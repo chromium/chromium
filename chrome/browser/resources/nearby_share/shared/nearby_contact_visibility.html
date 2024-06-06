@@ -235,11 +235,9 @@
   }
 </style>
 <div id="main">
-
-  <cr-radio-group id="visibilityRadioGroup"
-      disabled="[[disableRadioGroup_(contactsState)]]"
-      selected="{{selectedVisibility}}">
-    <template is="dom-if" if="[[showSelfShareUi_(isSelfShareEnabled_)]]">
+<cr-radio-group id="visibilityRadioGroup"
+    disabled="[[disableRadioGroup_(contactsState)]]"
+    selected="{{selectedVisibility}}">
     <cr-card-radio-button id="contacts" class="flex" name="contacts"
         aria-labelledby="contactsLabel" >
       <div class="card-contents">
@@ -260,29 +258,6 @@
         </div>
       </div>
     </cr-card-radio-button>
-  </template>
-  <template is="dom-if" if="[[!showSelfShareUi_(isSelfShareEnabled_)]]">
-    <cr-card-radio-button id="allContacts" class="flex" name="all"
-        aria-labelledby="allContactsLabel" >
-      <div class="card-contents">
-        <iron-icon icon="nearby20:contact-all" class="card-icon">
-        </iron-icon>
-        <div id="allContactsLabel" class="card-label" aria-hidden="true">
-          $i18n{nearbyShareContactVisibilityAll}
-        </div>
-      </div>
-    </cr-card-radio-button>
-    <cr-card-radio-button id="someContacts" class="flex" name="some"
-        aria-labelledby="someContactsLabel" >
-      <div class="card-contents">
-        <iron-icon icon="nearby20:contact-group" class="card-icon">
-        </iron-icon>
-        <div id="someContactsLabel" class="card-label" aria-hidden="true">
-          $i18n{nearbyShareContactVisibilitySome}
-        </div>
-      </div>
-    </cr-card-radio-button>
-  </template>
     <cr-card-radio-button id="noContacts" class="flex" name="none"
         aria-labelledby="noContactsLabel" >
       <div class="card-contents">

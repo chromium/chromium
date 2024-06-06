@@ -242,53 +242,34 @@
           $i18n{nearbyShareDiscoveryPagePlaceholder}
         </div>
         <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
-          <template is="dom-if" if="[[showSelfShareUi_(isSelfShareEnabled)]]">
-            <div id="deviceLists">
-              <array-selector class="selector" items="{{shareTargets_}}" selected-item="{{selectedShareTarget}}">
-              </array-selector>
-              <div id="selfShareDevices" class="device-list-container" aria-live="polite">
-                <template is="dom-repeat" items="[[selfShareTargets_]]">
-                  <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
-                    share-target="[[item]]"
-                    is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
-                    role="radio"
-                    aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
-                    on-click="onShareTargetClicked_"
-                    on-keydown="onKeyDownForShareTarget_">
-                  </nearby-device>
-                </template>
-              </div>
-              <div id="nonSelfShareDevices" class="device-list-container" aria-live="polite">
-                <template is="dom-repeat" items="[[nonSelfShareTargets_]]">
-                  <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
-                    share-target="[[item]]"
-                    is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
-                    role="radio"
-                    aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
-                    on-click="onShareTargetClicked_"
-                    on-keydown="onKeyDownForShareTarget_">
-                  </nearby-device>
-                </template>
-              </div>
-            </div>
-          </template>
-          <template is="dom-if" if="[[!showSelfShareUi_(isSelfShareEnabled)]]">
-            <div class="device-list-container" aria-live="polite">
-              <array-selector class="selector" items="{{shareTargets_}}"
-                  selected-item="{{selectedShareTarget}}">
-              </array-selector>
-              <template is="dom-repeat" items="[[shareTargets_]]">
+          <div id="deviceLists">
+            <array-selector class="selector" items="{{shareTargets_}}" selected-item="{{selectedShareTarget}}">
+            </array-selector>
+            <div id="selfShareDevices" class="device-list-container" aria-live="polite">
+              <template is="dom-repeat" items="[[selfShareTargets_]]">
                 <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
-                    share-target="[[item]]"
-                    is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
-                    role="radio"
-                    aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
-                    on-click="onShareTargetClicked_"
-                    on-keydown="onKeyDownForShareTarget_">
+                  share-target="[[item]]"
+                  is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
+                  role="radio"
+                  aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
+                  on-click="onShareTargetClicked_"
+                  on-keydown="onKeyDownForShareTarget_">
                 </nearby-device>
               </template>
             </div>
-          </template>
+            <div id="nonSelfShareDevices" class="device-list-container" aria-live="polite">
+              <template is="dom-repeat" items="[[nonSelfShareTargets_]]">
+                <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
+                  share-target="[[item]]"
+                  is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
+                  role="radio"
+                  aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
+                  on-click="onShareTargetClicked_"
+                  on-keydown="onKeyDownForShareTarget_">
+                </nearby-device>
+              </template>
+            </div>
+          </div>
         </template>
       </template>
     </div>

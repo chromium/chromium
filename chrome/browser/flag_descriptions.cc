@@ -7153,11 +7153,6 @@ const char kEnableNearbyBluetoothClassicAdvertisingName[] =
 const char kEnableNearbyBluetoothClassicAdvertisingDescription[] =
     "Enables Nearby advertising over Bluetooth Classic.";
 
-const char kNearbySharingSelfShareName[] = "Nearby Sharing Self Share";
-const char kNearbySharingSelfShareDescription[] =
-    "Enables Self Share auto-accept and UI features to allow seamless sharing "
-    "between a user's own devices.";
-
 const char kNearbyPresenceName[] = "Nearby Presence";
 const char kNearbyPresenceDescription[] =
     "Enables Nearby Presence for scanning and discovery of nearby devices.";

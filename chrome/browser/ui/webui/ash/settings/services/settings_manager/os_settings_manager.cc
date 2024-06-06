@@ -81,8 +81,6 @@ void OsSettingsManager::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isCrosComponentsEnabled",
                           chromeos::features::IsCrosComponentsEnabled());
-  html_source->AddBoolean("isSelfShareEnabled",
-                          ::features::IsSelfShareEnabled());
   html_source->UseStringsJs();
 }
 

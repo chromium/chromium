@@ -71,15 +71,26 @@ suite('DiscoveryPageTest', function() {
   }
 
   /**
-   * Returns a list of visible share target elements.
+   * Returns the |index| positioned Share Target in the concatenated Your
+   * Devices and Other Devices Share Target lists.
    */
   function getNearbyDeviceElementAt(index) {
-    const container =
-        discoveryPageElement.shadowRoot.querySelector('.device-list-container');
-    const nearbyDeviceElements = container.querySelectorAll('nearby-device');
+    const selfShareDevices =
+        discoveryPageElement.shadowRoot.querySelector('#selfShareDevices');
+    const selfShareDeviceElements =
+        selfShareDevices.querySelectorAll('nearby-device');
+    const nonSelfShareDevices =
+        discoveryPageElement.shadowRoot.querySelector('#nonSelfShareDevices');
+    const nonSelfShareDeviceElements =
+        nonSelfShareDevices.querySelectorAll('nearby-device');
 
-    assertTrue(nearbyDeviceElements.length > index);
-    return nearbyDeviceElements[index];
+    assertTrue(
+        selfShareDeviceElements.length + nonSelfShareDeviceElements.length >
+        index);
+    if (index < selfShareDeviceElements.length) {
+      return selfShareDeviceElements[index];
+    }
+    return nonSelfShareDeviceElements[index - selfShareDeviceElements.length];
   }
 
   /**
@@ -288,20 +299,7 @@ suite('DiscoveryPageTest', function() {
 
   teardown(function() {
     discoveryPageElement.remove();
-    loadTimeData.overrideValues({'isSelfShareEnabled': false});
   });
-
-  /**
-   * Sets up self share tests which need isSelfShareEnabled enabled.
-   */
-  async function setupSelfShare() {
-    discoveryPageElement.remove();
-    PolymerTest.clearBody();
-    loadTimeData.overrideValues({'isSelfShareEnabled': true});
-    discoveryPageElement = /** @type {!NearbyDiscoveryPageElement} */ (
-        document.createElement('nearby-discovery-page'));
-    document.body.appendChild(discoveryPageElement);
-  }
 
   test('renders component', async function() {
     assertEquals('NEARBY-DISCOVERY-PAGE', discoveryPageElement.tagName);
@@ -630,7 +628,6 @@ suite('DiscoveryPageTest', function() {
   test(
       'self share targets top device list when self share is enabled',
       async function() {
-        setupSelfShare();
         const listener = await startDiscovery();
 
         // Add 2 non-self share targets.
@@ -664,36 +661,7 @@ suite('DiscoveryPageTest', function() {
             'Device 2');
       });
 
-  test(
-      'share targets ordered by earliest discovery when self share disabled',
-      async function() {
-        const listener = await startDiscovery();
-
-        // Add 2 non-self share targets.
-        let targets = [
-          createShareTarget('Device 1', /*for_self_share=*/ false),
-          createShareTarget('Device 2', /*for_self_share=*/ false),
-        ];
-        targets.forEach((target) => listener.onShareTargetDiscovered(target));
-        await listener.$.flushForTesting();
-
-        // Add 2 self share targets.
-        targets = [
-          createShareTarget('Device 3', /*for_self_share=*/ true),
-          createShareTarget('Device 4', /*for_self_share=*/ true),
-        ];
-        targets.forEach((target) => listener.onShareTargetDiscovered(target));
-        await listener.$.flushForTesting();
-        flush();
-
-        assertEquals(getNearbyDeviceElementAt(0).$.name.innerHTML, 'Device 1');
-        assertEquals(getNearbyDeviceElementAt(1).$.name.innerHTML, 'Device 2');
-        assertEquals(getNearbyDeviceElementAt(2).$.name.innerHTML, 'Device 3');
-        assertEquals(getNearbyDeviceElementAt(3).$.name.innerHTML, 'Device 4');
-      });
-
   test('one self share target in device list', async function() {
-    setupSelfShare();
     const listener = await startDiscovery();
 
     // Add a self share target.
@@ -707,7 +675,6 @@ suite('DiscoveryPageTest', function() {
   });
 
   test('one non-self share target in device list', async function() {
-    setupSelfShare();
     const listener = await startDiscovery();
 
     // Add a non-self share target.
@@ -721,7 +688,6 @@ suite('DiscoveryPageTest', function() {
   });
 
   test('add and remove share targets to/from device list', async function() {
-    setupSelfShare();
     const listener = await startDiscovery();
 
     // Add self, non-self share targets.

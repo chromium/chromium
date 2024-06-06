@@ -46,33 +46,7 @@ suite('nearby-contact-visibility', () => {
 
   teardown(() => {
     visibilityElement.remove();
-    loadTimeData.overrideValues({'isSelfShareEnabled': false});
   });
-
-  /**
-   * Sets up self share tests which need isSelfShareEnabled enabled.
-   */
-  async function setupSelfShare() {
-    visibilityElement.remove();
-    PolymerTest.clearBody();
-    loadTimeData.overrideValues({'isSelfShareEnabled': true});
-
-    visibilityElement = /** @type {!NearbyContactVisibilityElement} */ (
-        document.createElement('nearby-contact-visibility'));
-
-    visibilityElement.settings = /** @type {!NearbySettings} */ ({
-      enabled: false,
-      fastInitiationNotificationState: FastInitiationNotificationState.kEnabled,
-      isFastInitiationHardwareSupported: true,
-      deviceName: 'deviceName',
-      dataUsage: DataUsage.kOnline,
-      visibility: Visibility.kUnknown,
-      isOnboardingComplete: false,
-      allowedContacts: [],
-    });
-
-    document.body.appendChild(visibilityElement);
-  }
 
   function succeedContactDownload() {
     fakeContactManager.setupContactRecords();
@@ -111,12 +85,8 @@ suite('nearby-contact-visibility', () => {
    * @return {boolean} true when the checkboxes for contacts are visible
    */
   function areContactCheckBoxesVisibleAndAllContactsToggledOff() {
-    if (loadTimeData.getValue('isSelfShareEnabled')) {
-      return visibilityElement.selectedVisibility === 'contacts' &&
-          !visibilityElement.isAllContactsToggledOn_;
-    }
-
-    return visibilityElement.selectedVisibility === 'some';
+    return visibilityElement.selectedVisibility === 'contacts' &&
+        !visibilityElement.isAllContactsToggledOn_;
   }
 
   /**
@@ -136,28 +106,11 @@ suite('nearby-contact-visibility', () => {
 
   /**
    * Checks the state of the contacts toggle button group
-   * @param {boolean} all is allContacts checked?
-   * @param {boolean} some is someContacts checked?
-   * @param {boolean} no is noContacts check?
-   */
-  function assertToggleState(all, some, no) {
-    assertEquals(
-        all,
-        visibilityElement.shadowRoot.querySelector('#allContacts').checked);
-    assertEquals(
-        some,
-        visibilityElement.shadowRoot.querySelector('#someContacts').checked);
-    assertEquals(
-        no, visibilityElement.shadowRoot.querySelector('#noContacts').checked);
-  }
-
-  /**
-   * Checks the state of the contacts toggle button group
    * @param {boolean} contacts is contacts checked?
    * @param {boolean} yourDevices is yourDevices checked?
    * @param {boolean} no is noContacts checked?
    */
-  function assertSelfShareToggleState(contacts, yourDevices, noContacts) {
+  function assertToggleState(contacts, yourDevices, noContacts) {
     assertEquals(
         contacts,
         visibilityElement.shadowRoot.querySelector('#contacts').checked);
@@ -193,13 +146,9 @@ suite('nearby-contact-visibility', () => {
     visibilityElement.set('settings.visibility', Visibility.kSelectedContacts);
     await waitAfterNextRender(visibilityElement);
 
-    if (loadTimeData.getValue('isSelfShareEnabled')) {
-      assertSelfShareToggleState(
-          /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
-      areContactCheckBoxesVisibleAndAllContactsToggledOff();
-    } else {
-      assertToggleState(/*all=*/ false, /*some=*/ true, /*no=*/ false);
-    }
+    assertToggleState(
+        /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+    areContactCheckBoxesVisibleAndAllContactsToggledOff();
     assertFalse(isZeroStateVisible());
     assertFalse(isNoContactsSectionVisible());
     assertTrue(isDownloadContactsFailedVisible());
@@ -248,12 +197,8 @@ suite('nearby-contact-visibility', () => {
     // need to wait for the next render to see if the zero
     await waitAfterNextRender(visibilityElement);
 
-    if (loadTimeData.getValue('isSelfShareEnabled')) {
-      assertSelfShareToggleState(
-          /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ false);
-    } else {
-      assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ false);
-    }
+    assertToggleState(
+        /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ false);
     assertTrue(isZeroStateVisible());
     assertFalse(isNoContactsSectionVisible());
   });
@@ -266,13 +211,8 @@ suite('nearby-contact-visibility', () => {
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
 
-        if (loadTimeData.getValue('isSelfShareEnabled')) {
-          assertSelfShareToggleState(
-              /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
-        } else {
-          assertToggleState(
-              /*all=*/ true, /*some=*/ false, /*no=*/ false);
-        }
+        assertToggleState(
+            /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
         assertFalse(isZeroStateVisible());
         assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertFalse(isNoContactsSectionVisible());
@@ -287,14 +227,9 @@ suite('nearby-contact-visibility', () => {
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
-        if (loadTimeData.getValue('isSelfShareEnabled')) {
-          assertSelfShareToggleState(
-              /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
-          areContactCheckBoxesVisibleAndAllContactsToggledOff();
-        } else {
-          assertToggleState(
-              /*all=*/ false, /*some=*/ true, /*no=*/ false);
-        }
+        assertToggleState(
+            /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+        areContactCheckBoxesVisibleAndAllContactsToggledOff();
         assertFalse(isZeroStateVisible());
         assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertFalse(isNoContactsSectionVisible());
@@ -306,12 +241,8 @@ suite('nearby-contact-visibility', () => {
     // need to wait for the next render to see results
     await waitAfterNextRender(visibilityElement);
 
-    if (loadTimeData.getValue('isSelfShareEnabled')) {
-      assertSelfShareToggleState(
-          /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ true);
-    } else {
-      assertToggleState(/*all=*/ false, /*some=*/ false, /*no=*/ true);
-    }
+    assertToggleState(
+        /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ true);
     assertFalse(isZeroStateVisible());
     assertEquals(visibilityElement.querySelectorAll('#contactList').length, 0);
     assertFalse(isNoContactsSectionVisible());
@@ -328,12 +259,8 @@ suite('nearby-contact-visibility', () => {
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
 
-        if (loadTimeData.getValue('isSelfShareEnabled')) {
-          assertSelfShareToggleState(
-              /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
-        } else {
-          assertToggleState(/*all=*/ true, /*some=*/ false, /*no=*/ false);
-        }
+        assertToggleState(
+            /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
         assertFalse(isZeroStateVisible());
         assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertTrue(isNoContactsSectionVisible());
@@ -391,7 +318,8 @@ suite('nearby-contact-visibility', () => {
         await waitAfterNextRender(visibilityElement);
 
         // visibility setting is not immediately updated
-        visibilityElement.shadowRoot.querySelector('#someContacts').click();
+        visibilityElement.shadowRoot.querySelector('#AllContactsToggle')
+            .click();
         await waitAfterNextRender(visibilityElement);
         assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertEquals(
@@ -419,8 +347,7 @@ suite('nearby-contact-visibility', () => {
         assertEquals(fakeContactManager.allowedContacts[0], '2');
       });
 
-  test('isSelfShareEnabled: System Settings changed on Save only', async () => {
-    setupSelfShare();
+  test('System Settings changed on Save only', async () => {
     fakeContactManager.setupContactRecords();
     fakeContactManager.setNumUnreachable(0);
     fakeContactManager.completeDownload();
@@ -456,86 +383,69 @@ suite('nearby-contact-visibility', () => {
     assertEquals('2', fakeContactManager.allowedContacts[0]);
   });
 
-  test(
-      'isSelfShare enabled: toggle some contacts from all contacts',
-      async () => {
-        setupSelfShare();
-        fakeContactManager.setupContactRecords();
-        fakeContactManager.setNumUnreachable(0);
-        fakeContactManager.completeDownload();
-        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
-        await waitAfterNextRender(visibilityElement);
-        assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+  test('Toggle some contacts from all contacts', async () => {
+    fakeContactManager.setupContactRecords();
+    fakeContactManager.setNumUnreachable(0);
+    fakeContactManager.completeDownload();
+    visibilityElement.set('settings.visibility', Visibility.kAllContacts);
+    await waitAfterNextRender(visibilityElement);
+    assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
 
-        // Toggles for each contact appear when some contacts is toggled on.
-        visibilityElement.shadowRoot.querySelector('#AllContactsToggle')
-            .click();
-        await waitAfterNextRender(visibilityElement);
-        assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
-      });
+    // Toggles for each contact appear when some contacts is toggled on.
+    visibilityElement.shadowRoot.querySelector('#AllContactsToggle').click();
+    await waitAfterNextRender(visibilityElement);
+    assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+  });
 
-  test(
-      'isSelfShare enabled: toggle all contacts from some contacts',
-      async () => {
-        setupSelfShare();
-        fakeContactManager.setupContactRecords();
-        fakeContactManager.setNumUnreachable(0);
-        fakeContactManager.completeDownload();
-        visibilityElement.set(
-            'settings.visibility', Visibility.kSelectedContacts);
-        await waitAfterNextRender(visibilityElement);
-        assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+  test('Toggle all contacts from some contacts', async () => {
+    fakeContactManager.setupContactRecords();
+    fakeContactManager.setNumUnreachable(0);
+    fakeContactManager.completeDownload();
+    visibilityElement.set('settings.visibility', Visibility.kSelectedContacts);
+    await waitAfterNextRender(visibilityElement);
+    assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
 
-        // Toggles for each contact disappear when some contacts is toggled off.
-        visibilityElement.shadowRoot.querySelector('#AllContactsToggle')
-            .click();
-        await waitAfterNextRender(visibilityElement);
-        assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
-      });
+    // Toggles for each contact disappear when some contacts is toggled off.
+    visibilityElement.shadowRoot.querySelector('#AllContactsToggle').click();
+    await waitAfterNextRender(visibilityElement);
+    assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+  });
 
-  test(
-      'isSelfShare enabled: your devices visibility implies empty contact list',
-      async () => {
-        setupSelfShare();
-        fakeContactManager.setupContactRecords();
-        fakeContactManager.setNumUnreachable(0);
-        fakeContactManager.completeDownload();
-        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
-        await waitAfterNextRender(visibilityElement);
+  test('Your devices visibility implies empty contact list', async () => {
+    fakeContactManager.setupContactRecords();
+    fakeContactManager.setNumUnreachable(0);
+    fakeContactManager.completeDownload();
+    visibilityElement.set('settings.visibility', Visibility.kAllContacts);
+    await waitAfterNextRender(visibilityElement);
 
-        // Toggle Your Devices.
-        visibilityElement.shadowRoot.querySelector('#yourDevices').click();
-        await waitAfterNextRender(visibilityElement);
-        visibilityElement.saveVisibilityAndAllowedContacts();
-        assertEquals(
-            Visibility.kYourDevices,
-            visibilityElement.get('settings.visibility'));
-        assertEquals(0, fakeContactManager.allowedContacts.length);
-      });
+    // Toggle Your Devices.
+    visibilityElement.shadowRoot.querySelector('#yourDevices').click();
+    await waitAfterNextRender(visibilityElement);
+    visibilityElement.saveVisibilityAndAllowedContacts();
+    assertEquals(
+        Visibility.kYourDevices, visibilityElement.get('settings.visibility'));
+    assertEquals(0, fakeContactManager.allowedContacts.length);
+  });
 
-  test(
-      'isSelfShare enabled: hidden visibility implies empty contact list',
-      async () => {
-        setupSelfShare();
-        fakeContactManager.setupContactRecords();
-        fakeContactManager.setNumUnreachable(0);
-        fakeContactManager.completeDownload();
-        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
-        await waitAfterNextRender(visibilityElement);
+  test('Hidden visibility implies empty contact list', async () => {
+    fakeContactManager.setupContactRecords();
+    fakeContactManager.setNumUnreachable(0);
+    fakeContactManager.completeDownload();
+    visibilityElement.set('settings.visibility', Visibility.kAllContacts);
+    await waitAfterNextRender(visibilityElement);
 
-        // Toggle Hidden.
-        visibilityElement.shadowRoot.querySelector('#noContacts').click();
-        await waitAfterNextRender(visibilityElement);
-        visibilityElement.saveVisibilityAndAllowedContacts();
-        assertEquals(
-            Visibility.kNoOne, visibilityElement.get('settings.visibility'));
-        assertEquals(0, fakeContactManager.allowedContacts.length);
-      });
+    // Toggle Hidden.
+    visibilityElement.shadowRoot.querySelector('#noContacts').click();
+    await waitAfterNextRender(visibilityElement);
+    visibilityElement.saveVisibilityAndAllowedContacts();
+    assertEquals(
+        Visibility.kNoOne, visibilityElement.get('settings.visibility'));
+    assertEquals(0, fakeContactManager.allowedContacts.length);
+  });
 
   test(
-      'isSelfShare enabled: only contacts toggled are saved in allowed contact list when selected contacts toggled',
+      'Only contacts toggled are saved in allowed contact list when selected contacts toggled',
       async () => {
-        setupSelfShare();
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(0);
         fakeContactManager.completeDownload();
@@ -572,27 +482,22 @@ suite('nearby-contact-visibility', () => {
         assertEquals('2', fakeContactManager.allowedContacts[0]);
       });
 
-  test(
-      'isSelfShareEnabled: Visibility component shows contacts for kAllContacts',
-      async () => {
-        setupSelfShare();
-        succeedContactDownload();
-        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
+  test('Visibility component shows contacts for kAllContacts', async () => {
+    succeedContactDownload();
+    visibilityElement.set('settings.visibility', Visibility.kAllContacts);
 
-        // need to wait for the next render to see results
-        await waitAfterNextRender(visibilityElement);
+    // need to wait for the next render to see results
+    await waitAfterNextRender(visibilityElement);
 
-        assertSelfShareToggleState(
-            /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
-        assertFalse(isZeroStateVisible());
-        assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
-        assertFalse(isNoContactsSectionVisible());
-      });
+    assertToggleState(
+        /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
+    assertFalse(isZeroStateVisible());
+    assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertFalse(isNoContactsSectionVisible());
+  });
 
   test(
-      'isSelfShareEnabled: Visibility component shows contacts for kSelectedContacts',
-      async () => {
-        setupSelfShare();
+      'Visibility component shows contacts for kSelectedContacts', async () => {
         succeedContactDownload();
         visibilityElement.set(
             'settings.visibility', Visibility.kSelectedContacts);
@@ -600,43 +505,37 @@ suite('nearby-contact-visibility', () => {
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
 
-        assertSelfShareToggleState(
+        assertToggleState(
             /*contacts=*/ true, /*yourDevices=*/ false, /*no=*/ false);
         assertFalse(isZeroStateVisible());
         assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
         assertFalse(isNoContactsSectionVisible());
       });
 
-  test(
-      'isSelfShareEnabled: Visibility component shows yourDevices for kYourDevices',
-      async () => {
-        setupSelfShare();
-        succeedContactDownload();
-        visibilityElement.set('settings.visibility', Visibility.kYourDevices);
+  test('Visibility component shows yourDevices for kYourDevices', async () => {
+    succeedContactDownload();
+    visibilityElement.set('settings.visibility', Visibility.kYourDevices);
 
-        // Results visible after next render.
-        await waitAfterNextRender(visibilityElement);
+    // Results visible after next render.
+    await waitAfterNextRender(visibilityElement);
 
-        assertSelfShareToggleState(
-            /*contacts=*/ false, /*yourDevices=*/ true, /*no=*/ false);
-        assertFalse(isZeroStateVisible());
-        assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
-        assertFalse(isNoContactsSectionVisible());
-      });
+    assertToggleState(
+        /*contacts=*/ false, /*yourDevices=*/ true, /*no=*/ false);
+    assertFalse(isZeroStateVisible());
+    assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertFalse(isNoContactsSectionVisible());
+  });
 
-  test(
-      'isSelfShareEnabled: Visibility component shows no contacts for kNoOne',
-      async () => {
-        setupSelfShare();
-        visibilityElement.set('settings.visibility', Visibility.kNoOne);
-        succeedContactDownload();
-        // need to wait for the next render to see results
-        await waitAfterNextRender(visibilityElement);
+  test('Visibility component shows no contacts for kNoOne', async () => {
+    visibilityElement.set('settings.visibility', Visibility.kNoOne);
+    succeedContactDownload();
+    // need to wait for the next render to see results
+    await waitAfterNextRender(visibilityElement);
 
-        assertSelfShareToggleState(
-            /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ true);
-        assertFalse(isZeroStateVisible());
-        assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
-        assertFalse(isNoContactsSectionVisible());
-      });
+    assertToggleState(
+        /*contacts=*/ false, /*yourDevices=*/ false, /*no=*/ true);
+    assertFalse(isZeroStateVisible());
+    assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertFalse(isNoContactsSectionVisible());
+  });
 });

@@ -42,6 +42,7 @@ const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kDeviceId[] = "123456789A";
 const char kDefaultDeviceName[] = "Josh's Chromebook";
 const char kTestProfileUserName[] = "test@google.com";
+const uint8_t kVisibilityCount = 3u;
 
 const std::vector<std::string> kPublicCertificateIds = {"id1", "id2", "id3"};
 
@@ -51,10 +52,9 @@ void CaptureDecryptedPublicCertificateCallback(
   *dest = std::move(src);
 }
 
-// We will run tests with the following feature flags enabled and disabled in
+// Run tests with the following feature flags enabled and disabled in
 // all permutations. To add or a remove a feature you can just update this list.
-const std::vector<base::test::FeatureRef> kTestFeatures = {
-    features::kNearbySharingSelfShare};
+const std::vector<base::test::FeatureRef> kTestFeatures = {};
 
 }  // namespace
 
@@ -160,12 +160,6 @@ class NearbyShareCertificateManagerImplTest
 
     PopulatePrivateCertificates();
     PopulatePublicCertificates();
-
-    visibility_count_ = (isSelfShareEnabled()) ? 3u : 2u;
-  }
-
-  bool isSelfShareEnabled() {
-    return base::FeatureList::IsEnabled(features::kNearbySharingSelfShare);
   }
 
   void SetBluetoothMacAddress(const std::string& bluetooth_mac_address) {
@@ -263,7 +257,7 @@ class NearbyShareCertificateManagerImplTest
     // selected-contacts
     std::vector<NearbySharePrivateCertificate> certs =
         *cert_store_->GetPrivateCertificates();
-    EXPECT_EQ(visibility_count_ * kNearbyShareNumPrivateCertificates,
+    EXPECT_EQ(kVisibilityCount * kNearbyShareNumPrivateCertificates,
               certs.size());
 
     base::Time min_not_before_all_contacts = base::Time::Max();
@@ -313,11 +307,9 @@ class NearbyShareCertificateManagerImplTest
         kNearbyShareNumPrivateCertificates *
             kNearbyShareCertificateValidityPeriod,
         max_not_after_selected_contacts - min_not_before_selected_contacts);
-    if (isSelfShareEnabled()) {
-      EXPECT_EQ(kNearbyShareNumPrivateCertificates *
-                    kNearbyShareCertificateValidityPeriod,
-                max_not_after_your_devices - min_not_before_your_devices);
-    }
+    EXPECT_EQ(kNearbyShareNumPrivateCertificates *
+                  kNearbyShareCertificateValidityPeriod,
+              max_not_after_your_devices - min_not_before_your_devices);
   }
 
   void RunUpload(bool success) {
@@ -327,7 +319,7 @@ class NearbyShareCertificateManagerImplTest
     EXPECT_EQ(initial_num_upload_calls + 1,
               local_device_data_manager_->upload_certificates_calls().size());
 
-    EXPECT_EQ(visibility_count_ * kNearbyShareNumPrivateCertificates,
+    EXPECT_EQ(kVisibilityCount * kNearbyShareNumPrivateCertificates,
               local_device_data_manager_->upload_certificates_calls()
                   .back()
                   .certificates.size());
@@ -449,14 +441,9 @@ class NearbyShareCertificateManagerImplTest
     const auto& metadata = GetNearbyShareTestMetadata();
 
     std::vector<nearby_share::mojom::Visibility> visibilities;
-    if (isSelfShareEnabled()) {
-      visibilities = {nearby_share::mojom::Visibility::kAllContacts,
-                      nearby_share::mojom::Visibility::kSelectedContacts,
-                      nearby_share::mojom::Visibility::kYourDevices};
-    } else {
-      visibilities = {nearby_share::mojom::Visibility::kAllContacts,
-                      nearby_share::mojom::Visibility::kSelectedContacts};
-    }
+    visibilities = {nearby_share::mojom::Visibility::kAllContacts,
+                    nearby_share::mojom::Visibility::kSelectedContacts,
+                    nearby_share::mojom::Visibility::kYourDevices};
 
     for (auto visibility : visibilities) {
       private_certificates_.emplace_back(visibility, t0, metadata);
@@ -517,7 +504,6 @@ class NearbyShareCertificateManagerImplTest
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<NearbyShareCertificateManager> cert_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  uint8_t visibility_count_;
 };
 
 TEST_P(NearbyShareCertificateManagerImplTest,
@@ -757,7 +743,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
       ++num_expected_calls;
       EXPECT_TRUE(certs.empty());
     } else {
-      EXPECT_EQ(visibility_count_ * kNearbyShareNumPrivateCertificates,
+      EXPECT_EQ(kVisibilityCount * kNearbyShareNumPrivateCertificates,
                 certs.size());
     }
 

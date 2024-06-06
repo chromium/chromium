@@ -80,11 +80,7 @@ size_t NumPrivateCertificates() {
 }
 
 size_t NumExpectedPrivateCertificates() {
-  if (features::IsSelfShareEnabled()) {
-    return kVisibilities.size() * NumPrivateCertificates();
-  }
-
-  return (kVisibilities.size() - 1) * NumPrivateCertificates();
+  return kVisibilities.size() * NumPrivateCertificates();
 }
 
 std::optional<std::string> GetBluetoothMacAddress(
@@ -604,36 +600,19 @@ void NearbyShareCertificateManagerImpl::AttemptPrivateCertificateRefresh() {
   // kNearbyShareNumPrivateCertificates (unless overridden by a command-line
   // switch).
   size_t num_certificates = NumPrivateCertificates();
-  if (features::IsSelfShareEnabled()) {
-    CD_LOG(INFO, Feature::NS)
-        << __func__ << ": Creating "
-        << num_certificates -
-               num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
-        << " all-contacts visibility, "
-        << num_certificates -
-               num_valid_certs
-                   [nearby_share::mojom::Visibility::kSelectedContacts]
-        << " selected-contacts visibility, and "
-        << num_certificates -
-               num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
-        << " your-devices private certificates.";
-  } else {
-    CD_LOG(INFO, Feature::NS)
-        << __func__ << ": Creating "
-        << num_certificates -
-               num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
-        << " all-contacts visibility and "
-        << num_certificates -
-               num_valid_certs
-                   [nearby_share::mojom::Visibility::kSelectedContacts]
-        << " selected-contacts visibility private certificates.";
-  }
+  CD_LOG(INFO, Feature::NS)
+      << __func__ << ": Creating "
+      << num_certificates -
+             num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
+      << " all-contacts visibility, "
+      << num_certificates -
+             num_valid_certs[nearby_share::mojom::Visibility::kSelectedContacts]
+      << " selected-contacts visibility, and "
+      << num_certificates -
+             num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
+      << " your-devices private certificates.";
 
   for (nearby_share::mojom::Visibility visibility : kVisibilities) {
-    if (visibility == nearby_share::mojom::Visibility::kYourDevices &&
-        !features::IsSelfShareEnabled()) {
-      continue;
-    }
     while (num_valid_certs[visibility] < num_certificates) {
       certs.emplace_back(visibility,
                          /*not_before=*/latest_not_after[visibility],

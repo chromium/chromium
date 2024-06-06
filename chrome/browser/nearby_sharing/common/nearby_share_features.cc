@@ -41,10 +41,6 @@ bool IsNameEnabled() {
   return base::FeatureList::IsEnabled(kIsNameEnabled);
 }
 
-bool IsSelfShareEnabled() {
-  return base::FeatureList::IsEnabled(kNearbySharingSelfShare);
-}
-
 bool IsRestrictToContactsEnabled() {
   return base::FeatureList::IsEnabled(kNearbySharingRestrictToContacts);
 }

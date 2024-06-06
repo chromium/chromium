@@ -8440,10 +8440,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShimlessRMAComplianceCheckName,
      flag_descriptions::kShimlessRMAComplianceCheckDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShimlessRMAComplianceCheck)},
-    {"nearby-sharing-self-share",
-     flag_descriptions::kNearbySharingSelfShareName,
-     flag_descriptions::kNearbySharingSelfShareDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingSelfShare)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

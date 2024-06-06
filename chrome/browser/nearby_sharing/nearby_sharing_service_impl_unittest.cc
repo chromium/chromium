@@ -351,8 +351,7 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 
 // We will run tests with the following feature flags enabled and disabled in
 // all permutations. To add or a remove a feature you can just update this list.
-const std::vector<base::test::FeatureRef> kTestFeatures = {
-    features::kNearbySharingSelfShare};
+const std::vector<base::test::FeatureRef> kTestFeatures = {};
 
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2338,11 +2337,7 @@ TEST_P(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  if (features::IsSelfShareEnabled()) {
-    EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-  } else {
-    EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
-  }
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }
 
@@ -2356,11 +2351,7 @@ TEST_P(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 
   session_controller_->SetScreenLocked(true);
-  if (features::IsSelfShareEnabled()) {
-    EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-  } else {
-    EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
-  }
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 
   session_controller_->SetScreenLocked(false);
@@ -5284,9 +5275,7 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
   ASSERT_TRUE(share_target.has_value());
   EXPECT_EQ(kDeviceName, share_target->device_name);
   EXPECT_EQ(kDeviceType, share_target->type);
-  if (features::IsSelfShareEnabled()) {
-    EXPECT_EQ(certificate_proto.for_self_share(), share_target->for_self_share);
-  }
+  EXPECT_EQ(certificate_proto.for_self_share(), share_target->for_self_share);
 
   // Test when |certificate| is null.
   share_target = CreateShareTarget(advertisement, /*certificate=*/std::nullopt);
@@ -5312,20 +5301,6 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
   NiceMock<MockTransferUpdateCallback> callback;
   ShareTarget share_target = SetUpIncomingConnection(
       callback, /*for_self_share=*/true, /*wifi_credentials_metadata_count=*/0);
-
-  // If Self Share is not enabled, we should just time out.
-  if (!features::IsSelfShareEnabled()) {
-    base::RunLoop run_loop;
-    EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
-        .WillOnce(testing::Invoke(
-            [&](const ShareTarget& share_target, TransferMetadata metadata) {
-              EXPECT_TRUE(metadata.is_final_status());
-              EXPECT_EQ(TransferMetadata::Status::kTimedOut, metadata.status());
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return;
-  }
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
@@ -5401,76 +5376,55 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept_WiFiCredentials) {
 
 TEST_P(NearbySharingServiceImplTest,
        SelfShareEnabled_YourDevicesVisibilityOnScreenLock) {
-  if (features::IsSelfShareEnabled()) {
-    const std::set<std::string> contacts = {"1", "2"};
-    SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
-    contact_manager()->SetAllowedContacts(contacts);
+  const std::set<std::string> contacts = {"1", "2"};
+  SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+  contact_manager()->SetAllowedContacts(contacts);
 
-    // Lock screen, expect Your Devices visibility.
-    session_controller_->SetScreenLocked(true);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
-    EXPECT_EQ(std::set<std::string>(), contact_manager()->GetAllowedContacts());
+  // Lock screen, expect Your Devices visibility.
+  session_controller_->SetScreenLocked(true);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
+  EXPECT_EQ(std::set<std::string>(), contact_manager()->GetAllowedContacts());
 
-    // Unlock screen, expect visibility to return to All Contacts.
-    session_controller_->SetScreenLocked(false);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
-    EXPECT_EQ(contacts, contact_manager()->GetAllowedContacts());
-  }
+  // Unlock screen, expect visibility to return to All Contacts.
+  session_controller_->SetScreenLocked(false);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
+  EXPECT_EQ(contacts, contact_manager()->GetAllowedContacts());
 }
 
 TEST_P(
     NearbySharingServiceImplTest,
     SelfShareEnabled_YourDevicesVisibilityOnScreenLock_DefaultSelectedContactsVisibility) {
-  if (features::IsSelfShareEnabled()) {
-    const std::set<std::string> contacts = {"1", "2"};
-    SetVisibility(nearby_share::mojom::Visibility::kSelectedContacts);
-    contact_manager()->SetAllowedContacts(contacts);
+  const std::set<std::string> contacts = {"1", "2"};
+  SetVisibility(nearby_share::mojom::Visibility::kSelectedContacts);
+  contact_manager()->SetAllowedContacts(contacts);
 
-    // Lock screen, expect Your Devices visibility.
-    session_controller_->SetScreenLocked(true);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
-    EXPECT_EQ(std::set<std::string>(), contact_manager()->GetAllowedContacts());
+  // Lock screen, expect Your Devices visibility.
+  session_controller_->SetScreenLocked(true);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
+  EXPECT_EQ(std::set<std::string>(), contact_manager()->GetAllowedContacts());
 
-    // Unlock screen, expect visibility to return to All Contacts.
-    session_controller_->SetScreenLocked(false);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kSelectedContacts,
-              GetVisibility());
-    EXPECT_EQ(contacts, contact_manager()->GetAllowedContacts());
-  }
-}
-
-TEST_P(NearbySharingServiceImplTest,
-       SelfShareDisabled_NoVisibilityChangeOnScreenLock) {
-  if (!features::IsSelfShareEnabled()) {
-    SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
-
-    // Lock screen, expect no change in visibility.
-    session_controller_->SetScreenLocked(true);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
-
-    // Unlock screen, expect no change in visibility.
-    session_controller_->SetScreenLocked(false);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
-  }
+  // Unlock screen, expect visibility to return to All Contacts.
+  session_controller_->SetScreenLocked(false);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kSelectedContacts,
+            GetVisibility());
+  EXPECT_EQ(contacts, contact_manager()->GetAllowedContacts());
 }
 
 TEST_P(NearbySharingServiceImplTest,
        UserSelectsHiddenVisibility_HiddenVisibilityOnScreenLock) {
-  if (features::IsSelfShareEnabled()) {
-    SetVisibility(nearby_share::mojom::Visibility::kNoOne);
-    std::set<std::string> empty_set;
-    contact_manager()->SetAllowedContacts(empty_set);
+  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
+  std::set<std::string> empty_set;
+  contact_manager()->SetAllowedContacts(empty_set);
 
-    // Lock screen, expect Hidden visibility.
-    session_controller_->SetScreenLocked(true);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, GetVisibility());
-    EXPECT_EQ(empty_set, contact_manager()->GetAllowedContacts());
+  // Lock screen, expect Hidden visibility.
+  session_controller_->SetScreenLocked(true);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, GetVisibility());
+  EXPECT_EQ(empty_set, contact_manager()->GetAllowedContacts());
 
-    // Unlock screen, expect visibility to still be Hidden.
-    session_controller_->SetScreenLocked(false);
-    EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, GetVisibility());
-    EXPECT_EQ(empty_set, contact_manager()->GetAllowedContacts());
-  }
+  // Unlock screen, expect visibility to still be Hidden.
+  session_controller_->SetScreenLocked(false);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, GetVisibility());
+  EXPECT_EQ(empty_set, contact_manager()->GetAllowedContacts());
 }
 
 INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,

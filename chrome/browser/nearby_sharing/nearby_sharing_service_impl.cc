@@ -290,12 +290,9 @@ class TransferUpdateDecorator : public TransferUpdateCallback {
 };
 
 bool isVisibleForAdvertising(nearby_share::mojom::Visibility visibility) {
-  if (visibility == nearby_share::mojom::Visibility::kYourDevices &&
-      features::IsSelfShareEnabled()) {
-    return true;
-  }
   return visibility == nearby_share::mojom::Visibility::kAllContacts ||
-         visibility == nearby_share::mojom::Visibility::kSelectedContacts;
+         visibility == nearby_share::mojom::Visibility::kSelectedContacts ||
+         visibility == nearby_share::mojom::Visibility::kYourDevices;
 }
 
 }  // namespace
@@ -1484,8 +1481,7 @@ void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
   // not Hidden.
   nearby_share::mojom::Visibility current_visibility =
       settings_.GetVisibility();
-  if (features::IsSelfShareEnabled() &&
-      current_visibility != nearby_share::mojom::Visibility::kNoOne) {
+  if (current_visibility != nearby_share::mojom::Visibility::kNoOne) {
     if (locked) {
       // Store old visibility setting.
       user_visibility_ = current_visibility;
@@ -2141,16 +2137,6 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
         << __func__
         << ": Stopping advertising because the system is suspended.";
     return;
-  }
-
-  // Do not advertise on lock screen unless Self Share is enabled.
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
-    if (is_screen_locked_) {
-      StopAdvertising();
-      CD_LOG(VERBOSE, Feature::NS)
-          << __func__ << ": Stopping advertising because the screen is locked.";
-      return;
-    }
   }
 
   if (!HasAvailableConnectionMediums()) {
@@ -4129,15 +4115,13 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
-    // Auto-accept self shares when not in high-visibility mode, unless the
-    // filetype includes WiFi credentials.
-    if (share_target.CanAutoAccept() && !IsInHighVisibility()) {
-      CD_LOG(INFO, Feature::NS) << __func__ << ": Auto-accepting self share.";
-      Accept(share_target, base::DoNothing());
-    } else {
-      CD_LOG(INFO, Feature::NS) << __func__ << ": Can't auto-accept transfer.";
-    }
+  // Auto-accept self shares when not in high-visibility mode, unless the
+  // filetype includes WiFi credentials.
+  if (share_target.CanAutoAccept() && !IsInHighVisibility()) {
+    CD_LOG(INFO, Feature::NS) << __func__ << ": Auto-accepting self share.";
+    Accept(share_target, base::DoNothing());
+  } else {
+    CD_LOG(INFO, Feature::NS) << __func__ << ": Can't auto-accept transfer.";
   }
 
   frames_reader->ReadFrame(
@@ -4280,9 +4264,7 @@ std::optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
   target.device_name = std::move(*device_name);
   target.is_incoming = is_incoming;
   target.device_id = GetDeviceId(endpoint_id, certificate);
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
-    target.for_self_share = certificate && certificate->for_self_share();
-  }
+  target.for_self_share = certificate && certificate->for_self_share();
 
   ShareTargetInfo& info = GetOrCreateShareTargetInfo(target, endpoint_id);
 
