@@ -6,6 +6,7 @@
 
 #import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 
@@ -37,9 +38,17 @@ std::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions) {
   return std::nullopt;
 }
 
-int GetIdleTimeoutActionsSubtitleId(ActionSet actions) {
-  return actions.clear ? IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA
-                       : IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA;
+int GetIdleTimeoutActionsSubtitleId(ActionSet actions,
+                                    bool is_account_managed) {
+  if (actions.clear) {
+    return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA;
+  } else if (actions.signout && is_account_managed &&
+             base::FeatureList::IsEnabled(
+                 kClearDeviceDataOnSignOutForManagedUsers)) {
+    return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT;
+  } else {
+    return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA;
+  }
 }
 
 std::optional<int> GetIdleTimeoutActionsSnackbarMessageId(ActionSet actions) {

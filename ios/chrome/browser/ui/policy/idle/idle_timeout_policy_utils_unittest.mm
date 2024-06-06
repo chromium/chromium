@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_utils.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/enterprise/idle/action_type.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -31,6 +33,8 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    scoped_feature_list_.InitWithFeatures(
+        {kClearDeviceDataOnSignOutForManagedUsers}, {});
     browser_state_ = test_cbs_builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -63,6 +67,7 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<AuthenticationService> authentication_service_;
@@ -82,8 +87,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedIn) {
             IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedOut) {
@@ -98,8 +104,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedOut) {
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedIn) {
@@ -114,8 +121,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedIn) {
             IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_SIGNOUT_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedOut) {
@@ -141,8 +149,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, AllActionsToActionSet_CloseTabs) {
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearBrowsingHistory) {
@@ -156,8 +165,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearBrowsingHistory) {
             IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest,
@@ -207,8 +217,12 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndClearData) {
             IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_AND_SIGNOUT_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_AND_SIGNOUT_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  // `IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA` should take precedence over
+  // `IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT` even if the
+  // `is_managed` flag is true.
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/true),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndCloseTabs) {
@@ -223,8 +237,31 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndCloseTabs) {
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_SNACKBAR_MESSAGE);
-  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(action_set),
-            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+}
+
+TEST_F(IdleTimeoutPolicyUtilsTest,
+       ActionsToActionSet_SignoutAndCloseTabsWithManagedState) {
+  // Sign in and verify that the signout action is set to true. Note that it
+  // does not make a difference whether this is a sign-in to a managed or
+  // unmanaged account becasuse `is_account_managed` is hard coded to true in
+  // the `GetIdleTimeoutActionsSubtitleId` method under test below.
+  SignIn();
+  SetIdleTimeoutActions({ActionType::kSignOut, ActionType::kCloseTabs});
+  ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
+  EXPECT_FALSE(action_set.clear);
+  EXPECT_TRUE(action_set.signout);
+  EXPECT_TRUE(action_set.close);
+
+  EXPECT_EQ(GetIdleTimeoutActionsTitleId(action_set),
+            IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_TITLE);
+  EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
+            IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_SNACKBAR_MESSAGE);
+  EXPECT_EQ(
+      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/true),
+      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT);
 }
 
 }  // namespace enterprise_idle

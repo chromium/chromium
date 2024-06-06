@@ -17,8 +17,8 @@ namespace enterprise_idle {
 std::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions);
 // Returns the string id that should be used for the subtitle of the
 // confirmation dialog. The subtitle has an additional sentence if data will be
-// cleared.
-int GetIdleTimeoutActionsSubtitleId(ActionSet actions);
+// cleared or if the user will be signed out from their managed account.
+int GetIdleTimeoutActionsSubtitleId(ActionSet actions, bool is_account_managed);
 // Returns the string id for the message that will be shown in the snackbar
 // after the idle timeout actions have run.
 std::optional<int> GetIdleTimeoutActionsSnackbarMessageId(ActionSet actions);

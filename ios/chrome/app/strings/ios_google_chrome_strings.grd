@@ -1055,6 +1055,11 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
             =1 {This happens when Chrome isn't used for {THRESHOLD} minute. This could include history and autofill.}
             other {This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}}
       </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens. It also informs the user that data will be cleared when they are signed out.">
+          {THRESHOLD, plural,
+            =1 {This happens when Chrome isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
+            other {This happens when Chrome isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
+      </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME" desc="Button label to indicate browser activity and stop the browser from running idle timeout actions.">
          Continue using Chrome
       </message>
