@@ -109,14 +109,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
 
-  # b/339349824, temporarily until LKGM uprev with crrev.com/c/5516014
-  "arc.Print.container_p",
-  "inputs.PhysicalKeyboardKoreanTyping",
-
-  # b/341794182, until LKGM R127-15898.0.0 lands
-  "arc.IntentForward.lacros",
-  "login.Chrome.lacros",
-
   # b/344945274
   "nacl.Pnacl.lacros@jacuzzi",
   "nacl.Pnacl.lacros@volteer",
@@ -164,9 +156,6 @@ tast_disabled_tests_from_lacros_all = [
   "crostini.VerifyAppWayland.bookworm_stable_lacros",
   "crostini.VerifyAppWayland.bullseye_stable_lacros",
 
-  # b/341794182, until LKGM R127-15898.0.0 lands
-  "login.Chrome.lacros",
-
   # On branch day, Lacros is +3 newer than ash which break the test.
   "lacros.CompareVersionWithAsh",
 
@@ -181,9 +170,6 @@ tast_disabled_tests_from_lacros_all = [
 ]
 
 if (!is_official_build) {
-  # b/322444880 Should be fixed by the next LKGM uprev.
-  tast_disabled_tests_from_chrome_all += [ "terminal.SSH@octopus" ]
-
   # b/324521903 temporary disabled until the test fixes
   tast_disabled_tests_from_chrome_all +=
       [ "secagentd.AuthenticationEvents.mainline@octopus" ]
