@@ -667,18 +667,18 @@
             },
             "unit_tests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 111,
-                    "estimated_bot_hour_delta": -2.16,
-                    "prev_avg_pending_time_sec": 53.5,
-                    "prev_p50_pending_time_sec": 2.0,
-                    "prev_p90_pending_time_sec": 171.0,
-                    "prev_percentile_duration_minutes": 11.06,
-                    "prev_shard_count": 4,
-                    "simulated_max_shard_duration": 14.36,
-                    "test_overhead_min": 1.1666666666666667,
+                    "avg_num_builds_per_peak_hour": 100,
+                    "estimated_bot_hour_delta": 2.19,
+                    "prev_avg_pending_time_sec": 29.4,
+                    "prev_p50_pending_time_sec": 0.0,
+                    "prev_p90_pending_time_sec": 114.0,
+                    "prev_percentile_duration_minutes": 16.36,
+                    "prev_shard_count": 3,
+                    "simulated_max_shard_duration": 12.6,
+                    "test_overhead_min": 1.3166666666666667,
                     "try_builder": "linux_chromium_tsan_rel_ng"
                 },
-                "shards": 3
+                "shards": 4
             },
             "webkit_unit_tests": {
                 "debug": {
