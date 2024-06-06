@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # TODO(crbug.com/1340013): Have a linux section for the toolchain for
-# goma/reclient. It likely just needs to download the .tgz on swift.org and
+# reclient. It likely just needs to download the .tgz on swift.org and
 # unpack it.
 
 # IMPORTANT: When changing the download URL, also be sure to update the install

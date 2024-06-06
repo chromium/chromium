@@ -12,8 +12,7 @@ Description:
 Compile all Swift with a consistent toolchain
 
 This represents the latest release toolchain from swift.org. Any bugs
-should be reported via their github. 
+should be reported via their github.
 
 The mac distribution is a universal binary for arm and x86. The linux
-distribution is for goma. 
-
+distribution is for RBE.
