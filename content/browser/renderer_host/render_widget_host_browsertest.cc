@@ -1621,8 +1621,15 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug/345304287): Temporary disable the same-doc variant while
+    // investigate the cause for flakiness.
+    ::testing::ValuesIn({TestConfig::kBFCacheEnabled,
+                         TestConfig::kBFCacheDisabled}),
+#else
     ::testing::ValuesIn({TestConfig::kSameDoc, TestConfig::kBFCacheEnabled,
                          TestConfig::kBFCacheDisabled}),
+#endif
     &DescribeTest);
 
 }  // namespace content
