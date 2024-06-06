@@ -87,8 +87,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
         int rootId = tabIds[0];
 
-        // Ensure that the color is set before merging the tabs into a group on restore, to indicate
-        // that this is not going to be a new group creation.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             groupFilter.setTabGroupColor(rootId, color);
         }

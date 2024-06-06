@@ -381,6 +381,7 @@ class TabListMediator {
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
     private @Nullable Profile mProfile;
     private Size mDefaultGridCardSize;
@@ -974,6 +975,8 @@ class TabListMediator {
         mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
         mTabGroupVisualDataDialogManager = null;
         mActionConfirmationManager = actionConfirmationManager;
+        mTabGroupCreationDialogManager =
+                new TabGroupCreationDialogManager(context, modalDialogManager);
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1235,6 +1238,7 @@ class TabListMediator {
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         context,
+                        mTabGroupCreationDialogManager,
                         mModel,
                         mCurrentTabModelFilterSupplier,
                         swipeSafeTabActionListener,
@@ -1894,6 +1898,8 @@ class TabListMediator {
             mTabGroupVisualDataDialogManager.destroy();
             mTabGroupVisualDataDialogManager = null;
         }
+
+        mTabGroupCreationDialogManager.destroy();
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -2184,12 +2190,7 @@ class TabListMediator {
             } else {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                int colorId = filter.getTabGroupColor(tab.getRootId());
-                // This should never be the case in practice, but if the color is invalid then set
-                // it to the first color in the list.
-                if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) {
-                    colorId = TabGroupColorId.GREY;
-                }
+                int colorId = filter.getOrCreateTabGroupColor(tab.getRootId());
                 final @StringRes int colorDescRes =
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);
@@ -2324,7 +2325,7 @@ class TabListMediator {
                 if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    int colorId = filter.getTabGroupColor(tab.getRootId());
+                    int colorId = filter.getOrCreateTabGroupColor(tab.getRootId());
                     faviconFetcher =
                             mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(
                                     colorId, filter.getTabModel().isIncognito());
@@ -2933,12 +2934,7 @@ class TabListMediator {
             } else {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                int colorId = filter.getTabGroupColor(rootId);
-                // This should never be the case in practice, but if the color is invalid
-                // then set it to the first color in the list.
-                if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) {
-                    colorId = TabGroupColorId.GREY;
-                }
+                int colorId = filter.getOrCreateTabGroupColor(rootId);
                 final @StringRes int colorDescRes =
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);

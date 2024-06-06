@@ -471,7 +471,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and verify dialog is showing correct content.
@@ -623,7 +622,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Expect the color icon to be clicked.
@@ -686,7 +684,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Expect the edit color menu item to be clicked.
@@ -768,7 +765,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and open selection editor and confirm the share action isn't visible.
@@ -1338,7 +1334,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(
                 cta,
@@ -1518,7 +1513,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
@@ -1546,7 +1540,6 @@ public class TabGridDialogTest {
         // Rotate to landscape mode and create a tab group.
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
@@ -1572,7 +1565,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 5, null);
 
@@ -1620,7 +1612,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and click the color icon to show the color picker.
@@ -2225,24 +2216,6 @@ public class TabGridDialogTest {
                 .verifyToolbarSelectionTextWithResourceId(
                         R.string.tab_selection_editor_toolbar_select_tabs)
                 .verifyAdapterHasItemCount(count);
-    }
-
-    private void verifyGroupCreationDialogOpenedAndDismiss() {
-        // Verify that the modal dialog is now showing.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true));
-                });
-        // Verify the visual data dialog exists.
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-        // Dismiss the tab group creation dialog.
-        dismissAllModalDialogs();
-        // Verify that the modal dialog is now hidden.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
-                });
     }
 
     private void dismissAllModalDialogs() {

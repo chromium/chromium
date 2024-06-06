@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Show
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,14 @@ public class TabListEditorManager {
     private final @TabListMode int mMode;
     private final @NonNull ObservableSupplierImpl<TabListEditorController> mControllerSupplier =
             new ObservableSupplierImpl<>();
+    private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable List<TabListEditorAction> mTabListEditorActions;
 
     /**
      * @param activity The current activity.
+     * @param modalDialogManager The modal dialog manager for the activity.
      * @param coordinatorView The overlay view to attach the editor to.
      * @param rootView The root view to attach the snackbar to.
      * @param browserControlsStateProvider The browser controls state provider.
@@ -59,6 +62,7 @@ public class TabListEditorManager {
      */
     public TabListEditorManager(
             @NonNull Activity activity,
+            @NonNull ModalDialogManager modalDialogManager,
             @NonNull ViewGroup coordinatorView,
             @NonNull ViewGroup rootView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
@@ -74,6 +78,8 @@ public class TabListEditorManager {
         mTabContentManager = tabContentManager;
         mTabListCoordinator = tabListCoordinator;
         mMode = mode;
+        mTabGroupCreationDialogManager =
+                new TabGroupCreationDialogManager(activity, modalDialogManager);
 
         // The snackbarManager used by mTabListEditorCoordinator. The rootView is the default
         // default parent view of the snackbar. When shown this will be re-parented inside the
@@ -90,6 +96,8 @@ public class TabListEditorManager {
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
         }
+
+        mTabGroupCreationDialogManager.destroy();
     }
 
     /** Initializes the tab list editor. */
@@ -137,6 +145,7 @@ public class TabListEditorManager {
             mTabListEditorActions.add(
                     TabListEditorGroupAction.createAction(
                             mActivity,
+                            mTabGroupCreationDialogManager,
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));

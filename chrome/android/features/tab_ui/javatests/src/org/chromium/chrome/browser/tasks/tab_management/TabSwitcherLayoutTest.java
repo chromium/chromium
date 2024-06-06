@@ -400,7 +400,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
         // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
@@ -1399,7 +1399,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1432,7 +1432,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1488,7 +1488,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1544,7 +1544,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1579,7 +1579,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1614,7 +1614,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1640,7 +1640,6 @@ public class TabSwitcherLayoutTest {
 
         // Regroup the tabs.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Click the ungroup action button to ungroup the group
@@ -1666,7 +1665,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1703,7 +1702,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1743,11 +1742,15 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 4);
 
         // Merge last two tabs into a group.
-        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
-        List<Tab> tabGroup =
-                new ArrayList<>(
-                        Arrays.asList(normalTabModel.getTabAt(2), normalTabModel.getTabAt(3)));
-        createTabGroup(cta, false, tabGroup);
+        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
+        enterTabListEditor(cta);
+        robot.resultRobot.verifyTabListEditorIsVisible();
+
+        robot.actionRobot.clickItemAtAdapterPosition(2);
+        robot.actionRobot.clickItemAtAdapterPosition(3);
+        robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
+        robot.resultRobot.verifyTabListEditorIsHidden();
+
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1761,10 +1764,15 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
 
         // Merge first two tabs into a group.
-        List<Tab> tabGroup2 =
-                new ArrayList<>(
-                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
-        createTabGroup(cta, false, tabGroup2);
+        robot = new TabListEditorTestingRobot();
+        enterTabListEditor(cta);
+        robot.resultRobot.verifyTabListEditorIsVisible();
+
+        robot.actionRobot.clickItemAtAdapterPosition(0);
+        robot.actionRobot.clickItemAtAdapterPosition(1);
+        robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
+        robot.resultRobot.verifyTabListEditorIsHidden();
+
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
@@ -1815,7 +1823,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1835,7 +1843,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
 
         // Expect that the the dialog is dismissed via another action.
         HistogramWatcher watcher =
@@ -1843,6 +1851,7 @@ public class TabSwitcherLayoutTest {
                         "Android.TabGroupParity.TabGroupCreationDialogResultAction", 2);
 
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+
         // Verify the color icon exists.
         onView(allOf(withId(R.id.tab_favicon), withParent(withId(R.id.card_view))))
                 .check(matches(isDisplayed()));
@@ -1859,7 +1868,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1906,7 +1915,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1940,7 +1949,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1978,7 +1987,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -2007,7 +2016,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
+        mergeNormalTabsToAGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -2132,7 +2141,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo"));
         verifyTabSwitcherCardCount(cta, 2);
@@ -2190,7 +2198,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
 
         // Merge tab group of 2 at first index with the 3rd tab.
         mergeAllNormalTabsToAGroup(cta);
@@ -2229,7 +2236,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(3), normalTabModel.getTabAt(4)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 4);
 
         // Assert default color 1 was set properly.
@@ -2251,7 +2257,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup2);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 3);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2323,7 +2328,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         int[] ungroupedRootId = new int[1];
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2393,7 +2397,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Assert default color was set properly.
@@ -2451,7 +2454,6 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Assert default color was set properly.
@@ -2764,6 +2766,36 @@ public class TabSwitcherLayoutTest {
                 withId(R.id.tab_list_recycler_view));
     }
 
+    private void mergeNormalTabsToAGroupWithDialog(ChromeTabbedActivity cta, int tabCount) {
+        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
+        enterTabListEditor(cta);
+        robot.resultRobot.verifyTabListEditorIsVisible();
+
+        for (int i = 0; i < tabCount; i++) {
+            robot.actionRobot.clickItemAtAdapterPosition(i);
+        }
+        robot.actionRobot
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem(tabCount == 1 ? "Group tab" : "Group tabs");
+        robot.resultRobot.verifyTabListEditorIsHidden();
+    }
+
+    private void verifyGroupVisualDataDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the visual data dialog exists.
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Wait until the keyboard is showing.
+        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
+        CriteriaHelper.pollUiThread(
+                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
+        // Dismiss the tab group visual data dialog.
+        dismissAllModalDialogs();
+        // Verify that the modal dialog is now hidden.
+        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
+    }
+
     private void editGroupVisualDataDialogTitle(ChromeTabbedActivity cta, String title) {
         onView(withId(R.id.title_input_text))
                 .perform(click())
@@ -2814,22 +2846,6 @@ public class TabSwitcherLayoutTest {
                                                     mActivityTestRule.getActivity(), color, false)),
                                     drawable.getColor());
                         });
-    }
-
-    private void verifyGroupVisualDataDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
-        // Verify that the modal dialog is now showing.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        // Verify the visual data dialog exists.
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-        // Wait until the keyboard is showing.
-        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
-        CriteriaHelper.pollUiThread(
-                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
-        // Dismiss the tab group visual data dialog.
-        dismissAllModalDialogs();
-        // Verify that the modal dialog is now hidden.
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
     }
 
     private void verifyModalDialogShowingAnimationCompleteInTabSwitcher() {

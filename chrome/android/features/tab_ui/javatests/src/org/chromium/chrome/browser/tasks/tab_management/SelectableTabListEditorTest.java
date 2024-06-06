@@ -149,6 +149,7 @@ public class SelectableTabListEditorTest {
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
     private BookmarkModel mBookmarkModel;
+    private TabGroupCreationDialogManager mCreationDialogManager;
 
     @Before
     public void setUp() throws Exception {
@@ -170,6 +171,8 @@ public class SelectableTabListEditorTest {
         mParentView = (ViewGroup) cta.findViewById(R.id.coordinator);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mCreationDialogManager =
+                            new TabGroupCreationDialogManager(cta, cta.getModalDialogManager());
                     ViewGroup compositorViewHolder = cta.getCompositorViewHolderForTesting();
                     ViewGroup rootView =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)
@@ -314,6 +317,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -408,6 +412,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -443,6 +448,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -482,6 +488,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -605,6 +612,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -664,6 +672,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1196,6 +1205,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1235,6 +1245,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1289,6 +1300,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1329,6 +1341,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1372,6 +1385,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1414,6 +1428,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1456,6 +1471,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1557,6 +1573,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1597,6 +1614,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1625,6 +1643,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.START));
@@ -1736,6 +1755,7 @@ public class SelectableTabListEditorTest {
                     actions.add(
                             TabListEditorGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
+                                    mCreationDialogManager,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.START));

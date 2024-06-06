@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -42,7 +43,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -92,6 +95,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock Profile mProfile;
     @Mock Tracker mTracker;
     @Mock GridLayoutManager mGridLayoutManager;
+    @Mock TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
     @Mock
     TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
@@ -146,6 +150,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         doReturn(tab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
         doReturn(tab3).when(mTabGroupModelFilter).getTabAt(POSITION3);
         doReturn(tab4).when(mTabGroupModelFilter).getTabAt(POSITION4);
+        doReturn(TAB1_ID).when(tab1).getRootId();
+        doReturn(TAB2_ID).when(tab2).getRootId();
+        doReturn(TAB3_ID).when(tab3).getRootId();
+        doReturn(TAB4_ID).when(tab4).getRootId();
         setupRecyclerView();
 
         mModel = new TabListModel();
@@ -181,6 +189,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         ContextUtils.getApplicationContext(),
+                        mTabGroupCreationDialogManager,
                         mModel,
                         mTabModelFilterSupplier,
                         mTabClosedListener,
@@ -859,6 +868,25 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(TAB1_ID);
         assertFalse(mItemTouchHelperCallback.shouldBlockAction());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void onTabMergeToGroup_willMergingCreateNewGroup() {
+        initAndAssertAllProperties();
+        doReturn(true).when(mTabGroupModelFilter).willMergingCreateNewGroup(any());
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Simulate hovering on card#2.
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mTabGroupModelFilter).mergeTabsToGroup(TAB1_ID, TAB2_ID);
+        verify(mTabGroupCreationDialogManager).showDialog(TAB2_ID, mTabGroupModelFilter);
     }
 
     private void verifyDrag(

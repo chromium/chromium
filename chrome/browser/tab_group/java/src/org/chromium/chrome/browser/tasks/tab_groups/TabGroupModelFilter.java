@@ -167,7 +167,7 @@ public class TabGroupModelFilter extends TabModelFilter {
      *
      * @param tabsToMerge The list of tabs to be merged including all source and destination tabs.
      */
-    public boolean willCreateNewGroup(List<Tab> tabsToMerge) {
+    public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
         for (Tab tab : tabsToMerge) {
             if (isTabInTabGroup(tab)) {
                 return false;
@@ -186,26 +186,15 @@ public class TabGroupModelFilter extends TabModelFilter {
         assert ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled();
         assert tab.getTabGroupId() == null;
         tab.setTabGroupId(Token.createRandom());
-        boolean willCreateNewGroup = true;
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            // If the destination group already has an assigned color, then this action is not
-            // for a new tab group creation. Currently, the only case where this would be called
-            // and it is not a new tab group creation is when a tab group is restored from the
-            // recent tabs page, where the color will be set before this call.
-            int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
-            willCreateNewGroup =
-                    willCreateNewGroup
-                            && (destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID);
-        }
+        boolean willMergingCreateNewGroup = true;
 
         // If this is a new tab group creation, do not trigger a snackbar.
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && willCreateNewGroup) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && willMergingCreateNewGroup) {
             notify = false;
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            if (willCreateNewGroup) {
+            if (willMergingCreateNewGroup) {
                 observer.didCreateNewGroup(tab, this);
             }
         }
@@ -249,7 +238,7 @@ public class TabGroupModelFilter extends TabModelFilter {
      * @param sourceTabId The id of the {@link Tab} to get the source group.
      * @param destinationTabId The id of a {@link Tab} to get the destination group.
      * @param skipUpdateTabModel True if updating the tab model will be handled elsewhere (e.g. by
-     *                           the tab strip).
+     *     the tab strip).
      */
     public void mergeTabsToGroup(
             int sourceTabId, int destinationTabId, boolean skipUpdateTabModel) {
@@ -275,17 +264,11 @@ public class TabGroupModelFilter extends TabModelFilter {
             Set<Pair<Integer, Token>> removedGroups = new HashSet<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
             int destinationGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
-            boolean willCreateNewGroup = willCreateNewGroup(List.of(sourceTab, destinationTab));
+            boolean willMergingCreateNewGroup =
+                    willMergingCreateNewGroup(List.of(sourceTab, destinationTab));
 
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                 destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
-                // If the destination group already has an assigned color, then this action is not
-                // for a new tab group creation. Currently, the only case where this would be called
-                // and it is not a new tab group creation is when a tab group is restored from the
-                // recent tabs page, where the color will be set before this call.
-                willCreateNewGroup =
-                        willCreateNewGroup
-                                && (destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID);
             }
 
             final boolean destinationGroupTitleCollapsed;
@@ -341,10 +324,11 @@ public class TabGroupModelFilter extends TabModelFilter {
                     observer.didMergeTabToGroup(tab, group.getLastShownTabId());
                 }
             }
+
             // TODO(b/339480989): Resequence this so that we iterate over observers multiple times
             // and emit one event per loop to be consistent with other usages.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                if (willCreateNewGroup) {
+                if (willMergingCreateNewGroup) {
                     observer.didCreateNewGroup(destinationTab, this);
 
                     // If this is a new tab group creation, do not trigger a snackbar.
@@ -390,7 +374,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.addAll(tabs);
         tabsToMerge.add(destinationTab);
-        boolean willCreateNewGroup = willCreateNewGroup(tabsToMerge);
+        boolean willMergingCreateNewGroup = willMergingCreateNewGroup(tabsToMerge);
 
         List<Tab> mergedTabs = new ArrayList<>();
         List<Integer> originalIndexes = new ArrayList<>();
@@ -484,13 +468,14 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            if (willCreateNewGroup) {
+            if (willMergingCreateNewGroup) {
                 observer.didCreateNewGroup(destinationTab, this);
             }
 
             // If this is a new tab group creation, do not trigger a snackbar.
             boolean skipSnackbarForCreation =
-                    willCreateNewGroup && ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
+                    willMergingCreateNewGroup
+                            && ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
@@ -789,14 +774,14 @@ public class TabGroupModelFilter extends TabModelFilter {
             throw new IllegalStateException("Attempting to open tab in the wrong model");
         }
 
-        boolean willCreateNewGroup = false;
+        boolean willMergingCreateNewGroup = false;
         if (shouldUseParentIds(tab)) {
             Tab parentTab = getParentTab(tab);
             if (parentTab != null) {
                 Token oldTabGroupId = parentTab.getTabGroupId();
                 Token newTabGroupId = getOrCreateTabGroupId(parentTab);
                 if (!Objects.equals(oldTabGroupId, newTabGroupId)) {
-                    willCreateNewGroup = true;
+                    willMergingCreateNewGroup = true;
                 }
                 tab.setRootId(parentTab.getRootId());
                 tab.setTabGroupId(newTabGroupId);
@@ -807,11 +792,11 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (mRootIdToGroupMap.containsKey(rootId)) {
             TabGroup group = mRootIdToGroupMap.get(rootId);
             if (!ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-                willCreateNewGroup = group.size() == 1;
+                willMergingCreateNewGroup = group.size() == 1;
             }
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
 
-            if (willCreateNewGroup) {
+            if (willMergingCreateNewGroup) {
                 // TODO(crbug.com/40173284): Update UMA for Context menu creation.
                 if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
                     if (mShouldRecordUma) {
@@ -1157,8 +1142,9 @@ public class TabGroupModelFilter extends TabModelFilter {
                 int newRootId = oldToNew.getValue();
                 TabGroupMetadata metadata = oldRootIdsToMetadata.get(oldRootId);
                 if (metadata.title != null) setTabGroupTitle(newRootId, metadata.title);
-                if (metadata.color != TabGroupColorUtils.INVALID_COLOR_ID)
+                if (metadata.color != TabGroupColorUtils.INVALID_COLOR_ID) {
                     setTabGroupColor(newRootId, metadata.color);
+                }
                 if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
                     if (metadata.isCollapsed) setTabGroupCollapsed(newRootId, true);
                 }

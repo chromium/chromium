@@ -249,6 +249,7 @@ public class TabSwitcherCoordinator
             mTabListEditorManager =
                     new TabListEditorManager(
                             activity,
+                            mModalDialogManager,
                             mCoordinatorView,
                             rootView,
                             browserControls,

@@ -165,7 +165,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mEphemeralTabCoordinatorSupplier,
                         mContextMenuCopyLinkObserver,
                         mSnackbarManagerSupplier,
-                        () -> mBottomSheetController),
+                        () -> mBottomSheetController,
+                        mModalDialogManagerSupplier),
                 mShareDelegateSupplier,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 ExternalAuthUtils.getInstance());

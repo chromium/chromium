@@ -145,6 +145,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final @DisplayMode.EnumType int mDisplayMode;
         private final MultiWindowUtils mMultiWindowUtils;
         private final boolean mShouldEnableEmbeddedMediaExperience;
+        private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
         /** See {@link TabWebContentsDelegateAndroid}. */
         public CustomTabWebContentsDelegate(
@@ -180,6 +181,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mDisplayMode = displayMode;
             mMultiWindowUtils = multiWindowUtils;
             mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
+            mModalDialogManagerSupplier = modalDialogManagerSupplier;
         }
 
         @Override
@@ -477,7 +479,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : () -> null,
                 () -> {},
                 () -> mSnackbarManager.get(),
-                () -> mBottomSheetController.get());
+                () -> mBottomSheetController.get(),
+                mModalDialogManagerSupplier);
     }
 
     @Override

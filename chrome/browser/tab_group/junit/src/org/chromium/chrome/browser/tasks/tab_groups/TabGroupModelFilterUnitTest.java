@@ -2548,16 +2548,16 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
-    public void testWillCreateNewGroup_NewGroup() {
+    public void testWillMergingCreateNewGroup_NewGroup() {
         // Mock a merge between mTab1 and mTab4, neither of which are in a group.
         List<Tab> tabsToMerge = List.of(mTab1, mTab4);
-        assertTrue(mTabGroupModelFilter.willCreateNewGroup(tabsToMerge));
+        assertTrue(mTabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge));
     }
 
     @Test
-    public void testWillCreateNewGroup_ExistingGroup() {
+    public void testWillMergingCreateNewGroup_ExistingGroup() {
         // Mock a merge between mTab1, mTab2 and mTab3, of which the latter 2 are in a group.
         List<Tab> tabsToMerge = List.of(mTab1, mTab2, mTab3);
-        assertFalse(mTabGroupModelFilter.willCreateNewGroup(tabsToMerge));
+        assertFalse(mTabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge));
     }
 }

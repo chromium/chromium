@@ -235,6 +235,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             TabListEditorManager tabListEditorManager =
                     new TabListEditorManager(
                             activity,
+                            mModalDialogManager,
                             coordinatorView,
                             /* rootView= */ parentView,
                             browserControlsStateProvider,

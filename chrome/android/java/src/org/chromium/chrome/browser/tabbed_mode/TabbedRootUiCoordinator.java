@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -118,8 +117,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -198,7 +195,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ViewGroup mCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
-    private Destroyable mTabGroupCreationDialogManager;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
 
     // Activity tab observer that updates the current tab used by various UI components.
@@ -511,11 +507,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mAppHeaderCoordinator = null;
         }
 
-        if (mTabGroupCreationDialogManager != null) {
-            mTabGroupCreationDialogManager.destroy();
-            mTabGroupCreationDialogManager = null;
-        }
-
         super.onDestroy();
     }
 
@@ -669,21 +660,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     };
             ((CoordinatorLayoutForPointer) mCoordinator)
                     .addTouchEventObserver(mDragDropTouchObserver);
-        }
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            TabModelUtils.runOnTabStateInitialized(
-                    mTabModelSelectorSupplier.get(),
-                    (tabModelSelector) -> {
-                        assert tabModelSelector != null;
-                        mTabGroupCreationDialogManager =
-                                TabManagementDelegateProvider.getDelegate()
-                                        .createTabGroupCreationDialogManager(
-                                                mActivity,
-                                                mModalDialogManagerSupplier.get(),
-                                                tabModelSelector,
-                                                () -> {});
-                    });
         }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
