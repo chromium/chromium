@@ -40,16 +40,30 @@ class CORE_EXPORT DOMException : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Constructor exposed to script.
+  // Constructor exposed to script. Only for use by the bindings code.
   static DOMException* Create(const String& message, const String& name);
 
-  // This constructor shouldn't be used except for V8ThrowDOMException. Note
-  // that this constructor does not associate the stacktrace with the created
-  // object.
-  // TODO(https://crbug.com/991544): Replace DOMException constructor calls.
+  // V8ThrowDOMException::CreateOrEmpty() should be used to create DOMException
+  // objects as it correctly attaches the stack property to the JavaScript
+  // object. However this constructor has many existing callers. This
+  // constructor can also be legitimately used by subclasses, in which case
+  // V8ThrowDOMException::AttachStackProperty() should be called after this
+  // constructor to attach the stack property. Strings are passed by value to
+  // avoid reference count churn when they are constructed from a temporary.
+  // TODO(https://crbug.com/40639312): Replace DOMException constructor calls.
   DOMException(DOMExceptionCode,
-               const String& sanitized_message = String(),
-               const String& unsanitized_message = String());
+               String sanitized_message,
+               String unsanitized_message = String());
+
+  // V8ThrowDOMException::CreateOrEmpty() should be used to create DOMException
+  // objects, however many callers call the DOMException constructor with
+  // literal strings. This constructor reduces code size for those callsites.
+  // TODO(https://crbug.com/40639312): Replace DOMException constructor calls.
+  explicit DOMException(DOMExceptionCode,
+                        const char* sanitized_message = nullptr,
+                        const char* unsanitized_message = nullptr);
+
+  // For use by Create() only.
   DOMException(uint16_t legacy_code,
                const String& name,
                const String& sanitized_message,
