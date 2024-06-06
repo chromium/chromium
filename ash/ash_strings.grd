@@ -5097,6 +5097,12 @@ No devices connected.
       <message name="IDS_ASH_AUTH_PIN_KEYBOARD" desc="The accessibility text for the authentication pin keyboard.">
         Pin keyboard
       </message>
+      <message name="IDS_ASH_AUTH_TEXTFIELD_PIN_ACCESSIBLE_NAME" desc="The accessibility text for the authentication pin textfield.">
+        PIN
+      </message>
+      <message name="IDS_ASH_AUTH_TEXTFIELD_PASSWORD_ACCESSIBLE_NAME" desc="The accessibility text for the authentication password textfield.">
+        Password
+      </message>
 
       <!-- Fast Pair strings -->
       <message name="IDS_FAST_PAIR_CONNECTION_ERROR_TITLE" desc="Notification title shown when a there is a Fast Pair connection error.">

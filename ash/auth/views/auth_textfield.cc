@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/auth/views/auth_textfield_timer.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
@@ -14,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/observer_list_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
@@ -66,6 +68,16 @@ AuthTextfield::AuthTextfield(AuthType auth_type)
   // Set the text colors.
   SetTextColorId(cros_tokens::kCrosSysOnSurface);
   SetPlaceholderTextColorId(cros_tokens::kCrosSysDisabled);
+
+  // Set Accessible name
+  if (auth_type_ == AuthType::kPassword) {
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_AUTH_TEXTFIELD_PASSWORD_ACCESSIBLE_NAME));
+  } else {
+    CHECK_EQ(auth_type_, AuthType::kPin);
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ASH_AUTH_TEXTFIELD_PIN_ACCESSIBLE_NAME));
+  }
 }
 
 AuthTextfield::~AuthTextfield() = default;
