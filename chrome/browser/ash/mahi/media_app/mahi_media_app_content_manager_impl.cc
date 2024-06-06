@@ -109,11 +109,6 @@ void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
 void MahiMediaAppContentManagerImpl::AddClient(base::UnguessableToken client_id,
                                                MahiMediaAppClient* client) {
   client_id_to_client_[client_id] = client;
-
-  client_id_to_window_record_[client_id] = client->media_app_window();
-  window_to_client_id_vec_[client->media_app_window()].push_back(client_id);
-
-  media_app_window_observations_.AddObservation(client->media_app_window());
   windows_of_live_clients_.insert(client->media_app_window());
 }
 
@@ -125,14 +120,7 @@ void MahiMediaAppContentManagerImpl::RemoveClient(
     return;
   }
 
-  // The media_app_window()==nullptr means the window is destroying. In this
-  // case, the cleaning is taken care of by `OnWindowDestroying()`.
-  aura::Window* window = it->second->media_app_window();
-  if (window != nullptr) {
-    windows_of_live_clients_.erase(window);
-    media_app_window_observations_.RemoveObservation(window);
-  }
-
+  windows_of_live_clients_.erase(it->second->media_app_window());
   client_id_to_client_.erase(it);
 }
 
@@ -143,36 +131,15 @@ bool MahiMediaAppContentManagerImpl::ObservingWindow(
 
 bool MahiMediaAppContentManagerImpl::ActivateClientWindow(
     const base::UnguessableToken client_id) {
-  // We don't care whether the client_id is removed and try to activate the
-  // associated media app window as long as it's live.
-  auto it = client_id_to_window_record_.find(client_id);
-  if (it == client_id_to_window_record_.end()) {
-    DVLOG(1) << "Tried to activate a closed window, do nothing";
+  auto it = client_id_to_client_.find(client_id);
+  if (it == client_id_to_client_.end()) {
+    DVLOG(1) << "Tried to activate a removed client, do nothing";
     return false;
   }
+  CHECK(it->second->media_app_window());
 
-  it->second->Focus();
+  it->second->media_app_window()->Focus();
   return true;
 }
 
-void MahiMediaAppContentManagerImpl::OnWindowDestroying(aura::Window* window) {
-  if (media_app_window_observations_.IsObservingSource(window)) {
-    RemoveClosedWindow(window);
-    media_app_window_observations_.RemoveObservation(window);
-  }
-}
-
-void MahiMediaAppContentManagerImpl::RemoveClosedWindow(aura::Window* window) {
-  auto window_iter = window_to_client_id_vec_.find(window);
-  if (window_iter == window_to_client_id_vec_.end()) {
-    return;
-  }
-
-  for (const auto client_id : window_iter->second) {
-    client_id_to_window_record_.erase(client_id);
-  }
-
-  window_to_client_id_vec_.erase(window_iter);
-  windows_of_live_clients_.erase(window);
-}
 }  // namespace ash

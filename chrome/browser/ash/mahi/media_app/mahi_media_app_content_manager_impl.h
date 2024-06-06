@@ -26,8 +26,7 @@ namespace ash {
 // active media app instance.
 class MahiMediaAppContentManagerImpl
     : public chromeos::MahiMediaAppEventsProxy::Observer,
-      public chromeos::MahiMediaAppContentManager,
-      public aura::WindowObserver {
+      public chromeos::MahiMediaAppContentManager {
  public:
   MahiMediaAppContentManagerImpl();
   MahiMediaAppContentManagerImpl(const MahiMediaAppContentManagerImpl&) =
@@ -55,30 +54,11 @@ class MahiMediaAppContentManagerImpl
   bool ObservingWindow(const aura::Window* window) const override;
   bool ActivateClientWindow(const base::UnguessableToken client_id) override;
 
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
-
  private:
-  // Removes all records related to this closed window.
-  void RemoveClosedWindow(aura::Window* window);
-
   std::map<base::UnguessableToken, raw_ptr<MahiMediaAppClient>>
       client_id_to_client_;
   std::set<raw_ptr<const aura::Window, SetExperimental>>
       windows_of_live_clients_;
-
-  // Keeps the mapping from client_id to aura::Window*, and reversed mapping,
-  // too. Elements are removed only when the window closes. That means if a
-  // client is removed but its associated window is still live, their mapping is
-  // still kept.
-  std::map<base::UnguessableToken, raw_ptr<aura::Window>>
-      client_id_to_window_record_;
-  std::map<aura::Window*, std::vector<base::UnguessableToken>>
-      window_to_client_id_vec_;
-
-  // This class observes all windows that have been associated to a client.
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      media_app_window_observations_{this};
 };
 
 }  // namespace ash
