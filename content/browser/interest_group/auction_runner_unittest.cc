@@ -65,6 +65,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -17175,10 +17176,14 @@ TEST_F(AuctionRunnerTest, RealTimeReportingSellerScriptLoadFailed) {
               testing::ElementsAre(
                   "Failed to load https://adstuff.publisher1.com/auction.js "
                   "HTTP status = 404 Not Found."));
-  EXPECT_THAT(result_.real_time_contributions,
-              testing::ElementsAre(testing::Pair(
-                  kSeller, ElementsAreContributions(BuildRealTimeContribution(
-                               /*bucket=*/1, /*priority_weight=*/1)))));
+  EXPECT_THAT(
+      result_.real_time_contributions,
+      testing::ElementsAre(testing::Pair(
+          kSeller, ElementsAreContributions(BuildRealTimeContribution(
+                       /*bucket=*/1024 +
+                           auction_worklet::RealTimeReportingPlatformError::
+                               kScoringScriptLoadFailure,
+                       /*priority_weight=*/1)))));
 }
 
 // An auction with different types of real time reporting contributions.
@@ -17222,17 +17227,25 @@ TEST_F(AuctionRunnerTest, RealTimeReportingMixedContributions) {
       testing::UnorderedElementsAre(
           // Bidder 1 has a platform contribution for failed bidding script
           // load.
-          testing::Pair(kBidder1,
-                        ElementsAreContributions(BuildRealTimeContribution(
-                            /*bucket=*/0, /*priority_weight=*/1))),
+          testing::Pair(
+              kBidder1,
+              ElementsAreContributions(BuildRealTimeContribution(
+                  /*bucket=*/1024 +
+                      auction_worklet::RealTimeReportingPlatformError::
+                          kBiddingScriptLoadFailure,
+                  /*priority_weight=*/1))),
           // Bidder 2 has a contribution from API call, and a contribution from
           // flatform contribution for failed trusted bidding signals load.
-          testing::Pair(kBidder2,
-                        ElementsAreContributions(
-                            BuildRealTimeContribution(
-                                /*bucket=*/102, priority_weight),
-                            BuildRealTimeContribution(
-                                /*bucket=*/2, /*priority_weight=*/1))),
+          testing::Pair(
+              kBidder2,
+              ElementsAreContributions(
+                  BuildRealTimeContribution(
+                      /*bucket=*/102, priority_weight),
+                  BuildRealTimeContribution(
+                      /*bucket=*/1024 +
+                          auction_worklet::RealTimeReportingPlatformError::
+                              kTrustedBiddingSignalsFailure,
+                      /*priority_weight=*/1))),
           testing::Pair(kSeller,
                         ElementsAreContributions(BuildRealTimeContribution(
                             /*bucket=*/202, priority_weight)))));

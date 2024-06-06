@@ -4846,31 +4846,13 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
                     .empty());
   }
 
-  // Bigger than supported bucket.
+  // Bigger than the API's max bucket (kFledgeRealTimeReportingNumBuckets).
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 12345);
-    dict.Set("priorityWeight", 0.5);
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs, ElementsAre());
-    EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
-                    ->TakeRealTimeReportingContributions()
-                    .empty());
-  }
-
-  // Reserved bucket for errors outside of worklets, such as script fetch error.
-  // API calls with these buckets will be ignored.
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 1);
+    dict.Set("bucket", 1024);
     dict.Set("priorityWeight", 0.5);
 
     Run(scope, script, "test", error_msgs,

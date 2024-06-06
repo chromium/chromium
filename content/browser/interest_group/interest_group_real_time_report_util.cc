@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -92,9 +93,11 @@ CalculateRealTimeReportingHistograms(
     // through the noising mechanism to satisfy the privacy requirements.
     histograms.emplace(
         origin,
-        Rappor(maybe_bucket,
-               blink::features::kFledgeRealTimeReportingEpsilon.Get(),
-               blink::features::kFledgeRealTimeReportingNumBuckets.Get()));
+        Rappor(
+            maybe_bucket,
+            blink::features::kFledgeRealTimeReportingEpsilon.Get(),
+            blink::features::kFledgeRealTimeReportingNumBuckets.Get() +
+                auction_worklet::RealTimeReportingPlatformError::kNumValues));
   }
   return histograms;
 }
@@ -108,7 +111,8 @@ bool HasValidRealTimeBucket(
         contribution) {
   return contribution->bucket >= 0 &&
          contribution->bucket <
-             blink::features::kFledgeRealTimeReportingNumBuckets.Get();
+             blink::features::kFledgeRealTimeReportingNumBuckets.Get() +
+                 auction_worklet::RealTimeReportingPlatformError::kNumValues;
 }
 
 bool HasValidRealTimePriorityWeight(

@@ -38,6 +38,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -60,6 +61,8 @@ constexpr int kMaxReportQueueLength = 1000;
 constexpr base::TimeDelta kMaxReportingRoundDuration = base::Minutes(10);
 // The time interval to wait before sending the next report after sending one.
 constexpr base::TimeDelta kReportingInterval = base::Milliseconds(50);
+// Version of real time report.
+constexpr int kRealTimeReportDataVersion = 1;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("auction_report_sender", R"(
@@ -143,6 +146,33 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
   return resource_request;
 }
 
+std::string BuildRealTimeReport(
+    const std::vector<uint8_t>& real_time_histogram) {
+  base::Value::Dict contents_dict;
+  size_t num_user_buckets =
+      blink::features::kFledgeRealTimeReportingNumBuckets.Get();
+  size_t num_platform_buckets =
+      auction_worklet::RealTimeReportingPlatformError::kNumValues;
+  contents_dict.Set("version", kRealTimeReportDataVersion);
+  CHECK_EQ(real_time_histogram.size(), num_user_buckets + num_platform_buckets);
+  base::Value::List histogram_list;
+  histogram_list.reserve(num_user_buckets);
+  base::Value::List platform_histogram_list;
+  platform_histogram_list.reserve(num_platform_buckets);
+  for (size_t i = 0; i < real_time_histogram.size(); i++) {
+    if (i < num_user_buckets) {
+      histogram_list.Append(real_time_histogram[i]);
+    } else {
+      platform_histogram_list.Append(real_time_histogram[i]);
+    }
+  }
+  contents_dict.Set("histogram", std::move(histogram_list));
+  contents_dict.Set("platformHistogram", std::move(platform_histogram_list));
+  std::optional<std::string> contents_json = base::WriteJson(contents_dict);
+  CHECK(contents_json.has_value());
+  return *contents_json;
+}
+
 // Makes a SimpleURLLoader for a given request. Returns the SimpleURLLoader
 // which will be used to report the result of an in-browser interest group based
 // ad auction to an auction participant.
@@ -155,15 +185,8 @@ std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
   simple_url_loader->SetAllowHttpErrorResults(true);
 
   if (real_time_histogram.has_value()) {
-    base::Value::List histogram_list;
-    histogram_list.reserve(real_time_histogram->size());
-    for (uint8_t value : *real_time_histogram) {
-      histogram_list.Append(value);
-    }
-    std::optional<std::string> contents_json = base::WriteJson(histogram_list);
-    CHECK(contents_json.has_value());
-    simple_url_loader->AttachStringForUpload(*contents_json,
-                                             "application/json");
+    simple_url_loader->AttachStringForUpload(
+        BuildRealTimeReport(*real_time_histogram), "application/json");
   }
 
   return simple_url_loader;

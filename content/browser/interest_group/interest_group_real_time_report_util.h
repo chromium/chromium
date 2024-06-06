@@ -45,7 +45,8 @@ CalculateRealTimeReportingHistograms(
 // Get the destination of sending real time report.
 CONTENT_EXPORT GURL GetRealTimeReportDestination(const url::Origin& origin);
 
-// Returns false if contribution has an invalid bucket.
+// Returns false if contribution has an invalid bucket. Note that it treats
+// platform buckets as valid.
 CONTENT_EXPORT bool HasValidRealTimeBucket(
     const auction_worklet::mojom::RealTimeReportingContributionPtr&
         contribution);

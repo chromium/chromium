@@ -26,6 +26,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -7416,7 +7417,9 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest,
       /*bucket=*/100, /*priority_weight=*/0.5,
       /*latency_threshold=*/std::nullopt);
   mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
-      /*bucket=*/3, /*priority_weight=*/1,
+      /*bucket=*/1024 + auction_worklet::RealTimeReportingPlatformError::
+                            kTrustedScoringSignalsFailure,
+      /*priority_weight=*/1,
       /*latency_threshold=*/std::nullopt);
 
   constexpr char kExtraCode[] = R"(
@@ -7459,7 +7462,9 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest,
                                   net::HTTP_NOT_FOUND);
 
   mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
-      /*bucket=*/3, /*priority_weight=*/1,
+      /*bucket=*/1024 + auction_worklet::RealTimeReportingPlatformError::
+                            kTrustedScoringSignalsFailure,
+      /*priority_weight=*/1,
       /*latency_threshold=*/std::nullopt);
 
   RealTimeReportingContributions expected_real_time_contributions;

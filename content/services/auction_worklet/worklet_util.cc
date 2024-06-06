@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -32,11 +32,17 @@ CONTENT_EXPORT void MaybeAddRealTimeReportingPlatformContributions(
     RealTimeReportingContributions& contributions) {
   if (base::FeatureList::IsEnabled(blink::features::kFledgeRealTimeReporting) &&
       trusted_signals_failed) {
+    int real_time_reporting_num_buckets =
+        blink::features::kFledgeRealTimeReportingNumBuckets.Get();
     contributions.push_back(
         auction_worklet::mojom::RealTimeReportingContribution::New(
             /*bucket=*/is_bidding_signal
-                ? kTrustedBiddingSignalsFailureRealTimeBucket
-                : kTrustedScoringSignalsFailureRealTimeBucket,
+                ? real_time_reporting_num_buckets +
+                      RealTimeReportingPlatformError::
+                          kTrustedBiddingSignalsFailure
+                : real_time_reporting_num_buckets +
+                      RealTimeReportingPlatformError::
+                          kTrustedScoringSignalsFailure,
             /*priority_weight=*/
             blink::features::
                 kFledgeRealTimeReportingPlatformContributionPriority.Get(),

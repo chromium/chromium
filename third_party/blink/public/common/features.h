@@ -569,7 +569,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kFledgeRealTimeReportingEpsilon;
 // Total number of buckets supported for FLEDGE real time reporting. Supported
-// buckets will be [0, kFledgeRealTimeReportingNumBuckets).
+// buckets will be [0, kFledgeRealTimeReportingNumBuckets). Platform
+// contribution buckets will start from kFledgeRealTimeReportingNumBuckets.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeRealTimeReportingNumBuckets;
 // The priorityWeight of FLEDGE real time reporting's platform contributions.

@@ -29,11 +29,6 @@ class SimpleURLLoader;
 
 namespace auction_worklet {
 
-static const int32_t kBiddingScriptLoadFailureRealTimeBucket = 0;
-static const int32_t kScoringScriptLoadFailureRealTimeBucket = 1;
-static const int32_t kTrustedBiddingSignalsFailureRealTimeBucket = 2;
-static const int32_t kTrustedScoringSignalsFailureRealTimeBucket = 3;
-
 // Download utility for auction scripts and JSON data. Creates requests and
 // blocks responses.
 class CONTENT_EXPORT AuctionDownloader {

@@ -72,7 +72,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -4517,6 +4517,10 @@ void InterestGroupAuction::MaybeAddScriptFailureRealTimeContribution(
           blink::features::kFledgeRealTimeReporting)) {
     return;
   }
+  if (!real_time_reporting_num_buckets_.has_value()) {
+    real_time_reporting_num_buckets_ =
+        blink::features::kFledgeRealTimeReportingNumBuckets.Get();
+  }
   if (!real_time_platform_contribution_priority_weight_.has_value()) {
     real_time_platform_contribution_priority_weight_ =
         blink::features::kFledgeRealTimeReportingPlatformContributionPriority
@@ -4525,14 +4529,18 @@ void InterestGroupAuction::MaybeAddScriptFailureRealTimeContribution(
   if (is_buyer && IsBuyerOptedInToRealTimeReporting(origin)) {
     real_time_contributions_[origin].push_back(
         auction_worklet::mojom::RealTimeReportingContribution::New(
-            auction_worklet::kBiddingScriptLoadFailureRealTimeBucket,
+            *real_time_reporting_num_buckets_ +
+                auction_worklet::RealTimeReportingPlatformError::
+                    kBiddingScriptLoadFailure,
             *real_time_platform_contribution_priority_weight_,
             /*latency_threshold=*/std::nullopt));
   } else if (!is_buyer && config_->non_shared_params
                               .seller_real_time_reporting_type.has_value()) {
     real_time_contributions_[origin].push_back(
         auction_worklet::mojom::RealTimeReportingContribution::New(
-            auction_worklet::kScoringScriptLoadFailureRealTimeBucket,
+            *real_time_reporting_num_buckets_ +
+                auction_worklet::RealTimeReportingPlatformError::
+                    kScoringScriptLoadFailure,
             *real_time_platform_contribution_priority_weight_,
             /*latency_threshold=*/std::nullopt));
   }

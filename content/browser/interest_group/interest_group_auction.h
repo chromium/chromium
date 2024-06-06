@@ -1448,9 +1448,9 @@ class CONTENT_EXPORT InterestGroupAuction
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
 
-  // A cache of feature param
-  // kFledgeRealTimeReportingPlatformContributionPriority to avoid getting its
-  // value many times which can be slow.
+  // A cache of feature params to avoid getting these values many times which
+  // can be slow.
+  std::optional<int> real_time_reporting_num_buckets_;
   std::optional<double> real_time_platform_contribution_priority_weight_;
 
   // Stores all real time reporting contributions. These will go through

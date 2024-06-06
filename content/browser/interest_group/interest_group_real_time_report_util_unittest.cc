@@ -14,7 +14,9 @@
 #include <utility>
 #include <vector>
 
+#include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -204,14 +206,14 @@ TEST_F(InterestGroupRealTimeReportUtilTest,
 
   std::map<url::Origin, std::vector<uint8_t>> histograms_map =
       CalculateRealTimeReportingHistograms(std::move(contributions_map));
+  int total_buckets =
+      1024 + auction_worklet::RealTimeReportingPlatformError::kNumValues;
   for (const url::Origin& origin : {origin_a, origin_b}) {
     auto it = histograms_map.find(origin);
     CHECK(it != histograms_map.end());
-    // A histogram is a vector of length kFledgeRealTimeReportingNumBuckets,
-    // and each element is either 0 or 1.
-    EXPECT_EQ(static_cast<unsigned>(
-                  blink::features::kFledgeRealTimeReportingNumBuckets.Get()),
-              it->second.size());
+    // A histogram is a vector of length total_buckets, and each element is
+    // either 0 or 1.
+    EXPECT_EQ(static_cast<unsigned>(total_buckets), it->second.size());
     EXPECT_TRUE(base::ranges::all_of(
         it->second, [](uint8_t bit) { return bit == 0 || bit == 1; }));
   }
@@ -224,14 +226,13 @@ TEST_F(InterestGroupRealTimeReportUtilTest, GetRealTimeReportDestination) {
 }
 
 TEST_F(InterestGroupRealTimeReportUtilTest, HasValidRealTimeBucket) {
+  int total_buckets =
+      1024 + auction_worklet::RealTimeReportingPlatformError::kNumValues;
   const struct {
     int32_t bucket;
     bool expected_is_valid;
   } kTestCases[] = {
-      {0, true},
-      {1, true},
-      {blink::features::kFledgeRealTimeReportingNumBuckets.Get() - 1, true},
-      {blink::features::kFledgeRealTimeReportingNumBuckets.Get(), false},
+      {0, true},   {1, true}, {total_buckets - 1, true}, {total_buckets, false},
       {-1, false},
   };
 
