@@ -16568,6 +16568,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Don't copy
     </message>
 
+    <!-- Data sharing UI strings -->
+    <message name="IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE" desc="Title of the data sharing bubble">
+      Data Sharing
+    </message>
 
     <!-- Deep scanning open now dialog strings -->
     <message name="IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE" desc="Title shown in tab modal dialog when the user attempts to open a download while deep scanning is in progress">

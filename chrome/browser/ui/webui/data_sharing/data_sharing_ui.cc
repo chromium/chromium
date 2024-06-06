@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 
+#include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/data_sharing_resources.h"
@@ -46,3 +47,15 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
 DataSharingUI::~DataSharingUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DataSharingUI)
+
+void DataSharingUI::BindInterface(
+    mojo::PendingReceiver<data_sharing::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void DataSharingUI::CreatePageHandler(
+    mojo::PendingReceiver<data_sharing::mojom::PageHandler> receiver) {
+  page_handler_ =
+      std::make_unique<DataSharingPageHandler>(this, std::move(receiver));
+}
