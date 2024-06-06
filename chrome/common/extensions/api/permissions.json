@@ -163,6 +163,36 @@
           "optional": true,
           "parameters": []
         }
+      },
+      {
+        "name": "removeSiteAccessRequest",
+        "type": "function",
+        "description": "Removes a site access request, if existent.",
+        // TODO(crbug.com/330588494): Remove nodoc.
+        "nodoc": true,
+        "parameters": [
+          {
+            "name": "request",
+            "type": "object",
+            "properties": {
+              "documentId": {
+                "type": "string",
+                "optional": true,
+                "description": "The id of a document where site access request will be removed. Must be the top-level document within a tab. This or `tabId` must be specified."
+              },
+              "tabId": {
+                "type": "number",
+                "optional": true,
+                "description": "The id of the tab where site access request will be removed. This or `documentId` must be specified."
+              }
+            }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ]
   }

@@ -1,0 +1,12 @@
+{
+  "name": "Removes site access request extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Tests a variety of permissions API calls for removing a site access request.",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": [ "tabs" ],
+  "host_permissions": [ "*://*.requested.com/*" ]
+}

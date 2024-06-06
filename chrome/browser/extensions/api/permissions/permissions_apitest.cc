@@ -305,4 +305,12 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiSiteAccessRequestsTest,
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionsApiSiteAccessRequestsTest,
+                       InvalidRemoveSiteAccessRequests) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ASSERT_TRUE(RunExtensionTest("permissions/remove_site_access_request"))
+      << message_;
+}
+
 }  // namespace extensions

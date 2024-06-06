@@ -738,6 +738,10 @@
     "min_manifest_version": 3,
     "feature_flag": "ApiPermissionsSiteAccessRequests"
   },
+  "permissions.removeSiteAccessRequest": {
+    "min_manifest_version": 3,
+    "feature_flag": "ApiPermissionsSiteAccessRequests"
+  },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],
     "contexts": ["privileged_extension"]

@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/permissions/permission_set.h"
 
@@ -119,6 +120,19 @@ class PermissionsAddSiteAccessRequestFunction : public ExtensionFunction {
 
  protected:
   ~PermissionsAddSiteAccessRequestFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+// chrome.permissions.removeSiteAccessRequest
+class PermissionsRemoveSiteAccessRequestFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("permissions.removeSiteAccessRequest",
+                             PERMISSIONS_REMOVESITEACCESSREQUEST)
+
+ protected:
+  ~PermissionsRemoveSiteAccessRequestFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

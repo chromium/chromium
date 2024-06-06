@@ -66,6 +66,64 @@ PermissionsRequestFunction::DialogAction g_dialog_action =
 PermissionsRequestFunction* g_pending_request_function = nullptr;
 bool ignore_user_gesture_for_tests = false;
 
+// Returns whether `tab_id` is a valid tab. Populates `web_contents` with the
+// ones belonging to the tab , and `error` if tab is invalid.
+bool ValidateTab(int tab_id,
+                 bool include_incognito_information,
+                 content::BrowserContext* browser_context,
+                 content::WebContents** web_contents,
+                 std::string* error) {
+  bool is_valid = ExtensionTabUtil::GetTabById(
+      tab_id, browser_context, include_incognito_information, web_contents);
+  if (!is_valid) {
+    *error = ErrorUtils::FormatErrorMessage(kTabNotFoundError,
+                                            base::NumberToString(tab_id));
+  }
+
+  return is_valid;
+}
+
+// Returns whether `document_id` is a valid document. Populates `web_contents`
+// with the ones belonging to the document attached frame, and `error` if
+// document is invalid.
+bool ValidateDocument(const std::string& document_id,
+                      bool include_incognito_information,
+                      content::BrowserContext* browser_context,
+                      content::WebContents** web_contents,
+                      std::string* error) {
+  // Document is invalid if its id doesn't exist.
+  ExtensionApiFrameIdMap::DocumentId frame_document_id =
+      ExtensionApiFrameIdMap::DocumentIdFromString(document_id);
+  if (!frame_document_id) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
+    return false;
+  }
+
+  // Document is invalid if there it has no frame attached.
+  content::RenderFrameHost* frame =
+      ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+          frame_document_id);
+  if (!frame) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
+    return false;
+  }
+
+  // Document is invalid if the web contents doesn't exist in our
+  // BrowserContext. We check for this since we found the RenderFrameHost
+  // through a generic lookup.
+  *web_contents = content::WebContents::FromRenderFrameHost(frame);
+  if (!ExtensionTabUtil::IsWebContentsInContext(
+          *web_contents, browser_context, include_incognito_information)) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
@@ -472,48 +530,24 @@ PermissionsAddSiteAccessRequestFunction::Run() {
   content::WebContents* web_contents = nullptr;
   int tab_id = -1;
 
+  bool is_valid = false;
+  std::string error;
   if (tab_id_param) {
+    is_valid =
+        ValidateTab(tab_id_param.value(), include_incognito_information(),
+                    browser_context(), &web_contents, &error);
     tab_id = tab_id_param.value();
-
-    // Request is invalid if tab id provided doesn't exist, or extension cannot
-    // access the tab's web contents.
-    bool valid_tab = ExtensionTabUtil::GetTabById(
-        tab_id, browser_context(), include_incognito_information(),
-        &web_contents);
-    if (!valid_tab) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          kTabNotFoundError, base::NumberToString(tab_id))));
-    }
   } else {
     // document_id_param.
-    // Request is invalid if document id provided doesn't exist.
-    ExtensionApiFrameIdMap::DocumentId document_id =
-        ExtensionApiFrameIdMap::DocumentIdFromString(document_id_param.value());
-    if (!document_id) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          kInvalidDocumentIdError, document_id_param.value())));
-    }
+    is_valid = ValidateDocument(document_id_param.value(),
+                                include_incognito_information(),
+                                browser_context(), &web_contents, &error);
+    tab_id = is_valid ? ExtensionTabUtil::GetTabId(web_contents) : -1;
+  }
 
-    // Since site access requests will be tied to tab ids, we need to retrieve
-    // the one corresponding to the document id by looking at the frame.
-    content::RenderFrameHost* frame =
-        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
-            document_id);
-    if (!frame) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          kInvalidDocumentIdError, document_id_param.value())));
-    }
-
-    // Request is invalid if the web contents doesn't exist in our
-    // BrowserContext. We check for this since we found the RenderFrameHost
-    // through a generic lookup.
-    web_contents = content::WebContents::FromRenderFrameHost(frame);
-    if (!ExtensionTabUtil::IsWebContentsInContext(
-            web_contents, browser_context(), include_incognito_information())) {
-      return RespondNow(WithArguments(base::Value()));
-    }
-
-    tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  if (!is_valid) {
+    CHECK(!error.empty());
+    return RespondNow(Error(error));
   }
 
   // Verify we properly retrieved the necessary information.
@@ -521,7 +555,6 @@ PermissionsAddSiteAccessRequestFunction::Run() {
   DCHECK_NE(tab_id, -1);
 
   const GURL& url = web_contents->GetLastCommittedURL();
-  std::string error;
   PermissionsData::PageAccess page_access =
       extension()->permissions_data()->GetPageAccess(url, tab_id, &error);
 
@@ -543,6 +576,60 @@ PermissionsAddSiteAccessRequestFunction::Run() {
           ->AddSiteAccessRequest(web_contents, tab_id, *extension());
       return RespondNow(NoArguments());
   }
+}
+
+ExtensionFunction::ResponseAction
+PermissionsRemoveSiteAccessRequestFunction::Run() {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kApiPermissionsSiteAccessRequests));
+  std::optional<api::permissions::RemoveSiteAccessRequest::Params> params =
+      api::permissions::RemoveSiteAccessRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::optional<std::string>& document_id_param =
+      params->request.document_id;
+  std::optional<int> tab_id_param = params->request.tab_id;
+  // TODO(crbug.com/330588494): Add `pattern` parameter.
+
+  if ((!document_id_param && !tab_id_param) ||
+      (document_id_param && tab_id_param)) {
+    return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
+  }
+
+  // Values to be computed for either tab id or document id.
+  content::WebContents* web_contents = nullptr;
+  int tab_id = -1;
+
+  bool is_valid = false;
+  std::string error;
+  if (tab_id_param) {
+    is_valid =
+        ValidateTab(tab_id_param.value(), include_incognito_information(),
+                    browser_context(), &web_contents, &error);
+    tab_id = tab_id_param.value();
+  } else {
+    // document_id_param.
+    is_valid = ValidateDocument(document_id_param.value(),
+                                include_incognito_information(),
+                                browser_context(), &web_contents, &error);
+    tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  }
+
+  if (!is_valid) {
+    CHECK(!error.empty());
+    return RespondNow(Error(error));
+  }
+
+  // Verify we properly retrieved the necessary information.
+  DCHECK(web_contents);
+  DCHECK_NE(tab_id, -1);
+
+  // TODO(crbug.com/330588494): Return an error if the request wasn't removed.
+  // For this we need to change the return value of
+  // PermissionsManager::RemoveSiteAccessRequest.
+  PermissionsManager::Get(browser_context())
+      ->RemoveSiteAccessRequest(tab_id, extension()->id());
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions
