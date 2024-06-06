@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*expected_url=*/
       kGoogleUrl,
       /*expected_tab_url=*/kGoogleUrl,
-      /*source=*/"",
+      /*source=*/"CLIPBOARD",
       /*destination=*/kGoogleUrl,
       /*mime_types=*/
       []() {
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*expected_url=*/
       kGoogleUrl,
       /*expected_tab_url=*/kGoogleUrl,
-      /*source=*/"",
+      /*source=*/"CLIPBOARD",
       /*destination=*/kGoogleUrl,
       /*mime_types=*/
       []() {
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*expected_url=*/
       kGoogleUrl,
       /*expected_tab_url=*/kGoogleUrl,
-      /*source=*/"",
+      /*source=*/"CLIPBOARD",
       /*destination=*/kGoogleUrl,
       /*mime_types=*/
       []() {
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*expected_url=*/
       kGoogleUrl,
       /*expected_tab_url=*/kGoogleUrl,
-      /*source=*/"",
+      /*source=*/"CLIPBOARD",
       /*destination=*/kGoogleUrl,
       /*mime_types=*/
       []() {
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*expected_url=*/
       kGoogleUrl,
       /*expected_tab_url=*/kGoogleUrl,
-      /*source=*/"",
+      /*source=*/"CLIPBOARD",
       /*destination=*/kGoogleUrl,
       /*mime_types=*/
       []() {
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       /*expected_url=*/
       kGoogleUrl,
       /*expected_tab_url=*/kGoogleUrl,
-      /*source=*/"",
+      /*source=*/"CLIPBOARD",
       /*destination=*/kGoogleUrl,
       /*mime_types=*/
       []() {

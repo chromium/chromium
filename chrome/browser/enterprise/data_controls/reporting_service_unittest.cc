@@ -280,7 +280,7 @@ TEST_F(DataControlsReportingServiceTest,
       /*expected_url=*/
       kChromiumUrl,
       /*expected_tab_url=*/kChromiumUrl,
-      /*source=*/"",
+      /*source=*/"INCOGNITO",
       /*destination=*/kChromiumUrl,
       /*mime_types=*/
       []() {
@@ -314,7 +314,7 @@ TEST_F(DataControlsReportingServiceTest,
       /*expected_url=*/
       kChromiumUrl,
       /*expected_tab_url=*/kChromiumUrl,
-      /*source=*/"",
+      /*source=*/"OTHER_PROFILE",
       /*destination=*/kChromiumUrl,
       /*mime_types=*/
       []() {
@@ -493,6 +493,34 @@ TEST_F(DataControlsReportingServiceTest, CopyInManagedProfile) {
                         },
                         Verdict::Report(triggered_rules));
   }
+}
+
+TEST_F(DataControlsReportingServiceTest, GetClipboardSourceString) {
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(
+                /*source=*/managed_endpoint(GURL(kGoogleUrl)),
+                /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+                kDataControlsRulesScopePref),
+            "https://google.com/");
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(
+                /*source=*/incognito_managed_endpoint(GURL(kGoogleUrl)),
+                /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+                kDataControlsRulesScopePref),
+            "INCOGNITO");
+
+  managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
+                                           policy::POLICY_SCOPE_MACHINE);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(
+                /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
+                /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+                kDataControlsRulesScopePref),
+            "https://google.com/");
+  managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
+                                           policy::POLICY_SCOPE_USER);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(
+                /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
+                /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+                kDataControlsRulesScopePref),
+            "OTHER_PROFILE");
 }
 
 }  // namespace data_controls

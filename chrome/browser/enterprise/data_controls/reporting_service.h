@@ -26,6 +26,18 @@ class Verdict;
 // Keyed service that provides an interface to report Data Control events.
 class ReportingService : public KeyedService {
  public:
+  // Converts `source` into a string to be sent in paste reporting events.
+  // Depending on what policies are applied and the relationship between
+  // `source` and `destination`, the output may be a URL or a special constant
+  // (INCOGNITO, CLIPBOARD, OTHER_PROFILE).
+  //
+  // This function should only be used to obtain a string source for paste
+  // reports.
+  static std::string GetClipboardSourceString(
+      const content::ClipboardEndpoint& source,
+      const content::ClipboardEndpoint& destination,
+      const char* scope_pref);
+
   ~ReportingService() override;
 
   void ReportPaste(const content::ClipboardEndpoint& source,
@@ -56,12 +68,6 @@ class ReportingService : public KeyedService {
       const Verdict& verdict,
       const std::string& trigger,
       safe_browsing::EventResult event_result);
-
-  // Returns true if information from `source` can be included in reported
-  // events.
-  bool IncludeSourceInformation(
-      const content::ClipboardEndpoint& source,
-      const content::ClipboardEndpoint& destination) const;
 
   // `profile_` is initialized with the browser_context passed in the
   // constructor.
