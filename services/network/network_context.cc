@@ -2410,12 +2410,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     // TODO(crbug.com/40928765): The TrustAnchorUsed callback should
     // work on all platforms. (Also consider whether this wrapper is the best
     // way to handle this or if it should be refactored.)
-    cert_verifier_with_trust_anchors_ =
-        new CertVerifierWithTrustAnchors(base::BindRepeating(
+    auto cert_verifier_with_trust_anchors =
+        std::make_unique<CertVerifierWithTrustAnchors>(base::BindRepeating(
             &NetworkContext::TrustAnchorUsed, base::Unretained(this)));
-    cert_verifier_with_trust_anchors_->InitializeOnIOThread(
+    cert_verifier_with_trust_anchors->InitializeOnIOThread(
         std::move(cert_verifier));
-    cert_verifier = base::WrapUnique(cert_verifier_with_trust_anchors_.get());
+    cert_verifier = std::move(cert_verifier_with_trust_anchors);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 

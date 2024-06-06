@@ -113,7 +113,6 @@ class URLMatcher;
 }
 
 namespace network {
-class CertVerifierWithTrustAnchors;
 class CookieManager;
 class HostResolver;
 class MdnsResponderManager;
@@ -896,11 +895,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   std::unique_ptr<SCTAuditingHandler> sct_auditing_handler_;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<CertVerifierWithTrustAnchors, DanglingUntriaged>
-      cert_verifier_with_trust_anchors_ = nullptr;
-#endif
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
   // Contains a list of closures that, when run, will dismount the shared
