@@ -703,9 +703,6 @@ public class StripLayoutHelperManager
     }
 
     private int getStripTransitionScrimColor() {
-        if (!ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim()) {
-            return getBackgroundColor();
-        }
         return mToolbarManager.getPrimaryColor();
     }
 

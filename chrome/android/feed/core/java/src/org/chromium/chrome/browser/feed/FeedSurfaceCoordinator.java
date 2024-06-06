@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
@@ -435,16 +434,16 @@ public class FeedSurfaceCoordinator
 
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-            mTabStripHeightChangeCallback =
-                    newHeight ->
-                            mRootView.setPadding(
-                                    mRootView.getPaddingLeft(),
-                                    newHeight,
-                                    mRootView.getPaddingRight(),
-                                    mRootView.getPaddingBottom());
-            mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
-        }
+
+        mTabStripHeightChangeCallback =
+                newHeight ->
+                        mRootView.setPadding(
+                                mRootView.getPaddingLeft(),
+                                newHeight,
+                                mRootView.getPaddingRight(),
+                                mRootView.getPaddingBottom());
+        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+
         mUiConfig = new UiConfig(mRootView);
         mRecyclerView = setUpView();
         mStreamViewResizer =

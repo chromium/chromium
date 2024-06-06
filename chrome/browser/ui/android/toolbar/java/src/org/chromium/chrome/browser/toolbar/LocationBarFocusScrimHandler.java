@@ -73,11 +73,9 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                         .build();
 
         mTabStripHeightSupplier = tabStripHeightSupplier;
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-            mTabStripHeightChangeCallback =
-                    newHeight -> mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
-            mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
-        }
+        mTabStripHeightChangeCallback =
+                newHeight -> mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
+        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
     }
 
     @Override

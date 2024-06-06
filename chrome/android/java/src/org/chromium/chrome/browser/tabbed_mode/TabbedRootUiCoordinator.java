@@ -186,7 +186,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private LayoutManagerImpl mLayoutManager;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
-    private final int mControlContainerHeightResource;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
@@ -250,8 +249,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
-     * @param hubManagerSupplier Supplier for the {@link HubManager}.
      * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
+     * @param hubManagerSupplier Supplier for the {@link HubManager}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
@@ -277,7 +276,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param statusBarColorProvider Provides the status bar color.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param intentRequestTracker Tracks intent requests.
-     * @param controlContainerHeightResource The resource for the control container.
      * @param insetObserver The {@link InsetObserver}.
      * @param backButtonShouldCloseTabFn Function which supplies whether or not the back button
      *     should close the tab.
@@ -334,7 +332,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull
                     ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker,
-            int controlContainerHeightResource,
             @NonNull InsetObserver insetObserver,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
@@ -390,7 +387,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 savedInstanceState,
                 overviewColorSupplier,
                 baseChromeLayout);
-        mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -417,8 +413,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 };
         mMultiInstanceManager = multiInstanceManager;
         mHubManagerSupplier = hubManagerSupplier;
-        mStatusBarColorController.setAllowToolbarColorOnTablets(
-                ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
+        mStatusBarColorController.setAllowToolbarColorOnTablets(true);
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
@@ -1095,34 +1090,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         int topControlsNewHeight;
-        // TODO(crbug/325351108): Check isDesktopWindowingEnabled instead. This currently checks
-        // the flag value, in order to receive every height updates from TabStripHeightSupplier.
-        if (ToolbarFeatures.canTabStripHeightChange(isTablet)) {
-            // This method can be called when the toolbar didn't go through a layout pass (e.g. when
-            // theme switches in settings, activity recreates), so getToolbar().getHeight() returns
-            // 0.
-            // TODO(crbug.com/40943442): Remove the reference to toolbar_height_no_shadow.
-            final int toolbarHeight =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-            final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
-            topControlsNewHeight = toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
-            if (tabStripHeight > 0 && !isTablet) {
-                String msg =
-                        "Non-zero tab strip height found on non-tablet form factor. tabStripHeight="
-                                + " "
-                                + tabStripHeight
-                                + " toolbarHeight= "
-                                + toolbarHeight
-                                + " statusIndicatorHeight= "
-                                + mStatusIndicatorHeight;
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(msg));
-            }
-        } else {
-            topControlsNewHeight =
-                    mActivity.getResources().getDimensionPixelSize(mControlContainerHeightResource)
+        // This method can be called when the toolbar didn't go through a layout pass (e.g. when
+        // theme switches in settings, activity recreates), so getToolbar().getHeight() returns
+        // 0.
+        // TODO(crbug.com/40943442): Remove the reference to toolbar_height_no_shadow.
+        final int toolbarHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
+        topControlsNewHeight = toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
+        if (tabStripHeight > 0 && !isTablet) {
+            String msg =
+                    "Non-zero tab strip height found on non-tablet form factor. tabStripHeight="
+                            + " "
+                            + tabStripHeight
+                            + " toolbarHeight= "
+                            + toolbarHeight
+                            + " statusIndicatorHeight= "
                             + mStatusIndicatorHeight;
+            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(msg));
         }
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
@@ -1221,8 +1206,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void initTabStripTransitionCoordinator() {
         // Tab strip transition is only supported for tablets.
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                || !ToolbarFeatures.isDynamicTopChromeEnabled()) return;
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
 
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);

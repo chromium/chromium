@@ -19,7 +19,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -111,16 +110,14 @@ public class RecentTabsPage
 
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-            mTabStripHeightChangeCallback =
-                    newHeight ->
-                            mView.setPadding(
-                                    mView.getPaddingLeft(),
-                                    newHeight,
-                                    mView.getPaddingRight(),
-                                    mView.getPaddingBottom());
-            mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
-        }
+        mTabStripHeightChangeCallback =
+                newHeight ->
+                        mView.setPadding(
+                                mView.getPaddingLeft(),
+                                newHeight,
+                                mView.getPaddingRight(),
+                                mView.getPaddingBottom());
+        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
 
         onUpdated();
     }

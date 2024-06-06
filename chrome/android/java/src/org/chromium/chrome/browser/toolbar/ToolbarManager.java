@@ -135,7 +135,6 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
-import org.chromium.chrome.browser.toolbar.top.TabStripHeightSupplier;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
@@ -322,7 +321,7 @@ public class ToolbarManager
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private TabStripHeightSupplier mTabStripHeightSupplier;
+    private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
     private TabStripHeightObserver mTabStripHeightObserver;
     private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
@@ -812,7 +811,7 @@ public class ToolbarManager
                         initializeWithIncognitoColors,
                         startSurfaceLogoClickedCallback,
                         mConstraintsProxy);
-        mTabStripHeightSupplier = new TabStripHeightSupplier(mToolbar.getTabStripHeight());
+        mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
                         mActivity,
@@ -1765,10 +1764,7 @@ public class ToolbarManager
                 mActivityTabProvider,
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-            // Only update the tab strip value when DTC is enabled.
-            mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
-        }
+        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =
                 new OnAttachStateChangeListener() {
@@ -1793,24 +1789,20 @@ public class ToolbarManager
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
 
-            if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-                mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
-                stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
-            }
+            mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
+            stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
         }
 
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-            mTabStripHeightObserver =
-                    new TabStripHeightObserver() {
-                        @Override
-                        public void onTransitionRequested(int newHeight) {
-                            // TODO(crbug.com/41481630): Supplier can have an inconsistent value
-                            //  with mToolbar.getTabStripHeight().
-                            mTabStripHeightSupplier.set(newHeight);
-                        }
-                    };
-            mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
-        }
+        mTabStripHeightObserver =
+                new TabStripHeightObserver() {
+                    @Override
+                    public void onTransitionRequested(int newHeight) {
+                        // TODO(crbug.com/41481630): Supplier can have an inconsistent value
+                        //  with mToolbar.getTabStripHeight().
+                        mTabStripHeightSupplier.set(newHeight);
+                    }
+                };
+        mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
 
         mUpdateMenuItemHelper = UpdateMenuItemHelper.getInstance(profile);
         if (mMenuStateObserver != null) {

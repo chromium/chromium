@@ -223,7 +223,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDrawKeyNativeEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kDrawWebEdgeToEdge,
-    &kDynamicTopChrome,
     &kExperimentsForAgsa,
     &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -276,7 +275,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupParityAndroid,
     &kTabIdMapAndroid,
     &kTabletTabSwitcherLongPressMenu,
-    &kTabletToolbarIncognitoStatus,
     &kTabletToolbarReordering,
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
@@ -670,10 +668,6 @@ BASE_FEATURE(kDrawWebEdgeToEdge,
              "DrawWebEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDynamicTopChrome,
-             "DynamicTopChrome",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -876,9 +870,6 @@ BASE_FEATURE(kTabletTabSwitcherLongPressMenu,
              "TabletTabSwitcherLongPressMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabletToolbarIncognitoStatus,
-             "TabletToolbarIncognitoStatus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabletToolbarReordering,
              "TabletToolbarReordering",

@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -332,37 +331,22 @@ public class LayoutManagerImpl
 
         // Overlays are ordered back (closest to the web content) to front.
         Class[] overlayOrder;
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
-            // When DynamicTopChrome is enabled, place the tab strip behind the toolbar scene layer
-            // as during transition, the toolbar will move up and cover the tab strip.
-            overlayOrder =
-                    new Class[] {
-                        HistoryNavigationCoordinator.getSceneOverlayClass(),
-                        // StripLayoutHelperManager should be updated before
-                        // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
-                        // the container size, it causes relocation tab strip scene layer.
-                        StripLayoutHelperManager.class,
-                        TopToolbarOverlayCoordinator.class,
-                        ScrollingBottomViewSceneLayer.class,
-                        StatusIndicatorCoordinator.getSceneOverlayClass(),
-                        ContextualSearchPanel.class,
-                        ReadAloudMiniPlayerSceneLayer.class
-                    };
-        } else {
-            overlayOrder =
-                    new Class[] {
-                        HistoryNavigationCoordinator.getSceneOverlayClass(),
-                        TopToolbarOverlayCoordinator.class,
-                        // StripLayoutHelperManager should be updated before
-                        // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
-                        // the container size, it causes relocation tab strip scene layer.
-                        StripLayoutHelperManager.class,
-                        ScrollingBottomViewSceneLayer.class,
-                        StatusIndicatorCoordinator.getSceneOverlayClass(),
-                        ContextualSearchPanel.class,
-                        ReadAloudMiniPlayerSceneLayer.class
-                    };
-        }
+
+        overlayOrder =
+                new Class[] {
+                    HistoryNavigationCoordinator.getSceneOverlayClass(),
+                    // Place the tab strip behind the toolbar scene layer as during tab strip
+                    // transition, the toolbar will move up and cover the tab strip.
+                    StripLayoutHelperManager.class,
+                    TopToolbarOverlayCoordinator.class,
+                    // StripLayoutHelperManager should be updated before
+                    // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
+                    // the container size, it causes relocation tab strip scene layer.
+                    ScrollingBottomViewSceneLayer.class,
+                    StatusIndicatorCoordinator.getSceneOverlayClass(),
+                    ContextualSearchPanel.class,
+                    ReadAloudMiniPlayerSceneLayer.class
+                };
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
 

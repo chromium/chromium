@@ -4187,11 +4187,6 @@ const char kDrawWebEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on most "
     "web pages.";
 
-const char kDynamicTopChromeName[] = "Dynamic Top Chrome";
-const char kDynamicTopChromeDescription[] =
-    "Enables top Chrome (e.g. top toolbar) to change according to the current "
-    "window size.";
-
 const char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 const char kEnableCommandLineOnNoRootedDescription[] =

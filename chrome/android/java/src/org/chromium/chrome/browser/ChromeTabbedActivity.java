@@ -2252,7 +2252,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* statusBarColorProvider= */ this,
                 new ObservableSupplierImpl<>(),
                 getIntentRequestTracker(),
-                getControlContainerHeightResource(),
                 getWindowAndroid().getInsetObserver(),
                 this::backShouldCloseTab,
                 getTabReparentingControllerSupplier(),

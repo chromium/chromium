@@ -46,6 +46,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     // configuration changed.
     private static final int TRANSITION_DELAY_MS = 200;
 
+    private static final int DEFAULT_DTC_THRESHOLD_DP = 412;
+
     /** Observes height of tab strip that could change during run time. */
     // TODO(crbug.com/41481630): Rework the observer interface.
     public interface TabStripHeightObserver {
@@ -581,7 +583,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     /** Get the min screen width required in DP for the tab strip to become visible. */
     private static int getScreenWidthThresholdDp() {
         if (sMinScreenWidthForTesting != null) return sMinScreenWidthForTesting;
-        return ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP.getValue();
+        return DEFAULT_DTC_THRESHOLD_DP;
     }
 
     private boolean isTopControlAtSteadyState() {

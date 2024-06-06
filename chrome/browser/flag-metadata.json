@@ -2195,11 +2195,6 @@
     "expiry_milestone": 103
   },
   {
-    "name": "dynamic-top-chrome",
-    "owners": ["wenyufu@chromium.org", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 128
-  },
-  {
     "name": "eap-gtc-wifi-authentication",
     "owners": [ "cros-connectivity@google.com" ],
     "expiry_milestone": 120

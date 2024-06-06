@@ -331,7 +331,7 @@ public class StatusBarColorController
     public void onToolbarColorChanged(@ColorInt int color) {
         boolean shouldUseToolbarColorOnPhone =
                 !mIsTablet && OmniboxFeatures.shouldMatchToolbarAndStatusBarColor();
-        // Status bar color on tablets could change when the DYNAMIC_TOP_CHROME feature is enabled,
+        // Status bar color on tablets could change when the tab strip transition is enabled,
         // where it might be required for the status bar color to match the toolbar color when the
         // tab strip is hidden.
         boolean shouldUseToolbarColorOnTablet = mIsTablet && mAllowToolbarColorOnTablets;
@@ -591,11 +591,11 @@ public class StatusBarColorController
 
     /**
      * Determines whether the status bar color could use the toolbar color on tablets when certain
-     * conditions are met. This is currently supported on ChromeTabbedActivity's with the
-     * DYNAMIC_TOP_CHROME feature enabled.
+     * conditions are met. This is currently supported on ChromeTabbedActivity's only.
      *
      * @param allowToolbarColorOnTablets Whether the status bar color could use the toolbar color.
      */
+    // TODO(crbug.com/324313724): Support this for other activities.
     public void setAllowToolbarColorOnTablets(boolean allowToolbarColorOnTablets) {
         mAllowToolbarColorOnTablets = allowToolbarColorOnTablets;
     }

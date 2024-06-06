@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
@@ -603,12 +602,7 @@ public class StatusMediator
     }
 
     public void onIncognitoStateChanged() {
-        boolean showIncognitoStatus =
-                !mIsTablet
-                        || ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
-                        || ChromeFeatureList.sDynamicTopChrome.isEnabled();
-        boolean incognitoBadgeVisible =
-                mLocationBarDataProvider.isIncognito() && showIncognitoStatus;
+        boolean incognitoBadgeVisible = mLocationBarDataProvider.isIncognito();
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         setStatusIconAlpha(1f);
