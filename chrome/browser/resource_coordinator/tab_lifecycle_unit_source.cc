@@ -23,8 +23,9 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
-#include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -95,7 +96,7 @@ class TabLifecycleStateObserver
     }
   }
 
-  // performance_manager::PageNode::ObserverDefaultImpl::
+  // PageNode::ObserverDefaultImpl:
   void OnPageLifecycleStateChanged(const PageNode* page_node) override {
     // Forward the notification over to the UI thread.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -132,8 +133,8 @@ TabLifecycleUnitSource::~TabLifecycleUnitSource() {
 void TabLifecycleUnitSource::Start() {
   // TODO(sebmarchand): Remove the "IsAvailable" check, or merge the TM into the
   // PM. The TM and PM must always exist together.
-  if (performance_manager::PerformanceManagerImpl::IsAvailable()) {
-    performance_manager::PerformanceManagerImpl::PassToGraph(
+  if (performance_manager::PerformanceManager::IsAvailable()) {
+    performance_manager::PerformanceManager::PassToGraph(
         FROM_HERE, std::make_unique<TabLifecycleStateObserver>());
   }
 }

@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
-#include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/graph_impl.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -39,7 +38,7 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     pm_harness_.SetUp();
     performance_manager::testing::CreatePageAggregatorAndPassItToGraph();
-    performance_manager::PerformanceManagerImpl::CallOnGraph(
+    performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
           graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
         }));
@@ -76,7 +75,7 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
           frame_node->SetHadFormInteraction();
           std::move(quit_loop).Run();
         });
-    performance_manager::PerformanceManagerImpl::CallOnGraph(
+    performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE, std::move(graph_callback));
     run_loop.Run();
   }

@@ -15,9 +15,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -32,6 +32,8 @@
 using content::BrowserThread;
 
 namespace {
+
+using performance_manager::PerformanceManager;
 
 struct AfterStartupTask {
   AfterStartupTask(const base::Location& from_here,
@@ -149,10 +151,12 @@ class StartupObserver
   static void Start();
 
  private:
+  using LoadingState = performance_manager::PageNode::LoadingState;
+
   StartupObserver() = default;
 
   void OnStartupComplete() {
-    if (!performance_manager::PerformanceManagerImpl::IsAvailable()) {
+    if (!PerformanceManager::IsAvailable()) {
       // Already shutting down before startup finished. Do not notify.
       return;
     }
@@ -177,16 +181,14 @@ class StartupObserver
   }
 
   // PageNodeObserver overrides
-  void OnLoadingStateChanged(
-      const performance_manager::PageNode* page_node,
-      performance_manager::PageNode::LoadingState previous_state) override {
+  void OnLoadingStateChanged(const performance_manager::PageNode* page_node,
+                             LoadingState previous_state) override {
     // Only interested in visible PageNodes
     if (page_node->IsVisible()) {
-      if (page_node->GetLoadingState() ==
-              performance_manager::PageNode::LoadingState::kLoadedIdle ||
-          page_node->GetLoadingState() ==
-              performance_manager::PageNode::LoadingState::kLoadingTimedOut)
+      if (page_node->GetLoadingState() == LoadingState::kLoadedIdle ||
+          page_node->GetLoadingState() == LoadingState::kLoadingTimedOut) {
         OnStartupComplete();
+      }
     }
   }
 
@@ -194,16 +196,15 @@ class StartupObserver
     // Pass to the performance manager so we can get notified when
     // loading completes.  Ownership of this object is passed to the
     // performance manager.
-    DCHECK(performance_manager::PerformanceManagerImpl::IsAvailable());
-    performance_manager::PerformanceManagerImpl::PassToGraph(
-        FROM_HERE, base::WrapUnique(this));
+    DCHECK(PerformanceManager::IsAvailable());
+    PerformanceManager::PassToGraph(FROM_HERE, base::WrapUnique(this));
   }
 
   void TakeFromGraph() {
     // Remove this object from the performance manager.  This will
     // cause the object to be deleted.
-    DCHECK(performance_manager::PerformanceManagerImpl::IsAvailable());
-    performance_manager::PerformanceManager::CallOnGraph(
+    DCHECK(PerformanceManager::IsAvailable());
+    PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindOnce(
                        [](performance_manager::GraphOwned* observer,
                           performance_manager::Graph* graph) {

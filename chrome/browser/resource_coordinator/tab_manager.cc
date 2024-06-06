@@ -51,8 +51,9 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
-#include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -148,12 +149,12 @@ void TabManager::Start() {
   // EQT measurements.
   // TODO(sebmarchand): Remove the "IsAvailable" check, or merge the TM into the
   // PM. The TM and PM must always exist together.
-  if (performance_manager::PerformanceManagerImpl::IsAvailable()) {
-    performance_manager::PerformanceManagerImpl::CallOnGraphImpl(
+  if (performance_manager::PerformanceManager::IsAvailable()) {
+    performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindOnce(
                        [](std::unique_ptr<ResourceCoordinatorSignalObserver>
                               rc_signal_observer,
-                          performance_manager::GraphImpl* graph) {
+                          performance_manager::Graph* graph) {
                          graph->PassToGraph(std::move(rc_signal_observer));
                        },
                        std::make_unique<ResourceCoordinatorSignalObserver>(
