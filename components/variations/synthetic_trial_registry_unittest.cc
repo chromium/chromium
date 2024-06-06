@@ -23,6 +23,7 @@
 namespace variations {
 namespace {
 
+using ::testing::_;
 using ::testing::Contains;
 
 class MockSyntheticTrialObserver : public SyntheticTrialObserver {
@@ -290,6 +291,7 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
   MockSyntheticTrialObserver observer;
   registry.AddObserver(&observer);
 
+  // A brand new synthetic trial is registered. Observers should be notified.
   SyntheticTrialGroup trial1("TestTrial1", "Group1",
                              SyntheticTrialAnnotationMode::kNextLog);
   EXPECT_CALL(observer, OnSyntheticTrialsChanged(
@@ -298,6 +300,7 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
                             std::vector<SyntheticTrialGroup>({trial1})));
   registry.RegisterSyntheticFieldTrial(trial1);
 
+  // A brand new synthetic trial is registered. Observers should be notified.
   SyntheticTrialGroup trial2("TestTrial2", "Group1",
                              SyntheticTrialAnnotationMode::kNextLog);
   EXPECT_CALL(observer,
@@ -307,6 +310,7 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
                   std::vector<SyntheticTrialGroup>({trial1, trial2})));
   registry.RegisterSyntheticFieldTrial(trial2);
 
+  // The group of a trial has changed. Observers should be notified.
   SyntheticTrialGroup trial3("TestTrial1", "Group2",
                              SyntheticTrialAnnotationMode::kNextLog);
   EXPECT_CALL(observer,
@@ -315,6 +319,21 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
                   std::vector<SyntheticTrialGroup>(),
                   std::vector<SyntheticTrialGroup>({trial3, trial2})));
   registry.RegisterSyntheticFieldTrial(trial3);
+
+  // The annotation mode of a trial has changed. Observers should be notified.
+  SyntheticTrialGroup trial4("TestTrial1", "Group2",
+                             SyntheticTrialAnnotationMode::kCurrentLog);
+  EXPECT_CALL(observer,
+              OnSyntheticTrialsChanged(
+                  std::vector<SyntheticTrialGroup>({trial4}),
+                  std::vector<SyntheticTrialGroup>(),
+                  std::vector<SyntheticTrialGroup>({trial4, trial2})));
+  registry.RegisterSyntheticFieldTrial(trial4);
+
+  // A synthetic trial is re-registered with no changes. Observers should NOT be
+  // notified.
+  EXPECT_CALL(observer, OnSyntheticTrialsChanged(_, _, _)).Times(0);
+  registry.RegisterSyntheticFieldTrial(trial4);
 
   registry.RemoveObserver(&observer);
 }
