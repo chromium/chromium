@@ -1556,6 +1556,60 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 }
 
+// Flaky. https://crbug.com/343188577
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StartDragWhileEndingPreviousDragDoesNothingTest \
+  DISABLED_StartDragWhileEndingPreviousDragDoesNothingTest
+#else
+#define MAYBE_StartDragWhileEndingPreviousDragDoesNothingTest \
+  StartDragWhileEndingPreviousDragDoesNothingTest
+#endif
+
+// Can't start another drag session while the previous one is still ending.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_StartDragWhileEndingPreviousDragDoesNothingTest) {
+  AddTabsAndResetBrowser(browser(), 2);
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  const gfx::Point tab_0_center_screen =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
+  const gfx::Point tab_1_center_screen =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(1));
+  const gfx::Point tab_2_center_screen =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(2));
+
+  ASSERT_TRUE(PressInput(tab_1_center_screen));
+  ASSERT_TRUE(DragInputTo(tab_0_center_screen));
+
+  ASSERT_TRUE(TabDragController::IsActive());
+  StopAnimating(tab_strip);
+
+  ASSERT_TRUE(ReleaseInput());
+
+  // The drag is over...
+  ASSERT_FALSE(TabDragController::IsActive());
+  ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+
+  // But the tab is still animating and still belongs to the TabDragContext.
+  ASSERT_TRUE(tab_strip->IsAnimatingInTabStrip());
+  ASSERT_TRUE(tab_strip->tab_at(0)->dragging());
+  ASSERT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
+
+  ASSERT_EQ("1 0 2", IDString(browser()->tab_strip_model()));
+
+  // Attempt to start *another* drag session while the animation is still going.
+  ASSERT_TRUE(PressInput(tab_2_center_screen));
+  ASSERT_TRUE(DragInputTo(tab_0_center_screen));
+
+  // This should not actually start.
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+  EXPECT_EQ("1 0 2", IDString(browser()->tab_strip_model()));
+
+  ASSERT_TRUE(ReleaseInput());
+}
+
 #if defined(USE_AURA)
 bool SubtreeShouldBeExplored(aura::Window* window,
                              const gfx::Point& local_point) {
@@ -1703,6 +1757,59 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // mouse/touch was released.
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
+}
+
+// Test is based on DragToSeparateWindow. https://crbug.com/1176998
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DragToSeparateWindowDuringDragEnd \
+  DISABLED_DragToSeparateWindowDuringDragEnd
+#else
+#define MAYBE_DragToSeparateWindowDuringDragEnd \
+  DragToSeparateWindowDuringDragEnd
+#endif
+
+// Creates two browsers, starts and end a drag in the target browser, then drags
+// from source to target before the target browser finishes ending drags.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_DragToSeparateWindowDuringDragEnd) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+
+  // Create another browser.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  AddTabsAndResetBrowser(browser2, 1);
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+
+  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip2->tab_at(0))));
+  ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip2->tab_at(1))));
+
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(ReleaseInput());
+
+  // We should be doing the post-drag animation.
+  ASSERT_TRUE(tab_strip2->GetDragContext()->IsAnimatingDragEnd());
+  // The tab should still be considered as dragging.
+  ASSERT_TRUE(tab_strip2->tab_at(1)->dragging());
+
+  // Drag from `tab_strip` to `tab_strip2`.
+  DragTabAndNotify(tab_strip, base::BindOnce(&DragToSeparateWindowStep2, this,
+                                             tab_strip, tab_strip2));
+
+  // Should now be attached to `tab_strip2`.
+  ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_TRUE(TabDragController::IsActive());
+  EXPECT_FALSE(GetIsDragged(browser()));
+  EXPECT_TRUE(IsTabDraggingInfoCleared(tab_strip));
+  EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip2, tab_strip));
+
+  // Release mouse or touch, stopping the drag session.
+  ASSERT_TRUE(ReleaseInput());
+  ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(TabDragController::IsActive());
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -224,13 +224,14 @@ void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
     // When tabs are wide enough, selecting a new tab cannot change the
     // ideal bounds, so only a repaint is necessary.
     SchedulePaint();
-  } else if (IsAnimating() || drag_context_->IsDragSessionActive()) {
-    // The selection change will have modified the ideal bounds of the tabs
-    // in |selected_tabs_| and |new_selection|.  We need to recompute and
-    // retarget the animation to these new bounds. Note: This is safe even if
-    // we're in the midst of mouse-based tab closure--we won't expand the
-    // tabstrip back to the full window width--because PrepareForCloseAt() will
-    // have set |override_available_width_for_tabs_| already.
+  } else if (controller_->IsAnimatingInTabStrip() ||
+             drag_context_->IsDragSessionActive()) {
+    // The selection change will have modified the ideal bounds of the tabs. We
+    // need to recompute and retarget the animation to these new bounds. Note:
+    // This is safe even if we're in the midst of mouse-based tab closure--we
+    // won't expand the tabstrip back to the full window width--because
+    // PrepareForCloseAt() will have set `override_available_width_for_tabs_`
+    // already.
     AnimateToIdealBounds();
   } else {
     // As in the animating case above, the selection change will have

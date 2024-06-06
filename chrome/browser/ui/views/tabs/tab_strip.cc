@@ -578,15 +578,21 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     tab_strip_->controller_->OnStartedDragging(
         views.size() == static_cast<size_t>(tab_strip_->GetModelCount()));
 
+    // Complete animations to ensure that the previous drag session fully ends
+    // before we start the next one. In particular this reparents the dragged
+    // tabs back to the TabContainer from the TabDragContext. N.B. this can
+    // happen either when starting a new drag in this tabstrip or when dragging
+    // tabs into this tabstrip from elsewhere.
+    tab_strip_->tab_container_->CompleteAnimationAndLayout();
+
     // No tabs should be dragging at this point.
     for (int i = 0; i < GetTabCount(); ++i) {
       CHECK(!GetTabAt(i)->dragging(), base::NotFatalUntil::M128)
           << "A tab is still marked as dragging when starting a new drag.";
     }
 
-    tab_strip_->tab_container_->CompleteAnimationAndLayout();
-
     for (TabSlotView* dragged_view : views) {
+      CHECK_NE(dragged_view->parent(), this, base::NotFatalUntil::M128);
       AddChildView(dragged_view);
       dragged_view->set_dragging(true);
     }
