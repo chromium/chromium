@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.Button role_description='button' clickable focusable name='Cut'
+++++android.widget.Button role_description='button' clickable focusable name='Copy'
+++++android.widget.Button role_description='button' clickable focusable name='Paste'

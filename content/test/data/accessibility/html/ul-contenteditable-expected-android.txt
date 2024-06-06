@@ -1,0 +1,2 @@
+android.webkit.WebView focusable focused
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='%E2%80%A2 Hello<newline>%E2%80%A2 Bye' text_change_added_count=13

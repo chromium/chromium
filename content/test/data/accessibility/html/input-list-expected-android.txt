@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View
+++++++android.widget.TextView name='Choose a pokemon '
+++++++android.widget.EditText clickable editable_text focusable hint='Choose a pokemon' input_type=1

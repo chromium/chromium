@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.EditText clickable editable_text focusable hint='Invalid is true' input_type=1
+++++android.widget.EditText clickable editable_text focusable hint='Invalid is true with multiple errors' input_type=1
+++++android.widget.EditText clickable editable_text focusable hint='Invalid is false' input_type=1
+++++android.widget.EditText clickable editable_text focusable hint='Invalid is not set' input_type=1
+++android.widget.TextView name='Error for invalid input'
+++android.widget.TextView name='Another error for invalid input'
+++android.widget.TextView name='Error for input which is not invalid'
+++android.widget.TextView name='Error for input with invalid not set'

@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='Red on blue.'
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Default. Blue background. Green text.' text_change_added_count=37

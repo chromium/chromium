@@ -1,0 +1,19 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='start'
+++android.view.View
+++++android.widget.TextView name='text with '
+++++android.view.View name='[:before]'
+++++android.widget.TextView name=' and '
+++++android.view.View name='[:after]'
+++++android.widget.TextView name=' content, then a'
+++++android.widget.TextView
+++++android.widget.TextView name='bold'
+++++android.widget.TextView name=' element with a '
+++++android.view.View name='[block]'
+++++android.widget.TextView name=' before content then a '
+++++android.widget.TextView name='italic'
+++++android.widget.TextView
+++++android.widget.TextView name='element with a '
+++++android.view.View name='[block]'
+++++android.widget.TextView name=' after content'
+++android.widget.TextView name='end'

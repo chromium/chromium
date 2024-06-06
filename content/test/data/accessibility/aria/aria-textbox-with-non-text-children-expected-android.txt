@@ -1,0 +1,30 @@
+android.webkit.WebView focusable focused
+++android.widget.EditText clickable editable_text focusable has_non_empty_value name='focusable: oklink name: <newline>' hint='not editable' text_change_added_count=25
+++++android.widget.TextView name='focusable: '
+++++android.widget.Button role_description='button' clickable focusable name='ok'
+++++android.view.View role_description='link' clickable focusable link name='link'
+++++++android.widget.TextView name='link'
+++++android.widget.TextView name=' '
+++++android.view.View
+++++++android.widget.TextView name='name: '
+++++++android.widget.EditText clickable editable_text focusable hint='name:' input_type=1
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='focusable: oklink name: <newline>' hint='editable' text_change_added_count=25
+++++android.widget.TextView name='focusable: '
+++++android.widget.Button role_description='button' clickable focusable name='ok'
+++++android.view.View role_description='link' clickable link name='link'
+++++++android.widget.TextView name='link'
+++++android.widget.TextView name=' '
+++++android.view.View
+++++++android.widget.TextView name='name: '
+++++++android.widget.EditText clickable editable_text focusable hint='name:' input_type=1
+++android.widget.EditText clickable editable_text has_non_empty_value name='focusable: oklink name: <newline>' hint='not editable or focusable' text_change_added_count=25
+++++android.widget.TextView name='focusable: '
+++++android.widget.Button role_description='button' clickable focusable name='ok'
+++++android.view.View role_description='link' clickable focusable link name='link'
+++++++android.widget.TextView name='link'
+++++android.widget.TextView name=' '
+++++android.view.View
+++++++android.widget.TextView name='name: '
+++++++android.widget.EditText clickable editable_text focusable hint='name:' input_type=1
+++android.widget.EditText clickable editable_text hint='not editable, img child'
+++++android.widget.Image role_description='graphic'

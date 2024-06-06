@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='Some '
+++android.view.View role_description='highlight' name='highlighted text'
+++android.widget.TextView name=' example.'
+++android.view.View role_description='comment' name='Good job!'
+++android.view.View role_description='footnote' name='Some footnote.'
+++android.view.View role_description='definition' name='The meaning is.'

@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='description' hint='Text-description'
+++android.widget.TextView name='both' hint='Description from describedby'
+++android.view.View role_description='tooltip' name='Description from describedby'

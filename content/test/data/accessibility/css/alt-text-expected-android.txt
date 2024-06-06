@@ -1,0 +1,34 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.TextView name='item1item2'
+++++android.widget.Image role_description='graphic'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.TextView name='code'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.Image role_description='graphic' name='star'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.Image role_description='graphic'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.TextView name='a list of items'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.Image role_description='graphic'
+++++android.widget.TextView name=' '
+++++android.widget.TextView name='Some Text'
+++android.view.View
+++++android.widget.TextView name='Some Text'
+++android.widget.Image role_description='graphic' name='alt'
+++android.widget.TextView name='DOM Text'
+++android.widget.TextView name='DOM Text'

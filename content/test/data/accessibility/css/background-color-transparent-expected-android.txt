@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='Document base color.'
+++android.widget.TextView name='Transparent color.'
+++android.widget.TextView name='Obscuring background.'
+++android.widget.TextView name='Blended with document base color.'
+++android.widget.TextView name='Blended with background color.'

@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.Image role_description='graphic'
+++++++android.widget.Button role_description='fancy button' clickable name='Click me!'
+++++++android.widget.Button role_description='fancy button' clickable name='Click me!'

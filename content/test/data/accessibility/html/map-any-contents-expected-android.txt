@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.Image role_description='graphic' name='pipe'
+++++++android.widget.TextView role_description='heading 1' heading name='Headings are allowed in a map'
+++++++android.view.View role_description='link' clickable focusable link name='pipe1'
+++++++android.view.View
+++++++++android.widget.TextView name='So are '
+++++++++android.view.View role_description='highlight' name='other elements'
+++++++++android.widget.TextView name='!'
+++++++android.widget.Button role_description='button' clickable focusable name='Even a button'

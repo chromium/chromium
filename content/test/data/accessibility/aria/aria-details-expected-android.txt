@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.EditText clickable editable_text focusable input_type=1
+++android.widget.TextView name='Details'
+++android.view.View
+++++android.widget.TextView name='This '
+++++android.widget.TextView name='text'
+++++android.widget.TextView name=' has details'
+++android.view.View name='Text details'
+++android.widget.Image role_description='graphic' name='Image details'

@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.widget.ToggleButton role_description='menu pop up button' checkable checked clickable collapsed name='Toggle button, pressed, collapsed' state_description='On'
+++android.widget.ToggleButton role_description='menu pop up button' checkable clickable collapsed name='Toggle button, not pressed, collapsed' state_description='Off'
+++android.widget.ToggleButton role_description='menu pop up button' checkable checked clickable expanded name='Toggle button, pressed, expanded' state_description='On'
+++android.widget.ToggleButton role_description='menu pop up button' checkable clickable expanded name='Toggle button, not pressed, collapsed"' state_description='Off'

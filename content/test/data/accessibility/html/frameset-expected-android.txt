@@ -1,0 +1,15 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View
+++++++android.view.View
+++++++++android.widget.TextView name='My favorite browser is '
+++++++++android.view.View role_description='deletion' name='ABC'
+++++++++android.widget.TextView name=' '
+++++++++android.view.View role_description='insertion' name='Chrome'
+++++++++android.widget.TextView name='!'
+++android.view.View
+++++android.view.View
+++++++android.view.View
+++++++++android.widget.TextView name='This test is to check '
+++++++++android.view.View role_description='highlight' name='mark tag'
+++++++++android.widget.TextView name='.'
