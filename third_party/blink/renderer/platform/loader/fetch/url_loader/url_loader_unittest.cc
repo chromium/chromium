@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -236,7 +237,7 @@ class TestURLLoaderClient : public URLLoaderClient {
 
   void DidReceiveResponse(
       const WebURLResponse& response,
-      mojo::ScopedDataPipeConsumerHandle body,
+      absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
@@ -248,8 +249,12 @@ class TestURLLoaderClient : public URLLoaderClient {
       return;
     }
     DCHECK(!response_body_);
-    if (body) {
-      response_body_ = std::move(body);
+    // SegmentedBuffer is used only for BackgroundUrlLoader.
+    CHECK(absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body));
+    mojo::ScopedDataPipeConsumerHandle body_handle =
+        std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+    if (body_handle) {
+      response_body_ = std::move(body_handle);
     }
   }
 

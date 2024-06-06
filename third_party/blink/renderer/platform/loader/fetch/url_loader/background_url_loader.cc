@@ -557,7 +557,7 @@ class BackgroundURLLoader::Context
     }
   }
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
-                          mojo::ScopedDataPipeConsumerHandle body,
+                          BodyVariant body,
                           std::optional<mojo_base::BigBuffer> cached_metadata,
                           int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
@@ -575,22 +575,8 @@ class BackgroundURLLoader::Context
       int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
-    OnReceivedResponse(
-        std::move(head),
-        absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body)
-            ? std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body))
-            : mojo::ScopedDataPipeConsumerHandle(),
-        std::move(cached_metadata), request_id);
-    if (absl::holds_alternative<SegmentedBuffer>(body)) {
-      SegmentedBuffer buffer = std::move(absl::get<SegmentedBuffer>(body));
-      // TODO(crbug.com/40244488): Consider passing the SegmentedBuffer to the
-      // client without data copying.
-      for (const auto& segment : buffer) {
-        if (client_) {
-          client_->DidReceiveData(segment);
-        }
-      }
-    }
+    OnReceivedResponse(std::move(head), std::move(body),
+                       std::move(cached_metadata), request_id);
     if (client_ && deferred_transfer_size_diff > 0) {
       OnTransferSizeUpdated(deferred_transfer_size_diff);
     }

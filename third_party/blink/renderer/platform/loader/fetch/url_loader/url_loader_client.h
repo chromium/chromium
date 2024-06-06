@@ -32,16 +32,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_CLIENT_H_
 
 #include <memory>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace net {
 class SiteForCookies;
@@ -87,7 +90,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   // Called when response are received.
   virtual void DidReceiveResponse(
       const WebURLResponse&,
-      mojo::ScopedDataPipeConsumerHandle body,
+      absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer>,
       std::optional<mojo_base::BigBuffer> cached_metadata) {}
 
   // Called when a chunk of response data is received. |data_length| is the

@@ -774,7 +774,7 @@ FetchContext& ResourceLoader::Context() const {
 
 void ResourceLoader::DidReceiveResponse(
     const WebURLResponse& response,
-    mojo::ScopedDataPipeConsumerHandle body,
+    absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!response.IsNull());
 
@@ -788,10 +788,22 @@ void ResourceLoader::DidReceiveResponse(
 
   DidReceiveResponseInternal(response.ToResourceResponse(),
                              std::move(cached_metadata));
-  if (!IsLoading() || !body) {
+  if (!IsLoading()) {
     return;
   }
-
+  if (absl::holds_alternative<SegmentedBuffer>(body)) {
+    // TODO(crbug.com/40244488): Consider passing the SegmentedBuffer to the
+    // Resource without copying.
+    for (const auto& span : absl::get<SegmentedBuffer>(body)) {
+      DidReceiveData(span);
+    }
+    return;
+  }
+  mojo::ScopedDataPipeConsumerHandle body_handle =
+      std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+  if (!body_handle) {
+    return;
+  }
   if (resource_->GetResourceRequest().DownloadToBlob()) {
     DCHECK(!blob_response_started_);
     blob_response_started_ = true;
@@ -803,7 +815,7 @@ void ResourceLoader::DidReceiveResponse(
     fetcher_->GetBlobRegistry()->RegisterFromStream(
         mime_type.IsNull() ? g_empty_string : mime_type.LowerASCII(), "",
         std::max(static_cast<int64_t>(0), response.ExpectedContentLength()),
-        std::move(body),
+        std::move(body_handle),
         progress_receiver_.BindNewEndpointAndPassRemote(GetLoadingTaskRunner()),
         WTF::BindOnce(&ResourceLoader::FinishedCreatingBlob,
                       WrapWeakPersistent(this)));
@@ -812,8 +824,9 @@ void ResourceLoader::DidReceiveResponse(
 
   DataPipeBytesConsumer::CompletionNotifier* completion_notifier = nullptr;
   DidStartLoadingResponseBodyInternal(
-      *MakeGarbageCollected<DataPipeBytesConsumer>(
-          task_runner_for_body_loader_, std::move(body), &completion_notifier));
+      *MakeGarbageCollected<DataPipeBytesConsumer>(task_runner_for_body_loader_,
+                                                   std::move(body_handle),
+                                                   &completion_notifier));
   data_pipe_completion_notifier_ = completion_notifier;
 }
 
