@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -193,8 +192,6 @@ class AXMediaAppUntrustedHandler
   SEQUENCE_CHECKER(sequence_checker_);
   std::optional<mojo::ReportBadMessageCallback> bad_message_callback_ =
       std::nullopt;
-  // This registrar is used to monitor changes to the PDF OCR setting.
-  PrefChangeRegistrar user_prefs_registrar_;
   // Records when the user starts reading content in MediaApp.
   base::TimeTicks start_reading_time_;
   // Records of most recent time when the user reads content in MediaApp.

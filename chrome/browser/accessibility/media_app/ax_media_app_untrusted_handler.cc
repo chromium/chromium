@@ -106,19 +106,9 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
 #else   // BUILDFLAG(IS_CHROMEOS_LACROS)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Observe the PDF OCR setting in user prefs.
-  user_prefs_registrar_.Init(profile->GetPrefs());
-  // base::Unretained() is safe since the listener is removed in this class's
-  // destructor.
-  user_prefs_registrar_.Add(
-      prefs::kAccessibilityPdfOcrAlwaysActive,
-      base::BindRepeating(&AXMediaAppUntrustedHandler::SetPdfOcrEnabledState,
-                          base::Unretained(this)));
 }
 
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
-  user_prefs_registrar_.Remove(prefs::kAccessibilityPdfOcrAlwaysActive);
   for (auto& page : pages_) {
     ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
         page.second->GetTreeID());
@@ -135,18 +125,10 @@ AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
 }
 
 void AXMediaAppUntrustedHandler::SetPdfOcrEnabledState() {
-  bool newState = false;
-  auto* profile =
-      Profile::FromBrowserContext(base::to_address(browser_context_));
-  const bool pref_enabled =
-      profile->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
-  if (IsAccessibilityEnabled() && pref_enabled) {
-    newState = true;
-  }
-  if (newState == pdf_ocr_enabled_) {
+  if (IsAccessibilityEnabled() == pdf_ocr_enabled_) {
     return;
   }
-  pdf_ocr_enabled_ = newState;
+  pdf_ocr_enabled_ = !pdf_ocr_enabled_;
   media_app_page_->SetPdfOcrEnabled(pdf_ocr_enabled_);
 }
 
