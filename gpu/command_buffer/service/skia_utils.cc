@@ -23,6 +23,7 @@
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -300,10 +301,11 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
   DCHECK(image);
   VkPhysicalDevice physical_device =
       image->device_queue()->GetVulkanPhysicalDevice();
-  GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
-      physical_device, image->image_tiling(), image->format(), si_format,
-      color_space, image->ycbcr_info());
-  GrVkAlloc alloc;
+  skgpu::VulkanYcbcrConversionInfo gr_ycbcr_info =
+      CreateVulkanYcbcrConversionInfo(physical_device, image->image_tiling(),
+                                      image->format(), si_format, color_space,
+                                      image->ycbcr_info());
+  skgpu::VulkanAlloc alloc;
   alloc.fMemory = image->device_memory();
   alloc.fOffset = 0;
   alloc.fSize = image->device_size();
@@ -350,7 +352,8 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
   return image_info;
 }
 
-GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
+GPU_GLES2_EXPORT skgpu::VulkanYcbcrConversionInfo
+CreateVulkanYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
     VkFormat format,
@@ -360,7 +363,7 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
   auto valid_ycbcr_info = ycbcr_info;
   if (!valid_ycbcr_info) {
     if (!VkFormatNeedsYcbcrSampler(format)) {
-      return GrVkYcbcrConversionInfo();
+      return skgpu::VulkanYcbcrConversionInfo();
     }
 
     // YCbCr sampler is required.
@@ -439,7 +442,7 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
           ? VK_FILTER_LINEAR
           : VK_FILTER_NEAREST;
 
-  GrVkYcbcrConversionInfo gr_ycbcr_info;
+  skgpu::VulkanYcbcrConversionInfo gr_ycbcr_info;
   gr_ycbcr_info.fFormat = vk_format;
   gr_ycbcr_info.fExternalFormat = valid_ycbcr_info->external_format;
   gr_ycbcr_info.fYcbcrModel = static_cast<VkSamplerYcbcrModelConversion>(

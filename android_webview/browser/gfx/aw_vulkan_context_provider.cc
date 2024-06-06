@@ -22,8 +22,9 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
+#include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
+#include "third_party/skia/include/gpu/vk/VulkanExtensions.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 
 namespace android_webview {
 
@@ -130,18 +131,18 @@ bool AwVulkanContextProvider::Globals::Initialize(
       params->graphics_queue_index, std::move(device_extensions));
 
   // Create our Skia GrContext.
-  GrVkGetProc get_proc = [](const char* proc_name, VkInstance instance,
-                            VkDevice device) {
+  skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
+                                     VkDevice device) {
     return device ? vkGetDeviceProcAddr(device, proc_name)
                   : vkGetInstanceProcAddr(instance, proc_name);
   };
-  GrVkExtensions vk_extensions;
+  skgpu::VulkanExtensions vk_extensions;
   vk_extensions.init(get_proc, params->instance, params->physical_device,
                      params->enabled_instance_extension_names_length,
                      params->enabled_instance_extension_names,
                      params->enabled_device_extension_names_length,
                      params->enabled_device_extension_names);
-  GrVkBackendContext backend_context{
+  skgpu::VulkanBackendContext backend_context{
       .fInstance = params->instance,
       .fPhysicalDevice = params->physical_device,
       .fDevice = params->device,

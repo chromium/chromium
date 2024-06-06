@@ -21,6 +21,9 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+namespace skgpu {
+struct VulkanYcbcrConversionInfo;
+}
 #endif
 
 // Forwardly declare a few GL types to avoid including GL header files.
@@ -112,13 +115,14 @@ CreateGrVkImageInfo(VulkanImage* image,
                     const viz::SharedImageFormat& si_format,
                     const gfx::ColorSpace& color_space);
 
-GPU_GLES2_EXPORT GrVkYcbcrConversionInfo
-CreateGrVkYcbcrConversionInfo(VkPhysicalDevice physical_device,
-                              VkImageTiling tiling,
-                              VkFormat format,
-                              const viz::SharedImageFormat& si_format,
-                              const gfx::ColorSpace& color_space,
-                              const std::optional<VulkanYCbCrInfo>& ycbcr_info);
+GPU_GLES2_EXPORT skgpu::VulkanYcbcrConversionInfo
+CreateVulkanYcbcrConversionInfo(
+    VkPhysicalDevice physical_device,
+    VkImageTiling tiling,
+    VkFormat format,
+    const viz::SharedImageFormat& si_format,
+    const gfx::ColorSpace& color_space,
+    const std::optional<VulkanYCbCrInfo>& ycbcr_info);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 // Helper that returns true when Vulkan memory usage is high enough

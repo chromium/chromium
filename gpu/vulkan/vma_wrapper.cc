@@ -189,7 +189,7 @@ void GetBudget(VmaAllocator allocator, VmaBudget* budget) {
 
 std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
     VmaAllocator allocator) {
-  // See GrVkMemoryAllocatorImpl::totalAllocatedAndUsedMemory() in skia for
+  // See VulkanAMDMemoryAllocator::totalAllocatedAndUsedMemory() in skia for
   // reference.
   VmaBudget budget[VK_MAX_MEMORY_HEAPS];
   GetBudget(allocator, budget);

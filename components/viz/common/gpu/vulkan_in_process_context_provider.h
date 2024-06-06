@@ -16,10 +16,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
-#if BUILDFLAG(ENABLE_VULKAN)
-#include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
-#endif
-
 namespace gpu {
 class VulkanImplementation;
 class VulkanDeviceQueue;
