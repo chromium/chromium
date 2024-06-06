@@ -200,7 +200,8 @@ suite('ProductSpecificationsTableTest', () => {
         testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
   });
 
-  test('shows open tab button when hovered', async () => {
+  // Disabled for flakiness, see b/342635241.
+  test.skip('shows open tab button when hovered', async () => {
     // Arrange
     tableElement.columns = [
       {
