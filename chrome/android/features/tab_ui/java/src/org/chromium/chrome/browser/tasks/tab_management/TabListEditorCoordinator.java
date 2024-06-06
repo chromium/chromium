@@ -107,23 +107,30 @@ class TabListEditorCoordinator {
 
         /** Sets the toolbar title when no items are selected. */
         void setToolbarTitle(String title);
+
+        /** Sets a custom {@link NavigationProvider} to handle "back" actions. */
+        void setNavigationProvider(@NonNull NavigationProvider navigationProvider);
+    }
+
+    /** An interface for embedders to provide navigation. */
+    public interface NavigationProvider {
+        /** Defines what to do to handle "back" actions. */
+        void goBack();
     }
 
     /** Provider of action for the navigation button in {@link TabListEditorMediator}. */
-    public static class TabListEditorNavigationProvider {
-        private final TabListEditorCoordinator.TabListEditorController
-                mTabListEditorController;
+    public static class TabListEditorNavigationProvider implements NavigationProvider {
+        private final TabListEditorCoordinator.TabListEditorController mTabListEditorController;
         private final Context mContext;
 
         public TabListEditorNavigationProvider(
                 Context context,
-                TabListEditorCoordinator.TabListEditorController
-                        tabListEditorController) {
+                TabListEditorCoordinator.TabListEditorController tabListEditorController) {
             mContext = context;
             mTabListEditorController = tabListEditorController;
         }
 
-        /** Defines what to do when the navigation button is clicked. */
+        @Override
         public void goBack() {
             TabUiMetricsHelper.recordSelectionEditorExitMetrics(
                     TabListEditorExitMetricGroups.CLOSED_BY_USER, mContext);
@@ -164,6 +171,11 @@ class TabListEditorCoordinator {
                 @Override
                 public void setToolbarTitle(String title) {
                     mTabListEditorMediator.setToolbarTitle(title);
+                }
+
+                @Override
+                public void setNavigationProvider(NavigationProvider navigationProvider) {
+                    mTabListEditorMediator.setNavigationProvider(navigationProvider);
                 }
 
                 @Override
@@ -246,9 +258,9 @@ class TabListEditorCoordinator {
                             displayGroups,
                             snackbarManager,
                             mTabListEditorLayout,
-                            initialTabActionState,
-                            new TabListEditorNavigationProvider(
-                                    mContext, mTabListEditorController));
+                            initialTabActionState);
+            mTabListEditorMediator.setNavigationProvider(
+                    new TabListEditorNavigationProvider(mContext, mTabListEditorController));
         }
     }
 

@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
@@ -57,6 +58,7 @@ public class ClosableTabListEditorTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
+    @Mock private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
 
     private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
@@ -189,6 +191,22 @@ public class ClosableTabListEditorTest {
                 });
 
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyToolbarSelectionText("testing");
+    }
+
+    @Test
+    @MediumTest
+    public void testCustomNavigationProvider() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabListEditorController.show(tabs, 0, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.setNavigationProvider(mNavigationProvider);
+                    mTabListEditorController.handleBackPress();
+                });
+
+        Mockito.verify(mNavigationProvider).goBack();
     }
 
     /** Retrieves all tabs from the current tab model */

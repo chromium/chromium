@@ -55,7 +55,6 @@ class TabListEditorMediator
     private final SelectionDelegate<Integer> mSelectionDelegate;
     private final boolean mActionOnRelatedTabs;
     private final TabModelObserver mTabModelObserver;
-    private final TabListEditorCoordinator.TabListEditorNavigationProvider mNavigationProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final List<Tab> mVisibleTabs = new ArrayList<>();
@@ -68,6 +67,7 @@ class TabListEditorMediator
     private TabListEditorMenu mTabListEditorMenu;
     private SnackbarManager mSnackbarManager;
     private TabListEditorToolbar mTabListEditorToolbar;
+    private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
 
     private final View.OnClickListener mNavigationClickListener =
             new View.OnClickListener() {
@@ -85,8 +85,7 @@ class TabListEditorMediator
             boolean actionOnRelatedTabs,
             SnackbarManager snackbarManager,
             TabListEditorLayout tabListEditorLayout,
-            @TabActionState int initialTabActionState,
-            TabListEditorCoordinator.TabListEditorNavigationProvider navigationProvider) {
+            @TabActionState int initialTabActionState) {
         mContext = context;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mModel = model;
@@ -94,7 +93,6 @@ class TabListEditorMediator
         mActionOnRelatedTabs = actionOnRelatedTabs;
         mSnackbarManager = snackbarManager;
         mTabListEditorLayout = tabListEditorLayout;
-        mNavigationProvider = navigationProvider;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -202,6 +200,7 @@ class TabListEditorMediator
             List<Tab> tabs,
             int preSelectedTabCount,
             @Nullable RecyclerViewPosition recyclerViewPosition) {
+        assert mNavigationProvider != null : "NavigationProvider must be set before calling #show";
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
         mSnackbarManager.setParentView(mTabListEditorLayout);
         // Records to a histogram the time since an instance of TabListEditor was last opened
@@ -328,6 +327,13 @@ class TabListEditorMediator
     @Override
     public void setToolbarTitle(String title) {
         mModel.set(TabListEditorProperties.TOOLBAR_TITLE, title);
+    }
+
+    @Override
+    public void setNavigationProvider(
+            @NonNull TabListEditorCoordinator.NavigationProvider navigationProvider) {
+        assert navigationProvider != null;
+        mNavigationProvider = navigationProvider;
     }
 
     @Override
