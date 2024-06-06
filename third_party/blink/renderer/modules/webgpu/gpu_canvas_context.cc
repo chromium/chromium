@@ -6,6 +6,7 @@
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
@@ -441,11 +442,48 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
 
   alpha_mode_ = descriptor->alphaMode().AsEnum();
 
-  // In the scenario that the system doesn't support the requested format but
-  // it's one that WebGPU is required to offer, a separate texture will be
-  // returned instead with the desired format and the texture will be copied to
-  // the swap buffer provider's texture with the system-supported format when
-  // we're ready to present.
+  // There are two scenarios that require special configuration here:
+  // * In the scenario that the system doesn't support the requested format but
+  //   it's one that WebGPU is required to offer, a separate texture will be
+  //   returned instead with the desired format and the texture will be copied
+  //   to the swap buffer provider's texture with the system-supported format
+  //   when we're ready to present.
+  // * In the alternative scenario where the texture returned to the user will
+  //   be the swap buffer texture, the texture will have various internal
+  //   operations done to it if the alpha mode is opaque.
+
+  // First configure `texture_descriptor_` as necessary in the case where the
+  // swap buffer texture will be returned to the user and the alpha mode is
+  // opaque. Note that it is necessary to do this *before* copying
+  // `texture_descriptor_` to `swap_texture_descriptor_`: Each can end up being
+  // used in operations on the texture depending on whether the operation is on
+  // `texture_` or `swap_texture_` (which will of course be the same texture in
+  // this case).
+  // NOTE: We gate these additions under the
+  // `kDawnSIRepsUseClientProvidedInternalUsages` feature here just to be safe
+  // while rolling out this feature. In reality, setting internal usages on
+  // `texture_` will be a no-op in this case if the feature is disabled, as the
+  // SI rep backing the texture will use hardcoded internal usages rather than
+  // taking them from the client.
+  if (!copy_to_swap_texture_required_ &&
+      alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque &&
+      base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    // `texture_` will be used as the source of CopyTextureForBrowser()
+    // operations and will have alpha clearing done on it. The former requires
+    // the CopySrc and TextureBinding usages, while the latter requires
+    // RenderAttachment.
+    texture_internal_usage_ = {{
+        .internalUsage = wgpu::TextureUsage::CopySrc |
+                         wgpu::TextureUsage::TextureBinding |
+                         wgpu::TextureUsage::RenderAttachment,
+    }};
+    texture_descriptor_.nextInChain = &texture_internal_usage_;
+  }
+
+  // Copy `texture_descriptor_` to `swap_texture_descriptor_` before making any
+  // distinct configuration on each of them that is necessary in the case where
+  // they will be distinct textures.
   swap_texture_descriptor_ = texture_descriptor_;
   if (copy_to_swap_texture_required_) {
     // The texture returned to the user will require both the CopySrc and
