@@ -82,6 +82,10 @@ enum class SearchPrefetchStatus {
 //   more easily.
 class SearchPrefetchRequest {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  static void SetIsTest();
+#endif
+
   SearchPrefetchRequest(const GURL& canonical_search_url,
                         const GURL& prefetch_url,
                         bool navigation_prefetch,
