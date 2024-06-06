@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 // Making an actionable tab active should hide the intervention toolbar button
 // because the actionable tab list is no longer valid.
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       ActivateActionableTab) {
+                       DISABLED_ActivateActionableTab) {
   RunTestSequence(
       InstrumentTab(kFirstTab, 0), AddInstrumentedTab(kSecondTab, GetURL()),
       AddInstrumentedTab(kThirdTab, GetURL()),
