@@ -398,6 +398,9 @@ BASE_DECLARE_FEATURE(kOmniboxColorIcons);
 // Feature flag that allows clearing data for managed users signing out.
 BASE_DECLARE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers);
 
+// Feature flag that allows opening the downloaded PDF files in Chrome.
+BASE_DECLARE_FEATURE(kDownloadedPDFOpening);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];

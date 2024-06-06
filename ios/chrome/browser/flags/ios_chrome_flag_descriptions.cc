@@ -916,6 +916,10 @@ const char kPasswordSharingName[] = "Enables password sharing";
 const char kPasswordSharingDescription[] =
     "Enables password sharing between members of the same family.";
 
+const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
+const char kDownloadedPDFOpeningDescription[] =
+    "Enables the direct opening of downloaded PDF files in Chrome";
+
 const char kEnablePolicyTestPageName[] =
     "Enable access to the policy test page";
 const char kEnablePolicyTestPageDescription[] =

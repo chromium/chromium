@@ -1694,6 +1694,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          page_image_service::kImageServiceOptimizationGuideSalientImages,
          kImageServiceOptimizationGuideSalientImagesVariations,
          "PageImageService")},
+    {"downloaded-pdf-opening-ios", flag_descriptions::kDownloadedPDFOpeningName,
+     flag_descriptions::kDownloadedPDFOpeningDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDownloadedPDFOpening)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
