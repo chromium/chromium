@@ -22,6 +22,10 @@ class ContextualPanelTabHelper;
 
 - (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper;
 
+- (void)contextualPanelOpened:(ContextualPanelTabHelper*)tabHelper;
+
+- (void)contextualPanelClosed:(ContextualPanelTabHelper*)tabHelper;
+
 @end
 
 // Bridge to observe ContextualPanelTabHelper in Objective-C.
@@ -47,6 +51,10 @@ class ContextualPanelTabHelperObserverBridge
           item_configurations) override;
   void ContextualPanelTabHelperDestroyed(
       ContextualPanelTabHelper* tab_helper) override;
+  void ContextualPanelOpened(ContextualPanelTabHelper* tab_helper) override;
+
+  // The given ContextualPanelTabHelper has closed its panel UI.
+  void ContextualPanelClosed(ContextualPanelTabHelper* tab_helper) override;
 
  private:
   __weak id<ContextualPanelTabHelperObserving> observer_ = nil;

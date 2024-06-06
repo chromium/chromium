@@ -24,10 +24,6 @@
 @end
 
 @implementation ContextualPanelEntrypointMediator {
-  // Current cached opened state of the Contextual Panel. When opened, the
-  // entrypoint's UI is slightly different (muted colors).
-  BOOL _contextualPanelCurrentlyOpened;
-
   // WebStateList to use for observing ContextualPanelTabHelper events.
   raw_ptr<WebStateList> _webStateList;
 
@@ -91,17 +87,15 @@
   _transitionToSmallEntrypointTimer = nullptr;
   [self.delegate enableFullscreen];
 
-  _contextualPanelCurrentlyOpened = !_contextualPanelCurrentlyOpened;
-
-  [self.consumer
-      transitionToContextualPanelOpenedState:_contextualPanelCurrentlyOpened];
-
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
-  contextualPanelTabHelper->SetContextualPanelCurrentlyOpened(
-      _contextualPanelCurrentlyOpened);
-  [self.contextualSheetHandler showContextualSheet];
+
+  if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
+    contextualPanelTabHelper->CloseContextualPanel();
+  } else {
+    contextualPanelTabHelper->OpenContextualPanel();
+  }
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
@@ -120,6 +114,14 @@
 
 - (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper {
   [self activeTabHasNewData:{}];
+}
+
+- (void)contextualPanelOpened:(ContextualPanelTabHelper*)tabHelper {
+  [self.consumer transitionToContextualPanelOpenedState:YES];
+}
+
+- (void)contextualPanelClosed:(ContextualPanelTabHelper*)tabHelper {
+  [self.consumer transitionToContextualPanelOpenedState:NO];
 }
 
 #pragma mark - WebStateListObserving
@@ -170,10 +172,9 @@
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
 
-  _contextualPanelCurrentlyOpened =
-      contextualPanelTabHelper->IsContextualPanelCurrentlyOpened();
   [self.consumer
-      transitionToContextualPanelOpenedState:_contextualPanelCurrentlyOpened];
+      transitionToContextualPanelOpenedState:
+          contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()];
 
   if (![self canShowLargeEntrypointWithConfig:config]) {
     return;
@@ -226,7 +227,7 @@
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
-  return !_contextualPanelCurrentlyOpened &&
+  return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLargeEntrypointShown() &&
          !config->entrypoint_message.empty() &&
          config->relevance >= config->high_relevance &&

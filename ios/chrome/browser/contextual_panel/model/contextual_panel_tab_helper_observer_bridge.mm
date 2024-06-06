@@ -27,3 +27,17 @@ void ContextualPanelTabHelperObserverBridge::ContextualPanelTabHelperDestroyed(
     [observer_ contextualPanelTabHelperDestroyed:tab_helper];
   }
 }
+
+void ContextualPanelTabHelperObserverBridge::ContextualPanelOpened(
+    ContextualPanelTabHelper* tab_helper) {
+  if ([observer_ respondsToSelector:@selector(contextualPanelOpened:)]) {
+    [observer_ contextualPanelOpened:tab_helper];
+  }
+}
+
+void ContextualPanelTabHelperObserverBridge::ContextualPanelClosed(
+    ContextualPanelTabHelper* tab_helper) {
+  if ([observer_ respondsToSelector:@selector(contextualPanelClosed:)]) {
+    [observer_ contextualPanelClosed:tab_helper];
+  }
+}

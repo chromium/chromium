@@ -20,7 +20,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 // A fake ContextualPanelEntrypointConsumer for use in tests.
 @interface FakeEntrypointConsumer : NSObject <ContextualPanelEntrypointConsumer>
@@ -158,9 +157,6 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
 
     delegate_ = [[FakeContextualPanelEntrypointMediatorDelegate alloc] init];
     mediator_.delegate = delegate_;
-
-    mocked_handler_ = OCMStrictProtocolMock(@protocol(ContextualSheetCommands));
-    mediator_.contextualSheetHandler = mocked_handler_;
   }
 
  protected:
@@ -171,22 +167,15 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   ContextualPanelEntrypointMediator* mediator_;
   FakeEntrypointConsumer* entrypoint_consumer_;
   FakeContextualPanelEntrypointMediatorDelegate* delegate_;
-  id mocked_handler_;
 };
 
 // Tests that tapping the entrypoint opens and then closes the panel.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
-  [[mocked_handler_ expect] showContextualSheet];
-
   [mediator_ entrypointTapped];
   EXPECT_TRUE(entrypoint_consumer_.contextualPanelIsOpen);
 
-  [[mocked_handler_ expect] showContextualSheet];
-
   [mediator_ entrypointTapped];
   EXPECT_FALSE(entrypoint_consumer_.contextualPanelIsOpen);
-
-  [mocked_handler_ verify];
 }
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {

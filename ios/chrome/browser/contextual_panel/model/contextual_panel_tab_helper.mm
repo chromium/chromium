@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 
@@ -50,12 +51,29 @@ ContextualPanelTabHelper::GetFirstCachedConfig() {
   return HasCachedConfigsAvailable() ? sorted_weak_configurations_[0] : nullptr;
 }
 
+void ContextualPanelTabHelper::SetContextualSheetHandler(
+    id<ContextualSheetCommands> handler) {
+  contextual_sheet_handler_ = handler;
+}
+
 bool ContextualPanelTabHelper::IsContextualPanelCurrentlyOpened() {
   return is_contextual_panel_currently_opened_;
 }
 
-void ContextualPanelTabHelper::SetContextualPanelCurrentlyOpened(bool opened) {
-  is_contextual_panel_currently_opened_ = opened;
+void ContextualPanelTabHelper::OpenContextualPanel() {
+  is_contextual_panel_currently_opened_ = true;
+  [contextual_sheet_handler_ showContextualSheet];
+  for (auto& observer : observers_) {
+    observer.ContextualPanelOpened(this);
+  }
+}
+
+void ContextualPanelTabHelper::CloseContextualPanel() {
+  is_contextual_panel_currently_opened_ = false;
+  [contextual_sheet_handler_ hideContextualSheet];
+  for (auto& observer : observers_) {
+    observer.ContextualPanelClosed(this);
+  }
 }
 
 bool ContextualPanelTabHelper::WasLargeEntrypointShown() {

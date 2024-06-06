@@ -25,6 +25,12 @@ class ContextualPanelTabHelperObserver : public base::CheckedObserver {
   // observers to disconnect.
   virtual void ContextualPanelTabHelperDestroyed(
       ContextualPanelTabHelper* tab_helper) {}
+
+  // The given ContextualPanelTabHelper has opened its panel UI.
+  virtual void ContextualPanelOpened(ContextualPanelTabHelper* tab_helper) {}
+
+  // The given ContextualPanelTabHelper has closed its panel UI.
+  virtual void ContextualPanelClosed(ContextualPanelTabHelper* tab_helper) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_TAB_HELPER_OBSERVER_H_

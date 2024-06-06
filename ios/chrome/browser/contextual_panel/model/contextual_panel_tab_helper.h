@@ -16,6 +16,7 @@ enum class ContextualPanelItemType;
 class ContextualPanelModel;
 struct ContextualPanelItemConfiguration;
 class ContextualPanelTabHelperObserver;
+@protocol ContextualSheetCommands;
 
 // Tab helper controlling the Contextual Panel feature for a given tab.
 class ContextualPanelTabHelper
@@ -47,9 +48,14 @@ class ContextualPanelTabHelper
   // configs.
   base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig();
 
-  // Getter and setter for is_contextual_panel_currently_opened_.
+  // Set the contextual sheet handler, used to display the contextual sheet UI.
+  void SetContextualSheetHandler(id<ContextualSheetCommands> handler);
+
+  // Getter for is_contextual_panel_currently_opened_.
   bool IsContextualPanelCurrentlyOpened();
-  void SetContextualPanelCurrentlyOpened(bool opened);
+
+  void OpenContextualPanel();
+  void CloseContextualPanel();
 
   // Getter and setter for large_entrypoint_shown_for_curent_page_navigation_.
   bool WasLargeEntrypointShown();
@@ -127,6 +133,9 @@ class ContextualPanelTabHelper
   // panel model responses, simply a cached list of their configs.
   std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
       sorted_weak_configurations_;
+
+  // Command handler for contextual sheet commands.
+  __weak id<ContextualSheetCommands> contextual_sheet_handler_ = nil;
 
   // List of observers to be notified when the Contextual Panel gets new data.
   base::ObserverList<ContextualPanelTabHelperObserver, true> observers_;

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_iph_presenter.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
@@ -175,6 +177,14 @@
   }
   AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
       _appLauncherBrowserPresentationProvider);
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(webState);
+  if (contextualPanelTabHelper) {
+    id<ContextualSheetCommands> contextualSheetHandler =
+        HandlerForProtocol(_commandDispatcher, ContextualSheetCommands);
+    contextualPanelTabHelper->SetContextualSheetHandler(contextualSheetHandler);
+  }
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
@@ -240,6 +250,12 @@
 
   AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
       nil);
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(webState);
+  if (contextualPanelTabHelper) {
+    contextualPanelTabHelper->SetContextualSheetHandler(nil);
+  }
 }
 
 @end
