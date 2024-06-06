@@ -281,11 +281,8 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     : BubbleDialogDelegateView(anchor.view,
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
-      id_(id),
-      style_(user_education_util::GetHelpBubbleStyle(params.extended_properties)
-                 .value_or(HelpBubbleStyle::kDialog)) {
-  // NOTE: Nudge style help bubbles cannot activate.
-  SetCanActivate(style_ != HelpBubbleStyle::kNudge);
+      id_(id) {
+  SetCanActivate(true);
 
   // When hosted within a `views::ScrollView`, the anchor view may be
   // (partially) outside the viewport. Ensure that the anchor view is visible.
@@ -427,30 +424,24 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   }
 
   // Add close button.
-  // NOTE: Nudge style help bubbles do not have buttons.
-  if (style_ != HelpBubbleStyle::kNudge) {
-    std::u16string alt_text = params.close_button_alt_text;
+  std::u16string alt_text = params.close_button_alt_text;
 
-    // This can be empty if a test doesn't set it. Set a reasonable default to
-    // avoid an assertion (generated when a button with no text has no
-    // accessible name).
-    if (alt_text.empty()) {
-      alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
-    }
-
-    // Since we set the cancel callback, we will use CancelDialog() to dismiss.
-    close_button_ =
-        (params.progress ? progress_container : top_text_container)
-            ->AddChildView(std::make_unique<ClosePromoButton>(
-                alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
-                                              base::Unretained(this))));
+  // This can be empty if a test doesn't set it. Set a reasonable default to
+  // avoid an assertion (generated when a button with no text has no
+  // accessible name).
+  if (alt_text.empty()) {
+    alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
   }
 
-  // Add other buttons.
-  // NOTE: Nudge style help bubbles do not have buttons.
-  if (!params.buttons.empty()) {
-    CHECK_NE(style_, HelpBubbleStyle::kNudge);
+  // Since we set the cancel callback, we will use CancelDialog() to dismiss.
+  close_button_ =
+      (params.progress ? progress_container : top_text_container)
+          ->AddChildView(std::make_unique<ClosePromoButton>(
+              alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
+                                            base::Unretained(this))));
 
+  // Add other buttons.
+  if (!params.buttons.empty()) {
     auto run_callback_and_close = [](HelpBubbleViewAsh* bubble_view,
                                      base::OnceClosure callback) {
       // We want to call the button callback before deleting the bubble in case
@@ -765,9 +756,8 @@ void HelpBubbleViewAsh::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  const SkColor background_color = color_provider->GetColor(
-      style_ == HelpBubbleStyle::kDialog ? cros_tokens::kCrosSysDialogContainer
-                                         : cros_tokens::kCrosSysBaseElevated);
+  const SkColor background_color =
+      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
   set_color(background_color);
 
   const SkColor foreground_color =

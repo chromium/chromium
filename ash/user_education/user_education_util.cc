@@ -36,7 +36,6 @@ constexpr char kHelpBubbleBodyIconKey[] = "helpBubbleBodyIcon";
 constexpr char kHelpBubbleBodyTextKey[] = "helpBubbleBodyText";
 constexpr char kHelpBubbleIdKey[] = "helpBubbleId";
 constexpr char kHelpBubbleModalTypeKey[] = "helpBubbleModalType";
-constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -100,14 +99,6 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
   user_education::HelpBubbleParams::ExtendedProperties extended_properties;
   extended_properties.values().Set(kHelpBubbleIdKey,
                                    static_cast<int>(help_bubble_id));
-  return extended_properties;
-}
-
-user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
-    HelpBubbleStyle help_bubble_style) {
-  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
-  extended_properties.values().Set(kHelpBubbleStyleKey,
-                                   static_cast<int>(help_bubble_style));
   return extended_properties;
 }
 
@@ -188,16 +179,6 @@ ui::ModalType GetHelpBubbleModalType(
     return static_cast<ui::ModalType>(model_type.value());
   }
   return ui::MODAL_TYPE_NONE;
-}
-
-std::optional<HelpBubbleStyle> GetHelpBubbleStyle(
-    const user_education::HelpBubbleParams::ExtendedProperties&
-        extended_properties) {
-  if (std::optional<int> help_bubble_style =
-          extended_properties.values().FindInt(kHelpBubbleStyleKey)) {
-    return static_cast<HelpBubbleStyle>(help_bubble_style.value());
-  }
-  return std::nullopt;
 }
 
 views::View* GetMatchingViewInRootWindow(int64_t display_id,

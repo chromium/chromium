@@ -66,10 +66,10 @@ TEST_F(UserEducationUtilTest, CreateExtendedProperties) {
   const user_education::HelpBubbleParams::ExtendedProperties
       extended_properties = CreateExtendedProperties(
           CreateExtendedProperties(HelpBubbleId::kTest),
-          CreateExtendedProperties(HelpBubbleStyle::kNudge));
+          CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM));
 
   EXPECT_EQ(GetHelpBubbleId(extended_properties), HelpBubbleId::kTest);
-  EXPECT_EQ(GetHelpBubbleStyle(extended_properties), HelpBubbleStyle::kNudge);
+  EXPECT_EQ(GetHelpBubbleModalType(extended_properties), ui::MODAL_TYPE_SYSTEM);
 }
 
 // Verifies that `CreateExtendedProperties()` can be used to create extended
@@ -106,19 +106,6 @@ TEST_F(UserEducationUtilTest, CreateExtendedPropertiesWithModalType) {
   // It is permissible to query help bubble modal type even when absent.
   EXPECT_EQ(GetHelpBubbleModalType(HelpBubbleParams::ExtendedProperties()),
             ui::MODAL_TYPE_NONE);
-}
-
-// Verifies that `CreateExtendedProperties()` can be used to create extended
-// properties for a help bubble having set style, and `GetHelpBubbleStyle()` can
-// be used to retrieve help bubble style from extended properties.
-TEST_F(UserEducationUtilTest, ExtendedPropertiesWithStyle) {
-  EXPECT_EQ(
-      GetHelpBubbleStyle(CreateExtendedProperties(HelpBubbleStyle::kNudge)),
-      HelpBubbleStyle::kNudge);
-
-  // It is permissible to query help bubble style even when absent.
-  EXPECT_EQ(GetHelpBubbleStyle(HelpBubbleParams::ExtendedProperties()),
-            std::nullopt);
 }
 
 // Verifies that `CreateExtendedPropertiesWithAccessibleName()` can be used to

@@ -42,6 +42,14 @@ std::u16string Repeat(std::u16string_view str, size_t times) {
 
 // HelpBubbleViewAshTestBase ---------------------------------------------------
 
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView() {
+  HelpBubbleParams params;
+  params.arrow = HelpBubbleArrow::kNone;
+
+  // NOTE: The returned help bubble view is owned by its widget.
+  return CreateHelpBubbleView(std::move(params));
+}
+
 HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
     HelpBubbleArrow arrow,
     bool with_title_text,
@@ -90,20 +98,6 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
   // NOTE: The returned help bubble view is owned by its widget.
   return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
                                std::move(params));
-}
-
-HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
-    const std::optional<HelpBubbleStyle>& style) {
-  HelpBubbleParams params;
-  params.arrow = HelpBubbleArrow::kNone;
-
-  if (style.has_value()) {
-    params.extended_properties =
-        user_education_util::CreateExtendedProperties(style.value());
-  }
-
-  // NOTE: The returned help bubble view is owned by its widget.
-  return CreateHelpBubbleView(std::move(params));
 }
 
 void HelpBubbleViewAshTestBase::SetUp() {

@@ -36,15 +36,6 @@ enum class HelpBubbleId {
   kMaxValue = kWelcomeTourFilesApp,
 };
 
-// Each value uniquely identifies a style of help bubble. Help bubbles of
-// different styles may differ both in terms of appearance as well as behavior.
-enum class HelpBubbleStyle {
-  kMinValue,
-  kDialog = kMinValue,
-  kNudge,
-  kMaxValue = kNudge,
-};
-
 // Enumeration of quantized time values for easy to interpret metrics about
 // human scale time measurements that can range from minutes to weeks. These
 // values are persisted to logs.

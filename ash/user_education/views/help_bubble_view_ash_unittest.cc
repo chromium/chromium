@@ -61,16 +61,6 @@ ui::MouseEvent CreateMouseMovedEvent(aura::Window* target,
   return mouse_moved_event;
 }
 
-std::vector<std::optional<HelpBubbleStyle>> GetHelpBubbleStyles() {
-  std::vector<std::optional<HelpBubbleStyle>> styles;
-  styles.emplace_back(std::nullopt);
-  for (size_t i = static_cast<size_t>(HelpBubbleStyle::kMinValue);
-       i <= static_cast<size_t>(HelpBubbleStyle::kMaxValue); ++i) {
-    styles.emplace_back(static_cast<HelpBubbleStyle>(i));
-  }
-  return styles;
-}
-
 std::vector<gfx::Point> GetPerimeterPoints(const gfx::Rect& rect) {
   return std::vector<gfx::Point>({rect.origin(), rect.top_center(),
                                   rect.top_right(), rect.right_center(),
@@ -89,7 +79,7 @@ using HelpBubbleViewAshTest = HelpBubbleViewAshTestBase;
 
 // Verifies that help bubbles are contained within the correct parent window.
 TEST_F(HelpBubbleViewAshTest, ParentWindow) {
-  auto* const help_bubble_view = CreateHelpBubbleView(HelpBubbleStyle::kDialog);
+  auto* const help_bubble_view = CreateHelpBubbleView();
   EXPECT_TRUE(help_bubble_view->anchor_widget()
                   ->GetNativeWindow()
                   ->GetRootWindow()
@@ -185,45 +175,23 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
                   IsNull()));
 }
 
-// HelpBubbleViewAshStyleTest --------------------------------------------------
-
-// Base class for tests of `HelpBubbleViewAsh` parameterized by style.
-class HelpBubbleViewAshStyleTest
-    : public HelpBubbleViewAshTestBase,
-      public ::testing::WithParamInterface<std::optional<HelpBubbleStyle>> {
- public:
-  // Returns the help bubble style to use given test parameterization.
-  const std::optional<HelpBubbleStyle>& style() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HelpBubbleViewAshStyleTest,
-                         ::testing::ValuesIn(GetHelpBubbleStyles()));
-
-// Tests -----------------------------------------------------------------------
-
-// Verifies that help bubbles have the appropriate background color given style.
-TEST_P(HelpBubbleViewAshStyleTest, BackgroundColor) {
-  const auto* const help_bubble_view = CreateHelpBubbleView(style());
+// Verifies that help bubbles have the appropriate background color.
+TEST_F(HelpBubbleViewAshTest, BackgroundColor) {
+  const auto* const help_bubble_view = CreateHelpBubbleView();
   const auto* const color_provider = help_bubble_view->GetColorProvider();
-  EXPECT_THAT(
-      help_bubble_view->color(),
-      Conditional(
-          help_bubble_view->style() == HelpBubbleStyle::kDialog,
-          Eq(color_provider->GetColor(cros_tokens::kCrosSysDialogContainer)),
-          Eq(color_provider->GetColor(cros_tokens::kCrosSysBaseElevated))));
+  EXPECT_EQ(help_bubble_view->color(),
+            color_provider->GetColor(cros_tokens::kCrosSysDialogContainer));
 }
 
-// Verifies that help bubbles can activate so long as they are not nudge style.
-TEST_P(HelpBubbleViewAshStyleTest, CanActivate) {
-  const auto* const help_bubble_view = CreateHelpBubbleView(style());
-  EXPECT_EQ(help_bubble_view->CanActivate(),
-            help_bubble_view->style() != HelpBubbleStyle::kNudge);
+// Verifies that help bubbles can activate.
+TEST_F(HelpBubbleViewAshTest, CanActivate) {
+  const auto* const help_bubble_view = CreateHelpBubbleView();
+  EXPECT_TRUE(help_bubble_view->CanActivate());
 }
 
 // Verifies that help bubbles do not handle events within their shadows.
-TEST_P(HelpBubbleViewAshStyleTest, HitTest) {
-  auto* const help_bubble_view = CreateHelpBubbleView(style());
+TEST_F(HelpBubbleViewAshTest, HitTest) {
+  auto* const help_bubble_view = CreateHelpBubbleView();
   auto* const help_bubble_widget = help_bubble_view->GetWidget();
   auto* const help_bubble_window = help_bubble_widget->GetNativeWindow();
   auto* const root_window = help_bubble_window->GetRootWindow();
@@ -274,14 +242,6 @@ TEST_P(HelpBubbleViewAshStyleTest, HitTest) {
     EXPECT_NE(root_window_targeter->FindTargetForEvent(root_window, &press),
               help_bubble_window);
   }
-}
-
-// Verifies that style is propagated to the help bubble as expected. Note that
-// if not explicitly provided, style defaults to `HelpBubbleStyle::kDialog`.
-TEST_P(HelpBubbleViewAshStyleTest, Style) {
-  const auto* const help_bubble_view = CreateHelpBubbleView(style());
-  EXPECT_EQ(help_bubble_view->style(),
-            style().value_or(HelpBubbleStyle::kDialog));
 }
 
 }  // namespace ash

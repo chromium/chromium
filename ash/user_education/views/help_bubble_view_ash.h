@@ -31,7 +31,6 @@ class Label;
 namespace ash {
 
 enum class HelpBubbleId;
-enum class HelpBubbleStyle;
 
 namespace internal {
 
@@ -78,7 +77,6 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   gfx::Rect GetHitRect() const;
 
   HelpBubbleId id() const { return id_; }
-  HelpBubbleStyle style() const { return style_; }
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -110,7 +108,6 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void UpdateRoundedCorners();
 
   const HelpBubbleId id_;
-  const HelpBubbleStyle style_;
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   std::vector<raw_ptr<views::Label, VectorExperimental>> labels_;
