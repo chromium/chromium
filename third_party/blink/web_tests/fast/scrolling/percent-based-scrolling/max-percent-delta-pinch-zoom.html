@@ -1,11 +1,10 @@
 <!doctype html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script src="../../resources/gesture-util.js"></script>
-<script src="../../resources/scrollbar-util.js"></script>
-<script src="../../resources/blink-coordinates-util.js"></script>
-<script src="resources/scroller-util.js"></script>
-<script src="resources/percent-based-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/percent-based-util.js"></script>
 
 <style>
   .scroller {
@@ -24,14 +23,19 @@
   <div class="child"></div>
 </div>
 <script>
-window.onload = async function () {
+
+window.onload = async () => {
   const onMacPlatform = navigator.userAgent.includes("Mac OS X");
   const ZOOM_RATIO = 3;
   // Pinch-zoom to start testing
-  internals.setPageScaleFactor(ZOOM_RATIO);
+  if (window.internals)
+    internals.setPageScaleFactor(ZOOM_RATIO);
 
   // 1 - Test arrows
-  promise_test(async function () {
+  promise_test(async () => {
+    if (!isPercentBasedScrollingEnabled())
+      return;
+
     // Mac doesn't have scrollbar arrows.
     if (onMacPlatform)
       return;
@@ -43,11 +47,13 @@ window.onload = async function () {
 
     await runScrollbarArrowsTest(scroller, expected_x, expected_y);
   }, "Percent scrolling using scrollbar arrows are clamped by " +
-    "visual viewport size after a pinch zoom");
-
+     "visual viewport size after a pinch zoom");
 
   // 2 - Test mousewheel
-  promise_test(async function () {
+  promise_test(async () => {
+    if (!isPercentBasedScrollingEnabled())
+      return;
+
     const SCROLL_PERCENTAGE = 0.6;
 
     const expected_x =
@@ -59,6 +65,6 @@ window.onload = async function () {
     await runMousewheelTest(scroller, expected_x, expected_y, SCROLL_PERCENTAGE);
 
   }, "Percent scrolling using mousewheel are clamped by " +
-    "visual viewport size after a pinch zoom");
+     "visual viewport size after a pinch zoom");
 };
 </script>

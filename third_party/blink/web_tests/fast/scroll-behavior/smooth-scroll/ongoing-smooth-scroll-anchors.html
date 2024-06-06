@@ -2,7 +2,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../../../resources/percent-based-util.js"></script>
 <style>
   body {
     margin: 0px;
@@ -56,7 +56,7 @@
     document.addEventListener("scroll", scrollListener);
 
     // Smooth scroll.
-    smoothScroll(userScrollY, 100, 100, source, 'down', 
+    smoothScroll(userScrollY, 100, 100, source, 'down',
                  SPEED_INSTANT, false /* precise_scrolling_deltas */);
     await raf();
     document.getElementById('anchor').scrollIntoView();

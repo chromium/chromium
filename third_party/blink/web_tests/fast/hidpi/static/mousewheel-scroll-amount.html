@@ -2,7 +2,7 @@
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../../../resources/percent-based-util.js"></script>
 
 <style type="text/css">
     body {
@@ -27,7 +27,7 @@ var position = {x: 20, y: 20};
 promise_test(async () => {
     await reset();
     await waitForWheelTickAndScroll(0, 1, position);
-    const {x: expectedScrollX, y: expectedScrollY} = 
+    const {x: expectedScrollX, y: expectedScrollY} =
         calculateExpectedScroll(document.scrollingElement, 0, pixelsPerTick());
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
@@ -41,7 +41,7 @@ promise_test(async () => {
 promise_test(async () => {
     await reset();
     await waitForWheelTickAndScroll(1, 0, position);
-    const {x: expectedScrollX, y: expectedScrollY} = 
+    const {x: expectedScrollX, y: expectedScrollY} =
         calculateExpectedScroll(document.scrollingElement, pixelsPerTick(), 0);
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
@@ -55,7 +55,7 @@ promise_test(async () => {
 promise_test(async () => {
     await reset();
     await waitForWheelTickAndScroll(0, 2, position);
-    const {x: expectedScrollX, y: expectedScrollY} = 
+    const {x: expectedScrollX, y: expectedScrollY} =
         calculateExpectedScroll(document.scrollingElement, 0, pixelsPerTick() * 2);
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
@@ -69,7 +69,7 @@ promise_test(async () => {
 promise_test(async () => {
     await reset();
     await waitForWheelTickAndScroll(2, 0, position);
-    const {x: expectedScrollX, y: expectedScrollY} = 
+    const {x: expectedScrollX, y: expectedScrollY} =
         calculateExpectedScroll(document.scrollingElement, pixelsPerTick() * 2, 0);
     if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);

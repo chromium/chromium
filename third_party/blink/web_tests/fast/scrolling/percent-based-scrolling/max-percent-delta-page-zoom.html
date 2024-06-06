@@ -1,11 +1,10 @@
 <!doctype html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script src="../../resources/gesture-util.js"></script>
-<script src="../../resources/scrollbar-util.js"></script>
-<script src="../../resources/blink-coordinates-util.js"></script>
-<script src="resources/scroller-util.js"></script>
-<script src="resources/percent-based-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/percent-based-util.js"></script>
 
 <style>
   .scroller {
@@ -20,15 +19,18 @@
   }
 </style>
 
-
 <div id="scroller" class="scroller">
   <div class="child"></div>
 </div>
+
 <script>
   const ZOOM_RATIO = 3;
 
   // 1 - Test arrows
   promise_test(async function () {
+    if (!isPercentBasedScrollingEnabled())
+      return;
+
     // Mac doesn't have scrollbar arrows.
     const onMacPlatform = navigator.userAgent.includes("Mac OS X");
     if(onMacPlatform)
@@ -46,15 +48,14 @@
     testRunner.setPageZoomFactor(ZOOM_RATIO);
 
     await runScrollbarArrowsTest(scroller, expected_x, expected_y);
-
   }, "Percent scrolling using scrollbar arrows clamped by viewport size");
 
-
   // 2 - Test mousewheel
-
   promise_test(async function () {
-    const WHEEL_PERCENTAGE = 0.1;
+    if (!isPercentBasedScrollingEnabled())
+      return;
 
+    const WHEEL_PERCENTAGE = 0.1;
     // As the clamping is made in un-zoomed physical pixels, zoom-out back to
     // 100% before calculating:
     testRunner.setPageZoomFactor(1);
@@ -67,5 +68,4 @@
 
     await runMousewheelTest(scroller, expected_x, expected_y, WHEEL_PERCENTAGE);
   }, "Percent scrolling using mousewheel clamped by visual viewport");
-
 </script>

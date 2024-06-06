@@ -538,22 +538,13 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "percent-based-scrolling",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--enable-features=WindowsScrollingPersonality",
-             "--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Jun 1, 2025"
-  },
-  {
     "prefix": "main-threaded-percent-based-scrolling",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/wheel",
-              "fast/scrolling",
-              "virtual/percent-based-scrolling"],
+              "fast/scrolling"],
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["gerchiko@microsoft.com", "yshalivskyy@microsoft.com"],
     "expires": "Jun 1, 2025"
   },
   {
@@ -564,17 +555,7 @@
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Jun 1, 2025"
-  },
-  {
-    "prefix": "compositor-threaded-percent-based-scrolling-dsf-2",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/scrolling/scrollbars/dsf-ready",
-              "virtual/percent-based-scrolling"],
-    "args": ["--enable-features=WindowsScrollingPersonality",
-             "--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text",
-             "--force-device-scale-factor=2"],
+    "owners": ["gerchiko@microsoft.com", "yshalivskyy@microsoft.com"],
     "expires": "Jun 1, 2025"
   },
   {

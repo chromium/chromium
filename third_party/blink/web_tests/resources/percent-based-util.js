@@ -88,6 +88,7 @@ function calculatePixelsToScroll(container, expectedScrollX, expectedScrollY) {
 async function runScrollbarArrowsTest(scroller, expected_x, expected_y) {
   // use tolerance for comparisons due to floating point approximations.
   const tolerance = 1;
+  await waitForCompositorReady();
 
   /* Step 1 - Click down button */
   scroller.scrollTop = 0;
@@ -123,8 +124,7 @@ async function runScrollbarArrowsTest(scroller, expected_x, expected_y) {
 // pixels) both in positive and negative directions.
 async function runMousewheelTest(scroller, expected_x, expected_y, percentage) {
   // Return page to initial conditions.
-  reset();
-  scroller.scrollTo(0, 0);
+  await reset(scroller);
 
   // use tolerance for comparisons due to floating point approximations.
   const tolerance = 1;
@@ -193,9 +193,10 @@ function moveViewportToVisible(point) {
   Methods for user interactions in test.
 */
 // Resets the document and viewport to the origin.
-function reset() {
+async function reset(scroller) {
   window.scroll(0, 0);
   internals.setVisualViewportOffset(0, 0);
+  await waitForScrollReset(scroller);
 }
 
 // Performs a mousewheel percent-scroll of |scroll_x| and |scroll_y| units (in
@@ -207,9 +208,13 @@ async function runPercentScrollAndWaitForAnimationEnd(scroller, scroll_x, scroll
     return Math.abs(actual - expected) <= tolerance;
   }
 
-  isCorrectXOffset = () => isNear(scroller.scrollLeft, expected_x, tolerance);
-  isCorrectYOffset = () => isNear(scroller.scrollTop, expected_y, tolerance);
+  isCorrectOffset = () => {
+    return (
+      isNear(scroller.scrollLeft, expected_x, tolerance) &&
+      isNear(scroller.scrollTop, expected_y, tolerance));
+  }
 
+  await waitForCompositorReady();
   const rect = scroller.getBoundingClientRect();
   assert_greater_than(rect.width, 20, "Test requires a scroller bigger than 20x20");
   assert_greater_than(rect.height, 20, "Test requires a scroller bigger than 20x20");
@@ -217,10 +222,8 @@ async function runPercentScrollAndWaitForAnimationEnd(scroller, scroll_x, scroll
   await percentScroll(scroll_x, scroll_y, mouse_pos.x, mouse_pos.y,
     GestureSourceType.MOUSE_INPUT);
 
-  await waitFor(isCorrectXOffset);
-  await waitFor(isCorrectYOffset);
-  await conditionHolds(isCorrectXOffset);
-  await conditionHolds(isCorrectYOffset);
+  await waitFor(isCorrectOffset);
+  await conditionHolds(isCorrectOffset);
 
   assert_approx_equals(scroller.scrollLeft, expected_x, tolerance, "Horizontal scroll");
   assert_approx_equals(scroller.scrollTop, expected_y, tolerance, "Vetical scroll");
