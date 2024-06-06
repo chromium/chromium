@@ -215,7 +215,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
    */
   private computeShowAxAnnotationsSubpage_(): boolean {
     const anyAxAnnotationsFeatureEnabled =
-        loadTimeData.getBoolean('pdfOcrEnabled') ||
         loadTimeData.getBoolean('mainNodeAnnotationsEnabled');
     return anyAxAnnotationsFeatureEnabled && this.hasScreenReader_;
   }

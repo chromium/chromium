@@ -20,7 +20,6 @@ suite('SettingsAxAnnotationsSubpageTest', () => {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       mainNodeAnnotationsEnabled: true,
-      pdfOcrEnabled: true,
     });
   });
 
@@ -38,7 +37,6 @@ suite('SettingsAxAnnotationsSubpageTest', () => {
 
   test('test main node annotations toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
 
     // Main node annotations toggle visibility depends on the screen reader
     // state, but is managed by a11y_page.ts. Thus, no need to simulate enabling
@@ -66,7 +64,6 @@ suite('SettingsAxAnnotationsSubpageTest', () => {
 
   test('test main node annotations toggle subtitle', async () => {
     assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
 
     // Main node annotations toggle visibility depends on the screen reader
     // state, but is managed by a11y_page.ts. Thus, no need to simulate enabling
@@ -103,66 +100,5 @@ suite('SettingsAxAnnotationsSubpageTest', () => {
         'screen-ai-state-changed', ScreenAiInstallStatus.DOWNLOADED);
     assertEquals(
         testElement.i18n('mainNodeAnnotationsSubtitle'), toggle.subLabel);
-  });
-
-  test('test pdf ocr toggle and pref', async () => {
-    assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-
-    // PDF OCR toggle visibility depends on the screen reader state, but is
-    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
-    // reader in this test.
-    const toggle =
-        testElement.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#pdfOcrToggle');
-    assertTrue(!!toggle);
-    await flushTasks();
-
-    // // The PDF OCR pref is on by default, so the button should be toggled on.
-    assertTrue(
-        testElement.getPref('settings.a11y.pdf_ocr_always_active').value,
-        'pdf ocr pref should be on by default');
-    assertTrue(toggle.checked);
-
-    toggle.click();
-    await flushTasks();
-    assertFalse(
-        testElement.getPref('settings.a11y.pdf_ocr_always_active').value,
-        'pdf ocr pref should be off');
-    assertFalse(toggle.checked);
-  });
-
-  test('test pdf ocr toggle subtitle', async () => {
-    assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-
-    // PDF OCR toggle visibility depends on the screen reader state, but is
-    // managed by a11y_page.ts. Thus, no need to simulate enabling screen
-    // reader in this test.
-    const toggle =
-        testElement.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#pdfOcrToggle');
-    assertTrue(!!toggle);
-    await flushTasks();
-
-    webUIListenerCallback(
-        'screen-ai-state-changed', ScreenAiInstallStatus.NOT_DOWNLOADED);
-    assertEquals(testElement.i18n('pdfOcrSubtitle'), toggle.subLabel);
-
-    webUIListenerCallback(
-        'screen-ai-state-changed', ScreenAiInstallStatus.DOWNLOAD_FAILED);
-    assertEquals(testElement.i18n('pdfOcrDownloadErrorLabel'), toggle.subLabel);
-
-    webUIListenerCallback(
-        'screen-ai-state-changed', ScreenAiInstallStatus.DOWNLOADING);
-    assertEquals(testElement.i18n('pdfOcrDownloadingLabel'), toggle.subLabel);
-
-    webUIListenerCallback('screen-ai-downloading-progress-changed', 50);
-    assertEquals(
-        testElement.i18n('pdfOcrDownloadProgressLabel', 50), toggle.subLabel);
-
-    webUIListenerCallback(
-        'screen-ai-state-changed', ScreenAiInstallStatus.DOWNLOADED);
-    assertEquals(testElement.i18n('pdfOcrSubtitle'), toggle.subLabel);
   });
 });

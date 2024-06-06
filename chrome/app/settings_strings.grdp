@@ -240,24 +240,6 @@
   <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE" desc="Subtitle for screen reader main node annotation feature." translateable="false">
     Identify the main landmark in web pages for assistive technology
   </message>
-  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE" desc="Success message when it has downloaded PDF OCR files.">
-    Text recognition files downloaded
-  </message>
-  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR" desc="Generic error message when it fails to download PDF OCR files.">
-    Can't download text recognition files. Try again later.
-  </message>
-  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_PROGRESS" desc="Download progress indicator after PDF OCR is enabled. The user needs to download certain files for the feature to work.">
-    Downloading text recognition files… <ph name="PERCENT">$1<ex>17</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOADING" desc="Generic message when it has started downloading PDF OCR files.">
-    Downloading text recognition files
-  </message>
-  <message name="IDS_SETTINGS_PDF_OCR_TITLE" desc="Description for screen reader pdf ocr feature.">
-    Extract text from PDF
-  </message>
-  <message name="IDS_SETTINGS_PDF_OCR_SUBTITLE" desc="Subtitle for screen reader pdf ocr feature.">
-    Scan PDF to extract text for assistive technology
-  </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
   </message>

@@ -74,7 +74,6 @@ suite('A11yPage', () => {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       mainNodeAnnotationsEnabled: true,
-      pdfOcrEnabled: true,
     });
   });
 
@@ -114,7 +113,6 @@ suite('A11yPage', () => {
   // <if expr="is_win or is_linux or is_macosx">
   test('check ax annotations subpage visibility', async () => {
     assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
 
     // Simulate disabling a screen reader to exclude the ax annotations subpage
     // in a DOM.

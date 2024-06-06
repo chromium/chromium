@@ -27,8 +27,6 @@ namespace {
 namespace IsAllowedLocalFileAccess =
     api::pdf_viewer_private::IsAllowedLocalFileAccess;
 
-namespace SetPdfOcrPref = api::pdf_viewer_private::SetPdfOcrPref;
-
 namespace SetPdfPluginAttributes =
     api::pdf_viewer_private::SetPdfPluginAttributes;
 
@@ -115,30 +113,6 @@ PdfViewerPrivateIsAllowedLocalFileAccessFunction::Run() {
       prefs->GetList(prefs::kPdfLocalFileAccessAllowedForDomains))));
 }
 
-PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::
-    PdfViewerPrivateIsPdfOcrAlwaysActiveFunction() = default;
-
-PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::
-    ~PdfViewerPrivateIsPdfOcrAlwaysActiveFunction() = default;
-
-ExtensionFunction::ResponseAction
-PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::Run() {
-  PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  DCHECK(prefs);
-
-  const PrefService::Preference* pref =
-      prefs->FindPreference(prefs::kAccessibilityPdfOcrAlwaysActive);
-  if (!pref) {
-    return RespondNow(
-        Error("Pref not found: *", prefs::kAccessibilityPdfOcrAlwaysActive));
-  }
-
-  DCHECK(pref->GetValue()->is_bool());
-  bool value = pref->GetValue()->GetBool();
-  return RespondNow(WithArguments(value));
-}
-
 PdfViewerPrivateSetPdfDocumentTitleFunction::
     PdfViewerPrivateSetPdfDocumentTitleFunction() = default;
 
@@ -168,33 +142,6 @@ PdfViewerPrivateSetPdfDocumentTitleFunction::Run() {
       base::UTF8ToUTF16(params->title));
 
   return RespondNow(NoArguments());
-}
-
-PdfViewerPrivateSetPdfOcrPrefFunction::PdfViewerPrivateSetPdfOcrPrefFunction() =
-    default;
-
-PdfViewerPrivateSetPdfOcrPrefFunction::
-    ~PdfViewerPrivateSetPdfOcrPrefFunction() = default;
-
-ExtensionFunction::ResponseAction PdfViewerPrivateSetPdfOcrPrefFunction::Run() {
-  std::optional<SetPdfOcrPref::Params> params =
-      SetPdfOcrPref::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  DCHECK(prefs);
-
-  const PrefService::Preference* pref =
-      prefs->FindPreference(prefs::kAccessibilityPdfOcrAlwaysActive);
-  if (!pref) {
-    return RespondNow(
-        Error("Pref not found: *", prefs::kAccessibilityPdfOcrAlwaysActive));
-  }
-
-  DCHECK(pref->GetValue()->is_bool());
-  prefs->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive, params->value);
-  return RespondNow(WithArguments(true));
 }
 
 PdfViewerPrivateSetPdfPluginAttributesFunction::

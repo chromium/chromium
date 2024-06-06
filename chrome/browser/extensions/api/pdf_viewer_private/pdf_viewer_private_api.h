@@ -46,24 +46,6 @@ class PdfViewerPrivateIsAllowedLocalFileAccessFunction
   ResponseAction Run() override;
 };
 
-class PdfViewerPrivateIsPdfOcrAlwaysActiveFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("pdfViewerPrivate.isPdfOcrAlwaysActive",
-                             PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE)
-
-  PdfViewerPrivateIsPdfOcrAlwaysActiveFunction();
-  PdfViewerPrivateIsPdfOcrAlwaysActiveFunction(
-      const PdfViewerPrivateIsPdfOcrAlwaysActiveFunction&) = delete;
-  PdfViewerPrivateIsPdfOcrAlwaysActiveFunction& operator=(
-      const PdfViewerPrivateIsPdfOcrAlwaysActiveFunction&) = delete;
-
- protected:
-  ~PdfViewerPrivateIsPdfOcrAlwaysActiveFunction() override;
-
-  // Override from ExtensionFunction:
-  ResponseAction Run() override;
-};
-
 class PdfViewerPrivateSetPdfDocumentTitleFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("pdfViewerPrivate.setPdfDocumentTitle",
@@ -77,24 +59,6 @@ class PdfViewerPrivateSetPdfDocumentTitleFunction : public ExtensionFunction {
 
  protected:
   ~PdfViewerPrivateSetPdfDocumentTitleFunction() override;
-
-  // Override from ExtensionFunction:
-  ResponseAction Run() override;
-};
-
-class PdfViewerPrivateSetPdfOcrPrefFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("pdfViewerPrivate.setPdfOcrPref",
-                             PDFVIEWERPRIVATE_SETPDFOCRPREF)
-
-  PdfViewerPrivateSetPdfOcrPrefFunction();
-  PdfViewerPrivateSetPdfOcrPrefFunction(
-      const PdfViewerPrivateSetPdfOcrPrefFunction&) = delete;
-  PdfViewerPrivateSetPdfOcrPrefFunction& operator=(
-      const PdfViewerPrivateSetPdfOcrPrefFunction&) = delete;
-
- protected:
-  ~PdfViewerPrivateSetPdfOcrPrefFunction() override;
 
   // Override from ExtensionFunction:
   ResponseAction Run() override;

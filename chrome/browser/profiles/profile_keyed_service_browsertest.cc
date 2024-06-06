@@ -283,9 +283,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "OneTimePermissionsTrackerKeyedService",
     "OptimizationGuideKeyedService",
-#if BUILDFLAG(ENABLE_PDF)
-    "PdfViewerPrivateEventRouter",
-#endif  // BUILDFLAG(ENABLE_PDF)
     "PermissionDecisionAutoBlocker",
     "PinnedToolbarActionsModel",
     "PlatformNotificationService",
@@ -501,9 +498,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OptimizationGuideKeyedService",
     "PageContentAnnotationsService",
     "PasswordsPrivateEventRouter",
-#if BUILDFLAG(ENABLE_PDF)
-    "PdfViewerPrivateEventRouter",
-#endif  // BUILDFLAG(ENABLE_PDF)
     "PermissionDecisionAutoBlocker",
     "PermissionHelper",
     "PermissionsManager",

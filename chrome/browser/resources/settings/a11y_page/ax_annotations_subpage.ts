@@ -4,9 +4,9 @@
 
 /**
  * @fileoverview
- * 'settings-ax-annotations-subpage' is a subpage for accessibility annotations
- * toggles, including PDF OCR and main node. It appears on the accessibility
- * page (chrome://settings/accessibility) on Windows, macOS, and Linux.
+ * 'settings-ax-annotations-subpage' is a subpage holding the toggle for main
+ * node accessibility annotations. It appears on the accessibility page
+ * (chrome://settings/accessibility) on Windows, macOS, and Linux.
  */
 
 import '../controls/settings_toggle_button.js';
@@ -47,28 +47,14 @@ export class SettingsAxAnnotationsSubpageElement extends
         notify: true,
       },
 
-      showMainNodeAnnotationsToggle_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('mainNodeAnnotationsEnabled');
-        },
-      },
-
-      showPdfOcrToggle_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('pdfOcrEnabled');
-        },
-      },
-
       /**
-       * `pdfOcrProgress_` stores the downloading progress in percentage of
+       * `screenAIProgress_` stores the downloading progress in percentage of
        * the ScreenAI library, which ranges from 0.0 to 100.0.
        */
       screenAIProgress_: Number,
 
       /**
-       * `pdfOcrStatus_` stores the ScreenAI library install state.
+       * `screenAIStatus_` stores the ScreenAI library install state.
        */
       screenAIStatus_: Number,
     };
@@ -78,14 +64,13 @@ export class SettingsAxAnnotationsSubpageElement extends
       AccessibilityBrowserProxyImpl.getInstance();
 
   private showMainNodeAnnotationsToggle_: boolean;
-  private showPdfOcrToggle_: boolean;
   private screenAIProgress_: number;
   private screenAIStatus_: ScreenAiInstallStatus;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    assert(this.showPdfOcrToggle_ || this.showMainNodeAnnotationsToggle_);
+    assert(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
 
     const updateScreenAIState = (screenAIState: ScreenAiInstallStatus) => {
       this.screenAIStatus_ = screenAIState;
@@ -96,23 +81,6 @@ export class SettingsAxAnnotationsSubpageElement extends
         'screen-ai-downloading-progress-changed', (progress: number) => {
           this.screenAIProgress_ = progress;
         });
-  }
-
-  private getPdfOcrToggleSublabel_(): string {
-    switch (this.screenAIStatus_) {
-      case ScreenAiInstallStatus.DOWNLOADING:
-        return this.screenAIProgress_ > 0 && this.screenAIProgress_ < 100 ?
-            this.i18n('pdfOcrDownloadProgressLabel', this.screenAIProgress_) :
-            this.i18n('pdfOcrDownloadingLabel');
-      case ScreenAiInstallStatus.DOWNLOAD_FAILED:
-        return this.i18n('pdfOcrDownloadErrorLabel');
-      case ScreenAiInstallStatus.DOWNLOADED:
-        // Show the default subtitle if downloading is done.
-        // fallthrough
-      case ScreenAiInstallStatus.NOT_DOWNLOADED:
-        // No subtitle update, so show a generic subtitle describing PDF OCR.
-        return this.i18n('pdfOcrSubtitle');
-    }
   }
 
   private getMainNodeAnnotationsToggleSublabel_(): string {

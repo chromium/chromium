@@ -29,24 +29,3 @@ source_set("pdf_viewer_private") {
     "//url",
   ]
 }
-
-if (enable_screen_ai_service) {
-  source_set("event_router") {
-    sources = [
-      "pdf_viewer_private_event_router.cc",
-      "pdf_viewer_private_event_router.h",
-      "pdf_viewer_private_event_router_factory.cc",
-      "pdf_viewer_private_event_router_factory.h",
-    ]
-
-    deps = [
-      "//base",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common:constants",
-      "//chrome/common/extensions/api",
-      "//components/keyed_service/core",
-      "//components/prefs",
-      "//extensions/browser",
-    ]
-  }
-}

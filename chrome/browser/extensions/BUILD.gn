@@ -1419,11 +1419,6 @@ source_set("extensions") {
       "//pdf:buildflags",
       "//pdf:features",
     ]
-
-    if (enable_screen_ai_service) {
-      deps +=
-          [ "//chrome/browser/extensions/api/pdf_viewer_private:event_router" ]
-    }
   }
 
   if (enable_rlz_support) {

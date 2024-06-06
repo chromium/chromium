@@ -293,12 +293,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
       {"mainNodeAnnotationsTitle", IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_TITLE},
       {"mainNodeAnnotationsSubtitle",
        IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE},
-      {"pdfOcrDownloadCompleteLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE},
-      {"pdfOcrDownloadErrorLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR},
-      {"pdfOcrDownloadProgressLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_PROGRESS},
-      {"pdfOcrDownloadingLabel", IDS_SETTINGS_PDF_OCR_DOWNLOADING},
-      {"pdfOcrTitle", IDS_SETTINGS_PDF_OCR_TITLE},
-      {"pdfOcrSubtitle", IDS_SETTINGS_PDF_OCR_SUBTITLE},
 #endif  // BULDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   };
@@ -309,8 +303,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "mainNodeAnnotationsEnabled",
       base::FeatureList::IsEnabled(features::kMainNodeAnnotations));
-  html_source->AddBoolean("pdfOcrEnabled",
-                          base::FeatureList::IsEnabled(features::kPdfOcr));
 #endif
 
   AddCaptionSubpageStrings(html_source);

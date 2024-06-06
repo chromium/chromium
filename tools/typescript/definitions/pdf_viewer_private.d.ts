@@ -31,16 +31,9 @@ declare global {
       export function getStreamInfo(callback: (info: StreamInfo) => void): void;
       export function isAllowedLocalFileAccess(
           url: string, callback: (isAllowed: boolean) => void): void;
-      export function isPdfOcrAlwaysActive(
-          callback: (isAlwaysActive: boolean) => void): void;
       export function setPdfDocumentTitle(title: string): void;
-      export function setPdfOcrPref(
-          isAlwaysActive: boolean, callback: (isSet: boolean) => void): void;
       export function setPdfPluginAttributes(attributes: PdfPluginAttributes):
           void;
-
-      type PdfOcrPrefCallback = ((isPdfOcrAlwaysActive: boolean) => void)|null;
-      export const onPdfOcrPrefChanged: ChromeEvent<PdfOcrPrefCallback>;
       export const onSave: ChromeEvent<(url: string) => void>;
     }
   }
