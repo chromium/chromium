@@ -131,3 +131,15 @@ TEST_F(PlusAddressBottomSheetMediatorTest, openErrorReportUrlOnNewTab) {
   // Ensure one new tab is opened.
   EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
 }
+
+// Ensure the consumer is notified when plus addresses are refreshed.
+TEST_F(PlusAddressBottomSheetMediatorTest, didTapRefresh) {
+  OCMExpect([consumer_
+      didReservePlusAddress:base::SysUTF8ToNSString(
+                                FakePlusAddressService::kFakePlusAddress)]);
+  [mediator() didTapRefreshButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ didConfirmPlusAddress]);
+  [mediator() confirmPlusAddress];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}

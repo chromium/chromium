@@ -26,6 +26,8 @@ const CGFloat kTableViewCellCornerRadius = 10;
 
 const CGFloat kTableViewCellHeight = 64;
 
+const CGFloat kCellImageSize = 24;
+
 const CGFloat kBrandingIconContainerViewSize = 64;
 
 const CGFloat kBrandingIconContainerViewCornerRadius = 15;

@@ -58,6 +58,20 @@ void FakePlusAddressService::ConfirmPlusAddress(
   std::move(on_completed).Run(profile);
 }
 
+void FakePlusAddressService::RefreshPlusAddress(
+    const url::Origin& origin,
+    PlusAddressRequestCallback on_completed) {
+  if (should_fail_to_refresh_) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kNetworkError)));
+    return;
+  }
+  std::move(on_completed)
+      .Run(
+          PlusProfile(kFakeProfileId, kFacet, kFakePlusAddress, is_confirmed_));
+}
+
 std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {
   // Ensure the value is present without requiring identity setup.
   return "plus+primary@plus.plus";

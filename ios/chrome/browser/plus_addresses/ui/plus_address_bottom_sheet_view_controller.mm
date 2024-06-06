@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -31,8 +31,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-static NSString* const kImageCellIdentifier = @"ImageCell";
 
 // Generates the description to be displayed in the modal, which includes an
 // attributed string that links to the user's myaccount page.
@@ -150,6 +148,8 @@ UIImage* PlusAddressesLogo() {
   // TODO(crbug.com/343153116): Cleanup once feature is enabled.
   // Yes, if the feature flag `kPlusAddressUIRedesign` is enabled.
   BOOL _plusAddressUIRedesignEnabled;
+  // Keeps track of the number of times the refresh button was hit.
+  NSInteger _refreshCount;
 }
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
@@ -162,6 +162,7 @@ UIImage* PlusAddressesLogo() {
     _reservedPlusAddress = @"";
     _plusAddressUIRedesignEnabled = base::FeatureList::IsEnabled(
         plus_addresses::features::kPlusAddressUIRedesign);
+    _refreshCount = 0;
   }
   return self;
 }
@@ -275,7 +276,8 @@ UIImage* PlusAddressesLogo() {
   plus_addresses::metrics::RecordModalShownOutcome(
       plus_addresses::metrics::PlusAddressModalCompletionStatus::
           kModalConfirmed,
-      base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
+      base::Time::Now() - _bottomSheetShownTime,
+      /*refresh_count=*/(int)_refreshCount);
   [_activityIndicator stopAnimating];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
@@ -341,17 +343,35 @@ UIImage* PlusAddressesLogo() {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewImageCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:kImageCellIdentifier];
+  PlusAddressSuggestionLabelCell* cell =
+      DequeueTableViewCell<PlusAddressSuggestionLabelCell>(tableView);
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  cell.userInteractionEnabled = NO;
-  // TODO(crbug.com/343153116): Update the image to indicate plus address.
-  cell.imageView.image = PlusAddressesLogo();
+  [cell setLeadingIconImage:DefaultSymbolTemplateWithPointSize(kMailFillSymbol,
+                                                               kCellImageSize)
+              withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
+  if ([_delegate isRefreshEnabled]) {
+    [cell setTrailingButtonImage:CustomSymbolTemplateWithPointSize(
+                                     kArrowClockWiseSymbol, kCellImageSize)
+                   withTintColor:[UIColor colorNamed:kBlueColor]];
+  }
   cell.textLabel.text = _reservedPlusAddress;
+  cell.delegate = self;
 
   return cell;
+}
+
+#pragma mark - PlusAddressSuggestionLabelDelegate
+
+- (void)didTapTrailingButton {
+  _refreshCount++;
+  [_delegate didTapRefreshButton];
+  self.primaryActionButton.enabled = NO;
+  // TODO(crbug.com/343153116): Disable the refresh button when it's loading.
+  _reservedPlusAddress = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT);
+  [_reservedPlusAddressTableView reloadData];
 }
 
 #pragma mark - Private
@@ -382,8 +402,7 @@ UIImage* PlusAddressesLogo() {
   tableViewContainer.rowHeight = kTableViewCellHeight;
   tableViewContainer.separatorStyle = UITableViewCellSeparatorStyleNone;
   tableViewContainer.layer.cornerRadius = kTableViewCellCornerRadius;
-  [tableViewContainer registerClass:[TableViewImageCell class]
-             forCellReuseIdentifier:kImageCellIdentifier];
+  RegisterTableViewCell<PlusAddressSuggestionLabelCell>(tableViewContainer);
   tableViewContainer.dataSource = self;
   tableViewContainer.delegate = self;
   [tableViewContainer.heightAnchor
@@ -466,12 +485,14 @@ UIImage* PlusAddressesLogo() {
   if (_bottomSheetErrorStatus.has_value()) {
     plus_addresses::metrics::RecordModalShownOutcome(
         _bottomSheetErrorStatus.value(),
-        base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
+        base::Time::Now() - _bottomSheetShownTime,
+        /*refresh_count=*/(int)_refreshCount);
   } else {
     plus_addresses::metrics::RecordModalShownOutcome(
         plus_addresses::metrics::PlusAddressModalCompletionStatus::
             kModalCanceled,
-        base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
+        base::Time::Now() - _bottomSheetShownTime,
+        /*refresh_count=*/(int)_refreshCount);
   }
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }

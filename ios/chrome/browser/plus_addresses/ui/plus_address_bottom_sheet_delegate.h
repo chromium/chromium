@@ -25,6 +25,12 @@ enum class PlusAddressURLType;
 // Asks the delegate to open the URL for `PlusAddressUrlType` on new tab.
 - (void)openNewTab:(PlusAddressURLType)type;
 
+// Asks the delegate if the refresh functionality is enabled.
+- (BOOL)isRefreshEnabled;
+
+// Informs the delegate that the refresh button has been tapped by the user.
+- (void)didTapRefreshButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_DELEGATE_H_

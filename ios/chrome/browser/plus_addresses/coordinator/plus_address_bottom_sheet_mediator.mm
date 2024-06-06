@@ -59,10 +59,10 @@
   // Create the callback needed by the C++ `_plusAddressService` object,
   // notifying the consumer once the call returns.
   auto callback = base::BindOnce(^(
-      const plus_addresses::PlusProfileOrError& maybe_plus_profile) {
-    if (maybe_plus_profile.has_value()) {
+      const plus_addresses::PlusProfileOrError& maybePlusProfile) {
+    if (maybePlusProfile.has_value()) {
       [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
-                                          maybe_plus_profile->plus_address)];
+                                          maybePlusProfile->plus_address)];
     } else {
       [weakSelf.consumer notifyError:plus_addresses::metrics::
                                          PlusAddressModalCompletionStatus::
@@ -78,10 +78,10 @@
   // Create the callback needed by the C++ `_plusAddressService` object,
   // notifying the consumer once the call returns.
   auto callback = base::BindOnce(
-      ^(const plus_addresses::PlusProfileOrError& maybe_plus_profile) {
-        if (maybe_plus_profile.has_value()) {
+      ^(const plus_addresses::PlusProfileOrError& maybePlusProfile) {
+        if (maybePlusProfile.has_value()) {
           [weakSelf runAutofillCallback:base::SysUTF8ToNSString(
-                                            maybe_plus_profile->plus_address)];
+                                            maybePlusProfile->plus_address)];
         } else {
           [weakSelf.consumer notifyError:plus_addresses::metrics::
                                              PlusAddressModalCompletionStatus::
@@ -110,6 +110,31 @@
   params.user_initiated = NO;
   params.in_incognito = _incognito;
   _urlLoader->Load(params);
+}
+
+- (BOOL)isRefreshEnabled {
+  return base::FeatureList::IsEnabled(
+             plus_addresses::features::kPlusAddressRefreshUiInIOS) &&
+         _plusAddressService->IsRefreshingSupported(_mainFrameOrigin);
+}
+
+- (void)didTapRefreshButton {
+  __weak __typeof(self) weakSelf = self;
+  // Create the callback needed by the C++ `_plusAddressService` object,
+  // notifying the consumer once the call returns.
+  auto callback = base::BindOnce(
+      ^(const plus_addresses::PlusProfileOrError& maybePlusProfile) {
+        if (maybePlusProfile.has_value()) {
+          [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
+                                              maybePlusProfile->plus_address)];
+        } else {
+          [weakSelf.consumer notifyError:plus_addresses::metrics::
+                                             PlusAddressModalCompletionStatus::
+                                                 kReservePlusAddressError];
+        }
+      });
+  _plusAddressService->RefreshPlusAddress(_mainFrameOrigin,
+                                          std::move(callback));
 }
 
 #pragma mark - Private

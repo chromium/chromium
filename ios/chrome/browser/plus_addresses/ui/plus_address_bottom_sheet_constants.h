@@ -46,6 +46,9 @@ extern const CGFloat kTableViewCellCornerRadius;
 // The cell height in the table view.
 extern const CGFloat kTableViewCellHeight;
 
+// The image size for both the plus address and the refresh icon.
+extern const CGFloat kCellImageSize;
+
 // Branding icon view size.
 extern const CGFloat kBrandingIconContainerViewSize;
 

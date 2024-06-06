@@ -36,6 +36,8 @@ class FakePlusAddressService : public PlusAddressService {
   void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
                           PlusAddressRequestCallback on_completed) override;
+  void RefreshPlusAddress(const url::Origin& origin,
+                          PlusAddressRequestCallback on_completed) override;
   std::optional<std::string> GetPrimaryEmail() override;
 
   // Toggles on/off whether `ReservePlusAddress` returns a confirmed
@@ -53,9 +55,14 @@ class FakePlusAddressService : public PlusAddressService {
     should_fail_to_confirm_ = status;
   }
 
-  // Toggles on/off whether an error occurs on `ConfirmPlusAddress`.
+  // Toggles on/off whether an error occurs on `ReservePlusAddress`.
   void set_should_fail_to_reserve(bool status) {
     should_fail_to_reserve_ = status;
+  }
+
+  // Toggles on/off whether an error occurs on `RefreshPlusAddress`.
+  void set_should_fail_to_refresh(bool status) {
+    should_fail_to_refresh_ = status;
   }
 
  private:
@@ -65,6 +72,7 @@ class FakePlusAddressService : public PlusAddressService {
   bool is_confirmed_ = false;
   bool should_fail_to_confirm_ = false;
   bool should_fail_to_reserve_ = false;
+  bool should_fail_to_refresh_ = false;
 };
 
 }  // namespace plus_addresses

@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  sources = [
+    "plus_address_suggestion_label_cell.h",
+    "plus_address_suggestion_label_cell.mm",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+}

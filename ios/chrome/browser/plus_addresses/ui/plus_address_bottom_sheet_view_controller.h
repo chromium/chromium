@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/plus_addresses/ui/cells/plus_address_suggestion_label_cell.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
 
@@ -16,7 +17,8 @@
 // use the plus address and a button to cancel the process and dismiss the UI.
 // For now, however, it is a skeleton implementation.
 @interface PlusAddressBottomSheetViewController
-    : BottomSheetViewController <PlusAddressBottomSheetConsumer>
+    : BottomSheetViewController <PlusAddressBottomSheetConsumer,
+                                 PlusAddressSuggestionLabelCellDelegate>
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
     withBrowserCoordinatorCommands:
