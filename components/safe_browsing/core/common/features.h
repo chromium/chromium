@@ -167,6 +167,9 @@ BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);
 // to the Safe Browsing server.
 extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
 
+// Enable faster OHTTP key rotation for hash-prefix real-time lookups.
+BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
+
 // UX improvements to download warnings on chrome://downloads page.
 BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
 

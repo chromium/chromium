@@ -5,11 +5,13 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -295,6 +297,10 @@ void OhttpKeyService::StartFetch(Callback callback,
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetKeyFetchingUrl();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (base::FeatureList::IsEnabled(
+          kHashPrefixRealTimeLookupsFasterOhttpKeyRotation)) {
+    resource_request->headers.SetHeader("X-OhttpPublickey-Fst", "true");
+  }
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kOhttpKeyTrafficAnnotation);
   url_loader_->SetTimeoutDuration(kKeyFetchTimeout);
