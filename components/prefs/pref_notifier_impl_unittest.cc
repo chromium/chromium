@@ -51,7 +51,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
       : PrefNotifierImpl(pref_service) {}
   ~MockPrefNotifier() override {}
 
-  MOCK_METHOD1(FireObservers, void(const std::string& path));
+  MOCK_METHOD(void, FireObservers, (const std::string& path), (override));
 
   size_t CountObserver(const std::string& path, PrefObserver* obs) {
     auto observer_iterator = pref_observers()->find(path);
@@ -59,7 +59,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
       return false;
 
     size_t count = 0;
-    for (auto& existing_obs : *observer_iterator->second) {
+    for (PrefObserver& existing_obs : observer_iterator->second) {
       if (&existing_obs == obs)
         count++;
     }

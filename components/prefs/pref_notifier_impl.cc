@@ -23,7 +23,7 @@ PrefNotifierImpl::~PrefNotifierImpl() {
 
   // Verify that there are no pref observers when we shut down.
   for (const auto& observer_list : pref_observers_) {
-    if (observer_list.second->begin() != observer_list.second->end()) {
+    if (observer_list.second.begin() != observer_list.second.end()) {
       // Generally, there should not be any subscribers left when the profile
       // is destroyed because a) those may indicate that the subscriber class
       // maintains an active pointer to the profile that might be used for
@@ -67,19 +67,9 @@ void PrefNotifierImpl::AddPrefObserver(const std::string& path,
                                        PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Get the pref observer list associated with the path.
-  auto observer_iterator = pref_observers_.find(path);
-  if (observer_iterator == pref_observers_.end()) {
-    observer_iterator =
-        pref_observers_.emplace(path, std::make_unique<PrefObserverList>())
-            .first;
-  }
-
-  PrefObserverList* observer_list = observer_iterator->second.get();
-
-  // Add the pref observer. ObserverList will DCHECK if it already is
+  // Add the pref observer. ObserverList hits a DCHECK if it already is
   // in the list.
-  observer_list->AddObserver(obs);
+  pref_observers_[path].AddObserver(obs);
 }
 
 void PrefNotifierImpl::RemovePrefObserver(const std::string& path,
@@ -91,8 +81,8 @@ void PrefNotifierImpl::RemovePrefObserver(const std::string& path,
     return;
   }
 
-  PrefObserverList* observer_list = observer_iterator->second.get();
-  observer_list->RemoveObserver(obs);
+  PrefObserverList& observer_list = observer_iterator->second;
+  observer_list.RemoveObserver(obs);
 }
 
 void PrefNotifierImpl::AddPrefObserverAllPrefs(PrefObserver* observer) {
@@ -134,15 +124,17 @@ void PrefNotifierImpl::FireObservers(const std::string& path) {
     return;
 
   // Fire observers for any preference change.
-  for (auto& observer : all_prefs_pref_observers_)
+  for (PrefObserver& observer : all_prefs_pref_observers_) {
     observer.OnPreferenceChanged(pref_service_, path);
+  }
 
   auto observer_iterator = pref_observers_.find(path);
   if (observer_iterator == pref_observers_.end())
     return;
 
-  for (PrefObserver& observer : *(observer_iterator->second))
+  for (PrefObserver& observer : observer_iterator->second) {
     observer.OnPreferenceChanged(pref_service_, path);
+  }
 }
 
 void PrefNotifierImpl::SetPrefService(PrefService* pref_service) {
