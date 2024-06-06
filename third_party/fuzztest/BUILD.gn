@@ -11,6 +11,7 @@
 #   targets using an out-of-process runner.
 # - fuzztest, a way of building new fuzzing targets using simpler macros.
 
+import("//build/buildflag_header.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
 
@@ -355,6 +356,12 @@ source_set("fuzztest") {
   testonly = true
 }
 
+buildflag_header("init_fuzztest_buildflags") {
+  header = "init_fuzztest_buildflags.h"
+  flags =
+      [ "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites" ]
+}
+
 # Depend on this if you're a test runner executable (or similar)
 # with its own main() but you need to call InitFuzzTest.
 source_set("init_fuzztest") {
@@ -364,6 +371,7 @@ source_set("init_fuzztest") {
     "src/fuzztest/init_fuzztest.h",
   ]
   deps = [
+    ":init_fuzztest_buildflags",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl_full",
   ]

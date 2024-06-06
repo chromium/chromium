@@ -156,6 +156,18 @@ declare_args() {
       (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
        is_ubsan_vptr || is_ubsan_security) && !is_component_build && is_linux &&
       build_with_chromium
+
+  # Whether FUZZ_TESTs should be registered as gtests in Chromium's mainstream
+  # test suites. This will cause the to run for 1 second in normal testing
+  # environments such as CI. Within Chromium, we want to do this only on
+  # platforms where we have ClusterFuzz support (Windows, Mac, Linux) because
+  # we want ClusterFuzz to find the majority of problems rather than CI.
+  # This gn arg is typically respected by general-purpose test suite
+  # initialization code; targets created specifically for fuzztests alone
+  # would not normally be disabled by a setting of 'false' here.
+  register_fuzztests_in_test_suites =
+      is_linux || is_mac || is_win || use_libfuzzer || use_afl ||
+      use_centipede || use_external_fuzzing_engine
 }
 
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
