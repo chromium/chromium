@@ -180,28 +180,16 @@ bool AuthenticatorMechanismSelectorSheetModel::IsActivityIndicatorVisible()
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
-  switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      return l10n_util::GetStringUTF16(
-          IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_TITLE);
-    case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringUTF16(
-          IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_TITLE);
-  }
+  CHECK_EQ(dialog_model()->request_type,
+           device::FidoRequestType::kMakeCredential);
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_TITLE,
+      GetRelyingPartyIdString(dialog_model()));
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
     const {
-  switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_BODY,
-          GetRelyingPartyIdString(dialog_model()));
-    case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_BODY,
-          GetRelyingPartyIdString(dialog_model()));
-  }
+  return u"";
 }
 
 // AuthenticatorInsertAndActivateUsbSheetModel ----------------------

@@ -16167,10 +16167,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
          This passkey will be saved only in Windows Hello. It will remain on this device after you close all Incognito windows.
       </message>
       <message name="IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_TITLE" desc="The title of a dialog prompting the user to create a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Create a passkey
-      </message>
-      <message name="IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_BODY" desc="The body of a dialog prompting the user to create a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Choose how you want to create a passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+        Choose where to save your passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_TITLE" desc="The title of a dialog prompting the user to use a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Use your passkey
