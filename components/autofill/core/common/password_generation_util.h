@@ -16,6 +16,10 @@ namespace autofill {
 
 namespace password_generation {
 
+// Minimum password length that allows to label the password as strong in the
+// UI.
+inline constexpr int kLengthSufficientForStrongLabel = 12;
+
 // Enumerates various events related to the password generation process.
 // Do not remove items from this enum as they are used for UMA stats logging.
 enum PasswordGenerationEvent {

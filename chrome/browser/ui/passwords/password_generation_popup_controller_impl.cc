@@ -558,7 +558,11 @@ std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM);
+  return l10n_util::GetStringUTF16(
+      current_generated_password_.size() >=
+              autofill::password_generation::kLengthSufficientForStrongLabel
+          ? IDS_PASSWORD_GENERATION_SUGGESTION_GPM
+          : IDS_PASSWORD_GENERATION_SUGGESTION_GPM_WITHOUT_STRONG);
 }
 
 const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() const {

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -311,6 +312,40 @@ TEST_F(PasswordGenerationPopupControllerImplTest, ClearsFormPreviewOnHide) {
 
   EXPECT_CALL(driver(), ClearPreviewedForm());
   controller->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       SuggestedTextDefaultPasswordLength) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
+          /*pref_service=*/nullptr);
+  controller->SetViewForTesting(popup_view());
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  EXPECT_EQ(static_cast<PasswordGenerationPopupController*>(controller.get())
+                ->SuggestedText(),
+            l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM));
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       SuggestedTextShorterPasswordLength) {
+  // Limit the max length of the password.
+  ui_data().max_length = 10;
+
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
+          /*pref_service=*/nullptr);
+  controller->SetViewForTesting(popup_view());
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  EXPECT_EQ(static_cast<PasswordGenerationPopupController*>(controller.get())
+                ->SuggestedText(),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_GENERATION_SUGGESTION_GPM_WITHOUT_STRONG));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
