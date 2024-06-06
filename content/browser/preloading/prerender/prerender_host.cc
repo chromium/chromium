@@ -13,11 +13,13 @@
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -1293,6 +1295,53 @@ void PrerenderHost::SetNoVarySearch(net::HttpNoVarySearchData no_vary_search) {
 bool PrerenderHost::IsInitialNavigation(
     const NavigationRequest& navigation_request) const {
   return GetInitialNavigationId() == navigation_request.GetNavigationId();
+}
+
+base::TimeDelta PrerenderHost::WaitUntilHeadTimeout() {
+  int timeout_in_milliseconds = 0;
+  if (IsSpeculationRuleType(attributes_.trigger_type)) {
+    CHECK(attributes_.eagerness.has_value());
+    switch (attributes_.eagerness.value()) {
+      case blink::mojom::SpeculationEagerness::kEager:
+        timeout_in_milliseconds =
+            features::kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender
+                .Get();
+        break;
+      case blink::mojom::SpeculationEagerness::kModerate:
+        timeout_in_milliseconds =
+            features::
+                kPrerender2NoVarySearchWaitForHeadersTimeoutModeratePrerender
+                    .Get();
+        break;
+      case blink::mojom::SpeculationEagerness::kConservative:
+        timeout_in_milliseconds =
+            features::
+                kPrerender2NoVarySearchWaitForHeadersTimeoutConservativePrerender
+                    .Get();
+        break;
+    }
+  } else {
+    timeout_in_milliseconds =
+        features::kPrerender2NoVarySearchWaitForHeadersTimeoutForEmbedders
+            .Get();
+  }
+  return base::Milliseconds(timeout_in_milliseconds);
+}
+
+void PrerenderHost::OnWaitingForHeadersStarted(
+    NavigationHandle& navigation_handle,
+    WaitingForHeadersStartedReason reason) {
+  for (auto& observer : observers_) {
+    observer.OnWaitingForHeadersStarted(navigation_handle, reason);
+  }
+}
+
+void PrerenderHost::OnWaitingForHeadersFinished(
+    NavigationHandle& navigation_handle,
+    WaitingForHeadersFinishedReason reason) {
+  for (auto& observer : observers_) {
+    observer.OnWaitingForHeadersFinished(navigation_handle, reason);
+  }
 }
 
 }  // namespace content

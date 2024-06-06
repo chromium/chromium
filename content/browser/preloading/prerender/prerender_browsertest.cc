@@ -51,6 +51,7 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/browser/preloading/prerender/prerender_no_vary_search_hint_commit_deferring_condition.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -846,8 +847,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
  public:
   NoVarySearchPrerenderBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kPrerender2NoVarySearch);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrerender2NoVarySearch,
+        {{"wait_for_headers_timeout_eager_prerender", "500"}});
   }
 
   ~NoVarySearchPrerenderBrowserTest() override = default;
@@ -856,7 +858,249 @@ class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class NoVarySeachHintPrerenderHostObserver : public PrerenderHost::Observer {
+ public:
+  void OnWaitingForHeadersStarted(
+      NavigationHandle& navigation_handle,
+      PrerenderHost::WaitingForHeadersStartedReason reason) override {
+    DCHECK(static_cast<NavigationRequest*>(&navigation_handle));
+    ASSERT_FALSE(static_cast<NavigationRequest*>(&navigation_handle)
+                     ->IsCommitDeferringConditionDeferredForTesting());
+    ASSERT_FALSE(wait_for_headers_start_reason_.has_value());
+    ASSERT_FALSE(wait_for_headers_finish_reason_.has_value());
+    wait_for_headers_start_reason_ = reason;
+  }
+
+  void OnWaitingForHeadersFinished(
+      NavigationHandle& navigation_handle,
+      PrerenderHost::WaitingForHeadersFinishedReason reason) override {
+    ASSERT_FALSE(wait_for_headers_finish_reason_.has_value());
+    wait_for_headers_finish_reason_ = reason;
+  }
+
+  std::optional<PrerenderHost::WaitingForHeadersStartedReason>
+  wait_for_headers_start_reason() const {
+    return wait_for_headers_start_reason_;
+  }
+
+  std::optional<PrerenderHost::WaitingForHeadersFinishedReason>
+  wait_for_headers_finish_reason() const {
+    return wait_for_headers_finish_reason_;
+  }
+
+ private:
+  std::optional<PrerenderHost::WaitingForHeadersStartedReason>
+      wait_for_headers_start_reason_;
+  std::optional<PrerenderHost::WaitingForHeadersFinishedReason>
+      wait_for_headers_finish_reason_;
+};
+
 }  // namespace
+
+// Test that the timer is enabled and cleared appropriately when navigating to
+// a No-Vary-Search hint matched prerender successfully.
+IN_PROC_BROWSER_TEST_F(
+    NoVarySearchPrerenderBrowserTest,
+    EagerTimerWorksCorrectlyForHeadersThatArriveBeforeTimeout) {
+  const std::string kTestingRelativeUrl =
+      "/delayed_with_no_vary_search?prerender";
+  const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
+  // Create a HTTP response to control prerendering main-frame navigation.
+  net::test_server::ControllableHttpResponse main_prerender_response(
+      embedded_test_server(), kPrerenderingRelativeUrl);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL(kPrerenderingRelativeUrl);
+  const GURL kNavigationUrl =
+      embedded_test_server()->GetURL(kTestingRelativeUrl + "&a=3");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Inject mock time task runner.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  PrerenderNoVarySearchHintCommitDeferringCondition::
+      SetTimerTaskRunnerForTesting(task_runner);
+
+  // Start prerendering `kPrerenderingUrl`.
+  content::test::PrerenderHostCreationWaiter host_creation_waiter;
+  AddPrerenderAsync(kPrerenderingUrl, R"(params=(\\\"a\\\"))");
+  int host_id = host_creation_waiter.Wait();
+  auto* host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          host_id);
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+
+  // Add a testing PrerenderHost::Observer to the prerender host that we'd like
+  // to activate.
+  NoVarySeachHintPrerenderHostObserver observer;
+  host->AddObserver(&observer);
+
+  // Start navigation in primary page to kNavigationUrl.
+  TestActivationManager primary_page_manager(web_contents(), kNavigationUrl);
+  // Start to navigate to kNavigationUrl
+  std::unique_ptr<content::TestNavigationObserver> nav_observer =
+      test::PrerenderTestHelper::NavigatePrimaryPageAsync(*web_contents_impl(),
+                                                          kNavigationUrl);
+
+  // Wait until the navigation is deferred by CommitDeferringCondition.
+  ASSERT_TRUE(primary_page_manager.WaitForBeforeChecks());
+  primary_page_manager.ResumeActivation();
+  ASSERT_FALSE(host->were_headers_received());
+
+  ASSERT_TRUE(host->WaitUntilHeadTimeout().is_positive());
+
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+  content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
+                                                     host_id);
+
+  // Advance the prerender http response by sending headers.
+  main_prerender_response.WaitForRequest();
+
+  // Advance timer for half the wait until head timeout.
+  task_runner->FastForwardBy(host->WaitUntilHeadTimeout() / 2);
+
+  main_prerender_response.Send(
+      net::HTTP_OK, /*content_type=*/"text/html", /*content=*/"",
+      /*cookies=*/{}, /*extra_headers=*/{"No-Vary-Search: params=(\"a\")"});
+  main_prerender_response.Send("Some Content");
+  main_prerender_response.Done();
+
+  ASSERT_TRUE(primary_page_manager.WaitForAfterChecks());
+  primary_page_manager.ResumeActivation();
+
+  // Wait for the navigation to finish.
+  nav_observer->Wait();
+  primary_page_manager.WaitForNavigationFinished();
+  // Check that the prerender host was activated.
+  ASSERT_TRUE(host_observer.was_activated());
+
+  // Ensure the state has been propagated to renderer processes.
+  ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
+
+  // The prerender host should be consumed.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  ASSERT_TRUE(observer.wait_for_headers_start_reason().has_value());
+  ASSERT_TRUE(observer.wait_for_headers_finish_reason().has_value());
+
+  EXPECT_EQ(observer.wait_for_headers_start_reason().value(),
+            PrerenderHost::WaitingForHeadersStartedReason::kWithTimeout);
+  EXPECT_EQ(observer.wait_for_headers_finish_reason().value(),
+            PrerenderHost::WaitingForHeadersFinishedReason::kHeadersReceived);
+}
+
+// Test that the timer is enabled and cleared appropriately when navigating to
+// a No-Vary-Search hint matched prerender with timeout waiting for headers.
+IN_PROC_BROWSER_TEST_F(
+    NoVarySearchPrerenderBrowserTest,
+    EagerTimerWorksCorrectlyForHeadersThatArriveAfterTimeout) {
+  const std::string kTestingRelativeUrl =
+      "/delayed_with_no_vary_search?prerender";
+  const std::string kPrerenderingRelativeUrl = kTestingRelativeUrl + "&a=5";
+  // Create a HTTP response to control prerendering main-frame navigation.
+  net::test_server::ControllableHttpResponse main_prerender_response(
+      embedded_test_server(), kPrerenderingRelativeUrl);
+  const std::string kNavigationRelativeUrl = kTestingRelativeUrl + "&a=3";
+  // Create a HTTP response to control the navigation in main-frame.
+  net::test_server::ControllableHttpResponse main_navigation_response(
+      embedded_test_server(), kNavigationRelativeUrl);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL(kPrerenderingRelativeUrl);
+  const GURL kNavigationUrl =
+      embedded_test_server()->GetURL(kNavigationRelativeUrl);
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Inject mock time task runner.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  PrerenderNoVarySearchHintCommitDeferringCondition::
+      SetTimerTaskRunnerForTesting(task_runner);
+
+  // Start prerendering `kPrerenderingUrl`.
+  content::test::PrerenderHostCreationWaiter host_creation_waiter;
+  AddPrerenderAsync(kPrerenderingUrl, R"(params=(\\\"a\\\"))");
+  int host_id = host_creation_waiter.Wait();
+  auto* host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          host_id);
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+
+  // Add a testing PrerenderHost::Observer to the prerender host that we'd like
+  // to activate.
+  NoVarySeachHintPrerenderHostObserver observer;
+  host->AddObserver(&observer);
+
+  // Start navigation in primary page to kNavigationUrl.
+  TestActivationManager primary_page_manager(web_contents(), kNavigationUrl);
+  // Start to navigate to kNavigationUrl
+  std::unique_ptr<content::TestNavigationObserver> nav_observer =
+      test::PrerenderTestHelper::NavigatePrimaryPageAsync(*web_contents_impl(),
+                                                          kNavigationUrl);
+
+  // Wait until the navigation is deferred by CommitDeferringCondition.
+  ASSERT_TRUE(primary_page_manager.WaitForBeforeChecks());
+  primary_page_manager.ResumeActivation();
+  ASSERT_FALSE(host->were_headers_received());
+
+  ASSERT_TRUE(host->WaitUntilHeadTimeout().is_positive());
+
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+  content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
+                                                     host_id);
+
+  // Advance the prerender http response by sending headers.
+  main_prerender_response.WaitForRequest();
+
+  // Advance timer for twice the wait until head timeout.
+  task_runner->FastForwardBy(2 * host->WaitUntilHeadTimeout());
+
+  main_prerender_response.Send(
+      net::HTTP_OK, /*content_type=*/"text/html", /*content=*/"",
+      /*cookies=*/{}, /*extra_headers=*/{"No-Vary-Search: params=(\"a\")"});
+  main_prerender_response.Send("Some Content");
+  main_prerender_response.Done();
+
+  ASSERT_TRUE(primary_page_manager.WaitForAfterChecks());
+
+  main_navigation_response.WaitForRequest();
+  main_navigation_response.Send("Some Content");
+  main_navigation_response.Done();
+
+  // Wait for the navigation to finish.
+  nav_observer->Wait();
+  primary_page_manager.WaitForNavigationFinished();
+  // Check that the prerender host was activated.
+  ASSERT_FALSE(host_observer.was_activated());
+
+  // Ensure the state has been propagated to renderer processes.
+  ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
+
+  // The prerender host should be destroyed.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  ASSERT_TRUE(observer.wait_for_headers_start_reason().has_value());
+  ASSERT_TRUE(observer.wait_for_headers_finish_reason().has_value());
+
+  EXPECT_EQ(observer.wait_for_headers_start_reason().value(),
+            PrerenderHost::WaitingForHeadersStartedReason::kWithTimeout);
+  EXPECT_EQ(observer.wait_for_headers_finish_reason().value(),
+            PrerenderHost::WaitingForHeadersFinishedReason::kTimeoutElapsed);
+}
 
 // Test that activation is successful when navigating to an inexact URL
 // before No-Vary-Search header is back from the server, if the No-Vary-Search

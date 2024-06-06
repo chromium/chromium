@@ -9,9 +9,15 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/navigation_type.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/commit_deferring_condition.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
 
 namespace content {
 
@@ -21,7 +27,7 @@ class NavigationRequest;
 // the main page's headers from the server. After receiving the headers,
 // we can check if the associated PrerenderHost's initial URL matches via
 // No-Vary-Search header in the subsequent CommitDeferringConditions.
-class PrerenderNoVarySearchHintCommitDeferringCondition
+class CONTENT_EXPORT PrerenderNoVarySearchHintCommitDeferringCondition
     : public CommitDeferringCondition,
       public PrerenderHost::Observer {
  public:
@@ -32,6 +38,11 @@ class PrerenderNoVarySearchHintCommitDeferringCondition
       std::optional<int> candidate_prerender_frame_tree_node_id);
   Result WillCommitNavigation(base::OnceClosure resume) override;
 
+  // Only used for tests. This task runner is used for precise injection in
+  // tests and for timing control.
+  static void SetTimerTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
  private:
   PrerenderNoVarySearchHintCommitDeferringCondition(
       NavigationRequest& navigation_request,
@@ -40,8 +51,28 @@ class PrerenderNoVarySearchHintCommitDeferringCondition
   void OnHeadersReceived() override;
   void OnHostDestroyed(PrerenderFinalStatus status) override;
 
+  // Called when `block_until_head_timer_` fires.
+  void OnBlockUntilHeadTimerElapsed();
+  // Used to set the timer to support testing.
+  scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
+
   const int candidate_prerender_frame_tree_node_id_;
   base::OnceClosure resume_;
+  // Timer to wait for a configurable amount of time for headers and then
+  // give up.
+  // This timer cannot outlive this instance, having it as a member variable
+  // guarantees it.
+  // This timer cannot outlive the PrerenderHost associated either - need to
+  // make sure to remove it in PrerenderHost::Observer::OnHostDestroyed.
+  // In this way we don't risk blocking the navigation forever.
+  std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
+  // Keep track if we are waiting on headers during navigation.
+  bool waiting_on_headers_ = false;
+
+  // Used to enable injection of a task runner for precise timing control
+  // in tests.
+  static scoped_refptr<base::SingleThreadTaskRunner>&
+  GetTimerTaskRunnerForTesting();
 };
 
 }  // namespace content

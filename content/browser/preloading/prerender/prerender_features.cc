@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerender/prerender_features.h"
 
+#include "third_party/blink/public/common/features.h"
+
 namespace features {
 
 // Kill-switch controlled by the field trial. When this feature is enabled,
@@ -46,5 +48,25 @@ const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsParam{
 BASE_FEATURE(kPrerender2FallbackPrefetchSpecRules,
              "Prerender2FallbackPrefetchSpecRules",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int>
+    kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender{
+        &blink::features::kPrerender2NoVarySearch,
+        "wait_for_headers_timeout_eager_prerender", 1000};
+
+const base::FeatureParam<int>
+    kPrerender2NoVarySearchWaitForHeadersTimeoutModeratePrerender{
+        &blink::features::kPrerender2NoVarySearch,
+        "wait_for_headers_timeout_moderate_prerender", 0};
+
+const base::FeatureParam<int>
+    kPrerender2NoVarySearchWaitForHeadersTimeoutConservativePrerender{
+        &blink::features::kPrerender2NoVarySearch,
+        "wait_for_headers_timeout_conservative_prerender", 0};
+
+const base::FeatureParam<int>
+    kPrerender2NoVarySearchWaitForHeadersTimeoutForEmbedders{
+        &blink::features::kPrerender2NoVarySearch,
+        "wait_for_headers_timeout_embedders", 1000};
 
 }  // namespace features

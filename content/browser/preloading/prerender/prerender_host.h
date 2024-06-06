@@ -23,6 +23,10 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace blink {
 class EnabledClientHints;
 }  // namespace blink
@@ -35,6 +39,7 @@ namespace content {
 
 class DevToolsPrerenderAttempt;
 class FrameTreeNode;
+class NavigationHandle;
 class PrerenderCancellationReason;
 class PrerenderHostRegistry;
 class RenderFrameHostImpl;
@@ -84,6 +89,17 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kMaxValue = kRequestDestination,
   };
 
+  // Reasons blocking navigation while waiting for headers started.
+  enum class WaitingForHeadersStartedReason { kWithoutTimeout, kWithTimeout };
+
+  // Reasons blocking navigation while waiting for headers finished.
+  enum class WaitingForHeadersFinishedReason {
+    kHeadersReceived,
+    kHostDestroyed,
+    kTimeoutElapsed,
+    kMaybeNavigationCancelled
+  };
+
   // Observes a triggered prerender. Note that the observer should overlive the
   // prerender host instance, or be removed properly upon destruction.
   class Observer : public base::CheckedObserver {
@@ -94,6 +110,18 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     // Called from PrerenderHost::ReadyToCommitNavigation when headers are
     // received for the initial navigation.
     virtual void OnHeadersReceived() {}
+
+    // Called from PrerenderHost::OnWaitingForHeadersStarted when we start
+    // blocking navigation waiting for headers.
+    virtual void OnWaitingForHeadersStarted(
+        NavigationHandle& navigation_handle,
+        WaitingForHeadersStartedReason reason) {}
+
+    // Called from PrerenderHost::OnWaitingForHeadersFinished when we are
+    // done blocking navigation waiting for headers.
+    virtual void OnWaitingForHeadersFinished(
+        NavigationHandle& navigation_handle,
+        WaitingForHeadersFinishedReason reason) {}
 
     // Called from the PrerenderHost's destructor. The observer should drop any
     // reference to the host.
@@ -344,6 +372,16 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
   bool were_headers_received() const { return were_headers_received_; }
+
+  // Gets the timeout configured for waiting on head.
+  base::TimeDelta WaitUntilHeadTimeout();
+
+  // Called when we start blocking navigation while waiting for headers.
+  void OnWaitingForHeadersStarted(NavigationHandle& navigation_handle,
+                                  WaitingForHeadersStartedReason reason);
+  // Called when we stop blocking navigation while waiting for headers.
+  void OnWaitingForHeadersFinished(NavigationHandle& navigation_handle,
+                                   WaitingForHeadersFinishedReason reason);
 
  private:
   void RecordFailedFinalStatusImpl(const PrerenderCancellationReason& reason);
