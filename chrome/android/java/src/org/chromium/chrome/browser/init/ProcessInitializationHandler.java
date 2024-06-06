@@ -461,7 +461,7 @@ public class ProcessInitializationHandler {
 
         tasks.add(
                 () -> {
-                    RevenueStats.getInstance().retrieveAndApplyTrackingIds();
+                    RevenueStats.getInstance();
                 });
 
         tasks.add(
