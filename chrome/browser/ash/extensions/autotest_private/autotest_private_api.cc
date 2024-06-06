@@ -985,6 +985,8 @@ class DisplaySmoothnessTracker {
     tracker_->Stop();
   }
 
+  void CancelReport() { tracker_->CancelReport(); }
+
   ReportCallback TakeCallback() { return std::move(callback_); }
   std::vector<int> TakeThroughput() { return std::move(throughput_); }
 
@@ -5933,6 +5935,7 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut(
   if (it == trackers->end()) {
     return;
   }
+  it->second->CancelReport();
   trackers->erase(it);
 
   Respond(Error("Smoothness is not available"));
