@@ -118,7 +118,7 @@ BASE_FEATURE(kAmbientModePhotoPreviewFeature,
 // may decrease the animation's smoothness if not done properly.
 BASE_FEATURE(kAmbientModeThrottleAnimation,
              "ChromeOSAmbientModeThrottleAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the logic for managed screensaver is enabled or not.
 BASE_FEATURE(kAmbientModeManagedScreensaver,
