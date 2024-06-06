@@ -326,7 +326,7 @@ void RemoteObject::RemoteObjectInvokeCallback(
   }
 
   RemoteObject* remote_object;
-  if (!gin::ConvertFromV8(isolate, info.Holder(), &remote_object)) {
+  if (!gin::ConvertFromV8(isolate, info.This(), &remote_object)) {
     // Someone messed with the |this| pointer. Throw and return.
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationOnNonInjectedObjectDisallowed)));
