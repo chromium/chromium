@@ -19,9 +19,9 @@ These design principles make it easier to write, debug, and maintain code in //c
         * Do NOT add to `//chrome/browser/BUILD.gn:browser` or
           `//chrome/browser/ui/BUILD.gn:ui`.
     * Circular dependencies are allowed (for legacy reasons) but discouraged.
-        * Do not add a circular dependency onto
-          `//chrome/browser/BUILD.gn:browser` or
-          `//chrome/browser/ui/BUILD.gn:ui`.
+        * Circular dependencies onto `//chrome/browser/BUILD.gn:browser` or
+          `//chrome/browser/ui/BUILD.gn:ui` are often necessary when
+          modularizing existing features without committing to a large refactor.
     * This directory may have its own namespace.
     * The BUILD.gn should use public/sources separation.
         * The main reason for this is to guard against future, unexpected usage
@@ -87,6 +87,21 @@ These design principles make it easier to write, debug, and maintain code in //c
               identical behavior between test and production code.
         * Use `TestingProfile::Builder::AddTestingFactory` to stub or fake
           services.
+        * Separating the .h and .cc file into different build targets is
+          allowed.
+            * BrowserContextKeyedServiceFactory combines 3 pieces of
+              functionality:
+                * A getter to receive a service based on an instance of
+                  `Profile`.
+                * A mechanism to establishing dependencies.
+                * A way to glue together //chrome layer logic with //components
+                  layer logic.
+                * The latter two pieces of functionality are implemented in the
+                  .cc file and typically result in dependencies on other parts
+                  of //chrome. The first piece of functionality is implemented
+                  in the .h file and does not necessarily introduce a dependency
+                  on //chrome, since the returned service can be defined in
+                  //components.
     * `GlobalFeatures` (member of `BrowserProcess`)
     * The core controller should not be a `NoDestructor` singleton.
 * Global functions should not access non-global state.
