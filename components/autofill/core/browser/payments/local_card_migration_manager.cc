@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -51,11 +52,8 @@ MigratableCreditCard::~MigratableCreditCard() = default;
 
 LocalCardMigrationManager::LocalCardMigrationManager(
     AutofillClient* client,
-    const std::string& app_locale,
-    PersonalDataManager* personal_data_manager)
-    : client_(client),
-      app_locale_(app_locale),
-      personal_data_manager_(personal_data_manager) {}
+    const std::string& app_locale)
+    : client_(CHECK_DEREF(client)), app_locale_(app_locale) {}
 
 LocalCardMigrationManager::~LocalCardMigrationManager() = default;
 
@@ -161,8 +159,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
       base::BindOnce(&LocalCardMigrationManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,
-      payments::GetBillingCustomerId(
-          &personal_data_manager_->payments_data_manager()),
+      payments::GetBillingCustomerId(&payments_data_manager()),
       is_from_settings_page
           ? payments::PaymentsNetworkInterface::UploadCardSource::
                 LOCAL_CARD_MIGRATION_SETTINGS_PAGE
@@ -209,12 +206,12 @@ void LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
 
 void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
     const std::string& deleted_card_guid) {
-  personal_data_manager_->RemoveByGUID(deleted_card_guid);
+  client_->GetPersonalDataManager()->RemoveByGUID(deleted_card_guid);
 }
 
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
   return ::autofill::IsCreditCardMigrationEnabled(
-      personal_data_manager_, client_->GetSyncService(),
+      client_->GetPersonalDataManager(), client_->GetSyncService(),
       /*is_test_mode=*/observer_for_testing_, client_->GetLogManager());
 }
 
@@ -340,8 +337,7 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
     }
 
     // Remove cards that were successfully migrated from local storage.
-    personal_data_manager_->payments_data_manager().DeleteLocalCreditCards(
-        migrated_cards);
+    payments_data_manager().DeleteLocalCreditCards(migrated_cards);
   }
 
   client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationResults(
@@ -372,8 +368,8 @@ void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
     observer_for_testing_->OnSentMigrateCardsRequest();
 
   migration_request_.app_locale = app_locale_;
-  migration_request_.billing_customer_number = payments::GetBillingCustomerId(
-      &personal_data_manager_->payments_data_manager());
+  migration_request_.billing_customer_number =
+      payments::GetBillingCustomerId(&payments_data_manager());
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->MigrateCards(
@@ -403,9 +399,7 @@ void LocalCardMigrationManager::ShowMainMigrationDialog() {
   // Pops up a larger, modal dialog showing the local cards to be uploaded.
   client_->GetPaymentsAutofillClient()->ConfirmMigrateLocalCardToCloud(
       legal_message_lines_,
-      personal_data_manager_->payments_data_manager()
-          .GetAccountInfoForPaymentsServer()
-          .email,
+      payments_data_manager().GetAccountInfoForPaymentsServer().email,
       migratable_credit_cards_,
       base::BindOnce(
           &LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog,
@@ -429,8 +423,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 
   // Local card migration should ONLY be offered when the user already has a
   // Google Payments account.
-  DCHECK_NE(0, payments::GetBillingCustomerId(
-                   &personal_data_manager_->payments_data_manager()));
+  DCHECK_NE(0, payments::GetBillingCustomerId(&payments_data_manager()));
   detected_values |=
       CreditCardSaveManager::DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
 
@@ -439,7 +432,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 
 void LocalCardMigrationManager::GetMigratableCreditCards() {
   std::vector<CreditCard*> local_credit_cards =
-      personal_data_manager_->payments_data_manager().GetLocalCreditCards();
+      payments_data_manager().GetLocalCreditCards();
 
   // Empty previous state.
   migratable_credit_cards_.clear();
@@ -450,8 +443,7 @@ void LocalCardMigrationManager::GetMigratableCreditCards() {
     // not expired) and is not a server card, add it to the list of migratable
     // cards.
     if (credit_card->IsValid() &&
-        !personal_data_manager_->payments_data_manager().IsServerCard(
-            credit_card)) {
+        !payments_data_manager().IsServerCard(credit_card)) {
       migratable_credit_cards_.emplace_back(*credit_card);
     }
   }
@@ -471,6 +463,17 @@ void LocalCardMigrationManager::FilterOutUnsupportedLocalCards(
         };
     std::erase_if(migratable_credit_cards_, card_is_unsupported);
   }
+}
+
+PaymentsDataManager& LocalCardMigrationManager::payments_data_manager() {
+  return const_cast<PaymentsDataManager&>(
+      const_cast<const LocalCardMigrationManager*>(this)
+          ->payments_data_manager());
+}
+
+const PaymentsDataManager& LocalCardMigrationManager::payments_data_manager()
+    const {
+  return client_->GetPersonalDataManager()->payments_data_manager();
 }
 
 }  // namespace autofill

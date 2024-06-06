@@ -24,7 +24,7 @@
 namespace autofill {
 
 class CreditCard;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Server-side response can return SUCCESS, TEMPORARY_FAILURE, or
 // PERMANENT_FAILURE (see SaveResult enum). Use these to extract migration
@@ -87,11 +87,9 @@ class LocalCardMigrationManager {
     virtual void OnReceivedMigrateCardsResponse() = 0;
   };
 
-  // The parameters should outlive the LocalCardMigrationManager.
-  LocalCardMigrationManager(
-      AutofillClient* client,
-      const std::string& app_locale,
-      PersonalDataManager* personal_data_manager);
+  // `client` must outlive the LocalCardMigrationManager.
+  LocalCardMigrationManager(AutofillClient* client,
+                            const std::string& app_locale);
 
   LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
   LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
@@ -179,7 +177,8 @@ class LocalCardMigrationManager {
       std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
       const std::string& display_text);
 
-  const raw_ptr<AutofillClient> client_;
+  PaymentsDataManager& payments_data_manager();
+  const PaymentsDataManager& payments_data_manager() const;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -220,15 +219,12 @@ class LocalCardMigrationManager {
     observer_for_testing_ = observer;
   }
 
-  // The parsed lines from the legal message return from GetUploadDetails.
-  LegalMessageLines legal_message_lines_;
+  const raw_ref<AutofillClient> client_;
 
   std::string app_locale_;
 
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the BrowserAutofillManagerTest.
-  // Weak reference.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  // The parsed lines from the legal message return from GetUploadDetails.
+  LegalMessageLines legal_message_lines_;
 
   // The imported credit card number from the form submission.
   std::optional<std::u16string> extracted_credit_card_number_;
