@@ -243,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
 // split mode extension.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/345326424): Flaky on Mac builds.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_IncognitoModeHandling_SplitMode \
   DISABLED_IncognitoModeHandling_SplitMode
 #else
@@ -324,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
 // spanning mode extension.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/345326424): Flaky on Mac builds.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_IncognitoModeHandling_SpanningMode \
   DISABLED_IncognitoModeHandling_SpanningMode
 #else
