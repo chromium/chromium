@@ -84,7 +84,15 @@ void TapMenuItem(int labelId) {
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
-- (void)testSetUpListMenuEnableNotifications {
+// TODO(crbug.com/345389318): Test fails on downstream bots (device only).
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testSetUpListMenuEnableNotifications \
+  DISABLED_testSetUpListMenuEnableNotifications
+#else
+#define MAYBE_testSetUpListMenuEnableNotifications \
+  testSetUpListMenuEnableNotifications
+#endif
+- (void)MAYBE_testSetUpListMenuEnableNotifications {
   // Swizzle to grant notification auth when requested.
   ScopedNotificationAuthSwizzler auth(YES);
 
@@ -98,7 +106,15 @@ void TapMenuItem(int labelId) {
   WaitForThenTapText(@"notifications turned on");
 }
 
-- (void)testSetUpListMenuEnableNotificationsAfterDeniedCancel {
+// TODO(crbug.com/345389318): Test fails on downstream bots (device only).
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedCancel \
+  DISABLED_testSetUpListMenuEnableNotificationsAfterDeniedCancel
+#else
+#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedCancel \
+  testSetUpListMenuEnableNotificationsAfterDeniedCancel
+#endif
+- (void)MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedCancel {
   // Swizzle in the "denied' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusDenied, NO);
 
@@ -112,7 +128,15 @@ void TapMenuItem(int labelId) {
   TapMenuItem(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
 }
 
-- (void)testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings {
+// TODO(crbug.com/345389318): Test fails on downstream bots (device only).
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings \
+  DISABLED_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings
+#else
+#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings \
+  testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings
+#endif
+- (void)MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings {
   // Swizzle in the "denied' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusDenied, NO);
 
