@@ -65,8 +65,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   void SaveProfiles(const std::vector<PlusProfile>& profiles) {
     std::vector<PlusAddressDataChange> changes;
     for (const PlusProfile& profile : profiles) {
-      changes.push_back(
-          PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile));
+      changes.emplace_back(PlusAddressDataChange::Type::kAdd, profile);
     }
     plus_address_service()->OnWebDataChangedBySync(changes);
   }
