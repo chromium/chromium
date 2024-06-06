@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -1071,6 +1073,74 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, SaveGroupIsPinned) {
   ASSERT_EQ(tab_group_id_3, saved_tab_groups[0].local_group_id());
   ASSERT_EQ(tab_group_id_1, saved_tab_groups[1].local_group_id());
   ASSERT_EQ(tab_group_id_2, saved_tab_groups[2].local_group_id());
+}
+
+// Tests TabGroupsSaveV2 specific interactions. In this mode, all tab groups are
+// saved by default (the only exception is incognito and guest mode).
+class SavedTabGroupKeyedServiceUnitTestV2 : public BrowserWithTestWindowTest {
+ public:
+  SavedTabGroupKeyedServiceUnitTestV2() {
+    feature_list_.InitAndEnableFeature(tab_groups::kTabGroupsSaveV2);
+  }
+  SavedTabGroupKeyedServiceUnitTestV2(
+      const SavedTabGroupKeyedServiceUnitTestV2&) = delete;
+  SavedTabGroupKeyedServiceUnitTestV2& operator=(
+      const SavedTabGroupKeyedServiceUnitTestV2&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SavedTabGroupKeyedServiceUnitTestV2, LastTabRemoveFromSyncClosesGroup) {
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+
+  // Create a saved tab group with one tab. Groups are default saved.
+  AddTab(browser(), GURL("https://www.test.com"));
+  const tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({0});
+  // service->SaveGroup(group_id);
+  const SavedTabGroup* const saved_group = service->model()->Get(group_id);
+
+  // Add an extra tab so closing the grouped tab doesn't close the browser.
+  AddTab(browser(), GURL("https://www.test.com"));
+
+  // Remove the only tab from the saved group.
+  service->model()->RemoveTabFromGroupFromSync(
+      saved_group->saved_guid(),
+      saved_group->saved_tabs().at(0).saved_tab_guid());
+
+  // The group should have closed along with all of its tabs.
+  EXPECT_EQ(1, tab_strip_model->count());
+  // The local group should also have been closed, since it's now empty.
+  EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTestV2,
+       GroupRemovedFromSyncClosesOpenGroup) {
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  // Create a tab group with one tab.
+  AddTab(browser(), GURL("https://www.test.com"));
+
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  const base::Uuid saved_group_id =
+      service->model()->Get(group_id)->saved_guid();
+
+  // Add an extra tab so closing the grouped tab doesn't close the browser.
+  AddTab(browser(), GURL("https://www.test.com"));
+
+  // Remove the saved group.
+  service->model()->RemovedFromSync(saved_group_id);
+
+  // The local group should have been closed.
+  EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(group_id));
+  // The group should have closed with its tabs in the tabstrip.
+  EXPECT_EQ(1, tabstrip->count());
 }
 
 }  // namespace tab_groups
