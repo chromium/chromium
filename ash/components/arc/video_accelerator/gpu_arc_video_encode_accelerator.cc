@@ -202,10 +202,10 @@ void GpuArcVideoEncodeAccelerator::Encode(
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
           base::NullCallback());
 
-  gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage> dummy_shared_image;
   auto frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
       gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),
-      dummy_mailbox /* mailbox_holders */,
+      dummy_shared_image, gpu::SyncToken(), /*texture_target=*/0,
       base::NullCallback() /* mailbox_holder_release_cb_ */,
       base::Microseconds(timestamp));
   if (!frame) {

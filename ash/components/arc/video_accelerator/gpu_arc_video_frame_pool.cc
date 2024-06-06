@@ -391,10 +391,11 @@ scoped_refptr<media::VideoFrame> GpuArcVideoFramePool::CreateVideoFrame(
     return nullptr;
   }
 
-  const gpu::MailboxHolder mailbox_holder[media::VideoFrame::kMaxPlanes] = {};
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   return media::VideoFrame::WrapExternalGpuMemoryBuffer(
       gfx::Rect(coded_size_), coded_size_, std::move(gpu_memory_buffer),
-      mailbox_holder, base::NullCallback(), base::TimeDelta());
+      shared_image, gpu::SyncToken(), /*texture_target=*/0,
+      base::NullCallback(), base::TimeDelta());
 }
 
 }  // namespace arc
