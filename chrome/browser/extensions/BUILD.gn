@@ -818,6 +818,7 @@ source_set("extensions") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser:font_pref",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/search/background",

@@ -563,10 +563,6 @@ static_library("browser") {
     "first_party_sets/first_party_sets_policy_service_factory.h",
     "flag_descriptions.cc",
     "flag_descriptions.h",
-    "font_pref_change_notifier.cc",
-    "font_pref_change_notifier.h",
-    "font_pref_change_notifier_factory.cc",
-    "font_pref_change_notifier_factory.h",
     "gcm/gcm_product_util.cc",
     "gcm/gcm_product_util.h",
     "gcm/gcm_profile_service_factory.cc",
@@ -2073,6 +2069,7 @@ static_library("browser") {
     ":buildflags",
     ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
+    ":font_pref",
     ":k_anonymity_storage_proto",
     ":lcp_critical_path_predictor_proto",
     ":main_extra_parts",
@@ -8200,6 +8197,22 @@ static_library("browser") {
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing" ]
   }
+}
+
+source_set("font_pref") {
+  sources = [
+    "font_pref_change_notifier.cc",
+    "font_pref_change_notifier.h",
+    "font_pref_change_notifier_factory.cc",
+    "font_pref_change_notifier_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/prefs",
+  ]
+  deps = [ "//chrome/common" ]
 }
 
 if (enable_compose) {

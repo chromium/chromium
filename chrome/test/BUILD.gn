@@ -6892,6 +6892,7 @@ test("unit_tests") {
     "//chrome/app/vector_icons",
     "//chrome/browser:active_use_util",
     "//chrome/browser:buildflags",
+    "//chrome/browser:font_pref",
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",

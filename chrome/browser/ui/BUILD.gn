@@ -449,6 +449,7 @@ static_library("ui") {
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
     "//chrome/browser:dev_ui_browser_resources",
+    "//chrome/browser:font_pref",
     "//chrome/browser:resource_prefetch_predictor_proto",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
