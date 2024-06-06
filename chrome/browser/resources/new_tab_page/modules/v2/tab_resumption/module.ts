@@ -174,10 +174,6 @@ tabs:
   private computeFaviconSize_(): number {
     return loadTimeData.getBoolean('modulesRedesignedEnabled') ? 18 : 19;
   }
-
-  private getVisibleTabs_(): Tab[] {
-    return this.tabs.slice(0, MAX_TABS);
-  }
 }
 
 customElements.define(
@@ -190,7 +186,7 @@ async function createElement(): Promise<TabResumptionModuleElement|null> {
   }
 
   const element = new TabResumptionModuleElement();
-  element.tabs = tabs;
+  element.tabs = tabs.slice(0, MAX_TABS);
   chrome.metricsPrivate.recordSmallCount('NewTabPage.TabResumption.TabCount',
     element.tabs.length);
 
