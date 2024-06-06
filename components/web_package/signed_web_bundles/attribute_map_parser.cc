@@ -43,6 +43,7 @@ void AttributeMapParser::ReadAttributesMapHeader(
   if (!attributes_map_length) {
     RunErrorCallback(
         "Cannot parse the size of signature stack entry's attributes.");
+    return;
   };
 
   attributes_entries_left_ = *attributes_map_length;
