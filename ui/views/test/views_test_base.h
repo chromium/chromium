@@ -96,12 +96,6 @@ class ViewsTestBase : public PlatformTest {
       Widget::InitParams::Type type =
           Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 
-  // TODO(crbug.com/339619005): Remove once all uses are explicitly specifying
-  // Widget ownership.
-  std::unique_ptr<Widget> CreateTestWidget(
-      Widget::InitParams::Type type =
-          Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-
   virtual std::unique_ptr<Widget> CreateTestWidget(Widget::InitParams params);
 
   // Simulate an OS-level destruction of the native window held by non-desktop
