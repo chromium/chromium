@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -18,6 +19,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +44,8 @@ class FileSuggestKeyedServiceTest : public testing::Test {
 
   virtual TestingProfile::TestingFactories GetTestingFactories() { return {}; }
 
+  PrefService* GetPrefService() { return profile_->GetTestingPrefService(); }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
@@ -62,6 +67,34 @@ TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
       /*sample=*/DriveSuggestValidationStatus::kDriveFSNotMounted,
       /*expected_count=*/
       features::IsLauncherContinueSectionWithRecentsEnabled() ? 0 : 1);
+}
+
+TEST_F(FileSuggestKeyedServiceTest, DisabledByPolicy) {
+  base::HistogramTester tester;
+  FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile_)
+      ->GetSuggestFileData(
+          FileSuggestionType::kDriveFile,
+          base::BindOnce([](const std::optional<std::vector<FileSuggestData>>&
+                                suggest_data) {
+            EXPECT_FALSE(suggest_data.has_value());
+          }));
+
+  // Disable file suggestion integration by policy.
+  GetPrefService()->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                            {});
+
+  FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile_)
+      ->GetSuggestFileData(
+          FileSuggestionType::kDriveFile,
+          base::BindOnce([](const std::optional<std::vector<FileSuggestData>>&
+                                suggest_data) {
+            // Disabling by policy should ensure a list with zero items is
+            // returned.
+            EXPECT_TRUE(suggest_data.has_value());
+            EXPECT_EQ(suggest_data->size(), 0u);
+          }));
 }
 
 class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {

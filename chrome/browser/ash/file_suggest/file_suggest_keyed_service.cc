@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/utility/forest_util.h"
 #include "base/functional/bind.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/file_suggest/drive_recent_file_suggestion_provider.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
+#include "components/prefs/pref_service.h"
 #include "storage/browser/file_system/file_system_context.h"
 
 namespace ash {
@@ -67,6 +69,18 @@ void FileSuggestKeyedService::MaybeUpdateItemSuggestCache(
 void FileSuggestKeyedService::GetSuggestFileData(
     FileSuggestionType type,
     GetSuggestFileDataCallback callback) {
+  const auto* const pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      (!base::Contains(pref_service->GetList(
+                           prefs::kContextualGoogleIntegrationsConfiguration),
+                       prefs::kGoogleDriveIntegrationName) &&
+       type == FileSuggestionType::kDriveFile)) {
+    // When drive is disabled by policy, return an empty list to indicate no
+    // further waiting on results is necessary.
+    std::move(callback).Run(/*suggestions=*/std::vector<FileSuggestData>());
+    return;
+  }
+
   // Always return null if `proto_` is not ready.
   if (!proto_.initialized()) {
     std::move(callback).Run(/*suggestions=*/std::nullopt);
