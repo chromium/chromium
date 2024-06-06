@@ -397,16 +397,17 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
-  void LoadComponentWithExperimentTagTargeting(int feature_flag_index,
-                                               const std::string& exp_tags) {
+  void LoadComponentWithExperimentTagTargeting(
+      const std::string& feature_index_targeting,
+      const std::string& exp_tags) {
     auto session_targeting =
         base::StringPrintf(R"(
             "session": {
-              "predefinedFeatureIndex": %d,
+              %s,
               "experimentTags": %s
             }
           )",
-                           feature_flag_index, exp_tags.c_str());
+                           feature_index_targeting.c_str(), exp_tags.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
@@ -1410,8 +1411,9 @@ TEST_F(CampaignsManagerTest, GetCampaignExperimentTag) {
   InitilizeCampaignsExperimentTag(
       /*feature*/ ash::features::kGrowthCampaignsExperiment2, /*exp_tag=*/"1");
 
-  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
-                                          R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("predefinedFeatureIndex": 1)",
+      R"(["1", "2", "3"])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1422,8 +1424,9 @@ TEST_F(CampaignsManagerTest, GetCampaignExperimentTagOrRelationship) {
       /*feature*/ ash::features::kGrowthCampaignsExperiment2,
       /*exp_tag=*/"2");
 
-  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
-                                          R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("predefinedFeatureIndex": 1)",
+      R"(["1", "2", "3"])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1434,8 +1437,9 @@ TEST_F(CampaignsManagerTest, GetCampaignExperimentTagMismatch) {
       /*feature*/ ash::features::kGrowthCampaignsExperiment2,
       /*exp_tag=*/"4");
 
-  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
-                                          R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("predefinedFeatureIndex": 1)",
+      R"(["1", "2", "3"])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1446,8 +1450,60 @@ TEST_F(CampaignsManagerTest,
       /*feature*/ ash::features::kGrowthCampaignsExperiment1,
       /*exp_tag=*/"3");
 
-  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
-                                          R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("predefinedFeatureIndex": 1)",
+      R"(["1", "2", "3"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignExperimentTagInvalidFeatureFlagIndex) {
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperiment1,
+      /*exp_tag=*/"3");
+
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("predefinedFeatureIndex": 100)",
+      R"(["1", "2", "3"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignExperimentTagWithOneOffFeature) {
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperimentFileAppGamgee,
+      /*exp_tag=*/"1");
+
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("oneOffExpFeatureIndex": 1)",
+      R"(["1", "2", "3"])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignExperimentTagMismatchedOneOffFeatureFlagIndex) {
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperimentFileAppGamgee,
+      /*exp_tag=*/"3");
+
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("oneOffExpFeatureIndex": 0)",
+      R"(["1", "2", "3"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignExperimentTagInvalidOneOffFeatureFlagIndex) {
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperimentFileAppGamgee,
+      /*exp_tag=*/"3");
+
+  LoadComponentWithExperimentTagTargeting(
+      /*feature_index_targeting=*/R"("oneOffExpFeatureIndex": 100)",
+      R"(["1", "2", "3"])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

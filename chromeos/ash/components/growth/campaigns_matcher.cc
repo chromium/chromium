@@ -123,6 +123,9 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
     return false;
   }
 
+  // TODO: b/344673533 - verify that valid experiment targeting should have
+  // both feature and experiment tag. Ignore the campaign if it is not the case.
+
   if (!feature.has_value()) {
     // Campaign matched if there is no targeted feature config.
     return true;

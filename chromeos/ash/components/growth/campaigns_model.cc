@@ -68,6 +68,7 @@ inline constexpr char kSessionTargeting[] = "session";
 
 // Experiment Tag Targeting paths.
 inline constexpr char kPredefinedFeatureIndex[] = "predefinedFeatureIndex";
+inline constexpr char kOneOffExpFeatureIndex[] = "oneOffExpFeatureIndex";
 inline constexpr char kExperimentTargetings[] = "experimentTags";
 
 // User Targeting paths.
@@ -134,6 +135,9 @@ inline constexpr char kVectorIcon[] = "vectorIcon";
 inline constexpr char kBuiltInVectorIcon[] = "builtInVectorIcon";
 
 // Each feature will be used in one finch study.
+// These features are reusable if a feature is not currently used.
+// Entries should not be ordered as feature is selected by index defined in the
+// campaign.
 inline const base::Feature* kPredefinedFeaturesForExperimentTagTargeting[] = {
     &ash::features::kGrowthCampaignsExperiment1,
     &ash::features::kGrowthCampaignsExperiment2,
@@ -155,6 +159,18 @@ inline const base::Feature* kPredefinedFeaturesForExperimentTagTargeting[] = {
     &ash::features::kGrowthCampaignsExperiment18,
     &ash::features::kGrowthCampaignsExperiment19,
     &ash::features::kGrowthCampaignsExperiment20,
+};
+
+// List of one-off feature flags used for delivering finch params for
+// study/groups that refer to more than one feature flags.
+// Each feature will be used in one finch study.
+// These features are not reusable. It is tied to the finch config of a
+// particular experiment.
+// Entries should not be ordered as feature is selected by index defined in the
+// campaign.
+const base::Feature* kOneOffFeaturesForExperimentTagTargeting[] = {
+    &ash::features::kGrowthCampaignsExperimentG1Nudge,
+    &ash::features::kGrowthCampaignsExperimentFileAppGamgee,
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -213,6 +229,17 @@ std::optional<base::Version> StringToVersion(const std::string* version_value) {
     return std::nullopt;
   }
   return std::move(version);
+}
+
+const base::Feature* SelectFeatureByIndex(const base::Feature* features[],
+                                          int size,
+                                          int index) {
+  if (index < 0 || index >= size) {
+    // TODO: b/344673533 - Record error metrics.
+    return nullptr;
+  }
+
+  return features[index];
 }
 
 }  // namespace
@@ -503,21 +530,24 @@ SessionTargeting::SessionTargeting(const Targeting* targeting_dict)
 SessionTargeting::~SessionTargeting() = default;
 
 std::optional<const base::Feature*> SessionTargeting::GetFeature() const {
-  const auto feature_index = GetIntCriteria(kPredefinedFeatureIndex);
-  if (!feature_index) {
-    return std::nullopt;
+  const auto one_off_feature_index = GetIntCriteria(kOneOffExpFeatureIndex);
+  if (one_off_feature_index) {
+    return SelectFeatureByIndex(
+        kOneOffFeaturesForExperimentTagTargeting,
+        static_cast<int>(std::size(kOneOffFeaturesForExperimentTagTargeting)),
+        one_off_feature_index.value());
   }
 
-  const auto feature_index_value = feature_index.value();
-  if (feature_index_value < 0 ||
-      feature_index_value >=
-          static_cast<int>(
-              std::size(kPredefinedFeaturesForExperimentTagTargeting))) {
-    // TODO: b/344673533 - Record error metrics.
-    return nullptr;
+  const auto predefined_feature_index = GetIntCriteria(kPredefinedFeatureIndex);
+  if (predefined_feature_index) {
+    return SelectFeatureByIndex(
+        kPredefinedFeaturesForExperimentTagTargeting,
+        static_cast<int>(
+            std::size(kPredefinedFeaturesForExperimentTagTargeting)),
+        predefined_feature_index.value());
   }
 
-  return kPredefinedFeaturesForExperimentTagTargeting[feature_index_value];
+  return std::nullopt;
 }
 
 const base::Value::List* SessionTargeting::GetExperimentTags() const {

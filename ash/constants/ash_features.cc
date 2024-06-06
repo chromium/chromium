@@ -1375,7 +1375,8 @@ BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
 // with a finch study to deliver finch param for each experiment group to
 // create randomization group that match the experiment tag targeting in
 // Growth campaigns.
-// The group will be selected by `featureFlag` config in experimental campaigns.
+// The group will be selected by `predefinedFeatureIndex` config in experimental
+// campaigns.
 BASE_FEATURE(kGrowthCampaignsExperiment1,
              "GrowthCampaignsExperiment1",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1435,6 +1436,21 @@ BASE_FEATURE(kGrowthCampaignsExperiment19,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGrowthCampaignsExperiment20,
              "GrowthCampaignsExperiment20",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// List of one-off Growth Framework experiment flag that will be associated
+// with a finch study to deliver finch param for each experiment group to
+// create randomization group that match the experiment tag targeting in
+// Growth campaigns.
+// The group will be selected by `oneOffExpFeatureIndex` config in experimental
+// campaigns.
+// Different from the predefined feature flag section above. These flags are
+// used by study/groups that refer to multiple feature flags.
+BASE_FEATURE(kGrowthCampaignsExperimentFileAppGamgee,
+             "GrowthCampaignsExperimentFileAppGamgee",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperimentG1Nudge,
+             "GrowthCampaignsExperimentG1Nudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables consumer session customizations with growth campaigns.
