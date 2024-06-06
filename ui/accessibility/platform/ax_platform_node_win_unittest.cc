@@ -6479,8 +6479,8 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(button_with_expanded_state));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_InvokePatternId,
-                        UIA_TextChildPatternId, UIA_TogglePatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_TextChildPatternId,
+                        UIA_TogglePatternId}),
             GetSupportedPatternsFromNodeId(button_without_expanded_state));
 }
 

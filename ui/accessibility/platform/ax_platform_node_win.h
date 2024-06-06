@@ -1572,7 +1572,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   bool IsSelectionItemSupported() const;
 
-  bool IsExpandCollapseSupported() const;
+  bool IsToggleSupported() const;
+
+  bool IsInvokeSupported() const;
 
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;

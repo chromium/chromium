@@ -8266,21 +8266,7 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_InvokePatternId:
-      // According to the Accessibility Insights rules [1] and UIA
-      // documentation [2][3], the Invoke control pattern should not be
-      // supported on the following control types because another control
-      // pattern will always be available to support the same invocable
-      // behavior:
-      //   - UIA_AppBarControlTypeId
-      //   - UIA_TabItemControlTypeId
-      //
-      // [1]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ControlShouldNotSupportInvokePattern.cs
-      // [2]:https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/implementing-the-ui-automation-invoke-control-pattern
-      // [3]:https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supporttabitemcontroltype#required-control-patterns
-      //
-      // TODO(accessibility): Add the condition for the UIA_AppBarControlTypeId
-      // if we ever start exposing this control type in Chromium.
-      if (GetData().IsInvocable() && GetRole() != ax::mojom::Role::kTab) {
+      if (IsInvokeSupported()) {
         return &PatternProvider<IInvokeProvider>;
       }
       break;
@@ -8358,7 +8344,7 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_TogglePatternId:
-      if (IsExpandCollapseSupported()) {
+      if (IsToggleSupported()) {
         return &PatternProvider<IToggleProvider>;
       }
       break;
@@ -8656,7 +8642,7 @@ bool AXPlatformNodeWin::IsSelectionItemSupported() const {
   }
 }
 
-bool AXPlatformNodeWin::IsExpandCollapseSupported() const {
+bool AXPlatformNodeWin::IsToggleSupported() const {
   ax::mojom::Role role = GetRole();
 
   // As per the spec [1], RadioButton control does not implement
@@ -8685,6 +8671,44 @@ bool AXPlatformNodeWin::IsExpandCollapseSupported() const {
   //
   // [4]:https://w3c.github.io/core-aam/#mapping_state-property_table
   return IsPlatformCheckable() || SupportsToggle(role);
+}
+
+bool AXPlatformNodeWin::IsInvokeSupported() const {
+  ax::mojom::Role role = GetRole();
+
+  // As per the documentation [1], tab item should never support
+  // IInvokeProvider.
+  //
+  // [1]:https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supporttabitemcontroltype#required-control-patterns
+  if (role == ax::mojom::Role::kTab) {
+    return false;
+  }
+
+  // According to this Accessibility Insights test [2], the UIA Invoke and
+  // Toggle patterns should never be used together for buttons.
+  //
+  // Note: It's not specified which pattern should be exposed when both could
+  // technically be supported. However, priority is given to Toggle Pattern
+  // here, as its the more specialized one.
+  //
+  // [2]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ButtonInvokeAndTogglePatterns.cs
+  if (IsToggleSupported() && IsButton(role)) {
+    return false;
+  }
+
+  // According to the Accessibility Insights rules [3] and UIA documentation
+  // [4], the Invoke control pattern should not be supported on the following
+  // control types because another control pattern will always be available to
+  // support the same invocable behavior:
+  //   - UIA_AppBarControlTypeId
+  //   - UIA_TabItemControlTypeId
+  //
+  // [3]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ControlShouldNotSupportInvokePattern.cs
+  // [4]:https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/implementing-the-ui-automation-invoke-control-pattern
+  //
+  // TODO(accessibility): Add the condition for the UIA_AppBarControlTypeId if
+  // we ever start exposing this control type in Chromium.
+  return GetData().IsInvocable();
 }
 
 }  // namespace ui
