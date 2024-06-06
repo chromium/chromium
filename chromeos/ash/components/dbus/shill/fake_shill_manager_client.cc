@@ -1410,6 +1410,7 @@ void FakeShillManagerClient::SetDefaultProperties() {
                shill::kP2PCapabilitiesGroupReadinessReady)
           .Set(shill::kP2PCapabilitiesClientReadinessProperty,
                shill::kP2PCapabilitiesClientReadinessReady)
+          .Set(shill::kP2PCapabilitiesP2PSupportedProperty, true)
           .Set(shill::kP2PCapabilitiesSupportedChannelsProperty,
                base::Value::List().Append(1).Append(2))
           .Set(shill::kP2PCapabilitiesPreferredChannelsProperty,

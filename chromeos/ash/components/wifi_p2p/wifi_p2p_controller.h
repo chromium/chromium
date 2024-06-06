@@ -51,8 +51,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   static bool IsInitialized();
 
   struct WifiP2PCapabilities {
-    WifiP2PCapabilities(const bool is_owner_ready, const bool is_client_ready)
-        : is_owner_ready(is_owner_ready), is_client_ready(is_client_ready) {}
+    WifiP2PCapabilities(const bool is_owner_ready,
+                        const bool is_client_ready,
+                        const bool is_p2p_supported)
+        : is_owner_ready(is_owner_ready),
+          is_client_ready(is_client_ready),
+          is_p2p_supported(is_p2p_supported) {}
 
     ~WifiP2PCapabilities() = default;
 
@@ -63,6 +67,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
     // Whether platform is ready for creating p2p GC interface without any
     // concurrency conflict.
     bool is_client_ready;
+
+    // Whether the device supports p2p operations or not.
+    bool is_p2p_supported;
   };
 
   // Represents the Wifi P2P operation result. Entries should not be renumbered
@@ -217,7 +224,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
 
   base::ObserverList<Observer> observer_list_;
 
-  WifiP2PCapabilities wifi_p2p_capabilities_{false, false};
+  WifiP2PCapabilities wifi_p2p_capabilities_{false, false, false};
 
   base::WeakPtrFactory<WifiP2PController> weak_ptr_factory_{this};
 };

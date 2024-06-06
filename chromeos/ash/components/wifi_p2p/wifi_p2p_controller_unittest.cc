@@ -390,6 +390,8 @@ TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
                               shill::kP2PCapabilitiesGroupReadinessReady);
   capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
                         shill::kP2PCapabilitiesClientReadinessReady);
+  capabilities_dict.Set(shill::kP2PCapabilitiesP2PSupportedProperty,
+                        /*is_p2p_supported=*/true);
   ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
       shill::kP2PCapabilitiesProperty, base::Value(capabilities_dict.Clone()));
 
@@ -399,6 +401,7 @@ TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
       WifiP2PController::Get()->GetP2PCapabilities();
   EXPECT_TRUE(result.is_owner_ready);
   EXPECT_TRUE(result.is_client_ready);
+  EXPECT_TRUE(result.is_p2p_supported);
   histogram_tester_.ExpectTotalCount(
       WifiP2PMetricsLogger::kWifiP2PCapabilitiesHistogram, 1);
   histogram_tester_.ExpectBucketCount(
@@ -409,6 +412,8 @@ TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
 
   capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
                         shill::kP2PCapabilitiesClientReadinessNotReady);
+  capabilities_dict.Set(shill::kP2PCapabilitiesP2PSupportedProperty,
+                        /*is_p2p_supported=*/false);
   ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
       shill::kP2PCapabilitiesProperty, base::Value(capabilities_dict.Clone()));
   base::RunLoop().RunUntilIdle();
@@ -416,6 +421,7 @@ TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
   result = WifiP2PController::Get()->GetP2PCapabilities();
   EXPECT_TRUE(result.is_owner_ready);
   EXPECT_FALSE(result.is_client_ready);
+  EXPECT_FALSE(result.is_p2p_supported);
   histogram_tester_.ExpectTotalCount(
       WifiP2PMetricsLogger::kWifiP2PCapabilitiesHistogram, 2);
   histogram_tester_.ExpectBucketCount(

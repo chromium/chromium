@@ -98,6 +98,8 @@ void WifiDirectManager::GetWifiP2PCapabilities(
       WifiP2PController::Get()->GetP2PCapabilities().is_owner_ready;
   result->is_client_ready =
       WifiP2PController::Get()->GetP2PCapabilities().is_client_ready;
+  result->is_p2p_supported =
+      WifiP2PController::Get()->GetP2PCapabilities().is_p2p_supported;
 
   std::move(callback).Run(std::move(result));
 }

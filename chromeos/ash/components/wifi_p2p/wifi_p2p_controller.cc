@@ -551,6 +551,8 @@ void WifiP2PController::UpdateP2PCapabilities(
       capabilities.FindString(shill::kP2PCapabilitiesGroupReadinessProperty);
   const std::string* client_readiness =
       capabilities.FindString(shill::kP2PCapabilitiesClientReadinessProperty);
+  const std::optional<bool> p2p_supported =
+      capabilities.FindBool(shill::kP2PCapabilitiesP2PSupportedProperty);
 
   if (group_readiness) {
     wifi_p2p_capabilities_.is_owner_ready =
@@ -560,6 +562,10 @@ void WifiP2PController::UpdateP2PCapabilities(
   if (client_readiness) {
     wifi_p2p_capabilities_.is_client_ready =
         (*client_readiness == shill::kP2PCapabilitiesClientReadinessReady);
+  }
+
+  if (p2p_supported.has_value()) {
+    wifi_p2p_capabilities_.is_p2p_supported = p2p_supported.value();
   }
 }
 
