@@ -68,6 +68,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     bool is_safe_browsing_surveys_enabled,
     base::OnceCallback<void(bool, SBThreatType)>
         trust_safety_sentiment_service_trigger,
+    base::OnceCallback<void(bool, SBThreatType)>
+        ignore_auto_revocation_notifications_trigger,
     network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(ui_manager,
                        web_contents,
@@ -86,7 +88,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       is_proceed_anyway_disabled_(is_proceed_anyway_disabled),
       is_safe_browsing_surveys_enabled_(is_safe_browsing_surveys_enabled),
       trust_safety_sentiment_service_trigger_(
-          std::move(trust_safety_sentiment_service_trigger)) {
+          std::move(trust_safety_sentiment_service_trigger)),
+      ignore_auto_revocation_notifications_trigger_(
+          std::move(ignore_auto_revocation_notifications_trigger)) {
   if (unsafe_resources.size() == 1) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
@@ -157,6 +161,15 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   // Log UKM if the user bypassed the interstitial.
   if (proceeded()) {
     LogSafeBrowsingInterstitialBypassedUKM(web_contents());
+  }
+
+  // If the user proceeded past a social engineering threat interstitial,
+  // ignore the origin in future auto-revocation of abusive notifications.
+  if (ignore_auto_revocation_notifications_trigger_) {
+    DCHECK(base::FeatureList::IsEnabled(
+        safe_browsing::kSafetyHubAbusiveNotificationRevocation));
+    std::move(ignore_auto_revocation_notifications_trigger_)
+        .Run(proceeded(), threat_type_);
   }
 
   // With committed interstitials OnProceed and OnDontProceed don't get

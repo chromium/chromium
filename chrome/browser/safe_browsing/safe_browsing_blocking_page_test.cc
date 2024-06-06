@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -481,6 +483,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
       bool is_safe_browsing_surveys_enabled,
       base::OnceCallback<void(bool, SBThreatType)>
           trust_safety_sentiment_service_trigger,
+      base::OnceCallback<void(bool, SBThreatType)>
+          ignore_auto_revocation_notifications_trigger,
       std::optional<base::TimeTicks> blocked_page_shown_timestamp)
       : SafeBrowsingBlockingPage(
             manager,
@@ -505,6 +509,7 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             is_proceed_anyway_disabled,
             is_safe_browsing_surveys_enabled,
             std::move(trust_safety_sentiment_service_trigger),
+            std::move(ignore_auto_revocation_notifications_trigger),
             /*url_loader_for_testing=*/nullptr) {
     // Don't wait the whole 3 seconds for the browser test.
     SetThreatDetailsProceedDelayForTesting(100);
@@ -552,6 +557,9 @@ class TestSafeBrowsingBlockingPageFactory
         prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled);
     bool is_safe_browsing_surveys_enabled =
         IsSafeBrowsingSurveysEnabled(*prefs);
+    bool is_abusive_notification_revocation_enabled =
+        base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation);
 
     BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options(
         BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
@@ -572,6 +580,9 @@ class TestSafeBrowsingBlockingPageFactory
                 Profile::FromBrowserContext(web_contents->GetBrowserContext()),
                 base::BindRepeating(&BuildMockTrustSafetySentimentService)));
 
+    auto* hcsm = HostContentSettingsMapFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+
     return new TestSafeBrowsingBlockingPage(
         delegate, web_contents, main_frame_url, unsafe_resources,
         display_options, should_trigger_reporting, is_proceed_anyway_disabled,
@@ -580,6 +591,11 @@ class TestSafeBrowsingBlockingPageFactory
             ? base::BindOnce(&MockTrustSafetySentimentService::
                                  InteractedWithSafeBrowsingInterstitial,
                              base::Unretained(mock_sentiment_service_))
+            : base::NullCallback(),
+        is_abusive_notification_revocation_enabled
+            ? base::BindOnce(
+                  &safe_browsing::MaybeIgnoreAbusiveNotificationAutoRevocation,
+                  base::WrapRefCounted(hcsm), main_frame_url)
             : base::NullCallback(),
         blocked_page_shown_timestamp);
   }
@@ -660,9 +676,11 @@ class SafeBrowsingBlockingPageBrowserTest
         safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport, {});
     base::test::FeatureRefAndParams create_warning_shown_csbrrs(
         safe_browsing::kCreateWarningShownClientSafeBrowsingReports, {});
+    base::test::FeatureRefAndParams abusive_notification_revocation(
+        safe_browsing::kSafetyHubAbusiveNotificationRevocation, {});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {tag_and_attribute, add_warning_shown_timestamp_csbrrs,
-         create_warning_shown_csbrrs},
+         create_warning_shown_csbrrs, abusive_notification_revocation},
         {});
   }
 
@@ -1026,6 +1044,10 @@ class SafeBrowsingBlockingPageBrowserTest
 
   MockTrustSafetySentimentService* mock_sentiment_service() {
     return raw_blocking_page_factory_->GetMockSentimentService();
+  }
+
+  HostContentSettingsMap* hcsm() {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   }
 
  protected:
@@ -1985,6 +2007,22 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   ASSERT_TRUE(report.ParseFromString(serialized));
   // The timstamp of the warning shown should be in CSBRRs.
   EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       IgnoreFutureAutoRevocation) {
+  GURL url = SetupWarningAndNavigate(browser());
+  EXPECT_FALSE(
+      safety_hub_util::IsAbusiveNotificationRevocationIgnored(hcsm(), url));
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+  AssertNoInterstitial();  // Assert the interstitial is gone.
+  if (GetThreatType() == SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
+    EXPECT_TRUE(
+        safety_hub_util::IsAbusiveNotificationRevocationIgnored(hcsm(), url));
+  } else {
+    EXPECT_FALSE(
+        safety_hub_util::IsAbusiveNotificationRevocationIgnored(hcsm(), url));
+  }
 }
 
 class AntiPhishingTelemetryBrowserTest

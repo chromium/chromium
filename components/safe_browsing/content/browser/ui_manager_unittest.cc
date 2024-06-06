@@ -140,7 +140,9 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             /*trigger_manager=*/nullptr,
             /*is_proceed_anyway_disabled=*/false,
             /*is_safe_browsing_surveys_enabled=*/true,
-            /*trust_safety_sentiment_service_trigger=*/base::NullCallback()) {
+            /*trust_safety_sentiment_service_trigger=*/base::NullCallback(),
+            /*ignore_auto_revocation_notifications_trigger=*/
+            base::NullCallback()) {
     // Don't delay details at all for the unittest.
     SetThreatDetailsProceedDelayForTesting(0);
     DontCreateViewForTesting();

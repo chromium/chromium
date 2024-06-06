@@ -5,9 +5,23 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 
+#if defined(UNIT_TEST)
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#endif
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 
 namespace safe_browsing {
+
+#if defined(UNIT_TEST)
+// If the user bypassed a phishing interstitial and the url is valid, set the
+// REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS setting value to ignore future
+// autorevocation.
+void MaybeIgnoreAbusiveNotificationAutoRevocation(
+    scoped_refptr<HostContentSettingsMap> hcsm,
+    GURL url,
+    bool did_proceed,
+    SBThreatType threat_type);
+#endif
 
 // The default SafeBrowsingBlockingPageFactory for //chrome.
 class ChromeSafeBrowsingBlockingPageFactory
