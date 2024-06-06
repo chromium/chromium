@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
@@ -16,6 +17,7 @@
 
 namespace ash {
 class ArcWindowWatcher;
+class MagicBoostStateAsh;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class OobeDialogUtil;
@@ -152,6 +154,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       video_conference_tray_controller_;
   std::unique_ptr<enterprise_connectors::AshAttestationCleanupManager>
       attestation_cleanup_manager_;
+  std::unique_ptr<ash::MagicBoostStateAsh> magic_boost_state_ash_;
   std::unique_ptr<chromeos::MahiManager> mahi_manager_;
   std::unique_ptr<chromeos::MahiMediaAppEventsProxy>
       mahi_media_app_events_proxy_;

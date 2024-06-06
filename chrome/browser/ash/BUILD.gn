@@ -6915,6 +6915,7 @@ source_set("unit_tests") {
     ":test_with_shadow_variables",
     "//chrome/browser/ash/crosapi:unit_tests",
     "//chrome/browser/ash/login/oobe_quick_start:unit_tests",
+    "//chrome/browser/ash/magic_boost:unit_tests",
     "//chrome/browser/ash/mahi:unit_tests",
     "//chrome/browser/ash/sparky:unit_tests",
     "//chromeos/ash/components/telemetry_extension:unit_tests",

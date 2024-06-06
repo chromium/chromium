@@ -44,10 +44,33 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  HMRConsentStatus hmr_constent_status() const { return hmr_consent_status_; }
+  // Increments HMRWindowDismissCount count and returns an incremented value.
+  // Note that this method is not thread safe, i.e., this increment does NOT
+  // operate as an atomic operation. Reading HMRWindowDismissCount immediately
+  // after the write can read a stale value.
+  virtual int32_t AsyncIncrementHMRConsentWindowDismissCount() = 0;
+
+  // Writes consent status and a respective enabled state to the pref. Note that
+  // this method returns BEFORE a write is completed. Reading consent status
+  // and/or enabled state immediately after the write can read a stale value.
+  virtual void AsyncWriteConsentStatus(HMRConsentStatus consent_status) = 0;
+
+  std::optional<HMRConsentStatus> hmr_consent_status() const {
+    return hmr_consent_status_;
+  }
+
+  int hmr_consent_window_dismiss_count() const {
+    return hmr_consent_window_dismiss_count_;
+  }
+
+ protected:
+  void UpdateHMRConsentStatus(HMRConsentStatus status);
+  void UpdateHMRConsentWindowDismissCount(int32_t count);
 
  private:
-  HMRConsentStatus hmr_consent_status_ = HMRConsentStatus::kUnset;
+  std::optional<HMRConsentStatus> hmr_consent_status_ =
+      HMRConsentStatus::kUnset;
+  int32_t hmr_consent_window_dismiss_count_ = 0;
 
   base::ObserverList<Observer> observers_;
 };

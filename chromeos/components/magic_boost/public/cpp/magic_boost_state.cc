@@ -4,6 +4,8 @@
 
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 
+#include <cstdint>
+
 #include "base/check.h"
 #include "base/logging.h"
 
@@ -34,6 +36,19 @@ void MagicBoostState::AddObserver(MagicBoostState::Observer* observer) {
 
 void MagicBoostState::RemoveObserver(MagicBoostState::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void MagicBoostState::UpdateHMRConsentStatus(HMRConsentStatus consent_status) {
+  hmr_consent_status_ = std::make_optional(consent_status);
+
+  for (auto& observer : observers_) {
+    observer.OnHMRConsentStatusUpdated(hmr_consent_status_.value());
+  }
+}
+
+void MagicBoostState::UpdateHMRConsentWindowDismissCount(
+    int32_t dismiss_count) {
+  hmr_consent_window_dismiss_count_ = dismiss_count;
 }
 
 }  // namespace chromeos

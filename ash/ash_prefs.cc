@@ -92,6 +92,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
@@ -200,6 +201,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterStringPref(language::prefs::kPreferredLanguages,
                                  std::string());
     registry->RegisterIntegerPref(prefs::kAltEventRemappedToRightClick, 0);
+    registry->RegisterIntegerPref(
+        prefs::kHMRConsentStatus,
+        base::to_underlying(chromeos::HMRConsentStatus::kUnset));
+    registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
     registry->RegisterIntegerPref(prefs::kSearchEventRemappedToRightClick, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackDelete, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackEnd, 0);
