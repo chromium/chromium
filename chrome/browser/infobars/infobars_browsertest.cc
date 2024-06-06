@@ -474,7 +474,14 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_automation) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40261456): This test case has been frequently failing on
+// "Win10 Tests x64" since 2024-05-08.
+#define MAYBE_InvokeUi_automation DISABLED_InvokeUi_automation
+#else
+#define MAYBE_InvokeUi_automation InvokeUi_automation
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_automation) {
   ShowAndVerifyUi();
 }
 
