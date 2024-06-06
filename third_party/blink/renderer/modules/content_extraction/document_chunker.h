@@ -36,7 +36,9 @@ class DocumentChunker {
   //  all be combined into a single passage under
   //  max_words_per_aggregate_passage words.
   DocumentChunker(size_t max_words_per_aggregate_passage,
-                  bool greedily_aggregate_sibling_nodes);
+                  bool greedily_aggregate_sibling_nodes,
+                  uint32_t max_passages,
+                  uint32_t min_words_per_passage);
 
   // Chunks the node and its descendants into text passages.
   // Returns a vector of text passages.
@@ -47,15 +49,18 @@ class DocumentChunker {
 
   // A list of finished aggregations of text segments, built from the leaves up.
   struct PassageList {
-    // Creates and adds a text passage for the input node, if it is non-empty.
-    void AddPassageForNode(const AggregateNode& node);
+    // Creates and adds a text passage for the input node, if it is non-empty,
+    // and contains more words than the given minimum.
+    void AddPassageForNode(const AggregateNode& node,
+                           size_t min_words_per_passage);
 
     // Extends this PassageList from another given |passage_list|.
     void Extend(const PassageList& passage_list);
 
     // Passages are completed aggregations of text segments. It is possible
     // for a single passage to exceed max_words_per_aggregate_passage but the
-    // aggregation process tries to avoid it.
+    // aggregation process tries to avoid it. This has an inline capacity of
+    // 32 to avoid excessive per-node reallocations during the recursive walk.
     Vector<String, 32> passages;
   };
 
@@ -83,10 +88,14 @@ class DocumentChunker {
 
   // Recursively processes a node and its descendants, returning early if
   // a maximum |depth| is reached.
-  AggregateNode ProcessNode(const Node& node, int depth);
+  AggregateNode ProcessNode(const Node& node,
+                            int depth,
+                            uint32_t passage_count);
 
   size_t max_words_per_aggregate_passage_;
   bool greedily_aggregate_sibling_nodes_;
+  uint32_t max_passages_;
+  uint32_t min_words_per_passage_;
 };
 
 }  // namespace blink

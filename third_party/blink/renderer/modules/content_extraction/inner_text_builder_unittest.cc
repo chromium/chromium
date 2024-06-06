@@ -166,6 +166,8 @@ TEST(InnerTextBuilderTest, DifferentOrigin) {
 
 void ExpectChunkerResult(int max_words_per_aggregate_passage,
                          bool greedily_aggregate_sibling_nodes,
+                         int max_passages,
+                         int min_words_per_passage,
                          const std::string& html,
                          const std::vector<String>& expected_passages) {
   test::TaskEnvironment task_environment;
@@ -180,6 +182,8 @@ void ExpectChunkerResult(int max_words_per_aggregate_passage,
   mojom::blink::InnerTextParams params;
   params.max_words_per_aggregate_passage = max_words_per_aggregate_passage;
   params.greedily_aggregate_sibling_nodes = greedily_aggregate_sibling_nodes;
+  params.max_passages = max_passages;
+  params.min_words_per_passage = min_words_per_passage;
 
   mojom::blink::InnerTextFramePtr frame = InnerTextPassagesBuilder::Build(
       *helper.LocalMainFrame()->GetFrame(), params);
@@ -195,7 +199,7 @@ void ExpectChunkerResult(int max_words_per_aggregate_passage,
 
 TEST(InnerTextBuilderTest, InnerTextPassagesChunksSingleTextBlock) {
   std::string html = "<p>Here is a paragraph.</p>";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           "Here is a paragraph.",
                       });
@@ -203,7 +207,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesChunksSingleTextBlock) {
 
 TEST(InnerTextBuilderTest, InnerTextPassagesHandlesEscapeCodes) {
   std::string html = "<p>Here&#39;s a paragraph.</p>";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           "Here's a paragraph.",
                       });
@@ -213,7 +217,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesHandlesUnicodeCharacters) {
   std::string html =
       "<p>Here is a "
       "\u2119\u212b\u213e\u212b\u210A\u213e\u212b\u2119\u210F.</p>";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           u"Here is a ℙÅℾÅℊℾÅℙℏ.",
                       });
@@ -224,7 +228,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesHandlesByteString) {
       "<p>Here is a "
       "\xe2\x84\x99\xe2\x84\xab\xe2\x84\xbe\xe2\x84\xab\xe2\x84\x8a\xe2\x84\xbe"
       "\xe2\x84\xab\xe2\x84\x99\xe2\x84\x8f.</p>";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           u"Here is a ℙÅℾÅℊℾÅℙℏ.",
                       });
@@ -252,7 +256,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesStripsWhitespaceAroundNodeText) {
       </div>
       )";
   ExpectChunkerResult(
-      8, false, html,
+      8, false, 0, 0, html,
       {
           // Note, the newline is included in whitespace simplification.
           "Here is a paragraph. And another. And more.",
@@ -263,7 +267,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesStripsWhitespaceAroundNodeText) {
   EXPECT_EQ(String(" And more.").SimplifyWhiteSpace(), "And more.");
   EXPECT_EQ(String("And more. ").SimplifyWhiteSpace(), "And more.");
   EXPECT_EQ(String(" And  more. ").SimplifyWhiteSpace(), "And more.");
-  ExpectChunkerResult(7, false, html,
+  ExpectChunkerResult(7, false, 0, 0, html,
                       {
                           "Here is a paragraph. And another.",
                           "And more.",
@@ -272,7 +276,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesStripsWhitespaceAroundNodeText) {
 
 TEST(InnerTextBuilderTest, InnerTextPassagesHandlesEmptyDomElements) {
   std::string html = "<div><p></p></div>";
-  ExpectChunkerResult(10, false, html, {});
+  ExpectChunkerResult(10, false, 0, 0, html, {});
 }
 
 TEST(InnerTextBuilderTest, InnerTextPassagesChunksMultipleHtmlBlocks) {
@@ -291,7 +295,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesChunksMultipleHtmlBlocks) {
       </div>
   )";
   ExpectChunkerResult(
-      10, false, html,
+      10, false, 0, 0, html,
       {
           "First level one.",
           "Second level one.",
@@ -316,7 +320,7 @@ TEST(InnerTextBuilderTest,
         </div>
       </div>
   )";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           "First level one.",
                           "Second level one.",
@@ -335,7 +339,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesJoinsSplitTextNodesWithinPTag) {
           and more.
       </p>
   )";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           "Paragraph one with link and more.",
                       });
@@ -349,7 +353,7 @@ TEST(InnerTextBuilderTest,
           and more.
       </p>
   )";
-  ExpectChunkerResult(1, false, html,
+  ExpectChunkerResult(1, false, 0, 0, html,
                       {
                           "Paragraph one with",
                           "link",
@@ -371,7 +375,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesExcludesTextFromSomeHtmlTags) {
         </body>
       </html>
   )";
-  ExpectChunkerResult(10, false, html,
+  ExpectChunkerResult(10, false, 0, 0, html,
                       {
                           "Title Paragraph",
                       });
@@ -403,7 +407,7 @@ TEST(InnerTextBuilderTest, InnerTextPassagesGreedilyAggregatesSiblingNodes) {
       </div>
   )";
   ExpectChunkerResult(
-      10, true, html,
+      10, true, 0, 0, html,
       {
           "First level one.",
           "Second level one.",
@@ -452,7 +456,7 @@ TEST(InnerTextBuilderTest,
       </div>
   )";
   ExpectChunkerResult(
-      10, true, html,
+      10, true, 0, 0, html,
       {
           "Paragraph one with link and more. Header one Paragraph two.",
           "Paragraph three with link and more.",
@@ -460,6 +464,46 @@ TEST(InnerTextBuilderTest,
           "Paragraph five with link and more. Paragraph six.",
           "Paragraph seven that puts entire div over length.",
       });
+}
+
+TEST(InnerTextBuilderTest, InnerTextPassagesTrimsExtraPassages) {
+  std::string html = R"(
+      <p>paragraph 1</p>
+      <p>paragraph 2</p>
+      <p>paragraph 3</p>
+  )";
+  ExpectChunkerResult(3, false, 2, 0, html,
+                      {
+                          "paragraph 1",
+                          "paragraph 2",
+                      });
+}
+
+TEST(InnerTextBuilderTest, InnerTextPassagesSkipsPassagesTooShort) {
+  std::string html = R"(
+      <p>an arbitrarily long paragraph</p>
+      <p>short paragraph</p>
+      <p>another long paragraph</p>
+  )";
+  ExpectChunkerResult(3, false, 0, 3, html,
+                      {
+                          "an arbitrarily long paragraph",
+                          "another long paragraph",
+                      });
+}
+
+TEST(InnerTextBuilderTest, InnerTextPassagesDropsShortPassagesAtMaxPassage) {
+  std::string html = R"(
+      <p>foo bar baz</p>
+      <p>foo</p>
+      <p>bar</p>
+      <p>foo bar baz</p>
+  )";
+  ExpectChunkerResult(3, false, 2, 3, html,
+                      {
+                          "foo bar baz",
+                          "foo bar baz",
+                      });
 }
 
 }  // namespace

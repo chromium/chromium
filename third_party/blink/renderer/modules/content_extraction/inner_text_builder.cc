@@ -124,7 +124,8 @@ mojom::blink::InnerTextFramePtr InnerTextPassagesBuilder::Build(
   // the head may contain useful information like title.
   DocumentChunker document_chunker(
       params.max_words_per_aggregate_passage.value_or(200),
-      params.greedily_aggregate_sibling_nodes.value_or(true));
+      params.greedily_aggregate_sibling_nodes.value_or(true),
+      params.max_passages, params.min_words_per_passage.value_or(0));
   auto segments = document_chunker.Chunk(*document);
   inner_text_frame->segments.ReserveInitialCapacity(segments.size());
   for (const String& s : segments) {

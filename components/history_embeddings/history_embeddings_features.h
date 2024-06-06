@@ -71,6 +71,10 @@ extern const base::FeatureParam<int> kEmbedderNumThreads;
 // passage.
 extern const base::FeatureParam<int> kEmbedderCacheSize;
 
+// The max number of passages that can be extracted from a page. Passages over
+// this limit will be dropped by passage extraction.
+extern const base::FeatureParam<int> kMaxPassagesPerPage;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

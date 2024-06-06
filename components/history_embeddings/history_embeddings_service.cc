@@ -207,6 +207,8 @@ void HistoryEmbeddingsService::RetrievePassages(
   auto params = blink::mojom::InnerTextParams::New();
   params->max_words_per_aggregate_passage =
       std::max(0, kPassageExtractionMaxWordsPerAggregatePassage.Get());
+  params->max_passages = kMaxPassagesPerPage.Get();
+  params->min_words_per_passage = kSearchPassageMinimumWordCount.Get();
   auto* agent_ptr = agent.get();
   agent_ptr->GetInnerText(
       std::move(params),

@@ -70,23 +70,34 @@ bool ShouldContentExtractionIncludeIFrame(const HTMLIFrameElement& iframe_elemen
 }
 
 DocumentChunker::DocumentChunker(size_t max_words_per_aggregate_passage,
-                                 bool greedily_aggregate_sibling_nodes)
+                                 bool greedily_aggregate_sibling_nodes,
+                                 uint32_t max_passages,
+                                 uint32_t min_words_per_passage)
     : max_words_per_aggregate_passage_(max_words_per_aggregate_passage),
-      greedily_aggregate_sibling_nodes_(greedily_aggregate_sibling_nodes) {}
+      greedily_aggregate_sibling_nodes_(greedily_aggregate_sibling_nodes),
+      max_passages_(max_passages),
+      min_words_per_passage_(min_words_per_passage) {}
 
 Vector<String> DocumentChunker::Chunk(const Node& tree) {
-  AggregateNode root = ProcessNode(tree, 0);
+  AggregateNode root = ProcessNode(tree, 0, 0);
   if (root.passage_list.passages.empty()) {
-    root.passage_list.AddPassageForNode(root);
+    root.passage_list.AddPassageForNode(root, min_words_per_passage_);
   }
+
   Vector<String> passages(root.passage_list.passages);
+  if (max_passages_ != 0 && passages.size() > max_passages_) {
+    passages.Shrink(max_passages_);
+  }
+
   return passages;
 }
 
-DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
-                                                            int depth) {
-  if (depth > 96) {
-    // Limit processing of deep trees.
+DocumentChunker::AggregateNode DocumentChunker::ProcessNode(
+    const Node& node,
+    int depth,
+    uint32_t passage_count) {
+  if (depth > 96 || (max_passages_ != 0 && passage_count >= max_passages_)) {
+    // Limit processing of deep trees, and passages beyond the max.
     return {};
   }
 
@@ -101,7 +112,7 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
       return current_node;
     }
     const LocalFrame* local_frame = To<LocalFrame>(iframe->ContentFrame());
-    return ProcessNode(*local_frame->GetDocument(), depth + 1);
+    return ProcessNode(*local_frame->GetDocument(), depth + 1, passage_count);
   }
 
   if (const Text* text = DynamicTo<Text>(node)) {
@@ -137,11 +148,13 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
   PassageList passage_list;
 
   for (const Node& child : NodeTraversal::ChildrenOf(node)) {
-    AggregateNode child_node = ProcessNode(child, depth + 1);
+    AggregateNode child_node = ProcessNode(
+        child, depth + 1, passage_count + passage_list.passages.size());
     if (!child_node.passage_list.passages.empty()) {
       should_aggregate_current_node = false;
       if (greedily_aggregate_sibling_nodes_) {
-        passage_list.AddPassageForNode(current_greedy_aggregating_node);
+        passage_list.AddPassageForNode(current_greedy_aggregating_node,
+                                       min_words_per_passage_);
         current_greedy_aggregating_node = AggregateNode();
       }
       passage_list.Extend(child_node.passage_list);
@@ -153,17 +166,19 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
                 child_node, max_words_per_aggregate_passage_)) {
           current_greedy_aggregating_node.AddNode(child_node);
         } else {
-          passage_list.AddPassageForNode(current_greedy_aggregating_node);
+          passage_list.AddPassageForNode(current_greedy_aggregating_node,
+                                         min_words_per_passage_);
           current_greedy_aggregating_node = child_node;
         }
       } else {
-        passage_list.AddPassageForNode(child_node);
+        passage_list.AddPassageForNode(child_node, min_words_per_passage_);
       }
     }
   }
 
   if (greedily_aggregate_sibling_nodes_) {
-    passage_list.AddPassageForNode(current_greedy_aggregating_node);
+    passage_list.AddPassageForNode(current_greedy_aggregating_node,
+                                   min_words_per_passage_);
   }
 
   // If we should not or cannot aggregate this node, add passages for this
@@ -171,7 +186,8 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
   if (!should_aggregate_current_node ||
       !current_node.Fits(current_aggregating_node,
                          max_words_per_aggregate_passage_)) {
-    current_node.passage_list.AddPassageForNode(current_node);
+    current_node.passage_list.AddPassageForNode(current_node,
+                                                min_words_per_passage_);
     current_node.passage_list.Extend(passage_list);
     return current_node;
   }
@@ -182,7 +198,12 @@ DocumentChunker::AggregateNode DocumentChunker::ProcessNode(const Node& node,
 }
 
 void DocumentChunker::PassageList::AddPassageForNode(
-    const AggregateNode& node) {
+    const AggregateNode& node,
+    size_t min_words_per_passage) {
+  if (node.num_words < min_words_per_passage) {
+    return;
+  }
+
   String passage = node.CreatePassage();
   if (!passage.empty()) {
     passages.push_back(std::move(passage));

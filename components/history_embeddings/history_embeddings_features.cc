@@ -77,4 +77,7 @@ const base::FeatureParam<int> kEmbedderCacheSize(&kHistoryEmbeddings,
                                                  "EmbedderCacheSize",
                                                  1000);
 
+const base::FeatureParam<int> kMaxPassagesPerPage(&kHistoryEmbeddings,
+                                                  "MaxPassagesPerPage",
+                                                  30);
 }  // namespace history_embeddings

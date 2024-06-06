@@ -45,6 +45,14 @@ struct InnerTextParams {
   // output as a separate passage if they cannot all be combined into a single
   // passage under max_words_per_aggregate_passage words. Default is true.
   bool? greedily_aggregate_sibling_nodes;
+
+  // If set to X, only the first X passages encountered during the extraction
+  // will be returned. If X == 0, all passages extracted will be returned.
+  uint32 max_passages;
+
+  // If set, will put a hard limit on the minimum number of words in each
+  // passage; passages without enough words will be dropped.
+  uint32? min_words_per_passage;
 };
 
 // Used to obtain the inner-text of a frame, as well as the inner-text of all
