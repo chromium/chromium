@@ -221,13 +221,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       },
       // </if>
 
-      // <if expr="enable_screen_ai_service">
-      pdfOcrEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-      // </if>
-
       printingEnabled_: {
         type: Boolean,
         value: false,
@@ -289,9 +282,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private pdfAnnotationsEnabled_: boolean;
   // <if expr="enable_pdf_ink2">
   private pdfInk2Enabled_: boolean = false;
-  // </if>
-  // <if expr="enable_screen_ai_service">
-  private pdfOcrEnabled_: boolean;
   // </if>
   private pluginController_: PluginController|null = null;
   private printingEnabled_: boolean;
@@ -768,9 +758,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
     // <if expr="enable_pdf_ink2">
     this.pdfInk2Enabled_ = loadTimeData.getBoolean('pdfInk2Enabled');
-    // </if>
-    // <if expr="enable_screen_ai_service">
-    this.pdfOcrEnabled_ = loadTimeData.getBoolean('pdfOcrEnabled');
     // </if>
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     const presetZoomFactors = this.viewport.presetZoomFactors;

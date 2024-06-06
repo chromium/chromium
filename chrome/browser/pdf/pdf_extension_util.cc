@@ -25,7 +25,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "pdf/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -35,10 +34,6 @@
 #include "base/feature_list.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "ui/accessibility/accessibility_features.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf_extension_util {
 
@@ -117,9 +112,6 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
       {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
       {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      {"pdfOcrShowToggle", IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION},
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
       {"tooltipAnnotate", IDS_PDF_ANNOTATION_ANNOTATE},
       {"annotationDocumentTooLarge", IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE},
@@ -240,11 +232,6 @@ void AddAdditionalData(bool enable_printing,
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // TODO(crbug.com/40912114): Re-enable it when integrating PDF OCR with
-  // Select-to-Speak. Consider adding a feature flag.
-  dict->Set("pdfOcrEnabled", false);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {

@@ -3237,13 +3237,6 @@ if (!is_android) {
         "//pdf/loader",
       ]
 
-      # Add a data dependency for pdf_extension_accessibility_test.cc to notify
-      # testing builders that this test needs this library, which will need to
-      # be downloaded from CIPD as defined in //DEPS.
-      if (enable_screen_ai_browsertests) {
-        data_deps += [ "//third_party/screen-ai:screen_ai" ]
-      }
-
       if (enable_printing) {
         sources += [ "../browser/pdf/pdf_extension_printing_test.cc" ]
 

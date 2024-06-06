@@ -4,7 +4,6 @@
 
 import("//chrome/test/data/webui/build_webui_tests.gni")
 import("//pdf/features.gni")
-import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_pdf, "enable_pdf check failed")
 
@@ -69,10 +68,6 @@ build_webui_tests("build") {
     if (!is_chromeos_ash) {
       files += [ "ink2_disabled_test.ts" ]
     }
-  }
-
-  if (enable_screen_ai_service) {
-    files += [ "pdf_ocr_toolbar_test.ts" ]
   }
 
   if (is_chromeos_ash) {

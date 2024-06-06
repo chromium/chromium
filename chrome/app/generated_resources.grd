@@ -802,9 +802,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_SEND_ONCE" desc="The context-menu sub-item that asks whether to integrate the accessibility image labeling service of Google to Chrome, for a single use.">
             Just once
           </message>
-          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION" desc="The context-menu item that asks whether to use the PDF OCR service to convert image to text.">
-            Extract text from PDF
-          </message>
           <message name="IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION" desc="The context-menu item that runs a local machine intelligence model to extract visual layout semantics.">
            Recognize visual layout semantics
           </message>

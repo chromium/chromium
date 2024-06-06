@@ -39,7 +39,6 @@ source_set("pdf") {
     "//pdf:buildflags",
     "//pdf:features",
     "//printing/buildflags",
-    "//services/screen_ai/buildflags",
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/gfx:color_utils",
