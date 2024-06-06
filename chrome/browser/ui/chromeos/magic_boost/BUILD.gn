@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 
 assert(is_chromeos)
@@ -21,6 +22,7 @@ source_set("magic_boost") {
     "//chrome/browser/chromeos",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/views/editor_menu:utils",
+    "//chromeos/crosapi/mojom",
     "//chromeos/ui/vector_icons",
     "//ui/color",
     "//ui/display",
@@ -31,6 +33,20 @@ source_set("magic_boost") {
   if (is_chrome_branded) {
     deps += [ "//chromeos/ash/resources/internal/strings" ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/magic_boost:magic_boost_ash",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -39,11 +55,14 @@ source_set("test_support") {
   sources = [
     "test/mock_magic_boost_card_controller.cc",
     "test/mock_magic_boost_card_controller.h",
+    "test/mock_magic_boost_controller_crosapi.cc",
+    "test/mock_magic_boost_controller_crosapi.h",
   ]
 
   deps = [
     ":magic_boost",
     "//base",
+    "//chromeos/crosapi/mojom",
     "//testing/gmock",
   ]
 }

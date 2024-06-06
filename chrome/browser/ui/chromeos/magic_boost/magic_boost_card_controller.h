@@ -9,7 +9,14 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif
 
 namespace gfx {
 class Rect;
@@ -39,7 +46,9 @@ class MagicBoostCardController {
   virtual void CloseOptInUi();
 
   // Shows/closes Magic Boost disclaimer widget.
-  void ShowDisclaimerUi();
+  void ShowDisclaimerUi(
+      int64_t display_id,
+      crosapi::mojom::MagicBoostController::TransitionAction action);
   void CloseDisclaimerUi();
 
   // Whether the Quick Answers and Mahi features should show the opt in UI.
@@ -59,6 +68,15 @@ class MagicBoostCardController {
 
   // For testing.
   void SetIsOrcaIncludedForTest(bool include);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void BindMagicBoostControllerCrosapiForTesting(
+      mojo::PendingRemote<crosapi::mojom::MagicBoostController> pending_remote);
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetMagicBoostControllerCrosapiForTesting(
+      crosapi::mojom::MagicBoostController* delegate);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
   views::Widget* disclaimer_widget_for_test() {
     return disclaimer_widget_.get();
@@ -78,6 +96,10 @@ class MagicBoostCardController {
   views::UniqueWidgetPtr disclaimer_widget_;
 
   std::unique_ptr<::mahi::MahiPrefsController> mahi_prefs_controller_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 // Helper class to automatically set and reset the `MagicBoostCardController`

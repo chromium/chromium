@@ -11,10 +11,12 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -28,6 +30,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
@@ -266,7 +269,15 @@ void MagicBoostOptInCard::RequestFocus() {
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
   auto* controller = MagicBoostCardController::Get();
   controller->CloseOptInUi();
-  controller->ShowDisclaimerUi();
+
+  // TODO(b/344024587): Pass in the correct `action` to these function calls.
+  controller->ShowDisclaimerUi(/*display_id=*/
+                               display::Screen::GetScreen()
+                                   ->GetDisplayNearestWindow(
+                                       GetWidget()->GetNativeWindow())
+                                   .id(),
+                               crosapi::mojom::MagicBoostController::
+                                   TransitionAction::kDoNothing);
 }
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {

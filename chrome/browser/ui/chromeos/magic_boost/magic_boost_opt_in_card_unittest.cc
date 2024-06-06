@@ -9,7 +9,11 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
+#include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/lottie/resource.h"
 #include "ui/views/view_utils.h"
@@ -53,13 +57,32 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
         &lottie::ParseLottieAsThemedStillImage);
 #endif
   }
+
+  // ChromeViewsTestBase:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+
+    // Replace the production `MagicBoostController` with a mock for testing
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    MagicBoostCardController::Get()->BindMagicBoostControllerCrosapiForTesting(
+        receiver_.BindNewPipeAndPassRemote());
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+    MagicBoostCardController::Get()->SetMagicBoostControllerCrosapiForTesting(
+        &crosapi_controller_);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+ protected:
+  testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
+  mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
+      &crosapi_controller_};
 };
 
 TEST_F(MagicBoostOptInCardTest, ButtonActions) {
   auto* controller = MagicBoostCardController::Get();
 
   // Show the opt-in UI card.
-  controller->ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
+  controller->ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = controller->opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
 
@@ -67,9 +90,11 @@ TEST_F(MagicBoostOptInCardTest, ButtonActions) {
   // disclaimer UI.
   auto* primary_button = GetPrimaryButton(opt_in_widget);
   ASSERT_TRUE(primary_button);
+
+  EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
+
   LeftClickOn(primary_button);
   EXPECT_FALSE(controller->opt_in_widget_for_test());
-  EXPECT_TRUE(controller->disclaimer_widget_for_test());
 
   // Close the disclaimer UI directly without pressing its buttons, which won't
   // set the `CanShowOptInUi` pref to false. This may happen during shutdown.
@@ -77,7 +102,7 @@ TEST_F(MagicBoostOptInCardTest, ButtonActions) {
 
   // Attempt re-showing the opt-in UI card. It should show since
   // `CanShowOptInUI` pref is still true.
-  controller->ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
+  controller->ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   ASSERT_TRUE(controller->opt_in_widget_for_test());
 
   // Test that pressing the secondary button closes the card and sets the pref

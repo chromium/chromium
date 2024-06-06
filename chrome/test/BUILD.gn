@@ -8793,7 +8793,6 @@ test("unit_tests") {
       "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
       "../browser/ui/ash/window_pin_util_ash_unittest.cc",
       "../browser/ui/chromeos/magic_boost/magic_boost_card_controller_unittest.cc",
-      "../browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view_unittest.cc",
       "../browser/ui/chromeos/magic_boost/magic_boost_opt_in_card_unittest.cc",
       "../browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller_unittest.cc",
       "../browser/ui/quick_answers/quick_answers_controller_unittest.cc",
