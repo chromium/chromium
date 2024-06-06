@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/common/password_generation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -52,7 +53,11 @@ constexpr CGFloat customSpacingAfterImage = 1;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
 
-  self.titleString = l10n_util::GetNSString(IDS_IOS_SUGGESTED_STRONG_PASSWORD);
+  self.titleString = l10n_util::GetNSString(
+      _passwordSuggestion.length >=
+              autofill::password_generation::kLengthSufficientForStrongLabel
+          ? IDS_IOS_SUGGESTED_STRONG_PASSWORD
+          : IDS_IOS_SUGGESTED_PASSWORD);
   self.secondaryTitleString = self.passwordSuggestion;
   self.subtitleString = l10n_util::GetNSStringF(
       IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,

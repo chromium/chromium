@@ -4895,6 +4895,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD" desc="Text that shows a suggested generated password at user's request [Length: unlimited] [iOS only]">
         Use Strong Password:
       </message>
+      <message name="IDS_IOS_SUGGESTED_PASSWORD" desc="Text that shows a suggested generated password at user's request [Length: unlimited] [iOS only]">
+        Use Suggested Password:
+      </message>
       <message name="IDS_IOS_SUGGESTIONS_DONE" desc="Label of the navigation bar button to close the view.">
         Done
       </message>
