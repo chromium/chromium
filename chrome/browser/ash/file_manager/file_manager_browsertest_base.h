@@ -200,6 +200,10 @@ class FileManagerBrowserTestBase
     // connector.
     bool bypass_requires_justification = false;
 
+    // Whether tests should disable Google One offer Files banner. This flag is
+    // disabled by default.
+    bool disable_google_one_offer_files_banner = false;
+
     // Whether tests should enable local image search by query.
     bool enable_local_image_search = false;
 

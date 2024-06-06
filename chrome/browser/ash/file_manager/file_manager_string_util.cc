@@ -1224,7 +1224,9 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
   }
 
   return base::FeatureList::IsEnabled(
-      ash::features::kGoogleOneOfferFilesBanner);
+             ash::features::kGoogleOneOfferFilesBanner) &&
+         !base::FeatureList::IsEnabled(
+             ash::features::kDisableGoogleOneOfferFilesBanner);
 }
 
 void AddStringsForVms(base::Value::Dict* dict) {

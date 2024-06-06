@@ -571,6 +571,12 @@ BASE_FEATURE(kCryptAuthV2DeviceSync,
              "CryptAuthV2DeviceSync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disable a Files banner about Google One offer. This flag is used by G1+
+// nudge to conditionally disable the G1 file banner via finch.
+BASE_FEATURE(kDisableGoogleOneOfferFilesBanner,
+             "DisableGoogleOneOfferFilesBanner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the CryptAuth v2 Enrollment flow.
 BASE_FEATURE(kCryptAuthV2Enrollment,
              "CryptAuthV2Enrollment",
@@ -1332,7 +1338,8 @@ BASE_FEATURE(kGesturePropertiesDBusService,
 // native screen capture tool.
 BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a Files banner about Google One offer.
+// Enables a Files banner about Google One offer. This flag is used by Gamgee
+// nudge to conditionally disable the G1 file banner for CBX boards via finch.
 BASE_FEATURE(kGoogleOneOfferFilesBanner,
              "GoogleOneOfferFilesBanner",
              base::FEATURE_ENABLED_BY_DEFAULT);

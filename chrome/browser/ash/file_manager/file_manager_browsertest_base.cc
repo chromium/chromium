@@ -2461,6 +2461,14 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
   }
 
+  if (options.disable_google_one_offer_files_banner) {
+    enabled_features.push_back(
+        ash::features::kDisableGoogleOneOfferFilesBanner);
+  } else {
+    disabled_features.push_back(
+        ash::features::kDisableGoogleOneOfferFilesBanner);
+  }
+
   if (options.enable_drive_bulk_pinning) {
     enabled_features.push_back(ash::features::kDriveFsBulkPinning);
     enabled_features.push_back(
