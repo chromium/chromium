@@ -179407,6 +179407,123 @@
         {}
        ]
       ],
+      "intrinsic-size-017.html": [
+       "d3742a532d207b9644bd3d76ab265180b23ecfa9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-018.html": [
+       "cbe5d5f10f73d54ce23aa2b620bc30b5cabcee22",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-019.html": [
+       "94ddc3c5781e8aa94184ea0b23efbbd563a87d6a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-020.html": [
+       "0b8c038571c4afd666cca49d23486466d1a6519e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-021.html": [
+       "b8ea5cd32cacbde71699905ea8575bd5d81ce825",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-022.html": [
+       "d03a1d37d5cbab8d5fbc987cdb162680f89da4ba",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-023.html": [
+       "65269f06bab5f4b9e683ba56ae5c454b3a8a00b9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-024.html": [
+       "e05724f258fb70cecc8ef1f4f6378a4d57a54590",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-025.html": [
+       "cc7aa35724ec80663ddc4019847504eb85c46c3a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "percentage-resolution-001.html": [
        "d606bfc65e340f95fbbc355b764a7de5e7aeb6a1",
        [
@@ -726527,8 +726644,8 @@
       },
       "session": {
        "new": {
-        "connect.py": [
-         "523899c3364d6d13e82612556ffeb9e7c9d8e214",
+        "bidi_upgrade.py": [
+         "1060bef2be95c6fb560b4d8bbafeb02e2a5083e2",
          [
           null,
           {}
@@ -727848,7 +727965,7 @@
         ]
        ],
        "websocket_url.py": [
-        "452decc90aa18420459d72886a85d89918a0fb38",
+        "9ae4bd2e1a082fb81c615520fb8e7e73d92d870a",
         [
          null,
          {}
@@ -728035,7 +728152,7 @@
       },
       "permissions": {
        "set.py": [
-        "740b93d40e0b5b20a4febeb22ecaa4763cd6a408",
+        "0bee5d39146cbcc276da015aac82ddf881b51370",
         [
          null,
          {}
