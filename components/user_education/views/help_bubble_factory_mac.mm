@@ -33,14 +33,24 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
   // Because the exact location of the menu item cannot be determined, an arrow
   // is not shown on the bubble.
   internal::HelpBubbleAnchorParams anchor;
-  anchor.show_arrow = false;
   anchor.view = widget->GetRootView();
   anchor.rect = element_mac->GetScreenBounds();
 
-  // We don't want the bubble to be flush with either the side or top of the
-  // Mac native menu, because it looks funny.
-  constexpr auto kMacMenuInsets = gfx::Insets::VH(10, -5);
-  anchor.rect->Inset(kMacMenuInsets);
+  if (@available(macOS 14.0, *)) {
+    // In MacOS 14.0 and later, the screen bounds reported by the element are
+    // the exact bounds of the menu item, which means that bubbles should be
+    // placed accurately and do not need additional visual adjustment.
+  } else {
+    // In earlier versions of MacOS, individual menu item bounds aren't
+    // available, and the entire menu's bounds are returned. Because of this,
+    // bubbles need to float next to the menu rather than attach to a particular
+    // menu item. Don't render an arrow and leave some space from the side of
+    // the menu to ensure that the bubble appears associated with the menu but
+    // not any one specific item.
+    anchor.show_arrow = false;
+    constexpr auto kMacMenuInsets = gfx::Insets::VH(10, -5);
+    anchor.rect->Inset(kMacMenuInsets);
+  }
 
   return base::WrapUnique(new HelpBubbleViews(
       new HelpBubbleView(delegate_, anchor, std::move(params)), element));
