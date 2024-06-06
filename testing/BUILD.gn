@@ -64,7 +64,6 @@ script_test("xvfb_py_unittests") {
 }
 
 group("run_perf_test") {
-  testonly = true
   data = [
     "//testing/scripts/common.py",
     "//testing/scripts/run_performance_tests.py",
@@ -76,7 +75,6 @@ group("run_perf_test") {
 
   data_deps = [
     ":test_scripts_shared",
-    "//third_party/catapult:telemetry_chrome_test_support",
     "//third_party/catapult/tracing:convert_chart_json",
   ]
 

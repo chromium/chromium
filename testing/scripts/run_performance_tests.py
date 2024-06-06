@@ -61,6 +61,8 @@ sys.path.append(str(PERF_DIR))
 if (PERF_DIR / 'crossbench_result_converter.py').exists():
   # Optional import needed to run crossbench.
   import crossbench_result_converter
+else:
+  print('Optional crossbench_result_converter not available.')
 import generate_legacy_perf_dashboard_json
 from core import path_util
 
@@ -76,10 +78,14 @@ from scripts import common
 
 CATAPULT_DIR = CHROMIUM_SRC_DIR / 'third_party/catapult'
 TELEMETRY_DIR = CATAPULT_DIR / 'telemetry'
-sys.path.append(str(TELEMETRY_DIR))
-from telemetry.internal.browser import browser_finder
-from telemetry.internal.browser import browser_options
-from telemetry.internal.util import binary_manager
+if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
+  # Telemetry is required on perf infra, but not present on some environments.
+  sys.path.append(str(TELEMETRY_DIR))
+  from telemetry.internal.browser import browser_finder
+  from telemetry.internal.browser import browser_options
+  from telemetry.internal.util import binary_manager
+else:
+  print('Optional telemetry library not available.')
 
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
