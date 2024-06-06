@@ -211,6 +211,10 @@ enum class ActionButtonsVisibility {
 @property(nonatomic, assign, readwrite)
     ActionButtonsVisibility actionButtonsVisibility;
 
+// Whether the primary button should be disabled and have its button text
+// replaced with a spinner. Should be set only after the view is loaded.
+@property(nonatomic, assign) BOOL primaryButtonSpinnerEnabled;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_H_

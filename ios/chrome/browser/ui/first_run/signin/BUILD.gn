@@ -43,6 +43,7 @@ source_set("signin_ui") {
     "signin_screen_view_controller.mm",
   ]
   deps = [
+    "//components/signin/public/base:signin_switches",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements:elements_internal",

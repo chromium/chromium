@@ -74,6 +74,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 @property(nonatomic, strong) UITextView* disclaimerView;
 // Primary action button for the view controller.
 @property(nonatomic, strong) HighlightButton* primaryActionButton;
+// Activity indicator on top of `primaryActionButton`.
+@property(nonatomic, strong)
+    UIActivityIndicatorView* primaryButtonActivityIndicatorView;
 // Read/Write override.
 @property(nonatomic, assign, readwrite) BOOL didReachBottom;
 
@@ -133,6 +136,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
 @synthesize learnMoreButton = _learnMoreButton;
+@synthesize primaryButtonSpinnerEnabled = _primaryButtonSpinnerEnabled;
 
 #pragma mark - Public
 
@@ -626,6 +630,46 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                        strongSelf.disclaimerView.alpha = 1.0;
                      }
                      completion:nil];
+  }
+}
+
+- (void)setPrimaryButtonSpinnerEnabled:(BOOL)enabled {
+  if (_primaryButtonSpinnerEnabled == enabled) {
+    return;
+  }
+
+  _primaryButtonSpinnerEnabled = enabled;
+
+  if (enabled) {
+    CHECK(!self.primaryButtonActivityIndicatorView);
+    CHECK(self.primaryActionString);
+    // Disable the button.
+    self.primaryActionButton.enabled = NO;
+    // Set blank button text and set accessibility label.
+    SetConfigurationTitle(self.primaryActionButton, @" ");
+    [self.primaryActionButton setAccessibilityLabel:self.primaryActionString];
+    // Create the spinner overlay.
+    self.primaryButtonActivityIndicatorView =
+        [[UIActivityIndicatorView alloc] init];
+    self.primaryButtonActivityIndicatorView
+        .translatesAutoresizingMaskIntoConstraints = NO;
+    self.primaryButtonActivityIndicatorView.color =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+    // Add the spinner to the primary button.
+    [self.primaryActionButton
+        addSubview:self.primaryButtonActivityIndicatorView];
+    AddSameCenterConstraints(self.primaryButtonActivityIndicatorView,
+                             self.primaryActionButton);
+    [self.primaryButtonActivityIndicatorView startAnimating];
+  } else {
+    CHECK(self.primaryButtonActivityIndicatorView);
+    // Remove the spinner.
+    [self.primaryButtonActivityIndicatorView removeFromSuperview];
+    self.primaryButtonActivityIndicatorView = nil;
+    self.primaryActionButton.enabled = YES;
+    // Reset the button text and accessibility label.
+    SetConfigurationTitle(self.primaryActionButton, self.primaryActionString);
+    self.primaryActionButton.accessibilityLabel = nil;
   }
 }
 
