@@ -80,7 +80,6 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
 
   String toBase64() const;
   static Binary fromBase64(const String& base64, bool* success);
-  static Binary fromSharedBuffer(scoped_refptr<SharedBuffer> buffer);
   static Binary fromVector(Vector<uint8_t> in);
   static Binary fromSpan(const uint8_t* data, size_t size);
 

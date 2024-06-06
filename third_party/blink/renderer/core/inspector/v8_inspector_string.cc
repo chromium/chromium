@@ -54,26 +54,10 @@ String StringUtil::fromUTF16LE(const uint16_t* data, size_t length) {
 }
 
 namespace {
-class BinaryBasedOnSharedBuffer : public Binary::Impl {
+
+class BinaryBasedOnUint8Vector : public Binary::Impl {
  public:
-  explicit BinaryBasedOnSharedBuffer(scoped_refptr<SharedBuffer> buffer)
-      : buffer_(std::move(buffer)) {}
-
-  const uint8_t* data() const override {
-    return reinterpret_cast<const uint8_t*>(
-        buffer_->FlattenIfNeededAndGetData());
-  }
-  size_t size() const override { return buffer_->size(); }
-
- private:
-  // buffer_ is mutable so we can call SharedBuffer::Data(),
-  // which flattens the segments of the buffer.
-  mutable scoped_refptr<SharedBuffer> buffer_;
-};
-
-class BinaryBasedOnVector : public Binary::Impl {
- public:
-  explicit BinaryBasedOnVector(Vector<uint8_t> values)
+  explicit BinaryBasedOnUint8Vector(Vector<uint8_t> values)
       : values_(std::move(values)) {}
 
   const uint8_t* data() const override { return values_.data(); }
@@ -81,6 +65,20 @@ class BinaryBasedOnVector : public Binary::Impl {
 
  private:
   Vector<uint8_t> values_;
+};
+
+class BinaryBasedOnCharVector : public Binary::Impl {
+ public:
+  explicit BinaryBasedOnCharVector(Vector<char> values)
+      : values_(std::move(values)) {}
+
+  const uint8_t* data() const override {
+    return reinterpret_cast<const uint8_t*>(values_.data());
+  }
+  size_t size() const override { return values_.size(); }
+
+ private:
+  Vector<char> values_;
 };
 
 class BinaryBasedOnCachedData : public Binary::Impl {
@@ -110,19 +108,12 @@ String Binary::toBase64() const {
 Binary Binary::fromBase64(const String& base64, bool* success) {
   Vector<char> out;
   *success = WTF::Base64Decode(base64, out);
-  return Binary(base::AdoptRef(
-      new BinaryBasedOnSharedBuffer(SharedBuffer::Create(std::move(out)))));
-}
-
-// static
-Binary Binary::fromSharedBuffer(scoped_refptr<SharedBuffer> buffer) {
-  return Binary(
-      base::AdoptRef(new BinaryBasedOnSharedBuffer(std::move(buffer))));
+  return Binary(base::AdoptRef(new BinaryBasedOnCharVector(std::move(out))));
 }
 
 // static
 Binary Binary::fromVector(Vector<uint8_t> in) {
-  return Binary(base::AdoptRef(new BinaryBasedOnVector(std::move(in))));
+  return Binary(base::AdoptRef(new BinaryBasedOnUint8Vector(std::move(in))));
 }
 
 // static

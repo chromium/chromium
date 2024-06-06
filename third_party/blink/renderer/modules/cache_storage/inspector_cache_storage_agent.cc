@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/inspector_cache_storage_agent.h"
 
+#include <sys/types.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -490,7 +492,8 @@ class CachedResponseFileReaderLoaderClient final
   void DidFinishLoading() override {
     std::unique_ptr<CachedResponse> response =
         CachedResponse::create()
-            .setBody(protocol::Binary::fromSharedBuffer(data_))
+            .setBody(protocol::Binary::fromVector(
+                std::move(data_).CopyAs<Vector<uint8_t>>()))
             .build();
     callback_wrapper_->SendSuccess(std::move(response));
     dispose();
@@ -506,7 +509,7 @@ class CachedResponseFileReaderLoaderClient final
 
   FileErrorCode DidReceiveData(const char* data,
                                unsigned data_length) override {
-    data_->Append(data, data_length);
+    data_.Append(data, data_length);
     return FileErrorCode::kOK;
   }
 
@@ -523,7 +526,6 @@ class CachedResponseFileReaderLoaderClient final
       : loader_(MakeGarbageCollected<FileReaderLoader>(this,
                                                        std::move(task_runner))),
         callback_wrapper_(callback_wrapper),
-        data_(SharedBuffer::Create()),
         keep_alive_(this) {
     loader_->Start(std::move(blob));
   }
@@ -539,7 +541,7 @@ class CachedResponseFileReaderLoaderClient final
   Member<FileReaderLoader> loader_;
   scoped_refptr<RequestCallbackWrapper<RequestCachedResponseCallback>>
       callback_wrapper_;
-  scoped_refptr<SharedBuffer> data_;
+  SegmentedBuffer data_;
   SelfKeepAlive<CachedResponseFileReaderLoaderClient> keep_alive_;
 };
 
