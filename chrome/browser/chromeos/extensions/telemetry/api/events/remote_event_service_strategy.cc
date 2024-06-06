@@ -67,14 +67,14 @@ std::unique_ptr<RemoteEventServiceStrategy>
 RemoteEventServiceStrategy::Create() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<RemoteEventServiceStrategyAsh>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!LacrosService::Get()->IsAvailable<crosapi::TelemetryEventService>()) {
     return nullptr;
   }
   return std::make_unique<RemoteEventServiceStrategyLacros>();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   NOTREACHED_NORETURN();
+#endif
 }
 
 RemoteEventServiceStrategy::RemoteEventServiceStrategy() = default;
