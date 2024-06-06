@@ -528,8 +528,9 @@ TEST_F(AddToHomescreenDataFetcherTest, InstallableManifest) {
 }
 
 TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kUniversalInstallManifest);
+  scoped_feature_list_.InitWithFeatures(
+      {}, {features::kUniversalInstallManifest,
+           features::kUniversalInstallRootScopeNoManifest});
   // Test that when the manifest does not provide either Manifest::short_name
   // nor Manifest::name that:
   //  - The page is not WebAPK compatible.

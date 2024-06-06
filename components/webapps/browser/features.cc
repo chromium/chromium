@@ -32,7 +32,7 @@ extern const base::FeatureParam<base::TimeDelta>
 
 BASE_FEATURE(kPwaUniversalInstallUi,
              "PwaUniversalInstallUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
@@ -83,7 +83,11 @@ BASE_FEATURE(kUniversalInstallManifest,
 // without manifest.
 BASE_FEATURE(kUniversalInstallRootScopeNoManifest,
              "UniversalInstallRootScopeNoManifest",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Allows installing a web app when no icon provided by the manifest.
 BASE_FEATURE(kUniversalInstallIcon,

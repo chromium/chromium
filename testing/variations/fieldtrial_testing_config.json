@@ -23570,22 +23570,6 @@
             ]
         }
     ],
-    "WebApkUniversalInstallUI": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PwaUniversalInstallUi",
-                        "UniversalInstallRootScopeNoManifest"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebAssemblyGenericWrapper": [
         {
             "platforms": [
