@@ -101,6 +101,11 @@ class ASH_EXPORT ShelfTracker {
 
 class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
  public:
+  struct RestoreWindowID {
+    int session_window_id;
+    std::string app_name;
+  };
+
   enum RestoreWindowType {
     kBrowser,
     kArc,
@@ -163,8 +168,10 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   // tracing after login is done.
   void AddLoginTimeMarker(const std::string& marker_name);
 
-  // This flag signals that all expected browser windows are already scheduled.
-  void BrowserSessionRestoreDataLoaded();
+  // This is called when the list of session windows gets completed. Note that
+  // this can be called multiple times when session restore is attempted
+  // multiple times, e.g. due to errors.
+  void BrowserSessionRestoreDataLoaded(std::vector<RestoreWindowID> window_ids);
 
   // This flag signals that Full Session restore has reported all the expected
   // windows to be created.

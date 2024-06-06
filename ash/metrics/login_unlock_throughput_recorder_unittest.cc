@@ -159,17 +159,19 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
       const std::vector<int>& browser_ids,
       bool is_lacros,
       const std::vector<int>& non_browser_ids = {}) {
+    std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
+        browser_window_ids;
     for (int n : browser_ids) {
-      throughput_recorder()->AddScheduledRestoreWindow(
-          n, is_lacros ? app_constants::kLacrosAppId : "",
-          LoginUnlockThroughputRecorder::kBrowser);
+      std::string app_name = is_lacros ? app_constants::kLacrosAppId : "";
+      browser_window_ids.emplace_back(n, std::move(app_name));
     }
     for (int n : non_browser_ids) {
       throughput_recorder()->AddScheduledRestoreWindow(
           n, base::StringPrintf("some_app%d", n),
           LoginUnlockThroughputRecorder::kBrowser);
     }
-    throughput_recorder()->BrowserSessionRestoreDataLoaded();
+    throughput_recorder()->BrowserSessionRestoreDataLoaded(
+        std::move(browser_window_ids));
     throughput_recorder()->FullSessionRestoreDataLoaded();
   }
 
@@ -271,7 +273,7 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
   GiveItSomeTime(base::Milliseconds(100));
 
   // Do not expect any windows to be restored.
-  throughput_recorder()->BrowserSessionRestoreDataLoaded();
+  throughput_recorder()->BrowserSessionRestoreDataLoaded({});
   throughput_recorder()->FullSessionRestoreDataLoaded();
 
   // Should not report login histogram until shelf is initialized.

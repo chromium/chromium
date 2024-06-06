@@ -672,12 +672,29 @@ void LoginUnlockThroughputRecorder::AddLoginTimeMarker(
                    << login_time_markers_.size();
 }
 
-void LoginUnlockThroughputRecorder::BrowserSessionRestoreDataLoaded() {
+void LoginUnlockThroughputRecorder::BrowserSessionRestoreDataLoaded(
+    std::vector<RestoreWindowID> window_ids) {
   if (login_finished_reported_) {
     return;
   }
 
-  DCHECK(!browser_session_restore_data_loaded_);
+  if (browser_session_restore_data_loaded_) {
+    // This may be called twice after login but before
+    // `login_finished_reported_` for some reasons (e.g. errors.) Normally in
+    // that case, the set of windows should be the same as the first one. So, we
+    // only track the first set of windows.
+    //
+    // In some tests, session restore seems to be performed multiple times with
+    // different sets of windows, but we also ignore such cases because those
+    // tests are not very related to login performance.
+    return;
+  }
+
+  for (const auto& w : window_ids) {
+    AddScheduledRestoreWindow(w.session_window_id, w.app_name,
+                              LoginUnlockThroughputRecorder::kBrowser);
+  }
+
   browser_session_restore_data_loaded_ = true;
   MaybeRestoreDataLoaded();
 }
@@ -812,11 +829,6 @@ void LoginUnlockThroughputRecorder::OnAllWindowsPresented() {
           base::Milliseconds(1), base::Seconds(100), 100);
     }
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented);
-  }
-
-  // TODO(b/343556103): Remove this block once the main issue is resolved.
-  if (window_restore_done_) {
-    return;
   }
 
   DCHECK(!window_restore_done_);
