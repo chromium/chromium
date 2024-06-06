@@ -246,6 +246,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Auto-enrollment-check.Next"/>
   <variant name="Autolaunch.Canceled"/>
   <variant name="Autolaunch.Completed"/>
+  <variant name="Categories-selection.DataMalformed"/>
   <variant name="Categories-selection.Error"/>
   <variant name="Categories-selection.Next"/>
   <variant name="Categories-selection.Skip"/>
@@ -370,6 +371,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Password-selection.LocalPasswordChoice"/>
   <variant name="Password-selection.LocalPasswordForced"/>
   <variant name="Personalized-apps.Back"/>
+  <variant name="Personalized-apps.DataMalformed"/>
+  <variant name="Personalized-apps.Error"/>
   <variant name="Personalized-apps.Next"/>
   <variant name="Personalized-apps.Skip"/>
   <variant name="Pin-setup.Done"/>

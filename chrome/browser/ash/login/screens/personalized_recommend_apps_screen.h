@@ -23,7 +23,14 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
  public:
   using TView = PersonalizedRecommendAppsScreenView;
 
-  enum class Result { kNext, kSkip, kBack, kNotApplicable };
+  enum class Result {
+    kNext,
+    kSkip,
+    kBack,
+    kDataMalformed,
+    kError,
+    kNotApplicable
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

@@ -23,7 +23,7 @@ class CategoriesSelectionScreen : public BaseScreen {
  public:
   using TView = CategoriesSelectionScreenView;
 
-  enum class Result { kNext, kSkip, kError, kNotApplicable };
+  enum class Result { kNext, kSkip, kError, kDataMalformed, kNotApplicable };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

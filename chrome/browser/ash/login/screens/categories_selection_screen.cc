@@ -46,6 +46,8 @@ std::string CategoriesSelectionScreen::GetResultString(Result result) {
       return "Skip";
     case Result::kError:
       return "Error";
+    case Result::kDataMalformed:
+      return "DataMalformed";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -108,7 +110,15 @@ void CategoriesSelectionScreen::OnResponseReceived(
     const std::vector<OOBEDeviceUseCase>& categories,
     AppsFetchingResult result) {
   if (result != AppsFetchingResult::kSuccess) {
+    LOG(ERROR)
+        << "Got an error when fetched cached data from the OOBE Apps Service";
     exit_callback_.Run(Result::kError);
+    return;
+  }
+
+  if (categories.empty()) {
+    LOG(ERROR) << "Empty set of use-cases received from the server";
+    exit_callback_.Run(Result::kDataMalformed);
     return;
   }
 

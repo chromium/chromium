@@ -69,6 +69,10 @@ std::string PersonalizedRecommendAppsScreen::GetResultString(Result result) {
       return "Skip";
     case Result::kBack:
       return "Back";
+    case Result::kDataMalformed:
+      return "DataMalformed";
+    case Result::kError:
+      return "Error";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -149,19 +153,19 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   if (result != AppsFetchingResult::kSuccess) {
     LOG(ERROR)
         << "Got an error when fetched cached data from the OOBE Apps Service";
-    exit_callback_.Run(Result::kNotApplicable);
+    exit_callback_.Run(Result::kError);
     return;
   }
 
   if (app_infos.empty()) {
     LOG(ERROR) << "Empty set of apps received from the server";
-    exit_callback_.Run(Result::kNotApplicable);
+    exit_callback_.Run(Result::kDataMalformed);
     return;
   }
 
   if (use_cases.empty()) {
     LOG(ERROR) << "Empty set of use-cases received from the server";
-    exit_callback_.Run(Result::kNotApplicable);
+    exit_callback_.Run(Result::kDataMalformed);
     return;
   }
 
@@ -177,7 +181,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   //      selected" use case as the first element.
   //
   // 2. Maps Apps to Use Cases:
-  //    - Creates a map (`apps_to_use_cases`) where keys are app IDs and
+  //    - Creates a map (`use_cases_to_apps`) where keys are app IDs and
   //      values are lists of corresponding use case IDs.
   //
   // 3. Creates WebUI-Ready App Data:
@@ -218,29 +222,21 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
                  << " use-case as zero index one, expected: "
                  << kNoUseCasesSelectedIDName << ", server data is malformed"
                  << ", skipping recommend apps screen";
-      exit_callback_.Run(Result::kNotApplicable);
+      exit_callback_.Run(Result::kDataMalformed);
       return;
     }
     selected_use_cases.emplace_back(use_cases.front());
   }
 
   std::unordered_map<std::string, std::vector<OOBEAppDefinition>>
-      apps_to_use_cases;
+      use_cases_to_apps;
 
   for (const auto& app : app_infos) {
     std::vector<std::string> tags = app.GetTags();
-    // TODO: Remove this logic once server side data is finalized and updated.
-    // There should be no apps with zero tags, but for now we will add all such
-    // apps into a special "zero use-cases selected" group, which is displayed
-    // when user skips device-use case screen.
-    if (tags.empty()) {
-      tags.emplace_back(use_cases.front().GetID());
-    }
-
     for (const auto& tag : tags) {
-      auto it = apps_to_use_cases.find(tag);
-      if (it == apps_to_use_cases.end()) {
-        apps_to_use_cases[tag] = std::vector<OOBEAppDefinition>{app};
+      auto it = use_cases_to_apps.find(tag);
+      if (it == use_cases_to_apps.end()) {
+        use_cases_to_apps[tag] = std::vector<OOBEAppDefinition>{app};
 
       } else {
         it->second.emplace_back(app);
@@ -259,9 +255,16 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 
   for (const auto& selected_use_case : selected_use_cases) {
     base::Value::List apps_list;
-    DCHECK(apps_to_use_cases.find(selected_use_case.GetID()) !=
-           apps_to_use_cases.end());
-    for (const auto& app : apps_to_use_cases[selected_use_case.GetID()]) {
+    // Handle case when server-side provided use-case that doesn't have any apps
+    // attached to it.
+    if (use_cases_to_apps.find(selected_use_case.GetID()) ==
+        use_cases_to_apps.end()) {
+      LOG(ERROR) << "No applications related to the "
+                 << selected_use_case.GetID()
+                 << " use-case found, check server-side data";
+      continue;
+    }
+    for (const auto& app : use_cases_to_apps[selected_use_case.GetID()]) {
       if (used_apps_uuids.find(app.GetAppGroupUUID()) !=
           used_apps_uuids.end()) {
         continue;
@@ -289,7 +292,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 
   if (apps_dict.empty()) {
     LOG(ERROR) << "No apps found after filtering, skipping the screen";
-    exit_callback_.Run(Result::kNotApplicable);
+    exit_callback_.Run(Result::kDataMalformed);
     return;
   }
 
