@@ -904,7 +904,10 @@ public class StripLayoutHelperTest {
     @Feature("Advanced Peripherals Support")
     public void testNewTabButtonHoverEnter() {
         // Setup
-        initializeTest(false, false, false, 0, 1);
+        initializeTest(false, false, true, 0, 1);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify new tab button is hovered.
         int x = (int) mStripLayoutHelper.getNewTabButton().getDrawX();
@@ -3016,7 +3019,7 @@ public class StripLayoutHelperTest {
                 "Tab strip should match tab model.",
                 expectedNumTabs,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        verify(mUpdateHost, times(5)).requestUpdate();
+        verify(mUpdateHost, times(7)).requestUpdate();
     }
 
     @Test

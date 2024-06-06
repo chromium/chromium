@@ -928,6 +928,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
 
             computeAndUpdateTabOrders(false, false);
+            resizeTabStrip(false, false, false);
         }
     }
 
