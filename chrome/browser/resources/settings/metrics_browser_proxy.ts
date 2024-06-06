@@ -446,6 +446,14 @@ export interface MetricsBrowserProxy {
       interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
 
   /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions
+   * histogram
+   */
+  recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
+
+  /**
    * Helper function that calls recordHistogram for
    * Settings.SafetyHub.UnusedSitePermissionsModule.ListCount histogram
    */
@@ -641,6 +649,15 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.SafetyHub.UnusedSitePermissionsModule.Interactions',
+      interaction,
+      SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions',
       interaction,
       SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
     ]);

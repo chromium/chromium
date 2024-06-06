@@ -170,10 +170,20 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
    * Asserts a correct action was recorded into
    * recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram histogram.
    */
-  async function assertInteractionMetricRecorded(action: Interactions) {
+  async function assertInteractionMetricRecorded(
+      action: Interactions, isAbusiveNotification?: boolean) {
     const result = await metricsBrowserProxy.whenCalled(
         'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
     assertEquals(action, result);
+
+    if (!isAbusiveNotification) {
+      isAbusiveNotification = false;
+    }
+    if (isAbusiveNotification) {
+      const resultAbusiveNotification = await metricsBrowserProxy.whenCalled(
+          'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram');
+      assertEquals(action, resultAbusiveNotification);
+    }
     metricsBrowserProxy.reset();
   }
 
@@ -266,6 +276,20 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await assertInteractionMetricRecorded(Interactions.ALLOW_AGAIN);
   });
 
+  test('Allow Again Click Abusive Notification Site', async function() {
+    // User clicks Allow Again.
+    getSiteList()[4]!.querySelector('cr-icon-button')!.click();
+
+    // Ensure the correctness of the browser proxy call and the undo toast.
+    await assertAllowAgain(4);
+    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 4);
+
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
+
+    // Ensure the metric for 'Allow Again' action is recorded.
+    await assertInteractionMetricRecorded(Interactions.ALLOW_AGAIN, true);
+  });
+
   test('Undo Allow Again', async function() {
     for (const [i, site] of getSiteList().entries()) {
       // User clicks Allow Again and then Undo.
@@ -282,8 +306,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
-      // Ensure the metric for 'Undo Allow Again' action is recorded.
-      await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
+      // Ensure the metric for 'Undo Allow Again' action is recorded. The
+      // last site at index 4 includes revoked notifications, so the abusive
+      // notification histogram should also be recorded.
+      if (i === 4) {
+        await assertInteractionMetricRecorded(
+            Interactions.UNDO_ALLOW_AGAIN, true);
+      } else {
+        await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
+      }
 
       assertInitialUi();
     }
@@ -307,8 +338,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
-      // Ensure the metric for 'Undo Allow Again' action is recorded.
-      await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
+      // Ensure the metric for 'Undo Allow Again' action is recorded. The
+      // last site at index 4 includes revoked notifications, so the abusive
+      // notification histogram should also be recorded.
+      if (i === 4) {
+        await assertInteractionMetricRecorded(
+            Interactions.UNDO_ALLOW_AGAIN, true);
+      } else {
+        await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
+      }
 
       assertInitialUi();
     }
@@ -334,7 +372,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertTrue(isVisible(testElement.$.bulkUndoButton));
 
     // Ensure the metric for 'Acknowledge All' action is recorded.
-    await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL);
+    await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL, true);
   });
 
   test('Undo Got It', async function() {
@@ -359,7 +397,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertFalse(isVisible(testElement.$.bulkUndoButton));
 
     // Ensure the metric for 'Undo Acknowledge All' action is recorded.
-    await assertInteractionMetricRecorded(Interactions.UNDO_ACKNOWLEDGE_ALL);
+    await assertInteractionMetricRecorded(
+        Interactions.UNDO_ACKNOWLEDGE_ALL, true);
   });
 
   test('Allow Again Click and Undo - single entry', async function() {
@@ -493,7 +532,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertEquals(routes.SITE_SETTINGS, Router.getInstance().getCurrentRoute());
 
     // Ensure the metric for 'Go To Settings' action is recorded.
-    await assertInteractionMetricRecorded(Interactions.GO_TO_SETTINGS);
+    await assertInteractionMetricRecorded(Interactions.GO_TO_SETTINGS, true);
   });
 
   /**

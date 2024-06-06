@@ -290,6 +290,12 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.metricsBrowserProxy_
         .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
             SafetyCheckUnusedSitePermissionsModuleInteractions.ALLOW_AGAIN);
+
+    if (this.doesSiteListIncludeAbusiveNotifications([item])) {
+      this.metricsBrowserProxy_
+          .recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+              SafetyCheckUnusedSitePermissionsModuleInteractions.ALLOW_AGAIN);
+    }
   }
 
   private async onGotItClick_(e: Event) {
@@ -313,6 +319,13 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.metricsBrowserProxy_
         .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
             SafetyCheckUnusedSitePermissionsModuleInteractions.ACKNOWLEDGE_ALL);
+
+    if (this.doesSiteListIncludeAbusiveNotifications(this.sites_)) {
+      this.metricsBrowserProxy_
+          .recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+              SafetyCheckUnusedSitePermissionsModuleInteractions
+                  .ACKNOWLEDGE_ALL);
+    }
   }
 
   private onMoreActionClick_(e: Event) {
@@ -330,6 +343,14 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.metricsBrowserProxy_
         .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
             SafetyCheckUnusedSitePermissionsModuleInteractions.GO_TO_SETTINGS);
+
+    if (this.sites_ && this.sites_.length > 0 &&
+        this.doesSiteListIncludeAbusiveNotifications(this.sites_)) {
+      this.metricsBrowserProxy_
+          .recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+              SafetyCheckUnusedSitePermissionsModuleInteractions
+                  .GO_TO_SETTINGS);
+    }
   }
 
   /* Repopulate the list when unused site permission list is updated. */
@@ -393,6 +414,13 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
         assert(this.lastUnusedSitePermissionsAllowedAgain_ !== null);
         this.browserProxy_.undoAllowPermissionsAgainForUnusedSite(
             this.lastUnusedSitePermissionsAllowedAgain_);
+        if (this.doesSiteListIncludeAbusiveNotifications(
+                [this.lastUnusedSitePermissionsAllowedAgain_])) {
+          this.metricsBrowserProxy_
+              .recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+                  SafetyCheckUnusedSitePermissionsModuleInteractions
+                      .UNDO_ALLOW_AGAIN);
+        }
         this.lastUnusedSitePermissionsAllowedAgain_ = null;
         this.metricsBrowserProxy_
             .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
@@ -403,6 +431,13 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
         assert(this.lastUnusedSitePermissionsListAcknowledged_ !== null);
         this.browserProxy_.undoAcknowledgeRevokedUnusedSitePermissionsList(
             this.lastUnusedSitePermissionsListAcknowledged_);
+        if (this.doesSiteListIncludeAbusiveNotifications(
+                this.lastUnusedSitePermissionsListAcknowledged_)) {
+          this.metricsBrowserProxy_
+              .recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+                  SafetyCheckUnusedSitePermissionsModuleInteractions
+                      .UNDO_ACKNOWLEDGE_ALL);
+        }
         this.lastUnusedSitePermissionsListAcknowledged_ = null;
         this.metricsBrowserProxy_
             .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
@@ -436,6 +471,26 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     const tooltip = this.shadowRoot!.querySelector('cr-tooltip');
     assert(tooltip);
     this.showTooltipAtTarget(tooltip, e.target! as Element);
+  }
+
+  private doesSiteListIncludeAbusiveNotifications(sites:
+                                                      UnusedSitePermissions[]) {
+    // Convert the permission type lists to i18n versions and check if each list
+    // includes notifications.
+    const listOfPermissionTypes = sites!.map(site => site.permissions);
+    const listPermissionsIncludeNotifications = listOfPermissionTypes.map(
+        permissions =>
+            permissions
+                .map(permission => {
+                  const localizationString =
+                      getLocalizationStringForContentType(permission);
+                  return localizationString ? this.i18n(localizationString) :
+                                              '';
+                })
+                .includes('notifications'));
+
+    // Return true if any of the permission type lists includes notifications.
+    return listPermissionsIncludeNotifications.includes(true);
   }
 }
 

@@ -25,6 +25,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordPrivacyGuideSettingsStatesHistogram',
       'recordPrivacyGuideStepsEligibleAndReachedHistogram',
       'recordDeleteBrowsingDataAction',
+      'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram',
       'recordSafetyHubCardStateClicked',
       'recordSafetyHubDashboardAnyWarning',
       'recordSafetyHubEntryPointClicked',
@@ -118,6 +119,13 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction) {
     this.methodCalled('recordDeleteBrowsingDataAction', action);
+  }
+
+  recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
+    this.methodCalled(
+        'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram',
+        interaction);
   }
 
   recordSafetyHubCardStateClicked(

@@ -652,6 +652,20 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions"
+    enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
+    expires_after="2025-06-05">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The user actions taken on revoked abusive notifications in the revoked
+    permissions module of the Safety Hub page in settings. Recorded every time
+    the user interacts with the respective UI element for abusive notifications
+    - this does not include interactions with revoked unused permissions.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.DashboardWarning"
     enum="SafetyHubModuleType" expires_after="2024-11-11">
   <owner>sideyilmaz@chromium.org</owner>
