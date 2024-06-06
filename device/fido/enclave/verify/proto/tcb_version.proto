@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+option optimize_for = LITE_RUNTIME;
+
+// The versions of the components in the AMD SEV-SNP platform Trusted Compute
+// Base (TCB).
+message TcbVersion {
+  // The current security version number (SVN) of the secure processor (PSP)
+  // bootloader.
+  uint32 boot_loader = 1;
+  // The current SVN of the PSP operating system.
+  uint32 tee = 2;
+  // The current SVN of the SNP firmware.
+  uint32 snp = 3;
+  // The lowest current patch level of all the CPU cores.
+  uint32 microcode = 4;
+}

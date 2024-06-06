@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+import "evidence.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Message for passing embedded certificate authority information between
+// layers. Will never appear in the evidence that is sent to the client.
+message CertificateAuthority {
+  // ECA private key that will be used by a layer to sign a certificate for the
+  // next layer.
+  bytes eca_private_key = 1;
+}
+
+// Message that is sent between DICE layers.
+message DiceData {
+  Evidence evidence = 1;
+  CertificateAuthority certificate_authority = 2;
+}

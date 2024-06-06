@@ -1,0 +1,94 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+option optimize_for = LITE_RUNTIME;
+
+// Endorsement for binaries from the Transparent Release process.
+// <https://github.com/project-oak/oak/blob/main/docs/release.md>
+message TransparentReleaseEndorsement {
+  // JSON string comtaining the endorsement statement for the underlying binary.
+  // The format is described here:
+  // https://github.com/project-oak/transparent-release/blob/main/docs/claim-transparency.md#the-claim-format
+  bytes endorsement = 1;
+
+  // The data hashed as endorsement subject can be inlined here when needed.
+  // Can be the binary or the attachment, depending on the usage specified
+  // in the endorsement.
+  bytes subject = 4;
+
+  // The signature for the endorsement.
+  bytes endorsement_signature = 2;
+
+  // The log entry as proof of inclusion of the endorsement statement in Rekor.
+  bytes rekor_log_entry = 3;
+}
+
+message RootLayerEndorsements {
+  // The serialized TEE certificate(s). The details of the format and how the
+  // certificate(s) are encoded into this byte array are implementation
+  // specific. In case of AMD-SEV-SNP, as described in
+  // https://www.amd.com/system/files/TechDocs/57230.pdf, there are three
+  // different certificates packaged in two different files. We only include
+  // the machine-specific VCEK certificate since the AMD Root Key (ARK) and
+  // AMD SEV Key (ASK) are long-lived.
+  bytes tee_certificate = 1;
+
+  // Endorsement of the Stage0 binary.
+  TransparentReleaseEndorsement stage0 = 2;
+}
+
+message KernelLayerEndorsements {
+  TransparentReleaseEndorsement kernel = 1;
+  TransparentReleaseEndorsement kernel_cmd_line = 2;
+  TransparentReleaseEndorsement init_ram_fs = 4;
+  TransparentReleaseEndorsement memory_map = 5;
+  TransparentReleaseEndorsement acpi = 6;
+
+  // Field is deprecated and kept only for backwards compatibility. Remove ASAP.
+  TransparentReleaseEndorsement kernel_image = 7 [deprecated = true];
+}
+
+message SystemLayerEndorsements {
+  TransparentReleaseEndorsement system_image = 1;
+}
+
+message ApplicationLayerEndorsements {
+  TransparentReleaseEndorsement binary = 1;
+  TransparentReleaseEndorsement configuration = 2;
+}
+
+message ContainerLayerEndorsements {
+  TransparentReleaseEndorsement binary = 1;
+  TransparentReleaseEndorsement configuration = 2;
+}
+
+message OakRestrictedKernelEndorsements {
+  RootLayerEndorsements root_layer = 1;
+  KernelLayerEndorsements kernel_layer = 2;
+  ApplicationLayerEndorsements application_layer = 3;
+}
+
+message OakContainersEndorsements {
+  RootLayerEndorsements root_layer = 1;
+  KernelLayerEndorsements kernel_layer = 2;
+  SystemLayerEndorsements system_layer = 3;
+  ContainerLayerEndorsements container_layer = 4;
+}
+
+// Endorsement contains statements that some entity (e.g. a hardware provider)
+// vouches for the integrity of claims about the TEE or the software running
+// on it.
+//
+// The name is chosen to match the RATS terminology:
+// <https://www.rfc-editor.org/rfc/rfc9334.html#name-endorsements>
+message Endorsements {
+  oneof type {
+    OakRestrictedKernelEndorsements oak_restricted_kernel = 1;
+    OakContainersEndorsements oak_containers = 2;
+  }
+};

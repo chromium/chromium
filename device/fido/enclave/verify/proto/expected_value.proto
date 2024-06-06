@@ -1,0 +1,145 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+import "digest.proto";
+import "tcb_version.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message VerificationSkipped {}
+
+message RawDigests {
+  repeated RawDigest digests = 1;
+}
+
+message ExpectedDigests {
+  oneof type {
+    // If the reference value was set to SkipVerification, we represent that
+    // here.
+    VerificationSkipped skipped = 1;
+
+    // One or more digests that should be considered a valid match against an
+    // actual value.
+    RawDigests digests = 2;
+  }
+}
+
+// The expected values for kernel image and setup data, computed from previously
+// provided endorsements and reference values.
+message KernelExpectedValues {
+  // Allowable digests for the image.
+  ExpectedDigests image = 1;
+
+  // Allowable digests for the setup data.
+  ExpectedDigests setup_data = 2;
+}
+
+message AmdSevExpectedValues {
+  ExpectedDigests stage0_expected = 1;
+
+  // Minimum accepted versions of all TCB components.
+  TcbVersion min_tcb_version = 2;
+
+  // If true, will skip the check that the TEE is not in debug mode.
+  bool allow_debug = 3;
+}
+
+message IntelTdxExpectedValues {}
+
+message InsecureExpectedValues {}
+
+message ExpectedRegex {
+  string value = 1;
+}
+
+message ExpectedStringLiterals {
+  repeated string value = 1;
+}
+
+message TextExpectedValue {
+  oneof type {
+    // If the reference value was set to SkipVerification, we represent that
+    // here.
+    VerificationSkipped skipped = 1;
+
+    ExpectedRegex regex = 2;
+
+    ExpectedStringLiterals string_literals = 3;
+  }
+}
+
+message RootLayerExpectedValues {
+  // Switches between AMD SEV-SNP and Intel TDX based on TeePlatform value.
+  // Verification is skipped when not running in a TEE.
+  AmdSevExpectedValues amd_sev = 1;
+  IntelTdxExpectedValues intel_tdx = 2;
+  // When insecure is set no verification of the TEE platform is performed. This
+  // can be used when not running in a TEE or when the client is agnostic about
+  // the platform and doesn't care about the hardware verification.
+  InsecureExpectedValues insecure = 3;
+}
+
+// Reference values of the kernel layer, as measured by stage0.
+message KernelLayerExpectedValues {
+  // Verifies the kernel based on endorsement.
+  KernelExpectedValues kernel = 1;
+
+  // Verifies the kernel command line, i.e. the parameters passed to the
+  // kernel on boot.
+  TextExpectedValue kernel_cmd_line_text = 2;
+
+  // Verifies the stage1 binary if running as Oak Containers.
+  ExpectedDigests init_ram_fs = 3;
+
+  ExpectedDigests memory_map = 4;
+
+  ExpectedDigests acpi = 5;
+}
+
+// The expected binary digests for a system layer image.
+message SystemLayerExpectedValues {
+  // The allowable digest values for a system layer image.
+  ExpectedDigests system_image = 1;
+}
+
+// The expected bundle and configuration digests for a container layer.
+message ContainerLayerExpectedValues {
+  // The allowable digest values for a container bundle.
+  ExpectedDigests bundle = 1;
+  // The allowable digest values for a configuration passed into a container.
+  ExpectedDigests config = 2;
+}
+
+// The expected binary and configuration digests for an application layer.
+message ApplicationLayerExpectedValues {
+  // The allowable digest values for an application binary.
+  ExpectedDigests binary = 1;
+  // The allowable digest values for a configuration passed to the application
+  // binary.
+  ExpectedDigests configuration = 2;
+}
+
+message OakRestrictedKernelExpectedValues {
+  RootLayerExpectedValues root_layer = 1;
+  KernelLayerExpectedValues kernel_layer = 2;
+  ApplicationLayerExpectedValues application_layer = 3;
+}
+
+message OakContainersExpectedValues {
+  RootLayerExpectedValues root_layer = 1;
+  KernelLayerExpectedValues kernel_layer = 2;
+  SystemLayerExpectedValues system_layer = 3;
+  ContainerLayerExpectedValues container_layer = 4;
+}
+
+message ExpectedValues {
+  oneof type {
+    OakRestrictedKernelExpectedValues oak_restricted_kernel = 1;
+    OakContainersExpectedValues oak_containers = 2;
+  }
+}

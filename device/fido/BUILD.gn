@@ -259,6 +259,7 @@ component("fido") {
 
       deps += [
         "//components/sync/protocol:protocol",
+        "//device/fido/enclave/verify/proto:proto",
         "//services/device/public/cpp/hid",
         "//services/device/public/cpp/usb",
         "//services/device/public/mojom",
