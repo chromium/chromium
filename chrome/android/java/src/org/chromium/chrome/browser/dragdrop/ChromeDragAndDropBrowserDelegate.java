@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipData.Item;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -138,10 +140,12 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                 DragAndDropLauncherActivity.getTabIntent(
                         context, tab.getId(), MultiWindowUtils.INVALID_INSTANCE_ID);
         if (intent != null) {
+            ActivityOptions opts = ActivityOptions.makeBasic();
+            ApiCompatibilityUtils.setCreatorActivityOptionsBackgroundActivityStartMode(opts);
             PendingIntent pendingIntent =
-                    PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-            ClipData.Item item =
-                    ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
+                    PendingIntent.getActivity(
+                            context, 0, intent, PendingIntent.FLAG_IMMUTABLE, opts.toBundle());
+            Item item = ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
             return item == null ? null : new ClipData(null, mSupportedMimeTypes, item);
         }
         return null;
