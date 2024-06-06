@@ -1818,6 +1818,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfOcr.MediaApp.ActiveTime" units="seconds"
+    expires_after="2025-06-30">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time difference between when a ChromeVox user starts reading
+    OCRed content in MediaApp and when the user reads it most recently.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData"
     enum="LocaleCodeISO639" expires_after="2024-10-06">
   <owner>kyungjunlee@google.com</owner>

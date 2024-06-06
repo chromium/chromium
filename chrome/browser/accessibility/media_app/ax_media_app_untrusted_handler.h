@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -194,6 +195,11 @@ class AXMediaAppUntrustedHandler
       std::nullopt;
   // This registrar is used to monitor changes to the PDF OCR setting.
   PrefChangeRegistrar user_prefs_registrar_;
+  // Records when the user starts reading content in MediaApp.
+  base::TimeTicks start_reading_time_;
+  // Records of most recent time when the user reads content in MediaApp.
+  base::TimeTicks latest_reading_time_;
+
   base::WeakPtrFactory<AXMediaAppUntrustedHandler> weak_ptr_factory_{this};
 };
 

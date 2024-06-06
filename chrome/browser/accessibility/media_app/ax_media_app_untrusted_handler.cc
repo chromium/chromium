@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -121,6 +122,15 @@ AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
   for (auto& page : pages_) {
     ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
         page.second->GetTreeID());
+  }
+
+  if (!start_reading_time_.is_null() && !latest_reading_time_.is_null() &&
+      start_reading_time_ < latest_reading_time_) {
+    // Record time difference between `start_reading_time_` and
+    // `latest_reading_time_`. This is considered as active time.
+    base::TimeDelta active_time = latest_reading_time_ - start_reading_time_;
+    base::UmaHistogramLongTimes100("Accessibility.PdfOcr.MediaApp.ActiveTime",
+                                   active_time);
   }
 }
 
@@ -279,10 +289,22 @@ void AXMediaAppUntrustedHandler::PerformAction(
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
       }
+
+      // Records the time that the user starts navigating content and the most
+      // recent time that the user navigates it as well.
+      if (start_reading_time_.is_null()) {
+        start_reading_time_ = base::TimeTicks::Now();
+        latest_reading_time_ = start_reading_time_;
+      } else {
+        // Keep tracking of most recent time that the user navigates content.
+        latest_reading_time_ = base::TimeTicks::Now();
+      }
+
       DCHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
       DCHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount() -
                                    (has_landmark_node_ ? 1u : 0u) -
                                    (has_postamble_page_ ? 1u : 0u));
+
       for (int32_t page_index = 0; const auto& page : pages_) {
         const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
         if (page_manager->GetTreeID() != action_data.target_tree_id) {

@@ -42,6 +42,7 @@
 #include <vector>
 
 #include "base/strings/escape.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -142,7 +143,6 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    ASSERT_NE(nullptr, handler_.get());
     handler_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -1258,6 +1258,86 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                  /*y=*/kTestPageHeight * 2 + kTestPageGap - kViewportHeight,
                  kViewportWidth, kViewportHeight),
       fake_media_app_.ViewportBox());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       CheckActiveTimeWithMultipleScrollToMakeVisibleActions) {
+  base::HistogramTester histograms;
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  const size_t kTestNumPages = 2;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // No metric has been recorded at this moment.
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.ActiveTime",
+                              /*expected_count=*/0);
+
+  ui::AXActionData first_scroll_action_data;
+  first_scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  first_scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  first_scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+  // "Scroll to make visible" the target node.
+  handler_->PerformAction(first_scroll_action_data);
+
+  ui::AXActionData second_scroll_action_data;
+  second_scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  second_scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[1]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[1]->id)->GetRoot());
+  second_scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[1]->id)->GetRoot()->id();
+  // "Scroll to make visible" the target node.
+  handler_->PerformAction(second_scroll_action_data);
+
+  // Destroying handler will trigger recording the metric.
+  handler_.reset();
+
+  // There must be one bucket being recorded at this moment.
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.ActiveTime",
+                              /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       CheckNoActiveTimeWithSingleScrollToMakeVisibleAction) {
+  base::HistogramTester histograms;
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  const size_t kTestNumPages = 1;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // No metric has been recorded at this moment.
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.ActiveTime",
+                              /*expected_count=*/0);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+  // "Scroll to make visible" the target node, which should scroll forward.
+  handler_->PerformAction(scroll_action_data);
+
+  // Destroying handler will trigger recording the metric.
+  handler_.reset();
+
+  // Nothing has been recorded yet as the active time expects at least two
+  // ScrollToMakeVisible actions to happen for recording.
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.ActiveTime",
+                              /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
