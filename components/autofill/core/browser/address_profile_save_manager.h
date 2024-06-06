@@ -14,16 +14,14 @@
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillProfile;
-class PersonalDataManager;
 
 // Manages logic for saving address profiles to the database. Owned by
 // FormDataImporter.
 class AddressProfileSaveManager {
  public:
-  // The parameters should outlive the AddressProfileSaveManager.
-  AddressProfileSaveManager(AutofillClient* client,
-                            PersonalDataManager* personal_data_manager);
+  explicit AddressProfileSaveManager(AutofillClient* client);
   AddressProfileSaveManager(const AddressProfileSaveManager&) = delete;
   AddressProfileSaveManager& operator=(const AddressProfileSaveManager&) =
       delete;
@@ -64,9 +62,7 @@ class AddressProfileSaveManager {
                       AutofillClient::AddressPromptUserDecision decision,
                       base::optional_ref<const AutofillProfile> edited_profile);
 
-  PersonalDataManager* personal_data_manager() {
-    return personal_data_manager_;
-  }
+  AddressDataManager& address_data_manager();
 
  private:
   // Called to initiate the actual storing of a profile.
@@ -81,17 +77,12 @@ class AddressProfileSaveManager {
 
   // Increases or resets the strike count depending on the user decision for
   // the corresponding prompt type.
-  void AdjustNewProfileStrikes(ProfileImportProcess& import_process) const;
-  void AdjustUpdateProfileStrikes(ProfileImportProcess& import_process) const;
-  void AdjustMigrateProfileStrikes(ProfileImportProcess& import_process) const;
+  void AdjustNewProfileStrikes(ProfileImportProcess& import_process);
+  void AdjustUpdateProfileStrikes(ProfileImportProcess& import_process);
+  void AdjustMigrateProfileStrikes(ProfileImportProcess& import_process);
 
-  // A pointer to the autofill client. It is assumed that the client outlives
-  // the instance of this class
-  const raw_ptr<AutofillClient> client_;
-
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.
-  const raw_ptr<PersonalDataManager> personal_data_manager_{nullptr};
+  // The client must outlive the instance of this class
+  const raw_ref<AutofillClient> client_;
 
   base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };
