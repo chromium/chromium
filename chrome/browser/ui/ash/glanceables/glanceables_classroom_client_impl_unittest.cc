@@ -272,6 +272,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
         }));
   }
 
+  base::SimpleTestClock* clock() { return &test_clock_; }
   GlanceablesClassroomClientImpl* client() { return client_.get(); }
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   TestRequestHandler& request_handler() { return request_handler_; }
@@ -1245,21 +1246,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        StudentRoleIsActiveWithEnrolledCourses) {
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  Field(&HttpRequest::relative_url,
-                        AllOf(HasSubstr("/courses?"), HasSubstr("studentId=me"),
-                              Not(HasSubstr("teacherId=me"))))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
-            {
-              "courses": [
-                {
-                  "id": "course-id-1",
-                  "name": "Active Course 1",
-                  "courseState": "ACTIVE"
-                }
-              ]
-            })"))));
+  ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -1305,6 +1293,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest, ReturnsCompletedStudentAssignments) {
   ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -1429,6 +1418,7 @@ TEST_F(GlanceablesClassroomClientImplTest, ReturnsCompletedStudentAssignments) {
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnsStudentAssignmentsWithApproachingDueDate) {
   ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -1587,6 +1577,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnsStudentAssignmentsWithMissedDueDate) {
   ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -1763,6 +1754,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnsStudentAssignmentsWithoutDueDate) {
   ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -1932,6 +1924,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
 TEST_F(GlanceablesClassroomClientImplTest,
        SubmissionsFailureWhenFetchingStudentAssignments) {
   ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -1995,36 +1988,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        RefetchStudentAssignmentsAfterReshowingBubble) {
-  // Mock requests for a course where the user is student - expect two requests,
-  // second of which adds an assignment with an approaching due date.
-  EXPECT_CALL(request_handler(),
-              HandleRequest(Field(
-                  &HttpRequest::relative_url,
-                  AllOf(HasSubstr("/courses?"), HasSubstr("studentId=me")))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
-            {
-              "courses": [
-                {
-                  "id": "student-course",
-                  "name": "Active Student Course",
-                  "courseState": "ACTIVE"
-                }
-              ]
-            })"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
-            {
-              "courses": [
-                {
-                  "id": "student-course",
-                  "name": "Active Student Course",
-                  "courseState": "ACTIVE"
-                }
-              ]
-            })"))));
+  ExpectActiveCourse();
+
   EXPECT_CALL(
       request_handler(),
       HandleRequest(Field(&HttpRequest::relative_url,
-                          HasSubstr("/courses/student-course/courseWork?"))))
+                          HasSubstr("/courses/course-id-1/courseWork?"))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courseWork": [
@@ -2112,7 +2081,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
     const auto [success, assignments] = future.Take();
     EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
-    EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - missed due date");
   }
@@ -2139,7 +2108,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
     const auto [success, assignments] = future.Take();
     EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
-    EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - approaching due date");
   }
@@ -2152,7 +2121,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
     const auto [success, assignments] = future.Take();
     EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
-    EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - missed due date");
   }
@@ -2166,7 +2135,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
     const auto [success, assignments] = future.Take();
     EXPECT_TRUE(success);
     ASSERT_EQ(assignments.size(), 1u);
-    EXPECT_EQ(assignments.at(0)->course_title, "Active Student Course");
+    EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
     EXPECT_EQ(assignments.at(0)->course_work_title,
               "Math assignment - approaching due date");
   }
@@ -2174,7 +2143,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        FetchStudentCoursesAfterIsActiveCheck) {
-  ExpectActiveCourse(/*times=*/2);
+  ExpectActiveCourse();
 
   EXPECT_CALL(
       request_handler(),
@@ -2244,7 +2213,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        FetchStudentCoursesConcurrentlyWithIsActiveCheck) {
-  ExpectActiveCourse(/*times=*/2);
+  ExpectActiveCourse();
 
   EXPECT_CALL(
       request_handler(),
@@ -2309,27 +2278,12 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        DontRefetchStudentAssignmentsIfBubbleReshownWhileStillFetching) {
-  EXPECT_CALL(request_handler(),
-              HandleRequest(Field(
-                  &HttpRequest::relative_url,
-                  AllOf(HasSubstr("/courses?"), HasSubstr("studentId=me")))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
-            {
-              "courses": [
-                {
-                  "id": "student-course",
-                  "name": "Active Student Course",
-                  "courseState": "ACTIVE"
-                }
-              ]
-            })"))))
-      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
-            {"courses": []}
-      )"))));
+  ExpectActiveCourse();
+
   EXPECT_CALL(
       request_handler(),
       HandleRequest(Field(&HttpRequest::relative_url,
-                          HasSubstr("/courses/student-course/courseWork?"))))
+                          HasSubstr("/courses/course-id-1/courseWork?"))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
             {
               "courseWork": [
@@ -2378,14 +2332,14 @@ TEST_F(GlanceablesClassroomClientImplTest,
   const auto [initial_success, initial_assignments] = initial_future.Take();
   EXPECT_TRUE(initial_success);
   ASSERT_EQ(initial_assignments.size(), 1u);
-  EXPECT_EQ(initial_assignments.at(0)->course_title, "Active Student Course");
+  EXPECT_EQ(initial_assignments.at(0)->course_title, "Active Course 1");
   EXPECT_EQ(initial_assignments.at(0)->course_work_title,
             "Math assignment - missed due date");
 
   const auto [second_success, second_assignments] = second_future.Take();
   EXPECT_TRUE(second_success);
   ASSERT_EQ(second_assignments.size(), 1u);
-  EXPECT_EQ(second_assignments.at(0)->course_title, "Active Student Course");
+  EXPECT_EQ(second_assignments.at(0)->course_title, "Active Course 1");
   EXPECT_EQ(second_assignments.at(0)->course_work_title,
             "Math assignment - missed due date");
 
@@ -2397,21 +2351,9 @@ TEST_F(GlanceablesClassroomClientImplTest,
   const auto [third_success, third_assignments] = third_future.Take();
   EXPECT_TRUE(third_success);
   ASSERT_EQ(third_assignments.size(), 1u);
-  EXPECT_EQ(third_assignments.at(0)->course_title, "Active Student Course");
+  EXPECT_EQ(third_assignments.at(0)->course_title, "Active Course 1");
   EXPECT_EQ(third_assignments.at(0)->course_work_title,
             "Math assignment - missed due date");
-
-  // Request after closing the bubble should refetch data, which is in this case
-  // empty.
-  client()->OnGlanceablesBubbleClosed();
-
-  AssignmentListFuture refetch_future;
-  client()->GetStudentAssignmentsWithMissedDueDate(
-      refetch_future.GetCallback());
-
-  const auto [refetch_success, refetch_assignments] = refetch_future.Take();
-  EXPECT_TRUE(refetch_success);
-  EXPECT_EQ(refetch_assignments.size(), 0u);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -2518,6 +2460,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
+    clock()->Advance(base::Hours(4));
+
     AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
@@ -2532,6 +2476,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Make sure assignments can be refetched after a failure.
   {
+    clock()->Advance(base::Hours(4));
+
     AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
@@ -2665,6 +2611,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   {
+    clock()->Advance(base::Hours(4));
+
     AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
@@ -2679,6 +2627,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   // Make sure assignments can be refetched after a failure.
   {
+    clock()->Advance(base::Hours(4));
+
     AssignmentListFuture future;
     client()->GetStudentAssignmentsWithApproachingDueDate(future.GetCallback());
 
@@ -2693,7 +2643,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnCachedDataIfCourseWorkFetchFailsForStudents) {
-  ExpectActiveCourse(/*call_count=*/2);
+  ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -2837,7 +2788,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnCachedDataIfCourseWorkSecondPageFetchFailsForStudents) {
-  ExpectActiveCourse(/*call_count=*/2);
+  ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(Field(&HttpRequest::relative_url,
                                   AllOf(HasSubstr("/courseWork?"),
@@ -3015,7 +2967,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnCachedDataIfSubmissionsFetchFailsForStudents) {
-  ExpectActiveCourse(/*call_count=*/2);
+  ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
@@ -3170,7 +3123,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
 TEST_F(GlanceablesClassroomClientImplTest,
        ReturnCachedDataIfSubmissionsSecondPageFetchFailsForStudents) {
-  ExpectActiveCourse(/*call_count=*/2);
+  ExpectActiveCourse();
+
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))

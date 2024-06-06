@@ -134,7 +134,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // the list of callbacks waiting for the list to be fetched.
   class CourseListState {
    public:
-    CourseListState();
+    explicit CourseListState(base::Clock* clock);
     CourseListState(const CourseListState&) = delete;
     CourseListState& operator=(const CourseListState&) = delete;
     ~CourseListState();
@@ -154,10 +154,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
     // list fetch request failed.
     void FinalizeFetch(std::unique_ptr<CourseList> fetched_courses);
 
-    // Updates fetch status to indicate it can be refetched when course list is
-    // requested next time. Called when the glanceables bubble gets closed.
-    void InvalidateFetchStatus();
-
     const CourseList& courses() const { return courses_; }
 
    private:
@@ -167,6 +163,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
     CourseList courses_;
     FetchStatus fetch_status_ = FetchStatus::kNotFetched;
+    const raw_ptr<base::Clock> clock_;
+    base::Time last_successful_fetch_time_;
     std::vector<FetchCoursesCallback> callbacks_;
   };
 

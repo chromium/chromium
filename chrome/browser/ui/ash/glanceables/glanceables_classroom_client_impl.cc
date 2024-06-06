@@ -75,6 +75,8 @@ constexpr char kAllStudentSubmissionsParameterValue[] = "-";
 
 constexpr char kClassroomUrl[] = "https://classroom.google.com/";
 
+constexpr auto kCoursesCacheDuration = base::Hours(4);
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("glanceables_classroom_integration", R"(
         semantics {
@@ -112,22 +114,24 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
 
 }  // namespace
 
-GlanceablesClassroomClientImpl::CourseListState::CourseListState() = default;
+GlanceablesClassroomClientImpl::CourseListState::CourseListState(
+    base::Clock* clock)
+    : clock_(clock) {}
 
 GlanceablesClassroomClientImpl::CourseListState::~CourseListState() = default;
 
 bool GlanceablesClassroomClientImpl::CourseListState::
     RunOrEnqueueCallbackAndUpdateFetchStatus(
         GlanceablesClassroomClientImpl::FetchCoursesCallback callback) {
-  if (fetch_status_ == FetchStatus::kFetched) {
+  if (fetch_status_ == FetchStatus::kFetched &&
+      clock_->Now() - last_successful_fetch_time_ < kCoursesCacheDuration) {
     std::move(callback).Run(/*success=*/true, courses_);
     return false;
   }
 
   callbacks_.push_back(std::move(callback));
 
-  const bool needs_fetch = fetch_status_ != FetchStatus::kFetching &&
-                           fetch_status_ != FetchStatus::kFetchingInvalidated;
+  const bool needs_fetch = fetch_status_ != FetchStatus::kFetching;
   fetch_status_ = FetchStatus::kFetching;
   return needs_fetch;
 }
@@ -140,17 +144,16 @@ void GlanceablesClassroomClientImpl::CourseListState::FinalizeFetch(
     switch (fetch_status_) {
       case FetchStatus::kNotFetched:
       case FetchStatus::kFetched:
+      case FetchStatus::kFetchingInvalidated:
         NOTREACHED_IN_MIGRATION();
         break;
       case FetchStatus::kFetching:
         fetch_status_ = FetchStatus::kFetched;
         break;
-      case FetchStatus::kFetchingInvalidated:
-        fetch_status_ = FetchStatus::kNotFetched;
-        break;
     }
 
     courses_.swap(*fetched_courses);
+    last_successful_fetch_time_ = clock_->Now();
   } else {
     fetch_status_ = FetchStatus::kNotFetched;
     // NOTE: Keeping existing `courses_` state around, so it can be reused to
@@ -160,10 +163,6 @@ void GlanceablesClassroomClientImpl::CourseListState::FinalizeFetch(
   }
 
   RunCallbacks(success);
-}
-
-void GlanceablesClassroomClientImpl::CourseListState::InvalidateFetchStatus() {
-  GlanceablesClassroomClientImpl::InvalidateFetchStatus(&fetch_status_);
 }
 
 void GlanceablesClassroomClientImpl::CourseListState::RunCallbacks(
@@ -213,7 +212,8 @@ GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
         create_request_sender_callback)
     : profile_(profile),
       clock_(clock),
-      create_request_sender_callback_(create_request_sender_callback) {}
+      create_request_sender_callback_(create_request_sender_callback),
+      student_courses_(CourseListState(clock_)) {}
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
 
@@ -397,7 +397,6 @@ void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
        {&student_data_fetch_status_, &teacher_data_fetch_status_}) {
     InvalidateFetchStatus(fetch_status);
   }
-  student_courses_.InvalidateFetchStatus();
 }
 
 // static
