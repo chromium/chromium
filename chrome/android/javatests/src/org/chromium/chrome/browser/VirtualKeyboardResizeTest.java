@@ -227,7 +227,7 @@ public class VirtualKeyboardResizeTest {
         double keyboardHeightPx =
                 mActivityTestRule
                         .getKeyboardDelegate()
-                        .calculateKeyboardHeight(
+                        .calculateTotalKeyboardHeight(
                                 mActivityTestRule
                                         .getActivity()
                                         .getWindow()

@@ -624,7 +624,7 @@ public class CompositorViewHolderUnitTest {
         int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
@@ -642,7 +642,7 @@ public class CompositorViewHolderUnitTest {
 
         // Hide the keyboard.
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(0);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
         mKeyboardInsetSupplier.set(0);
@@ -663,7 +663,7 @@ public class CompositorViewHolderUnitTest {
 
         // Simulate the keyboard being hidden
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(0);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
         when(mCompositorViewHolder.getWidth()).thenReturn(viewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(viewportHeight);
         mKeyboardInsetSupplier.set(0);
@@ -691,7 +691,7 @@ public class CompositorViewHolderUnitTest {
         int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
         mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
@@ -719,7 +719,7 @@ public class CompositorViewHolderUnitTest {
         int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
         mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
@@ -766,7 +766,7 @@ public class CompositorViewHolderUnitTest {
         int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
         mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);

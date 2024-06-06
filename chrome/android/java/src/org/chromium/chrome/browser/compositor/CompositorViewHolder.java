@@ -916,7 +916,7 @@ public class CompositorViewHolder extends FrameLayout
             if (mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
                 int keyboardHeight =
                         KeyboardVisibilityDelegate.getInstance()
-                                .calculateKeyboardHeight(this.getRootView());
+                                .calculateTotalKeyboardHeight(this.getRootView());
                 notifyVirtualKeyboardOverlayGeometryChangeEvent(width, keyboardHeight, webContents);
             }
         } else {

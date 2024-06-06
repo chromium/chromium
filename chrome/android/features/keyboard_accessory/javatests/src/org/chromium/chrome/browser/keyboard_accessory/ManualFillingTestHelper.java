@@ -255,7 +255,7 @@ public class ManualFillingTestHelper {
      */
     public void clickSubmit() throws TimeoutException {
         DOMUtils.clickNode(mWebContentsRef.get(), SUBMIT_NODE_ID);
-        getKeyboard().hideAndroidSoftKeyboard(null);
+        getKeyboard().hideSoftKeyboardOnly(null);
     }
 
     // ---------------------------------
@@ -267,7 +267,7 @@ public class ManualFillingTestHelper {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     return !getKeyboard()
-                            .isAndroidSoftKeyboardShowing(activity, activity.getCurrentFocus());
+                            .isSoftKeyboardShowing(activity, activity.getCurrentFocus());
                 });
     }
 

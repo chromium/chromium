@@ -83,29 +83,7 @@ public class KeyboardVisibilityDelegate {
      * @return Whether the keyboard was visible before.
      */
     public boolean hideKeyboard(View view) {
-        return hideAndroidSoftKeyboard(view);
-    }
-
-    /**
-     * Hides the soft keyboard by using the {@link Context#INPUT_METHOD_SERVICE}. This template
-     * method simplifies mocking and the access to the soft keyboard in subclasses.
-     *
-     * @param view The {@link View} that is currently accepting input.
-     * @return Whether the keyboard was visible before.
-     */
-    protected boolean hideAndroidSoftKeyboard(View view) {
         return KeyboardUtils.hideAndroidSoftKeyboard(view);
-    }
-
-    /**
-     * Calculates the keyboard height based on the bottom margin it causes for the given rootView.
-     * It is used to determine whether the keyboard is visible.
-     *
-     * @param rootView A {@link View}.
-     * @return The size of the bottom margin which most likely is exactly the keyboard size.
-     */
-    public int calculateKeyboardHeight(View rootView) {
-        return KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
     }
 
     /**
@@ -113,31 +91,22 @@ public class KeyboardVisibilityDelegate {
      *
      * <p>In addition to the keyboard itself, this may include accessory bars and related widgets
      * that behave as-if they're part of the keyboard if the embedder supports them.
+     *
+     * @param rootView A {@link View}.
+     * @return The the total keyboard widget height, including accessory bars if exists.
      */
     public int calculateTotalKeyboardHeight(View rootView) {
-        return calculateKeyboardHeight(rootView);
+        return KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
     }
 
     /**
      * Returns whether the keyboard is showing.
-     * @param context A {@link Context} instance.
-     * @param view    A {@link View}.
-     * @return        Whether or not the software keyboard is visible.
-     */
-    public boolean isKeyboardShowing(Context context, View view) {
-        return isAndroidSoftKeyboardShowing(context, view);
-    }
-
-    /**
-     * Detects whether or not the keyboard is showing. This is a best guess based on the height of
-     * the keyboard as there is no standardized/foolproof way to do this. This template method
-     * simplifies mocking and the access to the soft keyboard in subclasses.
      *
      * @param context A {@link Context} instance.
      * @param view A {@link View}.
      * @return Whether or not the software keyboard is visible.
      */
-    protected boolean isAndroidSoftKeyboardShowing(Context context, View view) {
+    public boolean isKeyboardShowing(Context context, View view) {
         return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 

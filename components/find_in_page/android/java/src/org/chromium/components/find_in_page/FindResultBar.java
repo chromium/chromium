@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.chromium.base.MathUtils;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -211,7 +210,7 @@ public class FindResultBar extends View {
             // We decided it's more important to get the keyboard out of the
             // way asap; the user can compensate if their next MotionEvent
             // scrolls somewhere unintended.
-            KeyboardVisibilityDelegate.getInstance().hideKeyboard(this);
+            mWindowAndroid.getKeyboardDelegate().hideKeyboard(this);
 
             // Identify which drawn tickmark is closest to the user's finger.
             int closest =
