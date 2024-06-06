@@ -10,6 +10,7 @@
 
 @synthesize doodleObserver = _doodleObserver;
 @synthesize showingLogo = _showingLogo;
+@synthesize usesMonochromeLogo = _usesMonochromeLogo;
 @synthesize view = _view;
 
 - (instancetype)init {

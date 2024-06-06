@@ -30,6 +30,9 @@ class WebState;
 // Whether or not the logo should be shown.  Defaults to YES.
 @property(nonatomic, assign, getter=isShowingLogo) BOOL showingLogo;
 
+// Whether the logo should be multicolor or monochrome.
+@property(nonatomic, assign) BOOL usesMonochromeLogo;
+
 // Whether or not the doodle is being shown. Defaults to NO.
 - (BOOL)isShowingDoodle;
 
