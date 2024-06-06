@@ -544,10 +544,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
       if (!cert_with_constraints.permitted_cidrs.empty()) {
         for (const auto& cidr : cert_with_constraints.permitted_cidrs) {
-          bssl::der::Input ip(cidr.ip.bytes().data(), cidr.ip.bytes().size());
-          bssl::der::Input mask(cidr.mask.bytes().data(),
-                                cidr.mask.bytes().size());
-          permitted_names.ip_address_ranges.emplace_back(ip, mask);
+          permitted_names.ip_address_ranges.emplace_back(cidr.ip.bytes(),
+                                                         cidr.mask.bytes());
         }
         permitted_names.present_name_types |=
             bssl::GeneralNameTypes::GENERAL_NAME_IP_ADDRESS;
@@ -728,7 +726,7 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
 
   for (const auto& spki : instance_params.additional_distrusted_spkis) {
     additional_trust_store_.AddDistrustedCertificateBySPKI(
-        std::string(spki.begin(), spki.end()));
+        std::string(base::as_string_view(spki)));
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
       base::Value::Dict results;
       results.Set("spki", NetLogBinaryValue(base::make_span(spki)));
