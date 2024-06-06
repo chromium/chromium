@@ -2947,7 +2947,7 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
     ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(
         &strip, test_data[i].tab_count, test_data[i].pinned_count,
         test_data[i].selected_tabs));
-    strip.MoveSelectedTabsTo(test_data[i].target_index);
+    strip.MoveSelectedTabsTo(test_data[i].target_index, std::nullopt);
     EXPECT_EQ(test_data[i].state_after_move, GetTabStripStateString(strip))
         << i;
     strip.CloseAllTabs();
@@ -2987,7 +2987,7 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
   EXPECT_EQ(raw_page_b1_contents, strip.GetWebContentsAt(3));
 
   // Move page B to the start of the tab strip.
-  strip.MoveSelectedTabsTo(0);
+  strip.MoveSelectedTabsTo(0, std::nullopt);
 
   // Open page B2 in the background from B. It should end up after B.
   std::unique_ptr<WebContents> page_b2_contents = CreateWebContents();
@@ -3796,6 +3796,23 @@ TEST_F(TabStripModelTest, AddToNewGroupDeletesGroup) {
 
   EXPECT_EQ(strip.group_model()->ListTabGroups().size(), 1U);
   EXPECT_NE(strip.GetTabGroupForTab(0), group);
+
+  strip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveGroupToTest) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  PrepareTabs(&strip, 5);
+
+  MockTabStripModelObserver observer;
+  strip.AddObserver(&observer);
+
+  const tab_groups::TabGroupId group1 = strip.AddToNewGroup({0, 1, 2});
+  strip.MoveGroupTo(group1, 2);
+
+  EXPECT_EQ("3 4 0 1 2", GetTabStripStateString(strip));
+  EXPECT_EQ(group1, strip.GetTabGroupForTab(4));
 
   strip.CloseAllTabs();
 }

@@ -43,6 +43,7 @@ class Profile;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
+class TabDragController;
 
 namespace content {
 class WebContents;
@@ -324,7 +325,8 @@ class TabStripModel : public TabGroupController {
   // index were 3, then the result would be [b c A f D F]. A, being pinned, can
   // move no further than index 2. The non-pinned tabs are moved to the target
   // index + selected-pinned tab-count (3 + 1).
-  void MoveSelectedTabsTo(int index);
+  void MoveSelectedTabsTo(int index,
+                          std::optional<tab_groups::TabGroupId> group);
 
   // Moves all tabs in |group| to |to_index|. This has no checks to make sure
   // the position is valid for a group to move to.
@@ -490,6 +492,14 @@ class TabStripModel : public TabGroupController {
   void MoveTabNext();
   void MoveTabPrevious();
 
+  // This is used by the `tab_drag_controller` to help precompute the group the
+  // selected tabs would be a part of if they moved to a destination index. It
+  // returns the index of the tabs in the current model that would end up being
+  // the adjacent tabs of the selected unpinned tabs post move operation.
+  std::pair<std::optional<int>, std::optional<int>>
+  GetAdjacentTabsAfterSelectedMove(base::PassKey<TabDragController>,
+                                   int destination_index);
+
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
   // so they are contiguous and do not split an existing group in half. Returns
@@ -512,13 +522,6 @@ class TabStripModel : public TabGroupController {
   void AddToExistingGroup(const std::vector<int> indices,
                           const tab_groups::TabGroupId group,
                           const bool add_to_end = false);
-
-  // Moves the set of tabs indicated by |indices| to precede the tab at index
-  // |destination_index|, maintaining their order and the order of tabs not
-  // being moved, and adds them to the tab group |group|.
-  void MoveTabsAndSetGroup(const std::vector<int>& indices,
-                           int destination_index,
-                           std::optional<tab_groups::TabGroupId> group);
 
   // Similar to AddToExistingGroup(), but creates a group with id |group| if it
   // doesn't exist. This is only intended to be called from session restore
@@ -672,6 +675,12 @@ class TabStripModel : public TabGroupController {
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
 
   struct DetachNotifications;
+  struct MoveNotification {
+    int initial_index;
+    std::optional<tab_groups::TabGroupId> intial_group;
+    tabs::TabHandle handle;
+    TabStripSelectionChange selection_change;
+  };
 
   // Tracks whether a tabstrip-modal UI is showing.
   class ScopedTabStripModalUIImpl : public ScopedTabStripModalUI {
@@ -824,12 +833,17 @@ class TabStripModel : public TabGroupController {
   // starting at |start| to |index|. See MoveSelectedTabsTo for more details.
   void MoveSelectedTabsToImpl(int index, size_t start, size_t length);
 
+  std::vector<int> GetSelectedPinnedTabs();
+  std::vector<int> GetSelectedUnpinnedTabs();
+
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.
   void AddToNewGroupImpl(
       const std::vector<int>& indices,
       const tab_groups::TabGroupId& new_group,
       std::optional<tab_groups::TabGroupVisualData> visual_data = std::nullopt);
+
+  void MoveGroupToImpl(const tab_groups::TabGroupId& group, int to_index);
 
   // Adds tabs to existing group |group|. This group must have been initialized
   // by a previous call to |AddToNewGroupImpl()|.
@@ -866,6 +880,12 @@ class TabStripModel : public TabGroupController {
                           bool pin,
                           bool select_after_move);
 
+  // Similar to `MoveTabToIndexImpl` but this is used for multiple tabs either
+  // being moved or having their group updated. `tab_indices` should be sorted.
+  void MoveTabsToIndexImpl(const std::vector<int>& tab_indices,
+                           int destination_index,
+                           const std::optional<tab_groups::TabGroupId> group);
+
   // Sends group notifications for a tab at `index` based on its initial_group
   // and `final_group` and updates the `group_model_`.
   void TabGroupStateChanged(
@@ -893,6 +913,18 @@ class TabStripModel : public TabGroupController {
   TabStripSelectionChange MaybeUpdateSelectionModel(int initial_index,
                                                     int final_index,
                                                     bool select_after_move);
+
+  // Generates the MoveNotifications for `MoveTabsToIndexImpl` and updates the
+  // selection model and openers.
+  std::vector<TabStripModel::MoveNotification> PrepareTabsToMoveToIndex(
+      const std::vector<int>& tab_indices,
+      int destination_index);
+
+  // Generates a sequence of initial and destination index for tabs in
+  // `tab_indices` when the tabs need to move to `destination_index`.
+  std::vector<std::pair<int, int>> CalculateIncrementalTabMoves(
+      const std::vector<int>& tab_indices,
+      int destination_index) const;
 
   // Changes the pinned state of all tabs at `indices`, moving them in the
   // process if necessary.

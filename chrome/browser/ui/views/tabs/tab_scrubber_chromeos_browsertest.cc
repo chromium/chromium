@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MoveHighlighted) {
   EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   browser()->tab_strip_model()->ToggleSelectionAt(1);
-  browser()->tab_strip_model()->MoveSelectedTabsTo(1);
+  browser()->tab_strip_model()->MoveSelectedTabsTo(1, std::nullopt);
   EXPECT_EQ(1, TabScrubberChromeOS::GetInstance()->highlighted_tab());
 }
 
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MoveBefore) {
   EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   browser()->tab_strip_model()->ToggleSelectionAt(2);
-  browser()->tab_strip_model()->MoveSelectedTabsTo(2);
+  browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
   EXPECT_EQ(0, TabScrubberChromeOS::GetInstance()->highlighted_tab());
 }
 
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MoveAfter) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->MoveSelectedTabsTo(0);
+  browser()->tab_strip_model()->MoveSelectedTabsTo(0, std::nullopt);
   EXPECT_EQ(2, TabScrubberChromeOS::GetInstance()->highlighted_tab());
 }
 
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLMoveBefore) {
   EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   browser()->tab_strip_model()->ToggleSelectionAt(2);
-  browser()->tab_strip_model()->MoveSelectedTabsTo(2);
+  browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
   EXPECT_EQ(0, TabScrubberChromeOS::GetInstance()->highlighted_tab());
 }
 

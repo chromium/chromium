@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -568,44 +569,34 @@ int TabStripModel::MoveWebContentsAt(
   to_position = ConstrainMoveIndex(to_position, IsTabPinned(index));
   MoveTabToIndexImpl(index, to_position, group, IsTabPinned(index),
                      select_after_move);
-  ValidateTabStripModel();
   return to_position;
 }
 
-void TabStripModel::MoveSelectedTabsTo(int index) {
+void TabStripModel::MoveSelectedTabsTo(
+    int index,
+    std::optional<tab_groups::TabGroupId> group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  int total_pinned_count = IndexOfFirstNonPinnedTab();
-  int selected_pinned_count = 0;
-  const ui::ListSelectionModel::SelectedIndices& selected_indices =
-      selection_model_.selected_indices();
-  int selected_count = static_cast<int>(selected_indices.size());
-  for (auto selection : selected_indices) {
-    if (IsTabPinned(selection))
-      selected_pinned_count++;
-  }
+  const int pinned_tab_count = IndexOfFirstNonPinnedTab();
+  const std::vector<int> pinned_selected_indices = GetSelectedPinnedTabs();
+  const std::vector<int> unpinned_selected_indices = GetSelectedUnpinnedTabs();
 
-  // To maintain that all pinned tabs occur before non-pinned tabs we move them
-  // first.
-  if (selected_pinned_count > 0) {
-    MoveSelectedTabsToImpl(
-        std::min(total_pinned_count - selected_pinned_count, index), 0u,
-        selected_pinned_count);
-    if (index > total_pinned_count - selected_pinned_count) {
-      // We're being told to drag pinned tabs to an invalid location. Adjust the
-      // index such that non-pinned tabs end up at a location as though we could
-      // move the pinned tabs to index. See description in header for more
-      // details.
-      index += selected_pinned_count;
-    }
-  }
-  if (selected_pinned_count == selected_count)
-    return;
+  const int last_pinned_index =
+      std::clamp(index + static_cast<int>(pinned_selected_indices.size()) - 1,
+                 static_cast<int>(pinned_selected_indices.size()) - 1,
+                 pinned_tab_count - 1);
 
-  // Then move the non-pinned tabs.
-  MoveSelectedTabsToImpl(std::max(index, total_pinned_count),
-                         selected_pinned_count,
-                         selected_count - selected_pinned_count);
+  MoveTabsToIndexImpl(
+      pinned_selected_indices,
+      last_pinned_index - static_cast<int>(pinned_selected_indices.size()) + 1,
+      std::nullopt);
+
+  const int first_unpinned_index =
+      std::clamp(index + static_cast<int>(pinned_selected_indices.size()),
+                 pinned_tab_count,
+                 count() - static_cast<int>(unpinned_selected_indices.size()));
+
+  MoveTabsToIndexImpl(unpinned_selected_indices, first_unpinned_index, group);
 }
 
 void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
@@ -615,27 +606,60 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
   CHECK_NE(to_index, kNoTab);
   to_index = ConstrainMoveIndex(to_index, false /* pinned tab */);
 
-  if (!group_model_)
+  if (!group_model_) {
     return;
-
-  gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
-  DCHECK_GT(tabs_in_group.length(), 0u);
-
-  int from_index = tabs_in_group.start();
-
-  if (to_index < from_index) {
-    // When moving a group to the left, we move the tabs towards
-    // end of the group first. This way we do not need to update the to_index.
-    from_index = tabs_in_group.end() - 1;
-  } else if (to_index > from_index) {
-    // When moving a group to the right, we move the tabs towards
-    // the beginning of the group first. This way we do not need to update the
-    // from_index.
-    to_index += tabs_in_group.length() - 1;
   }
 
-  for (size_t i = 0; i < tabs_in_group.length(); ++i) {
-    MoveTabToIndexImpl(from_index, to_index, group, false, false);
+  MoveGroupToImpl(group, to_index);
+}
+
+void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
+                                    int to_index) {
+  const gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
+  CHECK_GT(tabs_in_group.length(), 0u);
+
+  std::vector<int> tab_indices;
+  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+    tab_indices.push_back(i);
+  }
+
+  const std::vector<MoveNotification> notifications =
+      PrepareTabsToMoveToIndex(tab_indices, to_index);
+
+  std::vector<std::unique_ptr<tabs::TabModel>> moved_tabs;
+
+  // Remove all the tabs from the model.
+  for (int tab_index : base::Reversed(tab_indices)) {
+    std::unique_ptr<tabs::TabModel> moved_data =
+        std::move(GetContentsDataAsVector()[tab_index]);
+    moved_tabs.insert(moved_tabs.begin(), std::move(moved_data));
+    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
+                                    tab_index);
+  }
+
+  //  Add all the tabs back to the model.
+  for (size_t i = 0; i < moved_tabs.size(); i++) {
+    moved_tabs[i]->set_group(group);
+    GetContentsDataAsVector().insert(
+        GetContentsDataAsVector().begin() + to_index + i,
+        std::move(moved_tabs[i]));
+  }
+
+  ValidateTabStripModel();
+
+  for (auto notification : notifications) {
+    const int final_index = GetIndexOfTab(notification.handle);
+    const tabs::TabModel* const tab = GetTabAtIndex(final_index);
+    if (notification.initial_index != final_index) {
+      SendMoveNotificationForWebContents(notification.initial_index,
+                                         final_index, tab->contents(),
+                                         notification.selection_change);
+    }
+
+    if (notification.intial_group != tab->group()) {
+      TabGroupStateChanged(final_index, tab->contents(),
+                           notification.intial_group, tab->group());
+    }
   }
 
   MoveTabGroup(group);
@@ -1149,18 +1173,6 @@ void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
   CHECK(ContainsIndex(*(indices.rbegin())));
 
   AddToExistingGroupImpl(indices, group, add_to_end);
-}
-
-void TabStripModel::MoveTabsAndSetGroup(
-    const std::vector<int>& indices,
-    int destination_index,
-    std::optional<tab_groups::TabGroupId> group) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-
-  if (!group_model_)
-    return;
-
-  MoveTabsAndSetGroupImpl(indices, destination_index, group);
 }
 
 void TabStripModel::AddToGroupForRestore(const std::vector<int>& indices,
@@ -2298,48 +2310,114 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
                      IsTabPinned(target_index), true);
 }
 
-void TabStripModel::MoveSelectedTabsToImpl(int index,
-                                           size_t start,
-                                           size_t length) {
-  CHECK(start < selection_model_.selected_indices().size() &&
-        start + length <= selection_model_.selected_indices().size());
-  size_t end = start + length;
-  int count_before_index = 0;
-  const ui::ListSelectionModel::SelectedIndices& sel =
-      selection_model_.selected_indices();
-  auto indices = std::vector<int>(sel.begin(), sel.end());
+std::pair<std::optional<int>, std::optional<int>>
+TabStripModel::GetAdjacentTabsAfterSelectedMove(
+    base::PassKey<TabDragController>,
+    int destination_index) {
+  const int pinned_tab_count = IndexOfFirstNonPinnedTab();
+  const std::vector<int> pinned_selected_indices = GetSelectedPinnedTabs();
+  const std::vector<int> unpinned_selected_indices = GetSelectedUnpinnedTabs();
+  std::pair<std::optional<int>, std::optional<int>> adjacent_tabs(std::nullopt,
+                                                                  std::nullopt);
 
-  for (size_t i = start; i < end; ++i) {
-    if (indices[i] < index + count_before_index)
-      count_before_index++;
+  // If `unpinned_selected_indices` is empty there are no adjacent tabs.
+  if (unpinned_selected_indices.empty()) {
+    return adjacent_tabs;
   }
 
-  // First move those before index. Any tabs before index end up moving in the
-  // selection model so we use start each time through.
-  int target_index = index + count_before_index;
-  size_t tab_index = start;
-  while (tab_index < end && indices[start] < index) {
-    MoveTabToIndexImpl(indices[start], target_index - 1,
-                       GetTabGroupForTab(indices[start]),
-                       IsTabPinned(indices[start]), false);
-    // It is necessary to re-populate selected indices because
-    // MoveWebContetsAtImpl mutates selection_model_.
-    const auto& new_sel = selection_model_.selected_indices();
-    indices = std::vector<int>(new_sel.begin(), new_sel.end());
-    tab_index++;
-  }
+  // The index should be clamped between the first possible unpinned tab
+  // position and the end of the tabstrip.
+  const int first_unpinned_selected_dst_index = std::clamp(
+      destination_index + static_cast<int>(pinned_selected_indices.size()),
+      pinned_tab_count,
+      count() - static_cast<int>(unpinned_selected_indices.size()));
 
-  // Then move those after the index. These don't result in reordering the
-  // selection, therefore there is no need to repopulate indices.
-  while (tab_index < end) {
-    if (indices[tab_index] != target_index) {
-      MoveTabToIndexImpl(indices[tab_index], target_index,
-                         GetTabGroupForTab(indices[tab_index]),
-                         IsTabPinned(indices[tab_index]), false);
+  // Get the left adjacent if the first unpinned selected is not in the start of
+  // the unpinned container.
+  if (first_unpinned_selected_dst_index > pinned_tab_count) {
+    int non_selected_index = pinned_tab_count;
+    for (int i = pinned_tab_count; i < count(); ++i) {
+      if (!IsTabSelected(i)) {
+        if (non_selected_index == first_unpinned_selected_dst_index - 1) {
+          adjacent_tabs.first = i;
+          break;
+        }
+        ++non_selected_index;
+      }
     }
-    tab_index++;
-    target_index++;
+  } else {
+    // Maybe the left adjacent is the last pinned tab.
+    const int is_last_pinned_tab_selected =
+        !pinned_selected_indices.empty() &&
+        (destination_index + static_cast<int>(pinned_selected_indices.size()) -
+             1 >=
+         pinned_tab_count - 1);
+    for (int i = pinned_tab_count - 1; i >= 0; i--) {
+      if (IsTabSelected(i) == is_last_pinned_tab_selected) {
+        adjacent_tabs.first = i;
+        break;
+      }
+    }
   }
+
+  const int last_unpinned_selected_dst_index =
+      first_unpinned_selected_dst_index + unpinned_selected_indices.size() - 1;
+
+  // Get the right adjacent if the last unpinned selected is not in the end of
+  // the tabstrip.
+  if (last_unpinned_selected_dst_index < count() - 1) {
+    int non_selected_index = count() - 1;
+    for (int i = count() - 1; i >= pinned_tab_count; i--) {
+      if (!IsTabSelected(i)) {
+        if (non_selected_index == last_unpinned_selected_dst_index + 1) {
+          adjacent_tabs.second = i;
+          break;
+        }
+        --non_selected_index;
+      }
+    }
+  }
+
+  return adjacent_tabs;
+}
+
+std::vector<int> TabStripModel::GetSelectedPinnedTabs() {
+  const int pinned_tab_count = IndexOfFirstNonPinnedTab();
+  const ui::ListSelectionModel::SelectedIndices& selected_indices =
+      selection_model_.selected_indices();
+
+  std::vector<int> indices;
+
+  for (int selected_index : selected_indices) {
+    if (selected_index < pinned_tab_count) {
+      indices.push_back(selected_index);
+    } else {
+      // Since selected_indices are sorted, no more pinned tabs will be found
+      break;
+    }
+  }
+
+  return indices;
+}
+
+std::vector<int> TabStripModel::GetSelectedUnpinnedTabs() {
+  const int pinned_tab_count = IndexOfFirstNonPinnedTab();
+  const ui::ListSelectionModel::SelectedIndices& selected_indices =
+      selection_model_.selected_indices();
+
+  std::vector<int> indices;
+
+  for (int selected_index : base::Reversed(selected_indices)) {
+    if (selected_index >= pinned_tab_count) {
+      // Insert to the start so it is in ascending order.
+      indices.insert(indices.begin(), selected_index);
+    } else {
+      // Since selected_indices are sorted, no more unpinned tabs will be found
+      break;
+    }
+  }
+
+  return indices;
 }
 
 void TabStripModel::AddToNewGroupImpl(
@@ -2607,9 +2685,7 @@ void TabStripModel::MoveTabToIndexImpl(
   TabStripSelectionChange selection =
       MaybeUpdateSelectionModel(initial_index, final_index, select_after_move);
 
-  // TODO(shibalik): Replace with `ValidateTabStripModel()` after bulk move
-  // primitive addition.
-  CHECK(empty() || selection_model_.active().has_value());
+  ValidateTabStripModel();
 
   // Send all the notifications.
   if (initial_index != final_index) {
@@ -2626,6 +2702,65 @@ void TabStripModel::MoveTabToIndexImpl(
   if (group_model_ && (initial_group != tab->group())) {
     TabGroupStateChanged(final_index, web_contents, initial_group,
                          tab->group());
+  }
+}
+
+void TabStripModel::MoveTabsToIndexImpl(
+    const std::vector<int>& tab_indices,
+    int destination_index,
+    const std::optional<tab_groups::TabGroupId> group) {
+  if (tab_indices.empty()) {
+    return;
+  }
+
+  const int pinned_tab_count = IndexOfFirstNonPinnedTab();
+  const bool all_tabs_pinned = std::all_of(
+      tab_indices.begin(), tab_indices.end(),
+      [pinned_tab_count](int index) { return index < pinned_tab_count; });
+  const bool all_tabs_unpinned = std::all_of(
+      tab_indices.begin(), tab_indices.end(),
+      [pinned_tab_count](int index) { return index >= pinned_tab_count; });
+
+  CHECK(all_tabs_pinned || all_tabs_unpinned);
+  CHECK(base::ranges::is_sorted(tab_indices));
+
+  const std::vector<MoveNotification> notifications =
+      PrepareTabsToMoveToIndex(tab_indices, destination_index);
+
+  std::vector<std::unique_ptr<tabs::TabModel>> moved_datas;
+
+  // Remove all the tabs from the model.
+  for (int tab_index : base::Reversed(tab_indices)) {
+    std::unique_ptr<tabs::TabModel> moved_data =
+        std::move(GetContentsDataAsVector()[tab_index]);
+    moved_datas.insert(moved_datas.begin(), std::move(moved_data));
+    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
+                                    tab_index);
+  }
+
+  //  Add all the tabs back to the model.
+  for (size_t i = 0; i < moved_datas.size(); i++) {
+    moved_datas[i]->set_group(group);
+    GetContentsDataAsVector().insert(
+        GetContentsDataAsVector().begin() + destination_index + i,
+        std::move(moved_datas[i]));
+  }
+
+  ValidateTabStripModel();
+
+  for (auto notification : notifications) {
+    const int final_index = GetIndexOfTab(notification.handle);
+    const tabs::TabModel* const tab = GetTabAtIndex(final_index);
+    if (notification.initial_index != final_index) {
+      SendMoveNotificationForWebContents(notification.initial_index,
+                                         final_index, tab->contents(),
+                                         notification.selection_change);
+    }
+
+    if (group_model_ && notification.intial_group != tab->group()) {
+      TabGroupStateChanged(final_index, tab->contents(),
+                           notification.intial_group, tab->group());
+    }
   }
 }
 
@@ -2756,6 +2891,68 @@ TabStripSelectionChange TabStripModel::MaybeUpdateSelectionModel(
   }
   selection.new_model = selection_model_;
   return selection;
+}
+
+std::vector<std::pair<int, int>> TabStripModel::CalculateIncrementalTabMoves(
+    const std::vector<int>& tab_indices,
+    int destination_index) const {
+  std::vector<std::pair<int, int>> source_and_target_indices_to_move_left;
+  std::vector<std::pair<int, int>> source_and_target_indices_to_move_right;
+
+  // We want a sequence of moves that moves each tab directly from its
+  // initial index to its final index. This is possible if and only if
+  // every move maintains the same relative order of the moving tabs.
+  // We do this by splitting the tabs based on which direction they're
+  // moving, then moving them in the correct order within each group.
+  int tab_destination_index = destination_index;
+  for (int source_index : tab_indices) {
+    if (source_index < tab_destination_index) {
+      source_and_target_indices_to_move_right.push_back(
+          {source_index, tab_destination_index++});
+    } else {
+      source_and_target_indices_to_move_left.push_back(
+          {source_index, tab_destination_index++});
+    }
+  }
+
+  std::vector<std::pair<int, int>> moved_indices;
+  std::reverse(source_and_target_indices_to_move_right.begin(),
+               source_and_target_indices_to_move_right.end());
+
+  std::copy(source_and_target_indices_to_move_right.begin(),
+            source_and_target_indices_to_move_right.end(),
+            std::back_inserter(moved_indices));
+
+  std::copy(source_and_target_indices_to_move_left.begin(),
+            source_and_target_indices_to_move_left.end(),
+            std::back_inserter(moved_indices));
+
+  return moved_indices;
+}
+
+std::vector<TabStripModel::MoveNotification>
+TabStripModel::PrepareTabsToMoveToIndex(const std::vector<int>& tab_indices,
+                                        int destination_index) {
+  const std::vector<std::pair<int, int>> moved_indices =
+      CalculateIncrementalTabMoves(tab_indices, destination_index);
+  std::vector<MoveNotification> notifications;
+
+  for (std::pair<int, int> move : moved_indices) {
+    if (move.first != move.second) {
+      FixOpeners(move.first);
+    }
+
+    // Update the `selection_model_`
+    TabStripSelectionChange selection =
+        MaybeUpdateSelectionModel(move.first, move.second, false);
+
+    const tabs::TabModel* const tab = GetTabAtIndex(move.first);
+    const MoveNotification notification = {move.first, tab->group(),
+                                           tab->GetHandle(), selection};
+    notifications.push_back(notification);
+  }
+
+  return notifications;
 }
 
 void TabStripModel::SetTabsPinned(std::vector<int> indices, bool pinned) {

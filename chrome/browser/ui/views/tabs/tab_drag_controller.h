@@ -625,18 +625,10 @@ class TabDragController : public views::WidgetObserver,
   // (NORMAL vs APP).
   bool CanAttachTo(gfx::NativeWindow window);
 
-  // Helper method for TabDragController::MoveAttached to update the tab group
-  // membership of selected tabs. UpdateGroupForDraggedTabs should be called
-  // after the tabs move in a drag so the first selected index is the target
-  // index of the move.
-  void UpdateGroupForDraggedTabs();
-
-  // Helper method for TabDragController::UpdateGroupForDraggedTabs to decide if
-  // a dragged tab should stay in the tab group. Returns std::nullopt if the
-  // tab should not be in a group. Otherwise returns tab_groups::TabGroupId of
-  // the group the selected tabs should join.
-  std::optional<tab_groups::TabGroupId> GetTabGroupForTargetIndex(
-      const std::vector<int>& selected);
+  // Helper method for TabDragController::MoveAttached to precompute the tab
+  // group membership of selected tabs after performing the move.
+  std::optional<tab_groups::TabGroupId> CalculateGroupForDraggedTabs(
+      int to_index);
 
   // Helper method for OnSystemDragAndDropExited() to calculate a y-coordinate
   // that is out of the bounds of |attached_context_|, keeping

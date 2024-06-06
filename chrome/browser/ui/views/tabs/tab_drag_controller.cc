@@ -1289,12 +1289,11 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
               base::TimeTicks::Now()));
     }
 
-    attached_model->MoveSelectedTabsTo(to_index);
-
     if (header_drag_) {
-      attached_model->MoveTabGroup(group_.value());
+      attached_model->MoveGroupTo(group_.value(), to_index);
     } else {
-      UpdateGroupForDraggedTabs();
+      attached_model->MoveSelectedTabsTo(
+          to_index, CalculateGroupForDraggedTabs(to_index));
     }
 
     // Move may do nothing in certain situations (such as when dragging pinned
@@ -2657,8 +2656,14 @@ void TabDragController::ClearTabDraggingInfo() {
 #endif
 }
 
-void TabDragController::UpdateGroupForDraggedTabs() {
+std::optional<tab_groups::TabGroupId>
+TabDragController::CalculateGroupForDraggedTabs(int to_index) {
   TabStripModel* attached_model = attached_context_->GetTabStripModel();
+
+  // Get the proposed tabstrip model assuming the selection has taken place.
+  std::pair<std::optional<int>, std::optional<int>> adjacent_indices =
+      attached_model->GetAdjacentTabsAfterSelectedMove(
+          base::PassKey<TabDragController>(), to_index);
 
   const ui::ListSelectionModel::SelectedIndices& selected =
       attached_model->selection_model().selected_indices();
@@ -2671,35 +2676,24 @@ void TabDragController::UpdateGroupForDraggedTabs() {
       selected_unpinned.push_back(selected_index);
   }
 
-  if (selected_unpinned.empty())
-    return;
+  if (selected_unpinned.empty()) {
+    return std::nullopt;
+  }
 
-  const std::optional<tab_groups::TabGroupId> updated_group =
-      GetTabGroupForTargetIndex(selected_unpinned);
+  std::optional<tab_groups::TabGroupId> left_group =
+      adjacent_indices.first.has_value()
+          ? attached_model->GetTabGroupForTab(adjacent_indices.first.value())
+          : std::nullopt;
+  std::optional<tab_groups::TabGroupId> right_group =
+      adjacent_indices.second.has_value()
+          ? attached_model->GetTabGroupForTab(adjacent_indices.second.value())
+          : std::nullopt;
+  std::optional<tab_groups::TabGroupId> current_group =
+      attached_model->GetTabGroupForTab(selected_unpinned[0]);
 
-  attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
-                                      updated_group);
-}
-
-std::optional<tab_groups::TabGroupId>
-TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
-  // Indices in {selected} are always ordered in ascending order and should all
-  // be consecutive.
-  DCHECK_EQ(selected.back() - selected.front() + 1,
-            static_cast<int>(selected.size()));
-  const TabStripModel* attached_model = attached_context_->GetTabStripModel();
-
-  const int left_tab_index = selected.front() - 1;
-
-  const std::optional<tab_groups::TabGroupId> left_group =
-      attached_model->GetTabGroupForTab(left_tab_index);
-  const std::optional<tab_groups::TabGroupId> right_group =
-      attached_model->GetTabGroupForTab(selected.back() + 1);
-  const std::optional<tab_groups::TabGroupId> current_group =
-      attached_model->GetTabGroupForTab(selected[0]);
-
-  if (left_group == right_group)
+  if (left_group == right_group) {
     return left_group;
+  }
 
   // If the tabs on the left and right have different group memberships,
   // including if one is ungrouped or nonexistent, change the group of the
@@ -2708,7 +2702,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // ungrouped.
 
   const Tab* left_most_selected_tab =
-      attached_context_->GetTabAt(selected.front());
+      attached_context_->GetTabAt(selected_unpinned[0]);
 
   const int buffer = left_most_selected_tab->width() / 4;
 
@@ -2727,8 +2721,9 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // Use the left edge for a reliable fallback, e.g. if this is the leftmost
   // tab or there is a group header to the immediate left.
   int left_edge =
-      attached_model->ContainsIndex(left_tab_index)
-          ? tab_bounds_in_drag_context_coords(left_tab_index).right() -
+      adjacent_indices.first.has_value()
+          ? tab_bounds_in_drag_context_coords(adjacent_indices.first.value())
+                    .right() -
                 tab_left_inset
           : tab_left_inset;
 
@@ -2755,7 +2750,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
     // never leave it unless we add this check. See crbug.com/1134376.
     // TODO(crbug.com/40842551): Update this to work better with Tab Scrolling
     // once dragging near the end of the tabstrip is cleaner.
-    if (tab_bounds_in_drag_context_coords(selected.back()).right() >=
+    if (tab_bounds_in_drag_context_coords(selected_unpinned.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
       return std::nullopt;
     }
