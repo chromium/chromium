@@ -1114,6 +1114,12 @@ inline constexpr char kTrackingProtectionOnboardingNoticeFirstRequested[] =
 inline constexpr char kTrackingProtectionOnboardingNoticeLastRequested[] =
     "tracking_protection.tracking_protection_onboarding_notice_last_requested";
 
+// Deprecated 06/2024.
+#if !BUILDFLAG(IS_ANDROID)
+inline constexpr char kAccessibilityReadAnythingOmniboxIconLabelShownCount[] =
+    "settings.a11y.read_anything.omnibox_icon_label_shown_count";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1612,6 +1618,12 @@ void RegisterProfilePrefsForMigration(
                              base::Time());
   registry->RegisterTimePref(kTrackingProtectionOnboardingNoticeLastRequested,
                              base::Time());
+
+// Deprecated 06/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(
+      kAccessibilityReadAnythingOmniboxIconLabelShownCount, 0);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2994,6 +3006,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2024.
   profile_prefs->ClearPref(kTrackingProtectionOnboardingNoticeFirstRequested);
   profile_prefs->ClearPref(kTrackingProtectionOnboardingNoticeLastRequested);
+
+  // Added 06/2024.
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(
+      kAccessibilityReadAnythingOmniboxIconLabelShownCount);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

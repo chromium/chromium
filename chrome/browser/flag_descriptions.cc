@@ -4940,11 +4940,6 @@ const char kReadAloudLanguagePackDownloadingDescription[] =
     "Enables the experimental Reading Mode feature that downloads Google TTS "
     "languages directly from the Read Aloud menus.";
 
-const char kReadAnythingOmniboxIconName[] = "Reading Mode with Omnibox Icon";
-const char kReadAnythingOmniboxIconDescription[] =
-    "Show the reading mode icon in the omnibox. Click the icon to open reading "
-    "mode.";
-
 const char kReadAnythingLocalSidePanelName[] =
     "Reading Mode with Local Side Panel";
 const char kReadAnythingLocalSidePanelDescription[] =

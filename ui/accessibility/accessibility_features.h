@@ -239,10 +239,6 @@ AX_BASE_EXPORT bool IsReadAnythingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLocalSidePanel);
 AX_BASE_EXPORT bool IsReadAnythingLocalSidePanelEnabled();
 
-// Show a reading mode icon in the omnibox.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxIcon);
-AX_BASE_EXPORT bool IsReadAnythingOmniboxIconEnabled();
-
 // Show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();

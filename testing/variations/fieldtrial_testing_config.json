@@ -17565,28 +17565,6 @@
             ]
         }
     ],
-    "ReadAnythingOmniboxIconRollout": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "distillable_urls": "support.google.com,docs.google.com"
-                    },
-                    "enable_features": [
-                        "ReadAnythingOmniboxIcon"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAnythingPermanentAccessibility": [
         {
             "platforms": [

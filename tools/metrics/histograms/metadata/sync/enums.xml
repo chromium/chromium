@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
   <int value="100244" label="ReadAloudHighlightingEnabled"/>
   <int value="100245" label="HttpsFirstModeIncognito"/>
   <int value="100246"
-      label="AccessibilityReadAnythingOmniboxIconLabelShownCount"/>
+      label="(obsolete) AccessibilityReadAnythingOmniboxIconLabelShownCount"/>
   <int value="100247" label="ApplicationLocale"/>
   <int value="100248" label="ListenToThisPageEnabled"/>
   <int value="100249" label="IpProtectionEnabled"/>

@@ -7328,11 +7328,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingWebUIToolbarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingWebUIToolbar)},
 
-    {"read-anything-omnibox-icon",
-     flag_descriptions::kReadAnythingOmniboxIconName,
-     flag_descriptions::kReadAnythingOmniboxIconDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReadAnythingOmniboxIcon)},
-
     {"read-anything-local-side-panel",
      flag_descriptions::kReadAnythingLocalSidePanelName,
      flag_descriptions::kReadAnythingLocalSidePanelDescription, kOsDesktop,

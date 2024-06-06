@@ -2870,9 +2870,6 @@ extern const char kReadAloudAutoVoiceSwitchingDescription[];
 extern const char kReadAloudLanguagePackDownloadingName[];
 extern const char kReadAloudLanguagePackDownloadingDescription[];
 
-extern const char kReadAnythingOmniboxIconName[];
-extern const char kReadAnythingOmniboxIconDescription[];
-
 extern const char kReadAnythingLocalSidePanelName[];
 extern const char kReadAnythingLocalSidePanelDescription[];
 

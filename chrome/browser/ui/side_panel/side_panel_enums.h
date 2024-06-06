@@ -26,7 +26,7 @@ enum class SidePanelOpenTrigger {
   kPinnedEntryToolbarButton = 12,
   kAppMenu = 13,
   kOpenedInNewTabFromSidePanel = 14,
-  kReadAnythingOmniboxIcon = 15,
+  // kReadAnythingOmniboxIcon = 15, (deprecated)
   kReadAnythingNavigationThrottle = 16,
   kOverflowMenu = 17,
   kExtension = 18,

@@ -319,13 +319,6 @@ bool IsReadAnythingLocalSidePanelEnabled() {
          base::FeatureList::IsEnabled(::features::kReadAnythingWebUIToolbar);
 }
 
-BASE_FEATURE(kReadAnythingOmniboxIcon,
-             "ReadAnythingOmniboxIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsReadAnythingOmniboxIconEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingOmniboxIcon);
-}
-
 BASE_FEATURE(kReadAnythingReadAloud,
              "ReadAnythingReadAloud",
              base::FEATURE_DISABLED_BY_DEFAULT);

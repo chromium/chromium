@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -371,9 +370,6 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kZoom);
     params.types_enabled.push_back(PageActionIconType::kFileSystemAccess);
 
-    if (features::IsReadAnythingOmniboxIconEnabled()) {
-      params.types_enabled.push_back(PageActionIconType::kReadAnything);
-    }
     params.types_enabled.push_back(PageActionIconType::kCookieControls);
     params.types_enabled.push_back(
         PageActionIconType::kPaymentsOfferNotification);
