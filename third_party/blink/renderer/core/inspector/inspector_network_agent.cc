@@ -1581,7 +1581,7 @@ protocol::Response InspectorNetworkAgent::streamResourceContent(
 
   streaming_request_ids_.insert(request_id);
 
-  SharedBuffer* data = resource_data->Data();
+  const std::optional<SegmentedBuffer>& data = resource_data->Data();
   if (data) {
     *buffered_data =
         protocol::Binary::fromVector(data->CopyAs<Vector<uint8_t>>());

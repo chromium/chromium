@@ -170,10 +170,10 @@ class NetworkResourcesData final
 
     void Trace(Visitor*) const override;
 
-    SharedBuffer* Data() const { return data_buffer_.get(); }
+    const std::optional<SegmentedBuffer>& Data() const { return data_buffer_; }
 
    private:
-    bool HasData() const { return data_buffer_.get(); }
+    bool HasData() const { return data_buffer_.has_value(); }
     void AppendData(const char* data, size_t data_length);
     // Removes just the response content.
     [[nodiscard]] size_t RemoveResponseContent();
@@ -188,7 +188,7 @@ class NetworkResourcesData final
     String content_;
     Member<XHRReplayData> xhr_replay_data_;
     bool base64_encoded_;
-    scoped_refptr<SharedBuffer> data_buffer_;
+    std::optional<SegmentedBuffer> data_buffer_;
     bool is_content_evicted_;
     InspectorPageAgent::ResourceType type_;
     int http_status_code_;

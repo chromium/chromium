@@ -133,7 +133,7 @@ size_t NetworkResourcesData::ResourceData::RemoveResponseContent() {
 size_t NetworkResourcesData::ResourceData::EvictContent() {
   size_t size = ContentSize();
   is_content_evicted_ = true;
-  data_buffer_ = nullptr;
+  data_buffer_ = std::nullopt;
   content_ = String();
   post_data_ = nullptr;
   return size;
@@ -185,10 +185,10 @@ void NetworkResourcesData::ResourceData::FontResourceDataWillBeCleared() {
 void NetworkResourcesData::ResourceData::AppendData(const char* data,
                                                     size_t data_length) {
   DCHECK(!HasContent());
-  if (!data_buffer_)
-    data_buffer_ = SharedBuffer::Create(data, data_length);
-  else
-    data_buffer_->Append(data, data_length);
+  if (!data_buffer_) {
+    data_buffer_ = SegmentedBuffer();
+  }
+  data_buffer_->Append(data, data_length);
 }
 
 size_t NetworkResourcesData::ResourceData::DecodeDataToContent() {
@@ -196,10 +196,10 @@ size_t NetworkResourcesData::ResourceData::DecodeDataToContent() {
   DCHECK(HasData());
   size_t data_length = data_buffer_->size();
   bool success = InspectorPageAgent::SegmentedBufferContent(
-      data_buffer_.get(), mime_type_, text_encoding_name_, &content_,
-      &base64_encoded_);
+      data_buffer_ ? &*data_buffer_ : nullptr, mime_type_, text_encoding_name_,
+      &content_, &base64_encoded_);
   DCHECK(success);
-  data_buffer_ = nullptr;
+  data_buffer_ = std::nullopt;
   return content_.CharactersSizeInBytes() - data_length;
 }
 
