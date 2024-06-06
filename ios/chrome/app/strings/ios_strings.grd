@@ -6041,6 +6041,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the password chip button displayed in the password manual fallback screen and that's allowing the user to autofill their password on a specific form field.">
         Autofill the password
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the card number chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their card number.">
+        Autofill the card number ending in <ph name="LAST_DIGITS">$1<ex>1234</ex></ph>
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the expiration month chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's expiration month.">
+        Autofill the expiration month <ph name="MONTH">$1<ex>04</ex></ph>
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the expiration year chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's expiration year.">
+        Autofill the expiration year <ph name="YEAR">$1<ex>26</ex></ph>
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the cardholder chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's cardholder'.">
+        Autofill the cardholder <ph name="NAME">$1<ex>Jane Doe</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

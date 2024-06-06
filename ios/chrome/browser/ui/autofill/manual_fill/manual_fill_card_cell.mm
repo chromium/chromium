@@ -99,6 +99,25 @@ constexpr CGFloat kCardIconWidth = 40;
 // Width of the GPay icon.
 constexpr CGFloat kGPayIconWidth = 37;
 
+// Returns the last four digits of the card number to be used in an
+// accessibility label. The digits need to be split so that VoiceOver will read
+// them individually.
+NSString* CardNumberLastFourDigits(NSString* obfuscated_number) {
+  NSUInteger length = obfuscated_number.length;
+  if (length >= 4) {
+    NSString* lastFourDigits =
+        [obfuscated_number substringFromIndex:length - 4];
+    NSMutableArray* digits = [[NSMutableArray alloc] init];
+    for (NSUInteger i = 0; i < lastFourDigits.length; i++) {
+      [digits addObject:[lastFourDigits substringWithRange:NSMakeRange(i, 1)]];
+    }
+    return [digits componentsJoinedByString:@" "];
+    ;
+  }
+
+  return @"";
+}
+
 // Helper method to decide whether or not the GPay icon should be shown in the
 // cell.
 bool ShouldShowGPayIcon(autofill::CreditCard::RecordType card_record_type) {
@@ -462,6 +481,26 @@ CGFloat GPayIconTopAnchorOffset() {
             l10n_util::GetNSString(
                 IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NAME_ON_CARD_LABEL_IOS)
         buttonTitles:@[ card.cardHolder ]];
+
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      self.cardNumberLabeledChip.singleButton.accessibilityLabel =
+          l10n_util::GetNSStringF(
+              IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
+              base::SysNSStringToUTF16(
+                  CardNumberLastFourDigits(card.obfuscatedNumber)));
+      self.expirationDateLabeledChip.expirationMonthButton.accessibilityLabel =
+          l10n_util::GetNSStringF(
+              IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
+              base::SysNSStringToUTF16(card.expirationMonth));
+      self.expirationDateLabeledChip.expirationYearButton.accessibilityLabel =
+          l10n_util::GetNSStringF(
+              IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
+              base::SysNSStringToUTF16(card.expirationYear));
+      self.cardholderLabeledChip.singleButton.accessibilityLabel =
+          l10n_util::GetNSStringF(
+              IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
+              base::SysNSStringToUTF16(card.cardHolder));
+    }
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
@@ -483,6 +522,22 @@ CGFloat GPayIconTopAnchorOffset() {
                                forState:UIControlStateNormal];
     [self.cardholderButton setTitle:card.cardHolder
                            forState:UIControlStateNormal];
+
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      self.cardNumberButton.accessibilityLabel = l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(
+              CardNumberLastFourDigits(card.obfuscatedNumber)));
+      self.expirationMonthButton.accessibilityLabel = l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(card.expirationMonth));
+      self.expirationYearButton.accessibilityLabel = l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(card.expirationYear));
+      self.cardholderButton.accessibilityLabel = l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(card.cardHolder));
+    }
   }
 }
 
