@@ -4615,7 +4615,7 @@
     Turn on
   </message>
   <message name="IDS_SMART_PRIVACY_PROTECTION_TURN_OFF_BUTTON" desc="Label on a button to turn off the smart privacy protection feature and continue.">
-    No Thanks
+    No thanks
   </message>
 
   <!-- Supervision transition OOBE screen. -->
