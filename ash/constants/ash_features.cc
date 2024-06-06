@@ -2251,9 +2251,7 @@ BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOrcaFormalize, "OrcaFormalize", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables proofread for Orca.
-BASE_FEATURE(kOrcaProofread,
-             "OrcaProofread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaProofread, "OrcaProofread", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables rephrase for Orca.
 BASE_FEATURE(kOrcaRephrase, "OrcaRephrase", base::FEATURE_ENABLED_BY_DEFAULT);
