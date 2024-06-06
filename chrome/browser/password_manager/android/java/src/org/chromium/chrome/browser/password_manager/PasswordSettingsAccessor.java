@@ -59,7 +59,7 @@ public interface PasswordSettingsAccessor {
      *
      * @param autoSignInEnabled the value to set for the setting
      * @param account the account where to store the value the value or no account if it should be
-     *        stored in the local storage
+     *     stored in the local storage
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
@@ -68,4 +68,23 @@ public interface PasswordSettingsAccessor {
             Optional<Account> account,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback);
+
+    /**
+     * Asynchronously retrieves the value of the "Use biometric re-auth before credential filling"
+     * setting.
+     *
+     * @param account the account where to store the value the value or no account if it should be
+     *     stored in the local storage.
+     * @param successCallback called if the retrieval succeeds with the value of the setting or no
+     *     value if none was set.
+     * @param failureCallback called with an error if the retrieval did not succeed.
+     */
+    default void getUseBiometricsForCredentials(
+            Optional<Account> account,
+            Callback<Optional<Boolean>> successCallback,
+            Callback<Exception> failureCallback) {
+        // TODO(crbug.com/343879727) : Remove this after the implementation in the internal repo.
+        // For now just always return true for testing purposes.
+        successCallback.onResult(Optional.of(true));
+    }
 }
