@@ -145,9 +145,11 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
   container->SetPreferredSize(progress_bar->GetPreferredSize());
   container->AddChildView(std::move(progress_bar));
 
-  // When the network/issuer icons are inline with the title, we don't draw an
-  // additional logo on top.
-  if (!base::FeatureList::IsEnabled(
+  // When the network/issuer icons are inline with the title for the transaction
+  // UX, we don't draw an additional logo on top. For the no matching
+  // credentials UX, where we use the cart image, we still draw it.
+  if (use_cart_image ||
+      !base::FeatureList::IsEnabled(
           features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
     // Header icon
     auto image_view =

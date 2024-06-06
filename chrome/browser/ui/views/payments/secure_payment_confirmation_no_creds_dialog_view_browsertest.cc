@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
+#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -155,6 +157,25 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
   // Now click the Opt Out link and make sure that the expected events occur.
   opt_out_label->ClickFirstLinkForTesting();
   EXPECT_TRUE(opt_out_clicked_);
+}
+
+class SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest
+    : public SecurePaymentConfirmationNoCredsDialogViewTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons};
+};
+
+// Test that the cart icon is still shown even when the inline network/issuer
+// flag is set.
+IN_PROC_BROWSER_TEST_F(
+    SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest,
+    CartIconStillShows) {
+  CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/false);
+
+  EXPECT_NE(nullptr, dialog_view_->GetViewByID(static_cast<int>(
+                         SecurePaymentConfirmationNoCredsDialogView::
+                             DialogViewID::HEADER_IMAGE)));
 }
 
 }  // namespace payments
