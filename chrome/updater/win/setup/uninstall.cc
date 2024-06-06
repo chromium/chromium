@@ -192,6 +192,18 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
     UnregisterUserRunAtStartup(GetTaskNamePrefix(scope));
   }
 
+  if (uninstall_all) {
+    // Preserve the log file in %TMP%.
+    std::optional<base::FilePath> log_file = GetLogFilePath(scope);
+    if (log_file) {
+      std::optional<base::FilePath> temp_file =
+          GetUniqueTempFilePath(*log_file);
+      if (temp_file) {
+        base::CopyFile(*log_file, *temp_file);
+      }
+    }
+  }
+
   return RunUninstallScript(scope, uninstall_all);
 }
 

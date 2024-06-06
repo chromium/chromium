@@ -1511,4 +1511,15 @@ bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token) {
          ERROR_SUCCESS;
 }
 
+std::optional<base::FilePath> GetUniqueTempFilePath(base::FilePath file) {
+  base::FilePath temp_dir;
+  if (file.empty() || !base::GetTempDir(&temp_dir)) {
+    return {};
+  }
+  return temp_dir.Append(base::StrCat(
+      {file.RemoveExtension().BaseName().value(),
+       base::UTF8ToWide(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+       file.Extension()}));
+}
+
 }  // namespace updater

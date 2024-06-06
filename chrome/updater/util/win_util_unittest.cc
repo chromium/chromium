@@ -40,6 +40,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
@@ -647,6 +648,20 @@ TEST(WinUtil, StringFromGuid) {
   GUID guid = {0};
   EXPECT_HRESULT_SUCCEEDED(::CoCreateGuid(&guid));
   EXPECT_EQ(base::win::WStringFromGUID(guid), StringFromGuid(guid));
+}
+
+TEST(WinUtil, GetUniqueTempFilePath) {
+  EXPECT_FALSE(GetUniqueTempFilePath({}));
+
+  std::optional<base::FilePath> p = GetUniqueTempFilePath(base::FilePath(
+      L"C:\\Program Files (x86)\\Google\\GoogleUpdater\\updater.log"));
+  ASSERT_TRUE(p);
+  std::wstring p_base = p->BaseName().value();
+  EXPECT_TRUE(base::StartsWith(p_base, L"updater"));
+  EXPECT_TRUE(base::EndsWith(p_base, L".log"));
+  base::ReplaceSubstringsAfterOffset(&p_base, 0, L"updater", {});
+  base::ReplaceSubstringsAfterOffset(&p_base, 0, L".log", {});
+  EXPECT_TRUE(base::Uuid::ParseLowercase(base::WideToUTF8(p_base)).is_valid());
 }
 
 }  // namespace updater::test

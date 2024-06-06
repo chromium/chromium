@@ -1490,6 +1490,10 @@ use `%PROGRAMFILESX86%` if appropriate instead.)
 On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
 `%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
 
+On Windows, when the updater uninstalls itself, and there are no other versions
+of the updater in existence for the scope, the updater saves a copy of the final
+log file to `%TMP%\updater{guid}.log`.
+
 ## Network
 
 #### Proxy detection and authentication (Windows)
