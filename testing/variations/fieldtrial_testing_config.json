@@ -4072,6 +4072,348 @@
             ]
         }
     ],
+    "ChromeOSGrowthFrameworkStudy10": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_10_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment10"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy11": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_11_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment11"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy12": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_12_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment12"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy13": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_13_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment13"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy14": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_14_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment14"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy15": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_15_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment15"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy16": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_16_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment16"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy17": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_17_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment17"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy18": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_18_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment18"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy19": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_19_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment19"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_2_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy20": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_20_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment20"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy3": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_3_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment3"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy4": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_4_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment4"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy5": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_5_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment5"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy6": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_6_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment6"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy7": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_7_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment7"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy8": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_8_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment8"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkStudy9": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "exp_tag_9_1"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment9"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSHoldingSpaceSuggestions": [
         {
             "platforms": [
