@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -2011,7 +2012,8 @@ uint8_t* VideoFrame::ScopedMapping::Memory(uint32_t plane_index) {
 }
 
 size_t VideoFrame::ScopedMapping::Stride(uint32_t plane_index) {
-  return gpu_memory_buffer_ ? gpu_memory_buffer_->stride(plane_index)
+  return gpu_memory_buffer_ ? base::checked_cast<size_t>(
+                                  gpu_memory_buffer_->stride(plane_index))
                             : scoped_mapping_->Stride(plane_index);
 }
 
