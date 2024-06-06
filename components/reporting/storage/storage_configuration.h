@@ -21,6 +21,7 @@
 
 namespace reporting {
 
+using GenerationGuid = std::string;
 using DMtoken = std::string;
 
 inline constexpr char kDeviceDMToken[] = "";
@@ -41,7 +42,36 @@ class StorageOptions {
   // Default period for Storage to check for encryption key.
   static constexpr base::TimeDelta kDefaultKeyCheckPeriod = base::Seconds(1);
 
+  // Default delay until unused queue is garbage collected.
+  static constexpr base::TimeDelta kDefaultQueueGarbageCollectionPeriod =
+      base::Days(5);
+
   using QueuesOptionsList = std::vector<std::pair<Priority, QueueOptions>>;
+
+  // Multi-generation state of priorities.
+  // Declared as refcounted object in order to kep single instance over all
+  // cases of Options copying.
+  class MultiGenerational
+      : public base::RefCountedThreadSafe<MultiGenerational> {
+   public:
+    MultiGenerational();
+    MultiGenerational(const MultiGenerational&) = delete;
+    MultiGenerational& operator=(const MultiGenerational&) = delete;
+
+    // Retrieve the flag.
+    bool get(Priority priority) const;
+
+    // Atomically set the flag.
+    void set(Priority priority, bool state);
+
+   private:
+    friend base::RefCountedThreadSafe<MultiGenerational>;
+
+    ~MultiGenerational() = default;
+
+    // At counstruction all Priorities settings are set to 'false'.
+    std::array<std::atomic<bool>, Priority_ARRAYSIZE> is_multi_generational_;
+  };
 
   // Constructor. `modify_queue_options_for_tests` callback allows to adjust
   // queue options (used in tests only, Set to DoNothing in prod).
@@ -91,11 +121,26 @@ class StorageOptions {
     key_check_period_ = key_check_period;
     return *this;
   }
+  StorageOptions& set_inactive_queue_self_destruct_delay(
+      base::TimeDelta inactive_queue_self_destruct_delay) {
+    inactive_queue_self_destruct_delay_ = inactive_queue_self_destruct_delay;
+    return *this;
+  }
+
   const base::FilePath& directory() const { return directory_; }
   std::string_view signature_verification_public_key() const {
     return signature_verification_public_key_;
   }
   size_t max_record_size() const { return max_record_size_; }
+
+  bool is_multi_generational(Priority priority) const {
+    return is_multi_generational_->get(priority);
+  }
+
+  void set_multi_generational(Priority priority, bool state) const {
+    is_multi_generational_->set(priority, state);
+  }
+
   uint64_t max_total_files_size() const {
     return disk_space_resource_->GetTotal();
   }
@@ -112,6 +157,10 @@ class StorageOptions {
 
   base::TimeDelta key_check_period() const { return key_check_period_; }
 
+  base::TimeDelta inactive_queue_self_destruct_delay() const {
+    return inactive_queue_self_destruct_delay_;
+  }
+
  private:
   // Populates queue options for the given priority.
   QueueOptions PopulateQueueOptions(Priority priority) const;
@@ -127,8 +176,17 @@ class StorageOptions {
   // should be requested.
   base::TimeDelta key_check_period_;
 
+  // Delay until inactive queue self-destruct.
+  base::TimeDelta inactive_queue_self_destruct_delay_ =
+      StorageOptions::kDefaultQueueGarbageCollectionPeriod;
+
   // Maximum record size.
   size_t max_record_size_ = 1U * 1024UL * 1024UL;  // 1 MiB
+
+  // Map of atomic flags indicating whether each priority is set to
+  // multi-generation or single-generation (legacy) action. The map is
+  // constructed once and then only the values of the flags can change.
+  const scoped_refptr<MultiGenerational> is_multi_generational_;
 
   // Resources managements.
   scoped_refptr<ResourceManager> memory_resource_;
@@ -153,6 +211,10 @@ class QueueOptions {
   QueueOptions& set_subdirectory(
       const base::FilePath::StringType& subdirectory) {
     directory_ = storage_options_.directory().Append(subdirectory);
+    return *this;
+  }
+  QueueOptions& set_subdirectory_extension(std::string_view extension) {
+    directory_ = directory_.AddExtensionASCII(extension);
     return *this;
   }
   QueueOptions& set_file_prefix(const base::FilePath::StringType& file_prefix) {
@@ -187,6 +249,9 @@ class QueueOptions {
   uint64_t max_single_file_size() const { return max_single_file_size_; }
   base::TimeDelta upload_period() const { return upload_period_; }
   base::TimeDelta upload_retry_delay() const { return upload_retry_delay_; }
+  base::TimeDelta inactive_queue_self_destruct_delay() const {
+    return storage_options_.inactive_queue_self_destruct_delay();
+  }
   bool can_shed_records() const { return can_shed_records_; }
   scoped_refptr<ResourceManager> disk_space_resource() const {
     return storage_options_.disk_space_resource();

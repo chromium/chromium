@@ -31,6 +31,7 @@ class StorageModule : public StorageModuleInterface {
   // Factory method creates `StorageModule` object.
   static void Create(
       const StorageOptions& options,
+      const std::string_view legacy_storage_enabled,
       const scoped_refptr<QueuesContainer> queues_container,
       const scoped_refptr<EncryptionModuleInterface> encryption_module,
       const scoped_refptr<CompressionModule> compression_module,
@@ -68,6 +69,10 @@ class StorageModule : public StorageModuleInterface {
   // be paased here.
   // Declared virtual for testing purposes.
   virtual void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
+
+  // Parse list of priorities to be in legacy single-generation action state
+  // from now on. All other priorities are in multi-generation action state.
+  void SetLegacyEnabledPriorities(std::string_view legacy_storage_enabled);
 
   // Attaches a repeating callback to be invoked every time `ReportSuccess`
   // detects material progress in upload.

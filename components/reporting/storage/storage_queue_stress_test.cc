@@ -164,7 +164,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(key_update_event.result());
     test::TestEvent<Status> initialized_event;
     storage_queue_ = StorageQueue::Create(
-        options,
+        "GENERATION_GUID", options,
         base::BindRepeating(&StorageQueueStressTest::AsyncStartTestUploader,
                             base::Unretained(this)),
         base::BindRepeating(
@@ -173,6 +173,12 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
                    result_cb) {
               // Returns empty candidates queue - no degradation allowed.
               std::move(result_cb).Run({});
+            }),
+        base::DoNothing(),  // disable.
+        base::BindRepeating(
+            [](GenerationGuid generation_guid, base::OnceClosure done_cb) {
+              // Finished disconnect.
+              std::move(done_cb).Run();
             }),
         test_encryption_module,
         base::MakeRefCounted<test::TestCompressionModule>());

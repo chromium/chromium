@@ -138,9 +138,41 @@ void StorageModule::UpdateEncryptionKey(
   storage_->UpdateEncryptionKey(std::move(signed_encryption_key));
 }
 
+void StorageModule::SetLegacyEnabledPriorities(
+    std::string_view legacy_storage_enabled) {
+  const std::vector<std::string_view> splits =
+      base::SplitStringPieceUsingSubstr(legacy_storage_enabled, ",",
+                                        base::TRIM_WHITESPACE,
+                                        base::SPLIT_WANT_NONEMPTY);
+  // Initialize all flags as 'false' (multi-generational, non-legacy).
+  std::array<bool, Priority_ARRAYSIZE> legacy_enabled_for_priority;
+  for (auto& value : legacy_enabled_for_priority) {
+    value = false;
+  }
+  // Flip specified priorities' flags as 'true' (single-generation, legacy).
+  for (const auto& split : splits) {
+    Priority priority;
+    if (!Priority_Parse(std::string(split), &priority)) {
+      LOG(ERROR) << "Invalid legacy-enabled priority specified: `" << split
+                 << "`";
+      continue;
+    }
+    CHECK_LT(priority, Priority_ARRAYSIZE);
+    legacy_enabled_for_priority[priority] = true;
+  }
+  // Atomically deliver all priorities' flags to `options_` (shared with
+  // `storage_`). For flags that do not change `set_multi_generational` is
+  // effectively a no-op.
+  for (const auto& priority : StorageOptions::GetPrioritiesOrder()) {
+    options_.set_multi_generational(priority,
+                                    !legacy_enabled_for_priority[priority]);
+  }
+}
+
 // static
 void StorageModule::Create(
     const StorageOptions& options,
+    const std::string_view legacy_storage_enabled,
     const scoped_refptr<QueuesContainer> queues_container,
     const scoped_refptr<EncryptionModuleInterface> encryption_module,
     const scoped_refptr<CompressionModule> compression_module,
@@ -150,6 +182,9 @@ void StorageModule::Create(
   scoped_refptr<StorageModule> instance =
       // Cannot use `base::MakeRefCounted`, since constructor is protected.
       base::WrapRefCounted(new StorageModule(options));
+
+  // Enable/disable multi-generation action for all priorities.
+  instance->SetLegacyEnabledPriorities(legacy_storage_enabled);
 
   // Initialize `instance`.
   instance->InitStorage(options, queues_container, encryption_module,

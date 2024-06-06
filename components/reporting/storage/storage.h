@@ -111,6 +111,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Private helper class to initialize a single queue
   friend class CreateQueueContext;
 
+  // Private helper class to flush all queues with a given priority
+  friend class FlushContext;
+
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
@@ -129,7 +132,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Helper method to select queue by priority on the Storage task runner and
   // return it, if succeeded, or return failure status otherwise.
-  StatusOr<scoped_refptr<StorageQueue>> TryGetQueue(Priority priority);
+  StatusOr<scoped_refptr<StorageQueue>> TryGetQueue(
+      Priority priority,
+      StatusOr<GenerationGuid> generation_guid);
 
   // Writes a record to the given queue.
   void WriteToQueue(Record record,

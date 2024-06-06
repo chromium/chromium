@@ -50,6 +50,10 @@
 
 namespace reporting {
 
+BASE_FEATURE(kLegacyStorageEnabledFeature,
+             "LegacyStorageEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 QueueUploaderInterface::QueueUploaderInterface(
     Priority priority,
     std::unique_ptr<UploaderInterface> storage_uploader_interface)
@@ -143,24 +147,97 @@ QueuesContainer::~QueuesContainer() {
 Status QueuesContainer::AddQueue(Priority priority,
                                  scoped_refptr<StorageQueue> queue) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto [_, emplaced] = queues_.emplace(priority, queue);
+  auto [_, emplaced] = queues_.emplace(
+      std::make_tuple(priority, queue->generation_guid()), queue);
   if (!emplaced) {
-    return Status(error::ALREADY_EXISTS,
-                  base::StrCat({"Queue is already being created."}));
+    return Status(
+        error::ALREADY_EXISTS,
+        base::StrCat({"Queue with generation GUID=", queue->generation_guid(),
+                      " is already being created."}));
   }
   return Status::StatusOK();
 }
 
 StatusOr<scoped_refptr<StorageQueue>> QueuesContainer::GetQueue(
-    Priority priority) const {
+    Priority priority,
+    GenerationGuid generation_guid) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = queues_.find(priority);
+  auto it = queues_.find(std::make_tuple(priority, generation_guid));
   if (it == queues_.end()) {
     return base::unexpected(Status(
-        error::NOT_FOUND, base::StrCat({"No queue found with priority=",
-                                        base::NumberToString(priority)})));
+        error::NOT_FOUND,
+        base::StrCat(
+            {"No queue found with priority=", base::NumberToString(priority),
+             " and generation_guid= ", generation_guid})));
   }
   return it->second;
+}
+
+size_t QueuesContainer::RunActionOnAllQueues(
+    Priority priority,
+    base::RepeatingCallback<void(scoped_refptr<StorageQueue>)> action) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Flush each queue
+  size_t count = 0;
+  for (const auto& [priority_generation_tuple, queue] : queues_) {
+    auto queue_priority = std::get<Priority>(priority_generation_tuple);
+    const auto generation_guid =
+        std::get<GenerationGuid>(priority_generation_tuple);
+    if (queue_priority == priority) {
+      count++;  // Count the number of queues to flush
+      action.Run(queue);
+    }
+  }
+  return count;
+}
+
+GenerationGuid QueuesContainer::GetOrCreateGenerationGuid(
+    const DMtoken& dm_token,
+    Priority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StatusOr<GenerationGuid> generation_guid_result =
+      GetGenerationGuid(dm_token, priority);
+  if (!generation_guid_result.has_value()) {
+    // Create a generation guid for this dm token and priority
+    generation_guid_result = CreateGenerationGuidForDMToken(dm_token, priority);
+    // Creation should never fail.
+    CHECK(generation_guid_result.has_value()) << generation_guid_result.error();
+  }
+  return generation_guid_result.value();
+}
+
+StatusOr<GenerationGuid> QueuesContainer::GetGenerationGuid(
+    const DMtoken& dm_token,
+    Priority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (dmtoken_to_generation_guid_map_.find(std::make_tuple(
+          dm_token, priority)) == dmtoken_to_generation_guid_map_.end()) {
+    return base::unexpected(Status(
+        error::NOT_FOUND,
+        base::StrCat({"No generation guid exists for DM token: ", dm_token})));
+  }
+  return dmtoken_to_generation_guid_map_[std::make_tuple(dm_token, priority)];
+}
+
+StatusOr<GenerationGuid> QueuesContainer::CreateGenerationGuidForDMToken(
+    const DMtoken& dm_token,
+    Priority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (auto generation_guid = GetGenerationGuid(dm_token, priority);
+      generation_guid.has_value()) {
+    return base::unexpected(Status(
+        error::FAILED_PRECONDITION,
+        base::StrCat({"Generation guid for dm_token ", dm_token,
+                      " already exists! guid=", generation_guid.value()})));
+  }
+
+  GenerationGuid generation_guid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  dmtoken_to_generation_guid_map_[std::make_tuple(dm_token, priority)] =
+      generation_guid;
+  return generation_guid;
 }
 
 namespace {
@@ -231,7 +308,9 @@ void QueuesContainer::GetDegradationCandidates(
   std::vector<std::pair<Priority, scoped_refptr<StorageQueue>>>
       candidate_queues;
   const auto writing_queue_pair = std::make_pair(priority, queue);
-  for (const auto& [queue_priority, candidate_queue] : container->queues_) {
+  for (const auto& [priority_generation_tuple, candidate_queue] :
+       container->queues_) {
+    auto queue_priority = std::get<Priority>(priority_generation_tuple);
     auto queue_pair = std::make_pair(queue_priority, candidate_queue);
     if (comparator(queue_pair, writing_queue_pair)) {
       CHECK_NE(candidate_queue.get(), queue.get());
@@ -247,6 +326,45 @@ void QueuesContainer::GetDegradationCandidates(
     result.emplace(std::move(candidate_queue));
   }
   std::move(result_cb).Run(std::move(result));
+}
+
+// static
+void QueuesContainer::DisableQueue(base::WeakPtr<QueuesContainer> container,
+                                   Priority priority,
+                                   GenerationGuid generation_guid,
+                                   base::OnceClosure done_cb) {
+  if (!container) {
+    std::move(done_cb).Run();
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(container->sequence_checker_);
+  const auto count = std::erase_if(container->dmtoken_to_generation_guid_map_,
+                                   [&generation_guid](const auto& key_value) {
+                                     const auto& [_, guid] = key_value;
+                                     return guid == generation_guid;
+                                   });
+  CHECK_EQ(count, 1u) << Priority_Name(priority) << "/" << generation_guid;
+  // The specified queue has been removed from DM_Token map, resume the
+  // queue-owned action.
+  std::move(done_cb).Run();
+}
+
+// static
+void QueuesContainer::DisconnectQueue(base::WeakPtr<QueuesContainer> container,
+                                      Priority priority,
+                                      GenerationGuid generation_guid,
+                                      base::OnceClosure done_cb) {
+  if (!container) {
+    std::move(done_cb).Run();
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(container->sequence_checker_);
+  const auto count =
+      container->queues_.erase(std::make_tuple(priority, generation_guid));
+  CHECK_EQ(count, 1u) << Priority_Name(priority) << "/" << generation_guid;
+  // The specified queue has been removed, resume the queue-owned
+  // action to remove the queue files from the disk.
+  std::move(done_cb).Run();
 }
 
 void QueuesContainer::RegisterCompletionCallback(base::OnceClosure callback) {

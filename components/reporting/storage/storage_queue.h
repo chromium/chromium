@@ -77,6 +77,16 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
       base::OnceCallback<void(std::queue<scoped_refptr<StorageQueue>>)>
           result_cb)>;
 
+  // Declaration of a callback to make `StorageQueue` unfit for writing after
+  // a prolonged inactivity.
+  using DisableQueueCb =
+      base::RepeatingCallback<void(GenerationGuid, base::OnceClosure done_cb)>;
+
+  // Declaration of a callback to remove `StorageQueue` from `QueuesContainer`
+  // (called before erasing the queue files).
+  using DisconnectQueueCb =
+      base::RepeatingCallback<void(GenerationGuid, base::OnceClosure done_cb)>;
+
   // Declaration of a callback to be invoked when `StorageQueue::Init` fails, to
   // determine whether we should just accept a failure or to back off and retry.
   // The callback returns delay value if `Init` can be retried, or Status
@@ -94,12 +104,15 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Starts asynchronous initialization, that will run `initialized_cb` callback
   // once completed or failed.
   static scoped_refptr<StorageQueue> Create(
+      const GenerationGuid generation_guid,
       const QueueOptions options,
       // A factory callback that instantiates UploaderInterface every time the
       // queue starts uploading records - periodically, immediately after Write
       // or upon explicit Flush request.
       const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       const DegradationCandidatesCb degradation_candidates_cb,
+      const DisableQueueCb disable_queue_cb,
+      const DisconnectQueueCb disconnect_queue_cb,
       const scoped_refptr<EncryptionModuleInterface> encryption_module,
       const scoped_refptr<CompressionModule> compression_module);
 
@@ -201,8 +214,14 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   static StatusOr<base::TimeDelta> MaybeBackoffAndReInit(Status init_status,
                                                          size_t retry_count);
 
+  // Deletes all files in the queue's directory and the directory itself on the
+  // queue thread. Should be only called when all file operations are guaranteed
+  // to be finished.
+  void AsynchronouslyDeleteAllFilesAndDirectoryWarnIfFailed();
+
   // Accessors.
   const QueueOptions& options() const { return options_; }
+  GenerationGuid generation_guid() const { return generation_guid_; }
   base::Time time_stamp() const { return time_stamp_; }
 
  protected:
@@ -320,12 +339,15 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Private constructor, to be called by Create factory method only.
   StorageQueue(
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+      const GenerationGuid generation_guid,
       const QueueOptions options,
       // A factory callback that instantiates UploaderInterface every time the
       // queue starts uploading records - periodically, immediately after Write
       // or upon explicit Flush request.
       const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       const DegradationCandidatesCb degradation_candidates_cb,
+      const DisableQueueCb disable_queue_cb,
+      const DisconnectQueueCb disconnect_queue_cb,
       const scoped_refptr<EncryptionModuleInterface> encryption_module,
       const scoped_refptr<CompressionModule> compression_module);
 
@@ -486,6 +508,15 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // `space_to_recover`.
   bool ShedFiles(size_t space_to_recover);
 
+  // Helper function for inactive queue self-destruct (called only when
+  // `is_self_destructing_`  flag is set). If `status` is not OK or the thread
+  // is found to be non-empty, attempt to `Flush` it unless already in progress.
+  void MaybeSelfDestructInactiveQueue(Status status);
+
+  // Timer callback detects inactive thread and initiates its self-destruct
+  // (even if it is not empty yet).
+  void InactivityCheck();
+
   // Sequential task runner for all activities in this StorageQueue
   // (must be first member in class).
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
@@ -507,6 +538,11 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;
 
+  // Identical in function to `generation_id_` but is globally unique across
+  // all devices instead of just on the device itself. Passed in as a parameter
+  // during initialization. The directory where the queue writes files to is
+  // named 'priority.generation_guid_'.
+  const GenerationGuid generation_guid_;
 
   // Current generation id, unique per device and queue.
   // Set up once during initialization by reading from the 'gen_id.NNNN' file
@@ -575,6 +611,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   base::RetainingOneShotTimer check_back_timer_
       GUARDED_BY_CONTEXT(storage_queue_sequence_checker_);
 
+  // Inactivity check and destruct timer (started upon initialization and
+  // restarted after every write to the queue). If it fires, the queue is not
+  // used for long enough time, and if it is empty, its file can be deleted and
+  // the queue itself can self-destruct.
+  base::RetainingOneShotTimer inactivity_check_and_destruct_timer_
+      GUARDED_BY_CONTEXT(storage_queue_sequence_checker_);
+
   // Queue of initialization callbacks. Empty list means the queue is ready,
   // otherwise each callback represents an action that triggered queue redundant
   // initialization and is now pending until initialization that started earlier
@@ -582,11 +625,25 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   std::queue<QueueInitCb> init_cb_queue_
       GUARDED_BY_CONTEXT(storage_queue_sequence_checker_);
 
+  // Inactivity self-destruct flag. This flag is set once the queue has been
+  // removed from DM-token map in `QueuesContainer` (thus disabling `Write`s to
+  // this queue), and also indicates that once the queue is found having no
+  // data, it will be removed from `QueuesContainer` altogether, and all its
+  // files will be deleted.
+  bool is_self_destructing_
+      GUARDED_BY_CONTEXT(storage_queue_sequence_checker_) = false;
+
   // Upload provider callback.
   const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
   // Degradation queues request callback.
   const DegradationCandidatesCb degradation_candidates_cb_;
+
+  // Callback to disable queue for writing.
+  const DisableQueueCb disable_queue_cb_;
+
+  // Callback to diconnect queue from QueuesContainer.
+  const DisconnectQueueCb disconnect_queue_cb_;
 
   // Encryption module.
   const scoped_refptr<EncryptionModuleInterface> encryption_module_;

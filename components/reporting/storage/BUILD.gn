@@ -198,6 +198,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "key_delivery_unittest.cc",
+    "legacy_storage_degradation_unittest.cc",
+    "legacy_storage_unittest.cc",
     "storage_degradation_unittest.cc",
     "storage_queue_stress_test.cc",
     "storage_queue_unittest.cc",
