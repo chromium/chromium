@@ -6,6 +6,31 @@
       Lorem Ipsum
     </message>
     <!-- Creation dialog strings -->
+    <!-- Deprecated strings - to be removed once M127 UI refresh is default-enabled. -->
+    <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2" desc="The error message shown on the android bottom sheet." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+
+    <!-- Android strings -->
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android" translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID" desc="The description text on the creation dialog for plus addresses on Android." translateable="false">
+      Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_PROPOSED_PLUS_ADDRESS_PLACEHOLDER_ANDROID" desc="A placeholder for the plus address on Android" translateable="false">
+      Lorem Ipsum or whatever
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_ANDROID" desc="Cancel button text for the experimental enterprise plus addresses feature on Android" translateable="false">
+      Dolor
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID" desc="Ok button text for the experimental enterprise plus addresses feature on Android" translateable="false">
+      Sit
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID" desc="The error message shown on the android bottom sheet." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum
     </message>
@@ -26,9 +51,6 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP" desc="The error message shown on the desktop modal." translateable="false">
       Lorem ipsum, consectetur adipiscing <ph name="LINK">$1</ph>.
-    </message>
-     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2" desc="The error message shown on the android bottom sheet." translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_IOS" desc="The error message shown on the iOS bottom sheet." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
