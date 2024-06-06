@@ -65,6 +65,7 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
 #include "components/user_manager/user_names.h"
@@ -1415,7 +1416,8 @@ class PlusAddressContextMenuManagerTest
             "https://foo.bar"},
            {plus_addresses::features::kPlusAddressExcludedSites.name,
             kExcludedDomainEtldPlus1}}},
-         {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}}},
+         {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}},
+         {syncer::kSyncPlusAddress, {}}},
         /*disabled_features=*/{});
   }
 
@@ -1491,7 +1493,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   autofill_client()->set_is_off_the_record(true);
   autofill_client()->set_last_committed_primary_main_frame_url(kUrl);
   plus_address_service()->SavePlusProfile(
-      plus_addresses::test::CreatePlusProfile());
+      plus_addresses::test::CreatePlusProfile(/*use_full_domain=*/true));
 
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
