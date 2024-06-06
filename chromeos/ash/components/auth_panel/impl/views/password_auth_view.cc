@@ -31,6 +31,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -111,6 +112,8 @@ void PasswordAuthView::CreateAndConfigurePasswordRow() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
   password_row_layout_ = password_row_->SetLayoutManager(std::move(layout));
 
+  views::FocusRing::Install(password_row_);
+
   // Make the password row fill the view.
   password_row_container_layout->SetFlexForView(password_row_, 1);
 }
@@ -144,6 +147,7 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
 
   auth_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
+  auth_textfield_->SetFocusBehavior(FocusBehavior::ALWAYS);
 
   password_row_layout_->SetFlexForView(textfield_container, 1);
 }
@@ -226,6 +230,10 @@ bool PasswordAuthView::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
+void PasswordAuthView::RequestFocus() {
+  auth_textfield_->RequestFocus();
+}
+
 void PasswordAuthView::OnCapsLockChanged(bool enabled) {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::kCapslockKeyPressed,
@@ -266,6 +274,10 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
   CHECK(state.password_view_state_.has_value());
   const auto& password_view_state = state.password_view_state_.value();
 
+  if (state.password_view_state_->is_password_textfield_focused_) {
+    RequestFocus();
+  }
+
   UpdateTextfield(password_view_state.auth_textfield_state_);
 
   const auto& password = password_view_state.auth_textfield_state_.password_;
@@ -286,7 +298,8 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
 
   capslock_icon_->SetVisible(password_view_state.is_capslock_on_);
 
-  SetCapsLockIconHighlighted(password_view_state.is_capslock_icon_highlighted_);
+  SetCapsLockIconHighlighted(
+      password_view_state.is_password_textfield_focused_);
 }
 
 void PasswordAuthView::SetCapsLockIconHighlighted(bool highlight) {

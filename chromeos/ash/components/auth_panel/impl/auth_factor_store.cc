@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
@@ -107,13 +108,13 @@ void AuthFactorStore::OnUserAction(
     case AuthPanelEventDispatcher::UserAction::kPasswordTextfieldFocused: {
       CHECK(state_.password_view_state_.has_value());
 
-      state_.password_view_state_->is_capslock_icon_highlighted_ = true;
+      state_.password_view_state_->is_password_textfield_focused_ = true;
       break;
     }
     case AuthPanelEventDispatcher::UserAction::kPasswordTextfieldBlurred: {
       CHECK(state_.password_view_state_.has_value());
 
-      state_.password_view_state_->is_capslock_icon_highlighted_ = false;
+      state_.password_view_state_->is_password_textfield_focused_ = false;
       break;
     }
   }
@@ -126,6 +127,9 @@ void AuthFactorStore::OnFactorStateChanged(AshAuthFactor factor,
   switch (factor) {
     case AshAuthFactor::kGaiaPassword:
     case AshAuthFactor::kLocalPassword:
+      CHECK(password_type_.has_value());
+      CHECK_EQ(factor, password_type_.value());
+
       state_.password_view_state_->factor_state_ = state;
       break;
     case AshAuthFactor::kCryptohomePin:

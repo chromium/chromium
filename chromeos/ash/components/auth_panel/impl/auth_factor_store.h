@@ -42,7 +42,7 @@ class AuthFactorStore {
       bool is_display_password_button_visible_ = true;
       bool is_factor_enabled_ = true;
       bool is_capslock_on_ = false;
-      bool is_capslock_icon_highlighted_ = false;
+      bool is_password_textfield_focused_ = true;
       AuthFactorState factor_state_;
       AuthTextfieldState auth_textfield_state_;
 
