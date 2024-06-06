@@ -137,6 +137,8 @@ class AnimationFrameTimingInfo
   void SetDidPause() { did_pause_ = true; }
   bool DidPause() const { return did_pause_; }
 
+  uint64_t GetTraceId() const;
+
   virtual void Trace(Visitor*) const;
 
  private:
@@ -164,6 +166,9 @@ class AnimationFrameTimingInfo
 
   // Whether the LoAF included sync XHR or alerts (pause).
   bool did_pause_ = false;
+
+  // Unique ID used to tie together trace events for this animation frame.
+  mutable uint64_t trace_id_ = 0;
 };
 
 }  // namespace blink

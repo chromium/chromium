@@ -56,7 +56,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void Shutdown();
 
-  void BeginMainFrame(base::TimeTicks frame_time);
+  void BeginMainFrame(base::TimeTicks frame_time,
+                      LocalDOMWindow& local_root_window);
   void WillPerformStyleAndLayoutCalculation();
   void DidBeginMainFrame(LocalDOMWindow& local_root_window);
   void OnTaskCompleted(base::TimeTicks start_time,
@@ -131,6 +132,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                                            LocalDOMWindow& window);
   void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
                                      LocalDOMWindow& window);
+  void RequestPresentationTimeForTracing(LocalFrame& frame);
   void ReportPresentationTimeToTrace(
       uint64_t trace_id,
       const viz::FrameTimingDetails& presentation_details);
