@@ -66,7 +66,10 @@ NSAttributedString* ErrorMessage() {
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
   NSString* message = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_IOS);
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUIRedesign)
+          ? IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS
+          : IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_IOS);
   NSDictionary* link_attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSFontAttributeName :
@@ -174,8 +177,7 @@ UIImage* PlusAddressesLogo() {
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   [self setupAboveTitleView];
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressUIRedesign)) {
+  if (_plusAddressUIRedesignEnabled) {
     self.aboveTitleView = [self brandingIconView];
   } else {
     self.image = PlusAddressesLogo();
@@ -184,11 +186,16 @@ UIImage* PlusAddressesLogo() {
 
   self.customScrollViewBottomInsets =
       _plusAddressUIRedesignEnabled ? 0 : kScrollViewBottomInsets;
-  self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
+  self.titleString = l10n_util::GetNSString(
+      _plusAddressUIRedesignEnabled ? IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS
+                                    : IDS_PLUS_ADDRESS_MODAL_TITLE);
+  self.primaryActionString = l10n_util::GetNSString(
+      _plusAddressUIRedesignEnabled ? IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS
+                                    : IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
   self.secondaryActionString =
-      l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
+      l10n_util::GetNSString(_plusAddressUIRedesignEnabled
+                                 ? IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS
+                                 : IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
   // Don't show the dismiss bar button (with the secondary button used for
   // canceling), and ensure there is still sufficient space between the top of
   // the bottom sheet content and the top of the sheet. This is especially
@@ -370,7 +377,7 @@ UIImage* PlusAddressesLogo() {
   self.primaryActionButton.enabled = NO;
   // TODO(crbug.com/343153116): Disable the refresh button when it's loading.
   _reservedPlusAddress = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT);
+      IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS);
   [_reservedPlusAddressTableView reloadData];
 }
 
