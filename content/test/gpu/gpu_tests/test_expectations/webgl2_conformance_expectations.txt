@@ -601,6 +601,8 @@ crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/tr
 
 crbug.com/327026292 [ angle-metal apple passthrough sonoma graphite-enabled ] conformance2/glsl3/float-parsing.html [ Failure ]
 
+crbug.com/343889872 [ mac apple-angle-metal-renderer:-apple-m2 ] conformance/ogles/GL/swizzlers/swizzlers_017_to_024.html [ RetryOnFailure ]
+
 ## Metal Graphite ##
 
 
