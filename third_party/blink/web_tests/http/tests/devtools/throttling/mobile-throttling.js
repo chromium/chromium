@@ -13,23 +13,23 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that mobile, network, and CPU throttling interact with each other logically.\n`);
-  await TestRunner.showPanel("network");
-  await TestRunner.showPanel("timeline");
-  await UI.ViewManager.ViewManager.instance().showView("network.config");
+  await TestRunner.showPanel('network');
+  await TestRunner.showPanel('timeline');
+  await UI.ViewManager.ViewManager.instance().showView('network.config');
 
-  var deviceModeView = new Emulation.DeviceModeView.DeviceModeView();
+  const deviceModeView = new Emulation.DeviceModeView.DeviceModeView();
 
-  var deviceModeThrottling = deviceModeView.toolbar.throttlingConditionsItem;
-  var networkPanelThrottling = Network.NetworkPanel.NetworkPanel.instance().throttlingSelectForTest();
-  var networkConfigView = Network.NetworkConfigView.NetworkConfigView.instance();
-  var networkConditionsDrawerThrottlingSelector =
+  const deviceModeThrottling = deviceModeView.toolbar.throttlingConditionsItem;
+  const networkPanelThrottling = Network.NetworkPanel.NetworkPanel.instance().throttlingSelectForTest();
+  const networkConfigView = Network.NetworkConfigView.NetworkConfigView.instance();
+  const networkConditionsDrawerThrottlingSelector =
       networkConfigView.contentElement.querySelector('.network-config-throttling select.chrome-select');
-  var performancePanelNetworkThrottling = Timeline.TimelinePanel.TimelinePanel.instance().networkThrottlingSelect;
-  var performancePanelCPUThrottling = Timeline.TimelinePanel.TimelinePanel.instance().cpuThrottlingSelect;
+  const performancePanelNetworkThrottling = Timeline.TimelinePanel.TimelinePanel.instance().networkThrottlingSelect;
+  const performancePanelCPUThrottling = Timeline.TimelinePanel.TimelinePanel.instance().cpuThrottlingSelect;
 
   function dumpThrottlingState() {
     TestRunner.addResult('=== THROTTLING STATE ===');
-    var {download, upload, latency} = SDK.NetworkManager.MultitargetNetworkManager.instance().networkConditions();
+    const {download, upload, latency} = SDK.NetworkManager.MultitargetNetworkManager.instance().networkConditions();
     TestRunner.addResult(`Network throttling - download: ${Math.round(download)} upload: ${Math.round(upload)} latency: ${latency}`);
     TestRunner.addResult('CPU throttling rate: ' + SDK.CPUThrottlingManager.CPUThrottlingManager.instance().cpuThrottlingRate());
     TestRunner.addResult('Device mode throttling: ' + deviceModeThrottling.text);
@@ -54,8 +54,16 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   MobileThrottling.ThrottlingManager.throttlingManager().setCPUThrottlingRate(MobileThrottling.ThrottlingPresets.ThrottlingPresets.getLowEndMobileConditions().cpuThrottlingRate);
   dumpThrottlingState();
 
-  TestRunner.addResult('Change network to Fast 3G');
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setNetworkConditions(SDK.NetworkManager.Fast3GConditions);
+  TestRunner.addResult('Change network to 3G');
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setNetworkConditions(SDK.NetworkManager.Slow3GConditions);
+  dumpThrottlingState();
+
+  TestRunner.addResult('Change network to slow 4G');
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setNetworkConditions(SDK.NetworkManager.Slow4GConditions);
+  dumpThrottlingState();
+
+  TestRunner.addResult('Change network to fast 4G');
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setNetworkConditions(SDK.NetworkManager.Fast4GConditions);
   dumpThrottlingState();
 
   TestRunner.addResult('Change to mid-tier mobile in device mode');

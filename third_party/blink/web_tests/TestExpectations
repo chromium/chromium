@@ -7517,9 +7517,6 @@ crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-images
 # Branch Gardener 2024-04-21
 crbug.com/331358162 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass ]
 
-# Disabled to allow crrev.com/c/5582013 to land. TODO(crbug.com/342406608): re-enable and update.
-crbug.com/342406608 http/tests/devtools/throttling/mobile-throttling.js [ Failure Pass ]
-
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
 
