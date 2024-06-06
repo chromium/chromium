@@ -2419,7 +2419,13 @@ std::u16string FindChildText(const WebNode& node) {
 
 ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
                                 ButtonTitlesCache* button_titles_cache) {
-  DCHECK(web_form);
+  // It makes no sense to collect button titles for a synthetic forms built
+  // from unowned fields, as it's time-consuming and leads to scraping
+  // many irrelevant elements.
+  if (!web_form) {
+    return {};
+  }
+
   if (!button_titles_cache) {
     // Button titles scraping is disabled for this form.
     return InferButtonTitlesForForm(web_form);
