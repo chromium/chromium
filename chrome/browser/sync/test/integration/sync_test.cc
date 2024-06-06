@@ -1119,6 +1119,9 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
   excluded_types_from_check_for_data_type_failures_ = types;
 }
 
+// The set of types that *can* run in transport mode. Doesn't mean they are all
+// enabled by default, e.g. HISTORY requires a dedicated opt-in via
+// SyncUserSettings::SetSelectedTypes().
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
   static_assert(53 == syncer::GetNumModelTypes(),
                 "Add new types below if they can run in transport mode");
@@ -1127,16 +1130,21 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
   syncer::ModelTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
                                         syncer::AUTOFILL_WALLET_DATA,
                                         syncer::AUTOFILL_WALLET_USAGE,
-                                        syncer::CONTACT_INFO,
                                         syncer::DEVICE_INFO,
-                                        syncer::PLUS_ADDRESS,
-                                        syncer::PLUS_ADDRESS_SETTING,
                                         syncer::SECURITY_EVENTS,
                                         syncer::SEND_TAB_TO_SELF,
                                         syncer::SHARING_MESSAGE,
                                         syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
 
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEnableContactInfoDataTypeInTransportMode)) {
+    allowed_types.Put(syncer::CONTACT_INFO);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
+    allowed_types.Put(syncer::PLUS_ADDRESS);
+    allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
+  }
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableWalletMetadataInTransportMode)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
@@ -1167,6 +1175,10 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::PRIORITY_PREFERENCES);
   }
   if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    allowed_types.Put(syncer::BOOKMARKS);
+  }
+  if (base::FeatureList::IsEnabled(
           syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
     allowed_types.Put(syncer::READING_LIST);
   }
@@ -1174,6 +1186,13 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncSharedTabGroupDataInTransportMode)) {
     allowed_types.Put(syncer::COLLABORATION_GROUP);
     allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    allowed_types.Put(syncer::HISTORY);
+    allowed_types.Put(syncer::SESSIONS);
+    allowed_types.Put(syncer::PRODUCT_COMPARISON);
+    allowed_types.Put(syncer::SAVED_TAB_GROUP);
   }
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
