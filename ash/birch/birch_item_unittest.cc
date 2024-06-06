@@ -483,6 +483,25 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
                                1);
 }
 
+TEST_F(BirchItemTest, LastActive_Subtitle_TwoDaysAgo) {
+  BirchLastActiveItem item(u"item", GURL("http://example.com/"),
+                           base::Time::Now() - base::Days(2), ui::ImageModel());
+  EXPECT_EQ(item.subtitle(), u"2 days ago · Continue browsing");
+}
+
+TEST_F(BirchItemTest, LastActive_Subtitle_Yesterday) {
+  BirchLastActiveItem item(u"item", GURL("http://example.com/"),
+                           base::Time::Now() - base::Days(1), ui::ImageModel());
+  EXPECT_EQ(item.subtitle(), u"Yesterday · Continue browsing");
+}
+
+TEST_F(BirchItemTest, LastActive_Subtitle_OneHourAgo) {
+  BirchLastActiveItem item(u"item", GURL("http://example.com/"),
+                           base::Time::Now() - base::Hours(1),
+                           ui::ImageModel());
+  EXPECT_EQ(item.subtitle(), u"1 hr ago · Continue browsing");
+}
+
 TEST_F(BirchItemTest, LastActive_PerformAction) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"), base::Time(),
                            ui::ImageModel());

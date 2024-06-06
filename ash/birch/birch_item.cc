@@ -623,8 +623,14 @@ void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
 // static
 std::u16string BirchLastActiveItem::GetSubtitle(base::Time last_visit) {
   std::u16string prefix;
-  if (last_visit < base::Time::Now().LocalMidnight()) {
-    // TODO(jamescook): Add support for more than 1 day ago.
+  if (last_visit < base::Time::Now().LocalMidnight() - base::Days(1)) {
+    // If the last visit was before yesterday, show "X days ago".
+    int days = (base::Time::Now() - last_visit).InDays();
+    prefix = l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_DAYS_AGO, days);
+  } else if (last_visit < base::Time::Now().LocalMidnight()) {
+    // If the last visit was yesterday show "Yesterday", which is a common case
+    // in the mornings.
     prefix =
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_YESTERDAY);
   } else {

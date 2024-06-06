@@ -8259,6 +8259,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_SUFFIX" desc="End of the subtitle for the suggestion chip with tabs shared from other devices">
         Sent from <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
       </message>
+      <!-- This uses a full plural string for safety, even though the day count should be at least 2. -->
+      <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_DAYS_AGO" desc="Start of the subtitle for the suggestion chip with a last active tab used some number of days ago">
+        {DAYS, plural,
+         =1 {1 day ago}
+         other {# days ago}}
+      </message>
       <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_YESTERDAY" desc="Subtitle for the suggestion chip with the last active tab">
         Yesterday
       </message>
