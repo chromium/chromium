@@ -989,6 +989,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android:usage_stats_proto_java",
       "//chrome/android/features/android_library_factory:junit_tests",
       "//chrome/android/features/keyboard_accessory:internal_java",
+      "//chrome/android/features/keyboard_accessory/public:public_java",
       "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
       "//chrome/android/features/tab_ui/public:java",

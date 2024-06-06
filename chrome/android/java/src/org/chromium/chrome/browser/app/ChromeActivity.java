@@ -296,7 +296,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
             new ObservableSupplierImpl<>();
 
-    private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
+    protected final ManualFillingComponentSupplier mManualFillingComponentSupplier =
             new ManualFillingComponentSupplier();
     // TODO(crbug.com/40182241): Move ownership to RootUiCoordinator.
     private final UnownedUserDataSupplier<BrowserControlsManager> mBrowserControlsManagerSupplier =

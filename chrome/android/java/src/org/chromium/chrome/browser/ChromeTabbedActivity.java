@@ -2263,7 +2263,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getSavedInstanceState(),
                 mMultiInstanceManager,
                 getHubOverviewColorSupplier(),
-                getBaseChromeLayout());
+                getBaseChromeLayout(),
+                mManualFillingComponentSupplier);
     }
 
     @Override

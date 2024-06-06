@@ -134,7 +134,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mNavColorController.updateActiveTabForTesting();
 
-        mNavColorController.onBottomAttachedColorChanged(Color.RED, false);
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
         assertTrue(
                 "Should be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -147,7 +147,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
                 Color.RED,
                 mNavColorController.getNavigationBarDividerColor(false, false));
 
-        mNavColorController.onBottomAttachedColorChanged(null, false);
+        mNavColorController.onBottomAttachedColorChanged(null, false, false);
         assertFalse(
                 "Should no longer be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
@@ -169,7 +169,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mNavColorController.updateActiveTabForTesting();
         Mockito.clearInvocations(mWindow);
 
-        mNavColorController.onBottomAttachedColorChanged(Color.RED, true);
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, true, true);
         verify(mWindow, atLeastOnce()).setNavigationBarDividerColor(eq(NAV_DIVIDER_COLOR));
     }
 

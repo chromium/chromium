@@ -249,4 +249,10 @@ public interface ManualFillingComponent extends BackPressHandler {
      * Ideally this would live in a test utility like ManualFillingTestHelper.
      */
     void forceShowForTesting();
+
+    /**
+     * Returns a supplier for {@link AccessorySheetVisualStateProvider} that can be observed to be
+     * notified of changes to the visual state of the accessory sheel.
+     */
+    ObservableSupplier<AccessorySheetVisualStateProvider> getAccessorySheetVisualStateProvider();
 }

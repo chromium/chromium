@@ -115,6 +115,8 @@ class ManualFillingMediator
     private final Callback<ViewportInsets> mViewportInsetsObserver = this::onViewportInsetChanged;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<AccessorySheetVisualStateProvider>
+            mAccessorySheetVisualStateSupplier = new ObservableSupplierImpl<>();
 
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
@@ -193,6 +195,7 @@ class ManualFillingMediator
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
         mModel.addObserver(this::onPropertyChanged);
         mAccessorySheet = accessorySheet;
+        mAccessorySheetVisualStateSupplier.set(mAccessorySheet);
         mAccessorySheet.setOnPageChangeListener(mKeyboardAccessory.getOnPageChangeListener());
         mAccessorySheet.setHeight(getIdealSheetHeight());
         mApplicationViewportInsetSupplier = mWindowAndroid.getApplicationBottomInsetSupplier();
@@ -973,6 +976,14 @@ class ManualFillingMediator
                                 .getDimensionPixelSize(
                                         R.dimen.keyboard_accessory_suggestion_height);
         return idealHeight + getHeaderHeight();
+    }
+
+    /**
+     * Returns a supplier for {@link AccessorySheetVisualStateProvider} that can be observed to be
+     * notified of changes to the visual state of the accessory sheet.
+     */
+    ObservableSupplier<AccessorySheetVisualStateProvider> getAccessorySheetVisualStateProvider() {
+        return mAccessorySheetVisualStateSupplier;
     }
 
     TabModelObserver getTabModelObserverForTesting() {

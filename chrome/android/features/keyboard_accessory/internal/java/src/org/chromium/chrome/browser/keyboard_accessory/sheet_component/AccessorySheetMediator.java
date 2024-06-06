@@ -12,23 +12,27 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator.SheetVisibilityDelegate;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 
 /**
- * Contains the controller logic of the AccessorySheet component.
- * It communicates with data providers and native backends to update a model based on {@link
- * AccessorySheetProperties}.
+ * Contains the controller logic of the AccessorySheet component. It communicates with data
+ * providers and native backends to update a model based on {@link AccessorySheetProperties}.
  */
 class AccessorySheetMediator implements PropertyObservable.PropertyObserver<PropertyKey> {
     private final PropertyModel mModel;
@@ -41,8 +45,13 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
                 }
             };
     private final SheetVisibilityDelegate mSheetVisibilityDelegate;
+    private final Context mContext;
+    private ObserverList<AccessorySheetVisualStateProvider.Observer> mVisualObservers =
+            new ObserverList<>();
 
-    AccessorySheetMediator(PropertyModel model, SheetVisibilityDelegate sheetVisibilityDelegate) {
+    AccessorySheetMediator(
+            Context context, PropertyModel model, SheetVisibilityDelegate sheetVisibilityDelegate) {
+        mContext = context;
         mModel = model;
         mModel.addObserver(this);
         mSheetVisibilityDelegate = sheetVisibilityDelegate;
@@ -108,6 +117,10 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
     @Override
     public void onPropertyChanged(PropertyObservable<PropertyKey> source, PropertyKey propertyKey) {
         if (propertyKey == VISIBLE) {
+            for (AccessorySheetVisualStateProvider.Observer observer : mVisualObservers) {
+                observer.onAccessorySheetStateChanged(
+                        mModel.get(VISIBLE), SemanticColorUtils.getDefaultBgColor(mContext));
+            }
             if (mModel.get(VISIBLE) && getTab() != null && getTab().getListener() != null) {
                 getTab().getListener().onTabShown();
             }
@@ -125,5 +138,15 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
 
     void setOnPageChangeListener(ViewPager.OnPageChangeListener onPageChangeListener) {
         mModel.set(PAGE_CHANGE_LISTENER, onPageChangeListener);
+    }
+
+    void addObserver(AccessorySheetVisualStateProvider.Observer observer) {
+        mVisualObservers.addObserver(observer);
+        observer.onAccessorySheetStateChanged(
+                mModel.get(VISIBLE), SemanticColorUtils.getDefaultBgColor(mContext));
+    }
+
+    void removeObserver(AccessorySheetVisualStateProvider.Observer observer) {
+        mVisualObservers.removeObserver(observer);
     }
 }

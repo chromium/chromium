@@ -22,6 +22,8 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,15 +36,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator.SheetVisibilityDelegate;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,13 +59,27 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class})
+        shadows = {
+            CustomShadowAsyncTask.class,
+            AccessorySheetControllerTest.ShadowSemanticColorUtils.class
+        })
 public class AccessorySheetControllerTest {
+    @Implements(SemanticColorUtils.class)
+    static class ShadowSemanticColorUtils {
+        @Implementation
+        public static int getDefaultBgColor(Context context) {
+            return DEFAULT_BG_COLOR;
+        }
+    }
+
+    private static final int DEFAULT_BG_COLOR = Color.LTGRAY;
+
     @Mock private PropertyObservable.PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock private ListObservable.ListObserver<Void> mTabListObserver;
     @Mock private AccessorySheetView mMockView;
     @Mock private RecyclerView mMockRecyclerView;
     @Mock private SheetVisibilityDelegate mSheetVisibilityDelegate;
+    @Mock private AccessorySheetVisualStateProvider.Observer mVisualObserver;
 
     private final Tab[] mTabs =
             new Tab[] {
@@ -81,9 +101,10 @@ public class AccessorySheetControllerTest {
         when(mMockView.getLayoutParams()).thenReturn(new ViewGroup.LayoutParams(0, 0));
         mCoordinator =
                 new AccessorySheetCoordinator(
-                        new FakeViewProvider<>(mMockView), mSheetVisibilityDelegate);
+                        null, new FakeViewProvider<>(mMockView), mSheetVisibilityDelegate);
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
+        mMediator.addObserver(mVisualObserver);
     }
 
     @Test
@@ -96,20 +117,26 @@ public class AccessorySheetControllerTest {
     @Test
     public void testModelNotifiesAboutVisibilityOncePerChange() {
         mModel.addObserver(mMockPropertyObserver);
+        // The visual observer is notified of the current state when it is added.
+        verify(mVisualObserver).onAccessorySheetStateChanged(false, DEFAULT_BG_COLOR);
 
         // Calling show on the mediator should make model propagate that it's visible.
         mMediator.show();
         verify(mMockPropertyObserver).onPropertyChanged(mModel, VISIBLE);
         assertThat(mModel.get(VISIBLE), is(true));
+        verify(mVisualObserver).onAccessorySheetStateChanged(true, DEFAULT_BG_COLOR);
 
         // Calling show again does nothing.
         mMediator.show();
         verify(mMockPropertyObserver) // Still the same call and no new one added.
                 .onPropertyChanged(mModel, VISIBLE);
+        verify(mVisualObserver) // Still the same call and no new one added.
+                .onAccessorySheetStateChanged(true, DEFAULT_BG_COLOR);
 
         // Calling hide on the mediator should make model propagate that it's invisible.
         mMediator.hide();
         verify(mMockPropertyObserver, times(2)).onPropertyChanged(mModel, VISIBLE);
+        verify(mVisualObserver, times(2)).onAccessorySheetStateChanged(false, DEFAULT_BG_COLOR);
 
         assertThat(mModel.get(VISIBLE), is(false));
     }

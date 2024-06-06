@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -198,6 +200,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private Destroyable mTabGroupCreationDialogManager;
+    private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -287,6 +290,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
+     * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
+     *     interacting with non-popup filling UI.
      */
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -338,7 +343,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout) {
+            @Nullable View baseChromeLayout,
+            @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -414,6 +420,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusBarColorController.setAllowToolbarColorOnTablets(
                 ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
+        mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
         initAppHeaderCoordinator(savedInstanceState);
     }
@@ -533,6 +540,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mContextualSearchManagerSupplier,
                         getBottomSheetController(),
                         mToolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
+                        mManualFillingComponentSupplier
+                                .get()
+                                .getAccessorySheetVisualStateProvider(),
                         mInsetObserverViewSupplier.get());
     }
 

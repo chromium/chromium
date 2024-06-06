@@ -224,6 +224,12 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
+    public ObservableSupplier<AccessorySheetVisualStateProvider>
+            getAccessorySheetVisualStateProvider() {
+        return mMediator.getAccessorySheetVisualStateProvider();
+    }
+
+    @Override
     public void forceShowForTesting() {
         mMediator.show(true);
     }

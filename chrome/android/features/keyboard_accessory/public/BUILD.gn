@@ -25,6 +25,7 @@ android_library("public_java") {
     "//url:gurl_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/AccessorySheetVisualStateProvider.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponent.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentSupplier.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/KeyboardAccessoryData.java",
