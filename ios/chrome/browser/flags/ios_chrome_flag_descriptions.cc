@@ -225,6 +225,11 @@ extern const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
+const char kClearDeviceDataOnSignOutForManagedUsersName[] =
+    "Clear Device Data on Signout for Managed Users";
+const char kClearDeviceDataOnSignOutForManagedUsersDescription[] =
+    "Enables clearing data saved on the device for managed users on signout.";
+
 const char kContentNotificationExperimentName[] =
     "Content Notification Experiment";
 const char kContentNotificationExperimentDescription[] =

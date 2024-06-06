@@ -186,6 +186,11 @@ extern const char kSpotlightDonateNewIntentsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Title and description for the flag that enables clearing data for managed
+// users on signout.
+extern const char kClearDeviceDataOnSignOutForManagedUsersName[];
+extern const char kClearDeviceDataOnSignOutForManagedUsersDescription[];
+
 // Title and description for the flag to enable the content notification
 // experiments. This is a kill switcher that guarded the
 // ContentPushNotifications feature.

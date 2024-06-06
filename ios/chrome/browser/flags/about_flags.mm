@@ -1697,6 +1697,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"downloaded-pdf-opening-ios", flag_descriptions::kDownloadedPDFOpeningName,
      flag_descriptions::kDownloadedPDFOpeningDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadedPDFOpening)},
+    {"clear-device-data-on-signout-for-managed-users",
+     flag_descriptions::kClearDeviceDataOnSignOutForManagedUsersName,
+     flag_descriptions::kClearDeviceDataOnSignOutForManagedUsersDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kClearDeviceDataOnSignOutForManagedUsers)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

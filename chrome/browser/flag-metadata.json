@@ -1423,6 +1423,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "clear-device-data-on-signout-for-managed-users",
+    "owners": [ "esalma@google.com"],
+    "expiry_milestone": 129
+  },
+  {
     "name": "clear-login-database-for-upm-users",
     "owners": [ "vsemeniuk@google.com", "ioanap@chromium.org" ],
     "expiry_milestone": 127
