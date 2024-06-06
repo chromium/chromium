@@ -2,14 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -21,7 +29,11 @@ namespace {
 using net::test_server::ControllableHttpResponse;
 
 class NavPrefetchBrowserTest : public ContentBrowserTest {
- protected:
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
   void StartPrefetch(const GURL& url) {
     auto* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
@@ -39,6 +51,28 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
     prefetch_document_manager->ProcessCandidates(candidates,
                                                  /*devtools_observer=*/nullptr);
   }
+
+  RenderFrameHostImpl& GetPrimaryMainFrameHost() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetPrimaryPage()
+        .GetMainDocument();
+  }
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    // This should be called on `EmbeddedTestServer::io_thread_`.
+    EXPECT_FALSE(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    base::AutoLock auto_lock(lock_);
+    request_count_by_path_[request.GetURL().PathForRequest()]++;
+  }
+
+  int GetRequestCount(const GURL& url) {
+    EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    base::AutoLock auto_lock(lock_);
+    return request_count_by_path_[url.PathForRequest()];
+  }
+
+ private:
+  std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  base::Lock lock_;
 };
 
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
@@ -77,6 +111,39 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   nav_observer.Wait();
   EXPECT_EQ(nav_observer.last_committed_url(), next_url);
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+}
+
+// TODO(crbug.com/345352974): Make it a web platform test instead.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
+  net::test_server::EmbeddedTestServer ssl_server{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  ssl_server.RegisterRequestMonitor(base::BindRepeating(
+      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
+  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
+  ssl_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(ssl_server.Start());
+
+  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  GURL des_url = ssl_server.GetURL("a.test", "/title2.html");
+  GURL next_nav_url =
+      ssl_server.GetURL("b.test", "/server-redirect?" + des_url.spec());
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(des_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), des_url);
+  ASSERT_EQ(GetRequestCount(des_url), 1);
+
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", next_nav_url));
+  nav_observer.Wait();
+
+  EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ(GetRequestCount(des_url), 1);
 }
 
 }  // namespace
