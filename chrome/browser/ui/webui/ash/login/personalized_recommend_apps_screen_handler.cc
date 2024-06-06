@@ -37,9 +37,9 @@ void PersonalizedRecommendAppsScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void PersonalizedRecommendAppsScreenHandler::SetCategoriesAppsMapData(
-    base::Value::Dict categoriesApps) {
-  CallExternalAPI("setCategoriesAppsMapData", std::move(categoriesApps));
+void PersonalizedRecommendAppsScreenHandler::SetAppsAndUseCasesData(
+    base::Value::List useCasesApps) {
+  CallExternalAPI("setAppsAndUseCasesData", std::move(useCasesApps));
 }
 
 void PersonalizedRecommendAppsScreenHandler::SetOverviewStep() {

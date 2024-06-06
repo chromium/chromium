@@ -61,9 +61,7 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
   void OnInstall(base::Value::List selected_apps_package_ids) const;
 
   void ShowOverviewStep();
-  void SetCategoriesAppsMapData();
-
-  base::Value::Dict apps_category_map_;
+  void SetAppsAndUseCasesData(base::Value::List apps_with_use_cases_list);
 
   std::unique_ptr<base::OneShotTimer> delay_set_apps_timer_;
 

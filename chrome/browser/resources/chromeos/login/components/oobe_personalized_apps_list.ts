@@ -34,6 +34,13 @@ export interface CategoriesItemList extends Array<CategoryItem> {}
 
 export interface OobeAppsListData extends Array<AppsListApp> {}
 
+export interface CategoryAppsItem {
+  name: string;
+  apps: AppsListApp[];
+}
+
+export interface CategoryAppsItems extends Array<CategoryAppsItem> {}
+
 const OobePersonalizedAppsListBase = PolymerElement;
 
 export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
@@ -58,7 +65,7 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
       /**
        * List of apps displayed converted from the map.
        */
-      catgoriesMapApps: {
+      categoriesMapApps: {
         type: Object,
       },
       /**
@@ -86,7 +93,7 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
     };
   }
 
-  private catgoriesMapApps: CategoriesAppsMap;
+  private categoriesMapApps: CategoriesAppsMap;
   private appsList: OobeAppsListData;
   private selectedAppsCount: number;
   private loadedIconsCount: number;
@@ -100,22 +107,25 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
   /**
    * Initialize the list of categories.
    */
-  init(data: CategoriesAppsMap): void {
-    this.catgoriesMapApps = data;
+  init(data: CategoryAppsItems): void {
+    this.categoriesMapApps = {};
+    for (const categoryAppsItem of data) {
+      this.categoriesMapApps[categoryAppsItem.name] = categoryAppsItem.apps;
+    }
     this.selectedAppsCount = 0;
     this.loadedIconsCount = 0;
     this.categoriesItemRendered = [];
     this.appsList = [];
-    for (const key in this.catgoriesMapApps) {
+    for (const key in this.categoriesMapApps) {
       this.categoriesItemRendered.push({'id': key, 'count': 0});
-      this.catgoriesMapApps[key].forEach(element => {
+      this.categoriesMapApps[key].forEach(element => {
         this.appsList.push(element);
       });
     }
   }
 
   reset(): void {
-    this.catgoriesMapApps = {};
+    this.categoriesMapApps = {};
     this.selectedAppsCount = 0;
     this.loadedIconsCount = 0;
     this.categoriesItemRendered = [];
@@ -163,9 +173,9 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
   /**
    * Return if categories title should be shown.
    */
-  private shouldShowCategoriesTitle(catgoriesMapApps: CategoriesAppsMap):
+  private shouldShowCategoriesTitle(categoriesMapApps: CategoriesAppsMap):
       boolean {
-    return !(Object.keys(catgoriesMapApps).length > 1);
+    return !(Object.keys(categoriesMapApps).length > 1);
   }
 
   /**
@@ -187,7 +197,7 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
 
 
   getApps(key: string): OobeAppsListData {
-    return this.catgoriesMapApps[key];
+    return this.categoriesMapApps[key];
   }
 
   private updateCount(): void {

@@ -250,8 +250,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   // in case multiple attached use-cases were selected by the user.
   std::unordered_set<std::string> used_apps_uuids;
 
-  // We pass a map of use_case_name` -> list of apps to the screen's WebUI.
-  base::Value::Dict apps_dict;
+  base::Value::List apps_by_use_cases_list;
 
   for (const auto& selected_use_case : selected_use_cases) {
     base::Value::List apps_list;
@@ -285,24 +284,27 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
     }
 
     if (!apps_list.empty()) {
-      // Map a name of use-case to the list of filetered apps.
-      apps_dict.Set(selected_use_case.GetLabel(), std::move(apps_list));
+      // Create data that we pass to the WebUI.
+      apps_by_use_cases_list.Append(
+          base::Value::Dict()
+              .Set("name", selected_use_case.GetLabel())
+              .Set("apps", std::move(apps_list)));
     }
   }
 
-  if (apps_dict.empty()) {
+  if (apps_by_use_cases_list.empty()) {
     LOG(ERROR) << "No apps found after filtering, skipping the screen";
     exit_callback_.Run(Result::kDataMalformed);
     return;
   }
 
-  apps_category_map_ = std::move(apps_dict);
-
   delay_set_apps_timer_ = std::make_unique<base::OneShotTimer>();
 
   delay_set_apps_timer_->Start(
-      FROM_HERE, kDelaySetCategoriesAppsMapTime, this,
-      &PersonalizedRecommendAppsScreen::SetCategoriesAppsMapData);
+      FROM_HERE, kDelaySetCategoriesAppsMapTime,
+      base::BindOnce(&PersonalizedRecommendAppsScreen::SetAppsAndUseCasesData,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(apps_by_use_cases_list)));
 }
 
 void PersonalizedRecommendAppsScreen::HideImpl() {}
@@ -368,9 +370,10 @@ void PersonalizedRecommendAppsScreen::ShowOverviewStep() {
   }
 }
 
-void PersonalizedRecommendAppsScreen::SetCategoriesAppsMapData() {
+void PersonalizedRecommendAppsScreen::SetAppsAndUseCasesData(
+    base::Value::List apps_by_use_cases_list) {
   if (view_) {
-    view_->SetCategoriesAppsMapData(std::move(apps_category_map_));
+    view_->SetAppsAndUseCasesData(std::move(apps_by_use_cases_list));
   }
 }
 

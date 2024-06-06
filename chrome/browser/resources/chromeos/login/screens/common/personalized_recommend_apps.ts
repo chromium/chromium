@@ -18,7 +18,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
-import {CategoriesAppsMap, OobePersonalizedAppsList} from '../../components/oobe_personalized_apps_list.js';
+import {CategoryAppsItems, OobePersonalizedAppsList} from '../../components/oobe_personalized_apps_list.js';
 
 import {getTemplate} from './personalized_recommend_apps.html.js';
 
@@ -78,7 +78,7 @@ export class PersonalizedRecommedAppsElement extends
 
   override get EXTERNAL_API(): string[] {
     return [
-      'setCategoriesAppsMapData',
+      'setAppsAndUseCasesData',
       'setOverviewStep',
     ];
   }
@@ -110,7 +110,7 @@ export class PersonalizedRecommedAppsElement extends
             '#categoriesAppsList')!.reset();
   }
 
-  setCategoriesAppsMapData(categoriesData: CategoriesAppsMap): void {
+  setAppsAndUseCasesData(categoriesData: CategoryAppsItems): void {
     assert(categoriesData !== null);
     this.shadowRoot!
         .querySelector<OobePersonalizedAppsList>('#categoriesAppsList')!.init(

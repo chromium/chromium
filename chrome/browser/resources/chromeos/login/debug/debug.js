@@ -26,84 +26,90 @@ function createQuickStartQR() {
 }
 
 function createCategoriesAppsData() {
-  const data = {
-    'categorie_1': [
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
-        name: 'Pinterest',
-        subname: 'Music streaming',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/kMofEFLjobZy_bCuaiDogzBcUT-dz3BBbOrIEjJ-hqOabjK8ieuevGe6wlTD15QzOqw',
-        name: 'WhatsApp Messenger',
-        subname: 'Office software',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/bYtqbOcTYOlgc6gqZ2rwb8lptHuwlNE75zYJu6Bn076-hTmvd96HH-6v7S0YUAAJXoJN',
-        name: 'Clash Royale',
-        subname: 'Messaging',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
-        name: 'Zoom',
-        subname: 'Cloud gaming',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-    ],
-    'categorie_23': [
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
-        name: 'Pinterest',
-        subname: 'Music streaming',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
-        name: 'WhatsApp Messenger',
-        subname: 'Office software',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
-        name: 'Clash Royale',
-        subname: 'Messaging',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-      {
-        AppId: 'screenID1',
-        icon:
-            'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
-        name: 'Zoom',
-        subname: 'Cloud gaming',
-        package_name: 'Pinterest',
-        selected: false,
-      },
-    ],
-  };
+  const data = [
+    {
+      name: 'categorie_1',
+      apps: [
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Pinterest',
+          subname: 'Music streaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/kMofEFLjobZy_bCuaiDogzBcUT-dz3BBbOrIEjJ-hqOabjK8ieuevGe6wlTD15QzOqw',
+          name: 'WhatsApp Messenger',
+          subname: 'Office software',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/bYtqbOcTYOlgc6gqZ2rwb8lptHuwlNE75zYJu6Bn076-hTmvd96HH-6v7S0YUAAJXoJN',
+          name: 'Clash Royale',
+          subname: 'Messaging',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Zoom',
+          subname: 'Cloud gaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+      ],
+    },
+    {
+      name: 'categorie_23',
+      apps: [
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Pinterest',
+          subname: 'Music streaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'WhatsApp Messenger',
+          subname: 'Office software',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Clash Royale',
+          subname: 'Messaging',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Zoom',
+          subname: 'Cloud gaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+      ],
+    },
+  ];
   return data;
 }
 
@@ -1925,7 +1931,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           id: 'overview',
           trigger: (screen) => {
             screen.setUIStep('overview');
-            screen.setCategoriesAppsMapData(createCategoriesAppsData());
+            screen.setAppsAndUseCasesData(createCategoriesAppsData());
           },
         },
       ],
