@@ -196,10 +196,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             }));
   }
 
-  private computeAriaSetting(isError: boolean): string {
-    return isError ? `polite` : `off`;
-  }
-
   private isNotificationError(
       lang: string,
       voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode},
