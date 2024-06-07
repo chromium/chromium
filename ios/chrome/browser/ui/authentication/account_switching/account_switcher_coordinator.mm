@@ -16,18 +16,26 @@
   [super start];
   _viewController = [[AccountSwitcherViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  UINavigationController* navController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
 
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom == UIUserInterfaceIdiomPad) {
-    _viewController.modalPresentationStyle = UIModalPresentationPopover;
-    _viewController.popoverPresentationController.sourceView = self.anchorView;
-    _viewController.popoverPresentationController.permittedArrowDirections =
+    navController.modalPresentationStyle = UIModalPresentationPopover;
+    navController.popoverPresentationController.sourceView = self.anchorView;
+    navController.popoverPresentationController.permittedArrowDirections =
         UIPopoverArrowDirectionUp;
+
   } else {
-    _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    navController.modalPresentationStyle = UIModalPresentationPageSheet;
+    UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                             target:self
+                             action:@selector(didTapClose)];
+    _viewController.navigationItem.rightBarButtonItem = closeButton;
   }
 
-  [self.baseViewController presentViewController:_viewController
+  [self.baseViewController presentViewController:navController
                                         animated:YES
                                       completion:nil];
 }
@@ -37,6 +45,12 @@
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   [super stop];
+}
+
+#pragma mark - Private
+
+- (void)didTapClose {
+  [self stop];
 }
 
 @end
