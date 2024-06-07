@@ -52,6 +52,7 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*default.profraw",
             # "deps": "depfile",
             "output_local": True,
+            "timeout": "2m",
         },
     ])
     return step_config
