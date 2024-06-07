@@ -5,6 +5,8 @@
 #ifndef UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_UTIL_WIN_H_
 #define UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_UTIL_WIN_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -12,6 +14,7 @@
 #include "third_party/win_virtual_display/driver/public/properties.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/test/virtual_display_util.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 class Display;
@@ -28,6 +31,8 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
                               public VirtualDisplayUtil {
  public:
   explicit VirtualDisplayUtilWin(Screen* screen);
+  VirtualDisplayUtilWin(const VirtualDisplayUtilWin&) = delete;
+  VirtualDisplayUtilWin& operator=(const VirtualDisplayUtilWin&) = delete;
   ~VirtualDisplayUtilWin() override;
 
   // Check whether the related drivers are available on the current system.
@@ -60,6 +65,35 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   DriverProperties current_config_;
   // Map of virtual display ID (product code) to corresponding display ID.
   base::flat_map<unsigned short, int64_t> virtual_displays_;
+  // Copy of the display list when this utility was constructed.
+  std::vector<display::Display> initial_displays_;
+};
+
+// Utility that waits until desired display configs are observed.
+// TODO(btriebw): Generalize this class and share it among VirtualDisplayUtil
+// classes.
+class DisplayConfigWaiter : public display::DisplayObserver {
+ public:
+  explicit DisplayConfigWaiter(Screen* screen);
+  DisplayConfigWaiter(const VirtualDisplayUtilWin&) = delete;
+  DisplayConfigWaiter& operator=(const VirtualDisplayUtilWin&) = delete;
+  ~DisplayConfigWaiter() override;
+
+  // Waits until the display configuration equals the specified resolutions, in
+  // any arrangement.
+  void WaitForDisplaySizes(std::vector<gfx::Size> sizes);
+
+ private:
+  // display::DisplayObserver:
+  void OnDisplayAdded(const display::Display& new_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
+
+  // Checks if the wait condition is true that should end the wait loop.
+  bool IsWaitConditionMet();
+
+  raw_ptr<Screen> screen_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  std::vector<gfx::Size> wait_for_sizes_;
 };
 
 }  // namespace test
