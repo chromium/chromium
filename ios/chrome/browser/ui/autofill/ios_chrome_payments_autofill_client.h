@@ -152,4 +152,4 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
 }  // namespace autofill
 
-#endif  //  IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
