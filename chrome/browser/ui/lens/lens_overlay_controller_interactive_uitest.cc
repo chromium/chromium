@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
-#include "chrome/browser/ui/tabs/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"

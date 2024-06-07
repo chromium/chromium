@@ -7,7 +7,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_utils.h"

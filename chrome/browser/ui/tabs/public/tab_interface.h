@@ -18,6 +18,8 @@ class BrowserWindowInterface;
 
 namespace tabs {
 
+class TabFeatures;
+
 // A feature which wants to show tab-modal UI should call
 // TabInterface::ShowModalUI and keep alive the instance of ScopedTabModalUI for
 // the duration of the tab-modal UI.
@@ -95,6 +97,9 @@ class TabInterface {
   // is in the background there is no guarantee that it is associated with a
   // browser window.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
+
+  // Returns the feature controllers scoped to this tab.
+  virtual tabs::TabFeatures* GetTabFeatures() = 0;
 };
 
 }  // namespace tabs

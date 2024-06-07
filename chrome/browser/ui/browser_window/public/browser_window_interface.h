@@ -14,10 +14,15 @@
 // your feature needs. This comment will be deleted after there are 10+ features
 // in BrowserWindowFeatures.
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace views {
 class WebView;
 }  // namespace views
 
+class BrowserWindowFeatures;
 class GURL;
 class SessionID;
 
@@ -33,6 +38,13 @@ class BrowserWindowInterface {
 
   // Returns a session-unique ID.
   virtual const SessionID& GetSessionID() = 0;
+
+  // Returns the foreground tab. This can be nullptr very early during
+  // BrowserWindow initialization, and very late during BrowserWindow teardown.
+  virtual tabs::TabInterface* GetActiveTabInterface() = 0;
+
+  // Returns the feature controllers scoped to this browser window.
+  virtual BrowserWindowFeatures& GetFeatures() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

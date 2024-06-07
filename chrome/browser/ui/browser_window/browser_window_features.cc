@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_FEATURES_H_
-#define CHROME_BROWSER_UI_TABS_TAB_FEATURES_H_
+#ifndef CHROME_BROWSER_UI_TABS_PUBLIC_TAB_FEATURES_H_
+#define CHROME_BROWSER_UI_TABS_PUBLIC_TAB_FEATURES_H_
 
 #include <memory>
 
@@ -56,4 +56,4 @@ class TabFeatures {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_FEATURES_H_
+#endif  // CHROME_BROWSER_UI_TABS_PUBLIC_TAB_FEATURES_H_

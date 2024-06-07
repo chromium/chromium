@@ -115,6 +115,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
+  tabs::TabFeatures* GetTabFeatures() override;
 
  private:
   // Overridden from TabStripModelObserver:

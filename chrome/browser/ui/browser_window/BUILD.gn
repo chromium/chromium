@@ -6,6 +6,12 @@
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("browser_window") {
-  sources = [ "public/browser_window_interface.h" ]
-  deps = [ "//ui/base:types" ]
+  sources = [
+    "public/browser_window_features.h",
+    "public/browser_window_interface.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/base:types",
+  ]
 }

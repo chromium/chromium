@@ -110,7 +110,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -139,6 +139,7 @@
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1067,6 +1068,14 @@ void Browser::OpenURL(const GURL& gurl, WindowOpenDisposition disposition) {
 
 const SessionID& Browser::GetSessionID() {
   return session_id_;
+}
+
+tabs::TabInterface* Browser::GetActiveTabInterface() {
+  return tab_strip_model_->GetActiveTab();
+}
+
+BrowserWindowFeatures& Browser::GetFeatures() {
+  return *features_.get();
 }
 
 void Browser::OnWindowClosing() {

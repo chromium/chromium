@@ -419,6 +419,7 @@ static_library("ui") {
   # browser, then we can clean up these dependencies.
   public_deps = [
     "//chrome/browser/headless",
+    "//chrome/browser/ui/tabs:tab_enums",
     "//components/cross_device/logging",
     "//components/dom_distiller/core",
     "//components/paint_preview/buildflags",
@@ -1186,8 +1187,7 @@ static_library("ui") {
       "browser_view_prefs.cc",
       "browser_view_prefs.h",
       "browser_window.h",
-      "browser_window_features.cc",
-      "browser_window_features.h",
+      "browser_window/browser_window_features.cc",
       "browser_window_state.cc",
       "browser_window_state.h",
       "chrome_pages.cc",
@@ -1603,7 +1603,6 @@ static_library("ui") {
       "tabs/tab_collection_storage.cc",
       "tabs/tab_collection_storage.h",
       "tabs/tab_features.cc",
-      "tabs/tab_features.h",
       "tabs/tab_group.cc",
       "tabs/tab_group.h",
       "tabs/tab_group_controller.h",

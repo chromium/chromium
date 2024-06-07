@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
-#include "chrome/browser/ui/tabs/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -128,6 +128,10 @@ bool TabModel::IsInNormalWindow() const {
 
 BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
   return owning_model_->delegate()->GetBrowserWindowInterface();
+}
+
+tabs::TabFeatures* TabModel::GetTabFeatures() {
+  return tab_features_.get();
 }
 
 void TabModel::OnTabStripModelChanged(

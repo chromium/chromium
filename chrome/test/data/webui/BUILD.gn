@@ -169,6 +169,7 @@ source_set("browser_tests") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/tabs",
     "//chrome/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/bookmarks/managed:managed",
