@@ -390,7 +390,7 @@ TEST_F(PickerControllerTest, OpenDriveFileResult) {
       .Times(1);
 
   controller.OpenResult(PickerSearchResult::DriveFile(
-      u"title", GURL("http://foo.com"), base::FilePath(), ui::ImageModel{}));
+      u"title", GURL("http://foo.com"), base::FilePath()));
 }
 
 TEST_F(PickerControllerTest, OpenLocalFileResult) {
@@ -751,7 +751,7 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::DriveFile(u"", {}, {}, {}),
+            .result = PickerSearchResult::DriveFile(u"", {}, {}),
             .unfocused_action = PickerActionType::kOpen,
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,

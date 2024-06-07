@@ -48,7 +48,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/ui/base/file_icon_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -93,9 +92,7 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
   results.reserve(files.size());
   for (PickerFileSuggester::DriveFile& file : files) {
     results.push_back(ash::PickerSearchResult::DriveFile(
-        std::move(file.title), std::move(file.url), std::move(file.local_path),
-        ui::ImageModel::FromVectorIcon(
-            chromeos::GetIconForPath(file.local_path))));
+        std::move(file.title), std::move(file.url), file.local_path));
   }
   return results;
 }
@@ -159,8 +156,7 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
       }
       case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(ash::PickerSearchResult::DriveFile(
-            result->title(), *result->url(), result->filePath(),
-            result->icon().icon));
+            result->title(), *result->url(), result->filePath()));
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "

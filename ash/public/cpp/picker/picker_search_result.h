@@ -156,12 +156,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     std::u16string title;
     GURL url;
     base::FilePath file_path;
-    ui::ImageModel icon;
 
-    DriveFileData(std::u16string title,
-                  GURL url,
-                  base::FilePath file_path,
-                  ui::ImageModel icon);
+    DriveFileData(std::u16string title, GURL url, base::FilePath file_path);
     DriveFileData(const DriveFileData&);
     DriveFileData& operator=(const DriveFileData&);
     ~DriveFileData();
@@ -247,8 +243,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                       base::FilePath file_path);
   static PickerSearchResult DriveFile(std::u16string title,
                                       const GURL& url,
-                                      base::FilePath file_path,
-                                      ui::ImageModel icon);
+                                      base::FilePath file_path);
   static PickerSearchResult Category(PickerCategory category);
   static PickerSearchResult Editor(
       EditorData::Mode mode,

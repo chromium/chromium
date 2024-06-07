@@ -28,6 +28,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -285,7 +286,10 @@ PickerItemView* PickerSectionView::AddResult(
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
-            item_view->SetLeadingIcon(data.icon);
+            // TODO: b/333609460 - Handle dark/light mode.
+            item_view->SetLeadingIcon(
+                ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(
+                    data.file_path, /*dark_background=*/false, kIconSize)));
             item_view->SetPreview(
                 preview_controller, data.file_path,
                 // base::Unretained is safe here since asset_fetcher_ outlives
