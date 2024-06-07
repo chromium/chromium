@@ -1981,7 +1981,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       explanation = (
         'Most code should already be scoped to a Profile. Pass in a Profile* '
         'or retreive from an existing entity with a reference to the Profile '
-        '(e.g. WebContents).'
+        '(e.g. WebContents).',
       ),
       treat_as_error = False,
     ),
@@ -1997,7 +1997,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       explanation = (
         'Most code should already be scoped to a Browser. Pass in a Browser* '
-        'or retreive from an existing entity with a reference to the Browser.'
+        'or retreive from an existing entity with a reference to the Browser.',
       ),
       treat_as_error = False,
     ),
@@ -2009,7 +2009,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'functionally identical but has two benefits: it does not force a '
         'dependency onto class Browser, and lifetime semantics are explicit '
         'rather than implicit. See BrowserUserData header file for more '
-        'details.'
+        'details.',
       ),
       treat_as_error = False,
     ),
