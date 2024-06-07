@@ -551,7 +551,8 @@ void RenderWidgetHostViewIOS::OnTouchEvent(blink::WebTouchEvent web_event) {
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
                                                                latency_info);
   } else {
-    host()->ForwardTouchEventWithLatencyInfo(web_event, latency_info);
+    host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        web_event, latency_info);
   }
 }
 
@@ -612,7 +613,8 @@ void RenderWidgetHostViewIOS::InjectTouchEvent(
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
         this, &touch_event, latency_info);
   } else {
-    host()->ForwardTouchEventWithLatencyInfo(event, latency_info);
+    host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        event, latency_info);
   }
 }
 
