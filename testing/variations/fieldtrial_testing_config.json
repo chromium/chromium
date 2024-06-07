@@ -18403,6 +18403,25 @@
             ]
         }
     ],
+    "RichInlineAutocompleteAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_3Chars_AdditionalText",
+                    "params": {
+                        "rich_autocomplete_full_url": "true",
+                        "rich_autocomplete_minimum_characters": "3"
+                    },
+                    "enable_features": [
+                        "OmniboxRichAutocompletion"
+                    ]
+                }
+            ]
+        }
+    ],
     "RichInlineAutocompleteIOS": [
         {
             "platforms": [
