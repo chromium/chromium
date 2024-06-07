@@ -479,6 +479,7 @@ def lib32_list(options):
       "zlib1g:i386",
       # 32-bit libraries needed e.g. to compile V8 snapshot for Android or armhf
       "linux-libc-dev:i386",
+      "libexpat1:i386",
       "libpci3:i386",
   ]
 
