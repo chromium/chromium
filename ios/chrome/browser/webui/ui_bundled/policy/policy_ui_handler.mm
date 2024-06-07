@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.h"
 
 #import <UIKit/UIKit.h>
+
 #import <algorithm>
 #import <utility>
 #import <vector>
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -174,6 +176,10 @@ void PolicyUIHandler::RegisterMessages() {
       base::BindRepeating(&PolicyUIHandler::HandleSetLocalTestPolicies,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getAppliedTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "revertLocalTestPolicies",
       base::BindRepeating(&PolicyUIHandler::HandleRevertLocalTestPolicies,
                           base::Unretained(this)));
@@ -265,6 +271,19 @@ void PolicyUIHandler::HandleSetUserAffiliation(const base::Value::List& args) {
   web_ui()->ResolveJavascriptCallback(args[0], true);
 }
 
+void PolicyUIHandler::HandleGetAppliedTestPolicies(
+    const base::Value::List& args) {
+  CHECK_EQ(static_cast<int>(args.size()), 1);
+
+  auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
+      GetApplicationContext()
+          ->GetBrowserPolicyConnector()
+          ->local_test_policy_provider());
+
+  web_ui()->ResolveJavascriptCallback(args[0],
+                                      local_test_provider->GetPolicies());
+}
+
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
   web_ui()->ResolveJavascriptCallback(
       args[0], policy::PolicyLogger::GetInstance()->GetAsList());
@@ -289,6 +308,7 @@ void PolicyUIHandler::OnSchemaRegistryUpdated(bool has_new_schemas) {
   // Update UI when new schema is added.
   if (has_new_schemas) {
     SendPolicies();
+    SendSchema();
   }
 }
 
@@ -373,6 +393,17 @@ void PolicyUIHandler::SendPolicies() {
   base::Value::Dict names = GetPolicyNames();
   base::Value::Dict values = GetPolicyValues();
   web_ui()->FireWebUIListener("policies-updated", names, values);
+}
+
+void PolicyUIHandler::SendSchema() {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromWebUIIOS(web_ui());
+  if (!PolicyUI::ShouldLoadTestPage(browser_state)) {
+    return;
+  }
+
+  web_ui()->FireWebUIListener("schema-updated",
+                              PolicyUI::GetSchema(browser_state));
 }
 
 base::Value::Dict PolicyUIHandler::GetStatusValue() const {

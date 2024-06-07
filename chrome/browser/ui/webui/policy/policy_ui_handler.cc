@@ -100,6 +100,8 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+// LINT.IfChange
+
 namespace {
 
 // Key under which extension policies are grouped in JSON policy exports.
@@ -507,3 +509,5 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       policy::GetChromeMetadataParams(
           /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
 }
+
+// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.mm)
