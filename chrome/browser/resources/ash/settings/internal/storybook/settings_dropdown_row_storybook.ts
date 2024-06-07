@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../controls/v2/settings_dropdown_v2.js';
+import '../../controls/v2/settings_dropdown_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {DropdownOptionList} from '../../controls/v2/settings_dropdown_v2.js';
 
-import {getTemplate} from './settings_dropdown_v2_storybook.html.js';
+import {getTemplate} from './settings_dropdown_row_storybook.html.js';
 
-export class SettingsDropdownV2Storybook extends PolymerElement {
+export class SettingsDropdownRowStorybook extends PolymerElement {
   static get is() {
-    return 'settings-dropdown-v2-storybook' as const;
+    return 'settings-dropdown-row-storybook' as const;
   }
 
   static get template() {
@@ -69,9 +69,9 @@ export class SettingsDropdownV2Storybook extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsDropdownV2Storybook.is]: SettingsDropdownV2Storybook;
+    [SettingsDropdownRowStorybook.is]: SettingsDropdownRowStorybook;
   }
 }
 
 customElements.define(
-    SettingsDropdownV2Storybook.is, SettingsDropdownV2Storybook);
+    SettingsDropdownRowStorybook.is, SettingsDropdownRowStorybook);

@@ -114,6 +114,7 @@ build_webui("build") {
     "guest_os/guest_os_shared_paths.ts",
     "guest_os/guest_os_shared_usb_devices.ts",
     "guest_os/guest_os_shared_usb_devices_add_dialog.ts",
+    "internal/storybook/settings_dropdown_row_storybook.ts",
     "internal/storybook/settings_dropdown_v2_storybook.ts",
     "internal/storybook/settings_row_storybook.ts",
     "internal/storybook/settings_slider_v2_storybook.ts",
