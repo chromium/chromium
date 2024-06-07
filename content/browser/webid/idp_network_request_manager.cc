@@ -73,6 +73,7 @@ constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kModesKey[] = "modes";
+constexpr char kTypesKey[] = "types";
 
 // Keys in the 'accounts' dictionary
 constexpr char kIncludeKey[] = "include";
@@ -560,6 +561,16 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
+  if (IsFedCmIdPRegistrationEnabled()) {
+    const base::Value::List* types = response.FindList(kTypesKey);
+    if (types) {
+      for (const auto& type : *types) {
+        if (type.is_string()) {
+          idp_metadata.types.push_back(type.GetString());
+        }
+      }
+    }
+  }
 
   const base::Value::Dict* accounts_dict = response.FindDict(kAccountsKey);
   if (accounts_dict) {

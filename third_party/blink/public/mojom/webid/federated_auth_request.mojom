@@ -69,6 +69,9 @@ struct IdentityProviderConfig {
   // rather than directly.
   bool use_registered_config_urls;
 
+  // When using registered IDPs, this contains the type of IDP requested.
+  string? type;
+
   // Can be an empty string to be omitted in the request sent to the provider.
   string client_id;
 };

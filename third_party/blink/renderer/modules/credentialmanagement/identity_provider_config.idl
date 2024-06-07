@@ -12,6 +12,9 @@ dictionary IdentityProviderConfig {
   // Not marked as required to allow implementation of digital credentials.
   // See crbug.com/1416939.
   USVString clientId;
+  // The type of Identity Provider that is compatible with the RP.
+  // Used to only use compatible providers.
+  [RuntimeEnabled=FedCmIdPRegistration] DOMString type;
 };
 
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {

@@ -306,6 +306,9 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque: {
       return "FedCM is not supported on an opaque origin.";
     }
+    case FederatedAuthRequestResult::kTypeNotMatching: {
+      return "The requested IdP type did not match the registered IdP.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }

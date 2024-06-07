@@ -240,6 +240,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
     case FederatedAuthRequestResult::kErrorReplacedByButtonMode:
     case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque:
+    case FederatedAuthRequestResult::kTypeNotMatching:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -311,7 +312,8 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
           kIdpServerInvalidResponse;
     }
     case FederatedAuthRequestResult::kError:
-    case FederatedAuthRequestResult::kErrorSilentMediationFailure: {
+    case FederatedAuthRequestResult::kErrorSilentMediationFailure:
+    case FederatedAuthRequestResult::kTypeNotMatching: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
     }
   }
@@ -1289,6 +1291,20 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
           std::move(idp_info), fetch_error.result, fetch_error.token_status,
           /*should_delay_callback=*/rp_mode_ == RpMode::kWidget);
       continue;
+    }
+
+    if (IsFedCmIdPRegistrationEnabled()) {
+      if (get_info_it->second.provider->config->type) {
+        if (!base::Contains(fetch_result.metadata->types,
+                            get_info_it->second.provider->config->type)) {
+          OnFetchDataForIdpFailed(
+              std::move(idp_info),
+              blink::mojom::FederatedAuthRequestResult::kTypeNotMatching,
+              content::FedCmRequestIdTokenStatus::kConfigNotMatchingType,
+              /*should_delay_callback=*/false);
+          continue;
+        }
+      }
     }
 
     const auto& fields = get_info_it->second.provider->fields;

@@ -915,6 +915,7 @@ experimental domain Audits
       MissingTransientUserActivation
       ReplacedByButtonMode
       RelyingPartyOriginIsOpaque
+      TypeNotMatching
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties

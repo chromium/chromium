@@ -119,6 +119,7 @@ class IdpTestServer {
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
     std::string login_url;
+    std::vector<std::string> types;
     std::map<std::string,
              base::RepeatingCallback<std::unique_ptr<HttpResponse>(
                  const HttpRequest&)>>
@@ -186,11 +187,12 @@ class IdpTestServer {
  private:
   void BuildConfigResponseFromDetails(BasicHttpResponse& response,
                                       const ConfigDetails& details) {
-    std::string content = ConvertToJsonDictionary(
-        {{"accounts_endpoint", details.accounts_endpoint_url},
-         {"client_metadata_endpoint", details.client_metadata_endpoint_url},
-         {"id_assertion_endpoint", details.id_assertion_endpoint_url},
-         {"login_url", details.login_url}});
+    std::map<std::string, std::string> map = {
+        {"accounts_endpoint", details.accounts_endpoint_url},
+        {"client_metadata_endpoint", details.client_metadata_endpoint_url},
+        {"id_assertion_endpoint", details.id_assertion_endpoint_url},
+        {"login_url", details.login_url}};
+    std::string content = ConvertToJsonDictionary(map, details.types);
     response.set_code(details.status_code);
     response.set_content(content);
     response.set_content_type(details.content_type);
@@ -205,14 +207,22 @@ class IdpTestServer {
   }
 
   std::string ConvertToJsonDictionary(
-      const std::map<std::string, std::string>& data) {
+      const std::map<std::string, std::string>& data,
+      const std::vector<std::string> types) {
     std::string out = "{";
     for (auto it : data) {
       out += "\"" + it.first + "\":\"" + it.second + "\",";
     }
-    if (!out.empty()) {
-      out[out.length() - 1] = '}';
+    if (!types.empty()) {
+      out += "\"types\":[";
+      for (const auto& type : types) {
+        out += "\"" + type + "\",";
+      }
+      out[out.length() - 1] = ']';
+      // Adding comma which will be replaced when setting '}'.
+      out += ",";
     }
+    out[out.length() - 1] = '}';
     return out;
   }
 
@@ -349,6 +359,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
             client_metadata_endpoint_url,
             id_assertion_endpoint_url,
             login_url,
+            /*types=*/{},
             servlets};
   }
 
@@ -656,6 +667,139 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
 
   SetTestIdentityRequestDialogController("not_real_account");
 
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), get_script));
+}
+
+// Verify that when type is requested, an IDP not matching it will not show
+// up.
+IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeNoMatch) {
+  GURL configURL = GURL(BaseIdpUrl());
+  auto details = BuildValidConfigDetails();
+  details.types = {"idp_type"};
+  idp_server()->SetConfigResponseDetails(details);
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+      .WillOnce(::testing::WithArg<1>(
+          [](base::OnceCallback<void(bool accepted)> callback) {
+            std::move(callback).Run(true);
+          }));
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.register(')" +
+                       configURL.spec() + R"(');
+          // The permission was accepted if the promise resolves.
+          return true;
+        }) ()
+    )";
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
+
+  // Navigate to the RP.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  std::string get_script = R"(
+        (async () => {
+          var {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                nonce: "1234",
+                configURL: "any",
+                clientId: "https://rp.example",
+                type: "no_match"
+              }]
+            }
+          });
+          return token;
+        }) ()
+    )";
+
+  SetTestIdentityRequestDialogController("not_real_account");
+
+  // TODO(crbug.com/340914587): show a better error here.
+  std::string expected_error =
+      "NotAllowedError: User declined the permission to register the Identity "
+      "Provider.";
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+
+  // If the IdP does not have type set, it should also not show up.
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+}
+
+// Verify that when the type of the registered IdP matches the requested one,
+// the FedCM flow is successful.
+IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeMatch) {
+  GURL configURL = GURL(BaseIdpUrl());
+  auto details = BuildValidConfigDetails();
+  details.types = {"type_no_match", "idp_type"};
+  idp_server()->SetConfigResponseDetails(details);
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+      .WillOnce(::testing::WithArg<1>(
+          [](base::OnceCallback<void(bool accepted)> callback) {
+            std::move(callback).Run(true);
+          }));
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.register(')" +
+                       configURL.spec() + R"(');
+          // The permission was accepted if the promise resolves.
+          return true;
+        }) ()
+    )";
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
+
+  // Navigate to the RP.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  std::string get_script = R"(
+        (async () => {
+          var {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                nonce: "1234",
+                configURL: "any",
+                clientId: "https://rp.example",
+                type: "idp_type"
+              }]
+            }
+          });
+          return token;
+        }) ()
+    )";
+
+  SetTestIdentityRequestDialogController("not_real_account");
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), get_script));
 }
 

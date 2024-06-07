@@ -49,6 +49,9 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   GURL brand_icon_url;
   GURL idp_login_url;
   std::string requested_label;
+  // For registered IdPs, the type is used to only show the accounts when the
+  // RP is compatible.
+  std::vector<std::string> types;
   // The URL of the configuration endpoint. This is stored in
   // IdentityProviderMetadata so that the UI code can pass it along when an
   // Account is selected by the user.

@@ -855,6 +855,10 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
       options.configURL() == "any") {
     mojo_options->config->use_registered_config_urls = true;
+    // We only set the `type` if `configURL` is 'any'.
+    if (options.hasType()) {
+      mojo_options->config->type = options.type();
+    }
   } else {
     mojo_options->config->config_url = blink::KURL(options.configURL());
   }

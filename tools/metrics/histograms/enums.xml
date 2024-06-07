@@ -11295,6 +11295,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="47" label="ContinuationPopupClosedByIdentityProviderClose"/>
   <int value="48" label="InvalidFieldsSpecified"/>
   <int value="49" label="RpOriginIsOpaque"/>
+  <int value="50" label="ConfigNotMatchingType"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">

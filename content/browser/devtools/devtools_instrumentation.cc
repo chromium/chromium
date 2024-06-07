@@ -377,6 +377,9 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque: {
       return FederatedAuthRequestIssueReasonEnum::RelyingPartyOriginIsOpaque;
     }
+    case FederatedAuthRequestResult::kTypeNotMatching: {
+      return FederatedAuthRequestIssueReasonEnum::TypeNotMatching;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED_NORETURN();
     }

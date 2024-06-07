@@ -78,8 +78,9 @@ enum class FedCmRequestIdTokenStatus {
   kContinuationPopupClosedByIdentityProviderClose = 47,
   kInvalidFieldsSpecified = 48,
   kRpOriginIsOpaque = 49,
+  kConfigNotMatchingType = 50,
 
-  kMaxValue = kRpOriginIsOpaque
+  kMaxValue = kConfigNotMatchingType
 };
 
 // This enum describes whether user sign-in states between IDP and browser

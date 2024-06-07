@@ -246,6 +246,7 @@ enum FederatedAuthRequestResult {
   kErrorMissingTransientUserActivation,
   kErrorReplacedByButtonMode,
   kErrorRelyingPartyOriginIsOpaque,
+  kTypeNotMatching,
   kError,
 };
 
