@@ -8545,6 +8545,25 @@
             ]
         }
     ],
+    "EstablishGpuChannelAsync": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EstablishGpuChannelAsync",
+                    "enable_features": [
+                        "EstablishGpuChannelAsync"
+                    ]
+                }
+            ]
+        }
+    ],
     "EventTimingFallbackToModalDialogStart": [
         {
             "platforms": [
