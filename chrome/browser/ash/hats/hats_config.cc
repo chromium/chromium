@@ -252,8 +252,8 @@ const HatsConfig kHatsBorealisGamesSurvey = {
 const HatsConfig kHatsLauncherAppsFindingSurvey = {
     ::features::kHappinessTrackingLauncherAppsFinding,  // feature
     base::Hours(2),                                     // new_device_threshold
-    prefs::kHatsLauncherAppsSurveyCycleEndTs,           // is_selected_pref_name
-    prefs::kHatsLauncherAppsSurveyIsSelected,  // cycle_end_timestamp_pref_name
+    prefs::kHatsLauncherAppsSurveyIsSelected,           // is_selected_pref_name
+    prefs::kHatsLauncherAppsSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
 // Launcher survey -- Shown after a user opens the launcher for the first time.
@@ -261,8 +261,8 @@ const HatsConfig kHatsLauncherAppsFindingSurvey = {
 const HatsConfig kHatsLauncherAppsNeedingSurvey = {
     ::features::kHappinessTrackingLauncherAppsNeeding,  // feature
     base::Hours(2),                                     // new_device_threshold
-    prefs::kHatsLauncherAppsSurveyCycleEndTs,           // is_selected_pref_name
-    prefs::kHatsLauncherAppsSurveyIsSelected,  // cycle_end_timestamp_pref_name
+    prefs::kHatsLauncherAppsSurveyIsSelected,           // is_selected_pref_name
+    prefs::kHatsLauncherAppsSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
 }  // namespace ash
