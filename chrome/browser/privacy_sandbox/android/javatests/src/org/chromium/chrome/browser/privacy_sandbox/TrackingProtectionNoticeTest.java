@@ -320,9 +320,7 @@ public final class TrackingProtectionNoticeTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 NOTICE_CONTROLLER_EVENT_HISTOGRAM,
-                                NoticeControllerEvent.NAVIGATION_FINISHED,
-                                NoticeControllerEvent.NON_SECURE_CONNECTION,
-                                NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
+                                NoticeControllerEvent.NAVIGATION_FINISHED)
                         .build();
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         histogramWatcher.assertExpected();

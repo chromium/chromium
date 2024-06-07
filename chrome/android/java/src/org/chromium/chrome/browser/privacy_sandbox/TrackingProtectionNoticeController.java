@@ -21,7 +21,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -278,21 +277,9 @@ public class TrackingProtectionNoticeController {
                                 SecurityStateModel.getSecurityLevelForWebContents(
                                         tab.getWebContents());
 
-                        // TODO(b/304202327): Offboarding notice should skip the non secure pages
-                        // check.
-                        if (shouldShowNotice(mTrackingProtectionBridge)
-                                && (ChromeFeatureList.isEnabled(
-                                                ChromeFeatureList
-                                                        .TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
-                                        || securityLevel == ConnectionSecurityLevel.SECURE)) {
-                            showNoticeCallback.onResult(tab);
-                        } else if (shouldShowNotice(mTrackingProtectionBridge)) {
-                            if (securityLevel != ConnectionSecurityLevel.SECURE) {
-                                logNoticeControllerEvent(
-                                        NoticeControllerEvent.NON_SECURE_CONNECTION);
-                            }
-                            logNoticeControllerEvent(
-                                    NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN);
+                        if (shouldShowNotice(mTrackingProtectionBridge) &&
+                                securityLevel == ConnectionSecurityLevel.SECURE) {
+                              showNoticeCallback.onResult(tab);
                         }
                     }
                 };

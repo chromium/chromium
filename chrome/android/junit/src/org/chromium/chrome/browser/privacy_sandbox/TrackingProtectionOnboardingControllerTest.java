@@ -21,12 +21,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -87,7 +83,6 @@ public class TrackingProtectionOnboardingControllerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
     public void testMaybeOnboard_ShowsNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
@@ -96,18 +91,6 @@ public class TrackingProtectionOnboardingControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK,
-    })
-    public void testMaybeOnboard_SecureConnection_ShowsNotice() {
-        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
-                .thenReturn(ConnectionSecurityLevel.SECURE);
-        mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.MODE_B);
-        verify(mTrackingProtectionModeBOnboardingView).showNotice(any(), any(), any());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
     public void testMaybeOnboard_NotSecureConnection_DoesNotShowNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.NONE);
@@ -116,7 +99,6 @@ public class TrackingProtectionOnboardingControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
     public void testMaybeOnboard_SilentOnboarding_NoNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.SECURE);

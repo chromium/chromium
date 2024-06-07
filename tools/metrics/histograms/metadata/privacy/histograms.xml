@@ -1407,7 +1407,8 @@ reviewer.
     Records the current state of the Tracking Protection onboarding notice and
     its controller. This is a Clank-only metric and helps understanding whether
     the message was requested to be shown but wasn't due to e.g. navigation only
-    on tabs with non-secure connection state.
+    on tabs with non-secure connection state. This histogram is in the
+    deprecation process and will be removed soon.
   </summary>
 </histogram>
 

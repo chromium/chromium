@@ -13,7 +13,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NoticeControllerEvent;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -125,9 +124,7 @@ public class TrackingProtectionOnboardingController {
             int securityLevel =
                     SecurityStateModel.getSecurityLevelForWebContents(tab.getWebContents());
 
-            if (!ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
-                    && !(securityLevel == ConnectionSecurityLevel.SECURE)) {
+            if (securityLevel != ConnectionSecurityLevel.SECURE) {
                 logForSecurityLevel(securityLevel);
                 return;
             }

@@ -171,10 +171,6 @@ BASE_DECLARE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice);
 // proper onboarding flag once onboarding service is done.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger);
-// Forces Tracking Protection Onboarding notice to be shown on all kind of pages
-// (not only the ones with secure connection).
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingSkipSecurePageCheck);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables attribution reporting transitional debug reporting for the cookie

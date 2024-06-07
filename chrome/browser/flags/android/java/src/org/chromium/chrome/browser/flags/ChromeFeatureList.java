@@ -483,8 +483,6 @@ public abstract class ChromeFeatureList {
             "TrackingProtectionSettingsPageRollbackNotice";
     public static final String TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER =
             "TrackingProtectionFullOnboardingMobileTrigger";
-    public static final String TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK =
-            "TrackingProtectionOnboardingSkipSecurePageCheck";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRACKING_PROTECTION_SETTINGS_LAUNCH =
             "TrackingProtectionSettingsLaunch";

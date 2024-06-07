@@ -141,9 +141,6 @@ BASE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice,
 BASE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger,
              "TrackingProtectionFullOnboardingMobileTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTrackingProtectionOnboardingSkipSecurePageCheck,
-             "TrackingProtectionOnboardingSkipSecurePageCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
