@@ -15,6 +15,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(views::InkDropHost*)
@@ -142,7 +143,46 @@ InkDropContainerView::InkDropContainerView() {
   SetProperty(kIsDecorativeViewKey, true);
 }
 
+InkDropContainerView::~InkDropContainerView() = default;
+
+bool InkDropContainerView::GetAutoMatchParentBounds() const {
+  return auto_match_parent_bounds_;
+}
+
+void InkDropContainerView::SetAutoMatchParentBounds(
+    bool auto_match_parent_bounds) {
+  if (auto_match_parent_bounds_ == auto_match_parent_bounds) {
+    return;
+  }
+  auto_match_parent_bounds_ = auto_match_parent_bounds;
+  OnPropertyChanged(&auto_match_parent_bounds_,
+                    PropertyEffects::kPropertyEffectsNone);
+  if (parent()) {
+    OnViewBoundsChanged(parent());
+  }
+}
+
+void InkDropContainerView::ViewHierarchyChanged(
+    const ViewHierarchyChangedDetails& details) {
+  if (details.child == this) {
+    if (details.is_add) {
+      observer_.Observe(details.parent);
+    } else {
+      observer_.Reset();
+    }
+  }
+}
+
+void InkDropContainerView::OnViewBoundsChanged(View* observed_view) {
+  if (!auto_match_parent_bounds_) {
+    return;
+  }
+  gfx::Rect bounds = observed_view->GetLocalBounds();
+  SetBoundsRect(bounds);
+}
+
 BEGIN_METADATA(InkDropContainerView)
+ADD_PROPERTY_METADATA(bool, AutoMatchParentBounds)
 END_METADATA
 
 }  // namespace views

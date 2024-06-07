@@ -68,7 +68,8 @@ LabelButton::LabelButton(
           style::STYLE_DIALOG_BUTTON_DEFAULT)),
       appear_disabled_in_inactive_widget_(
           PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
-  ink_drop_container_ = AddChildView(std::make_unique<InkDropContainerView>());
+  ink_drop_container_ = AddChildView(
+      Builder<InkDropContainerView>().SetAutoMatchParentBounds(true).Build());
   ink_drop_container_->SetVisible(false);
   ink_drop_container_->SetProperty(kViewIgnoredByLayoutKey, true);
 
@@ -376,13 +377,6 @@ ProposedLayout LabelButton::CalculateProposedLayout(
   }
 
   gfx::Rect image_area = GetLocalBounds();
-
-  layouts.child_layouts.emplace_back(
-      ink_drop_container_.get(),
-      static_cast<DelegatingLayoutManager*>(GetLayoutManager())
-          ->CanBeVisible(ink_drop_container_.get()),
-      image_area, SizeBounds());
-
   gfx::Insets insets = GetInsets();
   // If the button have a limited space to fit in, the image and the label
   // may overlap with the border, which often times contains a lot of empty
