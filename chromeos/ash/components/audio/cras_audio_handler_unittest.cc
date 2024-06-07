@@ -7695,8 +7695,19 @@ TEST_P(
   FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
-  // Manually activate the kUSBHeadphone1, expect that notification is removed.
+  // Activate the kUSBHeadphone1 by system, expect that notification is not
+  // removed.
   AudioDevice usb_headphone_device(usb_headphone_1);
+  cras_audio_handler_->SwitchToDevice(usb_headphone_device, true,
+                                      DeviceActivateType::kActivateByPriority);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Switch back to internal speaker.
+  AudioDevice internal_speaker_device(internal_speaker);
+  cras_audio_handler_->SwitchToDevice(internal_speaker_device, true,
+                                      DeviceActivateType::kActivateByPriority);
+
+  // Manually activate the kUSBHeadphone1, expect that notification is removed.
   cras_audio_handler_->SwitchToDevice(usb_headphone_device, true,
                                       DeviceActivateType::kActivateByUser);
   EXPECT_EQ(0u, GetNotificationCount());
