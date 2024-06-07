@@ -123,6 +123,18 @@ class WebGPUInterface : public InterfaceBase {
                         GLuint id,
                         GLuint generation,
                         GLuint usage,
+                        GLuint internal_usage,
+                        MailboxFlags flags,
+                        const Mailbox& mailbox) {
+    AssociateMailbox(device_id, device_generation, id, generation, usage,
+                     internal_usage, nullptr, 0, flags, mailbox);
+  }
+
+  void AssociateMailbox(GLuint device_id,
+                        GLuint device_generation,
+                        GLuint id,
+                        GLuint generation,
+                        GLuint usage,
                         const Mailbox& mailbox) {
     AssociateMailbox(device_id, device_generation, id, generation, usage, 0,
                      nullptr, 0, WEBGPU_MAILBOX_NONE, mailbox);

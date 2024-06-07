@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <dawn/native/DawnNative.h>
+
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -637,6 +639,39 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
       NOTREACHED_IN_MIGRATION();
     }
   }
+}
+
+// Test that passing internal write usages when associating a mailbox fails if
+// the SharedImage associated with the mailbox doesn't have WEBGPU_WRITE access.
+TEST_P(WebGPUMailboxTest,
+       PassInternalWriteUsagesWhenAssociatingReadOnlyMailbox) {
+  // Create the shared image.
+  SharedImageInterface* sii = GetSharedImageInterface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              "TestLabel"},
+                             kNullSurfaceHandle);
+  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
+  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
+
+  // Register the shared image as a Dawn texture in the wire.
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu()->ReserveTexture(device_.Get());
+
+  // Create a texture for the mailbox, passing CopyDst as an internal usage.
+  webgpu()->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
+                             reservation.id, reservation.generation,
+                             WGPUTextureUsage_CopySrc, WGPUTextureUsage_CopyDst,
+                             webgpu::WEBGPU_MAILBOX_NONE,
+                             shared_image->mailbox());
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  // This creation should have resulted in an error since the SharedImage
+  // doesn't have WebGPU write usage.
+  EXPECT_TRUE(dawn::native::CheckIsErrorForTesting(texture.Get()));
 }
 
 // Test that passing WEBGPU_MAILBOX_DISCARD when associating a mailbox fails if
