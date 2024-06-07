@@ -1097,6 +1097,13 @@ class CORE_EXPORT LocalFrame final
   Member<CoreProbeSink> probe_sink_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   Member<PerformanceMonitor> performance_monitor_;
+
+  // Whether `performance_monitor_` was created by this (not a reference to a
+  // `PerformanceMonitor` created by another `LocalFrame`) and not shutdown yet.
+  //
+  // TODO(crbug.com/337200890): Remove when investigation is complete.
+  bool must_shutdown_performance_monitor_ = false;
+
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;
   Member<AttributionSrcLoader> attribution_src_loader_;

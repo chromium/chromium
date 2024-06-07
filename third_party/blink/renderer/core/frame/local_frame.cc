@@ -49,6 +49,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/source_location.mojom-blink.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -484,6 +485,11 @@ LocalFrame::~LocalFrame() {
   DCHECK(!frame_color_overlay_);
   if (IsAdFrame())
     InstanceCounters::DecrementCounter(InstanceCounters::kAdSubframeCounter);
+
+  // Before this destructor runs, `DetachImpl()` must have shutdown
+  // `PerformanceMonitor`, if that was needed.
+  // TODO(crbug.com/337200890): Remove when investigation is complete.
+  CHECK(!must_shutdown_performance_monitor_);
 }
 
 void LocalFrame::Trace(Visitor* visitor) const {
@@ -656,6 +662,12 @@ bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {
+  absl::Cleanup check_post_condition = [this] {
+    // This method must shutdown the `PerformanceMonitor` if needed.
+    // TODO(crbug.com/337200890): Remove when bug investigation is complete.
+    CHECK(!must_shutdown_performance_monitor_);
+  };
+
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // BEGIN REENTRANCY SAFE BLOCK
   // Starting here, the code must be safe against reentrancy. Dispatching
@@ -738,6 +750,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   if (IsLocalRoot()) {
     performance_monitor_->Shutdown();
+    must_shutdown_performance_monitor_ = false;
+
     if (ad_tracker_)
       ad_tracker_->Shutdown();
     // Unregister only if this is LocalRoot because the paint_image_generator_
@@ -1868,6 +1882,8 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   if (IsLocalRoot()) {
     performance_monitor_ =
         MakeGarbageCollected<PerformanceMonitor>(this, isolate);
+    must_shutdown_performance_monitor_ = true;
+
     inspector_issue_reporter_ = MakeGarbageCollected<InspectorIssueReporter>(
         &page.GetInspectorIssueStorage());
     probe_sink_->AddInspectorIssueReporter(inspector_issue_reporter_);
