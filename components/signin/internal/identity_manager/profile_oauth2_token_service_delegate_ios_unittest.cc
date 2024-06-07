@@ -4,6 +4,7 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -47,6 +48,7 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     fake_provider_ = new FakeDeviceAccountsProvider();
     oauth2_delegate_.reset(new ProfileOAuth2TokenServiceIOSDelegate(
         &client_, base::WrapUnique(fake_provider_), &account_tracker_));
+    oauth2_delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
     oauth2_delegate_->AddObserver(this);
   }
 

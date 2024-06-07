@@ -215,6 +215,11 @@ class ProfileOAuth2TokenServiceDelegate {
   void SetRefreshTokenRevokedFromSourceCallback(
       RefreshTokenRevokedFromSourceCallback callback);
 
+  // This callback will be invoked when a refresh token is revoked and observers
+  // have been notified.
+  void SetOnRefreshTokenRevokedNotified(
+      base::RepeatingCallback<void(const CoreAccountId&)> callback);
+
   // -----------------------------------------------------------------------
   // End of methods that are only used by ProfileOAuth2TokenService
   // -----------------------------------------------------------------------
@@ -254,12 +259,14 @@ class ProfileOAuth2TokenServiceDelegate {
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
+                           FireRefreshTokenRevoked);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
                            BackOffIsTriggerredForTransientErrors);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
-                           UpdateAuthError_TransientErrors);
+                           UpdateAuthErrorTransientErrors);
 
   // Internal implementations of the methods that can be overridden by
   // subclasses.
@@ -312,6 +319,8 @@ class ProfileOAuth2TokenServiceDelegate {
   // Callbacks to invoke, if set, for refresh token-related events.
   RefreshTokenAvailableFromSourceCallback on_refresh_token_available_callback_;
   RefreshTokenRevokedFromSourceCallback on_refresh_token_revoked_callback_;
+  base::RepeatingCallback<void(const CoreAccountId&)>
+      on_refresh_token_revoked_notified_callback_;
 
   signin_metrics::SourceForRefreshTokenOperation update_refresh_token_source_ =
       signin_metrics::SourceForRefreshTokenOperation::kUnknown;

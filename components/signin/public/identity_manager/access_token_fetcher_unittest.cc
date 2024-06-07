@@ -481,7 +481,7 @@ TEST_P(AccessTokenFetcherTest, RefreshTokenRevoked) {
   // fetcher should *not* retry.
   EXPECT_CALL(
       callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+      Run(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
           AccessTokenInfo()));
   token_service()->RevokeCredentials(account_id);
 }

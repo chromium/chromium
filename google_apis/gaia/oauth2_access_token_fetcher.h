@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 
+class GoogleServiceAuthError;
+
 // Interface of a OAuth2 access token fetcher.
 //
 // Usage:

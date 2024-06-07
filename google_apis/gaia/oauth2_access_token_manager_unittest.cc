@@ -349,7 +349,8 @@ TEST_F(OAuth2AccessTokenManagerTest, CancelAllRequests) {
   EXPECT_EQ(2, consumer_.number_of_errors_);
 }
 
-// Test that CancelRequestsForAccount cancels requests for the specific account.
+// Test that `CancelRequestsForAccount()` cancels requests for the specific
+// account.
 TEST_F(OAuth2AccessTokenManagerTest, CancelRequestsForAccount) {
   OAuth2AccessTokenManager::ScopeSet scope_set_1;
   scope_set_1.insert("scope1");
@@ -371,12 +372,16 @@ TEST_F(OAuth2AccessTokenManagerTest, CancelRequestsForAccount) {
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(0, consumer_.number_of_errors_);
 
-  token_manager_->CancelRequestsForAccount(account_id_);
+  token_manager_->CancelRequestsForAccount(
+      account_id_,
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
 
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(2, consumer_.number_of_errors_);
 
-  token_manager_->CancelRequestsForAccount(account_id_2);
+  token_manager_->CancelRequestsForAccount(
+      account_id_2,
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
 
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(3, consumer_.number_of_errors_);
@@ -506,14 +511,21 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenInvalidated) {
 
 // Test that `OnAccessTokenFetched()` is invoked when a request is canceled.
 TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCanceled) {
-  base::RunLoop run_loop;
-  GoogleServiceAuthError error(GoogleServiceAuthError::REQUEST_CANCELED);
-  delegate_.SetOnAccessTokenFetched(account_id_, error, run_loop.QuitClosure());
-  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
-      token_manager_->StartRequest(
-          account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
-  token_manager_->CancelRequestsForAccount(account_id_);
-  run_loop.Run();
+  GoogleServiceAuthError::State error_states[] = {
+      GoogleServiceAuthError::REQUEST_CANCELED,
+      GoogleServiceAuthError::USER_NOT_SIGNED_UP};
+  for (const auto& state : error_states) {
+    GoogleServiceAuthError error(state);
+    SCOPED_TRACE(error.ToString());
+    base::RunLoop run_loop;
+    delegate_.SetOnAccessTokenFetched(account_id_, error,
+                                      run_loop.QuitClosure());
+    std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+        token_manager_->StartRequest(
+            account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
+    token_manager_->CancelRequestsForAccount(account_id_, error);
+    run_loop.Run();
+  }
 }
 
 // Test that OnAccessTokenFetched is invoked when a request is completed.
@@ -535,7 +547,9 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedCancelsRequests) {
   GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
   delegate_.SetOnAccessTokenFetched(
       account_id_, error, base::BindLambdaForTesting([&]() {
-        token_manager_->CancelRequestsForAccount(account_id_);
+        token_manager_->CancelRequestsForAccount(
+            account_id_,
+            GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
         run_loop.Quit();
       }));
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -67,6 +68,7 @@ class OAuth2TokenServiceDelegateAndroidTest
     SetUpMockAccountManagerFacade();
     delegate_ = std::make_unique<OAuth2TokenServiceDelegateAndroidForTest>(
         &account_tracker_service_);
+    delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
     delegate_->AddObserver(&observer_);
     CreateAndSeedAccounts();
   }

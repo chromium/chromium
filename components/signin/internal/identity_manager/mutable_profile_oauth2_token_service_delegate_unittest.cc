@@ -144,6 +144,8 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   void InitializeOAuth2ServiceDelegate(
       signin::AccountConsistencyMethod account_consistency) {
     oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(account_consistency);
+    oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(
+        base::DoNothing());
     oauth2_service_delegate_->AddObserver(this);
   }
 
@@ -1341,6 +1343,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeBoundToken) {
   std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate =
       CreateOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled,
                                   std::move(token_binding_helper));
+  delegate->SetOnRefreshTokenRevokedNotified(base::DoNothing());
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
   const CoreAccountId account_id2 = CoreAccountId::FromGaiaId("account_id2");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};

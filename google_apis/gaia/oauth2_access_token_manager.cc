@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -84,10 +83,11 @@ void OAuth2AccessTokenManager::RequestImpl::InformConsumer(
     const GoogleServiceAuthError& error,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error.state() == GoogleServiceAuthError::NONE)
+  if (error.state() == GoogleServiceAuthError::NONE) {
     consumer_->OnGetTokenSuccess(this, token_response);
-  else
+  } else {
     consumer_->OnGetTokenFailure(this, error);
+  }
 }
 
 OAuth2AccessTokenManager::RequestParameters::RequestParameters(
@@ -103,15 +103,17 @@ OAuth2AccessTokenManager::RequestParameters::~RequestParameters() {}
 
 bool OAuth2AccessTokenManager::RequestParameters::operator<(
     const RequestParameters& p) const {
-  if (client_id < p.client_id)
+  if (client_id < p.client_id) {
     return true;
-  else if (p.client_id < client_id)
+  } else if (p.client_id < client_id) {
     return false;
+  }
 
-  if (account_id < p.account_id)
+  if (account_id < p.account_id) {
     return true;
-  else if (p.account_id < account_id)
+  } else if (p.account_id < account_id) {
     return false;
+  }
 
   return scopes < p.scopes;
 }
@@ -303,8 +305,9 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
   CHECK(fetcher_);
   fetcher_.reset();
 
-  if (ShouldRetry(error) && RetryIfPossible(error))
+  if (ShouldRetry(error) && RetryIfPossible(error)) {
     return;
+  }
 
   RecordOAuth2TokenFetchResult(error.state());
   InformFetchCompleted(base::unexpected(error));
@@ -395,7 +398,8 @@ OAuth2AccessTokenManager::OAuth2AccessTokenManager(
 
 OAuth2AccessTokenManager::~OAuth2AccessTokenManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelAllRequests();
+  CancelAllRequests(
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
 }
 
 OAuth2AccessTokenManager::Delegate* OAuth2AccessTokenManager::GetDelegate() {
@@ -480,8 +484,9 @@ OAuth2AccessTokenManager::GetCachedTokenResponse(
     const RequestParameters& request_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TokenCache::iterator token_iterator = token_cache_.find(request_parameters);
-  if (token_iterator == token_cache_.end())
+  if (token_iterator == token_cache_.end()) {
     return nullptr;
+  }
   if (token_iterator->second.expiration_time <= base::Time::Now()) {
     token_cache_.erase(token_iterator);
     return nullptr;
@@ -496,8 +501,9 @@ void OAuth2AccessTokenManager::ClearCacheForAccount(
        iter != token_cache_.end();
        /* iter incremented in body */) {
     if (iter->first.account_id == account_id) {
-      for (auto& observer : diagnostics_observer_list_)
+      for (auto& observer : diagnostics_observer_list_) {
         observer.OnAccessTokenRemoved(account_id, iter->first.scopes);
+      }
       token_cache_.erase(iter++);
     } else {
       ++iter;
@@ -505,30 +511,34 @@ void OAuth2AccessTokenManager::ClearCacheForAccount(
   }
 }
 
-void OAuth2AccessTokenManager::CancelAllRequests() {
+void OAuth2AccessTokenManager::CancelAllRequests(
+    const GoogleServiceAuthError& error) {
   // Match all requests.
-  CancelRequestIfMatch(base::BindRepeating(
-      [](const RequestParameters& params) -> bool { return true; }));
+  CancelRequestIfMatch(
+      error, base::BindRepeating(
+                 [](const RequestParameters& params) -> bool { return true; }));
 }
 
 void OAuth2AccessTokenManager::CancelRequestsForAccount(
-    const CoreAccountId& account_id) {
-  CancelRequestIfMatch(base::BindRepeating(
-      [](const CoreAccountId& account_id, const RequestParameters& params)
-          -> bool { return params.account_id == account_id; },
-      account_id));
+    const CoreAccountId& account_id,
+    const GoogleServiceAuthError& error) {
+  CancelRequestIfMatch(error, base::BindRepeating(
+                                  [](const CoreAccountId& account_id,
+                                     const RequestParameters& params) -> bool {
+                                    return params.account_id == account_id;
+                                  },
+                                  account_id));
 }
 
 void OAuth2AccessTokenManager::CancelRequestIfMatch(
+    const GoogleServiceAuthError& error,
     base::RepeatingCallback<bool(const RequestParameters&)> match_request) {
   for (auto it = pending_fetchers_.begin(); it != pending_fetchers_.end();) {
     if (match_request.Run(it->first)) {
       RequestParameters request_parameters = it->first;
       auto waiting_requests = it->second->TakeWaitingRequests();
       it = pending_fetchers_.erase(it);
-      ProcessOnFetchComplete(request_parameters,
-                             base::unexpected(GoogleServiceAuthError(
-                                 GoogleServiceAuthError::REQUEST_CANCELED)),
+      ProcessOnFetchComplete(request_parameters, base::unexpected(error),
                              waiting_requests);
     } else {
       ++it;
@@ -601,8 +611,9 @@ OAuth2AccessTokenManager::StartRequestForClientWithContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<RequestImpl> request(new RequestImpl(account_id, consumer));
-  for (auto& observer : diagnostics_observer_list_)
+  for (auto& observer : diagnostics_observer_list_) {
     observer.OnAccessTokenRequested(account_id, consumer->id(), scopes);
+  }
 
   if (!delegate_->HasRefreshToken(account_id)) {
     GoogleServiceAuthError error(GoogleServiceAuthError::USER_NOT_SIGNED_UP);

@@ -281,6 +281,8 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   void OnRefreshTokenRevoked(const CoreAccountId& account_id) override;
   void OnRefreshTokensLoaded() override;
 
+  void OnRefreshTokenRevokedNotified(const CoreAccountId& account_id);
+
   // Creates a new device ID if there are no accounts, or if the current device
   // ID is empty.
   void RecreateDeviceIdIfNeeded();

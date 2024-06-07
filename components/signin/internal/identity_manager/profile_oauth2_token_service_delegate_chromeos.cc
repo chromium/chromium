@@ -500,6 +500,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
   DCHECK(!account_info.IsEmpty());
   signin_client_->RemoveAccount(account_manager::AccountKey{
       account_info.gaia, account_manager::AccountType::kGaia});
+  ClearAuthError(account_id);
 #else
   // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
   NOTREACHED_IN_MIGRATION();
@@ -524,6 +525,13 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
     bool fire_auth_error_changed) {
   ProfileOAuth2TokenServiceDelegate::UpdateAuthError(account_id, error,
                                                      fire_auth_error_changed);
+  if (!RefreshTokenIsAvailable(account_id)) {
+    // Account has been removed.
+    DCHECK_EQ(error, GoogleServiceAuthError(
+                         GoogleServiceAuthError::USER_NOT_SIGNED_UP));
+    return;
+  }
+
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
   DCHECK(!account_info.IsEmpty());

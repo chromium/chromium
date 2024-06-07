@@ -186,6 +186,9 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenRevoked(
   ScopedBatchChange batch(this);
   for (auto& observer : observer_list_)
     observer.OnRefreshTokenRevoked(account_id);
+
+  CHECK(on_refresh_token_revoked_notified_callback_);
+  on_refresh_token_revoked_notified_callback_.Run(account_id);
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokensLoaded() {
@@ -383,4 +386,11 @@ void ProfileOAuth2TokenServiceDelegate::
     SetRefreshTokenRevokedFromSourceCallback(
         RefreshTokenRevokedFromSourceCallback callback) {
   on_refresh_token_revoked_callback_ = callback;
+}
+
+void ProfileOAuth2TokenServiceDelegate::SetOnRefreshTokenRevokedNotified(
+    base::RepeatingCallback<void(const CoreAccountId&)> callback) {
+  CHECK(callback);
+  CHECK(!on_refresh_token_revoked_notified_callback_);
+  on_refresh_token_revoked_notified_callback_ = std::move(callback);
 }

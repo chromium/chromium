@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -256,6 +257,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
             delete_signin_cookies_on_exit,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
             /*is_regular_profile=*/true);
+    delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
 
     LoadCredentialsAndWaitForCompletion(
         /*primary_account_id=*/account_info_.account_id, is_syncing);

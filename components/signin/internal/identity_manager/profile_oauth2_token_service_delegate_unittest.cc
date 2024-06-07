@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+
 #include <stddef.h>
 
 #include <string>
 
+#include "base/scoped_observation.h"
+#include "base/test/mock_callback.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
-#include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_utils.h"
@@ -19,25 +23,47 @@
 class MockOAuth2TokenServiceObserver
     : public ProfileOAuth2TokenServiceObserver {
  public:
-  MOCK_METHOD3(OnAuthErrorChanged,
-               void(const CoreAccountId&,
-                    const GoogleServiceAuthError&,
-                    signin_metrics::SourceForRefreshTokenOperation source));
+  MOCK_METHOD(void,
+              OnRefreshTokenRevoked,
+              (const CoreAccountId& account_id),
+              (override));
+  MOCK_METHOD(void,
+              OnAuthErrorChanged,
+              (const CoreAccountId&,
+               const GoogleServiceAuthError&,
+               signin_metrics::SourceForRefreshTokenOperation source),
+              (override));
 };
 
 class ProfileOAuth2TokenServiceDelegateTest : public testing::Test {
  public:
-  ProfileOAuth2TokenServiceDelegateTest() { delegate_.AddObserver(&observer_); }
-
-  ~ProfileOAuth2TokenServiceDelegateTest() override {
-    delegate_.RemoveObserver(&observer_);
+  ProfileOAuth2TokenServiceDelegateTest() {
+    delegate.SetOnRefreshTokenRevokedNotified(
+        on_refresh_token_revoked_notified_callback.Get());
+    scoped_observation.Observe(&delegate);
   }
 
+  ~ProfileOAuth2TokenServiceDelegateTest() override = default;
+
+  base::MockRepeatingCallback<void(const CoreAccountId&)>
+      on_refresh_token_revoked_notified_callback;
   // Note: Tests in this suite tests the default base implementation of
   //       'ProfileOAuth2TokenServiceDelegate'.
-  FakeProfileOAuth2TokenServiceDelegate delegate_;
-  MockOAuth2TokenServiceObserver observer_;
+  FakeProfileOAuth2TokenServiceDelegate delegate;
+  MockOAuth2TokenServiceObserver mock_observer;
+  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
+                          MockOAuth2TokenServiceObserver>
+      scoped_observation{&mock_observer};
 };
+
+TEST_F(ProfileOAuth2TokenServiceDelegateTest, FireRefreshTokenRevoked) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id1");
+  delegate.UpdateCredentials(account_id, "refresh_token1");
+  testing::InSequence sequence;
+  EXPECT_CALL(mock_observer, OnRefreshTokenRevoked(account_id));
+  EXPECT_CALL(on_refresh_token_revoked_notified_callback, Run(account_id));
+  delegate.FireRefreshTokenRevoked(account_id);
+}
 
 // The default implementation of
 // ProfileOAuth2TokenServiceDelegate::InvalidateTokensForMultilogin is used on
@@ -46,7 +72,7 @@ class ProfileOAuth2TokenServiceDelegateTest : public testing::Test {
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, InvalidateTokensForMultilogin) {
   // Check that OnAuthErrorChanged is not fired from
   // InvalidateTokensForMultilogin and refresh tokens are not set in error.
-  EXPECT_CALL(observer_,
+  EXPECT_CALL(mock_observer,
               OnAuthErrorChanged(
                   ::testing::_,
                   GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -58,14 +84,14 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, InvalidateTokensForMultilogin) {
   const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("account_id1");
   const CoreAccountId account_id2 = CoreAccountId::FromGaiaId("account_id2");
 
-  delegate_.UpdateCredentials(account_id1, "refresh_token1");
-  delegate_.UpdateCredentials(account_id2, "refresh_token2");
+  delegate.UpdateCredentials(account_id1, "refresh_token1");
+  delegate.UpdateCredentials(account_id2, "refresh_token2");
 
-  delegate_.InvalidateTokenForMultilogin(account_id1);
+  delegate.InvalidateTokenForMultilogin(account_id1);
 
-  EXPECT_EQ(delegate_.GetAuthError(account_id1).state(),
+  EXPECT_EQ(delegate.GetAuthError(account_id1).state(),
             GoogleServiceAuthError::NONE);
-  EXPECT_EQ(delegate_.GetAuthError(account_id2).state(),
+  EXPECT_EQ(delegate.GetAuthError(account_id2).state(),
             GoogleServiceAuthError::NONE);
 }
 
@@ -83,9 +109,9 @@ const GoogleServiceAuthError::State table[] = {
     GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED,
 };
 
-TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_PersistenErrors) {
+TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
-  delegate_.UpdateCredentials(account_id, "refresh_token");
+  delegate.UpdateCredentials(account_id, "refresh_token");
 
   static_assert(
       std::size(table) == GoogleServiceAuthError::NUM_STATES -
@@ -97,123 +123,121 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_PersistenErrors) {
     if (!error.IsPersistentError() || error.IsScopePersistentError())
       continue;
 
-    EXPECT_CALL(observer_,
+    EXPECT_CALL(mock_observer,
                 OnAuthErrorChanged(
                     account_id, error,
                     signin_metrics::SourceForRefreshTokenOperation::kUnknown))
         .Times(1);
 
-    delegate_.UpdateAuthError(account_id, error);
-    EXPECT_EQ(delegate_.GetAuthError(account_id), error);
+    delegate.UpdateAuthError(account_id, error);
+    EXPECT_EQ(delegate.GetAuthError(account_id), error);
     // Backoff only used for transient errors.
-    EXPECT_EQ(delegate_.BackoffEntry()->failure_count(), 0);
-    testing::Mock::VerifyAndClearExpectations(&observer_);
+    EXPECT_EQ(delegate.BackoffEntry()->failure_count(), 0);
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
   }
 }
 
-TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_TransientErrors) {
+TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
-  delegate_.UpdateCredentials(account_id, "refresh_token");
+  delegate.UpdateCredentials(account_id, "refresh_token");
 
   static_assert(
       std::size(table) == GoogleServiceAuthError::NUM_STATES -
                               GoogleServiceAuthError::kDeprecatedStateCount,
       "table size should match number of auth error types");
 
-  EXPECT_TRUE(delegate_.BackoffEntry());
+  EXPECT_TRUE(delegate.BackoffEntry());
   int failure_count = 0;
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
     if (!error.IsTransientError())
       continue;
 
-    EXPECT_CALL(observer_,
+    EXPECT_CALL(mock_observer,
                 OnAuthErrorChanged(
                     account_id, ::testing::_,
                     signin_metrics::SourceForRefreshTokenOperation::kUnknown))
         .Times(0);
 
     failure_count++;
-    delegate_.UpdateAuthError(account_id, error);
-    EXPECT_EQ(delegate_.GetAuthError(account_id),
+    delegate.UpdateAuthError(account_id, error);
+    EXPECT_EQ(delegate.GetAuthError(account_id),
               GoogleServiceAuthError::AuthErrorNone());
-    EXPECT_GT(delegate_.BackoffEntry()->GetTimeUntilRelease(),
+    EXPECT_GT(delegate.BackoffEntry()->GetTimeUntilRelease(),
               base::TimeDelta());
-    EXPECT_EQ(delegate_.BackoffEntry()->failure_count(), failure_count);
-    EXPECT_EQ(delegate_.BackOffError(), error);
-    testing::Mock::VerifyAndClearExpectations(&observer_);
+    EXPECT_EQ(delegate.BackoffEntry()->failure_count(), failure_count);
+    EXPECT_EQ(delegate.BackOffError(), error);
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
   }
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,
-       UpdateAuthError_ScopePersistenErrors) {
+       UpdateAuthErrorScopePersistenErrors) {
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
-  delegate_.UpdateCredentials(account_id, "refresh_token");
+  delegate.UpdateCredentials(account_id, "refresh_token");
   GoogleServiceAuthError error(
       GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
 
   // Scope persistent errors are not persisted or notified as it does not imply
   // that the account is in an error state but the error is only relevant to
   // the scope set requested in the access token request.
-  EXPECT_CALL(observer_, OnAuthErrorChanged(account_id, error, testing::_))
+  EXPECT_CALL(mock_observer, OnAuthErrorChanged(account_id, error, testing::_))
       .Times(0);
 
-  delegate_.UpdateAuthError(account_id, error);
-  EXPECT_EQ(delegate_.GetAuthError(account_id),
+  delegate.UpdateAuthError(account_id, error);
+  EXPECT_EQ(delegate.GetAuthError(account_id),
             GoogleServiceAuthError::AuthErrorNone());
   // Backoff only used for transient errors.
-  EXPECT_EQ(delegate_.BackoffEntry()->failure_count(), 0);
-  testing::Mock::VerifyAndClearExpectations(&observer_);
+  EXPECT_EQ(delegate.BackoffEntry()->failure_count(), 0);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,
-       UpdateAuthError_RefreshTokenNotAvailable) {
+       UpdateAuthErrorRefreshTokenNotAvailable) {
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
-  EXPECT_FALSE(delegate_.RefreshTokenIsAvailable(account_id));
-  EXPECT_CALL(observer_,
+  EXPECT_FALSE(delegate.RefreshTokenIsAvailable(account_id));
+  EXPECT_CALL(mock_observer,
               OnAuthErrorChanged(::testing::_, ::testing::_, testing::_))
       .Times(0);
-  delegate_.UpdateAuthError(
+  delegate.UpdateAuthError(
       account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  EXPECT_EQ(delegate_.GetAuthError(account_id),
+  EXPECT_EQ(delegate.GetAuthError(account_id),
             GoogleServiceAuthError::AuthErrorNone());
-  testing::Mock::VerifyAndClearExpectations(&observer_);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
   // Backoff only used for transient errors.
-  EXPECT_EQ(delegate_.BackoffEntry()->failure_count(), 0);
+  EXPECT_EQ(delegate.BackoffEntry()->failure_count(), 0);
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, AuthErrorChanged) {
   const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
-  delegate_.UpdateCredentials(account_id, "refresh_token");
+  delegate.UpdateCredentials(account_id, "refresh_token");
 
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-  EXPECT_CALL(observer_,
+  EXPECT_CALL(mock_observer,
               OnAuthErrorChanged(
                   account_id, error,
                   signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(1);
-  delegate_.UpdateAuthError(account_id, error);
-  EXPECT_EQ(delegate_.GetAuthError(account_id), error);
+  delegate.UpdateAuthError(account_id, error);
+  EXPECT_EQ(delegate.GetAuthError(account_id), error);
 
   // Update the error but without changing it should not fire a notification.
-  delegate_.UpdateAuthError(account_id, error);
-  testing::Mock::VerifyAndClearExpectations(&observer_);
+  delegate.UpdateAuthError(account_id, error);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Change the error.
-  EXPECT_CALL(observer_,
+  EXPECT_CALL(mock_observer,
               OnAuthErrorChanged(
                   account_id, GoogleServiceAuthError::AuthErrorNone(),
                   signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(1);
-  delegate_.UpdateAuthError(account_id,
-                            GoogleServiceAuthError::AuthErrorNone());
-  EXPECT_EQ(delegate_.GetAuthError(account_id),
+  delegate.UpdateAuthError(account_id, GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_EQ(delegate.GetAuthError(account_id),
             GoogleServiceAuthError::AuthErrorNone());
 
   // Update to none again should not fire any notification.
-  delegate_.UpdateAuthError(account_id,
-                            GoogleServiceAuthError::AuthErrorNone());
-  testing::Mock::VerifyAndClearExpectations(&observer_);
+  delegate.UpdateAuthError(account_id, GoogleServiceAuthError::AuthErrorNone());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }

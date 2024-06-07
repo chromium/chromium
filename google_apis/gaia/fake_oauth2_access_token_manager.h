@@ -13,6 +13,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+class GoogleServiceAuthError;
+
 // Helper class to simplify writing unittests that depend on an instance of
 // OAuth2AccessTokenManager.
 class FakeOAuth2AccessTokenManager : public OAuth2AccessTokenManager {
@@ -81,7 +83,8 @@ class FakeOAuth2AccessTokenManager : public OAuth2AccessTokenManager {
   }
 
   // OAuth2AccessTokenManager:
-  void CancelRequestsForAccount(const CoreAccountId& account_id) override;
+  void CancelRequestsForAccount(const CoreAccountId& account_id,
+                                const GoogleServiceAuthError& error) override;
   void FetchOAuth2Token(
       OAuth2AccessTokenManager::RequestImpl* request,
       const CoreAccountId& account_id,

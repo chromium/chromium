@@ -473,7 +473,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
   // *not* retry.
   EXPECT_CALL(
       callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+      Run(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
           AccessTokenInfo()));
 
   identity_test_env()->ClearPrimaryAccount();
@@ -497,7 +497,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
   // access token requests get canceled, and the fetcher should *not* retry.
   EXPECT_CALL(
       callback,
-      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+      Run(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
           AccessTokenInfo()));
   identity_test_env()->RemoveRefreshTokenForPrimaryAccount();
 }

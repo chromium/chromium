@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -39,6 +40,10 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
       std::make_unique<OAuth2AccessTokenManager>(/*delegate=*/this);
   // The `ProfileOAuth2TokenService` must be the first observer of `delegate_`.
   DCHECK(!delegate_->HasObserver());
+  // `base::Unretained(this)` is safe as `this` owns `delegate_`.
+  delegate_->SetOnRefreshTokenRevokedNotified(base::BindRepeating(
+      &ProfileOAuth2TokenService::OnRefreshTokenRevokedNotified,
+      base::Unretained(this)));
   AddObserver(this);
   DCHECK(delegate_->HasObserver());
 }
@@ -318,7 +323,9 @@ OAuth2AccessTokenManager* ProfileOAuth2TokenService::GetAccessTokenManager() {
 
 void ProfileOAuth2TokenService::OnRefreshTokenAvailable(
     const CoreAccountId& account_id) {
-  token_manager_->CancelRequestsForAccount(account_id);
+  token_manager_->CancelRequestsForAccount(
+      account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
   token_manager_->ClearCacheForAccount(account_id);
 }
 
@@ -327,8 +334,14 @@ void ProfileOAuth2TokenService::OnRefreshTokenRevoked(
   // If this was the last token, recreate the device ID.
   RecreateDeviceIdIfNeeded();
 
-  token_manager_->CancelRequestsForAccount(account_id);
   token_manager_->ClearCacheForAccount(account_id);
+}
+
+void ProfileOAuth2TokenService::OnRefreshTokenRevokedNotified(
+    const CoreAccountId& account_id) {
+  token_manager_->CancelRequestsForAccount(
+      account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP));
 }
 
 void ProfileOAuth2TokenService::OnRefreshTokensLoaded() {
