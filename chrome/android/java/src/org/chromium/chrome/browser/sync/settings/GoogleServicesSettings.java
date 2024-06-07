@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -331,11 +332,12 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         mPasswordsAccountStorage.setChecked(
                 syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS));
-        // TODO(crbug.com/340629575): Handle outdated GmsCore.
         CoreAccountInfo account = syncService.getAccountInfo();
         mPasswordsAccountStorage.setVisible(
                 syncService.getAccountInfo() != null
                         && !syncService.hasSyncConsent()
+                        && !PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                                UserPrefs.get(getProfile()), syncService)
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList
                                         .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
