@@ -616,6 +616,8 @@ skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
 #if BUILDFLAG(SKIA_USE_METAL)
     return GraphiteMetalTextureInfo(format, plane_index, is_yuv_plane,
                                     mipmapped);
+#else
+  NOTREACHED_NORETURN();
 #endif
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
@@ -624,9 +626,10 @@ skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
         format, readonly, is_yuv_plane, plane_index,
         /*array_slice=*/0, mipmapped, scanout_dcomp_surface,
         supports_multiplanar_rendering, supports_multiplanar_copy);
+#else
+  NOTREACHED_NORETURN();
 #endif
   }
-  NOTREACHED_NORETURN();
 }
 
 skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
@@ -639,6 +642,8 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 #if BUILDFLAG(SKIA_USE_METAL)
     return GraphiteMetalTextureInfo(format, plane_index,
                                     /*is_yuv_plane=*/false, mipmapped);
+#else
+  NOTREACHED_NORETURN();
 #endif
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
@@ -695,9 +700,10 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 #endif
 
     return dawn_texture_info;
+#else
+  NOTREACHED_NORETURN();
 #endif
   }
-  NOTREACHED_NORETURN();
 }
 
 #if BUILDFLAG(SKIA_USE_DAWN)
