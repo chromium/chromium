@@ -7,6 +7,7 @@ import '../../settings_shared.css.js';
 import './settings_dropdown_row_storybook.js';
 import './settings_dropdown_v2_storybook.js';
 import './settings_row_storybook.js';
+import './settings_slider_row_storybook.js';
 import './settings_slider_v2_storybook.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

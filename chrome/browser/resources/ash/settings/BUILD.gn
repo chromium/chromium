@@ -117,6 +117,7 @@ build_webui("build") {
     "internal/storybook/settings_dropdown_row_storybook.ts",
     "internal/storybook/settings_dropdown_v2_storybook.ts",
     "internal/storybook/settings_row_storybook.ts",
+    "internal/storybook/settings_slider_row_storybook.ts",
     "internal/storybook/settings_slider_v2_storybook.ts",
     "internal/storybook/storybook_subpage.ts",
     "internet_page/apn_subpage.ts",

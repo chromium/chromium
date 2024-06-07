@@ -16,8 +16,10 @@
 <settings-slider-v2
     value="[[sliderValueWithTicks_]]"
     ticks="[[ticks_]]"
-    on-change="onTicksSliderChange_">
+    on-change="onTicksSliderChange_"
+    disabled="[[disabled_]]">
 </settings-slider-v2>
+<cr-checkbox checked="{{disabled_}}">Disabled</cr-checkbox>
 <code>
   <div>Value: [[sliderValueWithTicks_]]</div>
 </code>
@@ -48,13 +50,6 @@
 <code>
   <div>Value: [[sliderValueWithScale_]]</div>
 </code>
-
-<h2>Disabled</h2>
-<settings-slider-v2
-    value="[[sliderValueWithTicks_]]"
-    ticks="[[ticks_]]"
-    disabled>
-</settings-slider-v2>
 
 <h2>Managed (via pref)</h2>
 <settings-slider-v2
