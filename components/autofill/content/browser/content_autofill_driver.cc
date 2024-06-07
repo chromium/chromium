@@ -394,8 +394,14 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
   // If this driver is active, then its main frame is identical to the main
   // frame at the time the form was received from a renderer and their origins
   // are the same.
-  const url::Origin& main_origin =
-      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin main_origin = [&] {
+    if (auto* main_rfh = render_frame_host_->GetMainFrame();
+        main_rfh->IsInPrimaryMainFrame()) {
+      return main_rfh->GetLastCommittedOrigin();
+    } else {
+      return url::Origin();
+    }
+  }();
   return RouteToAgent(router(), &AutofillDriverRouter::ApplyFormAction,
                       &mojom::AutofillAgent::ApplyFieldsAction, action_type,
                       action_persistence, data, main_origin, triggered_origin,
