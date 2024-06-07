@@ -111,6 +111,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/web",

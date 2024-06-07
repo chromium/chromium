@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 @interface PageInfoCoordinator () <PageInfoPresentationCommands>
@@ -166,8 +168,19 @@
       page_info::kWebsiteSettingsActionHistogram,
       page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
 
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  web::NavigationManager::WebLoadParams webParams =
+      web::NavigationManager::WebLoadParams(URL);
+  bool in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+
+  // Add X-Client-Data header.
+  NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
+      [web_navigation_util::VariationHeadersForURL(URL, in_incognito)
+          mutableCopy];
+  [combinedExtraHeaders addEntriesFromDictionary:webParams.extra_headers];
+  webParams.extra_headers = [combinedExtraHeaders copy];
+  UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
+  params.in_incognito = in_incognito;
+
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   id<PageInfoCommands> pageInfoCommandsHandler =
       HandlerForProtocol(self.dispatcher, PageInfoCommands);
