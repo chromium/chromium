@@ -111,6 +111,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:async_dns_resolver",
   "//third_party/webrtc/rtc_base:async_packet_socket",
   "//third_party/webrtc/rtc_base:byte_order",
+  "//third_party/webrtc/rtc_base:crypto_random",
   "//third_party/webrtc/rtc_base:data_rate_limiter",
   "//third_party/webrtc/rtc_base:event_tracer",
   "//third_party/webrtc/rtc_base:ip_address",
