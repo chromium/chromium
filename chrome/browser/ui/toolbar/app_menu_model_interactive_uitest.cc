@@ -15,6 +15,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -38,6 +39,9 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
@@ -105,6 +109,25 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
         new_browser = ui_test_utils::WaitForBrowserToOpen();
       }
       return new_browser->profile()->IsIncognitoProfile();
+    }));
+  }
+
+  auto CheckGuestWindowOpened(const Browser* default_browser) {
+    return Check(base::BindLambdaForTesting([default_browser]() {
+      Browser* new_browser = nullptr;
+      if (BrowserList::GetGuestBrowserCount() == 1) {
+        EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+        for (Browser* browser : *BrowserList::GetInstance()) {
+          if (browser != default_browser) {
+            new_browser = browser;
+            break;
+          }
+        }
+        CHECK(new_browser);
+      } else {
+        new_browser = ui_test_utils::WaitForBrowserToOpen();
+      }
+      return new_browser->profile()->IsGuestSession();
     }));
   }
 
@@ -552,3 +575,104 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "UniversalInstallEnabled"
                                              : "UniversalInstallDisabled";
                          });
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class SupervisedUserAppMenuModelInteractiveTest
+    : public AppMenuModelInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SupervisedUserAppMenuModelInteractiveTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        supervised_user::kHideGuestModeForSupervisedUsers,
+        HideGuestModeForSupervisedUsersFeatureEnabled());
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    unused_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  // Required to use IdentityTestEnvironmentAdaptor.
+                  IdentityTestEnvironmentProfileAdaptor::
+                      SetIdentityTestEnvironmentFactoriesOnBrowserContext(
+                          context);
+                }));
+  }
+
+ protected:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    identity_test_environment_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+  }
+
+  static bool HideGuestModeForSupervisedUsersFeatureEnabled() {
+    return GetParam();
+  }
+
+  void SignIn(bool is_supervised_user) {
+    AccountInfo account_info =
+        identity_test_environment_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("name@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    supervised_user::UpdateSupervisionStatusForAccount(
+        account_info,
+        identity_test_environment_adaptor_->identity_test_env()
+            ->identity_manager(),
+        is_supervised_user);
+  }
+
+ private:
+  base::CallbackListSubscription unused_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_environment_adaptor_;
+};
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserAppMenuModelInteractiveTest,
+                       OpenGuestSessionForSignedOutUser) {
+  RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kProfileMenuItem),
+                  SelectMenuItem(AppMenuModel::kProfileOpenGuestItem),
+                  CheckGuestWindowOpened(browser()));
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserAppMenuModelInteractiveTest,
+                       OpenGuestSessionForSignedInRegularUser) {
+  SignIn(/*is_supervised_user=*/false);
+  RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kProfileMenuItem),
+                  SelectMenuItem(AppMenuModel::kProfileOpenGuestItem),
+                  CheckGuestWindowOpened(browser()));
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserAppMenuModelInteractiveTest,
+                       OpenGuestSessionForSignedInSupervisedUser) {
+  SignIn(/*is_supervised_user=*/true);
+
+  if (HideGuestModeForSupervisedUsersFeatureEnabled()) {
+    RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
+                    SelectMenuItem(AppMenuModel::kProfileMenuItem),
+                    EnsureNotPresent(AppMenuModel::kProfileOpenGuestItem));
+  } else {
+    RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
+                    SelectMenuItem(AppMenuModel::kProfileMenuItem),
+                    SelectMenuItem(AppMenuModel::kProfileOpenGuestItem),
+                    CheckGuestWindowOpened(browser()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SupervisedUser,
+    SupervisedUserAppMenuModelInteractiveTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "HideGuestModeForSupervisedUsersEnabled"
+                        : "HideGuestModeForSupervisedUsersDisabled";
+    });
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

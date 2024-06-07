@@ -150,6 +150,8 @@
 using base::UserMetricsAction;
 using content::WebContents;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kProfileMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kProfileOpenGuestItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kBookmarksMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTabGroupsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
@@ -507,10 +509,13 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       other_profiles_.insert({menu_id, profile_entry->GetPath()});
     }
 
-    if (profiles::IsGuestModeEnabled()) {
+    if (profiles::IsGuestModeEnabled(*profile)) {
       AddItemWithStringIdAndVectorIcon(
           this, IDC_OPEN_GUEST_PROFILE, IDS_OPEN_GUEST_PROFILE,
           vector_icons::kAccountCircleChromeRefreshIcon);
+      SetElementIdentifierAt(
+          GetIndexOfCommandId(IDC_OPEN_GUEST_PROFILE).value(),
+          AppMenuModel::kProfileOpenGuestItem);
     }
     AddSeparator(ui::NORMAL_SEPARATOR);
     if (profiles::IsProfileCreationAllowed()) {
@@ -1699,6 +1704,9 @@ void AppMenuModel::Build() {
              profile_submenu_model->profile_name(), profile_submenu_model);
   SetIcon(GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
           profile_submenu_model->avatar_image_model());
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
+      kProfileMenuItem);
   AddSeparator(ui::SPACING_SEPARATOR);
 #endif
 

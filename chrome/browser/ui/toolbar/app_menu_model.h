@@ -170,6 +170,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
                      public ui::SimpleMenuModel::Delegate,
                      public ui::ButtonMenuItemModel::Delegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProfileMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProfileOpenGuestItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBookmarksMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroupsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDownloadsMenuItem);
