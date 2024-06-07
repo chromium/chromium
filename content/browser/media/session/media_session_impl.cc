@@ -1656,6 +1656,10 @@ const base::UnguessableToken& MediaSessionImpl::GetRequestId() const {
   return delegate_->request_id();
 }
 
+base::WeakPtr<MediaSessionImpl> MediaSessionImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
   std::set<media_session::mojom::MediaSessionAction> actions =
       routed_service_ ? routed_service_->actions()
