@@ -438,7 +438,7 @@ class MODULES_EXPORT AXObjectCacheImpl
                                   HeapVector<Member<AXObject>>& owned_children);
 
   // Given a <map> element, get the image currently associated with it, if any.
-  AXObject* GetAXImageForMap(HTMLMapElement& map);
+  AXObject* GetAXImageForMap(const HTMLMapElement& map);
 
   // Adds |object| to |fixed_or_sticky_node_ids_| if it has a fixed or sticky
   // position.
@@ -1059,6 +1059,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Get the queued tree update callbacks for the passed-in document
   TreeUpdateCallbackQueue& GetTreeUpdateCallbackQueue(Document& document);
+
+  // Helper method to notify a parent node that its children have changed.
+  // The notify method depends on the phase we are in. Please see
+  // `processing_deferred_events_` for more details.
+  void NotifyParentChildrenChanged(AXObject* parent);
 
   // Whether the user has granted permission for the user to install event
   // listeners for accessibility events using the AOM.

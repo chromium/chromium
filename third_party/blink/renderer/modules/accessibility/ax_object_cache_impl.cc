@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -110,6 +111,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_media_control.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_progress_indicator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_slider.h"
@@ -1138,10 +1140,10 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
   return result;
 }
 
-AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
+AXObject* AXObjectCacheImpl::GetAXImageForMap(const HTMLMapElement& map) {
   // Find first child node of <map> that has an AXObject and return it's
   // parent, which should be a native image.
-  Node* child = LayoutTreeBuilderTraversal::FirstChild(map);
+  Node* child = NodeTraversal::FirstChild(map);
   while (child) {
     if (AXObject* ax_child = Get(child)) {
       if (AXObject* ax_image = ax_child->ParentObject()) {
@@ -1155,7 +1157,7 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
         return ax_image;
       }
     }
-    child = LayoutTreeBuilderTraversal::NextSibling(*child);
+    child = NodeTraversal::NextSibling(*child);
   }
   return nullptr;
 }
@@ -1832,6 +1834,27 @@ void AXObjectCacheImpl::RemoveSubtree(const Node* node,
     return;
   }
 
+  if (const HTMLMapElement* map_element = DynamicTo<HTMLMapElement>(node)) {
+    // If this node is an image map, it is necessary to notify the <img> node
+    // associated with this map that its children will be deleted. The a11y tree
+    // will add the children of the image map as children of the image itself
+    // (see AXNodeObject::AddImageMapChildren for more details). However, the
+    // dom node traversal below would delete these children without notifying
+    // their parent that children will change, so this special check here is a
+    // must. For all other cases, this is not necessary because the parent is
+    // part of the subtree removal or will be notified via notify_parent defined
+    // above.
+    if (AXObject* image_ax_object = GetAXImageForMap(*map_element)) {
+      // Note here that an image will only be returned if the map has children
+      // and at least one of them points to an image, so it is guaranteed that
+      // we are not notifying a parent if children are not being removed.
+      // **important**: this call must come before the node traversal remove
+      // below since that could remove a child which would cause it to not point
+      // to its image parent, making it impossible to notify the parent.
+      NotifyParentChildrenChanged(image_ax_object);
+    }
+  }
+
   // Remove children found through dom traversal.
   for (Node* child_node = NodeTraversal::FirstChild(*node); child_node;
        child_node = NodeTraversal::NextSibling(*child_node)) {
@@ -1878,11 +1901,7 @@ void AXObjectCacheImpl::RemoveSubtree(const Node* node,
     Remove(object, /* notify_parent */ false);
   }
   if (parent_to_notify) {
-    if (processing_deferred_events_) {
-      ChildrenChangedWithCleanLayout(parent_to_notify);
-    } else {
-      ChildrenChanged(parent_to_notify);
-    }
+    NotifyParentChildrenChanged(parent_to_notify);
   }
 }
 
@@ -2635,22 +2654,15 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
   // cached in an ancestor's list of children:
   // Any ancestor up to the first included ancestor can contain the now-detached
   // child in it's cached children, and therefore must update children.
+  AXObject* parent = nullptr;
   if (processing_deferred_events_) {
-    ChildrenChangedWithCleanLayout(obj->ParentObjectIfPresent());
-    return;
+    parent = obj->ParentObjectIfPresent();
+  } else {
+    // TODO(crbug.com/337178753): this should not be necessary once subtree
+    // removals can be immediate, complete and safe.
+    parent = obj->ParentObject();
   }
-  AXObject* ax_ancestor = ChildrenChanged(obj->ParentObject());
-  if (!ax_ancestor) {
-    return;
-  }
-
-  CHECK(!IsFrozen())
-      << "Attempting to change children on an ancestor is dangerous during "
-         "serialization, because the ancestor may have already been "
-         "visited. Reaching this line indicates that AXObjectCacheImpl did "
-         "not handle a signal and call ChildrenChanged() earlier."
-      << "\nChild: " << obj << "\nParent: " << obj->ParentObject()
-      << "\nAncestor: " << ax_ancestor;
+  NotifyParentChildrenChanged(parent);
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(AXObject* obj) {
@@ -6092,6 +6104,27 @@ void AXObjectCacheImpl::ResetPluginTreeSerializer() {
 void AXObjectCacheImpl::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
   if (plugin_serializer_.get()) {
     plugin_serializer_->MarkSubtreeDirty(node_id);
+  }
+}
+
+void AXObjectCacheImpl::NotifyParentChildrenChanged(AXObject* parent) {
+  if (!parent) {
+    return;
+  }
+  if (processing_deferred_events_) {
+    ChildrenChangedWithCleanLayout(parent);
+  } else {
+    AXObject* ax_ancestor = ChildrenChanged(parent);
+    if (!ax_ancestor) {
+      return;
+    }
+
+    CHECK(!IsFrozen())
+        << "Attempting to change children on an ancestor is dangerous during "
+           "serialization, because the ancestor may have already been "
+           "visited. Reaching this line indicates that AXObjectCacheImpl did "
+           "not handle a signal and call ChildrenChanged() earlier."
+        << "\nParent: " << parent << "\nAncestor: " << ax_ancestor;
   }
 }
 
