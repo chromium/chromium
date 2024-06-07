@@ -333,4 +333,32 @@ suite(SettingsDropdownV2Element.is, () => {
           internalSelectElement, dropdownElement.shadowRoot!.activeElement);
     });
   });
+
+  suite('For a11y', () => {
+    test('ariaLabel property should apply to internal select', () => {
+      const ariaLabel = 'A11y label';
+      dropdownElement.ariaLabel = ariaLabel;
+      assertEquals(ariaLabel, internalSelectElement.getAttribute('aria-label'));
+    });
+
+    test('ariaLabel property does not reflect to attribute', () => {
+      const ariaLabel = 'A11y label';
+      dropdownElement.ariaLabel = ariaLabel;
+      assertFalse(dropdownElement.hasAttribute('aria-label'));
+    });
+
+    test('ariaDescription property should apply to internal select', () => {
+      const ariaDescription = 'A11y description';
+      dropdownElement.ariaDescription = ariaDescription;
+      assertEquals(
+          ariaDescription,
+          internalSelectElement.getAttribute('aria-description'));
+    });
+
+    test('ariaDescription property does not reflect to attribute', () => {
+      const ariaDescription = 'A11y description';
+      dropdownElement.ariaDescription = ariaDescription;
+      assertFalse(dropdownElement.hasAttribute('aria-description'));
+    });
+  });
 });

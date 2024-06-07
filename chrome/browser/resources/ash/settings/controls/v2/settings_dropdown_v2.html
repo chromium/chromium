@@ -15,7 +15,8 @@
 
 <select id="select"
     class="md-select"
-    aria-label$="[[ariaLabel]]"
+    aria-label="[[ariaLabel]]"
+    aria-description="[[ariaDescription]]"
     on-change="onChange_"
     disabled="[[isSelectDisabled_(disabled, options)]]">
   <template is="dom-repeat" items="[[options]]" as="option">

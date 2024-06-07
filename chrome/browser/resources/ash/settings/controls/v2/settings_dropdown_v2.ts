@@ -102,6 +102,19 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
   static get properties() {
     return {
       ...this.sharedProperties,
+
+      // A11y properties added since they are data-bound in HTML.
+      ariaLabel: {
+        type: String,
+        reflectToAttribute: false,
+        observer: 'onAriaLabelSet_',
+      },
+
+      ariaDescription: {
+        type: String,
+        reflectToAttribute: false,
+        observer: 'onAriaDescriptionSet_',
+      },
     };
   }
 
@@ -191,6 +204,34 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
    */
   private isSelectDisabled_(): boolean {
     return this.disabled || this.options.length === 0;
+  }
+
+  /**
+   * Manually remove the aria-label attribute from the host node since it is
+   * applied to the internal select. `reflectToAttribute=false` does not resolve
+   * this issue. This prevents the aria-label from being duplicated by
+   * screen readers.
+   */
+  private onAriaLabelSet_(): void {
+    const ariaLabel = this.getAttribute('aria-label');
+    if (ariaLabel) {
+      this.removeAttribute('aria-label');
+      this.ariaLabel = ariaLabel;
+    }
+  }
+
+  /**
+   * Manually remove the aria-description attribute from the host node since it
+   * is applied to the internal select. `reflectToAttribute=false` does not
+   * resolve this issue. This prevents the aria-description from being
+   * duplicated by screen readers.
+   */
+  private onAriaDescriptionSet_(): void {
+    const ariaDescription = this.getAttribute('aria-description');
+    if (ariaDescription) {
+      this.removeAttribute('aria-description');
+      this.ariaDescription = ariaDescription;
+    }
   }
 }
 
