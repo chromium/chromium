@@ -3213,6 +3213,21 @@
             ]
         }
     ],
+    "BrowsingDataModelAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowsingDataModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "BubbleMetricsApi": [
         {
             "platforms": [
