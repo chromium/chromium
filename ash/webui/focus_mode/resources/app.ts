@@ -68,6 +68,9 @@ globalThis.addEventListener('load', async () => {
   MediaClientImpl.init();
 });
 
+// Tracks whether we are currently requesting a track.
+let requestInProgress = false;
+
 globalThis.addEventListener('message', async (event: MessageEvent) => {
   if (event.origin != UNTRUSTED_ORIGIN) {
     return;
@@ -76,7 +79,18 @@ globalThis.addEventListener('message', async (event: MessageEvent) => {
   const data = event.data;
   if (data && typeof data == 'object' && typeof data.cmd == 'string') {
     if (data.cmd == 'gettrack') {
+      if (requestInProgress) {
+        // There is no point in doing concurrent requests, so if we get a new
+        // request while another is pending (this can happen if the user hammers
+        // the next track button in the media controls), then the request is
+        // simply dropped.
+        return;
+      }
+
+      requestInProgress = true;
       const result = await getProvider().getTrack();
+      requestInProgress = false;
+
       postPlayRequest(result.track);
     }
   }

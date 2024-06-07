@@ -4,8 +4,6 @@
 
 const TRUSTED_ORIGIN = 'chrome://focus-mode-media';
 
-let player: HTMLAudioElement|null = null;
-
 interface Track {
   // The URL of the audio data.
   mediaUrl: string;
@@ -36,25 +34,38 @@ function sendTrackRequest() {
   parent.postMessage({cmd: 'gettrack'}, TRUSTED_ORIGIN);
 }
 
+function getPlayerElement(): HTMLAudioElement {
+  return document.getElementById('player') as HTMLAudioElement;
+}
+
 function loadTrack(track: Track) {
-  if (player) {
-    player.src = track.mediaUrl;
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: track.title,
-      artist: track.artist,
-      // TODO: Implement thumbnail handling. We apparently cannot simply use the
-      // thumbnailUrl here. It seems that the parent frame will handle the
-      // actual network load (presumably because we're working with `navigator`)
-      // and since the parent isn't allowed to do network requests, the thing
-      // will fail. A workaround that should be fairly easy to implement is to
-      // load the thumbnail manually in this frame and convert the data to a
-      // blob: or data: URL.
-    });
-  }
+  const p = getPlayerElement();
+  p.src = track.mediaUrl;
+
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: track.title,
+    artist: track.artist,
+    // TODO: Implement thumbnail handling. We apparently cannot simply use the
+    // thumbnailUrl here. It seems that the parent frame will handle the
+    // actual network load (presumably because we're working with `navigator`)
+    // and since the parent isn't allowed to do network requests, the thing
+    // will fail. A workaround that should be fairly easy to implement is to
+    // load the thumbnail manually in this frame and convert the data to a
+    // blob: or data: URL.
+  });
 }
 
 globalThis.addEventListener('load', () => {
-  player = document.getElementById('player') as HTMLAudioElement;
+  getPlayerElement().addEventListener('ended', () => {
+    sendTrackRequest();
+  });
+
+  // Registering this makes the "next track" button show up in the media
+  // controls. We do not support going to the previous track.
+  navigator.mediaSession.setActionHandler('nexttrack', () => {
+    sendTrackRequest();
+  });
+
   sendTrackRequest();
 });
 
