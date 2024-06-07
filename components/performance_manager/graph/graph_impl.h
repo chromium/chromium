@@ -12,7 +12,6 @@
 #include <memory>
 #include <unordered_set>
 #include <utility>
-#include <vector>
 
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -50,8 +49,6 @@ class GraphImpl : public Graph {
   using PageNodeImplVisitor = base::FunctionRef<bool(PageNodeImpl*)>;
   using ProcessNodeImplVisitor = base::FunctionRef<bool(ProcessNodeImpl*)>;
   using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
-
-  using NodeSet = std::unordered_set<raw_ptr<NodeBase, CtnExperimental>>;
 
   // An ObserverList that DCHECK's if any observers are still in it when the
   // graph is deleted. `allow_reentrancy` is true because some observers update
@@ -96,10 +93,10 @@ class GraphImpl : public Graph {
   size_t GetFrameNodeCount() const override;
   size_t GetPageNodeCount() const override;
   size_t GetWorkerNodeCount() const override;
-  std::vector<const ProcessNode*> GetAllProcessNodes() const override;
-  std::vector<const FrameNode*> GetAllFrameNodes() const override;
-  std::vector<const PageNode*> GetAllPageNodes() const override;
-  std::vector<const WorkerNode*> GetAllWorkerNodes() const override;
+  NodeSetView<const ProcessNode*> GetAllProcessNodes() const override;
+  NodeSetView<const FrameNode*> GetAllFrameNodes() const override;
+  NodeSetView<const PageNode*> GetAllPageNodes() const override;
+  NodeSetView<const WorkerNode*> GetAllWorkerNodes() const override;
   bool VisitAllProcessNodes(ProcessNodeVisitor visitor) const override;
   bool VisitAllFrameNodes(FrameNodeVisitor visitor) const override;
   bool VisitAllPageNodes(PageNodeVisitor visitor) const override;
@@ -136,10 +133,10 @@ class GraphImpl : public Graph {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return system_node_.get();
   }
-  std::vector<ProcessNodeImpl*> GetAllProcessNodeImpls() const;
-  std::vector<FrameNodeImpl*> GetAllFrameNodeImpls() const;
-  std::vector<PageNodeImpl*> GetAllPageNodeImpls() const;
-  std::vector<WorkerNodeImpl*> GetAllWorkerNodeImpls() const;
+  NodeSetView<ProcessNodeImpl*> GetAllProcessNodeImpls() const;
+  NodeSetView<FrameNodeImpl*> GetAllFrameNodeImpls() const;
+  NodeSetView<PageNodeImpl*> GetAllPageNodeImpls() const;
+  NodeSetView<WorkerNodeImpl*> GetAllWorkerNodeImpls() const;
   bool VisitAllProcessNodeImpls(ProcessNodeImplVisitor visitor) const;
   bool VisitAllFrameNodeImpls(FrameNodeImplVisitor visitor) const;
   bool VisitAllPageNodeImpls(PageNodeImplVisitor visitor) const;
@@ -244,9 +241,6 @@ class GraphImpl : public Graph {
   void UnregisterFrameNodeForId(RenderProcessHostId render_process_id,
                                 int render_frame_id,
                                 FrameNodeImpl* frame_node);
-
-  template <typename NodeType, typename ReturnNodeType>
-  std::vector<ReturnNodeType> GetAllNodesOfType() const;
 
   template <typename NodeType, typename VisitedNodeType>
   bool VisitAllNodesOfType(

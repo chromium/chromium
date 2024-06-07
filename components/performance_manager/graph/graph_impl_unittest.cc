@@ -92,19 +92,21 @@ TEST_F(GraphImplTest, PIDReuse) {
 TEST_F(GraphImplTest, GetAllCUsByType) {
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
-  std::vector<ProcessNodeImpl*> processes = graph()->GetAllProcessNodeImpls();
+  std::vector<ProcessNodeImpl*> processes =
+      graph()->GetAllProcessNodeImpls().AsVector();
 
   // Graph contains a browser process and 1 renderer process.
   ASSERT_EQ(2u, processes.size());
   EXPECT_NE(nullptr, processes[0]);
   EXPECT_NE(nullptr, processes[1]);
 
-  std::vector<FrameNodeImpl*> frames = graph()->GetAllFrameNodeImpls();
+  std::vector<FrameNodeImpl*> frames =
+      graph()->GetAllFrameNodeImpls().AsVector();
   ASSERT_EQ(2u, frames.size());
   EXPECT_NE(nullptr, frames[0]);
   EXPECT_NE(nullptr, frames[1]);
 
-  std::vector<PageNodeImpl*> pages = graph()->GetAllPageNodeImpls();
+  std::vector<PageNodeImpl*> pages = graph()->GetAllPageNodeImpls().AsVector();
   ASSERT_EQ(2u, pages.size());
   EXPECT_NE(nullptr, pages[0]);
   EXPECT_NE(nullptr, pages[1]);

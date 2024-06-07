@@ -113,7 +113,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     }
 
     ASSERT_EQ(1u, graph->GetPageNodeCount());
-    auto* page = graph->GetAllPageNodeImpls()[0];
+    auto* page = graph->GetAllPageNodeImpls().AsVector()[0];
 
     // Extra RPHs can and most definitely do exist.
     auto associated_process_nodes =
@@ -213,7 +213,7 @@ namespace {
 void ExpectPageIsAudible(bool is_audible) {
   RunInGraph([&](GraphImpl* graph) {
     ASSERT_EQ(1u, graph->GetPageNodeCount());
-    auto* page = graph->GetAllPageNodeImpls()[0];
+    auto* page = graph->GetAllPageNodeImpls().AsVector()[0];
     EXPECT_EQ(is_audible, page->IsAudible());
   });
 }
@@ -223,7 +223,7 @@ void ExpectNotificationPermissionStatus(
     std::optional<blink::mojom::PermissionStatus> status) {
   RunInGraph([&](GraphImpl* graph) {
     ASSERT_EQ(1u, graph->GetPageNodeCount());
-    auto* page = graph->GetAllPageNodeImpls()[0];
+    auto* page = graph->GetAllPageNodeImpls().AsVector()[0];
     EXPECT_EQ(status, page->GetNotificationPermissionStatus());
   });
 }

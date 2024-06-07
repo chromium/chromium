@@ -272,20 +272,21 @@ size_t GraphImpl::GetWorkerNodeCount() const {
   return GetNodesOfType(NodeTypeEnum::kWorker).size();
 }
 
-std::vector<const ProcessNode*> GraphImpl::GetAllProcessNodes() const {
-  return GetAllNodesOfType<ProcessNodeImpl, const ProcessNode*>();
+Graph::NodeSetView<const ProcessNode*> GraphImpl::GetAllProcessNodes() const {
+  return NodeSetView<const ProcessNode*>(
+      GetNodesOfType(NodeTypeEnum::kProcess));
 }
 
-std::vector<const FrameNode*> GraphImpl::GetAllFrameNodes() const {
-  return GetAllNodesOfType<FrameNodeImpl, const FrameNode*>();
+Graph::NodeSetView<const FrameNode*> GraphImpl::GetAllFrameNodes() const {
+  return NodeSetView<const FrameNode*>(GetNodesOfType(NodeTypeEnum::kFrame));
 }
 
-std::vector<const PageNode*> GraphImpl::GetAllPageNodes() const {
-  return GetAllNodesOfType<PageNodeImpl, const PageNode*>();
+Graph::NodeSetView<const PageNode*> GraphImpl::GetAllPageNodes() const {
+  return NodeSetView<const PageNode*>(GetNodesOfType(NodeTypeEnum::kPage));
 }
 
-std::vector<const WorkerNode*> GraphImpl::GetAllWorkerNodes() const {
-  return GetAllNodesOfType<WorkerNodeImpl, const WorkerNode*>();
+Graph::NodeSetView<const WorkerNode*> GraphImpl::GetAllWorkerNodes() const {
+  return NodeSetView<const WorkerNode*>(GetNodesOfType(NodeTypeEnum::kWorker));
 }
 
 bool GraphImpl::VisitAllProcessNodes(ProcessNodeVisitor visitor) const {
@@ -369,7 +370,7 @@ GraphImpl* GraphImpl::FromGraph(const Graph* graph) {
 bool GraphImpl::NodeInGraph(const NodeBase* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const NodeSet& nodes = GetNodesOfType(node->GetNodeType());
-  return base::Contains(nodes, const_cast<NodeBase*>(node));
+  return base::Contains(nodes, node->ToNode());
 }
 
 ProcessNodeImpl* GraphImpl::GetProcessNodeByPid(base::ProcessId pid) {
@@ -385,20 +386,20 @@ FrameNodeImpl* GraphImpl::GetFrameNodeById(
       frames_by_id_, ProcessAndFrameId(render_process_id, render_frame_id));
 }
 
-std::vector<ProcessNodeImpl*> GraphImpl::GetAllProcessNodeImpls() const {
-  return GetAllNodesOfType<ProcessNodeImpl, ProcessNodeImpl*>();
+Graph::NodeSetView<ProcessNodeImpl*> GraphImpl::GetAllProcessNodeImpls() const {
+  return NodeSetView<ProcessNodeImpl*>(GetNodesOfType(NodeTypeEnum::kProcess));
 }
 
-std::vector<FrameNodeImpl*> GraphImpl::GetAllFrameNodeImpls() const {
-  return GetAllNodesOfType<FrameNodeImpl, FrameNodeImpl*>();
+Graph::NodeSetView<FrameNodeImpl*> GraphImpl::GetAllFrameNodeImpls() const {
+  return NodeSetView<FrameNodeImpl*>(GetNodesOfType(NodeTypeEnum::kFrame));
 }
 
-std::vector<PageNodeImpl*> GraphImpl::GetAllPageNodeImpls() const {
-  return GetAllNodesOfType<PageNodeImpl, PageNodeImpl*>();
+Graph::NodeSetView<PageNodeImpl*> GraphImpl::GetAllPageNodeImpls() const {
+  return NodeSetView<PageNodeImpl*>(GetNodesOfType(NodeTypeEnum::kPage));
 }
 
-std::vector<WorkerNodeImpl*> GraphImpl::GetAllWorkerNodeImpls() const {
-  return GetAllNodesOfType<WorkerNodeImpl, WorkerNodeImpl*>();
+Graph::NodeSetView<WorkerNodeImpl*> GraphImpl::GetAllWorkerNodeImpls() const {
+  return NodeSetView<WorkerNodeImpl*>(GetNodesOfType(NodeTypeEnum::kWorker));
 }
 
 bool GraphImpl::VisitAllProcessNodeImpls(ProcessNodeImplVisitor visitor) const {
@@ -441,7 +442,7 @@ void GraphImpl::AddNewNode(NodeBase* new_node) {
 
   // Add the node to the graph.
   NodeSet& nodes = GetNodesOfType(new_node->GetNodeType());
-  auto it = nodes.insert(new_node);
+  auto it = nodes.insert(new_node->ToNode());
   DCHECK(it.second);  // Inserted successfully
 
   // Advance the node through its lifecycle until it is active in the graph. See
@@ -477,7 +478,7 @@ void GraphImpl::RemoveNode(NodeBase* node) {
 
   // Remove the node itself.
   NodeSet& nodes = GetNodesOfType(node->GetNodeType());
-  size_t erased = nodes.erase(node);
+  size_t erased = nodes.erase(node->ToNode());
   DCHECK_EQ(1u, erased);
 }
 
@@ -500,13 +501,12 @@ size_t GraphImpl::NodeDataDescriberCountForTesting() const {
   return registry->size();
 }
 
-GraphImpl::NodeSet& GraphImpl::GetNodesOfType(NodeTypeEnum node_type) {
+Graph::NodeSet& GraphImpl::GetNodesOfType(NodeTypeEnum node_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nodes_.at(base::strict_cast<size_t>(node_type));
 }
 
-const GraphImpl::NodeSet& GraphImpl::GetNodesOfType(
-    NodeTypeEnum node_type) const {
+const Graph::NodeSet& GraphImpl::GetNodesOfType(NodeTypeEnum node_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nodes_.at(base::strict_cast<size_t>(node_type));
 }
@@ -694,20 +694,6 @@ void GraphImpl::UnregisterFrameNodeForId(RenderProcessHostId render_process_id,
   frames_by_id_.erase(process_and_frame_id);
 }
 
-template <typename NodeType, typename ReturnNodeType>
-std::vector<ReturnNodeType> GraphImpl::GetAllNodesOfType() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto type = NodeType::Type();
-  const NodeSet& nodes = GetNodesOfType(type);
-
-  std::vector<ReturnNodeType> ret;
-  ret.reserve(nodes.size());
-  for (NodeBase* node : nodes) {
-    ret.push_back(NodeType::FromNodeBase(node));
-  }
-  return ret;
-}
-
 template <typename NodeType, typename VisitedNodeType>
 bool GraphImpl::VisitAllNodesOfType(
     base::FunctionRef<bool(VisitedNodeType)> visitor) const {
@@ -715,8 +701,8 @@ bool GraphImpl::VisitAllNodesOfType(
   const auto type = NodeType::Type();
   const NodeSet& nodes = GetNodesOfType(type);
 
-  for (NodeBase* node : nodes) {
-    VisitedNodeType visited_node = NodeType::FromNodeBase(node);
+  for (const Node* node : nodes) {
+    VisitedNodeType visited_node = NodeType::FromNode(node);
     if (!visitor(visited_node)) {
       return false;
     }
