@@ -35,6 +35,8 @@ class ChromeProfileRequestGenerator {
 
   virtual void Generate(ReportCallback callback);
 
+  void ToggleExtensionReport(bool enabled);
+
  private:
   void OnBrowserReportReady(
       std::unique_ptr<ReportRequest> request,
