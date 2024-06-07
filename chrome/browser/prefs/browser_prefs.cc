@@ -1120,6 +1120,12 @@ inline constexpr char kAccessibilityReadAnythingOmniboxIconLabelShownCount[] =
     "settings.a11y.read_anything.omnibox_icon_label_shown_count";
 #endif
 
+// Deprecated 06/2024.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+inline constexpr char kAccessibilityPdfOcrAlwaysActive[] =
+    "settings.a11y.pdf_ocr_always_active";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1623,6 +1629,11 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kAccessibilityReadAnythingOmniboxIconLabelShownCount, 0);
+#endif
+
+// Deprecated 06/2024.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  registry->RegisterBooleanPref(kAccessibilityPdfOcrAlwaysActive, true);
 #endif
 }
 
@@ -2346,7 +2357,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, true);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -3011,6 +3021,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(
       kAccessibilityReadAnythingOmniboxIconLabelShownCount);
+#endif
+
+// Added 06/2024.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  profile_prefs->ClearPref(kAccessibilityPdfOcrAlwaysActive);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

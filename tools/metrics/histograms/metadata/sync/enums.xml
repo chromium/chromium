@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
   <int value="100141" label="TabDiscardingExceptions"/>
   <int value="100142" label="AccessibilityImageLabelsEnabled"/>
   <int value="100143" label="AccessibilityImageLabelsOptInAccepted"/>
-  <int value="100144" label="AccessibilityPdfOcrAlwaysActive"/>
+  <int value="100144" label="(obsolete) AccessibilityPdfOcrAlwaysActive"/>
   <int value="100145"
       label="(obsolete, no longer synced)
              ApplyPageColorsOnlyOnIncreasedContrast"/>

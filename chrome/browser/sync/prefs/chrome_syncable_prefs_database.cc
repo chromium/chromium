@@ -198,7 +198,7 @@ enum {
   kTabDiscardingExceptions = 100141,
   kAccessibilityImageLabelsEnabled = 100142,
   kAccessibilityImageLabelsOptInAccepted = 100143,
-  kAccessibilityPdfOcrAlwaysActive = 100144,
+  // kAccessibilityPdfOcrAlwaysActive = 100144,(deprecated)
   // kApplyPageColorsOnlyOnIncreasedContrast = 100145, (no longer synced)
   kDefaultCharset = 100146,
   kDefaultTasksByMimeType = 100147,
@@ -1180,10 +1180,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {prefs::kAccessibilityImageLabelsOptInAccepted,
      {syncable_prefs_ids::kAccessibilityImageLabelsOptInAccepted,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kAccessibilityPdfOcrAlwaysActive,
-     {syncable_prefs_ids::kAccessibilityPdfOcrAlwaysActive, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityMainNodeAnnotationsEnabled,
      {syncable_prefs_ids::kAccessibilityMainNodeAnnotationsEnabled,
