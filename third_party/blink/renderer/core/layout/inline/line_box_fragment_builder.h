@@ -78,9 +78,6 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
 
   const FontHeight& Metrics() const { return metrics_; }
   void SetMetrics(const FontHeight& metrics) { metrics_ = metrics; }
-  void SetIntrinsicMetrics(const FontHeight& intrinsic_metrics) {
-    intrinsic_metrics_ = intrinsic_metrics;
-  }
 
   void SetBaseDirection(TextDirection direction) {
     base_direction_ = direction;
@@ -112,7 +109,6 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   std::optional<LayoutUnit> trim_block_end_by_;
   LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();
-  FontHeight intrinsic_metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
   PhysicalLineBoxFragment::LineBoxType line_box_type_;
   TextDirection base_direction_;

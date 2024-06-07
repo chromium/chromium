@@ -642,8 +642,6 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
                               should_apply_over, should_apply_under,
                               intrinsic_metrics);
 
-  container_builder_.SetIntrinsicMetrics(intrinsic_metrics);
-
   if (should_apply_start) {
     // Apply `text-box-trim: start` if this is the first formatted line.
     const LayoutUnit offset_for_trimming_box =
