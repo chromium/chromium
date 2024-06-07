@@ -2168,14 +2168,14 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->AppendQuads(render_pass.get(), &data);
   active_layer()->DidDraw(nullptr);
 
-  // Changed tiling rect is snapped.
-  EXPECT_EQ(gfx::Rect(0, 0, 248, 248),
+  // Tiling rect origin is snapped.
+  EXPECT_EQ(gfx::Rect(0, 0, 180, 180),
             active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1u, data.num_missing_tiles);
   EXPECT_EQ(0u, data.num_incomplete_tiles);
-  EXPECT_EQ(61504, data.checkerboarded_visible_content_area);
-  EXPECT_EQ(39004, data.checkerboarded_no_recording_content_area);
+  EXPECT_EQ(32400, data.checkerboarded_visible_content_area);
+  EXPECT_EQ(9900, data.checkerboarded_no_recording_content_area);
   EXPECT_EQ(22500, data.checkerboarded_needs_raster_content_area);
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
 

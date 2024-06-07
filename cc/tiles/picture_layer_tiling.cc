@@ -967,31 +967,22 @@ gfx::Rect PictureLayerTiling::ComputeTilingRect() const {
   gfx::Rect recorded_bounds = raster_source_->recorded_bounds();
   gfx::Rect tiling_rect = EnclosingContentsRectFromLayerRect(recorded_bounds);
   gfx::Rect layer_bounds(raster_source_->size());
-  gfx::Rect old_tiling_rect = tiling_data_.tiling_rect();
-  if (recorded_bounds != layer_bounds &&
-      // Use exact tiling rect for the first time.
-      !old_tiling_rect.IsEmpty() && tiling_rect != old_tiling_rect) {
+  if (recorded_bounds != layer_bounds) {
     gfx::Rect layer_contents_rect =
         EnclosingContentsRectFromLayerRect(layer_bounds);
     // Snap tiling_rect to avoid full tiling invalidation on small change of
-    // tiling rect origin. The number is smaller than 2^7 to avoid small tiles
-    // along the right/bottom edge if the default tile size is power of 2.
-    constexpr int kSnapTexels = 124;
+    // tiling rect origin.
+    constexpr int kSnapTexels = 128;
     tiling_rect.SetByBounds(
-        // Keep the origin (without snapping) if it hasn't changed.
-        tiling_rect.x() == old_tiling_rect.x()
-            ? tiling_rect.x()
-            : MathUtil::UncheckedRoundDown(tiling_rect.x(), kSnapTexels),
-        tiling_rect.y() == old_tiling_rect.y()
-            ? tiling_rect.y()
-            : MathUtil::UncheckedRoundDown(tiling_rect.y(), kSnapTexels),
+        MathUtil::UncheckedRoundDown(tiling_rect.x(), kSnapTexels),
+        MathUtil::UncheckedRoundDown(tiling_rect.y(), kSnapTexels),
         // Snap to the layer edge if the tiling edge is near the layer edge.
         tiling_rect.right() + kSnapTexels > layer_contents_rect.right()
             ? layer_contents_rect.right()
-            : MathUtil::UncheckedRoundUp(tiling_rect.right(), kSnapTexels),
+            : tiling_rect.right(),
         tiling_rect.bottom() + kSnapTexels > layer_contents_rect.bottom()
             ? layer_contents_rect.bottom()
-            : MathUtil::UncheckedRoundUp(tiling_rect.bottom(), kSnapTexels));
+            : tiling_rect.bottom());
     DCHECK(layer_contents_rect.Contains(tiling_rect));
   }
   return tiling_rect;
