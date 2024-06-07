@@ -257,43 +257,60 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
-          "histograms": [
-            {
-              "key": "0x559",
-              "value": 65535
-            }
-          ],
+          "histograms": [ {
+            "key": "0x559",
+            "value": 65535
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3602",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "12345"
         },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "3602000"
+        "report_time": "3602000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
-          "histograms": [
-            {
-              "key": "0xa85",
-              "value": 1
-            }
-          ],
+          "histograms": [ {
+            "key": "0xa85",
+            "value": 1
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3604",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "12345"
         },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "3604000"
+        "report_time": "3604000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0xa85",
               "value": 65536
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3611",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "54321"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",

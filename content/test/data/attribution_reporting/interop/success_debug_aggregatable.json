@@ -206,13 +206,21 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x11",
               "value": 111
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "debug_mode": "enabled",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3601",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "111",
           "trigger_debug_key": "333"
         },
@@ -222,13 +230,21 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x11",
               "value": 111
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "debug_mode": "enabled",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3601",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "111",
           "trigger_debug_key": "333"
         },
@@ -238,13 +254,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x11",
               "value": 222
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3602",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "111"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -253,13 +276,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x11",
               "value": 333
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3603",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "source_debug_key": "111"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -268,13 +298,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x12",
               "value": 444
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://another-reporter.test",
+            "scheduled_report_time": "3604",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "trigger_debug_key": "555"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -283,13 +320,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://another-destination.test",
           "histograms": [
             {
               "key": "0x13",
               "value": 555
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://another-destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3605",
+            "source_registration_time": "0",
+            "version": "0.1"
+          },
           "trigger_debug_key": "666"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",

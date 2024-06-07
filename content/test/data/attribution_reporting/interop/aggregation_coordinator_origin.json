@@ -93,13 +93,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c2.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x559",
               "value": 123
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3600",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3600002"

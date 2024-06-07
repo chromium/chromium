@@ -147,24 +147,38 @@
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://coordinator.test",
-           "attribution_destination": "https://destination1.test",
-           "histograms": [ {
-              "key": "0x1",
-              "value": 321
-           } ]
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "key": "0x1",
+            "value": 321
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination1.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3601",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         "report_time": "3601000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://coordinator.test",
-           "attribution_destination": "https://destination2.test",
-           "histograms": [ {
-              "key": "0x1",
-              "value": 456
-           } ]
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "key": "0x1",
+            "value": 456
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination2.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3603",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         "report_time": "3603000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"

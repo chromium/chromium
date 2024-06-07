@@ -91,13 +91,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://anotherdestination.test",
           "histograms": [
             {
               "key": "0x11",
               "value": 111
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://anotherdestination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3601",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         "report_time": "3601000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
@@ -105,13 +112,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x21",
               "value": 222
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3602",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         "report_time": "3602000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"

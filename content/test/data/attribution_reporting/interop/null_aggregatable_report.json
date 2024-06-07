@@ -9,7 +9,7 @@
   "input": {
     "registrations": [
       {
-        "timestamp": "0",
+        "timestamp": "432000000",
         "registration_request": {
           "context_origin": "https://source.test",
           "Attribution-Reporting-Eligible": "navigation-source"
@@ -32,7 +32,7 @@
       },
       // Creates one aggregatable report and two null aggregatable reports.
       {
-        "timestamp": "1000",
+        "timestamp": "432001000",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -61,7 +61,7 @@
       },
       // Creates three null aggregatable reports.
       {
-        "timestamp": "2000",
+        "timestamp": "432002000",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -84,7 +84,7 @@
       },
       // Trigger without aggregataable data doesn't create null aggregatable reports.
       {
-        "timestamp": "2001",
+        "timestamp": "432002001",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -104,7 +104,7 @@
       },
       // Creates one aggregatable report.
       {
-        "timestamp": "3000",
+        "timestamp": "432003000",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -130,7 +130,7 @@
       },
       // Creates one null aggregatable report.
       {
-        "timestamp": "4000",
+        "timestamp": "432004000",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -150,7 +150,7 @@
       },
       // Trigger without aggregatable data doesn't create null aggregatable reports.
       {
-        "timestamp": "4001",
+        "timestamp": "432004001",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -178,105 +178,161 @@
            },
            "type": "trigger-aggregate-no-contributions"
         } ],
-        "report_time": "2000",
+        "report_time": "432002000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c2.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x559",
               "value": 123
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435601",
+            "source_registration_time": "432000",
+            "version": "0.1"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "3601000"
+        "report_time": "435601000"
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://c2.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
-              "key": "0x0",
-              "value": 0
-           } ]
+          "aggregation_coordinator_origin": "https://c2.test",
+          "histograms": [ {
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435601",
+            "source_registration_time": "259200",
+            "version": "0.1"
+         }
         },
-        "report_time": "3601000",
+        "report_time": "435601000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://c2.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
-              "key": "0x0",
-              "value": 0
-           } ]
+          "aggregation_coordinator_origin": "https://c2.test",
+          "histograms": [ {
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435601",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
-        "report_time": "3601000",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      },
-      {
-        "payload": {
-           "aggregation_coordinator_origin": "https://c1.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
-              "key": "0x0",
-              "value": 0
-           } ]
-        },
-        "report_time": "3602000",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      },
-      {
-        "payload": {
-           "aggregation_coordinator_origin": "https://c1.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
-              "key": "0x0",
-              "value": 0
-           } ]
-        },
-        "report_time": "3602000",
+        "report_time": "435601000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
            "aggregation_coordinator_origin": "https://c1.test",
-           "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",
               "value": 0
-           } ]
+           } ],
+           "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435602",
+            "source_registration_time": "432000",
+            "version": "0.1"
+          }
         },
-        "report_time": "3602000",
+        "report_time": "435602000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://c1.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
-              "key": "0x359",
-              "value": 321
-           } ]
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435602",
+            "source_registration_time": "259200",
+            "version": "0.1"
+          }
         },
-        "report_time": "3603000",
+        "report_time": "435602000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://c1.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435602",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
+        },
+        "report_time": "435602000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "key": "0x359",
+            "value": 321
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435603",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
+        },
+        "report_time": "435603000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
               "key": "0x0",
               "value": 0
-           } ]
+           } ],
+           "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "435604",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
-        "report_time": "3604000",
+        "report_time": "435604000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ]

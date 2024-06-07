@@ -218,13 +218,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x11",
               "value": 123
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "7199",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         // 7,200,000 ms  = 3,600 s (clamped aggregatable_report_window)  + 1
@@ -246,13 +253,20 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [
             {
               "key": "0x32",
               "value": 321
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter2.test",
+            "scheduled_report_time": "92000",
+            "source_registration_time": "0",
+            "version": "0.1"
+          }
         },
         // 90,000,000 ms  = 86,400 s (clamped aggregatable_report_window)  + 1
         // hour (base delay) + 1s (source's timestamp) - 1 ms offset

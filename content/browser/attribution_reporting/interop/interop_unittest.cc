@@ -148,26 +148,25 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
   return list;
 }
 
-void AdjustAggregatableReportPayloads(base::Value::Dict& report_body,
-                                      const std::string& shared_info) {
+void AdjustAggregatableReportBody(base::Value::Dict& report_body) {
+  std::optional<base::Value> shared_info = report_body.Extract("shared_info");
+  CHECK(shared_info.has_value());
+  const std::string& shared_info_str = shared_info->GetString();
+
+  std::optional<base::Value::Dict> shared_info_dict =
+      base::JSONReader::ReadDict(shared_info_str, base::JSON_PARSE_RFC);
+  CHECK(shared_info_dict.has_value());
+
+  // Report IDs are a source of nondeterminism, so remove them.
+  shared_info_dict->Remove("report_id");
+
+  // Set shared_info as a dictionary for easier comparison.
+  report_body.Set("shared_info", *std::move(shared_info_dict));
+
   report_body.Set(
       "histograms",
       GetDecryptedPayloads(report_body.Extract("aggregation_service_payloads"),
-                           shared_info));
-}
-
-AggregatableReportSharedInfo ExtractAggregatableReportSharedInfo(
-    base::Value::Dict& report_body) {
-  std::optional<base::Value> shared_info = report_body.Extract("shared_info");
-  CHECK(shared_info.has_value());
-  std::string& shared_info_str = shared_info->GetString();
-
-  std::optional<base::Value> shared_info_value =
-      base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
-  CHECK(shared_info_value.has_value());
-
-  return AggregatableReportSharedInfo(std::move(shared_info_str),
-                                      std::move(shared_info_value->GetDict()));
+                           shared_info_str));
 }
 
 class Adjuster : public ReportBodyAdjuster {
@@ -207,23 +206,7 @@ class Adjuster : public ReportBodyAdjuster {
       return;
     }
 
-    // These fields normally encode a random GUID or the absolute
-    // time and therefore are sources of nondeterminism in the
-    // output.
-    //
-    // Output attribution_destination from the shared_info field.
-    AggregatableReportSharedInfo shared_info =
-        ExtractAggregatableReportSharedInfo(report_body);
-
-    static constexpr char kKeyAttributionDestination[] =
-        "attribution_destination";
-    std::optional<base::Value> attribution_destination =
-        shared_info.as_dict.Extract(kKeyAttributionDestination);
-    CHECK(attribution_destination.has_value());
-    report_body.Set(kKeyAttributionDestination,
-                    *std::move(attribution_destination));
-
-    AdjustAggregatableReportPayloads(report_body, shared_info.as_string);
+    AdjustAggregatableReportBody(report_body);
   }
 
   void AdjustAggregatableDebug(base::Value::Dict& report_body) override {
@@ -231,16 +214,7 @@ class Adjuster : public ReportBodyAdjuster {
       return;
     }
 
-    AggregatableReportSharedInfo shared_info =
-        ExtractAggregatableReportSharedInfo(report_body);
-
-    // Report IDs are a source of nondeterminism, so remove them.
-    shared_info.as_dict.Remove("report_id");
-
-    // Set shared_info as a dictionary for easier comparison.
-    report_body.Set("shared_info", std::move(shared_info.as_dict));
-
-    AdjustAggregatableReportPayloads(report_body, shared_info.as_string);
+    AdjustAggregatableReportBody(report_body);
   }
 
   const bool actual_;

@@ -112,15 +112,7 @@ class Adjuster : public ReportBodyAdjuster {
 
  private:
   void AdjustEventLevel(base::Value::Dict& report_body) override {
-    // This field contains a string encoding seconds from the UNIX epoch. It
-    // needs to be adjusted relative to the simulator's origin time in order
-    // for test output to be consistent.
-    if (std::string* str = report_body.FindString("scheduled_report_time")) {
-      if (int64_t seconds; base::StringToInt64(*str, &seconds)) {
-        *str = base::NumberToString(seconds -
-                                    TimeOffset(time_origin_).InSeconds());
-      }
-    }
+    AdjustTime(report_body, "scheduled_report_time");
   }
 
   void AdjustAggregatable(base::Value::Dict& report_body) override {
@@ -135,22 +127,19 @@ class Adjuster : public ReportBodyAdjuster {
     std::string* shared_info = report_body.FindString("shared_info");
     CHECK(shared_info);
 
-    std::optional<base::Value> shared_info_value =
-        base::JSONReader::Read(*shared_info, base::JSON_PARSE_RFC);
-    CHECK(shared_info_value);
+    std::optional<base::Value::Dict> shared_info_dict =
+        base::JSONReader::ReadDict(*shared_info, base::JSON_PARSE_RFC);
+    CHECK(shared_info_dict);
 
-    std::string* scheduled_report_time =
-        shared_info_value->GetDict().FindString("scheduled_report_time");
-    CHECK(scheduled_report_time);
+    AdjustTime(*shared_info_dict, "scheduled_report_time");
 
-    int64_t seconds;
-    CHECK(base::StringToInt64(*scheduled_report_time, &seconds));
-
-    *scheduled_report_time =
-        base::NumberToString(seconds - TimeOffset(time_origin_).InSeconds());
+    // When source registration time is excluded from the report, its value is
+    // set to "0".
+    AdjustTime(*shared_info_dict, "source_registration_time",
+               /*skip_adjust_value=*/"0");
 
     std::string adjusted_shared_info;
-    base::JSONWriter::Write(*shared_info_value, &adjusted_shared_info);
+    base::JSONWriter::Write(*shared_info_dict, &adjusted_shared_info);
 
     // The payloads were encrypted with the original shared info, therefore
     // need to be re-encrypted with the adjusted shared info.
@@ -181,6 +170,21 @@ class Adjuster : public ReportBodyAdjuster {
     }
 
     *shared_info = std::move(adjusted_shared_info);
+  }
+
+  // Adjust the field that contains a string encoding seconds from the UNIX
+  // epoch. It needs to be adjusted relative to the simulator's origin time in
+  // order for test output to be consistent.
+  void AdjustTime(base::Value::Dict& dict,
+                  std::string_view key,
+                  std::string_view skip_adjust_value = "") {
+    if (std::string* str = dict.FindString(key);
+        str && *str != skip_adjust_value) {
+      if (int64_t seconds; base::StringToInt64(*str, &seconds)) {
+        *str = base::NumberToString(seconds -
+                                    TimeOffset(time_origin_).InSeconds());
+      }
+    }
   }
 
   const base::Time time_origin_;
@@ -448,24 +452,28 @@ RunAttributionInteropSimulation(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
 
-  // Ensure that `time_origin` has a whole number of seconds to make
-  // `AdjustEventLevelBody()` time calculations robust against
-  // sub-second-precision report times, which otherwise cannot be recovered
-  // because the `scheduled_report_time` field has second precision.
+  // Ensure that `time_origin` has a whole number of days to make
+  // `AdjustEventLevelBody()` and `AdjustAggregatableReportSharedInfo()` time
+  // calculations robust against sub-second-precision report times and rounding,
+  // which otherwise cannot be recovered because the `scheduled_report_time`
+  // field has second precision and `source_registration_time` is rounded to
+  // whole day.
   {
-    const base::Time with_millis = base::Time::Now();
+    const base::Time non_whole_day = base::Time::Now();
 
     base::Time::Exploded exploded;
-    with_millis.UTCExplode(&exploded);
+    non_whole_day.UTCExplode(&exploded);
     DCHECK(exploded.HasValidValues());
     exploded.millisecond = 0;
+    exploded.second = 0;
+    exploded.minute = 0;
+    exploded.hour = 0;
 
-    base::Time without_millis;
-    bool ok = base::Time::FromUTCExploded(exploded, &without_millis);
+    base::Time whole_day;
+    bool ok = base::Time::FromUTCExploded(exploded, &whole_day);
     DCHECK(ok);
 
-    task_environment.FastForwardBy((without_millis + base::Seconds(1)) -
-                                   with_millis);
+    task_environment.FastForwardBy((whole_day + base::Days(1)) - non_whole_day);
   }
 
   const base::Time time_origin = base::Time::Now();
