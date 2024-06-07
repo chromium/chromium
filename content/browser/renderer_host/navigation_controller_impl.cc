@@ -80,6 +80,7 @@
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/trace_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -1675,7 +1676,9 @@ bool NavigationControllerImpl::RendererDidNavigate(
                           details->did_replace_entry);
     active_entry->back_forward_cache_metrics()->DidCommitNavigation(
         navigation_request,
-        back_forward_cache_.IsAllowed(navigation_request->GetURL()));
+        IsBackForwardCacheEnabled() &&
+            rfh->delegate()->IsBackForwardCacheSupported() &&
+            back_forward_cache_.IsAllowed(navigation_request->GetURL()));
   }
 
   // Grab the corresponding FrameNavigationEntry for a few updates, but only if

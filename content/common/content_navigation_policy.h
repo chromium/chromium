@@ -29,7 +29,13 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial);
 
 namespace content {
 
+// Returns whether the BackForwardCache is enabled or not according to the
+// feature flags. Note that even if this returns true, the embedder might still
+// disable BackForwardCache by returning false in
+// `WebContentsDelegate::IsBackForwardCacheSupported()`, which this function
+// does not consider.
 CONTENT_EXPORT bool IsBackForwardCacheEnabled();
+
 CONTENT_EXPORT bool IsBackForwardCacheDisabledByCommandLine();
 CONTENT_EXPORT bool DeviceHasEnoughMemoryForBackForwardCache();
 

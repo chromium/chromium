@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/types/expected.h"
-#include "content/browser/back_forward_cache_browsertest.h"
-
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -12,8 +9,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -42,6 +41,7 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/echo.test-mojom.h"
 #include "media/base/media_switches.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -3295,6 +3295,195 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(HistoryGoToOffset(web_contents(), -1));
   ExpectNotRestored({NotRestoredReason::kBackForwardCacheDisabledForDelegate},
                     {}, {}, {}, {}, FROM_HERE);
+}
+
+// Tests what metrics are recorded when the BackForwardCache feature is
+// disabled.
+class BackForwardCacheDisabledBrowserTest : public ContentBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(features::kBackForwardCache);
+    ContentBrowserTest::SetUp();
+  }
+
+  void ExpectHistoryNavigationOutcomeCount(std::string histogram_suffix,
+                                           int all_sites_count,
+                                           int feature_enabled_count) {
+    histogram_tester_.ExpectTotalCount(
+        "BackForwardCache.AllSites.HistoryNavigationOutcome" + histogram_suffix,
+        all_sites_count);
+    histogram_tester_.ExpectTotalCount(
+        "BackForwardCache.HistoryNavigationOutcome" + histogram_suffix,
+        feature_enabled_count);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledBrowserTest,
+                       MetricsOnHistoryNavigation) {
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title2.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (!rfh_a.IsRenderFrameDeleted()) {
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  }
+
+  // 3) Confirm the metrics recorded when going back to A, which should not be
+  // restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+
+  ExpectHistoryNavigationOutcomeCount("", /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".NotRestoredReason",
+                                      /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BlocklistedFeature",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".DisabledForRenderFrameHostReason2",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".DisallowActivationReason",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BrowsingInstanceNotSwappedReason",
+
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledBrowserTest,
+                       MetricsOnHistoryNavigation_SameSite) {
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.test", "/title2.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // 2) Navigate to A2.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
+  if (!rfh_a.IsRenderFrameDeleted()) {
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  }
+
+  // 3) Confirm the metrics recorded when going back to A, which should not be
+  // restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+
+  ExpectHistoryNavigationOutcomeCount("", /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".NotRestoredReason",
+                                      /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BlocklistedFeature",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".DisabledForRenderFrameHostReason2",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BrowsingInstanceNotSwappedReason",
+                                      /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledBrowserTest,
+                       MetricsOnHistoryNavigation_BlocklistedFeature) {
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title2.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (!rfh_a.IsRenderFrameDeleted()) {
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  }
+
+  // 3) Confirm the metrics recorded when going back to A, which should not be
+  // restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+
+  ExpectHistoryNavigationOutcomeCount("", /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  // The page is not BFCached because the feature is enabled and the blocklisted
+  // feature.
+  ExpectHistoryNavigationOutcomeCount(".NotRestoredReason",
+                                      /*all_sites_count=*/2,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BlocklistedFeature",
+                                      /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".DisabledForRenderFrameHostReason2",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BrowsingInstanceNotSwappedReason",
+
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledBrowserTest,
+                       MetricsOnHistoryNavigation_DisabledForRFH) {
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title2.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_a->DisableBackForwardCache(RenderFrameHostDisabledForTestingReason());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (!rfh_a.IsRenderFrameDeleted()) {
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  }
+
+  // 3) Confirm the metrics recorded when going back to A, which should not be
+  // restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+
+  ExpectHistoryNavigationOutcomeCount("", /*all_sites_count=*/1,
+                                      /*feature_enabled_count=*/0);
+  // The page is not BFCached because the feature is enabled and the RFH
+  // disabling call.
+  ExpectHistoryNavigationOutcomeCount(".NotRestoredReason",
+                                      /*all_sites_count=*/2,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BlocklistedFeature",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  // Note: The "all sites" version doesn't exist for the
+  // `DisabledForRenderFrameHostReason2` histogram, so we expect it to be 0 too.
+  ExpectHistoryNavigationOutcomeCount(".DisabledForRenderFrameHostReason2",
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(".BrowsingInstanceNotSwappedReason",
+
+                                      /*all_sites_count=*/0,
+                                      /*feature_enabled_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NoThrottlesOnCacheRestore) {

@@ -109,8 +109,10 @@ class BackForwardCacheMetricsTestMatcher {
  private:
   // Adds a new outcome to the set of expected outcomes (restored or not) and
   // tests that it occurred.
-  void ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
-                     base::Location location);
+  void ExpectOutcome(
+      BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
+      std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
+      base::Location location);
 
   void ExpectReasons(
       std::vector<BackForwardCacheMetrics::NotRestoredReason> not_restored,
