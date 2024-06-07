@@ -184,9 +184,24 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   [[nodiscard]] virtual bool BubbleScrollEvent(
       const blink::WebGestureEvent& event);
 
+  // These values are written to logs. Do not renumber or delete existing items;
+  // add new entries to the end of the list.
+  enum class RootViewFocusState {
+    // RootView is NULL.
+    kNullView = 0,
+    // Root View is already focused.
+    kFocused = 1,
+    // Root View is not focused at TouchStart. Calls
+    // RenderWidgetHostViewChildFrame::Focus() to focus it.
+    kNotFocused = 2,
+    kMaxValue = kNotFocused
+  };
+
   // Determines whether the root RenderWidgetHostView (and thus the current
-  // page) has focus.
-  bool HasFocus();
+  // page) has focus. We need a tri-state enum as a return variable to
+  // differentiate between the cases where root view is NULL and when it's
+  // actually focused/unfocused. No behaviour change expected in focus handling.
+  RootViewFocusState HasFocus();
 
   // Cause the root RenderWidgetHostView to become focused.
   void FocusRootView();

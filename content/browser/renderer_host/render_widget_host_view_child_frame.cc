@@ -185,14 +185,21 @@ void RenderWidgetHostViewChildFrame::SetBounds(const gfx::Rect& rect) {
 }
 
 void RenderWidgetHostViewChildFrame::Focus() {
-  if (frame_connector_ && !frame_connector_->HasFocus())
+  if (!frame_connector_) {
+    return;
+  }
+  if (frame_connector_->HasFocus() ==
+      CrossProcessFrameConnector::RootViewFocusState::kNotFocused) {
     return frame_connector_->FocusRootView();
+  }
 }
 
 bool RenderWidgetHostViewChildFrame::HasFocus() {
-  if (frame_connector_)
-    return frame_connector_->HasFocus();
-  return false;
+  if (!frame_connector_) {
+    return false;
+  }
+  return frame_connector_->HasFocus() ==
+         CrossProcessFrameConnector::RootViewFocusState::kFocused;
 }
 
 bool RenderWidgetHostViewChildFrame::IsSurfaceAvailableForCopy() {
@@ -785,14 +792,24 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableForIOv2For(
 
 void RenderWidgetHostViewChildFrame::PreProcessTouchEvent(
     const blink::WebTouchEvent& event) {
-  if (event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
-    if (frame_connector_ && !frame_connector_->HasFocus()) {
+  if (event.GetType() != blink::WebInputEvent::Type::kTouchStart) {
+    return;
+  }
+
+  if (!frame_connector_) {
+    return;
+  }
+
+  CrossProcessFrameConnector::RootViewFocusState state =
+      frame_connector_->HasFocus();
 #if BUILDFLAG(IS_ANDROID)
-      UMA_HISTOGRAM_BOOLEAN(
-          "Android.FocusChanged.RenderWidgetHostViewChildFrame", true);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Android.FocusChanged.RenderWidgetHostViewChildFrame.RootViewFocusState",
+      state);
 #endif
-      Focus();
-    }
+
+  if (state == CrossProcessFrameConnector::RootViewFocusState::kNotFocused) {
+    Focus();
   }
 }
 

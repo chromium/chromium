@@ -303,11 +303,14 @@ bool CrossProcessFrameConnector::BubbleScrollEvent(
                                          resent_gesture_event);
 }
 
-bool CrossProcessFrameConnector::HasFocus() {
+CrossProcessFrameConnector::RootViewFocusState
+CrossProcessFrameConnector::HasFocus() {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
-  if (root_view)
-    return root_view->HasFocus();
-  return false;
+  if (!root_view) {
+    return RootViewFocusState::kNullView;
+  }
+  return root_view->HasFocus() ? RootViewFocusState::kFocused
+                               : RootViewFocusState::kNotFocused;
 }
 
 void CrossProcessFrameConnector::FocusRootView() {

@@ -1241,6 +1241,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Promo was dismissed via swipe down"/>
 </enum>
 
+<enum name="RootViewFocusState">
+  <int value="0" label="Root View is NULL"/>
+  <int value="1" label="Root View was Focused"/>
+  <int value="2" label="Root View was Not Focused (calls Focus())"/>
+</enum>
+
 <enum name="SearchActivityIntentOrigin">
   <int value="0" label="Unknown / External"/>
   <int value="1" label="Search Widget"/>
