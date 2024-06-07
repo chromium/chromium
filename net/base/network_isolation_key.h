@@ -254,6 +254,9 @@ class NET_EXPORT NetworkIsolationKey {
   std::optional<base::UnguessableToken> nonce_;
 };
 
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const NetworkIsolationKey& nak);
+
 }  // namespace net
 
 #endif  // NET_BASE_NETWORK_ISOLATION_KEY_H_

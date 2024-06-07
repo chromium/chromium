@@ -183,4 +183,10 @@ bool NetworkIsolationKey::IsOpaque() const {
   return false;
 }
 
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const NetworkIsolationKey& nik) {
+  os << nik.ToDebugString();
+  return os;
+}
+
 }  // namespace net
