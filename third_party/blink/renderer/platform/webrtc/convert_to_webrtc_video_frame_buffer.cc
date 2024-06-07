@@ -454,7 +454,7 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
   // The bind ensures that we keep a reference to the underlying buffer.
   video_frame->AddDestructionObserver(
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          [](const scoped_refptr<rtc::RefCountInterface>&) {},
+          [](const scoped_refptr<webrtc::RefCountInterface>&) {},
           scoped_refptr<webrtc::VideoFrameBuffer>(buffer.get()))));
   return video_frame;
 }
