@@ -17,6 +17,8 @@ namespace segmentation_platform {
 namespace {
 using proto::SegmentId;
 
+// Label input size
+constexpr int kLabelInputSize = 3;
 // Default parameters for contextual page actions model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
@@ -43,9 +45,11 @@ constexpr std::array<MetadataWriter::UMAFeature, 6> kShareUMAFeatures = {
         ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
 };
 
-constexpr std::array<const char*, 2> kContextualPageActionModelLabels = {
-    kContextualPageActionModelLabelPriceTracking,
-    kContextualPageActionModelLabelReaderMode};
+constexpr std::array<const char*, kLabelInputSize>
+    kContextualPageActionModelLabels = {
+        kContextualPageActionModelLabelPriceTracking,
+        kContextualPageActionModelLabelReaderMode,
+        kContextualPageActionModelLabelPriceInsights};
 
 }  // namespace
 
@@ -80,6 +84,15 @@ ContextualPageActionsModel::GetModelConfig() {
   (*reader_mode_input->mutable_additional_args())["name"] =
       kContextualPageActionModelInputReaderMode;
 
+  // Add price insights custom input.
+  proto::CustomInput* price_insights_input =
+      writer.AddCustomInput(MetadataWriter::CustomInput{
+          .tensor_length = 1,
+          .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+          .name = "price_insights_input"});
+  (*price_insights_input->mutable_additional_args())["name"] =
+      kContextualPageActionModelInputPriceInsights;
+
   if (base::FeatureList::IsEnabled(features::kContextualPageActionShareModel)) {
     // Add share related input features.
     writer.AddUmaFeatures(kShareUMAFeatures.data(), kShareUMAFeatures.size(),
@@ -110,11 +123,10 @@ ContextualPageActionsModel::GetModelConfig() {
 void ContextualPageActionsModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
-  size_t custom_input_size = 2;
   size_t expected_input_size =
       base::FeatureList::IsEnabled(features::kContextualPageActionShareModel)
-          ? kShareUMAFeatures.size() + custom_input_size
-          : custom_input_size;
+          ? kShareUMAFeatures.size() + kLabelInputSize
+          : kLabelInputSize;
 
   // Invalid inputs.
   if (inputs.size() != expected_input_size) {
@@ -126,11 +138,13 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   // TODO(haileywang): Use input[2] to input[7] to show share button.
   bool can_track_price = inputs[0];
   bool has_reader_mode = inputs[1];
+  bool has_price_insights = inputs[2];
 
   // Create response.
-  ModelProvider::Response response(2, 0);
+  ModelProvider::Response response(kLabelInputSize, 0);
   response[0] = can_track_price;
   response[1] = has_reader_mode;
+  response[2] = has_price_insights;
   // TODO(crbug.com/40249852): Set a classifier threshold.
 
   // TODO(shaktisahu): This class needs some rethinking to correctly associate

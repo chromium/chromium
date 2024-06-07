@@ -107,6 +107,9 @@ public class SegmentationPlatformServiceFactoryTest {
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
                                 ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
                         inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
 
                         segmentationPlatformService.getClassificationResult(

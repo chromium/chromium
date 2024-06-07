@@ -90,6 +90,7 @@ public class ContextualPageActionControllerUnitTest {
                                     // Supply all signals and notify controller.
                                     signalAccumulator.setHasReaderMode(true);
                                     signalAccumulator.setHasPriceTracking(true);
+                                    signalAccumulator.setHasPriceInsights(true);
                                     signalAccumulator.notifySignalAvailable();
                                 });
                     }

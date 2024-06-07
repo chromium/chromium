@@ -22,6 +22,7 @@ public class SignalAccumulator {
     // TODO(crbug.com/40242243): Introduce a key set and directly populate InputContext.
     private Boolean mHasPriceTracking;
     private Boolean mHasReaderMode;
+    private Boolean mHasPriceInsights;
 
     // Whether the backends didn't respond within the time limit. Any further response from the
     // backends will be ignored.
@@ -98,6 +99,18 @@ public class SignalAccumulator {
         mHasReaderMode = hasReaderMode;
     }
 
+    /**
+     * @return Whether the page is price insights eligible. Default is false.
+     */
+    public Boolean hasPriceInsights() {
+        return mHasPriceInsights == null ? false : mHasPriceInsights;
+    }
+
+    /** Called to set whether the page is price insights eligible. */
+    public void setHasPriceInsights(Boolean hasPriceInsights) {
+        mHasPriceInsights = hasPriceInsights;
+    }
+
     /** Central method invoked whenever a backend responds or time out happens. */
     private void proceedToNextStepIfReady() {
         boolean isReady = mHasTimedOut || hasAllSignals();
@@ -107,6 +120,6 @@ public class SignalAccumulator {
     }
 
     private boolean hasAllSignals() {
-        return mHasPriceTracking != null && mHasReaderMode != null;
+        return mHasPriceTracking != null && mHasReaderMode != null && mHasPriceInsights != null;
     }
 }

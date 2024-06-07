@@ -125,6 +125,9 @@ public class ContextualPageActionController {
         if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) {
             mActionProviders.add(new ReaderModeActionProvider());
         }
+        if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
+            mActionProviders.add(new PriceInsightsActionProvider());
+        }
     }
 
     /** Called on destroy. */
@@ -167,6 +170,9 @@ public class ContextualPageActionController {
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
                 ProcessedValue.fromFloat(signalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
+        inputContext.addEntry(
+                Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
+                ProcessedValue.fromFloat(signalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
 
         ContextualPageActionControllerJni.get()

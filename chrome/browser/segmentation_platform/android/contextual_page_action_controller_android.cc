@@ -36,6 +36,9 @@ AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
   } else if (label ==
              segmentation_platform::kContextualPageActionModelLabelReaderMode) {
     action = AdaptiveToolbarButtonVariant::kReaderMode;
+  } else if (label == segmentation_platform::
+                          kContextualPageActionModelLabelPriceInsights) {
+    action = AdaptiveToolbarButtonVariant::kPriceInsights;
   }
   return action;
 }

@@ -509,6 +509,9 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
   input_context->metadata_args.emplace(
       segmentation_platform::kContextualPageActionModelInputReaderMode,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputPriceInsights,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
 
   ExpectGetClassificationResult(
       kContextualPageActionsKey, prediction_options, input_context,

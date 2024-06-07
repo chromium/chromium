@@ -94,6 +94,7 @@ public class AdaptiveToolbarFeatures {
                 return false;
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
                 return true;
         }
         return false;
@@ -149,7 +150,7 @@ public class AdaptiveToolbarFeatures {
 
     /**
      * @return The amount of time the action chip should remain expanded in milliseconds. Default is
-     *         3 seconds.
+     *     3 seconds.
      */
     public static int getContextualPageActionDelayMs(
             @AdaptiveToolbarButtonVariant int buttonVariant) {
@@ -210,12 +211,19 @@ public class AdaptiveToolbarFeatures {
     }
 
     private static boolean isAnyContextualPageActionButtonEnabled() {
-        return isPriceTrackingPageActionEnabled() || isReaderModePageActionEnabled();
+        return isPriceTrackingPageActionEnabled()
+                || isReaderModePageActionEnabled()
+                || isPriceInsightsPageActionEnabled();
     }
 
     public static boolean isPriceTrackingPageActionEnabled() {
         // Price tracking is now default enabled, only depending on the global CPA flag.
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
+    }
+
+    public static boolean isPriceInsightsPageActionEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_INSIGHTS);
     }
 
     public static boolean isReaderModePageActionEnabled() {
