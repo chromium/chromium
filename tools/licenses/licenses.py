@@ -642,7 +642,10 @@ def ParseDir(path,
     return [], []
 
   # gclient creates empty directories for conditionally downloaded submodules.
-  if not os.listdir(os.path.join(root, path)):
+  try:
+    if not os.listdir(os.path.join(root, path)):
+      return [], []
+  except FileNotFoundError: #This gets thrown if directory is missing instead of empty.
     return [], []
 
   # Get the metadata values, from
