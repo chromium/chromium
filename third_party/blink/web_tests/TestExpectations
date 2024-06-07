@@ -7521,3 +7521,6 @@ crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.
 crbug.com/325323464 [ Mac13 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/325323464 [ Mac14 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/325323464 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass Timeout ]
+
+# Gardener 2024-06-07
+crbug.com/325323464 [ Mac12 ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure ]
