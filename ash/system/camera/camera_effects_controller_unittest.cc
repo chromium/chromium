@@ -861,7 +861,8 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageInfo) {
 TEST_F(CameraEffectsControllerTest, NotEligibleForSeaPen) {
   // Set is_eligible_for_background_replace to false so that the image button
   // will not be constructed.
-  GetSessionControllerClient()->set_is_eligible_for_background_replace(false);
+  GetSessionControllerClient()->set_is_eligible_for_background_replace(
+      {false, false});
   SimulateUserLogin(kTestAccount);
 
   // Update media status to make the video conference tray visible.

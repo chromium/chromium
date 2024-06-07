@@ -6,6 +6,8 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/style/typography.h"
@@ -16,8 +18,10 @@
 #include "ash/system/video_conference/resources/grit/vc_resources.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -31,6 +35,13 @@ namespace ash::video_conference {
 
 namespace {
 constexpr int kIconSize = 20;
+constexpr float kVcDisabledButtonOpacity = 0.38f;
+
+bool IsVcBackgroundAllowedByEnterprise() {
+  auto* controller = Shell::Get()->session_controller();
+  return std::get<1>(
+      controller->IsEligibleForSeaPen(controller->GetActiveAccountId()));
+}
 
 // Returns a gradient lottie animation defined in the resource file for the
 // `Image` button.
@@ -244,9 +255,12 @@ SetValueEffectSlider::SetValueEffectSlider(
     const VcEffectState* state = effect->GetState(/*index=*/i);
     DCHECK(state->state_value());
 
+    const bool is_image_button =
+        state->view_id() ==
+        video_conference::BubbleViewID::kBackgroundBlurImageButton;
+
     TabSliderButton* slider_button;
-    if (state->state_value() ==
-        CameraEffectsController::BackgroundBlurPrefValue::kImage) {
+    if (is_image_button && IsVcBackgroundAllowedByEnterprise()) {
       slider_button = tab_slider->AddButton(
           std::make_unique<AnimatedImageButton>(controller, effect, state));
     } else {
@@ -263,6 +277,16 @@ SetValueEffectSlider::SetValueEffectSlider(
                   },
                   base::Unretained(effect), base::Unretained(state)),
               state->icon(), state->label_text()));
+    }
+
+    if (is_image_button && !IsVcBackgroundAllowedByEnterprise()) {
+      // Disable button.
+      slider_button->SetState(views::Button::ButtonState::STATE_DISABLED);
+      // Add tooltip to indicate why it is disabled.
+      slider_button->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_DISABLED_TOOLTIP));
+      // Set opacity.
+      slider_button->layer()->SetOpacity(kVcDisabledButtonOpacity);
     }
 
     slider_button->SetSelected(state->state_value().value() == current_state);

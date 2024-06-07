@@ -570,7 +570,8 @@ void CameraEffectsController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   is_eligible_for_background_replace_ =
       features::IsVcBackgroundReplaceEnabled() &&
-      Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id);
+      std::get<0>(
+          Shell::Get()->session_controller()->IsEligibleForSeaPen(account_id));
 
   const base::FilePath profile_path =
       Shell::Get()->session_controller()->GetProfilePath(account_id);

@@ -1776,6 +1776,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE" desc="Text for background blur 'Image' setting, in the VC bubble.">
         Image
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_DISABLED_TOOLTIP" desc="The tooltip text when the Image button is disabled.">
+        Managed by your administrator
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE_LIST_ITEM_DESCRIPTION" desc="Text for description of background image buttons in the VC bubble. Only for accessibility purpose.">
        Background
       </message>

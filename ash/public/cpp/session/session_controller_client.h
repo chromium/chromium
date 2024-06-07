@@ -56,11 +56,13 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Returns the profile path for `account_id` or empty if one does not exist.
   virtual base::FilePath GetProfilePath(const AccountId& account_id) = 0;
 
-  // Returns whether `account_id` is eligible for SeaPen features.
+  // Returns a tuple of whether
+  // <IsVcBackgroundSupported, IsVcBackgroundAllowedByEnterprise>.
   // TODO(b/333767964): this is only a temporary solution. Having a function
   // here for each project does not sound ideal; this should be replaced with
   // more general approach.
-  virtual bool IsEligibleForSeaPen(const AccountId& account_id) = 0;
+  virtual std::tuple<bool, bool> IsEligibleForSeaPen(
+      const AccountId& account_id) = 0;
 
   // Return the number of users that have previously logged in on the device.
   // Returns nullopt in the event where we cannot query the number of existing

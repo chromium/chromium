@@ -328,7 +328,7 @@ base::FilePath TestSessionControllerClient::GetProfilePath(
   return base::FilePath("/profile/path").Append(account_id.GetUserEmail());
 }
 
-bool TestSessionControllerClient::IsEligibleForSeaPen(
+std::tuple<bool, bool> TestSessionControllerClient::IsEligibleForSeaPen(
     const AccountId& account_id) {
   return is_eligible_for_background_replace_;
 }

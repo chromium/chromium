@@ -147,7 +147,8 @@ class TestSessionControllerClient : public SessionControllerClient {
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   base::FilePath GetProfilePath(const AccountId& account_id) override;
-  bool IsEligibleForSeaPen(const AccountId& account_id) override;
+  std::tuple<bool, bool> IsEligibleForSeaPen(
+      const AccountId& account_id) override;
   std::optional<int> GetExistingUsersCount() const override;
 
   // By default `LockScreen()` only changes the session state but no UI views
@@ -158,7 +159,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   }
 
   void set_is_eligible_for_background_replace(
-      bool is_eligible_for_background_replace) {
+      const std::tuple<bool, bool>& is_eligible_for_background_replace) {
     is_eligible_for_background_replace_ = is_eligible_for_background_replace;
   }
 
@@ -185,7 +186,7 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   bool is_enterprise_managed_ = false;
 
-  bool is_eligible_for_background_replace_ = true;
+  std::tuple<bool, bool> is_eligible_for_background_replace_ = {true, true};
 
   int existing_users_count_ = 0;
 
