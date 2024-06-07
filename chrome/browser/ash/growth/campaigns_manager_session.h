@@ -13,6 +13,10 @@
 #include "ui/aura/window.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}
+
 class Profile;
 
 // Campaigns Manager session to store camapigns manager specific state, and to
@@ -36,8 +40,7 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  // Triggers campaigns when url navigation happens on web browser.
-  void PrimaryPageChanged(const GURL& url);
+  void PrimaryPageChanged(const content::WebContents* web_contents);
   aura::Window* GetOpenedWindow() { return opened_window_; }
 
   void SetProfileForTesting(Profile* profile);

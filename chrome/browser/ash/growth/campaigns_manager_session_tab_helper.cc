@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 
 CampaignsManagerSessionTabHelper::~CampaignsManagerSessionTabHelper() = default;
 
@@ -20,7 +19,7 @@ void CampaignsManagerSessionTabHelper::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
-  session->PrimaryPageChanged(web_contents()->GetLastCommittedURL());
+  session->PrimaryPageChanged(web_contents());
 }
 
 CampaignsManagerSessionTabHelper::CampaignsManagerSessionTabHelper(

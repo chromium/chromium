@@ -33,6 +33,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -171,9 +172,10 @@ void MaybeTriggerCampaignsWhenCampaignsLoaded() {
 }
 
 // The app_id is optional and only required if the browser type is app.
-const GURL FindActiveBrowserUrl(const Profile* profile,
-                                Browser::Type browser_type,
-                                const webapps::AppId& app_id = std::string()) {
+content::WebContents* FindActiveWebContent(
+    const Profile* profile,
+    Browser::Type browser_type,
+    const webapps::AppId& app_id = std::string()) {
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
       continue;
@@ -202,17 +204,22 @@ const GURL FindActiveBrowserUrl(const Profile* profile,
       continue;
     }
 
-    return active_web_contents->GetURL();
+    return active_web_contents;
   }
-  return GURL::EmptyGURL();
+  return nullptr;
 }
 
 const GURL FindActiveWebAppUrl(Profile* profile, const webapps::AppId& app_id) {
-  return FindActiveBrowserUrl(profile, Browser::TYPE_APP, app_id);
+  auto* active_web_contents =
+      FindActiveWebContent(profile, Browser::TYPE_APP, app_id);
+  if (!active_web_contents) {
+    return GURL::EmptyGURL();
+  }
+  return active_web_contents->GetURL();
 }
 
-const GURL FindActiveTabUrl(Profile* profile) {
-  return FindActiveBrowserUrl(profile, Browser::TYPE_NORMAL);
+content::WebContents* FindActiveTabWebContent(Profile* profile) {
+  return FindActiveWebContent(profile, Browser::TYPE_NORMAL);
 }
 
 std::optional<apps::AppType> GetAppType(const std::string& app_id) {
@@ -380,7 +387,8 @@ void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
   }
 }
 
-void CampaignsManagerSession::PrimaryPageChanged(const GURL& url) {
+void CampaignsManagerSession::PrimaryPageChanged(
+    const content::WebContents* web_contents) {
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
@@ -389,16 +397,20 @@ void CampaignsManagerSession::PrimaryPageChanged(const GURL& url) {
     return;
   }
 
-  // If the source of page change is different from active tab url, skip showing
-  // the campaign. This could happen when the user navigates to url_1, and while
-  // it is loading switches to another tab with url_2. The url_1 nudge will not
-  // be shown in this case.
-  auto active_tab_url = FindActiveTabUrl(GetProfile());
-  if (!active_tab_url.EqualsIgnoringRef(url)) {
+  // Skip triggering campaign if this Primary Page Changed event happens on an
+  // inactive tab (i.e. `web_contents` is not the active tab `web_contents`).
+  // For example:
+  // 1. Load `url1` in "tab 1".
+  // 2. While `url1` is loading, open a "tab 2" and load the same URL `url1`
+  // 3. The nudge triggered twice - one by the inactive "tab 1" and one by the
+  // active "tab 2".
+  auto* active_tab_web_contents = FindActiveTabWebContent(GetProfile());
+  if (active_tab_web_contents != web_contents) {
     return;
   }
 
-  campaigns_manager->SetActiveUrl(active_tab_url);
+  auto url = active_tab_web_contents->GetURL();
+  campaigns_manager->SetActiveUrl(url);
   MaybeTriggerCampaignsWhenAppOpened();
 }
 
