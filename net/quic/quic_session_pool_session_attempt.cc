@@ -156,12 +156,14 @@ int QuicSessionPool::SessionAttempt::DoCreateSession() {
     if (http_user_agent_settings_) {
       user_agent = http_user_agent_settings_->GetUserAgent();
     }
+    // Proxied connections are not on any specific network.
+    network_ = handles::kInvalidNetworkHandle;
     rv = pool()->CreateSessionOnProxyStream(
         base::BindOnce(&SessionAttempt::OnCreateSessionComplete,
                        weak_ptr_factory_.GetWeakPtr()),
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         std::move(local_endpoint_), std::move(ip_endpoint_),
-        std::move(proxy_stream_), user_agent, net_log(), &session_);
+        std::move(proxy_stream_), user_agent, net_log(), &session_, &network_);
   } else {
     if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
       return pool()->CreateSessionAsync(

@@ -187,6 +187,10 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
       std::string authority,
       std::string path,
       bool fin);
+  std::string ConstructClientH3DatagramFrame(
+      uint64_t quarter_stream_id,
+      uint64_t context_id,
+      std::unique_ptr<quic::QuicEncryptedPacket> inner);
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientH3DatagramPacket(
       uint64_t packet_number,
       uint64_t quarter_stream_id,

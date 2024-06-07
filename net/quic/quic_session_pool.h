@@ -567,7 +567,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
       std::string user_agent,
       const NetLogWithSource& net_log,
-      raw_ptr<QuicChromiumClientSession>* session);
+      raw_ptr<QuicChromiumClientSession>* session,
+      handles::NetworkHandle* network);
   void FinishCreateSession(CompletionOnceCallback callback,
                            QuicSessionAliasKey key,
                            quic::ParsedQuicVersion quic_version,

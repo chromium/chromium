@@ -1332,7 +1332,8 @@ int QuicSessionPool::CreateSessionOnProxyStream(
     std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
     std::string user_agent,
     const NetLogWithSource& net_log,
-    raw_ptr<QuicChromiumClientSession>* session) {
+    raw_ptr<QuicChromiumClientSession>* session,
+    handles::NetworkHandle* network) {
   // Use the host and port from the proxy server along with the example URI
   // template in https://datatracker.ietf.org/doc/html/rfc9298#section-2.
   const ProxyChain& proxy_chain = key.session_key().proxy_chain();
@@ -1354,10 +1355,10 @@ int QuicSessionPool::CreateSessionOnProxyStream(
 
   // No host resolution took place, so pass an empty metadata,
   // pretend resolution started and ended right now, and pass an
-  // invalid network handle.
+  // invalid network handle. Connections on an invalid network will
+  // not be migrated due to network changes.
   ConnectionEndpointMetadata metadata;
   auto dns_resolution_time = base::TimeTicks::Now();
-  auto network = handles::kInvalidNetworkHandle;
 
   // Maximum packet length for the session inside this stream is limited
   // by the largest message payload allowed, accounting for the quarter-stream
@@ -1381,7 +1382,7 @@ int QuicSessionPool::CreateSessionOnProxyStream(
       std::move(callback), std::move(key), quic_version, cert_verify_flags,
       require_confirmation, proxy_peer_address, std::move(metadata),
       dns_resolution_time, dns_resolution_time, session_max_packet_length,
-      net_log, session, &network, std::move(socket));
+      net_log, session, network, std::move(socket));
 
   return socket_ptr->ConnectViaStream(
       std::move(local_address), std::move(proxy_peer_address),

@@ -384,9 +384,7 @@ QuicSessionPoolTestBase::ConstructConnectUdpRequestPacket(
   return rv;
 }
 
-std::unique_ptr<quic::QuicEncryptedPacket>
-QuicSessionPoolTestBase::ConstructClientH3DatagramPacket(
-    uint64_t packet_number,
+std::string QuicSessionPoolTestBase::ConstructClientH3DatagramFrame(
     uint64_t quarter_stream_id,
     uint64_t context_id,
     std::unique_ptr<quic::QuicEncryptedPacket> inner) {
@@ -398,6 +396,17 @@ QuicSessionPoolTestBase::ConstructClientH3DatagramPacket(
   CHECK(writer.WriteVarInt62(context_id));
   CHECK(writer.WriteBytes(inner->data(), inner->length()));
   data.resize(writer.length());
+  return data;
+}
+
+std::unique_ptr<quic::QuicEncryptedPacket>
+QuicSessionPoolTestBase::ConstructClientH3DatagramPacket(
+    uint64_t packet_number,
+    uint64_t quarter_stream_id,
+    uint64_t context_id,
+    std::unique_ptr<quic::QuicEncryptedPacket> inner) {
+  std::string data = ConstructClientH3DatagramFrame(
+      quarter_stream_id, context_id, std::move(inner));
   return client_maker_.MakeDatagramPacket(packet_number, data);
 }
 

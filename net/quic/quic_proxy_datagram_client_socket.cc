@@ -202,7 +202,7 @@ void QuicProxyDatagramClientSocket::OnUnknownCapsule(
     quic::QuicStreamId stream_id,
     const quiche::UnknownCapsule& capsule) {}
 
-// TODO(crbug.com/41497362) Implement method.
+// Proxied connections are not on any specific network.
 handles::NetworkHandle QuicProxyDatagramClientSocket::GetBoundNetwork() const {
   return handles::kInvalidNetworkHandle;
 }
