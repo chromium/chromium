@@ -270,7 +270,8 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
   }
 
   // Provided to wgpu::Device as device lost callback.
-  static void LogDeviceLost(WGPUDeviceLostReason reason,
+  static void LogDeviceLost(WGPUDevice const* device,
+                            WGPUDeviceLostReason reason,
                             char const* message,
                             void* userdata) {
     if (reason != WGPUDeviceLostReason_Destroyed) {
@@ -390,6 +391,12 @@ bool DawnSharedState::Initialize(
   cache_desc.nextInChain = &toggles_desc;
 
   wgpu::DeviceDescriptor descriptor;
+  descriptor.uncapturedErrorCallbackInfo = {
+      .callback = &LogError, .userdata = static_cast<void*>(this)};
+  descriptor.deviceLostCallbackInfo = {
+      .mode = wgpu::CallbackMode::AllowProcessEvents,
+      .callback = &LogDeviceLost,
+      .userdata = static_cast<void*>(this)};
   descriptor.nextInChain = &cache_desc;
 
   std::vector<wgpu::FeatureName> features = {
@@ -583,10 +590,6 @@ bool DawnSharedState::Initialize(
     return false;
   }
 
-  device.SetUncapturedErrorCallback(&DawnSharedState::LogError,
-                                    static_cast<void*>(this));
-  device.SetDeviceLostCallback(&DawnSharedState::LogDeviceLost,
-                               static_cast<void*>(this));
   device.SetLoggingCallback(&DawnSharedState::LogInfo, nullptr);
 
   adapter_ = std::move(adapter);
