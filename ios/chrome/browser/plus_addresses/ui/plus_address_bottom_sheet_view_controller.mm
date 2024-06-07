@@ -180,24 +180,24 @@ UIImage* PlusAddressesLogo() {
 
   if (_plusAddressUIRedesignEnabled) {
     self.aboveTitleView = [self brandingIconView];
+    self.titleString =
+        l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS);
+    self.titleTextStyle = UIFontTextStyleTitle2;
+    self.primaryActionString =
+        l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
   } else {
     self.image = PlusAddressesLogo();
     self.imageHasFixedSize = YES;
+    self.customScrollViewBottomInsets = kPlusAddressSheetScrollViewBottomInsets;
+    self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
+    self.primaryActionString =
+        l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
   }
 
-  self.customScrollViewBottomInsets =
-      _plusAddressUIRedesignEnabled ? 0
-                                    : kPlusAddressSheetScrollViewBottomInsets;
-  self.titleString = l10n_util::GetNSString(
-      _plusAddressUIRedesignEnabled ? IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS
-                                    : IDS_PLUS_ADDRESS_MODAL_TITLE);
-  self.primaryActionString = l10n_util::GetNSString(
-      _plusAddressUIRedesignEnabled ? IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS
-                                    : IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
-  self.secondaryActionString =
-      l10n_util::GetNSString(_plusAddressUIRedesignEnabled
-                                 ? IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS
-                                 : IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
   // Don't show the dismiss bar button (with the secondary button used for
   // canceling), and ensure there is still sufficient space between the top of
   // the bottom sheet content and the top of the sheet. This is especially
