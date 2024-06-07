@@ -29,6 +29,9 @@ constexpr size_t kTasksToFetch = 5;
 // latency, we query up to `kListFetchBatchSize` task lists in parallel.
 constexpr size_t kListFetchBatchSize = 8;
 
+// Controls the amount of time we'll serve a cached version of the task list.
+constexpr base::TimeDelta kCacheLifetime = base::Seconds(30);
+
 // Used to sort tasks for the carousel.
 struct TaskComparator {
   // Tasks are classified into these groups and within each group sorted by
@@ -200,7 +203,7 @@ void FocusModeTasksProvider::ScheduleTaskListUpdate() {
 }
 
 void FocusModeTasksProvider::GetSortedTaskList(OnGetTasksCallback callback) {
-  if ((base::Time::Now() - task_fetch_time_) < base::Minutes(5)) {
+  if ((base::Time::Now() - task_fetch_time_) < kCacheLifetime) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), GetSortedTasksImpl()));
     return;
