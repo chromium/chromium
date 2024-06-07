@@ -264,8 +264,7 @@ class SyncService : public KeyedService {
 
   // Returns the set of reasons that are keeping Sync disabled, as a bitmask of
   // DisableReason enum entries.
-  // Note: This refers to Sync-the-feature. Sync-the-transport may be running
-  // even in the presence of disable reasons.
+  // Note: These refer to both Sync-the-feature and Sync-the-transport.
   virtual DisableReasonSet GetDisableReasons() const = 0;
   // Helper that returns whether GetDisableReasons() contains the given |reason|
   // (possibly among others).
