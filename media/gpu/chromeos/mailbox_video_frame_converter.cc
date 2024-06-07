@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_channel.h"
+#include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
@@ -116,35 +117,7 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
     return factory->MakeCapabilities();
   }
 
-  gpu::SharedImageStub::SharedImageDestructionCallback CreateSharedImage(
-      const gpu::Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat format,
-      gfx::BufferPlane plane,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage) override {
-    DCHECK(gpu_task_runner_->BelongsToCurrentThread());
-
-    if (!gpu_channel_)
-      return base::NullCallback();
-
-    gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
-    DCHECK(shared_image_stub);
-
-    if (!shared_image_stub->CreateSharedImage(
-            mailbox, std::move(handle), format, plane, size, color_space,
-            surface_origin, alpha_type, usage, "MailboxVideoFrameConverter")) {
-      return base::NullCallback();
-    }
-
-    return shared_image_stub->GetSharedImageDestructionCallback(mailbox);
-  }
-
-  gpu::SharedImageStub::SharedImageDestructionCallback CreateSharedImage(
-      const gpu::Mailbox& mailbox,
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBufferHandle handle,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -155,19 +128,19 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
     if (!gpu_channel_) {
-      return base::NullCallback();
+      return nullptr;
     }
 
     gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
-    DCHECK(shared_image_stub);
+    CHECK(shared_image_stub);
+    const scoped_refptr<gpu::GpuChannelSharedImageInterface>&
+        shared_image_interface = shared_image_stub->shared_image_interface();
+    CHECK(shared_image_interface);
 
-    if (!shared_image_stub->CreateSharedImage(
-            mailbox, std::move(handle), format, size, color_space,
-            surface_origin, alpha_type, usage, "MailboxVideoFrameConverter")) {
-      return base::NullCallback();
-    }
-
-    return shared_image_stub->GetSharedImageDestructionCallback(mailbox);
+    return shared_image_interface->CreateSharedImage(
+        {format, size, color_space, surface_origin, alpha_type, usage,
+         "MailboxVideoFrameConverter"},
+        std::move(handle));
   }
 
   bool UpdateSharedImage(const gpu::Mailbox& mailbox,
@@ -215,54 +188,34 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
   base::WeakPtr<gpu::GpuChannel> gpu_channel_;
 };
 
-// A SharedImage wrapper that calls |destroy_shared_image_cb| in dtor on
-// |gpu_task_runner|.
 class MailboxVideoFrameConverter::ScopedSharedImage {
  public:
-  ScopedSharedImage(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)
-      : destruction_task_runner_(std::move(gpu_task_runner)) {}
+  ScopedSharedImage() = default;
 
   ScopedSharedImage(const ScopedSharedImage&) = delete;
   ScopedSharedImage& operator=(const ScopedSharedImage&) = delete;
 
   ~ScopedSharedImage() { Destroy(); }
 
-  void Reset(const gpu::Mailbox& mailbox,
-             const gfx::Size& size,
-             const gfx::ColorSpace& color_space,
-             gpu::SharedImageStub::SharedImageDestructionCallback
-                 destroy_shared_image_cb) {
+  void Reset(scoped_refptr<gpu::ClientSharedImage> shared_image) {
     Destroy();
-    DCHECK(!mailbox.IsZero());
-    mailbox_ = mailbox;
-    size_ = size;
-    color_space_ = color_space;
-    destroy_shared_image_cb_ = std::move(destroy_shared_image_cb);
+    DCHECK(shared_image);
+    shared_image_ = std::move(shared_image);
   }
 
-  bool HasData() const { return !mailbox_.IsZero(); }
-  const gpu::Mailbox& mailbox() const { return mailbox_; }
-  const gfx::Size& size() const { return size_; }
-  const gfx::ColorSpace& color_space() const { return color_space_; }
+  bool HasData() const { return shared_image_ != nullptr; }
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image() {
+    return shared_image_;
+  }
 
  private:
   void Destroy() {
-    if (destroy_shared_image_cb_) {
-      if (destruction_task_runner_->RunsTasksInCurrentSequence()) {
-        std::move(destroy_shared_image_cb_).Run(gpu::SyncToken());
-        return;
-      }
-      destruction_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(destroy_shared_image_cb_),
-                                    gpu::SyncToken()));
+    if (shared_image_) {
+      shared_image_->MarkForDestruction();
     }
   }
 
-  gpu::Mailbox mailbox_;
-  gfx::Size size_;
-  gfx::ColorSpace color_space_;
-  gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb_;
-  const scoped_refptr<base::SequencedTaskRunner> destruction_task_runner_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
 
 // static
@@ -375,12 +328,12 @@ void MailboxVideoFrameConverter::ConvertFrame(
                      std::move(frame), base::Unretained(shared_image)));
 }
 
-void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
+void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
     FrameResource* origin_frame,
     scoped_refptr<FrameResource> frame,
-    const gpu::Mailbox& mailbox) {
+    scoped_refptr<gpu::ClientSharedImage> shared_image) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!mailbox.IsZero());
+  DCHECK(shared_image);
 
   const UniqueID origin_frame_id = origin_frame->unique_id();
   DCHECK(base::Contains(shared_images_, origin_frame_id));
@@ -398,8 +351,6 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   // format (which should be the same as the |frame|'s format).
   CHECK_EQ(frame->format(), origin_frame->format());
   CHECK(buffer_format);
-
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
 
   uint32_t texture_target = GL_TEXTURE_2D;
   // NOTE: The change to simplify logic for computing the texture target here is
@@ -420,8 +371,6 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
                          ? GL_TEXTURE_EXTERNAL_OES
                          : GL_TEXTURE_2D;
   }
-  mailbox_holders[0] =
-      gpu::MailboxHolder(mailbox, gpu::SyncToken(), texture_target);
 
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
@@ -471,10 +420,10 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
       frame->metadata().needs_detiling
           ? frame->coded_size()
           : GetRectSizeFromOrigin(frame->visible_rect());
-  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapNativeTextures(
-      frame->format(), mailbox_holders, std::move(release_mailbox_cb),
-      coded_size, frame->visible_rect(), frame->natural_size(),
-      frame->timestamp());
+  scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
+      frame->format(), shared_image, shared_image->creation_sync_token(),
+      texture_target, std::move(release_mailbox_cb), coded_size,
+      frame->visible_rect(), frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
@@ -504,19 +453,20 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
   const gfx::Rect visible_rect = frame->visible_rect();
 
   // |origin_frame| is valid as long as |frame| is carried.
-  auto wrap_mailbox_and_video_frame_and_output_cb = base::BindOnce(
-      &MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput,
+  auto wrap_shared_image_and_video_frame_and_output_cb = base::BindOnce(
+      &MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput,
       parent_weak_this_, base::Unretained(origin_frame), std::move(frame));
 
   // If there's a |stored_shared_image| associated with |origin_frame|, update
   // it and call the continuation callback, otherwise create a SharedImage and
   // register it.
   if (stored_shared_image) {
-    DCHECK(!stored_shared_image->mailbox().IsZero());
+    DCHECK(stored_shared_image->HasData());
     bool res;
-    if (stored_shared_image->size() == GetRectSizeFromOrigin(visible_rect) &&
-        stored_shared_image->color_space() == src_color_space) {
-      res = UpdateSharedImageOnGPUThread(stored_shared_image->mailbox());
+    const auto& client_shared_image = stored_shared_image->shared_image();
+    if (client_shared_image->size() == GetRectSizeFromOrigin(visible_rect) &&
+        client_shared_image->color_space() == src_color_space) {
+      res = UpdateSharedImageOnGPUThread(client_shared_image->mailbox());
     } else {
       // Either the existing shared image's size is no longer good enough or the
       // color space has changed. Let's create a new shared image.
@@ -527,23 +477,25 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
       DCHECK(stored_shared_image->HasData());
       parent_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(wrap_mailbox_and_video_frame_and_output_cb),
-                         stored_shared_image->mailbox()));
+          base::BindOnce(
+              std::move(wrap_shared_image_and_video_frame_and_output_cb),
+              client_shared_image));
     }
     return;
   }
 
   // There was no existing SharedImage: create a new one.
-  auto new_shared_image = std::make_unique<ScopedSharedImage>(gpu_task_runner_);
+  auto new_shared_image = std::make_unique<ScopedSharedImage>();
   if (!GenerateSharedImageOnGPUThread(origin_frame, src_color_space,
                                       visible_rect, new_shared_image.get())) {
     return;
   }
   DCHECK(new_shared_image->HasData());
 
-  const gpu::Mailbox mailbox = new_shared_image->mailbox();
+  scoped_refptr<gpu::ClientSharedImage> new_client_shared_image =
+      new_shared_image->shared_image();
   // |origin_frame| is valid as long as |frame| lives. |frame| is kept alive in
-  // |wrap_mailbox_and_video_frame_and_output_cb|.
+  // |wrap_shared_image_and_video_frame_and_output_cb|.
   parent_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MailboxVideoFrameConverter::RegisterSharedImage,
@@ -551,8 +503,8 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
                      std::move(new_shared_image)));
   parent_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(wrap_mailbox_and_video_frame_and_output_cb),
-                     mailbox));
+      base::BindOnce(std::move(wrap_shared_image_and_video_frame_and_output_cb),
+                     std::move(new_client_shared_image)));
 }
 
 bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
@@ -581,8 +533,6 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   auto gpu_memory_buffer_handle = origin_frame->CreateGpuMemoryBufferHandle();
   DCHECK(!gpu_memory_buffer_handle.is_null());
   DCHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
-
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
   // The SharedImage size ultimately must correspond to the size used to import
   // the decoded frame into a graphics API (e.g., the EGL image size when using
@@ -616,20 +566,19 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
-  gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb =
-      gpu_delegate_->CreateSharedImage(
-          mailbox, std::move(gpu_memory_buffer_handle),
-          GetSharedImageFormat(*buffer_format), shared_image_size,
-          src_color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          shared_image_usage);
-  if (destroy_shared_image_cb.is_null()) {
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image =
+      gpu_delegate_->CreateSharedImage(std::move(gpu_memory_buffer_handle),
+                                       GetSharedImageFormat(*buffer_format),
+                                       shared_image_size, src_color_space,
+                                       kTopLeft_GrSurfaceOrigin,
+                                       kPremul_SkAlphaType, shared_image_usage);
+  if (!client_shared_image) {
     OnError(FROM_HERE, "Failed to create shared image.");
     return false;
   }
   // There's no need to UpdateSharedImage() after CreateSharedImage().
 
-  shared_image->Reset(mailbox, shared_image_size, src_color_space,
-                      std::move(destroy_shared_image_cb));
+  shared_image->Reset(std::move(client_shared_image));
   return true;
 }
 
@@ -639,7 +588,7 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
   DVLOGF(4) << "frame: " << origin_frame->unique_id();
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(scoped_shared_image);
-  DCHECK(!scoped_shared_image->mailbox().IsZero());
+  DCHECK(scoped_shared_image->HasData());
   DCHECK(!base::Contains(shared_images_, origin_frame->unique_id()));
 
   shared_images_[origin_frame->unique_id()] = scoped_shared_image.get();

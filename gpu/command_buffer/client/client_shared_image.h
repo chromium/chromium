@@ -113,8 +113,8 @@ class GPU_EXPORT ClientSharedImage
   const Mailbox& mailbox() { return mailbox_; }
   viz::SharedImageFormat format() const { return metadata_.format; }
   gfx::Size size() const { return metadata_.size; }
-  uint32_t usage() { return metadata_.usage; }
   gfx::ColorSpace color_space() const { return metadata_.color_space; }
+  uint32_t usage() { return metadata_.usage; }
 
   bool HasHolder() { return sii_holder_ != nullptr; }
 

@@ -58,25 +58,14 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
 
     virtual bool Initialize() = 0;
     virtual std::optional<gpu::SharedImageCapabilities> GetCapabilities() = 0;
-    virtual gpu::SharedImageStub::SharedImageDestructionCallback
-    CreateSharedImage(const gpu::Mailbox& mailbox,
-                      gfx::GpuMemoryBufferHandle handle,
-                      gfx::BufferFormat format,
-                      gfx::BufferPlane plane,
-                      const gfx::Size& size,
-                      const gfx::ColorSpace& color_space,
-                      GrSurfaceOrigin surface_origin,
-                      SkAlphaType alpha_type,
-                      uint32_t usage) = 0;
-    virtual gpu::SharedImageStub::SharedImageDestructionCallback
-    CreateSharedImage(const gpu::Mailbox& mailbox,
-                      gfx::GpuMemoryBufferHandle handle,
-                      viz::SharedImageFormat format,
-                      const gfx::Size& size,
-                      const gfx::ColorSpace& color_space,
-                      GrSurfaceOrigin surface_origin,
-                      SkAlphaType alpha_type,
-                      uint32_t usage) = 0;
+    virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+        gfx::GpuMemoryBufferHandle handle,
+        viz::SharedImageFormat format,
+        const gfx::Size& size,
+        const gfx::ColorSpace& color_space,
+        GrSurfaceOrigin surface_origin,
+        SkAlphaType alpha_type,
+        uint32_t usage) = 0;
     virtual bool UpdateSharedImage(const gpu::Mailbox& mailbox,
                                    gfx::GpuFenceHandle in_fence_handle) = 0;
     virtual bool WaitOnSyncTokenAndReleaseFrame(
@@ -147,11 +136,12 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // TODO(crbug.com/998279): replace s/OnGPUThread/OnGPUTaskRunner/.
   bool InitializeOnGPUThread();
 
-  // Wraps |mailbox| and |frame| into a new VideoFrameResource and sends it via
-  // |output_cb_|.
-  void WrapMailboxAndVideoFrameAndOutput(FrameResource* origin_frame,
-                                         scoped_refptr<FrameResource> frame,
-                                         const gpu::Mailbox& mailbox);
+  // Wraps |shared_image| and |frame| into a new VideoFrameResource and sends it
+  // via |output_cb_|.
+  void WrapSharedImageAndVideoFrameAndOutput(
+      FrameResource* origin_frame,
+      scoped_refptr<FrameResource> frame,
+      scoped_refptr<gpu::ClientSharedImage> shared_image);
 
   // ConvertFrame() delegates to this method to GenerateSharedImageOnGPUThread()
   // or just UpdateSharedImageOnGPUThread(), then to jump back to

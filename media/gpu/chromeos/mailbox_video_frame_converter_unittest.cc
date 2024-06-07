@@ -43,27 +43,15 @@ class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(GetCapabilities, std::optional<gpu::SharedImageCapabilities>());
-  MOCK_METHOD9(CreateSharedImage,
-               gpu::SharedImageStub::SharedImageDestructionCallback(
-                   const gpu::Mailbox& mailbox,
-                   gfx::GpuMemoryBufferHandle handle,
-                   gfx::BufferFormat format,
-                   gfx::BufferPlane plane,
-                   const gfx::Size& size,
-                   const gfx::ColorSpace& color_space,
-                   GrSurfaceOrigin surface_origin,
-                   SkAlphaType alpha_type,
-                   uint32_t usage));
-  MOCK_METHOD8(CreateSharedImage,
-               gpu::SharedImageStub::SharedImageDestructionCallback(
-                   const gpu::Mailbox& mailbox,
-                   gfx::GpuMemoryBufferHandle handle,
-                   viz::SharedImageFormat format,
-                   const gfx::Size& size,
-                   const gfx::ColorSpace& color_space,
-                   GrSurfaceOrigin surface_origin,
-                   SkAlphaType alpha_type,
-                   uint32_t usage));
+  MOCK_METHOD7(
+      CreateSharedImage,
+      scoped_refptr<gpu::ClientSharedImage>(gfx::GpuMemoryBufferHandle handle,
+                                            viz::SharedImageFormat format,
+                                            const gfx::Size& size,
+                                            const gfx::ColorSpace& color_space,
+                                            GrSurfaceOrigin surface_origin,
+                                            SkAlphaType alpha_type,
+                                            uint32_t usage));
   MOCK_METHOD2(UpdateSharedImage,
                bool(const gpu::Mailbox& mailbox,
                     gfx::GpuFenceHandle in_fence_handle));
@@ -89,12 +77,6 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
         Mock::VerifyAndClearExpectations(mock_gpu_delegate_);
     const bool verified_for_mock_output_cb =
         Mock::VerifyAndClearExpectations(&mock_output_cb_);
-    bool verified_for_mock_destroy_shared_image_cbs = true;
-    for (auto& cb : mock_destroy_shared_image_cbs_) {
-      verified_for_mock_destroy_shared_image_cbs =
-          Mock::VerifyAndClearExpectations(cb.get()) &&
-          verified_for_mock_destroy_shared_image_cbs;
-    }
     bool verified_for_mock_frame_destruction_cbs = true;
     for (auto& cb : mock_frame_destruction_cbs_) {
       verified_for_mock_frame_destruction_cbs =
@@ -102,7 +84,6 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
           verified_for_mock_frame_destruction_cbs;
     }
     return verified_for_mock_gpu_delegate && verified_for_mock_output_cb &&
-           verified_for_mock_destroy_shared_image_cbs &&
            verified_for_mock_frame_destruction_cbs;
   }
 
@@ -129,13 +110,6 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
   // use these callbacks.
   StrictMock<base::MockRepeatingCallback<void(scoped_refptr<FrameResource>)>>
       mock_output_cb_;
-  // |mock_destroy_shared_image_cbs_| are the SharedImage destruction callbacks
-  // provided by the GpuDelegate to the MailboxVideoFrameConverter in order to
-  // destroy the SharedImage when the corresponding GpuMemoryBuffer
-  // FrameResource gets destroyed.
-  std::vector<std::unique_ptr<
-      StrictMock<base::MockOnceCallback<void(const gpu::SyncToken&)>>>>
-      mock_destroy_shared_image_cbs_;
   // |mock_frame_destruction_cbs_| are callbacks added as destruction observers
   // to VideoFrames.
   std::vector<std::unique_ptr<StrictMock<base::MockOnceCallback<void()>>>>
@@ -208,9 +182,6 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   gpu::Mailbox mailboxes_seen_by_gpu_delegate[std::size(gmb_frames)];
 
   for (size_t i = 0; i < std::size(gmb_frames); i++) {
-    mock_destroy_shared_image_cbs_.emplace_back(
-        std::make_unique<
-            StrictMock<base::MockOnceCallback<void(const gpu::SyncToken&)>>>());
     mock_frame_destruction_cbs_.emplace_back(
         std::make_unique<StrictMock<base::MockOnceCallback<void()>>>());
   }
@@ -245,13 +216,15 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
       EXPECT_CALL(
           *mock_gpu_delegate_,
           CreateSharedImage(
-              /*mailbox=*/_, /*handle=*/_, shared_image_format,
+              /*handle=*/_, shared_image_format,
               /*size=*/needs_detiling ? kCodedSize : kVisibleRect.size(),
               /*color_space=*/_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               /*usage=*/_))
-          .WillOnce(
-              DoAll(SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
-                    Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
+          .WillOnce([&mailboxes_seen_by_gpu_delegate, i]() {
+            auto shared_image = gpu::ClientSharedImage::CreateForTesting();
+            mailboxes_seen_by_gpu_delegate[i] = shared_image->mailbox();
+            return shared_image;
+          });
       EXPECT_CALL(mock_output_cb_, Run(_))
           .WillOnce(SaveArg<0>(&converted_frames[i]));
     }
@@ -302,8 +275,6 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
                 Property(&scoped_refptr<FrameResource>::get, gmb_frames[i]),
                 release_sync_token))
             .WillOnce(Return(true));
-    EXPECT_CALL(*mock_destroy_shared_image_cbs_[i], Run(gpu::SyncToken()))
-        .After(wait_on_sync_token_and_release);
     EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run())
         .After(wait_on_sync_token_and_release);
     SimpleSyncTokenClient sync_token_client(release_sync_token);
