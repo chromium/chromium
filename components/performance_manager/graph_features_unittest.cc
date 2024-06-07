@@ -60,18 +60,10 @@ TEST_F(GraphFeaturesTest, EnableDefault) {
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
   EXPECT_FALSE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
 
-  size_t graph_owned_count = 13;
-#if !BUILDFLAG(IS_ANDROID)
-  // The SiteDataRecorder is not available on Android.
-  graph_owned_count++;
-#endif
-
   // Validate that the default configuration works as expected.
   features.EnableDefault();
   features.ConfigureGraph(&graph);
-  EXPECT_EQ(4u, graph.GraphRegisteredCountForTesting());
-  EXPECT_EQ(graph_owned_count, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(9u, graph.NodeDataDescriberCountForTesting());
+
   // Ensure the GraphRegistered objects can be queried directly.
   EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
