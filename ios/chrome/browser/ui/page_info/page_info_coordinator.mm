@@ -123,6 +123,10 @@
   self.navigationController = nil;
   self.viewController = nil;
 
+  [_securityCoordinator stop];
+  _securityCoordinator.pageInfoPresentationHandler = nil;
+  _securityCoordinator = nil;
+
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
 

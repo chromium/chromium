@@ -53,6 +53,8 @@
 
 - (void)stop {
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  _viewController.pageInfoCommandsHandler = nil;
+  _viewController.pageInfoPresentationHandler = nil;
   _viewController = nil;
 }
 
