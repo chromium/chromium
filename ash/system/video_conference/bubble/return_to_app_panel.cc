@@ -440,6 +440,9 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   SetInteriorMargin(gfx::Insets::TLBR(16, 16, 0, 16));
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  SetLayoutManagerUseConstrainedSpace(false);
+
   auto container_view = std::make_unique<ReturnToAppContainer>();
   container_view_ = AddChildView(std::move(container_view));
 

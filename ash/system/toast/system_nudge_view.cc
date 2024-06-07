@@ -212,6 +212,9 @@ SystemNudgeView::SystemNudgeView(
   SetInteriorMargin(kNudgeInteriorMargin);
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  SetLayoutManagerUseConstrainedSpace(false);
+
   const bool nudge_is_text_only = nudge_data.image_model.IsEmpty() &&
                                   nudge_data.title_text.empty() &&
                                   nudge_data.primary_button_text.empty() &&

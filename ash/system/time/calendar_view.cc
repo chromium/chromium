@@ -516,6 +516,7 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
   // layout while reading the bounds of it.
   progress_bar_ = AddChildViewAt(std::make_unique<GlanceablesProgressBarView>(),
                                  kTitleRowProgressBarIndex + 1);
+  progress_bar_->SetPreferredSize(gfx::Size(0, kTitleRowProgressBarHeight));
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   // Adds the calendar month header view and up/down buttons after the progress

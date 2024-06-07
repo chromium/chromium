@@ -512,6 +512,9 @@ SearchResultView::SearchResultView(
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kPreferred));
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  body_text_container_->SetLayoutManagerUseConstrainedSpace(false);
+
   title_and_details_container_ = body_text_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
   title_and_details_container_->SetCrossAxisAlignment(
