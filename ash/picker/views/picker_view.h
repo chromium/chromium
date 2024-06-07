@@ -152,9 +152,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
 
-  // Clears the current results in the emoji bar and shows recent emojis
-  // instead.
-  void ResetEmojiBarToRecentEmojis();
+  // Clears the current results in the emoji bar and shows recent and
+  // placeholder emojis instead.
+  void ResetEmojiBarToZeroState();
 
   std::optional<PickerCategory> selected_category_;
 

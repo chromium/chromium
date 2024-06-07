@@ -99,6 +99,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
       const PickerSearchResult& result) override;
   std::vector<std::string> GetRecentEmoji(
       ui::EmojiPickerCategory category) override;
+  std::vector<std::string> GetPlaceholderEmojis() override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

@@ -86,6 +86,10 @@ class ASH_EXPORT PickerViewDelegate {
   // Gets history of emoji picker for certain `category`.
   virtual std::vector<std::string> GetRecentEmoji(
       ui::EmojiPickerCategory category) = 0;
+
+  // Gets placeholder emojis to show when the user has not used any emojis
+  // recently.
+  virtual std::vector<std::string> GetPlaceholderEmojis() = 0;
 };
 
 }  // namespace ash

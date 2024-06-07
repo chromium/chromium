@@ -63,6 +63,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
       ui::EmojiPickerCategory category) override {
     return {};
   }
+  std::vector<std::string> GetPlaceholderEmojis() override { return {}; }
 
  private:
   PickerSessionMetrics session_metrics_;

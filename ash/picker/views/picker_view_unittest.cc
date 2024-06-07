@@ -55,6 +55,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -71,9 +72,18 @@ using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::Truly;
 
 constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
+
+template <class V, class Matcher>
+auto AsView(Matcher matcher) {
+  return ResultOf(
+      "AsViewClass",
+      [](views::View* view) { return views::AsViewClass<V>(view); },
+      Pointee(matcher));
+}
 
 auto ContainsEvent(const metrics::structured::Event& event) {
   return Contains(AllOf(
@@ -107,6 +117,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     FakeSearchFunction search_function;
     PickerActionType action_type = PickerActionType::kInsert;
     std::vector<std::string> recent_emojis;
+    std::vector<std::string> placeholder_emojis;
   };
 
   FakePickerViewDelegate() = default;
@@ -177,6 +188,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   std::vector<std::string> GetRecentEmoji(
       ui::EmojiPickerCategory category) override {
     return options_.recent_emojis;
+  }
+
+  std::vector<std::string> GetPlaceholderEmojis() override {
+    return options_.placeholder_emojis;
   }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
@@ -666,7 +681,27 @@ TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
 
 TEST_F(PickerViewTest, InitiallyShowsRecentEmojis) {
   FakePickerViewDelegate delegate({
-      .recent_emojis = {"😊"},
+      .recent_emojis = {"😊", "👍"},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_TRUE(picker_view->emoji_bar_view_for_testing().GetVisible());
+  EXPECT_THAT(
+      picker_view->emoji_bar_view_for_testing()
+          .item_row_for_testing()
+          ->children(),
+      ElementsAre(AsView<PickerEmojiItemView>(
+                      Property(&PickerEmojiItemView::GetTextForTesting, u"😊")),
+                  AsView<PickerEmojiItemView>(Property(
+                      &PickerEmojiItemView::GetTextForTesting, u"👍"))));
+}
+
+TEST_F(PickerViewTest, InitiallyShowsPlaceholderEmojisIfNoRecentEmojis) {
+  FakePickerViewDelegate delegate({
+      .recent_emojis = {},
+      .placeholder_emojis = {"😃"},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -676,7 +711,8 @@ TEST_F(PickerViewTest, InitiallyShowsRecentEmojis) {
   EXPECT_THAT(picker_view->emoji_bar_view_for_testing()
                   .item_row_for_testing()
                   ->children(),
-              ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>)));
+              ElementsAre(AsView<PickerEmojiItemView>(
+                  Property(&PickerEmojiItemView::GetTextForTesting, u"😃"))));
 }
 
 TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {

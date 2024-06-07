@@ -365,7 +365,7 @@ void PickerView::StartSearch(const std::u16string& query) {
     SetActivePage(category_view_);
   } else {
     search_results_view_->ClearSearchResults();
-    ResetEmojiBarToRecentEmojis();
+    ResetEmojiBarToZeroState();
     SetActivePage(zero_state_view_);
   }
 }
@@ -512,7 +512,7 @@ void PickerView::AddEmojiBarView() {
   emoji_bar_view_ = AddChildViewAt(
       std::make_unique<PickerEmojiBarView>(this, kPickerViewMaxSize.width()),
       0);
-  ResetEmojiBarToRecentEmojis();
+  ResetEmojiBarToZeroState();
 }
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
@@ -549,20 +549,31 @@ void PickerView::OnSearchBackButtonPressed() {
   SetActivePage(zero_state_view_);
 }
 
-void PickerView::ResetEmojiBarToRecentEmojis() {
+void PickerView::ResetEmojiBarToZeroState() {
   if (delegate_ == nullptr) {
     emoji_bar_view_->ClearSearchResults();
     return;
   }
 
+  std::vector<PickerSearchResult> emoji_bar_results;
   std::vector<std::string> recent_emojis =
       delegate_->GetRecentEmoji(ui::EmojiPickerCategory::kEmojis);
-  std::vector<PickerSearchResult> emoji_bar_results;
-  emoji_bar_results.reserve(recent_emojis.size());
-  for (const std::string& emoji : recent_emojis) {
-    emoji_bar_results.push_back(
-        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+  if (recent_emojis.empty()) {
+    std::vector<std::string> placeholder_emojis =
+        delegate_->GetPlaceholderEmojis();
+    emoji_bar_results.reserve(placeholder_emojis.size());
+    for (const std::string& emoji : placeholder_emojis) {
+      emoji_bar_results.push_back(
+          PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+    }
+  } else {
+    emoji_bar_results.reserve(recent_emojis.size());
+    for (const std::string& emoji : recent_emojis) {
+      emoji_bar_results.push_back(
+          PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+    }
   }
+
   emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions, emoji_bar_results,
       /*has_more_results=*/false));

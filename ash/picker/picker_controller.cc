@@ -660,6 +660,10 @@ std::vector<std::string> PickerController::GetRecentEmoji(
   return results;
 }
 
+std::vector<std::string> PickerController::GetPlaceholderEmojis() {
+  return {"😀", "😃", "😄"};
+}
+
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
