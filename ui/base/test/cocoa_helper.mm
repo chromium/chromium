@@ -4,6 +4,9 @@
 
 #import "ui/base/test/cocoa_helper.h"
 
+#include <objc/message.h>
+#include <objc/runtime.h>
+
 #include <set>
 #include <vector>
 
@@ -39,10 +42,57 @@
   return [self initWithContentRect:NSMakeRect(0, 0, 800, 600)];
 }
 
-- (void)dealloc {
-  // Just a good place to put breakpoints when having problems with
-  // unittests and CocoaTestHelperWindow.
+// Enables users to write debugging code to help diagnose failures to close
+// CocoaTestHelperWindow. Debugging code is not usually committed in Chromium,
+// but because it's difficult to correctly override retain/release in ARC, this
+// is left in.
+#if 0
+
++ (void)initialize {
+  if (self == [CocoaTestHelperWindow self]) {
+    Class test_class = [CocoaTestHelperWindow class];
+
+    Method method = class_getInstanceMethod(test_class, @selector(debugRetain));
+    ASSERT_TRUE(method);
+    ASSERT_TRUE(class_addMethod(test_class, sel_registerName("retain"),
+                                method_getImplementation(method),
+                                method_getTypeEncoding(method)));
+
+    method = class_getInstanceMethod(test_class, @selector(debugRelease));
+    ASSERT_TRUE(method);
+    ASSERT_TRUE(class_addMethod(test_class, sel_registerName("release"),
+                                method_getImplementation(method),
+                                method_getTypeEncoding(method)));
+  }
 }
+
+- (void)dealloc {
+  // Insert debugging code here.
+}
+
+- (instancetype)debugRetain {
+  // Insert debugging code here.
+
+  struct objc_super mySuper = {.receiver = self,
+                               .super_class = [self superclass]};
+  using retainSendSuper = id (*)(struct objc_super*, SEL);
+  retainSendSuper sendSuper =
+      reinterpret_cast<retainSendSuper>(objc_msgSendSuper);
+  return sendSuper(&mySuper, _cmd);
+}
+
+- (oneway void)debugRelease {
+  // Insert debugging code here.
+
+  struct objc_super mySuper = {.receiver = self,
+                               .super_class = [self superclass]};
+  using releaseSendSuper = void (*)(struct objc_super*, SEL);
+  releaseSendSuper sendSuper =
+      reinterpret_cast<releaseSendSuper>(objc_msgSendSuper);
+  return sendSuper(&mySuper, _cmd);
+}
+
+#endif
 
 - (BOOL)isKeyWindow {
   return _pretendIsKeyWindow;
