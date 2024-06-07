@@ -72,9 +72,6 @@ class ReadAnythingModelTest : public TestWithBrowserView {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40853217): Fix the memory leak on destruction observed on
-// these tests on asan mac.
-#if !BUILDFLAG(IS_MAC) || !defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/40286096): Test is flaky on all platforms.
 TEST_F(ReadAnythingModelTest,
        DISABLED_AddingModelObserverNotifiesAllObservers) {
@@ -275,4 +272,3 @@ TEST_F(ReadAnythingModelTest, FontModelSetsDropdownAndForegroundColors) {
   EXPECT_EQ(color_info.selected_dropdown_color_id,
             GetFontModel()->GetDropdownSelectedBackgroundColorIdAt(0).value());
 }
-#endif  // !defined(ADDRESS_SANITIZER)
