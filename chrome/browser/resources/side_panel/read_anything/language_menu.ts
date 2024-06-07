@@ -61,13 +61,17 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: Array,
       languageSearchValue_: String,
       localeToDisplayName: Object,
-      voicePackInstallStatus: Object,
+      voicePackInstallStatus: {
+        type: Object,
+        observer: 'voicePackInstallStatusChanged_',
+      },
       selectedLang: String,
+      currentNotifications_: Array,
       availableLanguages_: {
         type: Array,
         computed:
             'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
-            'voicePackInstallStatus,selectedLang,languageSearchValue_)',
+            'currentNotifications_,selectedLang,languageSearchValue_)',
       },
     };
   }
@@ -86,14 +90,81 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // that can be downloaded from the language pack.
   private nonGoogleLanguages: string[] = [];
 
+  // The current notifications that should be used in the language menu.
+  // This is cleared each time the language menu reopens. After the language
+  // menu reopens, only new changes to voicePackInstallStatus will be reflected
+  // in notifications.
+  private currentNotifications_:
+      {[language: string]: VoiceClientSideStatusCode} = {};
+
   constructor() {
     super();
     this.addEventListener('cr-dialog-open', () => {
       this.$.languageMenu.querySelector<CrInputElement>('.search-field')
           ?.focus();
+
+      // Clear the list of current notifications each time we reopen the menu.
+      this.currentNotifications_ = {};
+
+      // Since the downloading messages will be cleared fairly quickly as
+      // we get voice pack updates, we should go ahead and show the message
+      // when we're actively downloading a voice pack, even if it was
+      // previously shown.
+      this.restoreDownloadingMessages();
     });
   }
 
+  private restoreDownloadingMessages() {
+    if (!this.voicePackInstallStatus) {
+      return;
+    }
+
+    for (const key of Object.keys(this.voicePackInstallStatus)) {
+      const status = this.voicePackInstallStatus[key];
+      switch (status) {
+        case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
+        case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
+        case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
+          this.setNotification(key, status);
+          break;
+        case VoiceClientSideStatusCode.AVAILABLE:
+        case VoiceClientSideStatusCode.ERROR_INSTALLING:
+        case VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION:
+        case VoiceClientSideStatusCode.NOT_INSTALLED:
+          continue;
+        default:
+          // This ensures the switch statement is exhaustive
+          return status satisfies never;
+      }
+    }
+  }
+
+  // Returns a copy of voicePackInstallStatus to use as a snapshot of the
+  // current state. Before copying over the map, check the diff of
+  // the new voicePackInstallStatus and our previous snapshot. If there are
+  // any differences, add these to the currentNotifications_ map.
+  private voicePackInstallStatusChanged_(
+      newValue: {[language: string]: VoiceClientSideStatusCode},
+      oldValue: {[language: string]: VoiceClientSideStatusCode}) {
+    this.restoreDownloadingMessages();
+    if (!oldValue) {
+      return;
+    }
+
+    for (const key of Object.keys(newValue)) {
+      if (oldValue[key] !== newValue[key]) {
+        // Update the notification status for recently changed language keys.
+        this.setNotification(key, newValue[key]);
+      }
+    }
+  }
+
+  private setNotification(lang: string, status: VoiceClientSideStatusCode) {
+    this.currentNotifications_ = {
+      ...this.currentNotifications_,
+      [lang]: status,
+    };
+  }
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
   }
@@ -117,6 +188,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         lang;
   }
 
+  // TODO(b/40927698): Investigate removing voicePackInstallStatus as a
+  // dependency.
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
