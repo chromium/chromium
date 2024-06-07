@@ -270,11 +270,13 @@ inline constexpr char kMultitaskMenuNudgeClamshellLastShown[] =
 inline constexpr char kMultitaskMenuNudgeTabletLastShown[] =
     "cros.wm_nudge.tablet_multitask_nudge_last_shown";
 
-// The number of times we have shown the pine education nudge.
-inline constexpr char kPineNudgeShownCount[] = "ash.wm.pine_nudge_shown_count";
+// The number of times we have shown the informed restore education nudge.
+inline constexpr char kInformedRestoreNudgeShownCount[] =
+    "ash.wm.informed_restore_nudge_shown_count";
 
-// The last time we showed the pine education nudge.
-inline constexpr char kPineNudgeLastShown[] = "ash.wm.pine_nudge_last_shown";
+// The last time we showed the informed restore education nudge.
+inline constexpr char kInformedRestoreNudgeLastShown[] =
+    "ash.wm.informed_restore_nudge_last_shown";
 
 // The following SAML-related prefs are not settings that the domain admin can
 // set, but information that the SAML Identity Provider can send us:
@@ -1025,9 +1027,10 @@ inline constexpr char kPineScreenshotTakenDuration[] =
 inline constexpr char kPineScreenshotEncodeAndSaveDuration[] =
     "ash.pine.sreenshot_encode_and_save_duration";
 
-// A boolean pref indicating whether the Pine onboarding dialog should be shown.
-inline constexpr char kShouldShowPineOnboarding[] =
-    "ash.pine.should_show_pine_onboarding";
+// A boolean pref indicating whether the informed restore onboarding dialog
+// should be shown.
+inline constexpr char kShowInformedRestoreOnboarding[] =
+    "ash.pine.should_show_informed_restore_onboarding";
 
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a

@@ -124,7 +124,7 @@ class InformedRestoreTest : public InProcessBrowserTest {
     auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
     prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAskEveryTime));
-    prefs->SetBoolean(prefs::kShouldShowPineOnboarding, false);
+    prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, false);
   }
 
  protected:
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_RestoreOff) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                     static_cast<int>(RestoreOption::kDoNotRestore));
-  prefs->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 }
 
 // Tests that when Restore is off, we show the onboarding dialog.
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_NoRestoreData) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
-  prefs->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 }
 
 // Tests that when Restore is 'Ask every time' and there is no restore data, we
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Onboarding) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
-  prefs->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Onboarding) {
 
   // Attempt to show the dialog again. Since we've already shown it, we
   // don't show it again.
-  Shell::Get()->pine_controller()->MaybeShowPineOnboardingMessage(
+  Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
       /*restore_on=*/true);
   EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
 }

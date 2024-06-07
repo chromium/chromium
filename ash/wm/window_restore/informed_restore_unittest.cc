@@ -454,10 +454,10 @@ TEST_F(InformedRestoreTest, InformedRestoreNudge) {
 // Tests that the onboarding dialog toast shows up when clicking the accept
 // button for the onboarding dialog, if restore was previously off.
 TEST_F(InformedRestoreTest, OnboardingToast) {
-  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   EXPECT_FALSE(ToastManager::Get()->IsToastShown(pine::kOnboardingToastId));
-  Shell::Get()->pine_controller()->MaybeShowPineOnboardingMessage(
+  Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
       /*restore_on=*/false);
   auto* dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
@@ -469,24 +469,24 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   base::HistogramTester histogram_tester;
 
   // The pref is set to false in tests by default.
-  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   // Verify initial histogram counts.
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 0);
 
   // Press "Accept". Test we increment `true`.
   auto* pine_controller = Shell::Get()->pine_controller();
-  pine_controller->MaybeShowPineOnboardingMessage(/*restore_on=*/false);
+  pine_controller->MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
   auto* dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
   histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
                                      /*sample=*/true,
                                      /*expected_count=*/1);
-  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   // Press "Cancel". Test we increment `false`.
-  pine_controller->MaybeShowPineOnboardingMessage(
+  pine_controller->MaybeShowInformedRestoreOnboarding(
       /*restore_on=*/false);
   dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetCancelButtonForTesting());
@@ -494,13 +494,13 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
                                      /*sample=*/false,
                                      /*expected_count=*/1);
-  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+  GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   // Verify total counts.
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
 
   // Show the onboarding dialog with 'Restore' on. Test we don't record.
-  pine_controller->MaybeShowPineOnboardingMessage(
+  pine_controller->MaybeShowInformedRestoreOnboarding(
       /*restore_on=*/true);
   dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());

@@ -34,7 +34,7 @@ class ASH_EXPORT PineController : public OverviewObserver,
 
   // Shows the onboarding message. If `restore_on` is true, only the
   // "Continue" button will be shown. Otherwise shows both buttons.
-  void MaybeShowPineOnboardingMessage(bool restore_on);
+  void MaybeShowInformedRestoreOnboarding(bool restore_on);
 
   // Starts an overview session with the pine contents view if certain
   // conditions are met. Uses fake for testing only data.
@@ -78,9 +78,9 @@ class ASH_EXPORT PineController : public OverviewObserver,
   void OnOnboardingAcceptPressed(bool restore_on);
   void OnOnboardingCancelPressed();
 
-  // True if overview was in pine session, up until the overview animation is
-  // ended.
-  bool in_pine_ = false;
+  // True if overview was in informed restore session, up until the overview
+  // animation is ended.
+  bool in_informed_restore_ = false;
 
   // The first-time experience onboarding dialog.
   views::UniqueWidgetPtr onboarding_widget_;

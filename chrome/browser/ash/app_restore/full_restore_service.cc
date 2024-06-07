@@ -834,7 +834,7 @@ void FullRestoreService::MaybeShowInformedRestoreOnboarding() {
     RestoreOption restore_pref = static_cast<RestoreOption>(
         profile_->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
     CHECK(Shell::Get()->pine_controller());
-    Shell::Get()->pine_controller()->MaybeShowPineOnboardingMessage(
+    Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
         /*restore_on=*/restore_pref == RestoreOption::kAskEveryTime);
   }
 }

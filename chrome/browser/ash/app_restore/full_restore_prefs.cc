@@ -25,9 +25,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   if (IsForestFeatureFlagEnabled()) {
-    registry->RegisterBooleanPref(prefs::kShouldShowPineOnboarding, true);
-    registry->RegisterIntegerPref(prefs::kPineNudgeShownCount, 0);
-    registry->RegisterTimePref(prefs::kPineNudgeLastShown, base::Time());
+    registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding, true);
+    registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
+    registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
+                               base::Time());
   }
 }
 

@@ -82,11 +82,11 @@ PrefService* GetActivePrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
 }
 
-// Returns true if this is the first time login and we should show the pine
-// onboarding message.
-bool ShouldShowPineOnboarding() {
+// Returns true if this is the first time login and we should show the informed
+// restore onboarding message.
+bool ShouldStartInformedRestoreOnboarding() {
   PrefService* prefs = GetActivePrefService();
-  return prefs && prefs->GetBoolean(prefs::kShouldShowPineOnboarding);
+  return prefs && prefs->GetBoolean(prefs::kShowInformedRestoreOnboarding);
 }
 
 }  // namespace
@@ -101,15 +101,12 @@ PineController::~PineController() {
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
-void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
-  if (onboarding_widget_) {
+void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
+  if (onboarding_widget_ || !ShouldStartInformedRestoreOnboarding()) {
     return;
   }
-
-  if (!ShouldShowPineOnboarding()) {
-    return;
-  }
-  GetActivePrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, false);
+  GetActivePrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding,
+                                     false);
 
   auto dialog =
       views::Builder<SystemDialogDelegateView>()
@@ -231,10 +228,11 @@ void PineController::MaybeStartPineOverviewSession(
 
   contents_data_ = std::move(contents_data);
 
-  // If this is the first time starting pine, show the onboarding dialog
-  // instead. Pine session will be started if the user hits 'Accept'.
-  if (ShouldShowPineOnboarding()) {
-    MaybeShowPineOnboardingMessage(/*restore_on=*/true);
+  // If this is the first time starting informed restore, show the onboarding
+  // dialog instead. Informed restore session will be started if the user hits
+  // 'Accept'.
+  if (ShouldStartInformedRestoreOnboarding()) {
+    MaybeShowInformedRestoreOnboarding(/*restore_on=*/true);
     return;
   }
 
@@ -256,10 +254,10 @@ void PineController::MaybeEndPineOverviewSession() {
 }
 
 void PineController::OnOverviewModeEnding(OverviewSession* overview_session) {
-  in_pine_ = false;
+  in_informed_restore_ = false;
   for (const auto& grid : overview_session->grid_list()) {
     if (grid->pine_widget()) {
-      in_pine_ = true;
+      in_informed_restore_ = true;
       break;
     }
   }
@@ -267,12 +265,13 @@ void PineController::OnOverviewModeEnding(OverviewSession* overview_session) {
 
 void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   // If `canceled` is true, overview was reentered before the exit animations
-  // were finished. `in_pine_` will be reset the next time overview ends.
-  if (canceled || !in_pine_) {
+  // were finished. `in_informed_restore_` will be reset the next time overview
+  // ends.
+  if (canceled || !in_informed_restore_) {
     return;
   }
 
-  in_pine_ = false;
+  in_informed_restore_ = false;
 
   // In multi-user scenario, forest may have been available for the user that
   // started overview, but not for the current user. (Switching users ends
@@ -287,14 +286,15 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   }
 
   // Nudge has already been shown three times. No need to educate anymore.
-  const int shown_count = prefs->GetInteger(prefs::kPineNudgeShownCount);
+  const int shown_count =
+      prefs->GetInteger(prefs::kInformedRestoreNudgeShownCount);
   if (shown_count >= kNudgeMaxShownCount) {
     return;
   }
 
   // Nudge has been shown within the last 24 hours already.
   base::Time now = base::Time::Now();
-  if (now - prefs->GetTime(prefs::kPineNudgeLastShown) <
+  if (now - prefs->GetTime(prefs::kInformedRestoreNudgeLastShown) <
       kNudgeTimeBetweenShown) {
     return;
   }
@@ -310,8 +310,8 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   nudge_data.fill_image_size = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
-  prefs->SetInteger(prefs::kPineNudgeShownCount, shown_count + 1);
-  prefs->SetTime(prefs::kPineNudgeLastShown, now);
+  prefs->SetInteger(prefs::kInformedRestoreNudgeShownCount, shown_count + 1);
+  prefs->SetTime(prefs::kInformedRestoreNudgeLastShown, now);
 }
 
 void PineController::OnWindowActivated(ActivationReason reason,
@@ -375,7 +375,7 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
   // Wait until the onboarding widget is destroyed before starting overview,
   // since we disallow entering overview while system modal windows are open.
   // Use a weak ptr since `this` can be deleted before we close all windows.
-  // Only do this if we have pine contents data.
+  // Only do this if we have contents data.
   if (contents_data_) {
     onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
         base::BindOnce(
@@ -397,7 +397,7 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
 
-  // Show toast letting users know the pref change will effect them next
+  // Show toast letting users know the pref change will affect them next
   // session.
   Shell::Get()->toast_manager()->Show(
       ToastData(pine::kOnboardingToastId, ToastCatalogName::kPineOnboarding,
