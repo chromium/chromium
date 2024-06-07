@@ -161,7 +161,8 @@ void UserTriggeredManualGenerationFromContextMenu(
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 #if BUILDFLAG(IS_ANDROID)
   if (password_manager::UsesSplitStoresAndUPMForLocal(client->GetPrefs()) &&
-      IsSyncFeatureEnabledIncludingPasswords(client->GetSyncService())) {
+      password_manager::sync_util::HasChosenToSyncPasswords(
+          client->GetSyncService())) {
     // After store split on Android, AccountPasswordStore is a default store for
     // saving passwords when sync is enabled. If either of conditions above is
     // not satisfied fallback to ProfilePasswordStore.

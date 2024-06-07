@@ -768,10 +768,9 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   // in the local store, password check for local should be accessible from the
   // dialog.
   std::string account =
-      in_account_store
-          ? password_manager::sync_util::
-                GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-                    sync_service)
+      in_account_store && password_manager::sync_util::HasChosenToSyncPasswords(
+                              sync_service)
+          ? sync_service->GetAccountInfo().email
           : "";
   (new CredentialLeakControllerAndroid(
        leak_type, url, username, profile_,

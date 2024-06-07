@@ -1105,11 +1105,10 @@ void ChromePasswordProtectionService::OpenPasswordCheck(
     JNIEnv* env = base::android::AttachCurrentThread();
     const syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile_);
-    std::string account = password_manager::sync_util::
-        GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service);
     bool is_syncing_passwords =
-        password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
-            sync_service);
+        password_manager::sync_util::HasChosenToSyncPasswords(sync_service);
+    std::string account =
+        is_syncing_passwords ? sync_service->GetAccountInfo().email : "";
 
     CredentialFoundInStore credentials_store =
         CheckCredentialsStore(saved_passwords_matching_reused_credentials());
