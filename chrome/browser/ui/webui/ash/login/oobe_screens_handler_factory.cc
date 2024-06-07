@@ -7,11 +7,13 @@
 #include "base/check.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
+#include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -110,6 +112,19 @@ void OobeScreensHandlerFactory::EstablishPackagedLicenseScreenPipe(
       WizardController::default_controller()
           ->GetScreen<PackagedLicenseScreen>();
   packaged_license->BindPageHandlerReceiver(std::move(receiver));
+}
+
+void OobeScreensHandlerFactory::EstablishArcVmDataMigrationScreenPipe(
+    mojo::PendingReceiver<screens_login::mojom::ArcVmDataMigrationPageHandler>
+        receiver,
+    EstablishArcVmDataMigrationScreenPipeCallback callback) {
+  CHECK(WizardController::default_controller());
+  ArcVmDataMigrationScreen* arc_vm_data_migration =
+      WizardController::default_controller()
+          ->GetScreen<ArcVmDataMigrationScreen>();
+  arc_vm_data_migration->BindPageHandlerReceiver(std::move(receiver));
+  arc_vm_data_migration->PassPagePendingReceiverWithCallback(
+      std::move(callback));
 }
 
 void OobeScreensHandlerFactory::EstablishLocalDataLossWarningScreenPipe(

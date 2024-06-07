@@ -13,18 +13,21 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/oobe_icons.html.js';
 
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {ArcVmDataMigrationPageCallbackRouter, ArcVmDataMigrationPageHandlerRemote} from '../../mojom-webui/screens_login.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './arc_vm_data_migration.html.js';
 
-// Keep in sync with ArcVmDataMigrationScreenView::UIState.
+// Keep in sync with ArcVmDataMigrationPage_ArcVmUIState
 enum ArcVmDataMigrationUiState {
   LOADING = 'loading',
   WELCOME = 'welcome',
@@ -32,15 +35,6 @@ enum ArcVmDataMigrationUiState {
   PROGRESS = 'progress',
   SUCCESS = 'success',
   FAILURE = 'failure',
-}
-
-// Keep in sync with kUserAction* in arc_vm_data_migration_screen.cc.
-enum ArcVmDataMigrationUserAction {
-  SKIP = 'skip',
-  UPDATE = 'update',
-  RESUME = 'resume',
-  FINISH = 'finish',
-  REPORT = 'report',
 }
 
 const ArcVmDataMigrationScreenElementBase = mixinBehaviors(
@@ -111,9 +105,31 @@ export class ArcVmDataMigrationScreen extends
   private isConnectedToCharger: boolean;
   private migrationProgress: number;
   private estimatedRemainingTimeInString: string;
+  private callbackRouter: ArcVmDataMigrationPageCallbackRouter;
+  private handler: ArcVmDataMigrationPageHandlerRemote;
 
   constructor() {
     super();
+    this.callbackRouter = new ArcVmDataMigrationPageCallbackRouter();
+    this.handler = new ArcVmDataMigrationPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory
+        .establishArcVmDataMigrationScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
+    this.callbackRouter.setUIState.addListener(this.setUIState.bind(this));
+    this.callbackRouter.setRequiredFreeDiskSpace.addListener(
+        this.setRequiredFreeDiskSpace.bind(this));
+    this.callbackRouter.setMinimumBatteryPercent.addListener(
+        this.setMinimumBatteryPercent.bind(this));
+    this.callbackRouter.setBatteryState.addListener(
+        this.setBatteryState.bind(this));
+    this.callbackRouter.setMigrationProgress.addListener(
+        this.setMigrationProgress.bind(this));
+    this.callbackRouter.setEstimatedRemainingTime.addListener(
+        this.setEstimatedRemainingTime.bind(this));
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -123,17 +139,6 @@ export class ArcVmDataMigrationScreen extends
 
   override get UI_STEPS() {
     return ArcVmDataMigrationUiState;
-  }
-
-  override get EXTERNAL_API(): string[] {
-    return [
-      'setUIState',
-      'setRequiredFreeDiskSpace',
-      'setMinimumBatteryPercent',
-      'setBatteryState',
-      'setMigrationProgress',
-      'setEstimatedRemainingTime',
-    ];
   }
 
   override ready(): void {
@@ -170,8 +175,9 @@ export class ArcVmDataMigrationScreen extends
     this.migrationProgress = Math.floor(migrationProgress);
   }
 
-  setEstimatedRemainingTime(estimatedRemainingTimeInString: string): void {
-    this.estimatedRemainingTimeInString = estimatedRemainingTimeInString;
+  setEstimatedRemainingTime(estimatedRemainingTimeInString: String16): void {
+    this.estimatedRemainingTimeInString =
+        String.fromCharCode(...estimatedRemainingTimeInString.data);
   }
 
   private shouldDisableUpdateButton(
@@ -184,23 +190,23 @@ export class ArcVmDataMigrationScreen extends
   }
 
   private onSkipButtonClicked(): void {
-    this.userActed(ArcVmDataMigrationUserAction.SKIP);
+    this.handler.onSkipClicked();
   }
 
   private onUpdateButtonClicked(): void {
-    this.userActed(ArcVmDataMigrationUserAction.UPDATE);
+    this.handler.onUpdateClicked();
   }
 
   private onResumeButtonClicked(): void {
-    this.userActed(ArcVmDataMigrationUserAction.RESUME);
+    this.handler.onResumeClicked();
   }
 
   private onFinishButtonClicked(): void {
-    this.userActed(ArcVmDataMigrationUserAction.FINISH);
+    this.handler.onFinishClicked();
   }
 
   private onReportButtonClicked(): void {
-    this.userActed(ArcVmDataMigrationUserAction.REPORT);
+    this.handler.onReportClicked();
   }
 }
 

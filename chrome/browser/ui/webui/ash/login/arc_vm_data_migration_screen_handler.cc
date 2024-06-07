@@ -7,8 +7,6 @@
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/time_format.h"
-#include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
 
@@ -67,36 +65,6 @@ void ArcVmDataMigrationScreenHandler::DeclareLocalizedValues(
 
 void ArcVmDataMigrationScreenHandler::Show() {
   ShowInWebUI();
-}
-
-void ArcVmDataMigrationScreenHandler::SetUIState(UIState state) {
-  CallExternalAPI("setUIState", static_cast<int>(state));
-}
-
-void ArcVmDataMigrationScreenHandler::SetRequiredFreeDiskSpace(
-    uint64_t required_free_disk_space) {
-  CallExternalAPI("setRequiredFreeDiskSpace",
-                  ui::FormatBytes(required_free_disk_space));
-}
-
-void ArcVmDataMigrationScreenHandler::SetMinimumBatteryPercent(double percent) {
-  CallExternalAPI("setMinimumBatteryPercent", percent);
-}
-
-void ArcVmDataMigrationScreenHandler::SetBatteryState(bool enough,
-                                                      bool connected) {
-  CallExternalAPI("setBatteryState", enough, connected);
-}
-
-void ArcVmDataMigrationScreenHandler::SetMigrationProgress(double progress) {
-  CallExternalAPI("setMigrationProgress", progress);
-}
-
-void ArcVmDataMigrationScreenHandler::SetEstimatedRemainingTime(
-    const base::TimeDelta& delta) {
-  CallExternalAPI("setEstimatedRemainingTime",
-                  ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
-                                         ui::TimeFormat::LENGTH_SHORT, delta));
 }
 
 base::WeakPtr<ArcVmDataMigrationScreenView>

@@ -12,8 +12,10 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
 #include "chromeos/ash/components/dbus/arcvm_data_migrator/arcvm_data_migrator.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -28,6 +30,7 @@ class TickClock;
 namespace ash {
 
 class ScopedScreenLockBlocker;
+class ArcVmDataMigrationScreenView;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -46,10 +49,15 @@ enum class ArcVmDataMigrationScreenSetupFailure {
   kMaxValue = kStopArcVmAndArcVmUpstartJobsFailure,
 };
 
-class ArcVmDataMigrationScreen : public BaseScreen,
-                                 public ArcVmDataMigratorClient::Observer,
-                                 public chromeos::PowerManagerClient::Observer {
+class ArcVmDataMigrationScreen
+    : public BaseScreen,
+      public ArcVmDataMigratorClient::Observer,
+      public chromeos::PowerManagerClient::Observer,
+      public screens_login::mojom::ArcVmDataMigrationPageHandler,
+      public OobeMojoBinder<screens_login::mojom::ArcVmDataMigrationPageHandler,
+                            screens_login::mojom::ArcVmDataMigrationPage> {
  public:
+  using TView = ArcVmDataMigrationScreenView;
   explicit ArcVmDataMigrationScreen(
       base::WeakPtr<ArcVmDataMigrationScreenView> view);
   ~ArcVmDataMigrationScreen() override;
@@ -57,12 +65,22 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   ArcVmDataMigrationScreen& operator=(const ArcVmDataMigrationScreen&) = delete;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
+  void SetRemoteForTesting(
+      mojo::PendingRemote<screens_login::mojom::ArcVmDataMigrationPage>
+          pending_page);
+
+ protected:
+  // screens_login::mojom::ArcVmDataMigrationPageHandler
+  void OnSkipClicked() override;
+  void OnUpdateClicked() override;
+  void OnResumeClicked() override;
+  void OnFinishClicked() override;
+  void OnReportClicked() override;
 
  private:
   // BaseScreen overrides:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
 
   void OnArcVmAndArcVmUpstartJobsStopped(bool result);
 
@@ -100,13 +118,8 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   void RemoveArcDataAndShowFailureScreen();
   void OnArcDataRemoved(bool success);
 
-  void UpdateUIState(ArcVmDataMigrationScreenView::UIState state);
-
-  void HandleSkip();
-  void HandleUpdate();
-  void HandleResume();
-  void HandleFinish();
-  void HandleReport();
+  void UpdateUIState(
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState state);
 
   void HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure failure);
 
@@ -120,8 +133,8 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   raw_ptr<Profile> profile_;
   std::string user_id_hash_;
 
-  ArcVmDataMigrationScreenView::UIState current_ui_state_ =
-      ArcVmDataMigrationScreenView::UIState::kLoading;
+  screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState current_ui_state_ =
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kLoading;
 
   uint64_t disk_size_ = 0;
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -36,6 +37,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace ash {
 namespace {
@@ -44,9 +46,6 @@ constexpr char kArcRemoveDataJobName[] = "arc_2dremove_2ddata";
 
 constexpr char kProfileName[] = "user@gmail.com";
 constexpr char kGaiaId[] = "1234567890";
-
-constexpr char kUserActionUpdate[] = "update";
-constexpr char kUserActionResume[] = "resume";
 
 constexpr uint64_t kDefaultAndroidDataSize = 8ULL << 30;
 
@@ -93,16 +92,6 @@ class FakeArcVmDataMigrationScreenView final
       const ArcVmDataMigrationScreenView&) = delete;
 
   bool shown() { return shown_; }
-  UIState state() { return state_; }
-  bool minimum_free_disk_space_set() { return minimum_free_disk_space_set_; }
-  bool minimum_battery_percent_set() { return minimum_battery_percent_set_; }
-  bool has_enough_free_disk_space() { return has_enough_free_disk_space_; }
-  bool has_enough_battery() { return has_enough_battery_; }
-  bool is_connected_to_charger() { return is_connected_to_charger_; }
-  double migration_progress() { return migration_progress_; }
-  base::TimeDelta estimated_remaining_time() {
-    return estimated_remaining_time_;
-  }
 
   base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -110,8 +99,40 @@ class FakeArcVmDataMigrationScreenView final
 
  private:
   void Show() override { shown_ = true; }
-  void SetUIState(UIState state) override { state_ = state; }
-  void SetRequiredFreeDiskSpace(uint64_t required_free_disk_space) override {
+
+  bool shown_ = false;
+  base::WeakPtrFactory<ArcVmDataMigrationScreenView> weak_ptr_factory_{this};
+};
+
+class FakeArcVmDataMigrationPage
+    : public screens_login::mojom::ArcVmDataMigrationPage {
+ public:
+  FakeArcVmDataMigrationPage() = default;
+  ~FakeArcVmDataMigrationPage() override = default;
+  FakeArcVmDataMigrationPage(const FakeArcVmDataMigrationPage&) = delete;
+  FakeArcVmDataMigrationPage& operator=(const FakeArcVmDataMigrationPage&) =
+      delete;
+
+  screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState state() {
+    return state_;
+  }
+  bool minimum_free_disk_space_set() { return minimum_free_disk_space_set_; }
+  bool minimum_battery_percent_set() { return minimum_battery_percent_set_; }
+  bool has_enough_free_disk_space() { return has_enough_free_disk_space_; }
+  bool has_enough_battery() { return has_enough_battery_; }
+  bool is_connected_to_charger() { return is_connected_to_charger_; }
+  double migration_progress() { return migration_progress_; }
+  std::u16string estimated_remaining_time() {
+    return estimated_remaining_time_;
+  }
+
+ private:
+  void SetUIState(screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState
+                      state) override {
+    state_ = state;
+  }
+
+  void SetRequiredFreeDiskSpace(int64_t required_free_disk_space) override {
     minimum_free_disk_space_set_ = true;
     has_enough_free_disk_space_ = false;
   }
@@ -128,20 +149,19 @@ class FakeArcVmDataMigrationScreenView final
     migration_progress_ = progress;
   }
 
-  void SetEstimatedRemainingTime(const base::TimeDelta& delta) override {
+  void SetEstimatedRemainingTime(const ::std::u16string& delta) override {
     estimated_remaining_time_ = delta;
   }
 
-  bool shown_ = false;
-  UIState state_ = UIState::kLoading;
+  screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState state_ =
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kLoading;
   bool minimum_free_disk_space_set_ = false;
   bool minimum_battery_percent_set_ = false;
   bool has_enough_free_disk_space_ = true;
   bool has_enough_battery_ = false;
   bool is_connected_to_charger_ = false;
   double migration_progress_ = 0.0;
-  base::TimeDelta estimated_remaining_time_ = base::TimeDelta();
-  base::WeakPtrFactory<ArcVmDataMigrationScreenView> weak_ptr_factory_{this};
+  std::u16string estimated_remaining_time_;
 };
 
 // Fake ArcVmDataMigrationScreen that exposes whether it has encountered a fatal
@@ -158,6 +178,7 @@ class TestArcVmDataMigrationScreen : public ArcVmDataMigrationScreen {
   bool HasWakeLock() { return fake_wake_lock_.HasWakeLock(); }
 
  private:
+  friend class ArcVmDataMigrationScreenTest;
   void HandleRetriableFatalError() override {
     encountered_retriable_fatal_error_ = true;
   }
@@ -211,6 +232,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     screen_ = std::make_unique<TestArcVmDataMigrationScreen>(
         view_.get()->AsWeakPtr());
     screen_->SetTickClockForTesting(&tick_clock_);
+    screen_->SetRemoteForTesting(receiver_.BindNewPipeAndPassRemote());
 
     vm_observation_.Observe(FakeConciergeClient::Get());
   }
@@ -259,17 +281,9 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
   }
 
-  void PressUpdateButton() {
-    base::Value::List args;
-    args.Append(kUserActionUpdate);
-    screen_->HandleUserAction(args);
-  }
+  void PressUpdateButton() { screen_->OnUpdateClicked(); }
 
-  void PressResumeButton() {
-    base::Value::List args;
-    args.Append(kUserActionResume);
-    screen_->HandleUserAction(args);
-  }
+  void PressResumeButton() { screen_->OnResumeClicked(); }
 
   void SendDataMigrationProgress(uint64_t current_bytes, uint64_t total_bytes) {
     arc::data_migrator::DataMigrationProgress progress;
@@ -303,6 +317,9 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
 
   std::unique_ptr<TestArcVmDataMigrationScreen> screen_;
   std::unique_ptr<FakeArcVmDataMigrationScreenView> view_;
+  FakeArcVmDataMigrationPage fake_page_;
+  mojo::Receiver<screens_login::mojom::ArcVmDataMigrationPage> receiver_{
+      &fake_page_};
 
   base::ScopedObservation<ConciergeClient, ConciergeClient::VmObserver>
       vm_observation_{this};
@@ -312,9 +329,13 @@ TEST_F(ArcVmDataMigrationScreenTest, ScreenTransition) {
   EXPECT_FALSE(view_->shown());
   screen_->Show(wizard_context_.get());
   EXPECT_TRUE(view_->shown());
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kLoading);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kLoading);
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
 }
 
 TEST_F(ArcVmDataMigrationScreenTest, NotEnoughDiskSpace) {
@@ -322,27 +343,33 @@ TEST_F(ArcVmDataMigrationScreenTest, NotEnoughDiskSpace) {
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
-  EXPECT_TRUE(view_->minimum_free_disk_space_set());
-  EXPECT_FALSE(view_->has_enough_free_disk_space());
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
+  EXPECT_TRUE(fake_page_.minimum_free_disk_space_set());
+  EXPECT_FALSE(fake_page_.has_enough_free_disk_space());
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
 }
 
 TEST_F(ArcVmDataMigrationScreenTest, BatteryStateUpdate_InitiallyGood) {
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
-  EXPECT_TRUE(view_->minimum_battery_percent_set());
-  EXPECT_TRUE(view_->has_enough_battery());
-  EXPECT_TRUE(view_->is_connected_to_charger());
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
+  EXPECT_TRUE(fake_page_.minimum_battery_percent_set());
+  EXPECT_TRUE(fake_page_.has_enough_battery());
+  EXPECT_TRUE(fake_page_.is_connected_to_charger());
 
   SetBatteryState(/*enough=*/true, /*connected=*/false);
-  EXPECT_TRUE(view_->has_enough_battery());
-  EXPECT_FALSE(view_->is_connected_to_charger());
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(fake_page_.has_enough_battery());
+  EXPECT_FALSE(fake_page_.is_connected_to_charger());
 
   SetBatteryState(/*enough=*/false, /*connected=*/false);
-  EXPECT_FALSE(view_->has_enough_battery());
-  EXPECT_FALSE(view_->is_connected_to_charger());
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(fake_page_.has_enough_battery());
+  EXPECT_FALSE(fake_page_.is_connected_to_charger());
 
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
 }
@@ -352,18 +379,22 @@ TEST_F(ArcVmDataMigrationScreenTest, BatteryStateUpdate_InitiallyBad) {
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
-  EXPECT_TRUE(view_->minimum_battery_percent_set());
-  EXPECT_FALSE(view_->has_enough_battery());
-  EXPECT_FALSE(view_->is_connected_to_charger());
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
+  EXPECT_TRUE(fake_page_.minimum_battery_percent_set());
+  EXPECT_FALSE(fake_page_.has_enough_battery());
+  EXPECT_FALSE(fake_page_.is_connected_to_charger());
 
   SetBatteryState(/*enough=*/false, /*connected=*/true);
-  EXPECT_FALSE(view_->has_enough_battery());
-  EXPECT_TRUE(view_->is_connected_to_charger());
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(fake_page_.has_enough_battery());
+  EXPECT_TRUE(fake_page_.is_connected_to_charger());
 
   SetBatteryState(/*enough=*/true, /*connected=*/true);
-  EXPECT_TRUE(view_->has_enough_battery());
-  EXPECT_TRUE(view_->is_connected_to_charger());
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(fake_page_.has_enough_battery());
+  EXPECT_TRUE(fake_page_.is_connected_to_charger());
 
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
 }
@@ -408,7 +439,9 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcVmSuccess) {
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
   EXPECT_EQ(fake_concierge_client->stop_vm_call_count(), 1);
   EXPECT_TRUE(arc_vm_stopped_);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -433,7 +466,9 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcUpstartJobs) {
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
   EXPECT_TRUE(jobs_to_be_stopped.empty());
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
 }
@@ -483,7 +518,9 @@ TEST_F(ArcVmDataMigrationScreenTest, CreateDiskImageSuccess) {
 
   PressUpdateButton();
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kProgress);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kStarted);
   EXPECT_EQ(FakeConciergeClient::Get()->create_disk_image_call_count(), 1);
@@ -513,14 +550,24 @@ TEST_F(ArcVmDataMigrationScreenTest, MigrationInProgress) {
   SendDataMigrationProgress(0, 400);
   tick_clock_.Advance(base::Seconds(1));
   SendDataMigrationProgress(20, 400);
+  task_environment()->RunUntilIdle();
   // Note that here we rely on the precision of floating point calculation.
-  EXPECT_EQ(static_cast<int>(std::round(view_->migration_progress())), 5);
-  EXPECT_EQ(view_->estimated_remaining_time().InMilliseconds(), 19000);
+  EXPECT_EQ(static_cast<int>(std::round(fake_page_.migration_progress())), 5);
+  std::u16string remaining_time_string = ui::TimeFormat::Simple(
+      ui::TimeFormat::FORMAT_REMAINING, ui::TimeFormat::LENGTH_SHORT,
+      base::Milliseconds(19000));
+  EXPECT_EQ(fake_page_.estimated_remaining_time(), remaining_time_string);
   tick_clock_.Advance(base::Seconds(2));
   SendDataMigrationProgress(40, 400);
-  EXPECT_EQ(static_cast<int>(std::round(view_->migration_progress())), 10);
-  EXPECT_EQ(view_->estimated_remaining_time().InMilliseconds(), 18947);
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(static_cast<int>(std::round(fake_page_.migration_progress())), 10);
+  std::u16string remaining_time_string_1 = ui::TimeFormat::Simple(
+      ui::TimeFormat::FORMAT_REMAINING, ui::TimeFormat::LENGTH_SHORT,
+      base::Milliseconds(18947));
+  EXPECT_EQ(fake_page_.estimated_remaining_time(), remaining_time_string_1);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kProgress);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kStarted);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -532,11 +579,15 @@ TEST_F(ArcVmDataMigrationScreenTest, Resume) {
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kResume);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kResume);
 
   PressResumeButton();
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kProgress);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kStarted);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -551,7 +602,9 @@ TEST_F(ArcVmDataMigrationScreenTest,
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kFailure);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kFailure);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kFinished);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -572,7 +625,9 @@ TEST_F(ArcVmDataMigrationScreenTest,
   task_environment()->RunUntilIdle();
   PressResumeButton();
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kFailure);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kFailure);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kFinished);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -589,7 +644,10 @@ TEST_F(ArcVmDataMigrationScreenTest, MigrationSuccess) {
   progress.set_status(
       arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_SUCCESS);
   FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kSuccess);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kSuccess);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kFinished);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -607,7 +665,9 @@ TEST_F(ArcVmDataMigrationScreenTest, MigrationFailure) {
       arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_FAILED);
   FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kFailure);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kFailure);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kFinished);
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
@@ -631,7 +691,9 @@ TEST_F(ArcVmDataMigrationScreenTest, MigrationFailure_ArcDataRemovalFailed) {
       arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_FAILED);
   FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kFailure);
+  EXPECT_EQ(
+      fake_page_.state(),
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kFailure);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kFinished);
   EXPECT_TRUE(

@@ -61,6 +61,11 @@ class OobeScreensHandlerFactory
       mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
           receiver) override;
 
+  void EstablishArcVmDataMigrationScreenPipe(
+      mojo::PendingReceiver<screens_login::mojom::ArcVmDataMigrationPageHandler>
+          receiver,
+      EstablishArcVmDataMigrationScreenPipeCallback callback) override;
+
   void EstablishLocalDataLossWarningScreenPipe(
       mojo::PendingReceiver<
           screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver)

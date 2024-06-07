@@ -21,24 +21,9 @@ class ArcVmDataMigrationScreenView {
   inline constexpr static StaticOobeScreenId kScreenId{
       "arc-vm-data-migration", "ArcVmDataMigrationScreen"};
 
-  enum class UIState {
-    kLoading = 0,
-    kWelcome = 1,
-    kResume = 2,
-    kProgress = 3,
-    kSuccess = 4,
-    kFailure = 5,
-  };
-
   virtual ~ArcVmDataMigrationScreenView() = default;
 
   virtual void Show() = 0;
-  virtual void SetUIState(UIState state) = 0;
-  virtual void SetRequiredFreeDiskSpace(uint64_t required_free_disk_space) = 0;
-  virtual void SetMinimumBatteryPercent(double percent) = 0;
-  virtual void SetBatteryState(bool enough, bool connected) = 0;
-  virtual void SetMigrationProgress(double progress) = 0;
-  virtual void SetEstimatedRemainingTime(const base::TimeDelta& delta) = 0;
   virtual base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() = 0;
 };
 
@@ -62,12 +47,7 @@ class ArcVmDataMigrationScreenHandler final
 
   // ArcVmDataMigrationScreenView overrides:
   void Show() override;
-  void SetUIState(UIState state) override;
-  void SetRequiredFreeDiskSpace(uint64_t required_free_disk_space) override;
-  void SetMinimumBatteryPercent(double percent) override;
-  void SetBatteryState(bool enough, bool connected) override;
-  void SetMigrationProgress(double progress) override;
-  void SetEstimatedRemainingTime(const base::TimeDelta& delta) override;
+
   base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() override;
 
   base::WeakPtrFactory<ArcVmDataMigrationScreenView> weak_ptr_factory_{this};

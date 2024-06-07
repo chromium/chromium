@@ -5,6 +5,7 @@
 module ash.screens_factory.mojom;
 
 import "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom";
+import "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom";
 
@@ -52,6 +53,15 @@ interface ScreensFactory {
           handler);
 
   // ash.screens_login.mojom
+
+  // Establish a ArcVmDataMigrationScreen pipe for handling the communication
+  // for the ArcVmDataMigrationPageHandler and the ArcVmDataMigrationPage
+  // component.
+  EstablishArcVmDataMigrationScreenPipe(
+      pending_receiver<ash.screens_login.mojom.ArcVmDataMigrationPageHandler>
+          handler)
+      => (pending_receiver<ash.screens_login.mojom.ArcVmDataMigrationPage>
+              pending);
 
   // ash.screens_osauth.mojom
 
