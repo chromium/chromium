@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_user_data.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/performance_controls/performance_state_observer.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom-shared.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"

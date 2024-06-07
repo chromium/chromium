@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_side_panel_controller_utils.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller_utils.h"
 
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 

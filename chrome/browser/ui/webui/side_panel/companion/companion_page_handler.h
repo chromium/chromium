@@ -13,7 +13,7 @@
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

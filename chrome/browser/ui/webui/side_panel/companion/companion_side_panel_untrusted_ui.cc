@@ -6,8 +6,8 @@
 
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_side_panel_controller_utils.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"

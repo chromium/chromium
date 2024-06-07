@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_tab_helper.h"
 
 namespace content {
 class WebContents;

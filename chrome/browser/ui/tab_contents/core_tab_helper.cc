@@ -60,8 +60,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

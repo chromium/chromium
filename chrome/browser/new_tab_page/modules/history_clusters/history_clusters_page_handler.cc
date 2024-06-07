@@ -27,7 +27,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/history/core/browser/url_row.h"

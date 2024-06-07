@@ -14,7 +14,7 @@ namespace features {
 
 // `internal` code should be called outside this file with extreme caution.
 // The external code should call the utility functions defined in
-// chrome/browser/ui/side_panel/companion/companion_utils.h or
+// chrome/browser/ui/views/side_panel/companion/companion_utils.h or
 // chrome/browser/companion/core/utils.h.
 namespace internal {
 // This differs from the search companion by providing a separate WebUI that

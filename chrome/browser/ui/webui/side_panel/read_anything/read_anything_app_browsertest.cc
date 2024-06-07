@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"

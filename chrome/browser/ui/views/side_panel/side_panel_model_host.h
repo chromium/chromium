@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/side_panel/side_panel_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_model.h"
 #include "ui/views/layout/box_layout_view.h"
 
 // TODO(pbos): This should probably be a SidePanelModelHostView that

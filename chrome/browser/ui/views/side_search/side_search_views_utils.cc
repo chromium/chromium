@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_search/side_search_views_utils.h"
 
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
 namespace side_search {
 
