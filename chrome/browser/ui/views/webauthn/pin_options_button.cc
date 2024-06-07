@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
 
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -18,10 +20,10 @@ constexpr int kCheckIconSize = 16;
 std::u16string GetCommandIdLabel(int command_id) {
   switch (command_id) {
     case PinOptionsButton::CommandId::CHOOSE_SIX_DIGIT_PIN:
-      return u"Numbers (UT)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_OPTION_NUMBERS);
     case PinOptionsButton::CommandId::CHOOSE_ARBITRARY_PIN:
-      // TODO(enclave): Replace `and` with `&amp;` when adding translation.
-      return u"Letters and numbers (UT)";
+      return l10n_util::GetStringUTF16(
+          IDS_WEBAUTHN_GPM_PIN_OPTION_ALPHANUMERIC);
     default:
       NOTREACHED_IN_MIGRATION();
       return u"";
