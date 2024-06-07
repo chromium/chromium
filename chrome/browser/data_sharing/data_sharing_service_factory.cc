@@ -22,8 +22,8 @@
 #include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/data_sharing/data_sharing_service_factory_bridge.h"
 #include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
-#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace data_sharing {
@@ -64,7 +64,8 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
 
 #if BUILDFLAG(IS_ANDROID)
   ui_delegate = std::make_unique<DataSharingUIDelegateAndroid>(profile);
-  sdk_delegate = DataSharingSDKDelegate::CreateDelegate();
+  sdk_delegate = DataSharingSDKDelegate::CreateDelegate(
+      DataSharingServiceFactoryBridge::CreateJavaSDKDelegate());
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return new DataSharingServiceImpl(

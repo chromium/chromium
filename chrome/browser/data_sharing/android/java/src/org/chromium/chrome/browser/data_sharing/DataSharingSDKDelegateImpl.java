@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.data_sharing;
+package org.chromium.chrome.browser.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.components.data_sharing.DataSharingSDKDelegate;
+import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupResult;

@@ -25,15 +25,16 @@ using base::android::ScopedJavaLocalRef;
 namespace data_sharing {
 
 // static
-std::unique_ptr<DataSharingSDKDelegate>
-DataSharingSDKDelegate::CreateDelegate() {
-  return std::make_unique<DataSharingSDKDelegateAndroid>();
+std::unique_ptr<DataSharingSDKDelegate> DataSharingSDKDelegate::CreateDelegate(
+    ScopedJavaLocalRef<jobject> sdk_delegate) {
+  return std::make_unique<DataSharingSDKDelegateAndroid>(sdk_delegate);
 }
 
-DataSharingSDKDelegateAndroid::DataSharingSDKDelegateAndroid() {
+DataSharingSDKDelegateAndroid::DataSharingSDKDelegateAndroid(
+    const JavaRef<jobject>& sdk_delegate) {
   JNIEnv* env = AttachCurrentThread();
   java_obj_.Reset(env, Java_DataSharingSDKDelegateBridge_create(
-                           env, reinterpret_cast<int64_t>(this))
+                           env, reinterpret_cast<int64_t>(this), sdk_delegate)
                            .obj());
 }
 

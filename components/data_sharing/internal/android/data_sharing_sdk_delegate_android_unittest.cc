@@ -29,9 +29,9 @@ class DataSharingSDKDelegateAndroidTest : public testing::Test {
 
   void SetUp() override {
     JNIEnv* env = base::android::AttachCurrentThread();
-    delegate_ = new DataSharingSDKDelegateAndroid();
-    Java_DataSharingSDKDelegateAndroidTestSupport_setUpBridge(
-        env, delegate_->GetJavaObject());
+    delegate_ = new DataSharingSDKDelegateAndroid(
+        Java_DataSharingSDKDelegateAndroidTestSupport_createDelegateTestImpl(
+            env));
   }
 
   data_sharing_pb::CreateGroupResult TestCreateGroup() {

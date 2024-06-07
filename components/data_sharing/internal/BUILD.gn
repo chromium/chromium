@@ -126,7 +126,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/DataSharingConversionBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateBridge.java",
-      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateImpl.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
       "android/java/src/org/chromium/components/data_sharing/ObserverBridge.java",
     ]

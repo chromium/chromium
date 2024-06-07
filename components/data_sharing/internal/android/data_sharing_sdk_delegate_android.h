@@ -34,7 +34,7 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
 
   using GetStatusCallback = base::OnceCallback<void(const absl::Status&)>;
 
-  DataSharingSDKDelegateAndroid();
+  explicit DataSharingSDKDelegateAndroid(const JavaRef<jobject>& sdk_delegate);
   ~DataSharingSDKDelegateAndroid() override;
 
   // Disallow copy/assign.

@@ -3114,6 +3114,8 @@ static_library("browser") {
       "content_settings/request_desktop_site_web_contents_observer_android.cc",
       "content_settings/request_desktop_site_web_contents_observer_android.h",
       "data_sharing/android/data_sharing_service_factory_android.cc",
+      "data_sharing/data_sharing_service_factory_bridge.cc",
+      "data_sharing/data_sharing_service_factory_bridge.h",
       "data_sharing/data_sharing_ui_delegate_android.cc",
       "data_sharing/data_sharing_ui_delegate_android.h",
       "device_reauth/android/device_authenticator_android.cc",

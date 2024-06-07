@@ -13,12 +13,13 @@ if (is_android) {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
     ]
 
     deps = [
+      ":delegate_java",
       ":java",
-      ":ui_delegate_java",
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
@@ -69,11 +70,12 @@ if (is_android) {
       "//url:url_java",
     ]
 
-    public_deps = [ ":ui_delegate_java" ]
+    public_deps = [ ":delegate_java" ]
   }
 
-  android_library("ui_delegate_java") {
+  android_library("delegate_java") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingSDKDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
     ]
@@ -84,6 +86,8 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:url_java",
@@ -137,6 +141,7 @@ if (is_android) {
   generate_jni("jni_headers") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
     ]
   }

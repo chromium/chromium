@@ -10,6 +10,12 @@
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+
+using base::android::ScopedJavaLocalRef;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace data_sharing {
 
 // Used by DataSharingService to provide access to SDK.
@@ -25,7 +31,8 @@ class DataSharingSDKDelegate {
   virtual ~DataSharingSDKDelegate() = default;
 
 #if BUILDFLAG(IS_ANDROID)
-  static std::unique_ptr<DataSharingSDKDelegate> CreateDelegate();
+  static std::unique_ptr<DataSharingSDKDelegate> CreateDelegate(
+      ScopedJavaLocalRef<jobject> sdk_delegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   virtual void CreateGroup(
