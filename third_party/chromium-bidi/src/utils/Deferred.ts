@@ -18,11 +18,19 @@
 export class Deferred<T> implements Promise<T> {
   #isFinished = false;
   #promise: Promise<T>;
+  #result: T | undefined;
   #resolve!: (value: T) => void;
   #reject!: (reason: unknown) => void;
 
   get isFinished(): boolean {
     return this.#isFinished;
+  }
+
+  get result(): T {
+    if (!this.#isFinished) {
+      throw new Error('Deferred is not finished yet');
+    }
+    return this.#result!;
   }
 
   constructor() {
@@ -51,6 +59,7 @@ export class Deferred<T> implements Promise<T> {
   }
 
   resolve(value: T) {
+    this.#result = value;
     if (!this.#isFinished) {
       this.#isFinished = true;
       this.#resolve(value);

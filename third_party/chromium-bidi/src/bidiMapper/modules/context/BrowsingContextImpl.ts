@@ -73,7 +73,8 @@ export class BrowsingContextImpl {
   readonly #realmStorage: RealmStorage;
   #loaderId?: Protocol.Network.LoaderId;
   #cdpTarget: CdpTarget;
-  #maybeDefaultRealm?: Realm;
+  // The deferred will be resolved when the default realm is created.
+  #defaultRealmDeferred = new Deferred<Realm>();
   readonly #logger?: LoggerFn;
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
@@ -241,14 +242,6 @@ export class BrowsingContextImpl {
     this.directChildren.map((child) => child.dispose());
   }
 
-  get #defaultRealm(): Realm {
-    assert(
-      this.#maybeDefaultRealm,
-      `No default realm for browsing context ${this.#id}`
-    );
-    return this.#maybeDefaultRealm;
-  }
-
   get cdpTarget(): CdpTarget {
     return this.#cdpTarget;
   }
@@ -275,7 +268,8 @@ export class BrowsingContextImpl {
 
   async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
     if (sandbox === undefined || sandbox === '') {
-      return this.#defaultRealm;
+      // Default realm is not guaranteed to be created at this point, so return a deferred.
+      return await this.#defaultRealmDeferred;
     }
 
     let maybeSandboxes = this.#realmStorage.findRealms({
@@ -462,7 +456,16 @@ export class BrowsingContextImpl {
             sandbox = name;
             // Sandbox should have the same origin as the context itself, but in CDP
             // it has an empty one.
-            origin = this.#defaultRealm.origin;
+            if (!this.#defaultRealmDeferred.isFinished) {
+              this.#logger?.(
+                LogType.debugError,
+                'Unexpectedly, isolated realm created before the default one'
+              );
+            }
+            origin = this.#defaultRealmDeferred.isFinished
+              ? this.#defaultRealmDeferred.result.origin
+              : // This fallback is not expected to be ever reached.
+                '';
             break;
           case 'default':
             origin = serializeOrigin(params.context.origin);
@@ -484,7 +487,7 @@ export class BrowsingContextImpl {
         );
 
         if (auxData.isDefault) {
-          this.#maybeDefaultRealm = realm;
+          this.#defaultRealmDeferred.resolve(realm);
 
           // Initialize ChannelProxy listeners for all the channels of all the
           // preload scripts related to this BrowsingContext.
@@ -503,6 +506,14 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextDestroyed',
       (params) => {
+        if (
+          this.#defaultRealmDeferred.isFinished &&
+          this.#defaultRealmDeferred.result.executionContextId ===
+            params.executionContextId
+        ) {
+          this.#defaultRealmDeferred = new Deferred<Realm>();
+        }
+
         this.#realmStorage.deleteRealms({
           cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
@@ -511,6 +522,12 @@ export class BrowsingContextImpl {
     );
 
     this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+      if (!this.#defaultRealmDeferred.isFinished) {
+        this.#defaultRealmDeferred.reject(
+          new UnknownErrorException('execution contexts cleared')
+        );
+      }
+      this.#defaultRealmDeferred = new Deferred<Realm>();
       this.#realmStorage.deleteRealms({
         cdpSessionId: this.#cdpTarget.cdpSessionId,
       });
@@ -1029,7 +1046,7 @@ export class BrowsingContextImpl {
   ): Promise<BrowsingContext.LocateNodesResult> {
     // TODO: create a dedicated sandbox instead of `#defaultRealm`.
     return await this.#locateNodesByLocator(
-      this.#defaultRealm,
+      await this.#defaultRealmDeferred,
       params.locator,
       params.startNodes ?? [],
       params.maxNodeCount,
@@ -1263,7 +1280,7 @@ export class BrowsingContextImpl {
 
         // The next two commands cause a11y caches for the target to be
         // preserved. We probably do not need to disable them if the
-        // client is using a11y features but we could by calling
+        // client is using a11y features, but we could by calling
         // Accessibility.disable.
         await Promise.all([
           this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable'),
