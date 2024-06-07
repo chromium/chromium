@@ -68,6 +68,9 @@ class BirchKeyedService : public KeyedService,
   void set_file_suggest_provider_for_test(BirchDataProvider* provider) {
     file_suggest_provider_for_test_ = provider;
   }
+  void set_last_active_provider_for_test(BirchDataProvider* provider) {
+    last_active_provider_for_test_ = provider;
+  }
 
  private:
   void ShutdownBirch();
@@ -102,8 +105,9 @@ class BirchKeyedService : public KeyedService,
   // that type.
   raw_ptr<BirchDataProvider> calendar_provider_for_test_;
 
-  // This is a member for consistency with `calendar_provider_for_test`.
+  // These are members for consistency with `calendar_provider_for_test`.
   raw_ptr<BirchDataProvider> file_suggest_provider_for_test_;
+  raw_ptr<BirchDataProvider> last_active_provider_for_test_;
 };
 
 }  // namespace ash

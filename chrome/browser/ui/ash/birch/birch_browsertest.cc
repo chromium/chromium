@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
@@ -86,17 +87,39 @@ class TestFileSuggestProvider : public BirchDataProvider {
   }
 };
 
-// A new window delegate that records opened files.
+// A last active provider that provides a single URL.
+class TestLastActiveProvider : public BirchDataProvider {
+ public:
+  TestLastActiveProvider() = default;
+  ~TestLastActiveProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    std::vector<BirchLastActiveItem> items;
+    items.emplace_back(u"item", GURL("http://example.com/"), base::Time(),
+                       ui::ImageModel());
+    Shell::Get()->birch_model()->SetLastActiveItems(std::move(items));
+  }
+};
+
+// A new window delegate that records opened files and URLs.
 class MockNewWindowDelegate : public TestNewWindowDelegate {
  public:
   MockNewWindowDelegate() = default;
   ~MockNewWindowDelegate() override = default;
 
   // NewWindowDelegate:
+  void OpenUrl(const GURL& url,
+               OpenUrlFrom from,
+               Disposition disposition) override {
+    opened_url_ = url;
+  }
+
   void OpenFile(const base::FilePath& file_path) override {
     opened_file_ = file_path;
   }
 
+  GURL opened_url_;
   base::FilePath opened_file_;
 };
 
@@ -324,6 +347,75 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
 
   // Clicking the button should attempt to open the file.
   EXPECT_EQ(window_delegate_ptr->opened_file_, base::FilePath("test-path"));
+
+  // Avoid dangling pointers.
+  window_delegate_ptr = nullptr;
+}
+
+IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
+  // Set up a last active provider that provides a single chip.
+  auto* birch_keyed_service = GetBirchKeyedService();
+  TestLastActiveProvider last_active_provider;
+  birch_keyed_service->set_last_active_provider_for_test(&last_active_provider);
+
+  // Last active chips only show in the morning so force morning in the ranker.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kBirchIsMorning);
+
+  // Disable the prefs for data providers other than last active. This ensures
+  // the data is fresh once the last active provider replies.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Ensure the item remover is initialized, otherwise data fetches won't
+  // complete.
+  EnsureItemRemoverInitialized();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Enter overview, which triggers a birch data fetch.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  auto test_api = std::make_unique<OverviewGridTestApi>(root);
+  EXPECT_TRUE(test_api->birch_bar_view());
+  ASSERT_EQ(test_api->GetBirchChips().size(), 1u);
+  BirchChipButtonBase* button = test_api->GetBirchChips()[0];
+  EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kLastActive);
+
+  // Reset the test API to avoid danging pointers when we exit overview below.
+  test_api.reset();
+
+  // Clear out the existing NewWindowDelegateProvider so we can replace it with
+  // a mock (there are CHECKs that prevent doing this without the reset).
+  ChromeBrowserMainExtraPartsAsh::Get()
+      ->ResetNewWindowDelegateProviderForTest();
+  auto window_delegate = std::make_unique<MockNewWindowDelegate>();
+  auto* window_delegate_ptr = window_delegate.get();
+  TestNewWindowDelegateProvider window_delegate_provider(
+      std::move(window_delegate));
+
+  // Clicking the button closes overview and destroys the button, so avoid a
+  // dangling pointer with std::exchange.
+  ClickOnView(std::exchange(button, nullptr));
+
+  // Clicking the button should attempt to open the URL.
+  EXPECT_EQ(window_delegate_ptr->opened_url_, GURL("http://example.com/"));
 
   // Avoid dangling pointers.
   window_delegate_ptr = nullptr;

@@ -81,6 +81,9 @@ BirchDataProvider* BirchKeyedService::GetRecentTabsProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetLastActiveProvider() {
+  if (last_active_provider_for_test_) {
+    return last_active_provider_for_test_;
+  }
   return last_active_provider_.get();
 }
 
