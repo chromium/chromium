@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -48,8 +49,9 @@ constexpr auto kSubmissionSource =
 
 constexpr char kNonCommerceUrl[] = "https://www.foo.com";
 constexpr char kCommerceUrl[] = "https://www.buy-stuff.com/checkout.html";
-
 constexpr char kManagedDomain[] = "corporate.com";
+
+constexpr char kUmaSubmission[] = "PlusAddresses.Submission";
 
 // Short-hands for the bucket enum used to record bucketed plus address counts.
 constexpr int64_t kNoPlusAddress = 0;
@@ -186,7 +188,15 @@ struct PlusAddressSubmissionTestCase {
     std::string main_frame_url = kNonCommerceUrl;
   };
   const Input input;
-  const std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics> outcome;
+
+  const std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics> ukms;
+  struct Uma {
+    // If set, contains the value of the single `PlusAddresses.Submission` that
+    // was emitted. Otherwise, no `PlusAddresses.Submission` emission is
+    // expected.
+    std::optional<bool> submitted_plus_address;
+  };
+  const Uma uma;
 };
 
 class PlusAddressSubmissionTestWithParam
@@ -196,6 +206,7 @@ class PlusAddressSubmissionTestWithParam
 // Parametrized test that checks that the expected UKM is recorded. The test
 // simulates that the user is logged in and submits a previously focused form
 TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
+  base::HistogramTester histogram_tester;
   const PlusAddressSubmissionTestCase::Input& input = GetParam().input;
 
   AccountInfo account_info = identity_env().MakeAccountAvailable(
@@ -224,7 +235,14 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
   form.fields[0].set_value(input.submitted_value);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
                                      kSubmissionSource);
-  EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().outcome));
+  EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().ukms));
+  const PlusAddressSubmissionTestCase::Uma& uma = GetParam().uma;
+  if (uma.submitted_plus_address) {
+    histogram_tester.ExpectUniqueSample(kUmaSubmission,
+                                        uma.submitted_plus_address.value(), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(kUmaSubmission, 0);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -240,7 +258,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .suggestion_type = SuggestionType::kCreateNewPlusAddress,
                       .plus_address_count = 0,
                       .submitted_value = kSamplePlusAddress_U16},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kNoPlusAddress,
@@ -249,7 +267,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/true,
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kNoPasswordForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = true}},
         // Submission of an email form after seeing combined plus address &
         // Autocomplete suggestions and creating and filling a new plus address.
         PlusAddressSubmissionTestCase{
@@ -258,7 +277,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .suggestion_type = SuggestionType::kCreateNewPlusAddress,
                       .plus_address_count = 0,
                       .submitted_value = kSamplePlusAddress_U16},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kNoPlusAddress,
@@ -267,7 +286,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/true,
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kNoPasswordForm,
-                SuggestionContext::kAutocomplete)}},
+                SuggestionContext::kAutocomplete)},
+            .uma = {.submitted_plus_address = true}},
         // Submission of an email form after filling an existing plus address.
         PlusAddressSubmissionTestCase{
             .input =
@@ -276,7 +296,7 @@ INSTANTIATE_TEST_SUITE_P(
                  .suggestion_type = SuggestionType::kFillExistingPlusAddress,
                  .plus_address_count = 1,
                  .submitted_value = kSamplePlusAddress_U16},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kOneToThreePlusAddresses,
@@ -285,7 +305,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/false,
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kSingleUsernameForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = true}},
         // Submission from a managed account.
         PlusAddressSubmissionTestCase{
             .input =
@@ -295,7 +316,7 @@ INSTANTIATE_TEST_SUITE_P(
                  .plus_address_count = 1,
                  .submitted_value = kSamplePlusAddress_U16,
                  .is_managed_profile = true},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kOneToThreePlusAddresses,
@@ -304,7 +325,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/false,
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kSingleUsernameForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = true}},
         // Submission from a main frame URL with a checkout context.
         PlusAddressSubmissionTestCase{
             .input =
@@ -314,7 +336,7 @@ INSTANTIATE_TEST_SUITE_P(
                  .plus_address_count = 1,
                  .submitted_value = kSamplePlusAddress_U16,
                  .main_frame_url = kCommerceUrl},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kOneToThreePlusAddresses,
@@ -323,7 +345,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/false,
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kSingleUsernameForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = true}},
         // Submission of an email form with GAIA email after seeing a fill plus
         // address suggestion.
         PlusAddressSubmissionTestCase{
@@ -333,7 +356,7 @@ INSTANTIATE_TEST_SUITE_P(
                  .suggestion_type = SuggestionType::kFillExistingPlusAddress,
                  .plus_address_count = 4,
                  .submitted_value = kGaiaAccount_U16},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kMoreThanThreePlusAddresses,
@@ -342,7 +365,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/false,
                 /*submitted_plus_address=*/false,
                 PasswordFormType::kSingleUsernameForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = false}},
         // Submission of an email form with GAIA email after seeing a create
         // plus address suggestion.
         PlusAddressSubmissionTestCase{
@@ -352,7 +376,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .suggestion_type = SuggestionType::kCreateNewPlusAddress,
                       .plus_address_count = 1,
                       .submitted_value = kGaiaAccount_U16},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/1,
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kOneToThreePlusAddresses,
@@ -361,7 +385,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/false,
                 /*submitted_plus_address=*/false,
                 PasswordFormType::kNoPasswordForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = false}},
         // Submission of a form with many fields - the field counts are
         // bucketed.
         PlusAddressSubmissionTestCase{
@@ -373,7 +398,7 @@ INSTANTIATE_TEST_SUITE_P(
                       .suggestion_type = SuggestionType::kCreateNewPlusAddress,
                       .plus_address_count = 1,
                       .submitted_value = kSamplePlusAddress_U16},
-            .outcome = {CreateUkmMetrics(
+            .ukms = {CreateUkmMetrics(
                 /*field_count_browser_form=*/38,
                 /*field_count_renderer_form=*/38,
                 /*plus_address_count=*/kOneToThreePlusAddresses,
@@ -382,7 +407,8 @@ INSTANTIATE_TEST_SUITE_P(
                 /*is_newly_created=*/true,
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kNoPasswordForm,
-                SuggestionContext::kAutofillProfileOnEmailField)}},
+                SuggestionContext::kAutofillProfileOnEmailField)},
+            .uma = {.submitted_plus_address = true}},
         // Submission of an email form after filling no email address at all.
         PlusAddressSubmissionTestCase{
             .input =
@@ -391,6 +417,7 @@ INSTANTIATE_TEST_SUITE_P(
                  .suggestion_type = SuggestionType::kFillExistingPlusAddress,
                  .plus_address_count = kOneToThreePlusAddresses,
                  .submitted_value = u"Some name"},
-            .outcome = {}}));
+            .ukms = {},
+            .uma = {}}));
 
 }  // namespace plus_addresses::metrics

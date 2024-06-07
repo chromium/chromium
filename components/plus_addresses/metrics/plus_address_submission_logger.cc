@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -190,6 +191,10 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
       record.SetSubmittedPlusAddress(plus_address_submitted);
       record.Record(manager.client().GetUkmRecorder());
       has_recorded_submission = true;
+
+      // Record a subset of the data also in form of UMAs.
+      base::UmaHistogramBoolean("PlusAddresses.Submission",
+                                plus_address_submitted);
     }
     records_for_manager.erase(it);
   }
