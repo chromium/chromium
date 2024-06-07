@@ -26,7 +26,9 @@ std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
       fend_core::evaluate(base::UTF16ToUTF8(query));
   if (result.has_value()) {
     return PickerSearchResult::Text(
-        base::UTF8ToUTF16(*result),
+        base::UTF8ToUTF16(*result), u"",
+        ui::ImageModel::FromVectorIcon(
+            kPickerUnitsMathsIcon, cros_tokens::kCrosSysOnSurface, kIconSize),
         PickerSearchResult::TextData::Source::kMath);
   }
   return std::nullopt;
@@ -38,7 +40,7 @@ std::vector<PickerSearchResult> PickerMathExamples() {
     results.push_back(PickerSearchResult::SearchRequest(
         query,
         ui::ImageModel::FromVectorIcon(
-            kPickerConversionIcon, cros_tokens::kCrosSysOnSurface, kIconSize)));
+            kPickerUnitsMathsIcon, cros_tokens::kCrosSysOnSurface, kIconSize)));
   }
   return results;
 }
