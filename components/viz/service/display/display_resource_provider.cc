@@ -34,7 +34,7 @@ base::AtomicSequenceNumber g_next_display_resource_provider_tracing_id;
 DisplayResourceProvider::DisplayResourceProvider(Mode mode)
     : mode_(mode),
       tracing_id_(g_next_display_resource_provider_tracing_id.GetNext()) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
   // TODO(crbug.com/40430067): Get this working in Android Webview.
@@ -60,7 +60,7 @@ void DisplayResourceProvider::Destroy() {
 bool DisplayResourceProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& resource_entry : resources_) {
     const auto& resource = resource_entry.second;
@@ -196,7 +196,7 @@ const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(
 
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
                                          const SurfaceId& surface_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int child_id = next_child_++;
   Child& child = children_[child_id];
@@ -216,7 +216,7 @@ void DisplayResourceProvider::DestroyChild(int child_id) {
 void DisplayResourceProvider::ReceiveFromChild(
     int child_id,
     const std::vector<TransferableResource>& resources) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto child_it = children_.find(child_id);
   DCHECK(child_it != children_.end());
@@ -259,7 +259,7 @@ void DisplayResourceProvider::ReceiveFromChild(
 void DisplayResourceProvider::DeclareUsedResourcesFromChild(
     int child,
     const ResourceIdSet& resources_from_child) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto child_it = children_.find(child);
   DCHECK(child_it != children_.end());
@@ -286,7 +286,7 @@ gpu::Mailbox DisplayResourceProvider::GetMailbox(ResourceId resource_id) const {
 
 const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
 DisplayResourceProvider::GetChildToParentMap(int child) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = children_.find(child);
   DCHECK(it != children_.end());
   DCHECK(!it->second.marked_for_deletion);
@@ -300,7 +300,7 @@ bool DisplayResourceProvider::InUse(ResourceId id) const {
 
 const DisplayResourceProvider::ChildResource*
 DisplayResourceProvider::GetResource(ResourceId id) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(id);
   auto it = resources_.find(id);
   DCHECK(it != resources_.end());
@@ -315,7 +315,7 @@ DisplayResourceProvider::ChildResource* DisplayResourceProvider::GetResource(
 
 const DisplayResourceProvider::ChildResource*
 DisplayResourceProvider::TryGetResource(ResourceId id) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!id)
     return nullptr;
   auto it = resources_.find(id);
@@ -384,7 +384,7 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     ChildMap::iterator child_it,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_it != children_.end());
   Child& child_info = child_it->second;
 
@@ -415,7 +415,7 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
 
 void DisplayResourceProvider::DestroyChildInternal(ChildMap::iterator it,
                                                    DeleteStyle style) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Child& child = it->second;
   DCHECK(style == FOR_SHUTDOWN || !child.marked_for_deletion);

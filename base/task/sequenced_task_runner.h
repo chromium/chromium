@@ -32,6 +32,9 @@ class AlsaPcmOutputStream;
 class AlsaPcmInputStream;
 class FakeAudioWorker;
 }  // namespace media
+namespace viz {
+class ExternalBeginFrameSourceWin;
+}  // namespace viz
 namespace webrtc {
 class ThreadWrapper;
 }  // namespace webrtc
@@ -85,6 +88,7 @@ class RunOrPostTaskPassKey {
 
   friend class IPC::ChannelAssociatedGroupController;
   friend class RunOrPostTaskPassKeyForTesting;
+  friend class viz::ExternalBeginFrameSourceWin;
 };
 
 class PostDelayedTaskPassKeyForTesting : public PostDelayedTaskPassKey {};

@@ -6,10 +6,19 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 
 namespace viz {
+
+namespace {
+
+BASE_FEATURE(kExternalBeginFrameSourceWinUsesRunOrPostTask,
+             "ExternalBeginFrameSourceWinUsesRunOrPostTask",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 ExternalBeginFrameSourceWin::ExternalBeginFrameSourceWin(
     uint32_t restart_id,
@@ -25,13 +34,22 @@ ExternalBeginFrameSourceWin::~ExternalBeginFrameSourceWin() {
 
 void ExternalBeginFrameSourceWin::OnVSync(base::TimeTicks vsync_time,
                                           base::TimeDelta vsync_interval) {
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExternalBeginFrameSourceWin::OnVSync,
-                       weak_factory_.GetWeakPtr(), vsync_time, vsync_interval));
-    return;
+  auto callback =
+      base::BindOnce(&ExternalBeginFrameSourceWin::OnVSyncOnSequence,
+                     weak_factory_.GetWeakPtr(), vsync_time, vsync_interval);
+  if (base::FeatureList::IsEnabled(
+          kExternalBeginFrameSourceWinUsesRunOrPostTask)) {
+    task_runner_->RunOrPostTask(base::subtle::RunOrPostTaskPassKey(), FROM_HERE,
+                                std::move(callback));
+  } else {
+    task_runner_->PostTask(FROM_HERE, std::move(callback));
   }
+}
+
+void ExternalBeginFrameSourceWin::OnVSyncOnSequence(
+    base::TimeTicks vsync_time,
+    base::TimeDelta vsync_interval) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   vsync_interval_ = vsync_interval;
   if (skip_next_vsync_) {
     TRACE_EVENT_INSTANT0("gpu",

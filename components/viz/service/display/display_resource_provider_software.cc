@@ -94,7 +94,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
 void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id,
                                                     const SkImage* sk_image) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ChildResource* resource = GetResource(id);
   DCHECK(!resource->is_gpu_resource_type());
   if (sk_image) {

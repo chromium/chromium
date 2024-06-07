@@ -57,7 +57,7 @@ SurfaceManager::SurfaceManager(
                        LocalSurfaceId(1u, base::UnguessableToken::Create())),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       max_uncommitted_frames_(max_uncommitted_frames) {
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // Android WebView doesn't have a task runner and doesn't need the timer.
   if (base::SequencedTaskRunner::HasCurrentDefault())
@@ -115,7 +115,7 @@ Surface* SurfaceManager::CreateSurface(
     base::WeakPtr<SurfaceClient> surface_client,
     const SurfaceInfo& surface_info,
     const SurfaceId& pending_copy_surface_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(surface_info.is_valid());
   DCHECK(surface_client);
 
@@ -149,7 +149,7 @@ Surface* SurfaceManager::CreateSurface(
 }
 
 void SurfaceManager::MarkSurfaceForDestruction(const SurfaceId& surface_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(surface_map_.count(surface_id));
   for (auto& observer : observer_list_)
     observer.OnSurfaceMarkedForDestruction(surface_id);
@@ -179,7 +179,7 @@ std::vector<SurfaceId> SurfaceManager::GetCreatedSurfaceIds() const {
 
 void SurfaceManager::AddSurfaceReferences(
     const std::vector<SurfaceReference>& references) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& reference : references)
     AddSurfaceReferenceImpl(reference);
@@ -187,7 +187,7 @@ void SurfaceManager::AddSurfaceReferences(
 
 void SurfaceManager::RemoveSurfaceReferences(
     const std::vector<SurfaceReference>& references) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& reference : references)
     RemoveSurfaceReferenceImpl(reference);
@@ -489,7 +489,7 @@ void SurfaceManager::ExpireOldTemporaryReferences() {
 }
 
 Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = surface_map_.find(surface_id);
   if (it == surface_map_.end())
     return nullptr;
@@ -500,7 +500,7 @@ bool SurfaceManager::SurfaceModified(
     const SurfaceId& surface_id,
     const BeginFrameAck& ack,
     SurfaceObserver::HandleInteraction handle_interaction) {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool changed = false;
   for (auto& observer : observer_list_)
     changed |= observer.OnSurfaceDamaged(surface_id, ack, handle_interaction);
@@ -508,7 +508,7 @@ bool SurfaceManager::SurfaceModified(
 }
 
 void SurfaceManager::FirstSurfaceActivation(const SurfaceInfo& surface_info) {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& observer : observer_list_)
     observer.OnFirstSurfaceActivation(surface_info);
@@ -545,13 +545,13 @@ void SurfaceManager::SurfaceDestroyed(Surface* surface) {
 
 void SurfaceManager::SurfaceDamageExpected(const SurfaceId& surface_id,
                                            const BeginFrameArgs& args) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_)
     observer.OnSurfaceDamageExpected(surface_id, args);
 }
 
 void SurfaceManager::DestroySurfaceInternal(const SurfaceId& surface_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = surface_map_.find(surface_id);
   DCHECK(it != surface_map_.end());
   // Make sure that the surface is removed from the map before being actually
@@ -683,7 +683,7 @@ void SurfaceManager::MaybeGarbageCollectAllocationGroups() {
 
 bool SurfaceManager::HasBlockedEmbedder(
     const FrameSinkId& frame_sink_id) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = frame_sink_id_to_allocation_groups_.find(frame_sink_id);
   if (it == frame_sink_id_to_allocation_groups_.end())
     return false;

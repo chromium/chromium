@@ -46,6 +46,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceWin
   void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
 
  private:
+  void OnVSyncOnSequence(base::TimeTicks vsync_time, base::TimeDelta interval);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   BeginFrameArgsGenerator begin_frame_args_generator_;

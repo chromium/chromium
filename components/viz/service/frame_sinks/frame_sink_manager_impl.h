@@ -20,9 +20,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
@@ -479,7 +479,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   base::flat_map<uint32_t, base::ScopedClosureRunner> cached_back_buffers_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // |video_detector_| is instantiated lazily in order to avoid overhead on
   // platforms that don't need video detection.

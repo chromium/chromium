@@ -17,7 +17,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -359,7 +359,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   void SetBatchReturnResources(bool aggregate);
   void TryFlushBatchedResources();
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   const Mode mode_;
 
   ResourceMap resources_;
