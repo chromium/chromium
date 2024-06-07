@@ -117,7 +117,7 @@ enum AcceleratorAction {
   kToggleOverview,
   kToggleProjectorMarker,
   kToggleResizeLockMenu,
-  kToggleSnapGroupWindowsGroupAndUngroup,
+  kCreateSnapGroup,
   kToggleSnapGroupWindowsMinimizeAndRestore,
   kToggleSpokenFeedback,
   kToggleStylusTools,

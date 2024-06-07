@@ -3060,6 +3060,36 @@ TEST_F(SnapGroupTest, RecallSnapGroupWontStartPartialOverview) {
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w4.get()));
 }
 
+// Verify that 'Search + Shift + G' creates a Snap Group from two snapped
+// windows.
+TEST_F(SnapGroupTest, UseShortcutToGroupSnappedWindows) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+
+  // Press 'Search + Shift + G' to to group `w1` and `w2`.
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Press the shortcut again and the windows will still be grouped.
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(snap_group_divider());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDividerTest:
 
@@ -6763,6 +6793,46 @@ TEST_F(SnapGroupSnapToReplaceTest, DoNotSnapToReplaceSnapGroupInOverview) {
       snap_group_controller->AreWindowsInSnapGroup(w0.get(), w1.get()));
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w0.get(), w2.get()));
+}
+
+// Verify 'Search + Shift + G' replaces the window on the same side when a
+// snapped window is stacked on a Snap Group.
+TEST_F(SnapGroupSnapToReplaceTest, UseShortcutToGroupPerformSnapToReplace) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  // Create a snapped `w3` stacked above the Snap Group.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+
+  auto* event_generator = GetEventGenerator();
+
+  // Press 'Search + Shift + G' to perform snap-to-replace i.e. replacing `w1`
+  // in the Snap Group with `w3`.
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_TRUE(snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w3.get(), w2.get(), snap_group_divider());
+
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+
+  // Press 'Search + Shift + G' to perform snap-to-replace again i.e. replacing
+  // `w2` in the Snap Group with `w4`.
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w4.get()));
+  EXPECT_TRUE(snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(), snap_group_divider());
 }
 
 // -----------------------------------------------------------------------------

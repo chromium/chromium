@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AccessibilityAction"/>
   <variant name="BrightnessDown"/>
   <variant name="BrightnessUp"/>
+  <variant name="CreateSnapGroup"/>
   <variant name="CycleBackwardMru"/>
   <variant name="CycleForwardMru"/>
   <variant name="CycleSameAppWindowsBackward"/>
@@ -167,7 +168,6 @@ chromium-metrics-reviews@google.com.
   <variant name="TogglePicker"/>
   <variant name="ToggleProjectorMarker"/>
   <variant name="ToggleResizeLockMenu"/>
-  <variant name="ToggleSnapGroupWindowsGroupAndUngroup"/>
   <variant name="ToggleSnapGroupWindowsMinimizeAndRestore"/>
   <variant name="ToggleSpokenFeedback"/>
   <variant name="ToggleSystemTrayBubble"/>

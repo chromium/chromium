@@ -51,6 +51,9 @@ class SnapGroup : public aura::WindowObserver,
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
   SplitViewDivider* snap_group_divider() { return &snap_group_divider_; }
+  base::TimeTicks carry_over_creation_time() const {
+    return carry_over_creation_time_;
+  }
 
   // Cleans up prior to deletion. Must be called before the object is destroyed.
   void Shutdown();

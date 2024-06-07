@@ -15,11 +15,8 @@
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace display {
 enum class TabletState;
@@ -100,6 +97,16 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // does not differentiate between root windows. See if we can remove it when
   // we remove group minimize.
   SnapGroup* GetTopmostSnapGroup() const;
+
+  // Determines which windows can be used for snap-to-replace with keyboard
+  // shortcut:
+  // 1. Finds the topmost snapped window.
+  // 2. Identifies the window within a partially obscured Snap Group that isn't
+  // hidden by the topmost snapped window.
+  //  Returns the window pair for snap-to-replace: [primary snapped window,
+  //  secondary snapped window].
+  std::optional<std::pair<aura::Window*, aura::Window*>>
+  GetWindowPairForSnapToReplaceWithKeyboardShortcut();
 
   // Restores the most recent used snap group to be at the default snapped state
   // i.e. two windows in the most recent snap group are positioned at primary

@@ -52,6 +52,9 @@ enum class AccessibilityAlert {
   SNAP_GROUP_RESIZE_RIGHT,
   SNAP_GROUP_RESIZE_UP,
   SNAP_GROUP_RESIZE_DOWN,
+
+  // When the user creates a snap group.
+  SNAP_GROUP_CREATION,
 };
 
 enum class AccessibilityPanelState {

@@ -5,6 +5,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "ash/root_window_controller.h"
@@ -23,12 +24,14 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
@@ -316,6 +319,81 @@ SnapGroup* SnapGroupController::GetTopmostSnapGroup() const {
     }
   }
   return nullptr;
+}
+
+std::optional<std::pair<aura::Window*, aura::Window*>>
+SnapGroupController::GetWindowPairForSnapToReplaceWithKeyboardShortcut() {
+  // Snap-to-replace targets only partially obscured Snap Group, which is the
+  // topmost Snap Group.
+  SnapGroup* top_snap_group = GetTopmostSnapGroup();
+  if (!top_snap_group) {
+    return std::nullopt;
+  }
+
+  aura::Window* root_window = window_util::GetRootWindowAt(
+      display::Screen::GetScreen()->GetCursorScreenPoint());
+  aura::Window::Windows windows = GetActiveDeskAppWindowsInZOrder(root_window);
+  for (size_t i = 0; i < windows.size(); i++) {
+    aura::Window* window = windows[i];
+    const auto* window_state = WindowState::Get(window);
+    if (!window->IsVisible() || window_state->IsMinimized() ||
+        desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+      continue;
+    }
+
+    // If the `window` being traversed belongs to a Snap Group and is the first
+    // window encountered in the list, we can immediately exit the loop. Since
+    // the other window in the group will also be on top, indicating the group
+    // is not partially obscured (a condition we need for snap-to-replace).
+    if (SnapGroup* snap_group_being_traversed =
+            GetSnapGroupForGivenWindow(window);
+        snap_group_being_traversed && i == 0 &&
+        window == snap_group_being_traversed->GetTopMostWindowInGroup()) {
+      break;
+    }
+
+    // Snap-to-Replace Eligibility Check:
+    //   - Upon finding a snapped window, assess its potential for
+    //   snap-to-replace.
+    //   - This entails checking against the `top_snap_group`.
+    //   - The combined snap ratios of the snapped window and the opposite
+    //   window within the `top_snap_group` must equal one. This signifies that
+    //   the two windows would perfectly fill the workspace if snapped together.
+    //  - If this eligibility check passes:
+    //     i. The snapped window is confirmed as a valid candidate for
+    //     snap-to-replace.
+    //     ii. The opposite snapped window within the `top_snap_group` is
+    //     identified as another member of the `window_pair` required to form
+    //     the new Snap Group after the snap-to-replace.
+    const auto window_state_type = window_state->GetStateType();
+    const auto snap_ratio = window_state->snap_ratio();
+    aura::Window* visible_snapped_window_in_snap_group = nullptr;
+    if (window_state_type == chromeos::WindowStateType::kPrimarySnapped) {
+      CHECK(snap_ratio);
+      visible_snapped_window_in_snap_group = top_snap_group->window2();
+      if (base::IsApproximatelyEqual(
+              *WindowState::Get(visible_snapped_window_in_snap_group)
+                      ->snap_ratio() +
+                  *snap_ratio,
+              1.f, std::numeric_limits<float>::epsilon())) {
+        return std::make_pair(window, visible_snapped_window_in_snap_group);
+      }
+    }
+
+    if (window_state_type == chromeos::WindowStateType::kSecondarySnapped) {
+      CHECK(snap_ratio);
+      visible_snapped_window_in_snap_group = top_snap_group->window1();
+      if (base::IsApproximatelyEqual(
+              *WindowState::Get(visible_snapped_window_in_snap_group)
+                      ->snap_ratio() +
+                  *snap_ratio,
+              1.f, std::numeric_limits<float>::epsilon())) {
+        return std::make_pair(visible_snapped_window_in_snap_group, window);
+      }
+    }
+  }
+
+  return std::nullopt;
 }
 
 void SnapGroupController::RestoreTopmostSnapGroup() {

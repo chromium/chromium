@@ -1589,10 +1589,10 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kWindows,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
-       {AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
+       {AcceleratorAction::kCreateSnapGroup,
         AcceleratorLayoutDetails(
-            AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
-            IDS_ASH_ACCELERATOR_DESCRIPTION_GROUP_UNGROUP_WINDOWS,
+            AcceleratorAction::kCreateSnapGroup,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_CREATE_SNAP_GROUP,
             mojom::AcceleratorCategory::kWindowsAndDesks,
             mojom::AcceleratorSubcategory::kWindows,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,

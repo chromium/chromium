@@ -246,7 +246,7 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_BROWSER_BACK, ui::EF_NONE,
      AcceleratorAction::kMinimizeTopWindowOnBack},
     {true, ui::VKEY_G, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-     AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup},
+     AcceleratorAction::kCreateSnapGroup},
     {true, ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore},
     {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN,

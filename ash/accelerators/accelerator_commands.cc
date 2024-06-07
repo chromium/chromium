@@ -4,6 +4,8 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include <optional>
+
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
@@ -63,10 +65,13 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
+#include "ash/wm/splitview/layout_divider_controller.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
@@ -78,7 +83,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/ranges.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -408,18 +415,43 @@ aura::Window* GetTargetWindow() {
   return window->IsVisible() ? window : nullptr;
 }
 
-// Returns the window pair that is eligle to form a snap group.
-aura::Window::Windows GetTargetWindowPairForSnapGroup() {
-  aura::Window::Windows window_pair;
-  MruWindowTracker::WindowList windows =
-      Shell::Get()->mru_window_tracker()->BuildAppWindowList(kActiveDesk);
-  auto* overview_controller = Shell::Get()->overview_controller();
-  OverviewSession* overview_session = overview_controller->overview_session();
-  if (!overview_session && windows.size() >= 2) {
-    aura::Window* window1 = windows[0];
-    aura::Window* window2 = windows[1];
-    window_pair.push_back(window2);
-    window_pair.push_back(window1);
+// Returns the eligible independent windows for Snap Group creation.
+std::optional<std::pair<aura::Window*, aura::Window*>>
+GetIndependentWindowPairForSnapGroupCreation() {
+  std::optional<std::pair<aura::Window*, aura::Window*>> window_pair;
+  if (IsInOverviewSession()) {
+    return window_pair;
+  }
+
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  if (!snap_group_controller) {
+    return window_pair;
+  }
+
+  aura::Window* root_window = window_util::GetRootWindowAt(
+      display::Screen::GetScreen()->GetCursorScreenPoint());
+  aura::Window::Windows windows = GetActiveDeskAppWindowsInZOrder(root_window);
+  aura::Window::Windows window_pair_list;
+  for (size_t i = 0; i < windows.size() && window_pair_list.size() < 2; i++) {
+    aura::Window* window = windows[i];
+    WindowState* window_state = WindowState::Get(window);
+    if (!window->IsVisible() || window_state->IsMinimized() ||
+        desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+      continue;
+    }
+
+    // Upon finding a Snap Group, further iteration is unnecessary. Any windows
+    // appearing later in the vector will be hidden behind the group.
+    if (snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      break;
+    }
+
+    window_pair_list.push_back(window);
+  }
+
+  if (window_pair_list.size() == 2) {
+    window_pair =
+        std::make_pair(window_pair_list.at(0), window_pair_list.at(1));
   }
 
   return window_pair;
@@ -496,56 +528,88 @@ bool CanLock() {
   return Shell::Get()->session_controller()->CanLockScreen();
 }
 
-bool CanGroupOrUngroupWindows() {
-  aura::Window::Windows window_pair = GetTargetWindowPairForSnapGroup();
-  if (!SnapGroupController::Get() || window_pair.size() != 2) {
-    return false;
-  }
-
-  aura::Window* window1 = window_pair[0];
-  aura::Window* window2 = window_pair[1];
-  WindowStateType window1_state_type =
-      WindowState::Get(window1)->GetStateType();
-  WindowStateType window2_state_type =
-      WindowState::Get(window2)->GetStateType();
-  return (window1_state_type == WindowStateType::kPrimarySnapped &&
-          window2_state_type == WindowStateType::kSecondarySnapped) ||
-         (window1_state_type == WindowStateType::kSecondarySnapped &&
-          window2_state_type == WindowStateType::kPrimarySnapped);
+bool CanCreateSnapGroup() {
+  return SnapGroupController::Get();
 }
 
-void GroupOrUngroupWindowsInSnapGroup() {
+void CreateSnapGroup() {
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   CHECK(snap_group_controller);
-  aura::Window::Windows window_pair = GetTargetWindowPairForSnapGroup();
-  if (window_pair.size() != 2) {
+
+  auto maybe_create_snap_group =
+      [&](aura::Window* window1, aura::Window* window2,
+          std::optional<base::TimeTicks> carry_over_creation_time) {
+        snap_group_controller->AddSnapGroup(window1, window2, /*replace=*/false,
+                                            carry_over_creation_time);
+        if (snap_group_controller->AreWindowsInSnapGroup(window1, window2)) {
+          Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
+              AccessibilityAlert::SNAP_GROUP_CREATION);
+        }
+      };
+
+  // Phase 1: Find the topmost two independent windows snapped on the opposite
+  // sides.
+  const std::optional<std::pair<aura::Window*, aura::Window*>>
+      independent_windows = GetIndependentWindowPairForSnapGroupCreation();
+  if (independent_windows.has_value()) {
+    aura::Window* window1 = independent_windows->first;
+    aura::Window* window2 = independent_windows->second;
+    const WindowState* window1_state = WindowState::Get(window1);
+    WindowStateType window1_state_type = window1_state->GetStateType();
+    const auto window1_snap_ratio = window1_state->snap_ratio();
+
+    const WindowState* window2_state = WindowState::Get(window2);
+    WindowStateType window2_state_type = window2_state->GetStateType();
+    const auto window2_snap_ratio = window2_state->snap_ratio();
+
+    const bool snap_ratio_sum_equal_to_one =
+        window1_snap_ratio.has_value() && window2_snap_ratio.has_value() &&
+        base::IsApproximatelyEqual(*window1_snap_ratio + *window2_snap_ratio,
+                                   1.f, std::numeric_limits<float>::epsilon());
+
+    if (snap_ratio_sum_equal_to_one) {
+      if (window1_state_type == WindowStateType::kPrimarySnapped &&
+          window2_state_type == WindowStateType::kSecondarySnapped) {
+        maybe_create_snap_group(window1, window2, std::nullopt);
+        return;
+      }
+
+      if (window1_state_type == WindowStateType::kSecondarySnapped &&
+          window2_state_type == WindowStateType::kPrimarySnapped) {
+        maybe_create_snap_group(window2, window1, std::nullopt);
+        return;
+      }
+    }
+  }
+
+  // Phase 2: Find topmost visible snapped window and a Snap Group underneath to
+  // perform snap to replace.
+  const std::optional<std::pair<aura::Window*, aura::Window*>>
+      snap_to_replace_window_pair =
+          snap_group_controller
+              ->GetWindowPairForSnapToReplaceWithKeyboardShortcut();
+  if (!snap_to_replace_window_pair.has_value()) {
     return;
   }
 
-  aura::Window* window1 = window_pair[0];
-  aura::Window* window2 = window_pair[1];
-  WindowStateType window1_state_type =
-      WindowState::Get(window1)->GetStateType();
-  WindowStateType window2_state_type =
-      WindowState::Get(window2)->GetStateType();
-  CHECK((window1_state_type == WindowStateType::kPrimarySnapped &&
-         window2_state_type == WindowStateType::kSecondarySnapped) ||
-        (window1_state_type == WindowStateType::kSecondarySnapped &&
-         window2_state_type == WindowStateType::kPrimarySnapped));
-
-  // TODO(michelefan): Trigger a11y alert if there are no eligible windows.
-  if (!snap_group_controller->AreWindowsInSnapGroup(window1, window2)) {
-    snap_group_controller->AddSnapGroup(
-        window1, window2, /*replace=*/false,
-        /*carry_over_creation_time=*/std::nullopt);
-    CHECK(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
-  } else {
-    // TODO(http://b/343808581): Temporarily put a `SnapGroupExit` point here
-    // since this shortcut will be removed soon.
-    snap_group_controller->RemoveSnapGroupContainingWindow(
-        window1, SnapGroupExitPoint::kCanNotFitInWorkArea);
-    CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+  SnapGroup* to_be_replaced_snap_group = nullptr;
+  for (aura::Window* window : {snap_to_replace_window_pair->first,
+                               snap_to_replace_window_pair->second}) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      to_be_replaced_snap_group = snap_group;
+      break;
+    }
   }
+
+  const base::TimeTicks carry_over_creation_time =
+      to_be_replaced_snap_group->carry_over_creation_time();
+  snap_group_controller->RemoveSnapGroup(to_be_replaced_snap_group,
+                                         SnapGroupExitPoint::kSnapToReplace);
+
+  maybe_create_snap_group(snap_to_replace_window_pair->first,
+                          snap_to_replace_window_pair->second,
+                          carry_over_creation_time);
 }
 
 bool CanMinimizeSnapGroupWindows() {

@@ -440,7 +440,7 @@ std::string GetUuid(mojom::AcceleratorSource source,
 // or specific device property.
 bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   switch (details.action_id) {
-    case kToggleSnapGroupWindowsGroupAndUngroup:
+    case kCreateSnapGroup:
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return !features::IsSnapGroupEnabled();
     // Hide user switching shortcuts for lacros builds.

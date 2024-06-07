@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="ToggleOverview"/>
   <int value="107" label="ToggleProjectorMarker"/>
   <int value="108" label="ToggleResizeLockMenu"/>
-  <int value="109" label="ToggleSnapGroupWindowsGroupAndUngroup"/>
+  <int value="109" label="CreateSnapGroup"/>
   <int value="110" label="ToggleSnapGroupWindowsMinimizeAndRestore"/>
   <int value="111" label="ToggleSpokenFeedback"/>
   <int value="112" label="ToggleStylusTools"/>

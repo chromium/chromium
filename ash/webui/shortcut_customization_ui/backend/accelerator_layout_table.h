@@ -453,7 +453,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kWindowCycleSnapRight,
     AcceleratorAction::kMoveActiveWindowBetweenDisplays,
     AcceleratorAction::kMinimizeTopWindowOnBack,
-    AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
+    AcceleratorAction::kCreateSnapGroup,
     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore,
     AcceleratorAction::kToggleFloating,
     // TODO(b/343559364): Temporary location pending UI review.

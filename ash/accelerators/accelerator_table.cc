@@ -444,7 +444,7 @@ const AcceleratorAction kActionsNeedingWindow[] = {
     AcceleratorAction::kToggleFloating,
     AcceleratorAction::kToggleFullscreen,
     AcceleratorAction::kToggleMaximized,
-    AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
+    AcceleratorAction::kCreateSnapGroup,
     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore,
     AcceleratorAction::kWindowCycleSnapLeft,
     AcceleratorAction::kWindowCycleSnapRight,

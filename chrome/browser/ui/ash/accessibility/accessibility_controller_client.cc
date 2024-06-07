@@ -99,6 +99,9 @@ void AccessibilityControllerClient::TriggerAccessibilityAlert(
     case ash::AccessibilityAlert::SNAP_GROUP_RESIZE_DOWN:
       msg = IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_DOWN;
       break;
+    case ash::AccessibilityAlert::SNAP_GROUP_CREATION:
+      msg = IDS_A11Y_ALERT_SNAP_GROUP_CREATION;
+      break;
     case ash::AccessibilityAlert::NONE:
       msg = 0;
       break;

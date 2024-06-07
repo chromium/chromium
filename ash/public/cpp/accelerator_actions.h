@@ -142,7 +142,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ToggleOverview)                             \
   ACCELERATOR_ACTION_ENTRY(ToggleProjectorMarker)                      \
   ACCELERATOR_ACTION_ENTRY(ToggleResizeLockMenu)                       \
-  ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsGroupAndUngroup)      \
+  ACCELERATOR_ACTION_ENTRY(CreateSnapGroup)                            \
   ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsMinimizeAndRestore)   \
   ACCELERATOR_ACTION_ENTRY(ToggleSpokenFeedback)                       \
   ACCELERATOR_ACTION_ENTRY(ToggleStylusTools)                          \
