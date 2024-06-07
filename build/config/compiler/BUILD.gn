@@ -1073,6 +1073,16 @@ config("compiler") {
   if (use_safe_libstdcxx) {
     defines += [ "_GLIBCXX_ASSERTIONS=1" ]
   }
+
+  # 64-bit Android sometimes defines __ARM_NEON but not __ARM_NEON__.
+  # 32-bit Android builds and macOS, however, define __ARM_NEON__,
+  # and code typically checks for this.
+  #
+  # Reduce confusion by making the __ARM_NEON__ #define always available,
+  # as NEON is a mandatory part of ARMv8 anyway.
+  if (current_cpu == "arm64") {
+    defines += [ "__ARM_NEON__=1" ]
+  }
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when
