@@ -117,8 +117,6 @@ class ReadAnythingUntrustedPageHandler :
   void OnLockStateChanged(bool locked) override;
 #endif
 
-  void IncrementMetric(const std::string& metric_name) override;
-
  private:
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
@@ -206,9 +204,6 @@ class ReadAnythingUntrustedPageHandler :
   // Logs the current visual settings values.
   void LogTextStyle();
 
-  // Log speech count events.
-  void LogSpeechEventCounts();
-
   // Adds this as an observer of the ReadAnythingSidePanelController tied to a
   // WebContents.
   void ObserveWebContentsSidePanelController(
@@ -242,7 +237,7 @@ class ReadAnythingUntrustedPageHandler :
   // contents requested.
   std::unique_ptr<ReadAnythingSnapshotter> web_snapshotter_;
 
-  mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
+  const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
 
   // Whether the Read Anything feature is currently active. The feature is
@@ -253,15 +248,6 @@ class ReadAnythingUntrustedPageHandler :
   std::string default_language_code_ = "en-US";
   // The current language being used in the app.
   std::string current_language_code_ = "en-US";
-
-  // Metrics for logging. Any metric that we want to track 0-counts of should
-  // be initialized here.
-  std::map<std::string, int64_t> metric_to_count_map_ = {
-      {"Accessibility.ReadAnything.ReadAloudNextButtonSessionCount", 0},
-      {"Accessibility.ReadAnything.ReadAloudPauseSessionCount", 0},
-      {"Accessibility.ReadAnything.ReadAloudPlaySessionCount", 0},
-      {"Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount", 0},
-  };
 
   // Observes the AXActionHandlerRegistry for AXTree removals.
   base::ScopedObservation<ui::AXActionHandlerRegistry,

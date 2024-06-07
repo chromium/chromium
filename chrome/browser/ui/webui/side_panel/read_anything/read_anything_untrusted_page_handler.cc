@@ -333,7 +333,6 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   main_observer_.reset();
   pdf_observer_.reset();
   LogTextStyle();
-  LogSpeechEventCounts();
 
   if (features::IsReadAnythingLocalSidePanelEnabled() && tab_helper_) {
     // If |this| is destroyed before the |ReadAnythingSidePanelController|, then
@@ -599,16 +598,6 @@ void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
   web_snapshotter_->RequestSnapshot(main_observer_->web_contents());
 }
 
-void ReadAnythingUntrustedPageHandler::IncrementMetric(
-    const std::string& metric_name) {
-  if (auto it = metric_to_count_map_.find(metric_name);
-      it != metric_to_count_map_.end()) {
-    ++it->second;
-  } else {
-    receiver_.ReportBadMessage("unexpected metric");
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingModel::Observer:
 ///////////////////////////////////////////////////////////////////////////////
@@ -860,12 +849,6 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration(string_constants::kLetterSpacingHistogramName,
                                 letter_spacing);
-}
-
-void ReadAnythingUntrustedPageHandler::LogSpeechEventCounts() {
-  for (const auto& [metric, count] : metric_to_count_map_) {
-    base::UmaHistogramCounts1000(metric, count);
-  }
 }
 
 void ReadAnythingUntrustedPageHandler::ObserveWebContentsSidePanelController(

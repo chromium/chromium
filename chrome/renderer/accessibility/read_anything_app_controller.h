@@ -342,6 +342,7 @@ class ReadAnythingAppController
   void LogUmaHistogramTimes(int64_t time, const std::string& metric);
   void LogUmaHistogramLongTimes(int64_t time, const std::string& metric);
   void IncrementMetricCount(const std::string& metric);
+  void LogSpeechEventCounts();
 
   void LogSpeechErrorEvent(const std::string& error_code);
 

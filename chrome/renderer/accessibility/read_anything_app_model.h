@@ -403,6 +403,9 @@ class ReadAnythingAppModel {
 
   void IncrementMetric(const std::string& metric_name);
 
+  // Log speech count events.
+  void LogSpeechEventCounts();
+
  private:
   void EraseTree(const ui::AXTreeID& tree_id);
 
@@ -609,6 +612,15 @@ class ReadAnythingAppModel {
   // Previously processed granularities on the current page.
   std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
       processed_granularities_on_current_page_;
+
+  // Metrics for logging. Any metric that we want to track 0-counts of should
+  // be initialized here.
+  std::map<std::string, int64_t> metric_to_count_map_ = {
+      {"Accessibility.ReadAnything.ReadAloudNextButtonSessionCount", 0},
+      {"Accessibility.ReadAnything.ReadAloudPauseSessionCount", 0},
+      {"Accessibility.ReadAnything.ReadAloudPlaySessionCount", 0},
+      {"Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount", 0},
+  };
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

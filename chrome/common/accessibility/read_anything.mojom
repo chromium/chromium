@@ -165,13 +165,6 @@ interface UntrustedPageHandler {
   // Informs the browser controller that the user enabled/disabled a language.
   OnLanguagePrefChange(string lang, bool enabled);
 
-  // TODO(b/345242073): This is a temporary workaround and should be removed
-  // once the underlying issue has been addressed.
-  // Increments a count-based metric (such as the number of play button presses)
-  // in a particular session. Since is a total within a particular session,
-  // chrome.metricsPrivate won't work.
-  IncrementMetric(string metric);
-
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);

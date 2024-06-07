@@ -1727,6 +1727,16 @@ int ReadAnythingAppModel::GetNextWordHighlightLength(int start_index) {
   return word_length;
 }
 
+void ReadAnythingAppModel::IncrementMetric(const std::string& metric_name) {
+  metric_to_count_map_[metric_name]++;
+}
+
+void ReadAnythingAppModel::LogSpeechEventCounts() {
+  for (const auto& [metric, count] : metric_to_count_map_) {
+    base::UmaHistogramCounts1000(metric, count);
+  }
+}
+
 bool ReadAnythingAppModel::IsSuperscript(ui::AXNode* node) {
   return node->data().GetTextPosition() ==
          ax::mojom::TextPosition::kSuperscript;

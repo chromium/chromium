@@ -81,7 +81,6 @@ class MockReadAnythingUntrustedPageHandler
               OnVoiceChange,
               (const std::string& voice, const std::string& lang),
               (override));
-  MOCK_METHOD(void, IncrementMetric, (const std::string& metric), (override));
   MOCK_METHOD(void,
               OnLanguagePrefChange,
               (const std::string& lang, bool enabled),
