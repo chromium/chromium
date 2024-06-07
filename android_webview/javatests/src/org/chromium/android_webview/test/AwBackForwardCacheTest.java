@@ -203,9 +203,8 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
     public void testBFCacheWithMultiplePages() throws Exception, Throwable {
-        mAwContents.getSettings().setBackForwardCacheEnabled(false);
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         mActivityTestRule.loadUrlSync(

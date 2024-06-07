@@ -484,7 +484,8 @@ public class AwSettings {
         assert mNativeAwSettings != 0;
         AwSettingsJni.get().updateEverythingLocked(mNativeAwSettings, AwSettings.this);
         onGestureZoomSupportChanged(supportsDoubleTapZoomLocked(), supportsMultiTouchZoomLocked());
-        setRequestedWithHeaderOriginAllowListLocked(mRequestedWithHeaderAllowedOriginRules);
+        setRequestedWithHeaderOriginAllowListLocked(
+                mRequestedWithHeaderAllowedOriginRules, /* flushBackForwardCache= */ false);
     }
 
     /** See {@link android.webkit.WebSettings#setBlockNetworkLoads}. */
@@ -1305,11 +1306,13 @@ public class AwSettings {
                 allowedOriginRules != null ? allowedOriginRules : Collections.emptySet();
         AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeAPIUsage(allowedOriginRules);
         synchronized (mAwSettingsLock) {
-            setRequestedWithHeaderOriginAllowListLocked(allowedOriginRules);
+            setRequestedWithHeaderOriginAllowListLocked(
+                    allowedOriginRules, /* flushBackForwardCache= */ true);
         }
     }
 
-    private void setRequestedWithHeaderOriginAllowListLocked(final Set<String> allowedOriginRules) {
+    private void setRequestedWithHeaderOriginAllowListLocked(
+            final Set<String> allowedOriginRules, boolean flushBackForwardCache) {
         assert Thread.holdsLock(mAwSettingsLock);
         if (mNativeAwSettings == 0) {
             return;
@@ -1320,7 +1323,9 @@ public class AwSettings {
 
         mEventHandler.runOnUiThreadBlockingAndLocked(
                 () -> {
-                    flushBackForwardCache();
+                    if (flushBackForwardCache) {
+                        flushBackForwardCache();
+                    }
                     String[] rejected =
                             AwSettingsJni.get()
                                     .updateXRequestedWithAllowListOriginMatcher(
