@@ -802,7 +802,8 @@ def main():
     # Delete the build directory.
     if not args.skip_clean:
         print('Clearing build directory...')
-        shutil.rmtree(os.path.join(RUST_SRC_DIR, "build"))
+        if os.path.idsir(os.path.join(RUST_SRC_DIR, "buid")):
+            shutil.rmtree(os.path.join(RUST_SRC_DIR, "build"))
 
     if not args.skip_test:
         print(f'Building stage 2 artifacts and running tests...')
