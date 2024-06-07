@@ -399,7 +399,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   // AXTreeManager overrides.
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
-  void CleanUp() override;
   void UpdateAttributesOnParent(ui::AXNode* parent) override;
 
   // AXPlatformTreeManager overrides.

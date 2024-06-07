@@ -249,8 +249,6 @@ AXTreeManager::~AXTreeManager() {
   if (ax_tree_)
     ax_tree_->Destroy();
 
-  CleanUp();
-
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.ReleaseTree();
   if (HasValidTreeID()) {

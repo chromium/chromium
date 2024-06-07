@@ -184,10 +184,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // attributes accordingly when the parent connection changes.
   virtual void UpdateAttributesOnParent(AXNode* parent) {}
 
-  // Perform some additional clean up on the derived classes to be called in the
-  // destructor.
-  virtual void CleanUp() {}
-
   // True if the root's parent is in another accessibility tree and that
   // parent's child is the root. Ensures that the parent node is notified
   // once when this subtree is first connected.

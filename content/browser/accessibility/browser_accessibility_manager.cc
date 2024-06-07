@@ -339,10 +339,6 @@ void BrowserAccessibilityManager::UpdateAttributesOnParent(ui::AXNode* parent) {
   parent_wrapper->UpdatePlatformAttributes();
 }
 
-void BrowserAccessibilityManager::CleanUp() {
-  delegate_ = nullptr;
-}
-
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
   DCHECK_LE(popup_root_ids_.size(), 1u);
   if (popup_root_ids_.size() == 1) {
