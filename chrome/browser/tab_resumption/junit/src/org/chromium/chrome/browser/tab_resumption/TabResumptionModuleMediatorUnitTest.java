@@ -467,6 +467,52 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     @Test
     @SmallTest
+    public void testShowOnlyOneLocalTab() {
+        List<SuggestionEntry> suggestions =
+                Arrays.asList(createLocalTabModelSuggestion(0), createLocalTabModelSuggestion(1));
+
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new SuggestionsResult(ResultStrength.STABLE, suggestions));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals(1, getSuggestionBundle().entries.size());
+        Assert.assertEquals(suggestions.get(0), getSuggestionBundle().entries.get(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowOnlyOneLocalTab_WithForeignTab() {
+        List<SuggestionEntry> suggestions =
+                Arrays.asList(
+                        createLocalTabModelSuggestion(0),
+                        createLocalTabModelSuggestion(1),
+                        makeSyncDerivedSuggestion(1));
+
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new SuggestionsResult(ResultStrength.STABLE, suggestions));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals(2, getSuggestionBundle().entries.size());
+        Assert.assertEquals(suggestions.get(0), getSuggestionBundle().entries.get(0));
+        Assert.assertEquals(suggestions.get(2), getSuggestionBundle().entries.get(1));
+    }
+
+    @Test
+    @SmallTest
     public void testTrainingInfoUsageTentativeClick() {
         List<SuggestionEntry> tentativeSuggestions =
                 Arrays.asList(makeSyncDerivedSuggestion(0), makeSyncDerivedSuggestion(1));

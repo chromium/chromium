@@ -397,9 +397,16 @@ public class TabResumptionModuleMediator {
         long currentTimeMs = TabResumptionModuleUtils.getCurrentTimeMs();
         SuggestionBundle bundle = new SuggestionBundle(currentTimeMs);
         int maxTilesNumber = TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.getValue();
+        boolean hasLocalTab = false;
         for (SuggestionEntry entry : suggestions) {
+            // At most one local Tab can be shown on the Tab resumption module.
+            if (hasLocalTab && entry.isLocalTab()) {
+                continue;
+            }
+
             if (isSuggestionValid(entry)) {
                 bundle.entries.add(entry);
+                hasLocalTab |= entry.isLocalTab();
                 if (bundle.entries.size() >= maxTilesNumber) {
                     break;
                 }

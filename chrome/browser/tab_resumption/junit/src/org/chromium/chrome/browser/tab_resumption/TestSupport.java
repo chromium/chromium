@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.junit.Assert;
 
@@ -186,6 +187,21 @@ public class TestSupport {
                 /* url= */ urlChoices[index],
                 /* title= */ titleChoices[index],
                 /* timestamp= */ makeTimestamp(16, 0, 0));
+    }
+
+    /** Creates local tab suggestion. */
+    @VisibleForTesting
+    static SuggestionEntry createLocalTabModelSuggestion(int index) {
+        assert index == 0 || index == 1;
+        GURL[] urlChoices = {JUnitTestGURLs.GOOGLE_URL_DOG, JUnitTestGURLs.GOOGLE_URL_CAT};
+        String[] titleChoices = {"Google Dog", "Google Cat"};
+        int[] tabIds = {40, 60};
+        return new SuggestionEntry(
+                /* sourceName= */ "Phone",
+                /* url= */ urlChoices[index],
+                /* title= */ titleChoices[index],
+                /* timestamp= */ makeTimestamp(16, 0, 0),
+                tabIds[index]);
     }
 
     static Tab makeMockBrowserTab() {
