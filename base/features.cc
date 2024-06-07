@@ -10,6 +10,7 @@
 #include "build/buildflag.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#include "base/message_loop/message_pump_epoll.h"
 #include "base/message_loop/message_pump_libevent.h"
 #endif
 
@@ -98,6 +99,7 @@ void Init(EmitThreadControllerProfilerMetadata
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   MessagePumpLibevent::InitializeFeatures();
+  MessagePumpEpoll::InitializeFeatures();
 #endif
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)

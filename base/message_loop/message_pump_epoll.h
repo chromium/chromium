@@ -40,6 +40,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   MessagePumpEpoll& operator=(const MessagePumpEpoll&) = delete;
   ~MessagePumpEpoll() override;
 
+  // Initializes features for this class. See `base::features::Init()`.
+  static void InitializeFeatures();
+
   bool WatchFileDescriptor(int fd,
                            bool persistent,
                            int mode,
