@@ -435,6 +435,14 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PRIVACY_SYNC_AND_SERVICES_LINK_SYNC_OFF" desc="The text for Privacy preferences that is shown after all preference rows. This version of the text is shown if Sync hasn't been turned on.">
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google services<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <message name="IDS_PRIVACY_CHROME_DATA_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Account Settings and Google Services settings.">
+        You can <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>manage what Chrome data is saved<ph name="END_LINK1">&lt;/link1&gt;</ph> in your Google Account.
+
+For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>Google Services<ph name="END_LINK2">&lt;/link2&gt;</ph>.
+      </message>
+      <message name="IDS_PRIVACY_CHROME_DATA_AND_GOOGLE_SERVICES_SIGNED_OUT_FOOTER" desc="Footer to invite the signed out user to open the Google Services settings.">
+        For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Services<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
       <message name="IDS_USAGE_AND_CRASH_REPORTS_TITLE" desc="Title for a preference that enables sending usage statistics and crash reports.">
         Help improve Chrome\u2019s features and performance
       </message>

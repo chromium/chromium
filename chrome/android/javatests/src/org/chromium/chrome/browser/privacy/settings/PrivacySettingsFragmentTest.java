@@ -13,9 +13,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.text.TextUtils;
 import android.view.View;
@@ -33,6 +39,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -55,14 +64,18 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
+import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -96,8 +109,11 @@ public class PrivacySettingsFragmentTest {
 
     @Rule public JniMocker mocker = new JniMocker();
 
+    @Rule public MockitoRule mockito = MockitoJUnit.rule();
+
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mActionTester;
+    @Mock private SettingsLauncher mSettingsLauncher;
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(
@@ -562,5 +578,26 @@ public class PrivacySettingsFragmentTest {
                 fragment.findPreference(PrivacySettings.PREF_CLEAR_BROWSING_DATA_ADVANCED);
         assertTrue(ClearBrowsingDataAdvancedPreference.isVisible());
         assertFalse(ClearBrowsingDataPreference.isVisible());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSignedOutFooterLink() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule.getFragment().setSettingsLauncher(mSettingsLauncher);
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        String footer =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.privacy_chrome_data_and_google_services_signed_out_footer);
+        String footerWithoutSpans =
+                SpanApplier.applySpans(footer, new SpanInfo("<link>", "</link>", new Object()))
+                        .toString();
+        onView(withText(containsString(footerWithoutSpans))).perform(clickOnClickableSpan(0));
+
+        verify(mSettingsLauncher).launchSettingsActivity(any(), eq(GoogleServicesSettings.class));
     }
 }

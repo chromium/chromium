@@ -35,12 +35,12 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
@@ -53,7 +53,7 @@ import org.chromium.ui.text.SpanApplier;
 
 /** Fragment to keep track of the all the privacy related preferences. */
 public class PrivacySettings extends ChromeBaseSettingsFragment
-        implements Preference.OnPreferenceChangeListener {
+        implements Preference.OnPreferenceChangeListener, FragmentSettingsLauncher {
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
     private static final String PREF_PRELOAD_PAGES = "preload_pages";
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
@@ -75,6 +75,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     static final String PREF_CLEAR_BROWSING_DATA_ADVANCED = "clear_browsing_data_advanced";
 
     private IncognitoLockSettings mIncognitoLockSettings;
+    private SettingsLauncher mSettingsLauncher;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -99,7 +100,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 preference -> {
                     PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                             getContext(),
-                            new SettingsLauncherImpl(),
+                            mSettingsLauncher,
                             PrivacySandboxReferrer.PRIVACY_SETTINGS);
                     return true;
                 });
@@ -196,7 +197,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         }
 
         Preference syncAndServicesLink = findPreference(PREF_SYNC_AND_SERVICES_LINK);
-        syncAndServicesLink.setSummary(buildSyncAndServicesLink());
+        syncAndServicesLink.setSummary(buildFooterString());
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
         Preference doNotTrackPref = findPreference(PREF_DO_NOT_TRACK);
@@ -228,15 +229,46 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         updatePreferences();
     }
 
-    private SpannableString buildSyncAndServicesLink() {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
+    }
+
+    private SpannableString buildFooterString() {
         NoUnderlineClickableSpan servicesLink =
                 new NoUnderlineClickableSpan(
                         getContext(),
                         v -> {
-                            settingsLauncher.launchSettingsActivity(
+                            mSettingsLauncher.launchSettingsActivity(
                                     getActivity(), GoogleServicesSettings.class);
                         });
+        NoUnderlineClickableSpan accountSettingsLink =
+                new NoUnderlineClickableSpan(
+                        getContext(),
+                        v -> {
+                            mSettingsLauncher.launchSettingsActivity(
+                                    getActivity(),
+                                    ManageSyncSettings.class,
+                                    ManageSyncSettings.createArguments(false));
+                        });
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            if (IdentityServicesProvider.get()
+                            .getIdentityManager(getProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                    == null) {
+                // User is signed out, show the string with one link to "Google Services".
+                return SpanApplier.applySpans(
+                        getString(
+                                R.string.privacy_chrome_data_and_google_services_signed_out_footer),
+                        new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
+            }
+            // Otherwise, show the string with both links to account settings and "Google Services".
+            return SpanApplier.applySpans(
+                    getString(R.string.privacy_chrome_data_and_google_services_footer),
+                    new SpanApplier.SpanInfo("<link1>", "</link1>", accountSettingsLink),
+                    new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
+        }
         if (IdentityServicesProvider.get()
                         .getIdentityManager(getProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SYNC)
@@ -247,18 +279,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
         }
         // Otherwise, show the string with both links to "Sync" and "Google Services".
-        NoUnderlineClickableSpan syncLink =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        v -> {
-                            settingsLauncher.launchSettingsActivity(
-                                    getActivity(),
-                                    ManageSyncSettings.class,
-                                    ManageSyncSettings.createArguments(false));
-                        });
         return SpanApplier.applySpans(
                 getString(R.string.privacy_sync_and_services_link_sync_on),
-                new SpanApplier.SpanInfo("<link1>", "</link1>", syncLink),
+                new SpanApplier.SpanInfo("<link1>", "</link1>", accountSettingsLink),
                 new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
     }
 
