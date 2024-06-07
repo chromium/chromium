@@ -1885,7 +1885,7 @@ BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
 
 BASE_FEATURE(kPrerender2NoVarySearch,
              "Prerender2NoVarySearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrerender2WarmUpCompositor,
              "Prerender2WarmUpCompositor",

@@ -858,6 +858,19 @@ class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class DisabledNoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {
+ public:
+  DisabledNoVarySearchPrerenderBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kPrerender2NoVarySearch);
+  }
+
+  ~DisabledNoVarySearchPrerenderBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class NoVarySeachHintPrerenderHostObserver : public PrerenderHost::Observer {
  public:
   void OnWaitingForHeadersStarted(
@@ -1540,7 +1553,8 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 
 // Tests that the speculationrules No-Vary-Search hint is not populated for the
 // PrerenderHost if kPrerender2NoVarySearch feature is not enabled.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NoVarySearchHintIsNotPopulated) {
+IN_PROC_BROWSER_TEST_F(DisabledNoVarySearchPrerenderBrowserTest,
+                       NoVarySearchHintIsNotPopulated) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/no_vary_search_a.html?prerender");
 
@@ -1614,7 +1628,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 // Test that activation is unsuccessful when navigating to an inexact URL
 // before No-Vary-Search header is back from the server, even if the
 // No-Vary-Search header is matching when it is received.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(DisabledNoVarySearchPrerenderBrowserTest,
                        NoVarySearchHintActivationUnsuccessful) {
   const std::string kTestingRelativeUrl =
       "/delayed_with_no_vary_search?prerender";
