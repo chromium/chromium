@@ -1,4 +1,11 @@
+import("//build/util/process_version.gni")
 import("//testing/test.gni")
+
+process_version("version_header") {
+  sources = [ "//chrome/VERSION" ]
+  template_file = "enterprise_companion_version.h.in"
+  output = "$target_gen_dir/enterprise_companion_version.h"
+}
 
 source_set("base") {
   sources = [
@@ -15,6 +22,7 @@ source_set("base") {
   ]
   deps = [
     ":client",
+    ":version_header",
     "mojom/",
     "//base",
     "//components/named_mojo_ipc_server",
