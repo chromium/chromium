@@ -159,6 +159,18 @@ PaintLayer* SlowContainingLayer(LayoutObject& layout_object) {
   return nullptr;
 }
 
+std::optional<gfx::SizeF> ComputeFilterViewport(const PaintLayer& layer) {
+  if (const auto* layout_inline =
+          DynamicTo<LayoutInline>(layer.GetLayoutObject())) {
+    return gfx::SizeF(layout_inline->PhysicalLinesBoundingBox().size);
+  }
+  const auto* box = layer.GetLayoutBox();
+  if (box->IsSVGForeignObject()) {
+    return std::nullopt;
+  }
+  return gfx::SizeF(box->Size());
+}
+
 }  // namespace
 
 PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
@@ -1803,10 +1815,11 @@ PaintLayer* PaintLayer::HitTestChildren(
 void PaintLayer::UpdateFilterReferenceBox() {
   if (!HasFilterThatMovesPixels())
     return;
-  PhysicalRect result = LocalBoundingBoxIncludingSelfPaintingDescendants();
-  gfx::RectF reference_box(result);
+  gfx::RectF reference_box(LocalBoundingBoxIncludingSelfPaintingDescendants());
+  std::optional<gfx::SizeF> viewport(ComputeFilterViewport(*this));
   if (!ResourceInfo() ||
-      ResourceInfo()->FilterReferenceBox() != reference_box) {
+      ResourceInfo()->FilterReferenceBox() != reference_box ||
+      ResourceInfo()->FilterViewport() != viewport) {
     if (GetLayoutObject().GetDocument().Lifecycle().GetState() ==
         DocumentLifecycle::kInPrePaint) {
       GetLayoutObject()
@@ -1815,8 +1828,13 @@ void PaintLayer::UpdateFilterReferenceBox() {
     } else {
       GetLayoutObject().SetNeedsPaintPropertyUpdate();
     }
+    if (ResourceInfo() && ResourceInfo()->FilterViewport() != viewport) {
+      filter_on_effect_node_dirty_ = true;
+    }
   }
-  EnsureResourceInfo().SetFilterReferenceBox(reference_box);
+  auto& resource_info = EnsureResourceInfo();
+  resource_info.SetFilterReferenceBox(reference_box);
+  resource_info.SetFilterViewport(viewport);
 }
 
 gfx::RectF PaintLayer::FilterReferenceBox() const {
@@ -1827,6 +1845,15 @@ gfx::RectF PaintLayer::FilterReferenceBox() const {
   if (ResourceInfo())
     return ResourceInfo()->FilterReferenceBox();
   return gfx::RectF();
+}
+
+std::optional<gfx::SizeF> PaintLayer::FilterViewport() const {
+  DCHECK_GE(GetLayoutObject().GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kInPrePaint);
+  if (ResourceInfo()) {
+    return ResourceInfo()->FilterViewport();
+  }
+  return std::nullopt;
 }
 
 gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
@@ -2227,7 +2254,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
     return;
 
   operations =
-      FilterEffectBuilder(reference_box, zoom,
+      FilterEffectBuilder(reference_box, FilterViewport(), zoom,
                           style.VisitedDependentColor(GetCSSPropertyColor()),
                           style.UsedColorScheme())
           .BuildFilterOperations(filter);
@@ -2271,7 +2298,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
   // bounds with a mirror edge mode, but this is the responsibility of the
   // compositor to apply, regardless of the actual filter operations added here.
   operations =
-      FilterEffectBuilder(reference_box, zoom,
+      FilterEffectBuilder(reference_box, FilterViewport(), zoom,
                           style.VisitedDependentColor(GetCSSPropertyColor()),
                           style.UsedColorScheme(), nullptr, nullptr)
           .BuildFilterOperations(filter_operations);

@@ -3859,6 +3859,10 @@
       status: "stable",
     },
     {
+      name: "SvgFilterUserSpaceViewportForNonSvg",
+      status: "stable",
+    },
+    {
       name: "SvgNoPixelSnappingScaleAdjustment",
       status: "stable",
     },

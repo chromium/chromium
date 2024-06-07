@@ -89,7 +89,8 @@ gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
     const SVGLength& x,
     const SVGLength& y,
     const SVGLength& width,
-    const SVGLength& height) {
+    const SVGLength& height,
+    const std::optional<gfx::SizeF>& override_viewport) {
   // Convert SVGLengths to Lengths (preserves percentages).
   const LengthPoint point(x.ConvertToLength(conversion_data),
                           y.ConvertToLength(conversion_data));
@@ -115,7 +116,8 @@ gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
     if (size.Width().MayHavePercentDependence() ||
         size.Height().MayHavePercentDependence() || point.X().HasPercent() ||
         point.Y().HasPercent()) {
-      viewport_size_for_resolve = viewport_resolver.ResolveViewport();
+      viewport_size_for_resolve =
+          override_viewport.value_or(viewport_resolver.ResolveViewport());
     }
     // Resolve the Lengths to user units.
     resolved_rect =
@@ -132,7 +134,8 @@ gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
     const SVGLength& x,
     const SVGLength& y,
     const SVGLength& width,
-    const SVGLength& height) {
+    const SVGLength& height,
+    const std::optional<gfx::SizeF>& override_viewport) {
   const ComputedStyle* style =
       SVGLengthContext::ComputedStyleForLengthResolving(context_element);
   if (!style) {
@@ -141,7 +144,8 @@ gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
   const SVGViewportResolver viewport_resolver(context_element);
   const SVGLengthConversionData conversion_data(context_element, *style);
   return ResolveRectangle(viewport_resolver, conversion_data, type,
-                          reference_box, x, y, width, height);
+                          reference_box, x, y, width, height,
+                          override_viewport);
 }
 
 gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(

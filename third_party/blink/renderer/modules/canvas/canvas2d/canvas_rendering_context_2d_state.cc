@@ -458,8 +458,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
   cc::PaintFlags stroke_flags_for_filter;
   stroke_style_.ApplyToFlags(stroke_flags_for_filter, 1.0f);
 
+  const gfx::SizeF canvas_viewport(canvas_size);
   FilterEffectBuilder filter_effect_builder(
-      gfx::RectF(gfx::SizeF(canvas_size)),
+      gfx::RectF(canvas_viewport), canvas_viewport,
       1.0f,  // Deliberately ignore zoom on the canvas element.
       Color::kBlack, mojom::blink::ColorScheme::kLight, &fill_flags_for_filter,
       &stroke_flags_for_filter);
@@ -529,8 +530,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   cc::PaintFlags stroke_flags_for_filter;
   stroke_style_.ApplyToFlags(stroke_flags_for_filter, 1.0f);
 
+  const gfx::SizeF canvas_viewport(canvas_size);
   FilterEffectBuilder filter_effect_builder(
-      gfx::RectF(gfx::SizeF(canvas_size)),
+      gfx::RectF(canvas_viewport), canvas_viewport,
       1.0f,  // Deliberately ignore zoom on the canvas element.
       Color::kBlack, mojom::blink::ColorScheme::kLight, &fill_flags_for_filter,
       &stroke_flags_for_filter);

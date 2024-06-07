@@ -92,31 +92,37 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
 
   // Resolve the rectangle defined by `x`, `y`, `width` and `height` in the
   // unit space defined by `type` into user units.
-  static gfx::RectF ResolveRectangle(const SVGViewportResolver&,
-                                     const SVGLengthConversionData&,
-                                     SVGUnitTypes::SVGUnitType type,
-                                     const gfx::RectF& reference_box,
-                                     const SVGLength& x,
-                                     const SVGLength& y,
-                                     const SVGLength& width,
-                                     const SVGLength& height);
-  static gfx::RectF ResolveRectangle(const SVGElement& context,
-                                     SVGUnitTypes::SVGUnitType type,
-                                     const gfx::RectF& reference_box,
-                                     const SVGLength& x,
-                                     const SVGLength& y,
-                                     const SVGLength& width,
-                                     const SVGLength& height);
+  static gfx::RectF ResolveRectangle(
+      const SVGViewportResolver&,
+      const SVGLengthConversionData&,
+      SVGUnitTypes::SVGUnitType type,
+      const gfx::RectF& reference_box,
+      const SVGLength& x,
+      const SVGLength& y,
+      const SVGLength& width,
+      const SVGLength& height,
+      const std::optional<gfx::SizeF>& override_viewport = std::nullopt);
+  static gfx::RectF ResolveRectangle(
+      const SVGElement& context,
+      SVGUnitTypes::SVGUnitType type,
+      const gfx::RectF& reference_box,
+      const SVGLength& x,
+      const SVGLength& y,
+      const SVGLength& width,
+      const SVGLength& height,
+      const std::optional<gfx::SizeF>& override_viewport = std::nullopt);
   // Like the above, but pass `x()`, `y()`, `width()` and `height()` from the
   // context element for the corresponding arguments.
   template <typename T>
-  static gfx::RectF ResolveRectangle(const T& context,
-                                     SVGUnitTypes::SVGUnitType type,
-                                     const gfx::RectF& reference_box) {
+  static gfx::RectF ResolveRectangle(
+      const T& context,
+      SVGUnitTypes::SVGUnitType type,
+      const gfx::RectF& reference_box,
+      const std::optional<gfx::SizeF>& override_viewport = std::nullopt) {
     return ResolveRectangle(
         context, type, reference_box, *context.x()->CurrentValue(),
         *context.y()->CurrentValue(), *context.width()->CurrentValue(),
-        *context.height()->CurrentValue());
+        *context.height()->CurrentValue(), override_viewport);
   }
 
   gfx::RectF ResolveRectangle(SVGUnitTypes::SVGUnitType type,

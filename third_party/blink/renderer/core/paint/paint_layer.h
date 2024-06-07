@@ -373,6 +373,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Filter reference box is the area over which the filter is computed, in the
   // local coordinate system of the effect node containing the filter.
   gfx::RectF FilterReferenceBox() const;
+  std::optional<gfx::SizeF> FilterViewport() const;
   gfx::RectF BackdropFilterReferenceBox() const;
   gfx::RRectF BackdropFilterBounds() const;
 

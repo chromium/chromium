@@ -47,6 +47,7 @@ class CORE_EXPORT FilterEffectBuilder final {
 
  public:
   FilterEffectBuilder(const gfx::RectF& reference_box,
+                      std::optional<gfx::SizeF> viewport,
                       float zoom,
                       Color current_color,
                       mojom::blink::ColorScheme color_scheme,
@@ -68,6 +69,7 @@ class CORE_EXPORT FilterEffectBuilder final {
 
  private:
   const gfx::RectF reference_box_;
+  const std::optional<gfx::SizeF> viewport_;
   const float zoom_;
   float shorthand_scale_;  // Scale factor for shorthand filter functions.
   const Color current_color_;

@@ -382,8 +382,9 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
       return;
     }
 
+    const gfx::SizeF canvas_viewport(Width(), Height());
     FilterEffectBuilder filter_effect_builder(
-        gfx::RectF(Width(), Height()),
+        gfx::RectF(canvas_viewport), canvas_viewport,
         1.0f,  // Deliberately ignore zoom on the canvas element.
         Color::kBlack, mojom::blink::ColorScheme::kLight);
 
