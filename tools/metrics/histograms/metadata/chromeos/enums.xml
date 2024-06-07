@@ -1320,6 +1320,12 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Settings changed"/>
 </enum>
 
+<enum name="MahiCacheHit">
+  <int value="0" label="No Hit"/>
+  <int value="1" label="Summary"/>
+  <int value="2" label="Content"/>
+</enum>
+
 <enum name="MahiContextMenuButtonType">
   <int value="0" label="Summary Button"/>
   <int value="1" label="Outline"/>
@@ -1333,6 +1339,19 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Submit Question Button"/>
   <int value="3" label="Condensed Menu Button"/>
   <int value="4" label="Settings Button"/>
+</enum>
+
+<enum name="MahiResponseStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Inappropriate"/>
+  <int value="3" label="Low Quota"/>
+  <int value="4" label="Quota Limit Hit"/>
+  <int value="5" label="Resource Exhausted"/>
+  <int value="6" label="Content Extraction Error"/>
+  <int value="7" label="Can't Find Output Data"/>
+  <int value="8" label="Restricted Country"/>
+  <int value="9" label="Unsupported Language"/>
 </enum>
 
 <enum name="MetadataTier">

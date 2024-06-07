@@ -2453,6 +2453,17 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <token key="MachineStatistic" variants="MachineStatistics"/>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.CacheStateOnAccess" enum="MahiCacheHit"
+    expires_after="2025-06-01">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Tracks the type of cache that is used for user requests. Also tracks if
+    there is no cache available. The metric is recorded for every summary/QA
+    request to MahiManager.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Mahi.ContentExtraction.TriggeringLatency" units="ms"
     expires_after="2025-04-04">
   <owner>thanhdng@chromium.org</owner>
@@ -2500,6 +2511,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <summary>
     Records whether the page is distillable when Mahi menu is requested to show.
     Emitted when user right clicks and Mahi menu is requested.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Mahi.ResponseStatusOnRequest"
+    enum="MahiResponseStatus" expires_after="2025-06-01">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Tracks the type of returned response status of Mahi for requests from its
+    callers. The metric is recored for each summary/QA request to MahiManager.
   </summary>
 </histogram>
 

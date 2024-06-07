@@ -17,6 +17,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +47,18 @@ namespace {
 
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
+
+const char kMahiCacheHit[] = "ChromeOS.Mahi.CacheStateOnAccess";
+const char kMahiResponseStatus[] = "ChromeOS.Mahi.ResponseStatusOnRequest";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CacheHit {
+  kNoHit = 0,
+  kSummary = 1,
+  kContent = 2,
+  kMaxValue = kContent,
+};
 
 MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
     manta::MantaStatusCode code) {
@@ -144,7 +157,7 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
     std::move(callback).Run(cached_summary.value(),
                             MahiResponseStatus::kSuccess);
 
-    // TODO(b:338140794): Add metrics here.
+    base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kSummary);
     return;
   }
 
@@ -156,10 +169,11 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
             /*client_id=*/base::UnguessableToken(),
             /*page_id=*/base::UnguessableToken(), cached_content));
 
-    // TODO(b:338140794): Add metrics here.
+    base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kContent);
     return;
   }
 
+  base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kNoHit);
   auto get_content_done_callback =
       base::BindOnce(&MahiManagerImpl::OnGetPageContentForSummary,
                      weak_ptr_factory_for_requests_.GetWeakPtr(),
@@ -214,10 +228,11 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
             /*client_id=*/base::UnguessableToken(),
             /*page_id=*/base::UnguessableToken(), cached_content));
 
-    // TODO(b:338140794): Add metrics here.
+    base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kContent);
     return;
   }
 
+  base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kNoHit);
   auto get_content_done_callback = base::BindOnce(
       &MahiManagerImpl::OnGetPageContentForQA,
       weak_ptr_factory_for_requests_.GetWeakPtr(), current_panel_info_->Clone(),
@@ -451,8 +466,9 @@ void MahiManagerImpl::OnGetPageContentForSummary(
     MahiSummaryCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr || mahi_content_ptr->page_content.empty()) {
-    std::move(callback).Run(u"summary text",
-                            MahiResponseStatus::kContentExtractionError);
+    latest_response_status_ = MahiResponseStatus::kContentExtractionError;
+    std::move(callback).Run(u"", latest_response_status_);
+    base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
     return;
   }
 
@@ -484,8 +500,9 @@ void MahiManagerImpl::OnGetPageContentForQA(
     MahiAnswerQuestionCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr || mahi_content_ptr->page_content.empty()) {
-    std::move(callback).Run(std::nullopt,
-                            MahiResponseStatus::kContentExtractionError);
+    latest_response_status_ = MahiResponseStatus::kContentExtractionError;
+    std::move(callback).Run(std::nullopt, latest_response_status_);
+    base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
     return;
   }
 
@@ -524,6 +541,7 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
         GetMahiResponseStatusFromMantaStatus(status.status_code);
     std::move(summary_callback)
         .Run(u"Couldn't get summary", latest_response_status_);
+    base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
     return;
   }
 
@@ -540,6 +558,7 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
     std::move(summary_callback)
         .Run(u"Cannot find output data", latest_response_status_);
   }
+  base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
 
 void MahiManagerImpl::OnMahiProviderQAResponse(
@@ -553,6 +572,7 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
         GetMahiResponseStatusFromMantaStatus(status.status_code);
     current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), "");
     std::move(callback).Run(std::nullopt, latest_response_status_);
+    base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
     return;
   }
 
@@ -564,6 +584,7 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
     std::move(callback).Run(std::nullopt, latest_response_status_);
   }
+  base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
 
 }  // namespace ash

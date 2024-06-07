@@ -28,6 +28,8 @@ struct COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiOutline {
   bool operator==(const MahiOutline&) const;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // List os possible response statuses for a Mahi request.
 enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiResponseStatus {
   kSuccess = 0,
@@ -40,7 +42,7 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiResponseStatus {
   kCantFindOutputData = 7,
   kRestrictedCountry = 8,
   kUnsupportedLanguage = 9,
-  kMax = kCantFindOutputData,
+  kMaxValue = kUnsupportedLanguage,
 };
 
 // An interface serves as the connection between mahi system and the UI.

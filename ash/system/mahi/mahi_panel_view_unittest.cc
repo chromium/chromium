@@ -77,7 +77,7 @@ class MockNewWindowDelegate : public NiceMock<TestNewWindowDelegate> {
 std::vector<MahiResponseStatus> GetMahiErrors() {
   std::vector<MahiResponseStatus> errors;
   for (size_t status_value = 0;
-       status_value <= static_cast<size_t>(MahiResponseStatus::kMax);
+       status_value <= static_cast<size_t>(MahiResponseStatus::kMaxValue);
        ++status_value) {
     MahiResponseStatus status = static_cast<MahiResponseStatus>(status_value);
     if (status != MahiResponseStatus::kSuccess &&
