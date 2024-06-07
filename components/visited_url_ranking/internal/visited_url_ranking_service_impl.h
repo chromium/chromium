@@ -37,6 +37,9 @@ enum class Status;
 // The internal implementation of the VisitedURLRankingService.
 class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
  public:
+  // Wait time before which we record kSeen events as feedback.
+  constexpr static int kSeenRecordDelaySec = 300;
+
   VisitedURLRankingServiceImpl(
       segmentation_platform::SegmentationPlatformService*
           segmentation_platform_service,
@@ -62,6 +65,12 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
       segmentation_platform::TrainingRequestId visit_request_id) override;
 
  private:
+  // Trigger training data collection with the user action.
+  void TriggerTrainingData(
+      ScoredURLUserAction action,
+      const std::string& visit_id,
+      segmentation_platform::TrainingRequestId visit_request_id);
+
   // Callback invoked when the various fetcher instances have completed.
   void MergeVisitsAndCallback(
       GetURLVisitAggregatesCallback callback,

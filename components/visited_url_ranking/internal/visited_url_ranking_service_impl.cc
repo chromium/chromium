@@ -15,7 +15,10 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/segmentation_platform/public/features.h"
@@ -28,6 +31,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -188,6 +192,29 @@ void VisitedURLRankingServiceImpl::RecordAction(
     client->AddEvent(visit_event);
   }
 
+  base::TimeDelta wait_for_activation = base::TimeDelta();
+  // If the action is kSeen, then wait for some time before recording this as
+  // result, in case the user clicks on the suggestion. Effectively, this would
+  // assume if the user clicks on first 5 mins, then it's a success, otherwise
+  // failure.
+  if (action == ScoredURLUserAction::kSeen) {
+    int delay_sec = base::GetFieldTrialParamByFeatureAsInt(
+        features::kVisitedURLRankingService, "seen_record_action_delay_sec",
+        kSeenRecordDelaySec);
+    wait_for_activation = base::Seconds(delay_sec);
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&VisitedURLRankingServiceImpl::TriggerTrainingData,
+                     weak_ptr_factory_.GetWeakPtr(), action, visit_id,
+                     visit_request_id),
+      wait_for_activation);
+}
+
+void VisitedURLRankingServiceImpl::TriggerTrainingData(
+    ScoredURLUserAction action,
+    const std::string& visit_id,
+    segmentation_platform::TrainingRequestId visit_request_id) {
   // Trigger UKM data collection on action.
   auto labels = segmentation_platform::TrainingLabels();
   labels.output_metric = std::make_pair("action", static_cast<int>(action));

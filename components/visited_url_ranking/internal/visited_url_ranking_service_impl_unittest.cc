@@ -14,10 +14,12 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_database_client.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
@@ -25,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using segmentation_platform::HasTrainingLabel;
 using segmentation_platform::MockSegmentationPlatformService;
 using testing::_;
 
@@ -164,14 +167,34 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     return result;
   }
 
+  void WaitForCollectData(
+      segmentation_platform::TrainingRequestId test_request_id,
+      ScoredURLUserAction action) {
+    base::RunLoop wait_loop;
+    EXPECT_CALL(
+        *segmentation_platform_service_,
+        CollectTrainingData(
+            _, test_request_id,
+            HasTrainingLabel("action",
+                             static_cast<base::HistogramBase::Sample>(action)),
+            _))
+        .WillOnce([&wait_loop](
+                      segmentation_platform::proto::SegmentId,
+                      segmentation_platform::TrainingRequestId,
+                      const segmentation_platform::TrainingLabels&,
+                      segmentation_platform::SegmentationPlatformService::
+                          SuccessCallback) { wait_loop.QuitClosure().Run(); });
+    wait_loop.Run();
+  }
+
  protected:
   std::unique_ptr<segmentation_platform::MockDatabaseClient> database_client_;
   std::unique_ptr<VisitedURLRankingServiceImpl> service_impl_;
   std::unique_ptr<MockSegmentationPlatformService>
       segmentation_platform_service_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
+  base::SimpleTestClock clock_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(VisitedURLRankingServiceImplTest, FetchURLVisitAggregates) {
@@ -251,29 +274,74 @@ TEST_F(VisitedURLRankingServiceImplTest, RankURLVisitAggregates) {
 TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
 
-  std::pair<segmentation_platform::UkmEventHash,
-            std::map<segmentation_platform::UkmMetricHash, int64_t>>
-      event;
+  std::vector<
+      std::pair<segmentation_platform::UkmEventHash,
+                std::map<segmentation_platform::UkmMetricHash, int64_t>>>
+      events;
   EXPECT_CALL(*database_client_, AddEvent(testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&event](const segmentation_platform::DatabaseClient::StructuredEvent&
-                       structured_event) {
-            event = std::make_pair(structured_event.event_id,
-                                   structured_event.metric_hash_to_value);
+      .Times(2)
+      .WillRepeatedly(testing::Invoke(
+          [&events](
+              const segmentation_platform::DatabaseClient::StructuredEvent&
+                  structured_event) {
+            events.push_back(
+                std::make_pair(structured_event.event_id,
+                               structured_event.metric_hash_to_value));
           }));
   segmentation_platform::TrainingRequestId test_request_id =
       segmentation_platform::TrainingRequestId::FromUnsafeValue(0);
-  EXPECT_CALL(*segmentation_platform_service_,
-              CollectTrainingData(_, test_request_id, _, _))
-      .Times(1);
+  service_impl_->RecordAction(ScoredURLUserAction::kSeen, kSampleSearchUrl,
+                              test_request_id);
   service_impl_->RecordAction(ScoredURLUserAction::kActivated, kSampleSearchUrl,
                               test_request_id);
+
+  WaitForCollectData(test_request_id, ScoredURLUserAction::kActivated);
+
+  clock_.Advance(
+      base::Seconds(VisitedURLRankingServiceImpl::kSeenRecordDelaySec));
+
+  WaitForCollectData(test_request_id, ScoredURLUserAction::kSeen);
 
   segmentation_platform::UkmMetricHash visit_id_metric_hash =
       segmentation_platform::UkmMetricHash::FromUnsafeValue(
           base::HashMetricName(kSampleSearchUrl));
-  ASSERT_EQ(event.second.count(visit_id_metric_hash), 1u);
+  ASSERT_EQ(events.size(), 2u);
+  EXPECT_EQ(events[0].second.count(visit_id_metric_hash), 1u);
+  EXPECT_EQ(events[1].second.count(visit_id_metric_hash), 1u);
+}
+
+TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
+  InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  std::vector<
+      std::pair<segmentation_platform::UkmEventHash,
+                std::map<segmentation_platform::UkmMetricHash, int64_t>>>
+      events;
+  EXPECT_CALL(*database_client_, AddEvent(testing::_))
+      .Times(1)
+      .WillRepeatedly(testing::Invoke(
+          [&events](
+              const segmentation_platform::DatabaseClient::StructuredEvent&
+                  structured_event) {
+            events.push_back(
+                std::make_pair(structured_event.event_id,
+                               structured_event.metric_hash_to_value));
+          }));
+  segmentation_platform::TrainingRequestId test_request_id =
+      segmentation_platform::TrainingRequestId::FromUnsafeValue(0);
+  service_impl_->RecordAction(ScoredURLUserAction::kSeen, kSampleSearchUrl,
+                              test_request_id);
+
+  clock_.Advance(
+      base::Seconds(VisitedURLRankingServiceImpl::kSeenRecordDelaySec));
+
+  WaitForCollectData(test_request_id, ScoredURLUserAction::kSeen);
+
+  segmentation_platform::UkmMetricHash visit_id_metric_hash =
+      segmentation_platform::UkmMetricHash::FromUnsafeValue(
+          base::HashMetricName(kSampleSearchUrl));
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(events[0].second.count(visit_id_metric_hash), 1u);
 }
 
 }  // namespace visited_url_ranking

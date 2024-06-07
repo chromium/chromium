@@ -103,10 +103,9 @@ class VisitedURLRankingService : public KeyedService {
   // `RankURLVisitAggregates`. It is ok to make multiple calls to
   // `RankURLVisitAggregates` before calling `RecordAction` since
   // `visit_request_id` is globally unique.
-  // WARNING: Only the first action for a `visit_request_id` is used. Any
-  // successive calls for the ID are ignored. So, the client would need to call
-  // this when the user selects one of the URLs or navigates away from NTP, to
-  // record the final action for the URL.
+  // It is better to call RecordAction at a point where user can no longer
+  // activate the URL, like NTP is being destroyed. But, it is ok to record seen
+  // and activated events when ever they happen.
   virtual void RecordAction(
       ScoredURLUserAction action,
       const std::string& visit_id,
