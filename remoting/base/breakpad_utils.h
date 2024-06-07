@@ -13,18 +13,45 @@
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/values.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_handle.h"
+#endif
 
 namespace remoting {
 
 // base::Value keys used in multiple crash components.
-extern const char kBreakpadHostVersionKey[];
+extern const char kBreakpadProductVersionKey[];
+extern const char kBreakpadProcessStartTimeKey[];
+extern const char kBreakpadProcessIdKey[];
+extern const char kBreakpadProcessNameKey[];
 extern const char kBreakpadProcessUptimeKey[];
 
 // Returns the path to the directory to use when generating or processing
 // minidumps. Does not attempt to create the directory or check R/W permissions.
 extern base::FilePath GetMinidumpDirectoryPath();
 
-// In-process exception handler for generating and uploading minidumps.
+extern bool CreateMinidumpDirectoryIfNeeded(
+    const base::FilePath& minidump_directory);
+
+extern bool WriteMetadataForMinidump(const base::FilePath& minidump_file_path,
+                                     base::Value::Dict custom_client_info);
+
+#if BUILDFLAG(IS_WIN)
+// CustomClientInfo keys.
+extern const wchar_t kCustomClientInfoVersionKey[];
+extern const wchar_t kCustomClientInfoProcessStartTimeKey[];
+extern const wchar_t kCustomClientInfoProcessIdKey[];
+extern const wchar_t kCustomClientInfoProcessNameKey[];
+
+// The name of the pipe to use for OOP crash reporting.
+extern const wchar_t kCrashServerPipeName[];
+
+base::win::ScopedHandle GetClientHandleForCrashServerPipe();
+#endif  // BUILDFLAG(IS_WIN)
+
+// Helper for generating and uploading minidumps.
 class BreakpadHelper {
  public:
   BreakpadHelper();
@@ -35,8 +62,12 @@ class BreakpadHelper {
   ~BreakpadHelper();
 
   // Configures the instance for handling minidumps, must be called before
-  // |OnMinidumpGenerated|.
+  // |OnException| or |OnMinidumpGenerated|.
   bool Initialize(const base::FilePath& minidump_directory);
+
+  // Called in the Breakpad client's filter callback, this function is used to
+  // ensure multiple threads do not report an exception concurrently.
+  void OnException();
 
   // Prepares a newly generated minidump for upload. Will block when writing
   // the upload metadata file.

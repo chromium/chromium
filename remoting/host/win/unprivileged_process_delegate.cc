@@ -13,10 +13,10 @@
 
 #include <sddl.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -34,8 +34,10 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/base/breakpad_utils.h"
 #include "remoting/base/typed_buffer.h"
 #include "remoting/host/base/switches.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/window_station_and_desktop.h"
@@ -305,11 +307,32 @@ void UnprivilegedProcessDelegate::LaunchProcess(
       handles.desktop(),
       handles.window_station(),
   };
+
+  // Create a handle for crash server pipe and provide it to the child process.
+  // A named pipe will not exist if the user has not opted into crash reporting.
+  ScopedHandle crash_server_pipe;
+  if (IsUsageStatsAllowed()) {
+    crash_server_pipe = GetClientHandleForCrashServerPipe();
+    if (crash_server_pipe.get()) {
+      // In order to pass the handle on the command line we need to convert it
+      // to a string. The handle is a pointer and the conversion utilities don't
+      // provide helpers for pointer -> string conversions so we cast to a
+      // 64-bit value to make this conversion insensitive to the bitness of the
+      // binary. Since the client and server will be the same bitness, the
+      // child process will cast this value back to the correct bitness.
+      command_line.AppendSwitchASCII(
+          kCrashServerPipeHandle,
+          base::NumberToString(
+              reinterpret_cast<uint64_t>(crash_server_pipe.get())));
+      handles_to_inherit.push_back(crash_server_pipe.get());
+    }
+  }
+
   mojo::PlatformChannel channel;
   channel.PrepareToPassRemoteEndpoint(&handles_to_inherit, &command_line);
 
   // Try to launch the worker process. The launched process inherits
-  // the window station, desktop and pipe handles, created above.
+  // the window station, desktop, and pipe handles, created above.
   ScopedHandle worker_process;
   ScopedHandle worker_thread;
   if (!LaunchProcessWithToken(

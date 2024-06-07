@@ -222,7 +222,18 @@ int HostMain(int argc, char** argv) {
   // be initialized first, so that the preference for crash-reporting can be
   // looked up in the config file.
   if (IsUsageStatsAllowed()) {
+#if BUILDFLAG(IS_LINUX)
     InitializeCrashReporting();
+#elif BUILDFLAG(IS_WIN)
+    // TODO: joedow - Enable crash reporting for the RDP process.
+    if (process_type == kProcessTypeDesktop ||
+        process_type == kProcessTypeDaemon) {
+      InitializeCrashReporting();
+    } else if (command_line->HasSwitch(kCrashServerPipeHandle)) {
+      InitializeOopCrashClient(
+          command_line->GetSwitchValueASCII(kCrashServerPipeHandle));
+    }
+#endif
   }
 #endif  // defined(REMOTING_ENABLE_BREAKPAD)
 

@@ -31,12 +31,18 @@ class BreakpadLinux {
   BreakpadHelper& helper() { return helper_; }
 
  private:
-  // Breakpad's exception handler.
+  // Breakpad exception handler.
   std::unique_ptr<google_breakpad::ExceptionHandler> breakpad_;
 
-  // Shared logic for preparing a minidump directory for upload.
+  // Shared logic for handling exceptions and minidump processing.
   BreakpadHelper helper_;
 };
+
+bool FilterCallback(void* context) {
+  // If an exception is already being handled, this thread will be put to sleep.
+  BreakpadLinux::GetInstance().helper().OnException();
+  return true;
+}
 
 bool MinidumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
                       void* context,
@@ -50,7 +56,7 @@ BreakpadLinux::BreakpadLinux() {
   if (helper().Initialize(minidump_directory)) {
     google_breakpad::MinidumpDescriptor descriptor(minidump_directory.value());
     breakpad_ = std::make_unique<google_breakpad::ExceptionHandler>(
-        descriptor, /*filter_callback=*/nullptr, MinidumpCallback,
+        descriptor, FilterCallback, MinidumpCallback,
         /*callback_context=*/nullptr,
         /*install_handler=*/true,
         /*server_fd=*/-1);

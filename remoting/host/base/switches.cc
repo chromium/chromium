@@ -45,6 +45,7 @@ const char kInputSwitchName[] = "input";
 const char kOutputSwitchName[] = "output";
 
 const char kMojoPipeToken[] = "mojo-pipe-token";
+const char kCrashServerPipeHandle[] = "crash-server-pipe-handle";
 
 #if BUILDFLAG(IS_APPLE)
 const char kCheckPermissionSwitchName[] = "check-permission";

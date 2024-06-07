@@ -718,6 +718,7 @@ static_library("common") {
       "//media",
       "//media/gpu:gpu",
       "//mojo/core/embedder:embedder",
+      "//remoting/base:breakpad",
       "//remoting/host/win",
       "//remoting/host/win:messages",
       "//remoting/host/win:remoting_lib_idl",

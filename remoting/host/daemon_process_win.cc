@@ -7,10 +7,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -45,6 +46,7 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/win/etw_trace_consumer.h"
 #include "remoting/host/win/host_event_file_logger.h"
 #include "remoting/host/win/host_event_windows_event_logger.h"
@@ -118,6 +120,10 @@ class DaemonProcessWin : public DaemonProcess {
   // |etw_trace_consumer_| is destroyed.  Logging destinations are configured
   // via the registry.
   void ConfigureHostLogging();
+
+  // If the user has consented to crash reporting, this method will start a
+  // BreakpadServer instance to handle crashes from the network process.
+  void ConfigureOopCrashServer();
 
  protected:
   // DaemonProcess implementation.
@@ -334,6 +340,10 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
   // Configure host logging first so we can capture subsequent events.
   daemon_process->ConfigureHostLogging();
 
+  // Initial OOP crash server before the network process is launched.
+  daemon_process->ConfigureOopCrashServer();
+
+  // Finishes configuring the Daemon process and launches the network process.
   daemon_process->Initialize();
 
   return std::move(daemon_process);
@@ -500,6 +510,13 @@ void DaemonProcessWin::BindChromotingHostServices(
   }
   remoting_host_control_->BindChromotingHostServices(std::move(receiver),
                                                      peer_pid);
+}
+
+void DaemonProcessWin::ConfigureOopCrashServer() {
+  if (IsUsageStatsAllowed()) {
+    InitializeOopCrashServer();
+    // TODO: joedow - Initialize minidump file watcher and uploader.
+  }
 }
 
 void DaemonProcessWin::ConfigureHostLogging() {

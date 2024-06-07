@@ -154,7 +154,7 @@ bool RetrieveCrashReportDetails(const base::FilePath& crash_guid,
   // file may contain additional fields (e.g. for troubleshooting or manual
   // uploading) but there are only a few which are required for the upload.
   const std::string* version =
-      opt_metadata->FindString(kBreakpadHostVersionKey);
+      opt_metadata->FindString(kBreakpadProductVersionKey);
   if (version == nullptr || version->empty()) {
     error_reason = "Metadata file is missing the product version field";
     return false;
@@ -219,7 +219,7 @@ void GenerateMultiPartPostData(const base::Value::Dict& metadata,
   net::AddMultipartValueForUpload(kProductNameKey, kProductNameValue,
                                   mime_boundary, std::string(), &post_data);
   // Add the product version.
-  const std::string* version = metadata.FindString(kBreakpadHostVersionKey);
+  const std::string* version = metadata.FindString(kBreakpadProductVersionKey);
   net::AddMultipartValueForUpload(kProductVersionKey, *version, mime_boundary,
                                   std::string(), &post_data);
   // Add the process uptime.
