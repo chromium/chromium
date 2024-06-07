@@ -47,6 +47,83 @@ void ComputePropertyTreeNodeUpdate(
   container.push_back(std::move(wire));
 }
 
+void ComputePropertyTreeNodeUpdate(
+    const ClipNode* old_node,
+    const ClipNode& new_node,
+    std::vector<viz::mojom::ClipNodePtr>& container) {
+  if (old_node && old_node->id == new_node.id &&
+      old_node->parent_id == new_node.parent_id &&
+      old_node->transform_id == new_node.transform_id &&
+      old_node->clip == new_node.clip) {
+    return;
+  }
+
+  auto wire = viz::mojom::ClipNode::New();
+  wire->id = new_node.id;
+  wire->parent_id = new_node.parent_id;
+  wire->transform_id = new_node.transform_id;
+  wire->clip = new_node.clip;
+  container.push_back(std::move(wire));
+}
+
+void ComputePropertyTreeNodeUpdate(
+    const EffectNode* old_node,
+    const EffectNode& new_node,
+    std::vector<viz::mojom::EffectNodePtr>& container) {
+  if (old_node && old_node->id == new_node.id &&
+      old_node->parent_id == new_node.parent_id &&
+      old_node->transform_id == new_node.transform_id &&
+      old_node->clip_id == new_node.clip_id &&
+      old_node->element_id == new_node.element_id &&
+      old_node->opacity == new_node.opacity &&
+      old_node->render_surface_reason == new_node.render_surface_reason) {
+    return;
+  }
+
+  auto wire = viz::mojom::EffectNode::New();
+  wire->id = new_node.id;
+  wire->parent_id = new_node.parent_id;
+  wire->transform_id = new_node.transform_id;
+  wire->clip_id = new_node.clip_id;
+  wire->element_id = new_node.element_id;
+  wire->opacity = new_node.opacity;
+  wire->has_render_surface =
+      new_node.render_surface_reason != RenderSurfaceReason::kNone;
+  container.push_back(std::move(wire));
+}
+
+void ComputePropertyTreeNodeUpdate(
+    const ScrollNode* old_node,
+    const ScrollNode& new_node,
+    std::vector<viz::mojom::ScrollNodePtr>& container) {
+  if (old_node && old_node->id == new_node.id &&
+      old_node->parent_id == new_node.parent_id &&
+      old_node->transform_id == new_node.transform_id &&
+      old_node->container_bounds == new_node.container_bounds &&
+      old_node->bounds == new_node.bounds &&
+      old_node->element_id == new_node.element_id &&
+      old_node->scrolls_inner_viewport == new_node.scrolls_inner_viewport &&
+      old_node->scrolls_outer_viewport == new_node.scrolls_outer_viewport &&
+      old_node->user_scrollable_horizontal ==
+          new_node.user_scrollable_horizontal &&
+      old_node->user_scrollable_vertical == new_node.user_scrollable_vertical) {
+    return;
+  }
+
+  auto wire = viz::mojom::ScrollNode::New();
+  wire->id = new_node.id;
+  wire->parent_id = new_node.parent_id;
+  wire->transform_id = new_node.transform_id;
+  wire->container_bounds = new_node.container_bounds;
+  wire->bounds = new_node.bounds;
+  wire->element_id = new_node.element_id;
+  wire->scrolls_inner_viewport = new_node.scrolls_inner_viewport;
+  wire->scrolls_outer_viewport = new_node.scrolls_outer_viewport;
+  wire->user_scrollable_horizontal = new_node.user_scrollable_horizontal;
+  wire->user_scrollable_vertical = new_node.user_scrollable_vertical;
+  container.push_back(std::move(wire));
+}
+
 template <typename TreeType, typename ContainerType>
 void ComputePropertyTreeUpdate(const TreeType& old_tree,
                                const TreeType& new_tree,
@@ -89,12 +166,29 @@ void VizLayerContext::UpdateDisplayTreeFrom(LayerTreeImpl& tree) {
   }
   update->background_color = tree.background_color();
 
-  // TODO(rockot): Update clip, effect, and scroll trees. Also granular change
-  // tracking so we aren't diffing trees every time.
+  const ViewportPropertyIds& property_ids = tree.viewport_property_ids();
+  update->overscroll_elasticity_transform =
+      property_ids.overscroll_elasticity_transform;
+  update->page_scale_transform = property_ids.page_scale_transform;
+  update->inner_scroll = property_ids.inner_scroll;
+  update->outer_clip = property_ids.outer_clip;
+  update->outer_scroll = property_ids.outer_scroll;
+
+  // TODO(rockot): Granular change tracking for property trees, so we aren't
+  // diffing every time.
   PropertyTrees& old_trees = last_committed_property_trees_;
   ComputePropertyTreeUpdate(
       old_trees.transform_tree(), property_trees.transform_tree(),
       update->transform_nodes, update->num_transform_nodes);
+  ComputePropertyTreeUpdate(old_trees.clip_tree(), property_trees.clip_tree(),
+                            update->clip_nodes, update->num_clip_nodes);
+  ComputePropertyTreeUpdate(old_trees.effect_tree(),
+                            property_trees.effect_tree(), update->effect_nodes,
+                            update->num_effect_nodes);
+  ComputePropertyTreeUpdate(old_trees.scroll_tree(),
+                            property_trees.scroll_tree(), update->scroll_nodes,
+                            update->num_scroll_nodes);
+
   last_committed_property_trees_ = property_trees;
 
   service_->UpdateDisplayTree(std::move(update));

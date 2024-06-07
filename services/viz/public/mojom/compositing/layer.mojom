@@ -38,3 +38,88 @@ struct TransformNode {
   // visible frame.
   cc.mojom.ElementId? visible_frame_element_id;
 };
+
+// Details about a new or updated node within a clip property tree.
+struct ClipNode {
+  // The ID of this node. Must be in the range [0, N) for a clip tree with N
+  // nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for a clip tree with
+  // N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of this clip node's corresponding transform node within the
+  // transform tree. Must be in the range [0, N) for a transform tree with N
+  // nodes.
+  int32 transform_id;
+
+  // The clip rectangle for this node, in the space of the corresponding
+  // transform node.
+  gfx.mojom.RectF clip;
+};
+
+// Details about a new or updated node within an effect property tree.
+struct EffectNode {
+  // The ID of this node. Must be in the range [0, N) for an effect tree with N
+  // nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for an effect tree
+  // with N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of this effect node's corresponding transform node within the
+  // transform tree. Must be in the range [0, N) for a transform tree with N
+  // nodes.
+  int32 transform_id;
+
+  // The ID of this effect node's corresponding clip node within the clip tree.
+  // Must be in the range [0, N) for a clip tree with N nodes.
+  int32 clip_id;
+
+  // The stable ElementId of the client-side object to which this effect node
+  // applies.
+  cc.mojom.ElementId? element_id;
+
+  // The opacity of drawn layers associated with this effect node.
+  float opacity;
+
+  // TODO(rockot): Replace this with a RenderSurfaceReason enumeration. In
+  // practice the specific reason is only useful for metrics, and for now all we
+  // need is to know whether or not the reason is kNone.
+  bool has_render_surface;
+};
+
+// Details about a new or updated node within a scroll property tree.
+struct ScrollNode {
+  // The ID of this node. Must be in the range [0, N) for a scroll tree with N
+  // nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for a scroll tree
+  // with N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of this scroll node's corresponding transform node within the
+  // transform tree. Must be in the range [0, N) for a transform tree with N
+  // nodes.
+  int32 transform_id;
+
+  // The bounds of the scrollable container in which the scroll node's content
+  // resides. This does not include non-overlay scrollbar footprint.
+  gfx.mojom.Size container_bounds;
+
+  // The size of the content scrolled within the node's scrollable container.
+  gfx.mojom.Size bounds;
+
+  // The stable ElementId of the scrollable client-side object to which this
+  // scroll node applies.
+  cc.mojom.ElementId? element_id;
+
+  // Flags specifying the behavior of scrolls on this node.
+  bool scrolls_inner_viewport;
+  bool scrolls_outer_viewport;
+  bool user_scrollable_horizontal;
+  bool user_scrollable_vertical;
+};

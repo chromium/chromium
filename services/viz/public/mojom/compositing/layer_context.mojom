@@ -34,13 +34,24 @@ struct LayerTreeUpdate {
   // within the tree's content rect.
   skia.mojom.SkColor4f background_color;
 
+  // Property tree node indices corresponding to ViewportPropertyIds.
+  int32 overscroll_elasticity_transform;
+  int32 page_scale_transform;
+  int32 inner_scroll;
+  int32 outer_clip;
+  int32 outer_scroll;
+
   // Nodes added or modified on any property tree since the last update.
-  // TODO(rockot): Add fields for clip, effect, and scroll trees.
   array<TransformNode> transform_nodes;
+  array<ClipNode> clip_nodes;
+  array<EffectNode> effect_nodes;
+  array<ScrollNode> scroll_nodes;
 
   // The total number of nodes in each property tree.
-  // TODO(rockot): Add fields for clip, effect, and scroll trees.
   uint32 num_transform_nodes;
+  uint32 num_clip_nodes;
+  uint32 num_effect_nodes;
+  uint32 num_scroll_nodes;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding

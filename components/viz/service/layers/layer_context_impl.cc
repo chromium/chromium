@@ -68,6 +68,68 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   return base::ok();
 }
 
+base::expected<void, std::string> UpdatePropertyTreeNode(
+    cc::PropertyTrees& trees,
+    cc::ClipNode& node,
+    const mojom::ClipNode& wire) {
+  if (!IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id)) {
+    return base::unexpected("Invalid transform_id for clip node");
+  }
+  node.transform_id = wire.transform_id;
+  node.clip = wire.clip;
+  return base::ok();
+}
+
+base::expected<void, std::string> UpdatePropertyTreeNode(
+    cc::PropertyTrees& trees,
+    cc::EffectNode& node,
+    const mojom::EffectNode& wire) {
+  if (!IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id)) {
+    return base::unexpected("Invalid transform_id for effect node");
+  }
+  if (!IsPropertyTreeIndexValid(trees.clip_tree(), wire.clip_id)) {
+    return base::unexpected("Invalid clip_id for effect node");
+  }
+  node.transform_id = wire.transform_id;
+  node.clip_id = wire.clip_id;
+  node.element_id = wire.element_id;
+  if (node.element_id) {
+    trees.effect_tree_mutable().SetElementIdForNodeId(node.id, node.element_id);
+  }
+  node.opacity = wire.opacity;
+  node.effect_changed = true;
+
+  if (wire.has_render_surface) {
+    // TODO(rockot): Plumb the real reason over IPC. It's only used for metrics
+    // so we make something up for now.
+    node.render_surface_reason = cc::RenderSurfaceReason::kRoot;
+  } else {
+    node.render_surface_reason = cc::RenderSurfaceReason::kNone;
+  }
+  return base::ok();
+}
+
+base::expected<void, std::string> UpdatePropertyTreeNode(
+    cc::PropertyTrees& trees,
+    cc::ScrollNode& node,
+    const mojom::ScrollNode& wire) {
+  if (!IsPropertyTreeIndexValid(trees.transform_tree(), wire.transform_id)) {
+    return base::unexpected("Invalid transform_id for scroll node");
+  }
+  node.transform_id = wire.transform_id;
+  node.container_bounds = wire.container_bounds;
+  node.bounds = wire.bounds;
+  node.element_id = wire.element_id;
+  if (node.element_id) {
+    trees.scroll_tree_mutable().SetElementIdForNodeId(node.id, node.element_id);
+  }
+  node.scrolls_inner_viewport = wire.scrolls_inner_viewport;
+  node.scrolls_outer_viewport = wire.scrolls_outer_viewport;
+  node.user_scrollable_horizontal = wire.user_scrollable_horizontal;
+  node.user_scrollable_vertical = wire.user_scrollable_vertical;
+  return base::ok();
+}
+
 template <typename TreeType, typename WireContainerType>
 base::expected<bool, std::string> UpdatePropertyTree(
     cc::PropertyTrees& trees,
@@ -107,6 +169,46 @@ base::expected<bool, std::string> UpdatePropertyTree(
     RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
   }
   return changed_anything;
+}
+
+base::expected<void, std::string> UpdateViewportPropertyIds(
+    cc::LayerTreeImpl& layers,
+    cc::PropertyTrees& trees,
+    mojom::LayerTreeUpdate& update) {
+  const auto& transform_tree = trees.transform_tree();
+  const auto& scroll_tree = trees.scroll_tree();
+  const auto& clip_tree = trees.clip_tree();
+  if (!IsOptionalPropertyTreeIndexValid(
+          transform_tree, update.overscroll_elasticity_transform)) {
+    return base::unexpected("Invalid overscroll_elasticity_transform");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(transform_tree,
+                                        update.page_scale_transform)) {
+    return base::unexpected("Invalid page_scale_transform");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(scroll_tree, update.inner_scroll)) {
+    return base::unexpected("Invalid inner_scroll");
+  }
+  if (update.inner_scroll == cc::kInvalidPropertyNodeId &&
+      (update.outer_clip != cc::kInvalidPropertyNodeId ||
+       update.outer_scroll != cc::kInvalidPropertyNodeId)) {
+    return base::unexpected(
+        "Cannot set outer_clip or outer_scroll without valid inner_scroll");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(clip_tree, update.outer_clip)) {
+    return base::unexpected("Invalid outer_clip");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(scroll_tree, update.outer_scroll)) {
+    return base::unexpected("Invalid outer_scroll");
+  }
+  layers.SetViewportPropertyIds(cc::ViewportPropertyIds{
+      .overscroll_elasticity_transform = update.overscroll_elasticity_transform,
+      .page_scale_transform = update.page_scale_transform,
+      .inner_scroll = update.inner_scroll,
+      .outer_clip = update.outer_clip,
+      .outer_scroll = update.outer_scroll,
+  });
+  return base::ok();
 }
 
 }  // namespace
@@ -323,13 +425,27 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
 
   // We update property trees first, as they may change dimensions here and we
-  // need to validate tree node references when updating layers below.
-  // TODO(rockot): Update clip, effect, and scroll trees as well.
+  // need to validate tree node references when updating layers below. The order
+  // of tree update also matters here because clip, effect, and scroll trees all
+  // validate some fields against the updated transform tree, and effect trees
+  // also validate fields against the updated clip tree.
   cc::PropertyTrees& property_trees = *layers.property_trees();
   ASSIGN_OR_RETURN(const bool transform_changed,
                    UpdatePropertyTree(
                        property_trees, property_trees.transform_tree_mutable(),
                        update->transform_nodes, update->num_transform_nodes));
+  ASSIGN_OR_RETURN(
+      const bool clip_changed,
+      UpdatePropertyTree(property_trees, property_trees.clip_tree_mutable(),
+                         update->clip_nodes, update->num_clip_nodes));
+  ASSIGN_OR_RETURN(
+      const bool effect_changed,
+      UpdatePropertyTree(property_trees, property_trees.effect_tree_mutable(),
+                         update->effect_nodes, update->num_effect_nodes));
+  ASSIGN_OR_RETURN(
+      const bool scroll_changed,
+      UpdatePropertyTree(property_trees, property_trees.scroll_tree_mutable(),
+                         update->scroll_nodes, update->num_scroll_nodes));
 
   layers.set_background_color(update->background_color);
   layers.set_source_frame_number(update->source_frame_number);
@@ -340,10 +456,17 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
   }
 
+  RETURN_IF_ERROR(UpdateViewportPropertyIds(layers, property_trees, *update));
+
   property_trees.UpdateChangeTracking();
   property_trees.transform_tree_mutable().set_needs_update(
       transform_changed || property_trees.transform_tree().needs_update());
-  property_trees.set_changed(transform_changed);
+  property_trees.clip_tree_mutable().set_needs_update(
+      clip_changed || property_trees.clip_tree().needs_update());
+  property_trees.effect_tree_mutable().set_needs_update(
+      effect_changed || property_trees.effect_tree().needs_update());
+  property_trees.set_changed(transform_changed || clip_changed ||
+                             effect_changed || scroll_changed);
 
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
   return base::ok();
