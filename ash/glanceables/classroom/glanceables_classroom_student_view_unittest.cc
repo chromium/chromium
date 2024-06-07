@@ -144,18 +144,18 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
             GlanceablesViewId::kClassroomBubbleEmptyListLabel)));
   }
 
-  const views::Label* GetListFooterItemsCountLabel() const {
-    return views::AsViewClass<views::Label>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kListFooterItemsCountLabel)));
-  }
-
   const views::View* GetListFooter() const {
     return views::AsViewClass<views::View>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter)));
   }
 
-  views::LabelButton* GetListFooterSeeAllButton() const {
-    return views::AsViewClass<views::LabelButton>(view_->GetViewByID(
+  const views::Label* GetListFooterLabel() const {
+    return views::AsViewClass<views::Label>(GetListFooter()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kListFooterTitleLabel)));
+  }
+
+  const views::LabelButton* GetListFooterSeeAllButton() const {
+    return views::AsViewClass<views::LabelButton>(GetListFooter()->GetViewByID(
         base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
   }
 
@@ -391,8 +391,9 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersListItems) {
   EXPECT_EQ(GetListContainerView()->children().size(), 3u);  // No more than 3.
 
   EXPECT_TRUE(GetListFooter()->GetVisible());
-  ASSERT_TRUE(GetListFooterItemsCountLabel());
-  EXPECT_EQ(GetListFooterItemsCountLabel()->GetText(), u"Showing 3 out of 5");
+  ASSERT_TRUE(GetListFooterLabel());
+  EXPECT_EQ(GetListFooterLabel()->GetText(),
+            u"See all assignments in Google Classroom");
 }
 
 TEST_F(GlanceablesClassroomStudentViewTest, RendersEmptyListLabel) {
@@ -401,7 +402,6 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersEmptyListLabel) {
   EXPECT_FALSE(GetEmptyListLabel()->GetVisible());
   EXPECT_TRUE(GetListFooter()->GetVisible());
   EXPECT_EQ(GetCounterExpandButton()->counter_for_test(), 1u);
-  EXPECT_EQ(GetListFooterItemsCountLabel()->GetText(), u"Showing 1 out of 1");
   EXPECT_EQ(GetListContainerView()->children().size(), 1u);
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))

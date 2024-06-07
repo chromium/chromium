@@ -163,9 +163,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // of this view.
   int selected_list_change_count_ = 0;
 
-  // If true, always sets `list_footer_view_` to invisible.
-  bool force_hide_footer_view_ = false;
-
   // The currently selected assignment list.
   StudentAssignmentsListType selected_list_type_ =
       StudentAssignmentsListType::kAssigned;

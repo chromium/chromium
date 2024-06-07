@@ -296,6 +296,8 @@ GlanceablesTasksView::GlanceablesTasksView(
   list_footer_view_ =
       list_view->AddChildView(std::make_unique<GlanceablesListFooterView>(
           l10n_util::GetStringUTF16(
+              IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL),
+          l10n_util::GetStringUTF16(
               IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
@@ -666,8 +668,6 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
       l10n_util::GetStringFUTF16(
           IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
           base::UTF8ToUTF16(task_list_title)));
-  task_items_container_view_->GetViewAccessibility().SetDescription(
-      *list_footer_view_->items_count_label());
   task_items_container_view_->NotifyAccessibilityEvent(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);
@@ -701,10 +701,12 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   }
 }
 
+// TODO(b/338917100): Remove this along with the view observer as the
+// announcement is not needed anymore.
 void GlanceablesTasksView::AnnounceListStateOnComboBoxAccessibility() {
-  if (list_footer_view_->items_count_label()->GetVisible()) {
+  if (list_footer_view_->title_label()->GetVisible()) {
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
-        list_footer_view_->items_count_label()->GetText());
+        list_footer_view_->title_label()->GetText());
   }
 }
 

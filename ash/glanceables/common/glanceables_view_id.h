@@ -12,7 +12,7 @@ enum class GlanceablesViewId {
   kDefaultIdZero,
 
   // `GlanceablesListFooterView`.
-  kListFooterItemsCountLabel,
+  kListFooterTitleLabel,
   kListFooterSeeAllButton,
 
   // `GlanceablesProgressBarView`.

@@ -7544,11 +7544,11 @@ New install
       <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DONE_LIST" desc="The student classroom glanceable shows this label when there are no assignments to show for the 'Done' list.">
         No assignments completed yet.
       </message>
-      <message name="IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. The first placeholder value is the number of items visible in the UI. The second placeholder value is the total number of items returned from API.">
-        Showing <ph name="NUM_SHOWN_ITEMS">$1<ex>5</ex></ph> out of <ph name="NUM_TOTAL_ITEMS">$2<ex>10</ex></ph>
-      </message>
       <message name="IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL" desc="The glanceable displays tasks items fetched from Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking the adjacent launch button, which will open the corresponding website.">
         See all tasks in Google Tasks
+      </message>
+      <message name="IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_ASSIGNMENTS_LABEL" desc="The glanceable displays assignments fetched from Google Classroom API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking the adjacent launch button, which will open the Google Classroom website.">
+        See all assignments in Google Classroom
       </message>
       <message name="IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website.">
         See all

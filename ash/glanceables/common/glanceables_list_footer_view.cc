@@ -88,16 +88,16 @@ END_METADATA
 }  // namespace
 
 GlanceablesListFooterView::GlanceablesListFooterView(
-    const std::u16string& see_all_accessible_name,
+    std::u16string title_text,
+    std::u16string see_all_accessible_name,
     base::RepeatingClosure on_see_all_pressed) {
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   const auto* const typography_provider = TypographyProvider::Get();
-
-  items_count_label_ = AddChildView(
+  title_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetID(base::to_underlying(
-              GlanceablesViewId::kListFooterItemsCountLabel))
+          .SetText(title_text)
+          .SetID(base::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
           .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
@@ -110,22 +110,8 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
-  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
-    items_count_label_->SetText(l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL));
-  }
-
   see_all_button_ = AddChildView(std::make_unique<SeeAllButton>(
       see_all_accessible_name, on_see_all_pressed));
-}
-
-void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
-                                                 size_t total_items_count) {
-  CHECK_LE(visible_items_count, total_items_count);
-  items_count_label_->SetText(
-      l10n_util::GetStringFUTF16(IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL,
-                                 base::NumberToString16(visible_items_count),
-                                 base::NumberToString16(total_items_count)));
 }
 
 BEGIN_METADATA(GlanceablesListFooterView)

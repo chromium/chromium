@@ -100,7 +100,8 @@ constexpr char kExpandAnimationSmoothnessHistogramName[] =
 constexpr char kCollapseAnimationSmoothnessHistogramName[] =
     "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness";
 
-constexpr size_t kMaxAssignments = 3;
+constexpr size_t kMaxAssignments = 100;
+constexpr size_t kMaxAssignmentsForV2 = 3;
 
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
@@ -293,6 +294,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   list_footer_view_ =
       body_container_->AddChildView(std::make_unique<GlanceablesListFooterView>(
           l10n_util::GetStringUTF16(
+              IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_ASSIGNMENTS_LABEL),
+          l10n_util::GetStringUTF16(
               IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
           base::BindRepeating(&GlanceablesClassroomStudentView::OnSeeAllPressed,
                               base::Unretained(this))));
@@ -352,7 +355,6 @@ void GlanceablesClassroomStudentView::CancelUpdates() {
 void GlanceablesClassroomStudentView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
-  force_hide_footer_view_ = true;
   list_footer_view_->SetVisible(false);
   expand_button_->SetVisible(true);
   expand_button_->SetExpanded(is_expanded_);
@@ -543,12 +545,10 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   list_container_view_->RemoveAllChildViews();
   total_assignments_ = assignments.size();
 
-  // TODO(b/338917100): Revisit to see if we want to limit the number of
-  // assignments to 100 and shows the footer view.
   const size_t num_assignments =
       features::AreGlanceablesV2Enabled()
-          ? std::min(kMaxAssignments, assignments.size())
-          : assignments.size();
+          ? std::min(kMaxAssignmentsForV2, assignments.size())
+          : std::min(kMaxAssignments, assignments.size());
   for (size_t i = 0; i < num_assignments; ++i) {
     list_container_view_->AddChildView(
         std::make_unique<GlanceablesClassroomItemView>(
@@ -558,21 +558,25 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
                 base::Unretained(this), initial_update, assignments[i]->link)));
   }
   const size_t shown_assignments = list_container_view_->children().size();
-  list_footer_view_->UpdateItemsCount(shown_assignments, total_assignments_);
   // TODO(b/338917100): Revisit the counter used on the expand button later to
   // see if we want to use the shown one or the total one.
   expand_button_->UpdateCounter(shown_assignments);
 
   const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);
-  list_footer_view_->SetVisible(!is_list_empty && !force_hide_footer_view_);
+
+  bool should_show_footer_view;
+  if (features::AreGlanceablesV2Enabled()) {
+    should_show_footer_view = !is_list_empty;
+  } else {
+    should_show_footer_view = assignments.size() >= kMaxAssignments;
+  }
+  list_footer_view_->SetVisible(should_show_footer_view);
   list_footer_view_->SetProperty(views::kMarginsKey, kFooterMargins);
 
   list_container_view_->GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(
           IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
-  list_container_view_->GetViewAccessibility().SetDescription(
-      *list_footer_view_->items_count_label());
   list_container_view_->NotifyAccessibilityEvent(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);
@@ -617,14 +621,16 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   }
 }
 
+// TODO(b/338917100): Remove this along with the view observer as the
+// announcement is not needed anymore.
 void GlanceablesClassroomStudentView::
     AnnounceListStateOnComboBoxAccessibility() {
   if (empty_list_label_->GetVisible()) {
     combo_box_view_->GetViewAccessibility().AnnounceText(
         empty_list_label_->GetText());
-  } else if (list_footer_view_->items_count_label()->GetVisible()) {
+  } else if (list_footer_view_->title_label()->GetVisible()) {
     combo_box_view_->GetViewAccessibility().AnnounceText(
-        list_footer_view_->items_count_label()->GetText());
+        list_footer_view_->title_label()->GetText());
   }
 }
 

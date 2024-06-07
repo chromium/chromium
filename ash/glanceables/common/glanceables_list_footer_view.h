@@ -5,9 +5,8 @@
 #ifndef ASH_GLANCEABLES_COMMON_GLANCEABLES_LIST_FOOTER_VIEW_H_
 #define ASH_GLANCEABLES_COMMON_GLANCEABLES_LIST_FOOTER_VIEW_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
+#include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,23 +25,21 @@ class ASH_EXPORT GlanceablesListFooterView : public views::FlexLayoutView {
   METADATA_HEADER(GlanceablesListFooterView, views::FlexLayoutView)
 
  public:
-  GlanceablesListFooterView(const std::u16string& see_all_accessible_name,
+  using GlanceablesContext = GlanceablesTimeManagementBubbleView::Context;
+
+  GlanceablesListFooterView(std::u16string title_text,
+                            std::u16string see_all_accessible_name,
                             base::RepeatingClosure on_see_all_pressed);
   GlanceablesListFooterView(const GlanceablesListFooterView&) = delete;
   GlanceablesListFooterView& operator=(const GlanceablesListFooterView&) =
       delete;
   ~GlanceablesListFooterView() override = default;
 
-  // Updates `items_count_label_`.
-  // `visible_items_count` - number of items visible/rendered in a list.
-  // `total_items_count`   - total number of items returned from API.
-  void UpdateItemsCount(size_t visible_items_count, size_t total_items_count);
-
-  views::Label* items_count_label() { return items_count_label_; }
+  views::Label* title_label() const { return title_label_; }
   views::LabelButton* see_all_button() const { return see_all_button_; }
 
  private:
-  raw_ptr<views::Label> items_count_label_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::LabelButton> see_all_button_ = nullptr;
 };
 
