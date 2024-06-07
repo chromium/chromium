@@ -20508,6 +20508,22 @@
             ]
         }
     ],
+    "SkipParentApprovalToInstallExtensions": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableSupervisedUserSkipParentApprovalToInstallExtensions"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipUnnecessaryThreadHopsForParseHeaders": [
         {
             "platforms": [
@@ -20893,22 +20909,6 @@
                     },
                     "enable_features": [
                         "EnableStructuredMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SupervisedUserSkipParentApprovalToInstallExtensionsChromeOS": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableSupervisedUserSkipParentApprovalToInstallExtensions"
                     ]
                 }
             ]
