@@ -158,15 +158,21 @@ void FocusModeFeaturePodController::UpdateUI(
           ? l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL, duration_string)
           : duration_string);
+
+  const std::u16string tooltip_duration_string =
+      session_duration_remaining < base::Minutes(1)
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE)
+          : duration_string;
   tile_->SetTooltipText(l10n_util::GetStringFUTF16(
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_ACTIVE
                        : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INACTIVE,
-      duration_string));
+      tooltip_duration_string));
   tile_->SetIconClickable(true);
   tile_->SetIconButtonTooltipText(l10n_util::GetStringFUTF16(
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_ACTIVE
                        : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE,
-      duration_string));
+      tooltip_duration_string));
 }
 
 }  // namespace ash

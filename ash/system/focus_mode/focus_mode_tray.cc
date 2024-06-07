@@ -59,12 +59,16 @@ std::u16string GetAccessibleTrayName(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
   }
 
-  const std::u16string time_remaining =
-      focus_mode_util::GetDurationString(session_snapshot.remaining_time,
-                                         /*digital_format=*/false);
+  const std::u16string duration_string =
+      session_snapshot.remaining_time < base::Minutes(1)
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE)
+          : focus_mode_util::GetDurationString(session_snapshot.remaining_time,
+                                               /*digital_format=*/false);
+
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
-      time_remaining);
+      duration_string);
 }
 
 std::u16string GetAccessibleBubbleName(

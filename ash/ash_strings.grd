@@ -910,6 +910,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME" desc="The accessible name for the tray bubble contextual panel when there is no selected task.">
         Focus is on, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE" desc="The tooltip text for the tray bubble and the focus mode feature tile in the quick settings menu when the focus session is less than 1 minute.">
+        less than 1 min
+      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
         Restart to update
