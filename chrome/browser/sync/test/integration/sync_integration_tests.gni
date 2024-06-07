@@ -127,6 +127,7 @@ if (is_android) {
     "//chrome:chrome_android_core",
     "//chrome/android:delegate_public_impl_java",
     "//chrome/browser/android/webapk:webapk_sources",
+    "//chrome/browser/sync",
     "//chrome/test:android_browsertests_assets",
     "//chrome/test:android_browsertests_java",
     "//chrome/test:browser_tests_runner",
