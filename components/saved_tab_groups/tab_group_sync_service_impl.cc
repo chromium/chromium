@@ -101,7 +101,7 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
   // Copy values before moving the value.
   base::Uuid group_id = group.saved_guid();
   LocalTabGroupID local_group_id = group.local_group_id().value();
-  group.SetCreatedBeforeSyncingTabGroups(saved_bridge_.IsSyncing());
+  group.SetCreatedBeforeSyncingTabGroups(!saved_bridge_.IsSyncing());
   model_->Add(std::move(group));
   tab_group_store_->StoreTabGroupIDMetadata(group_id,
                                             TabGroupIDMetadata(local_group_id));

@@ -285,7 +285,25 @@ TEST_F(TabGroupSyncServiceTest, AddGroup) {
   EXPECT_EQ(group->saved_guid(), group_4.saved_guid());
   EXPECT_EQ(group->title(), group_4.title());
   EXPECT_EQ(group->color(), group_4.color());
+  EXPECT_FALSE(group->created_before_syncing_tab_groups());
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_4.saved_tabs());
+}
+
+TEST_F(TabGroupSyncServiceTest, AddGroupWhenSignedOut) {
+  // Add a new group while signed out.
+  ON_CALL(processor_, IsTrackingMetadata())
+      .WillByDefault(testing::Return(false));
+
+  SavedTabGroup group_4(test::CreateTestSavedTabGroup());
+  LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
+  group_4.SetLocalGroupId(tab_group_id);
+
+  tab_group_sync_service_->AddGroup(group_4);
+
+  // Query the group via service and verify members.
+  auto group = tab_group_sync_service_->GetGroup(group_4.saved_guid());
+  EXPECT_EQ(group->saved_guid(), group_4.saved_guid());
+  EXPECT_TRUE(group->created_before_syncing_tab_groups());
 }
 
 TEST_F(TabGroupSyncServiceTest, RemoveGroupByLocalId) {
