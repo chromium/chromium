@@ -24,8 +24,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Coordinator for the UI described in account_storage_notice.h, meant to be used from native. */
@@ -36,16 +34,22 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
 
     private long mNativeCoordinatorObserver;
 
+    // Impl note: hasChosenToSyncPasswords() and isGmsCoreUpdateRequired() can't be easily called
+    // here (even if the predicates are moved to different targets to avoid cyclic dependencies,
+    // that then causes issues with *UnitTest.java depending on mojo). So the booleans are plumbed
+    // instead. The API is actually quite sane, all combinations of the booleans are valid.
     @CalledByNative
     public static @Nullable AccountStorageNoticeCoordinator create(
-            @Nullable SyncService syncService,
+            boolean hasSyncConsent,
+            boolean hasChosenToSyncPasswords,
+            boolean isGmsCoreUpdateRequired,
             PrefService prefService,
             WindowAndroid windowAndroid,
             SettingsLauncher settingsLauncher) {
         boolean shouldShow =
-                syncService != null
-                        && !syncService.hasSyncConsent()
-                        && syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
+                !hasSyncConsent
+                        && hasChosenToSyncPasswords
+                        && !isGmsCoreUpdateRequired
                         && !prefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList

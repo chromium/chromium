@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "ui/android/window_android.h"
@@ -28,7 +31,11 @@ std::unique_ptr<AccountStorageNotice> AccountStorageNotice::MaybeShow(
   base::android::ScopedJavaLocalRef<jobject> java_coordinator =
       Java_AccountStorageNoticeCoordinator_create(
           AttachCurrentThread(),
-          sync_service ? sync_service->GetJavaObject() : nullptr,
+          sync_service ? sync_service->HasSyncConsent() : false,
+          password_manager::sync_util::HasChosenToSyncPasswords(sync_service),
+          password_manager::IsGmsCoreUpdateRequired(
+              pref_service, sync_service,
+              base::android::BuildInfo::GetInstance()->gms_version_code()),
           pref_service->GetJavaObject(), window_android->GetJavaObject(),
           Java_SettingsLauncherImpl_create(AttachCurrentThread()));
   if (java_coordinator) {

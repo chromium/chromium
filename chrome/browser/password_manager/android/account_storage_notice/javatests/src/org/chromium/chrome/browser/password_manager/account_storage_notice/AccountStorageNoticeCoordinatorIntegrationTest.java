@@ -37,11 +37,9 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -60,8 +58,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
 public class AccountStorageNoticeCoordinatorIntegrationTest {
-    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
-
     @Rule public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
 
     @Rule
@@ -88,7 +84,6 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     public void setUp() {
         mJniMocker.mock(AccountStorageNoticeCoordinatorJni.TEST_HOOKS, mJniMock);
         mActivityRule.startMainActivityOnBlankPage();
-        mSigninTestRule.addTestAccountThenSignin();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Tests are batched, so reset the pref, otherwise the notice only shows once.
@@ -184,10 +179,14 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    // The logic for when to show the coordinator is tested in the UnitTest.java.
+                    // Tests here only care about the UI interaction, so it's fine to hardcode the
+                    // booleans below.
                     AccountStorageNoticeCoordinator coordinator =
                             AccountStorageNoticeCoordinator.create(
-                                    SyncServiceFactory.getForProfile(
-                                            ProfileManager.getLastUsedRegularProfile()),
+                                    /* hasSyncConsent= */ false,
+                                    /* hasChosenToSyncPasswords= */ true,
+                                    /* isGmsCoreUpdateRequired= */ false,
                                     UserPrefs.get(profile),
                                     mActivityRule.getActivity().getWindowAndroid(),
                                     new SettingsLauncherImpl());
