@@ -51,6 +51,7 @@ build_webui("build_overlay") {
     "selection_overlay.ts",
     "shimmer_circle.ts",
     "side_panel/side_panel_app.ts",
+    "side_panel/side_panel_ghost_loader.ts",
     "text_layer.ts",
   ]
 

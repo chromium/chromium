@@ -45,8 +45,7 @@ suite('SidePanelResultsFrame', () => {
     // Since the two elements are completely overlapping, the element with the
     // larger z-index is the one that is visible.
     let loadingZIndex = parseInt(
-        window.getComputedStyle(lensSidePanelElement.$.loadingResultsImage)
-            .zIndex);
+        window.getComputedStyle(lensSidePanelElement.$.ghostLoader).zIndex);
     let resultsZIndex = parseInt(
         window.getComputedStyle(lensSidePanelElement.$.results).zIndex);
     assertTrue(loadingZIndex > resultsZIndex);
@@ -55,8 +54,7 @@ suite('SidePanelResultsFrame', () => {
     await waitAfterNextRender(lensSidePanelElement);
 
     loadingZIndex = parseInt(
-        window.getComputedStyle(lensSidePanelElement.$.loadingResultsImage)
-            .zIndex);
+        window.getComputedStyle(lensSidePanelElement.$.ghostLoader).zIndex);
     resultsZIndex = parseInt(
         window.getComputedStyle(lensSidePanelElement.$.results).zIndex);
     assertTrue(loadingZIndex < resultsZIndex);
@@ -65,8 +63,7 @@ suite('SidePanelResultsFrame', () => {
     await waitAfterNextRender(lensSidePanelElement);
 
     loadingZIndex = parseInt(
-        window.getComputedStyle(lensSidePanelElement.$.loadingResultsImage)
-            .zIndex);
+        window.getComputedStyle(lensSidePanelElement.$.ghostLoader).zIndex);
     resultsZIndex = parseInt(
         window.getComputedStyle(lensSidePanelElement.$.results).zIndex);
     assertTrue(loadingZIndex > resultsZIndex);

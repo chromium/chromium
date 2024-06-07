@@ -4,6 +4,7 @@
 
 import '../strings.m.js';
 import '//resources/cr_components/searchbox/realbox.js';
+import './side_panel_ghost_loader.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
@@ -16,6 +17,7 @@ import type {LensSidePanelPageHandlerInterface} from '../lens.mojom-webui.js';
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
 import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
+import type {SidePanelGhostLoaderElement} from './side_panel_ghost_loader.js';
 
 // The url query parameter keys for the viewport size.
 const VIEWPORT_HEIGHT_KEY = 'bih';
@@ -32,7 +34,7 @@ function maybeCloseOverlay(event: KeyboardEvent) {
 export interface LensSidePanelAppElement {
   $: {
     results: HTMLIFrameElement,
-    loadingResultsImage: HTMLImageElement,
+    ghostLoader: SidePanelGhostLoaderElement,
   };
 }
 

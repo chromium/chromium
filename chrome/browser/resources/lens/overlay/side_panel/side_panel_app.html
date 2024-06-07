@@ -28,15 +28,16 @@
     z-index: 0;
   }
 
-  #loadingResultsImage {
+  #ghostLoader {
     background-color: white;
   }
 
-  :host([dark-mode]) #loadingResultsImage {
+  :host([dark-mode]) #ghostLoader {
     background-color: #1F1F1F;
   }
 
-  :host(:not([is-loading-results])) #loadingResultsImage {
+  :host(:not([is-loading-results])) #ghostLoader {
+    visibility: hidden;
     z-index: 0;
   }
 
@@ -143,8 +144,8 @@
   <cr-realbox id="realbox"></cr-realbox>
 </div>
 
-<!-- Image that is only shown when results are loading. -->
-<img id="loadingResultsImage" class="results-pane" src="[[loadingImageUrl]]">
+<side-panel-ghost-loader id="ghostLoader"
+    class="results-pane"></side-panel-ghost-loader>
 
 <iframe name="results" id="results" class="results-pane"
     allow="cross-origin-isolated; display-capture; geolocation; microphone;"
