@@ -166,7 +166,10 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
     Browser* browser,
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (delegate->ShouldCurrentRequestUseQuietUI()) {
+  if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+    return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
+                                                      delegate);
+  } else if (delegate->ShouldCurrentRequestUseQuietUI()) {
     return std::make_unique<PermissionPromptQuietIcon>(browser, web_contents,
                                                        delegate);
   } else {
