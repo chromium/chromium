@@ -20,6 +20,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
 namespace emoji {
@@ -72,6 +73,7 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
   void HandleEditorSearchResults(PickerSearchSource source,
                                  std::optional<PickerSearchResult> result);
+  const base::Value::Dict* LoadEmojiVariantsFromPrefs();
 
   bool is_category_specific_search_;
   const raw_ref<PickerClient> client_;

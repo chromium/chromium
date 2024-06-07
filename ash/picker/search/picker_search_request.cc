@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
@@ -30,6 +31,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -248,6 +250,15 @@ void PickerSearchRequest::HandleGifSearchResults(
                             /*has_more_results=*/true);
 }
 
+const base::Value::Dict* PickerSearchRequest::LoadEmojiVariantsFromPrefs() {
+  if (client_->GetPrefs() == nullptr) {
+    return nullptr;
+  }
+  return client_->GetPrefs()
+      ->GetDict(prefs::kEmojiPickerPreferences)
+      .FindDict("preferred_variants");
+}
+
 void PickerSearchRequest::HandleEmojiSearchResults(
     emoji::EmojiSearchResult results) {
   if (emoji_search_start_.has_value()) {
@@ -260,10 +271,20 @@ void PickerSearchRequest::HandleEmojiSearchResults(
   emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
                         kMaxEmoticonResults);
 
+  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs();
+
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
+    std::string emoji_string = result.emoji_string;
+    if (emoji_variants != nullptr) {
+      const std::string* variant_string =
+          emoji_variants->FindString(emoji_string);
+      if (variant_string != nullptr) {
+        emoji_string = *variant_string;
+      }
+    }
     emoji_results.push_back(
-        PickerSearchResult::Emoji(base::UTF8ToUTF16(result.emoji_string)));
+        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji_string)));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
