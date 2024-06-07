@@ -42,6 +42,14 @@ std::string FormatModalDurationMetrics(
       /*offsets=*/nullptr);
 }
 
+std::string FormatRefreshHistogramNameFor(
+    metrics::PlusAddressModalCompletionStatus status) {
+  return base::ReplaceStringPlaceholders(
+      "Autofill.PlusAddresses.Modal.$1.Refreshes",
+      {metrics::PlusAddressModalCompletionStatusToString(status)},
+      /*offsets=*/nullptr);
+}
+
 }  // namespace
 
 // Testing very basic functionality for now. As UI complexity increases, this
@@ -113,6 +121,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
       kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      0, 1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
@@ -143,6 +155,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
       kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      1, 1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
@@ -184,6 +200,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError),
       kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError),
+      0, 1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
@@ -220,6 +240,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError),
       kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError),
+      0, 1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
@@ -271,6 +295,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kModalCanceled),
       kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalCanceled),
+      0, 1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
@@ -314,6 +342,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
       kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      0, 1);
 }
 // With the feature disabled, the `KeyedService` is not present; ensure this is
 // handled. While this code path should not be called in that case, it is

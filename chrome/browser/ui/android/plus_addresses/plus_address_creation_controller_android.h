@@ -84,6 +84,9 @@ class PlusAddressCreationControllerAndroid
   // This is set on `OfferCreation`.
   std::optional<base::Time> modal_shown_time_;
   std::optional<metrics::PlusAddressModalCompletionStatus> modal_error_status_;
+  // The number of responses from calls to reserve a plus address that a user
+  // has made. This equals 1 + number of refreshes.
+  int reserve_response_count_ = 0;
 
   base::WeakPtrFactory<PlusAddressCreationControllerAndroid> weak_ptr_factory_{
       this};

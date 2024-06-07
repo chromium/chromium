@@ -136,6 +136,7 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
   }
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();
+    ++reserve_response_count_;
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError;
@@ -162,9 +163,11 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
 void PlusAddressCreationControllerAndroid::RecordModalShownDuration(
     metrics::PlusAddressModalCompletionStatus status) {
   if (modal_shown_time_.has_value()) {
-    metrics::RecordModalShownOutcome(
-        status, clock_->Now() - modal_shown_time_.value(), /*refresh_count=*/0);
+    metrics::RecordModalShownOutcome(status,
+                                     clock_->Now() - modal_shown_time_.value(),
+                                     std::max(reserve_response_count_ - 1, 0));
     modal_shown_time_.reset();
+    reserve_response_count_ = 0;
   }
 }
 
