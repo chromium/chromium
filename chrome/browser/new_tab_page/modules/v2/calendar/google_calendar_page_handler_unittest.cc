@@ -196,7 +196,13 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   }
 }
 
-TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
+// TODO: crbug.com/345602518 - Flaky on Mac and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_GetEvents DISABLED_GetEvents
+#else
+#define MAYBE_GetEvents GetEvents
+#endif
+TEST_F(GoogleCalendarPageHandlerTest, MAYBE_GetEvents) {
   std::unique_ptr<GoogleCalendarPageHandler> handler =
       CreateHandlerWithTestServer("calendar/events.json");
   std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
@@ -228,7 +234,13 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
             "https://meet.google.com/jbe-test");
 }
 
-TEST_F(GoogleCalendarPageHandlerTest, GetEventWithAttachments) {
+// TODO: crbug.com/345602518 - Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GetEventWithAttachments DISABLED_GetEventWithAttachments
+#else
+#define MAYBE_GetEventWithAttachments GetEventWithAttachments
+#endif
+TEST_F(GoogleCalendarPageHandlerTest, MAYBE_GetEventWithAttachments) {
   std::unique_ptr<GoogleCalendarPageHandler> handler =
       CreateHandlerWithTestServer("calendar/event_with_attachments.json");
   std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
