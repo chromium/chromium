@@ -272,7 +272,7 @@ void IOSLanguageDetectionTabHelper::OnTextRetrieved(
     const std::string& html_lang,
     const GURL& url,
     const base::Value* text_content) {
-  if (!web_state_) {
+  if (!web_state_ || web_state_->IsBeingDestroyed()) {
     // If the webState is destroyed, this callback will still be called as the
     // request is cancelled.
     return;
