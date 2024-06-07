@@ -1,4 +1,5 @@
 # -*- bazel-starlark -*-
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./typescript_all.star", "typescript_all")
@@ -9,6 +10,12 @@ __handlers.update(typescript_all.handlers)
 def __step_config(ctx, step_config):
     remote_run = True
     step_config["input_deps"].update(typescript_all.input_deps)
+
+    use_input_root_absolute_path = False
+    if gn.args(ctx).get("use_javascript_coverage") == "true":
+        # crbug.com/345528247: The mismatch of checkout paths between the bot
+        # and remote workers breaks js coverage builds.
+        use_input_root_absolute_path = True
 
     # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
     step_config["input_deps"].update({
@@ -43,6 +50,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "handler": "typescript_ts_library",
             "output_local": True,
+            "input_root_absolute_path": use_input_root_absolute_path,
         },
         {
             "name": "typescript/ts_definitions",
@@ -62,6 +70,7 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "timeout": "2m",
             "handler": "typescript_ts_definitions",
+            "input_root_absolute_path": use_input_root_absolute_path,
         },
     ])
     return step_config
