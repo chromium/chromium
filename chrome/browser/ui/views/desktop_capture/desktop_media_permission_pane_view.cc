@@ -67,9 +67,10 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
 DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
     DesktopMediaList::Type type)
     : type_(type) {
-  SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
-                                                         /*top_radius=*/0,
-                                                         /*bottom_radius=*/8));
+  SetBackground(
+      views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
+                                               /*top_radius=*/0.0f,
+                                               /*bottom_radius=*/8.0f));
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
