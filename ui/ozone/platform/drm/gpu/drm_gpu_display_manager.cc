@@ -89,43 +89,50 @@ bool MatchMode(const display::DisplayMode& display_mode,
          display_mode.is_interlaced() == ModeIsInterlaced(m);
 }
 
-bool FindMatchingMode(const std::vector<drmModeModeInfo> modes,
-                      const display::DisplayMode& display_mode,
-                      drmModeModeInfo* mode) {
+// Finds a mode from |modes| that matches the size and timing specified by
+// |request_mode| and writes the results to |out_mode|. Returns true if a
+// matching mode was found.
+bool FindMatchingMode(const display::DisplayMode& request_mode,
+                      const std::vector<drmModeModeInfo>& modes,
+                      drmModeModeInfo* out_mode) {
   for (const drmModeModeInfo& m : modes) {
-    if (MatchMode(display_mode, m)) {
-      *mode = m;
+    if (MatchMode(request_mode, m)) {
+      *out_mode = m;
       return true;
     }
   }
   return false;
 }
 
+// Finds a mode that matches the size and timing specified by |request_mode| and
+// writes the results to |out_mode|. Prioritizes choosing modes natively
+// belonging to |display|, and attempts panel-fitting from |all_displays| if
+// needed. Returns true if a matching mode was found.
 bool FindModeForDisplay(
-    drmModeModeInfo* mode_ptr,
-    const display::DisplayMode& display_mode,
-    const std::vector<drmModeModeInfo>& modes,
-    const std::vector<std::unique_ptr<DrmDisplay>>& all_displays) {
-  bool mode_found = FindMatchingMode(modes, display_mode, mode_ptr);
-  if (!mode_found) {
-    // If the display doesn't have the mode natively, then lookup the mode
-    // from other displays and try using it on the current display (some
-    // displays support panel fitting and they can use different modes even
-    // if the mode isn't explicitly declared).
-    for (const auto& other_display : all_displays) {
-      mode_found =
-          FindMatchingMode(other_display->modes(), display_mode, mode_ptr);
-      if (mode_found)
-        break;
-    }
-    if (!mode_found) {
-      LOG(ERROR) << "Failed to find mode: size="
-                 << display_mode.size().ToString()
-                 << " is_interlaced=" << display_mode.is_interlaced()
-                 << " refresh_rate=" << display_mode.refresh_rate();
+    const display::DisplayMode& request_mode,
+    const DrmDisplay& display,
+    const std::vector<std::unique_ptr<DrmDisplay>>& all_displays,
+    drmModeModeInfo* out_mode) {
+  if (FindMatchingMode(request_mode, display.modes(), out_mode)) {
+    return true;
+  }
+
+  // If the display doesn't have the mode natively, then lookup the mode
+  // from other displays and try using it on the current display (some
+  // displays support panel fitting and they can use different modes even
+  // if the mode isn't explicitly declared).
+  for (const auto& other_display : all_displays) {
+    if (FindMatchingMode(request_mode, other_display->modes(), out_mode)) {
+      VLOG(3) << "Found matching mode from another display. Attempting to "
+                 "apply via panel fitting.";
+      return true;
     }
   }
-  return mode_found;
+
+  LOG(ERROR) << "Failed to find mode: size=" << request_mode.size().ToString()
+             << " is_interlaced=" << request_mode.is_interlaced()
+             << " refresh_rate=" << request_mode.refresh_rate();
+  return false;
 }
 
 std::string GetEventPropertyByKey(const std::string& key,
@@ -426,8 +433,8 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   }
 
   if (controllers_to_configure.empty()) {
-    for (const auto& config : config_requests) {
-      int64_t display_id = config.id;
+    for (const auto& request : config_requests) {
+      int64_t display_id = request.id;
       DrmDisplay* display = FindDisplay(display_id);
       if (!display) {
         LOG(WARNING) << __func__ << ": there is no display with ID "
@@ -436,18 +443,18 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
       }
 
       std::unique_ptr<drmModeModeInfo> mode_ptr =
-          config.mode ? std::make_unique<drmModeModeInfo>() : nullptr;
-      if (config.mode) {
-        if (!FindModeForDisplay(mode_ptr.get(), *config.mode, display->modes(),
-                                displays_)) {
+          request.mode ? std::make_unique<drmModeModeInfo>() : nullptr;
+      if (request.mode) {
+        if (!FindModeForDisplay(*request.mode, *display, displays_,
+                                mode_ptr.get())) {
           return false;
         }
       }
 
       scoped_refptr<DrmDevice> drm = display->drm();
       ControllerConfigParams params(display->display_id(), drm, display->crtc(),
-                                    display->connector(), config.origin,
-                                    std::move(mode_ptr), config.enable_vrr,
+                                    display->connector(), request.origin,
+                                    std::move(mode_ptr), request.enable_vrr,
                                     display->base_connector_id());
       controllers_to_configure.push_back(std::move(params));
     }
@@ -748,7 +755,7 @@ bool DrmGpuDisplayManager::RetryTestConfigureDisplaysWithAlternateCrtcs(
       if (!UpdateDisplaysWithNewCrtcs(controllers_to_configure)) {
         LOG(ERROR)
             << __func__
-            << ": Failed to revert to the original CRTC-conector pairings.";
+            << ": Failed to revert to the original CRTC-connector pairings.";
       }
 
       const std::string num_fallback_histogram =
@@ -760,10 +767,10 @@ bool DrmGpuDisplayManager::RetryTestConfigureDisplaysWithAlternateCrtcs(
   }
 
   if (fallback_successful_for_all_devices) {
-    const std::string config_reques_string =
+    const std::string config_request_string =
         ConfigRequestToString(config_requests);
     successful_test_config_params_.insert(
-        {config_reques_string, successful_config_list});
+        {config_request_string, successful_config_list});
   }
 
   // TODO: b/329078793 - Stop reverting to the original config once
@@ -775,7 +782,7 @@ bool DrmGpuDisplayManager::RetryTestConfigureDisplaysWithAlternateCrtcs(
   // ConfigureDisplays() calls.
   if (!UpdateDisplaysWithNewCrtcs(controllers_to_configure)) {
     LOG(ERROR) << __func__
-               << ": Failed to revert to the original CRTC-conector pairings.";
+               << ": Failed to revert to the original CRTC-connector pairings.";
   }
 
   const std::string num_fallback_histogram =
@@ -833,10 +840,10 @@ bool DrmGpuDisplayManager::UpdateDisplaysWithNewCrtcs(
 std::vector<ControllerConfigParams>
 DrmGpuDisplayManager::GetLatestModesetTestConfig(
     const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  const std::string config_reques_string =
+  const std::string config_request_string =
       ConfigRequestToString(config_requests);
   const auto& config_param_it =
-      successful_test_config_params_.find(config_reques_string);
+      successful_test_config_params_.find(config_request_string);
 
   if (config_param_it == successful_test_config_params_.end()) {
     return {};
