@@ -367,12 +367,16 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+  EXPECT_TRUE(compose_enabling_->IsPageLanguageSupported(
+      mock_translate_manager_.get()));
 
   // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+  EXPECT_FALSE(compose_enabling_->IsPageLanguageSupported(
+      mock_translate_manager_.get()));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
@@ -387,6 +391,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+  EXPECT_FALSE(compose_enabling_->IsPageLanguageSupported(
+      mock_translate_manager_.get()));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLanguageTest) {
@@ -405,6 +411,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLanguageTest) {
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+  EXPECT_TRUE(compose_enabling_->IsPageLanguageSupported(
+      mock_translate_manager_.get()));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
@@ -423,6 +431,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+  EXPECT_TRUE(compose_enabling_->IsPageLanguageSupported(
+      mock_translate_manager_.get()));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {

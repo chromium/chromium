@@ -433,10 +433,15 @@ ComposeEnabling::PageLevelChecks(translate::TranslateManager* translate_manager,
 
   if (!base::FeatureList::IsEnabled(
           compose::features::kEnableComposeLanguageBypass) &&
-      !translate_language_provider_->IsLanguageSupported(translate_manager)) {
+      !IsPageLanguageSupported(translate_manager)) {
     DVLOG(2) << "language not supported";
     return base::unexpected(compose::ComposeShowStatus::kUnsupportedLanguage);
   }
 
   return base::ok();
+}
+
+bool ComposeEnabling::IsPageLanguageSupported(
+    translate::TranslateManager* translate_manager) {
+  return translate_language_provider_->IsLanguageSupported(translate_manager);
 }

@@ -94,6 +94,9 @@ class ComposeEnabling {
   compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url,
                                                              Profile* profile);
 
+  // Checks if the page assessed language is supported by Compose.
+  bool IsPageLanguageSupported(translate::TranslateManager* translate_manager);
+
  private:
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
       translate::TranslateManager* translate_manager,

@@ -65,6 +65,11 @@ std::string_view EvalLocationString(EvalLocation location) {
   }
 }
 
+std::string_view LanguageSupportedString(bool page_language_supported) {
+  return page_language_supported ? "PageLanguageSupported"
+                                 : "PageLanguageUnsupported";
+}
+
 // Emit an enum for for each event present in `session_events`.
 // Split the event counts histogram on `eval_location` if provided.
 void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
@@ -304,15 +309,27 @@ void LogComposeRequestReason(EvalLocation eval_location,
       reason);
 }
 
-void LogComposeRequestStatus(compose::mojom::ComposeStatus status) {
+void LogComposeRequestStatus(bool page_language_supported,
+                             compose::mojom::ComposeStatus status) {
   base::UmaHistogramEnumeration(kComposeRequestStatus, status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Compose.Request.",
+                    LanguageSupportedString(page_language_supported),
+                    ".Status"}),
+      status);
 }
 
 void LogComposeRequestStatus(EvalLocation eval_location,
+                             bool page_language_supported,
                              compose::mojom::ComposeStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"Compose.", EvalLocationString(eval_location), ".Request.Status"}),
+      status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Compose.", EvalLocationString(eval_location), ".Request.",
+                    LanguageSupportedString(page_language_supported),
+                    ".Status"}),
       status);
 }
 

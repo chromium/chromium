@@ -90,6 +90,7 @@ class ComposeSession
       base::Token session_id,
       InnerTextProvider* inner_text,
       autofill::FieldGlobalId node_id,
+      bool is_page_language_supported,
       Observer* observer,
       ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
@@ -374,6 +375,9 @@ class ComposeSession
   bool got_inner_text_ = false;
 
   autofill::FieldGlobalId node_id_;
+
+  // Information about the page assessed language being supported by Compose.
+  bool is_page_language_supported_;
 
   base::OnceClosure continue_compose_;
 

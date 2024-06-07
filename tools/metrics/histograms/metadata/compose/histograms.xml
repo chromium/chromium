@@ -315,6 +315,26 @@ chromium-metrics-reviews@google.com.
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
 
+<histogram
+    name="Compose.{ComposeEvalLocation}Request.{PageLanguageStatus}.Status"
+    enum="ComposeRequestStatus" expires_after="2024-11-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records the Compose server request status when a request is made from a
+    {PageLanguageStatus}. Logged each time a Compose request receives a
+    response. {ComposeEvalLocation}
+  </summary>
+  <token key="PageLanguageStatus">
+    <variant name="PageLanguageSupported"
+        summary="page whose language is supported by Compose"/>
+    <variant name="PageLanguageUnsupported"
+        summary="page whose language is not supported by Compose (but usage
+                 was still allowed)."/>
+  </token>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
 <histogram name="Compose.{ComposeEvalLocation}Session.CloseReason"
     enum="ComposeSessionCloseReasonType" expires_after="2024-11-01">
   <owner>petewil@chromium.org</owner>
