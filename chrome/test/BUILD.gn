@@ -11795,6 +11795,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
+        "//ui/base/clipboard/clipboard_win_unittest.cc",
         "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
       ]
 
