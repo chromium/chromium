@@ -32,7 +32,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
@@ -270,7 +269,7 @@ bool TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip() {
 // Tab Search button as a FrameCaptionButton, but it still needs to be on the
 // left if it exists.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return features::IsChromeRefresh2023();
+  return true;
 #else
   return false;
 #endif
