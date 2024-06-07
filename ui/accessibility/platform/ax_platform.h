@@ -21,6 +21,18 @@ class AXPlatformNode;
 // Process-wide accessibility platform state.
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
  public:
+#if BUILDFLAG(IS_WIN)
+  // These strings are only needed for IA2 support.
+  struct ProductStrings {
+    // Product name, e.g. "Chrome".
+    std::string product_name;
+    // Version number, e.g. "aa.bb.cc.dd".
+    std::string product_version;
+    // Toolkit version of the product, for example, the User Agent string.
+    std::string toolkit_version;
+  };
+#endif
+
   class COMPONENT_EXPORT(AX_PLATFORM) Delegate {
    public:
     Delegate(const Delegate&) = delete;
@@ -41,6 +53,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // should be called when we detect accessibility API usage.
     virtual void OnAccessibilityApiUsage() = 0;
 
+#if BUILDFLAG(IS_WIN)
+    // Used to retrieve the product name, version, and toolkit version for IA2.
+    // Only called the first time the data is needed to fill in the
+    // product_strings_ member of AXPlatform.
+    virtual ProductStrings GetProductStrings() = 0;
+#endif
+
    protected:
     Delegate() = default;
   };
@@ -51,10 +70,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Constructs a new instance. Only one instance may be alive in a process at
   // any given time. Typically, the embedder creates one during process startup
   // and ensures that it is kept alive throughout the process's UX.
-  explicit AXPlatform(Delegate& delegate,
-                      const std::string& product_name,
-                      const std::string& product_version,
-                      const std::string& toolkit_version);
+  explicit AXPlatform(Delegate& delegate);
   AXPlatform(const AXPlatform&) = delete;
   AXPlatform& operator=(const AXPlatform&) = delete;
   ~AXPlatform();
@@ -77,17 +93,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   bool IsCaretBrowsingEnabled();
   void SetCaretBrowsingState(bool enabled);
 
+#if BUILDFLAG(IS_WIN)
   // Returns the product name, e.g. "Chrome".
-  const std::string& product_name() const { return product_name_; }
+  const std::string& GetProductName() const;
 
   // Returns the version number, e.g. "aa.bb.cc.dd".
-  const std::string& product_version() const { return product_version_; }
+  const std::string& GetProductVersion() const;
 
   // Returns the toolkit version of the product, for example, the User Agent
   // string.
-  const std::string& toolkit_version() const { return toolkit_version_; }
+  const std::string& GetToolkitVersion() const;
 
-#if BUILDFLAG(IS_WIN)
   // Enables or disables use of the UI Automation Provider on Windows. If this
   // function is not called, the provider is enabled or disabled on the basis of
   // the "UiaProvider" base::Feature. In such cases, the `--enable-features` or
@@ -107,6 +123,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Sets the process-wide accessibility mode.
   void SetMode(AXMode new_mode) { delegate_->SetProcessMode(new_mode); }
 
+#if BUILDFLAG(IS_WIN)
+  // Retrieves the product name, version, and toolkit version from the delegate
+  // if they have not already been retrieved.
+  void RetrieveProductStringsIfNeeded() const;
+#endif
+
   // Keeps track of whether caret browsing is enabled.
   bool caret_browsing_enabled_ = false;
 
@@ -118,13 +140,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
                      /*allow_reentrancy=*/false>
       observers_;
 
-  // See product_name() product_version(), and toolkit_version().
-  // These are passed by the embedder at construction.
-  const std::string product_name_;
-  const std::string product_version_;
-  const std::string toolkit_version_;
-
 #if BUILDFLAG(IS_WIN)
+  // See product_name() product_version(), and toolkit_version().
+  // These are lazily cached upon first use. Mutable to allow caching.
+  mutable std::optional<ProductStrings> product_strings_;
+
   enum class UiaProviderEnablement {
     // Enabled or disabled via Chrome Variations (base::FeatureList).
     kVariations,

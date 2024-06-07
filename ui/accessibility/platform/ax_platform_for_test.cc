@@ -47,4 +47,10 @@ void AXPlatformForTest::SetProcessMode(AXMode new_mode) {
 
 void AXPlatformForTest::OnAccessibilityApiUsage() {}
 
+#if BUILDFLAG(IS_WIN)
+AXPlatform::ProductStrings AXPlatformForTest::GetProductStrings() {
+  return {{}, {}, {}};
+}
+#endif
+
 }  // namespace ui

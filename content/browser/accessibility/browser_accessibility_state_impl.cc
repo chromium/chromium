@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -166,37 +165,6 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
              : (mode & ui::AXMode::kNativeAPIs);
 }
 
-// Helper for GetProductName and GetProductVersion, gets the product name and
-// version from the content client.
-std::vector<std::string> GetProductNameAndVersion() {
-  // GetProduct() returns a string like "Chrome/aa.bb.cc.dd", split out
-  // the part before and after the "/".
-  std::vector<std::string> product_components = base::SplitString(
-      CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser()).GetProduct(), "/",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  return product_components;
-}
-
-std::string GetProductName() {
-  std::vector<std::string> product_components = GetProductNameAndVersion();
-  if (product_components.size() != 2) {
-    return "";
-  }
-  return product_components[0];
-}
-
-std::string GetProductVersion() {
-  std::vector<std::string> product_components = GetProductNameAndVersion();
-  if (product_components.size() != 2) {
-    return "";
-  }
-  return product_components[1];
-}
-
-std::string GetToolkitVersion() {
-  CHECK(GetContentClient() && GetContentClient()->browser());
-  return CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser()).GetUserAgent();
-}
 
 }  // namespace
 
@@ -223,10 +191,7 @@ BrowserAccessibilityStateImpl::Create() {
 
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     : BrowserAccessibilityState(),
-      ax_platform_(*this,
-                   GetProductName(),
-                   GetProductVersion(),
-                   GetToolkitVersion()),
+      ax_platform_(*this),
       histogram_delay_(base::Seconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS)),
       scoped_modes_for_process_(base::BindRepeating(
           &BrowserAccessibilityStateImpl::OnModeChangedForProcess,

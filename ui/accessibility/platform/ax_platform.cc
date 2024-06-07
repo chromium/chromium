@@ -22,14 +22,7 @@ AXPlatform& AXPlatform::GetInstance() {
   return *g_instance;
 }
 
-AXPlatform::AXPlatform(Delegate& delegate,
-                       const std::string& product_name,
-                       const std::string& product_version,
-                       const std::string& toolkit_version)
-    : delegate_(delegate),
-      product_name_(product_name),
-      product_version_(product_version),
-      toolkit_version_(toolkit_version) {
+AXPlatform::AXPlatform(Delegate& delegate) : delegate_(delegate) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
@@ -62,6 +55,21 @@ void AXPlatform::SetCaretBrowsingState(bool enabled) {
 }
 
 #if BUILDFLAG(IS_WIN)
+const std::string& AXPlatform::GetProductName() const {
+  RetrieveProductStringsIfNeeded();
+  return product_strings_->product_name;
+}
+
+const std::string& AXPlatform::GetProductVersion() const {
+  RetrieveProductStringsIfNeeded();
+  return product_strings_->product_version;
+}
+
+const std::string& AXPlatform::GetToolkitVersion() const {
+  RetrieveProductStringsIfNeeded();
+  return product_strings_->toolkit_version;
+}
+
 void AXPlatform::SetUiaProviderEnabled(bool is_enabled) {
   CHECK_EQ(uia_provider_enablement_, UiaProviderEnablement::kVariations);
   uia_provider_enablement_ = is_enabled ? UiaProviderEnablement::kEnabled
@@ -72,6 +80,12 @@ bool AXPlatform::IsUiaProviderEnabled() const {
   return uia_provider_enablement_ == UiaProviderEnablement::kVariations
              ? base::FeatureList::IsEnabled(features::kUiaProvider)
              : (uia_provider_enablement_ == UiaProviderEnablement::kEnabled);
+}
+
+void AXPlatform::RetrieveProductStringsIfNeeded() const {
+  if (!product_strings_) {
+    product_strings_ = delegate_->GetProductStrings();
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -161,6 +162,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void InitBackgroundTasks() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
+  ui::AXPlatform::ProductStrings GetProductStrings() override;
 
  private:
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
@@ -271,6 +273,22 @@ void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", g_nvda);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport", g_zoomtext);
+}
+
+ui::AXPlatform::ProductStrings
+BrowserAccessibilityStateImplWin::GetProductStrings() {
+  ContentClient& content_client = CHECK_DEREF(content::GetContentClient());
+  // GetProduct() returns a string like "Chrome/aa.bb.cc.dd", split out
+  // the part before and after the "/".
+  std::vector<std::string> product_components = base::SplitString(
+      CHECK_DEREF(CHECK_DEREF(content::GetContentClient()).browser())
+          .GetProduct(),
+      "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (product_components.size() != 2) {
+    return {{}, {}, CHECK_DEREF(content_client.browser()).GetUserAgent()};
+  }
+  return {product_components[0], product_components[1],
+          CHECK_DEREF(content_client.browser()).GetUserAgent()};
 }
 
 // static
