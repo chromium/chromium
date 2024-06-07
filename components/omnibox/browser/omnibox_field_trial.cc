@@ -748,6 +748,20 @@ namespace OmniboxFieldTrial {
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
+// The debouncing delay (in milliseconds) to use when throttling ZPS prefetch
+// requests.
+const base::FeatureParam<int> kZeroSuggestPrefetchDebounceDelay(
+    &omnibox::kZeroSuggestPrefetchDebouncing,
+    "ZeroSuggestPrefetchDebounceDelay",
+    300);
+
+// Whether to calculate debouncing delay relative to the latest successful run
+// (instead of the latest run request).
+const base::FeatureParam<bool> kZeroSuggestPrefetchDebounceFromLastRun(
+    &omnibox::kZeroSuggestPrefetchDebouncing,
+    "ZeroSuggestPrefetchDebounceFromLastRun",
+    true);
+
 // The maximum number of entries stored by the in-memory zero-suggest cache at
 // at any given time (LRU eviction policy is used to enforce this limit).
 const base::FeatureParam<int> kZeroSuggestCacheMaxSize(

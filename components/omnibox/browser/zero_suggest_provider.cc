@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -347,6 +348,17 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchDebouncing)) {
+    debouncer_->RequestRun(
+        base::BindOnce(&ZeroSuggestProvider::RunZeroSuggestPrefetch,
+                       base::Unretained(this), input, result_type));
+  } else {
+    RunZeroSuggestPrefetch(input, result_type);
+  }
+}
+
+void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
+                                                 const ResultType result_type) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
   search_terms_args.request_source = input.request_source();
@@ -472,6 +484,10 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
                                bool due_to_user_inactivity) {
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
 
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchDebouncing)) {
+    debouncer_->CancelRequest();
+  }
+
   if (loader_) {
     LogOmniboxZeroSuggestRequest(RemoteRequestEvent::kRequestInvalidated,
                                  result_type_running_,
@@ -504,6 +520,12 @@ ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
                                          AutocompleteProviderListener* listener)
     : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client) {
   AddListener(listener);
+
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchDebouncing)) {
+    debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(
+        OmniboxFieldTrial::kZeroSuggestPrefetchDebounceFromLastRun.Get(),
+        OmniboxFieldTrial::kZeroSuggestPrefetchDebounceDelay.Get());
+  }
 }
 
 ZeroSuggestProvider::~ZeroSuggestProvider() = default;

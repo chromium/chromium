@@ -1509,6 +1509,9 @@ extern const char kOmniboxStarterPackExpansionDescription[];
 extern const char kOmniboxStarterPackIPHName[];
 extern const char kOmniboxStarterPackIPHDescription[];
 
+extern const char kOmniboxZeroSuggestPrefetchDebouncingName[];
+extern const char kOmniboxZeroSuggestPrefetchDebouncingDescription[];
+
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 

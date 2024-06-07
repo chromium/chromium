@@ -21013,6 +21013,7 @@ from previous Chrome versions.
   <int value="280644887" label="mash"/>
   <int value="280925459" label="LiveCaption:disabled"/>
   <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
+  <int value="281209060" label="ZeroSuggestPrefetchDebouncing:enabled"/>
   <int value="281528483" label="MediaAppPdfA11yOcr:disabled"/>
   <int value="282165459" label="ForceMinorVersion100InUserAgent:enabled"/>
   <int value="282456095"
@@ -25308,6 +25309,7 @@ from previous Chrome versions.
   <int value="2122876605" label="enable-bleeding-edge-rendering-fast-paths"/>
   <int value="2123183411" label="BlinkHeapIncrementalMarking:enabled"/>
   <int value="2123567684" label="OptimizeLoadingIPCForSmallResources:enabled"/>
+  <int value="2123977420" label="ZeroSuggestPrefetchDebouncing:disabled"/>
   <int value="2125732298" label="RetailCoupons:disabled"/>
   <int value="2126030721" label="VCBackgroundBlur:disabled"/>
   <int value="2126203058" label="force-show-update-menu-badge"/>

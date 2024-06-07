@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/base_search_provider.h"
 
 class AutocompleteProviderListener;
@@ -125,6 +126,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                  const int response_code,
                                  std::unique_ptr<std::string> response_body);
 
+  // Called by `debouncer_`.
+  void RunZeroSuggestPrefetch(const AutocompleteInput& input,
+                              const ResultType result_type);
+
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
       const SearchSuggestionParser::NavigationResult& navigation);
@@ -153,6 +158,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // Loader used to retrieve results for ZPS prefetch requests on SRP/Web.
   std::unique_ptr<network::SimpleURLLoader> srp_web_prefetch_loader_;
+
+  // Debouncer used to throttle the frequency of ZPS prefetch requests (to
+  // minimize the performance impact on the remote Suggest service).
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
 
   // The list of experiment stats corresponding to |matches_|.
   SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;

@@ -1465,6 +1465,67 @@ const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
+const FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRun[] = {
+        {"ZeroSuggestPrefetchDebounceDelay", "300"},
+        {"ZeroSuggestPrefetchDebounceFromLastRun", "true"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRequest[] = {
+        {"ZeroSuggestPrefetchDebounceDelay", "300"},
+        {"ZeroSuggestPrefetchDebounceFromLastRun", "false"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestPrefetchDebouncingModerateFromLastRun[] = {
+        {"ZeroSuggestPrefetchDebounceDelay", "600"},
+        {"ZeroSuggestPrefetchDebounceFromLastRun", "true"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestPrefetchDebouncingModerateFromLastRequest[] = {
+        {"ZeroSuggestPrefetchDebounceDelay", "600"},
+        {"ZeroSuggestPrefetchDebounceFromLastRun", "false"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestPrefetchDebouncingAggressiveFromLastRun[] = {
+        {"ZeroSuggestPrefetchDebounceDelay", "900"},
+        {"ZeroSuggestPrefetchDebounceFromLastRun", "true"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestPrefetchDebouncingAggressiveFromLastRequest[] = {
+        {"ZeroSuggestPrefetchDebounceDelay", "900"},
+        {"ZeroSuggestPrefetchDebounceFromLastRun", "false"},
+};
+
+const FeatureEntry::FeatureVariation
+    kOmniboxZeroSuggestPrefetchDebouncingVariations[] = {
+        {"Minimal debouncing relative to last run",
+         kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRun,
+         std::size(kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRun),
+         nullptr},
+        {"Minimal debouncing relative to last request",
+         kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRequest,
+         std::size(kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRequest),
+         nullptr},
+        {"Moderate debouncing relative to last run",
+         kOmniboxZeroSuggestPrefetchDebouncingModerateFromLastRun,
+         std::size(kOmniboxZeroSuggestPrefetchDebouncingModerateFromLastRun),
+         nullptr},
+        {"Moderate debouncing relative to last request",
+         kOmniboxZeroSuggestPrefetchDebouncingModerateFromLastRequest,
+         std::size(
+             kOmniboxZeroSuggestPrefetchDebouncingModerateFromLastRequest),
+         nullptr},
+        {"Aggressive debouncing relative to last run",
+         kOmniboxZeroSuggestPrefetchDebouncingAggressiveFromLastRun,
+         std::size(kOmniboxZeroSuggestPrefetchDebouncingAggressiveFromLastRun),
+         nullptr},
+        {"Aggressive debouncing relative to last request",
+         kOmniboxZeroSuggestPrefetchDebouncingAggressiveFromLastRequest,
+         std::size(
+             kOmniboxZeroSuggestPrefetchDebouncingAggressiveFromLastRequest),
+         nullptr},
+};
+
 #if BUILDFLAG(IS_ANDROID)
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment1[] = {
     {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
@@ -6099,6 +6160,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxOnClobberFocusTypeOnContentName,
      flag_descriptions::kOmniboxOnClobberFocusTypeOnContentDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxOnClobberFocusTypeOnContent)},
+
+    {"omnibox-zero-suggest-prefetch-debouncing",
+     flag_descriptions::kOmniboxZeroSuggestPrefetchDebouncingName,
+     flag_descriptions::kOmniboxZeroSuggestPrefetchDebouncingDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kZeroSuggestPrefetchDebouncing,
+         kOmniboxZeroSuggestPrefetchDebouncingVariations,
+         "OmniboxZeroSuggestPrefetchDebouncing")},
 
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,

@@ -420,6 +420,14 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 
+// Determines the debouncing delay (in milliseconds) to use when throttling ZPS
+// prefetch requests.
+extern const base::FeatureParam<int> kZeroSuggestPrefetchDebounceDelay;
+
+// Determines whether to calculate debouncing delay relative to the latest
+// successful run (instead of the latest run request).
+extern const base::FeatureParam<bool> kZeroSuggestPrefetchDebounceFromLastRun;
+
 // Determines the maximum number of entries stored by the in-memory ZPS cache.
 extern const base::FeatureParam<int> kZeroSuggestCacheMaxSize;
 

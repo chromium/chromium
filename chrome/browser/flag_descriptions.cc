@@ -2475,6 +2475,12 @@ const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
     "Updates the logic constructing MV tiles to use horizontal render group. "
     "No user-facing changes expected.";
 
+const char kOmniboxZeroSuggestPrefetchDebouncingName[] =
+    "Omnibox Zero Prefix Suggest Prefetch Request Debouncing";
+const char kOmniboxZeroSuggestPrefetchDebouncingDescription[] =
+    "Enables the use of a request debouncer to throttle the volume of ZPS "
+    "prefetch requests issued to the remote Suggest service.";
+
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on NTP";
 const char kOmniboxZeroSuggestPrefetchingDescription[] =

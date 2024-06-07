@@ -163,6 +163,13 @@ BASE_FEATURE(kZeroSuggestInMemoryCaching,
              "ZeroSuggestInMemoryCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the use of a request debouncer to throttle the number of ZPS prefetch
+// requests initiated over a given period of time (to help minimize the
+// performance impact of ZPS prefetching on the remote Suggest service).
+BASE_FEATURE(kZeroSuggestPrefetchDebouncing,
+             "ZeroSuggestPrefetchDebouncing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables prefetching of the zero prefix suggestions for eligible users on NTP.
 BASE_FEATURE(kZeroSuggestPrefetching,
              "ZeroSuggestPrefetching",
