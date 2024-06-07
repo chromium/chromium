@@ -506,7 +506,8 @@ LoginDatabaseAsyncHelper::DeleteUndecryptableCredentials() {
   return login_db_->DeleteUndecryptableLogins();
 }
 
-bool LoginDatabaseAsyncHelper::WereUndecryptableLoginsDeleted() const {
+std::optional<bool> LoginDatabaseAsyncHelper::WereUndecryptableLoginsDeleted()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!login_db_) {
     return false;

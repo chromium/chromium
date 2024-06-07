@@ -391,7 +391,10 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               (override));
   MOCK_METHOD(bool, IsAccountStore, (), (const override));
   MOCK_METHOD(bool, DeleteAndRecreateDatabaseFile, (), (override));
-  MOCK_METHOD(bool, WereUndecryptableLoginsDeleted, (), (const override));
+  MOCK_METHOD(std::optional<bool>,
+              WereUndecryptableLoginsDeleted,
+              (),
+              (const override));
   MOCK_METHOD(void, ClearWereUndecryptableLoginsDeleted, (), (override));
 };
 
@@ -1084,13 +1087,36 @@ TEST_F(PasswordSyncBridgeTest,
 #endif
 
 TEST_F(PasswordSyncBridgeTest,
+       ShouldNotRemoveSyncMetadataWhenUndecryptablePasswordsWereNotDeleted) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list{};
+  feature_list.InitAndEnableFeature(features::kClearUndecryptablePasswords);
+
+  EXPECT_CALL(*mock_password_store_sync(), WereUndecryptableLoginsDeleted)
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              GetAllSyncMetadata(syncer::PASSWORDS));
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials).Times(0);
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS))
+      .Times(0);
+
+  auto bridge = PasswordSyncBridge(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
+                                      0, 1);
+}
+
+TEST_F(PasswordSyncBridgeTest,
        ShouldRemoveSyncMetadataWhenUndecryptablePasswordsWereDeleted) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list{};
   feature_list.InitAndEnableFeature(features::kClearUndecryptablePasswords);
 
   EXPECT_CALL(*mock_password_store_sync(), WereUndecryptableLoginsDeleted)
-      .WillOnce(Return(false))
+      .WillOnce(Return(std::optional<bool>()))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               GetAllSyncMetadata(syncer::PASSWORDS));

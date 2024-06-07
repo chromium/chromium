@@ -243,7 +243,7 @@ class LoginDatabase {
 
   // Returns whether there were undecryptable logins present in the login db and
   // if they were successfully removed.
-  bool were_undecryptable_logins_deleted() const {
+  std::optional<bool> were_undecryptable_logins_deleted() const {
     return were_undecryptable_logins_deleted_;
   }
 
@@ -392,7 +392,7 @@ class LoginDatabase {
   PasswordNotesTable password_notes_table_;
   SyncMetadataStore password_sync_metadata_store_{&db_};
 
-  bool were_undecryptable_logins_deleted_ = false;
+  std::optional<bool> were_undecryptable_logins_deleted_;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

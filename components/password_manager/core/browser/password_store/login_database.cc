@@ -2318,6 +2318,17 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   DCHECK(forms);
   forms->clear();
   bool failed = false;
+
+  // Since this member is only used to trigger sync, it should maintain the most
+  // relevant value for the PasswordSyncBridge. Which means if there were no
+  // reads assume that the read was successful and there were no deletions.
+  // Deletion will update this member's value to true, only starting sync can
+  // set it back to false. This way PasswordSyncBridge will always know whether
+  // the sync should happen or no, no matter how many calls happen before that.
+  if (!were_undecryptable_logins_deleted_.has_value()) {
+    were_undecryptable_logins_deleted_ = false;
+  }
+
   while (statement->Step()) {
     std::u16string plaintext_password;
     EncryptionResult result =

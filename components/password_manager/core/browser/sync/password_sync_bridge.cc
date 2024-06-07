@@ -198,8 +198,10 @@ bool ShouldRecoverPasswordsDuringMerge() {
 bool WereUndecryptablePasswordsDeleted(PasswordStoreSync* password_store_sync) {
   // This check is needed in case, someone read passwords before password
   // sync init was started.
-  if (password_store_sync->WereUndecryptableLoginsDeleted()) {
-    return true;
+  auto were_undecryptable_logins_deleted =
+      password_store_sync->WereUndecryptableLoginsDeleted();
+  if (were_undecryptable_logins_deleted.has_value()) {
+    return were_undecryptable_logins_deleted.value();
   }
 
   // In case nothing was deleted before sync init started, try to read passwords
@@ -209,7 +211,14 @@ bool WereUndecryptablePasswordsDeleted(PasswordStoreSync* password_store_sync) {
   const bool read_success =
       password_store_sync->ReadAllCredentials(&key_to_specifics_map) ==
       FormRetrievalResult::kSuccess;
-  return read_success && password_store_sync->WereUndecryptableLoginsDeleted();
+
+  if (!read_success) {
+    return false;
+  }
+  were_undecryptable_logins_deleted =
+      password_store_sync->WereUndecryptableLoginsDeleted();
+  return were_undecryptable_logins_deleted.has_value() &&
+         were_undecryptable_logins_deleted.value();
 }
 
 bool DoesPasswordStoreContainAccidentalBatchDeletions(
