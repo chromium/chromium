@@ -441,6 +441,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::TimeZoneService> receiver) override;
   void BindTrustedVaultBackend(
       mojo::PendingReceiver<mojom::TrustedVaultBackend> receiver) override;
+  void BindTrustedVaultBackendService(
+      mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver)
+      override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;

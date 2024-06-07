@@ -40,11 +40,13 @@ BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);
 // LacrosOnly mode.
 BASE_DECLARE_FEATURE(kChromeOSTrustedVaultUseWebUIDialog);
 
-// Enables sharing of TrustedVaultClient between Ash and Lacros main profile via
-// Crosapi: Ash will keep a stateful TrustedVaultClient and Lacros will use it
-// via IPC to implement stateless TrustedVaultClient.
+// Enables sharing of the Chrome Sync TrustedVaultClient between Ash and Lacros
+// main profile via Crosapi: Ash will keep a stateful TrustedVaultClient and
+// Lacros will use it via IPC to implement stateless TrustedVaultClient.
+//
+// Passkeys TrustedVaultClients are not controlled by this flag, they always
+// share state between Ash and Lacros.
 BASE_DECLARE_FEATURE(kChromeOSTrustedVaultClientShared);
-
 #endif
 
 }  // namespace trusted_vault

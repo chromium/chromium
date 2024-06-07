@@ -19,7 +19,7 @@ TrustedVaultService::TrustedVaultService(
   CHECK(chrome_sync_security_domain_client_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TrustedVaultService::TrustedVaultService(
     std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client,
     std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client)
@@ -28,9 +28,10 @@ TrustedVaultService::TrustedVaultService(
       passkeys_security_domain_client_(
           std::move(passkeys_security_domain_client)) {
   CHECK(chrome_sync_security_domain_client_);
-  CHECK(passkeys_security_domain_client_);
+  // `passkeys_security_domain_client` will be null if the passkeys feature is
+  // disabled.
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TrustedVaultService::~TrustedVaultService() = default;
 
@@ -40,11 +41,11 @@ trusted_vault::TrustedVaultClient* TrustedVaultService::GetTrustedVaultClient(
     case SecurityDomainId::kChromeSync:
       return chrome_sync_security_domain_client_.get();
     case SecurityDomainId::kPasskeys:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       return passkeys_security_domain_client_.get();
 #else
       return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   NOTREACHED_NORETURN();
 }

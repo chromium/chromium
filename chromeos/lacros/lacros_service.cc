@@ -644,6 +644,10 @@ LacrosService::LacrosService()
       crosapi::mojom::TrustedVaultBackend,
       &crosapi::mojom::Crosapi::BindTrustedVaultBackend,
       Crosapi::MethodMinVersions::kBindTrustedVaultBackendMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::TrustedVaultBackendService,
+      &crosapi::mojom::Crosapi::BindTrustedVaultBackendService,
+      Crosapi::MethodMinVersions::kBindTrustedVaultBackendServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Tts, &crosapi::mojom::Crosapi::BindTts,
                   Crosapi::MethodMinVersions::kBindTtsMinVersion>();
   ConstructRemote<crosapi::mojom::UrlHandler,

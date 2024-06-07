@@ -169,8 +169,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 143
-// Next method id: 145
+// Next version: 144
+// Next method id: 146
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -708,12 +708,24 @@ interface Crosapi {
   [MinVersion=134]
   BindSuggestionService@136(pending_receiver<SuggestionService> receiver);
 
-  // Binds TrustedVaultBackend, which allows lacros-chrome to access data stored
-  // by ash-chrome TrustedVaultClient.
+  // Binds TrustedVaultBackend for the `chromesync` security domain, which
+  // allows lacros-chrome to access data stored by ash-chrome
+  // TrustedVaultClient.
+  // TODO(crbug.com/342239249): Deprecate in favor of
+  // `BindTrustedVaultBackendService` two milestones after that is rolled out,
+  // and we can stop relying on this method as a fallback (M129).
   // Added in M119.
   [MinVersion=119]
   BindTrustedVaultBackend@121(
       pending_receiver<TrustedVaultBackend> receiver);
+
+  // Binds TrustedVaultBackendService, which allows lacros-chrome to bind to
+  // TrustedVaultBackend instances to access data stored by ash-chrome
+  // TrustedVaultClients.
+  // Added in M127.
+  [MinVersion=143]
+  BindTrustedVaultBackendService@145(
+      pending_receiver<TrustedVaultBackendService> receiver);
 
   // Binds the HidManager interface for support HID devices.
   // Added in M87.

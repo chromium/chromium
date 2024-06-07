@@ -4,6 +4,8 @@
 
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_ash.h"
+#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_factory_ash.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
@@ -18,6 +20,7 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/test/fake_crosapi_trusted_vault_backend.h"
+#include "components/trusted_vault/test/fake_crosapi_trusted_vault_backend_service.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/test/browser_test.h"
@@ -67,14 +70,13 @@ MATCHER_P4(StatusLabelsMatch,
 
 class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
  public:
-  TrustedVaultKeysSharingLacrosBrowserTest()
-      : SyncTest(SINGLE_CLIENT),
-        trusted_vault_client_ash_(/*auto_complete_requests=*/true) {
+  TrustedVaultKeysSharingLacrosBrowserTest() : SyncTest(SINGLE_CLIENT) {
     override_features_.InitAndEnableFeature(
         trusted_vault::kChromeOSTrustedVaultClientShared);
-    fake_crosapi_backend_ =
-        std::make_unique<trusted_vault::FakeCrosapiTrustedVaultBackend>(
-            &trusted_vault_client_ash_);
+    fake_crosapi_backend_service_ =
+        std::make_unique<trusted_vault::FakeCrosapiTrustedVaultBackendService>(
+            &chrome_sync_trusted_vault_client_ash_,
+            &passkeys_trusted_vault_client_ash_);
   }
 
   ~TrustedVaultKeysSharingLacrosBrowserTest() override = default;
@@ -86,8 +88,8 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
     return base::FilePath(chrome::kInitialProfile);
   }
 
-  // This test replaces production TrustedVaultBackend Crosapi interface with a
-  // fake one. It needs to be done before connection between Ash
+  // This test replaces production TrustedVaultBackend Crosapi interface with
+  // a fake one. It needs to be done before connection between Ash
   // TrustedVaultBackend and Lacros TrustedVaultClient is established (during
   // creation of Lacros profile), but after LacrosService is initialized. Thus
   // relying on CreatedBrowserMainParts().
@@ -95,10 +97,10 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
       content::BrowserMainParts* browser_main_parts) override {
     SyncTest::CreatedBrowserMainParts(browser_main_parts);
 
-    // Replace the production TrustedVaultBackend Crosapi with a fake for
-    // testing.
+    // Replace the production TrustedVaultBackendService Crosapi with a fake
+    // for testing.
     chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        fake_crosapi_backend_->BindNewPipeAndPassRemote());
+        fake_crosapi_backend_service_->BindNewPipeAndPassRemote());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -132,14 +134,14 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
 
     embedded_test_server()->StartAcceptingConnections();
 
-    fake_crosapi_backend_->SetPrimaryAccountInfo(
+    fake_crosapi_backend_service_->chrome_sync_backend().SetPrimaryAccountInfo(
         GetSyncService(0)->GetAccountInfo());
 
     return true;
   }
 
   trusted_vault::FakeTrustedVaultClient& trusted_vault_client_ash() {
-    return trusted_vault_client_ash_;
+    return chrome_sync_trusted_vault_client_ash_;
   }
 
   bool WaitForTrustedVaultReauthCompletion() {
@@ -160,9 +162,12 @@ class TrustedVaultKeysSharingLacrosBrowserTest : public SyncTest {
   std::unique_ptr<views::NamedWidgetShownWaiter>
       trusted_vault_widget_shown_waiter_;
 
-  trusted_vault::FakeTrustedVaultClient trusted_vault_client_ash_;
-  std::unique_ptr<trusted_vault::FakeCrosapiTrustedVaultBackend>
-      fake_crosapi_backend_;
+  trusted_vault::FakeTrustedVaultClient chrome_sync_trusted_vault_client_ash_{
+      /*auto_complete_requests=*/true};
+  trusted_vault::FakeTrustedVaultClient passkeys_trusted_vault_client_ash_{
+      /*auto_complete_requests=*/true};
+  std::unique_ptr<trusted_vault::FakeCrosapiTrustedVaultBackendService>
+      fake_crosapi_backend_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(TrustedVaultKeysSharingLacrosBrowserTest,

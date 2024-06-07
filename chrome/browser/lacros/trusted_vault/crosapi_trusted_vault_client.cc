@@ -22,6 +22,15 @@ crosapi::mojom::AccountKeyPtr MakeMojoAccountKey(const std::string& gaia_id) {
 }  // namespace
 
 CrosapiTrustedVaultClient::CrosapiTrustedVaultClient(
+    mojo::Remote<crosapi::mojom::TrustedVaultBackend> remote)
+    : owned_remote_(std::move(remote)) {
+  remote_ = &owned_remote_.value();
+  CHECK(remote_);
+  CHECK(remote_->is_bound());
+  (*remote_)->AddObserver(receiver_.BindNewPipeAndPassRemote());
+}
+
+CrosapiTrustedVaultClient::CrosapiTrustedVaultClient(
     mojo::Remote<crosapi::mojom::TrustedVaultBackend>* remote)
     : remote_(remote) {
   CHECK(remote_);

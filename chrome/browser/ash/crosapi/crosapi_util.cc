@@ -428,7 +428,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 142,
+static_assert(crosapi::mojom::Crosapi::Version_ == 143,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -559,6 +559,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::TestController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TimeZoneService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TrustedVaultBackend>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::TrustedVaultBackendService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Tts>(),
     MakeInterfaceVersionEntry<crosapi::mojom::UrlHandler>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),

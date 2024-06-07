@@ -178,6 +178,8 @@ static_library("test_support") {
     sources += [
       "test/fake_crosapi_trusted_vault_backend.cc",
       "test/fake_crosapi_trusted_vault_backend.h",
+      "test/fake_crosapi_trusted_vault_backend_service.cc",
+      "test/fake_crosapi_trusted_vault_backend_service.h",
     ]
 
     public_deps += [

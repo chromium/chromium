@@ -5,82 +5,63 @@
 #ifndef CHROME_BROWSER_ASH_TRUSTED_VAULT_TRUSTED_VAULT_BACKEND_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_TRUSTED_VAULT_TRUSTED_VAULT_BACKEND_SERVICE_ASH_H_
 
-#include <cstdint>
-#include <vector>
+#include <memory>
 
-#include "chrome/browser/profiles/profile_observer.h"
-#include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/trusted_vault/trusted_vault_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+
+namespace signin {
+class IdentityManager;
+}
+
+namespace trusted_vault {
+class TrustedVaultClient;
+}
 
 namespace ash {
 
+class TrustedVaultBackendAsh;
+
 class TrustedVaultBackendServiceAsh
     : public KeyedService,
-      public crosapi::mojom::TrustedVaultBackend,
-      public trusted_vault::TrustedVaultClient::Observer {
+      public crosapi::mojom::TrustedVaultBackendService {
  public:
   // `identity_manager` and `trusted_vault_client` must not be null.
-  explicit TrustedVaultBackendServiceAsh(
+  // `passkeys_trusted_vault_client_` may be null.
+  TrustedVaultBackendServiceAsh(
       signin::IdentityManager* identity_manager,
-      trusted_vault::TrustedVaultClient* trusted_vault_client);
+      trusted_vault::TrustedVaultClient* chrome_sync_trusted_vault_client,
+      trusted_vault::TrustedVaultClient* passkeys_trusted_vault_client);
   TrustedVaultBackendServiceAsh(const TrustedVaultBackendServiceAsh&) = delete;
   TrustedVaultBackendServiceAsh& operator=(
       const TrustedVaultBackendServiceAsh&) = delete;
   ~TrustedVaultBackendServiceAsh() override;
 
   void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::TrustedVaultBackend> receiver);
+      mojo::PendingReceiver<crosapi::mojom::TrustedVaultBackendService>
+          receiver);
 
   // KeyedService implementation.
   void Shutdown() override;
 
-  // trusted_vault::TrustedVaultClient::Observer implementation.
-  void OnTrustedVaultKeysChanged() override;
-  void OnTrustedVaultRecoverabilityChanged() override;
-
-  // crosapi::mojom::TrustedVaultBackend implementation.
-  void AddObserver(
-      mojo::PendingRemote<crosapi::mojom::TrustedVaultBackendObserver> observer)
+  // crosapi::mojom::TrustedVaultBackendService implementation.
+  void GetTrustedVaultBackend(
+      crosapi::mojom::SecurityDomainId security_domain,
+      mojo::PendingReceiver<crosapi::mojom::TrustedVaultBackend> backend)
       override;
-  void FetchKeys(crosapi::mojom::AccountKeyPtr account_key,
-                 FetchKeysCallback callback) override;
-  void MarkLocalKeysAsStale(crosapi::mojom::AccountKeyPtr account_key,
-                            MarkLocalKeysAsStaleCallback callback) override;
-  void StoreKeys(crosapi::mojom::AccountKeyPtr account_key,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int32_t last_key_version) override;
-  void GetIsRecoverabilityDegraded(
-      crosapi::mojom::AccountKeyPtr account_key,
-      GetIsRecoverabilityDegradedCallback callback) override;
-  void AddTrustedRecoveryMethod(
-      crosapi::mojom::AccountKeyPtr account_key,
-      const std::vector<uint8_t>& public_key,
-      int32_t method_type_hint,
-      AddTrustedRecoveryMethodCallback callback) override;
-  void ClearLocalDataForAccount(
-      crosapi::mojom::AccountKeyPtr account_key) override;
+
+  TrustedVaultBackendAsh* chrome_sync_trusted_vault_backend() const;
 
  private:
-  bool ValidateAccountKeyIsPrimaryAccount(
-      const crosapi::mojom::AccountKeyPtr& account_key) const;
-  CoreAccountInfo GetPrimaryAccountInfo() const;
+  std::unique_ptr<TrustedVaultBackendAsh> chrome_sync_backend_;
+  std::unique_ptr<TrustedVaultBackendAsh> passkeys_backend_;
 
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
-
-  // Don't add new members below this. `receivers_` and `observers_` should be
-  // destroyed as soon as `this` (or prior that) is getting destroyed so that we
-  // don't deal with message handling on a partially destroyed object.
-  mojo::ReceiverSet<crosapi::mojom::TrustedVaultBackend> receivers_;
-  mojo::RemoteSet<crosapi::mojom::TrustedVaultBackendObserver> observers_;
+  // Don't add new members below this. `receivers_` should be destroyed as soon
+  // as `this` (or prior that) is getting destroyed so that we don't deal with
+  // message handling on a partially destroyed object.
+  mojo::ReceiverSet<crosapi::mojom::TrustedVaultBackendService> receivers_;
 };
 
 }  // namespace ash

@@ -49,7 +49,9 @@ TrustedVaultBackendServiceFactoryAsh::BuildServiceInstanceForBrowserContext(
   return std::make_unique<TrustedVaultBackendServiceAsh>(
       IdentityManagerFactory::GetForProfile(profile),
       TrustedVaultServiceFactory::GetForProfile(profile)->GetTrustedVaultClient(
-          trusted_vault::SecurityDomainId::kChromeSync));
+          trusted_vault::SecurityDomainId::kChromeSync),
+      TrustedVaultServiceFactory::GetForProfile(profile)->GetTrustedVaultClient(
+          trusted_vault::SecurityDomainId::kPasskeys));
 }
 
 }  // namespace ash
