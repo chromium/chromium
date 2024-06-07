@@ -457,6 +457,10 @@ class PasswordFormMetricsRecorder
   // JavaScript. The result is stored in |js_only_input_|.
   void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
 
+  // Calculates the share of input text field characters in the submitted form
+  // that are filled by Chrome. The result is stored in `automation_rate_`.
+  void CalculateAutomationRate(const autofill::FormData& submitted_form);
+
   // Caches how the form was parsed for filling. Needed to measure the
   // difference in form parsing on filling and saving.
   void CacheParsingResultInFillingMode(const PasswordForm& form);
@@ -621,6 +625,11 @@ class PasswordFormMetricsRecorder
   autofill::FieldRendererId confirmation_password_rendered_id_;
 
   std::optional<ParsingDifference> parsing_diff_on_filling_and_saving_;
+
+  // Records the share of input text field characters in the submitted
+  // form that are filled by Chrome. This value includes all fields in the
+  // form (not only username and passwords).
+  std::optional<float> automation_rate_;
 };
 
 }  // namespace password_manager

@@ -2076,4 +2076,35 @@ TEST_F(PasswordFormMetricsRecorderTest, FormParsingDifferencePassword) {
           PasswordFormMetricsRecorder::ParsingDifference::kPasswordDiff));
 }
 
+TEST_F(PasswordFormMetricsRecorderTest, AutomationRate) {
+  const std::vector<TestCaseFieldInfo> form_fields = {
+      // Placeholder field should be ignored, as it had not user interaction.
+      {.value = "placeholder"},
+      {.value = "username", .user_typed = true},
+      {.value = "OTP", .user_typed = true},
+      // The only autofilled field is password field.
+      {.value = "strong_password",
+       .manually_filled = true,
+       .is_password = true}};
+  PasswordForm password_form_data = ConvertToPasswordForm(form_fields);
+
+  {
+    auto recorder = CreatePasswordFormMetricsRecorder(
+        /*is_main_frame_secure=*/true, &pref_service_);
+    recorder->CalculateFillingAssistanceMetric(
+        password_form_data, /*saved_usernames=*/{}, /*saved_passwords=*/{},
+        /*is_blocklisted=*/false,
+        /*interactions_stats=*/{},
+        PasswordAccountStorageUsageLevel::kUsingAccountStorage);
+    recorder->LogSubmitPassed();
+  }
+
+  int expected_rate =
+      100 * form_fields[3].value.size() /
+      (form_fields[1].value.size() + form_fields[2].value.size() +
+       form_fields[3].value.size());
+  histogram_tester_.ExpectUniqueSample("PasswordManager.FillingAutomationRate",
+                                       expected_rate, 1);
+}
+
 }  // namespace password_manager

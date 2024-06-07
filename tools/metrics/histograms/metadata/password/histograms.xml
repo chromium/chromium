@@ -1387,6 +1387,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FillingAutomationRate" units="%"
+    expires_after="2024-12-15">
+  <owner>kazinova@google.com</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <summary>
+    Records the percentage of input text field characters that were autofilled.
+    This function measures text input as a number of UTF-16 code points.
+
+    Recorded when the password form is submitted and the corresponding form
+    manager is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FillingSource"
     enum="PasswordManagerFillingSource" expires_after="2024-11-03">
   <owner>mamir@chromium.org</owner>

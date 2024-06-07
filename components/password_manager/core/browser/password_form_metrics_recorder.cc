@@ -248,11 +248,18 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     ukm_entry_builder_.SetSubmission_Observed(0 /*false*/);
   }
 
-  if (submit_result_ != SubmitResult::kNotSubmitted && submitted_form_type_) {
-    base::UmaHistogramEnumeration("PasswordManager.SubmittedFormType2",
-                                  submitted_form_type_.value());
-    ukm_entry_builder_.SetSubmission_SubmittedFormType2(
-        static_cast<int64_t>(submitted_form_type_.value()));
+  if (submit_result_ != SubmitResult::kNotSubmitted) {
+    if (submitted_form_type_.has_value()) {
+      base::UmaHistogramEnumeration("PasswordManager.SubmittedFormType2",
+                                    submitted_form_type_.value());
+      ukm_entry_builder_.SetSubmission_SubmittedFormType2(
+          static_cast<int64_t>(submitted_form_type_.value()));
+    }
+
+    if (automation_rate_.has_value()) {
+      base::UmaHistogramPercentage("PasswordManager.FillingAutomationRate",
+                                   100 * automation_rate_.value());
+    }
   }
 
   ukm_entry_builder_.SetUpdating_Prompt_Shown(update_prompt_shown_);
@@ -656,6 +663,7 @@ void PasswordFormMetricsRecorder::CalculatePasswordFillingAssistanceMetric(
     features_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level) {
   CalculateJsOnlyInput(submitted_form);
+  CalculateAutomationRate(submitted_form);
   if (is_main_frame_secure_ && submitted_form.action().is_valid() &&
       !submitted_form.is_action_empty() &&
       !submitted_form.action().SchemeIsCryptographic()) {
@@ -817,6 +825,30 @@ void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
                        ? JsOnlyInput::kAutofillOrUserInput
                        : (had_focus ? JsOnlyInput::kOnlyJsInputWithFocus
                                     : JsOnlyInput::kOnlyJsInputNoFocus);
+}
+
+void PasswordFormMetricsRecorder::CalculateAutomationRate(
+    const FormData& submitted_form) {
+  float total_length_autofilled_fields = 0.0;
+  float total_length = 0.0;
+  for (const auto& field : submitted_form.fields) {
+    if (!field.IsTextInputElement()) {
+      continue;
+    }
+
+    // The field was never filled or typed in, ignore it.
+    if (!field.DidUserType() && !field.WasPasswordAutofilled()) {
+      continue;
+    }
+    if (field.WasPasswordAutofilled()) {
+      total_length_autofilled_fields += field.value().size();
+    }
+    total_length += field.value().size();
+  }
+
+  if (total_length > 0) {
+    automation_rate_ = total_length_autofilled_fields / total_length;
+  }
 }
 
 void PasswordFormMetricsRecorder::CacheParsingResultInFillingMode(
