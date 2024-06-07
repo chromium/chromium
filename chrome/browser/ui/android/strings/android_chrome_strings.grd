@@ -4817,7 +4817,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       Sign in to save this page
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SAVE_DISABLED_BUTTON_DESCRIPTION" desc="Content description for disabled save button">
-      Disabled save button
+      Disabled Add to collection
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SHARE_BUTTON_DESCRIPTION" desc="Content description for share button">
       Share button
