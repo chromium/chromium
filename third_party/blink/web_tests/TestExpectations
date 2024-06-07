@@ -2570,6 +2570,8 @@ crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTra
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
+[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/345002381 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?cpu [ Skip Timeout ]
 crbug.com/343991292 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?gpu [ Skip Timeout ]
 crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
@@ -4259,7 +4261,7 @@ crbug.com/1053903 external/wpt/webxr/events_referenceSpace_reset_inline.https.ht
 ### Subset of scrolling tests that are failing when percent-based scrolling feature is enabled
 
 # fast/events/wheel
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout Pass ]
+crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Pass Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
 crbug.com/1456442 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Pass Timeout ]

@@ -144473,6 +144473,19 @@
         {}
        ]
       ],
+      "text-box-trim-line-clamp-001.html": [
+       "e0af246db0e53665c5a54d3ad1a2064f52b61462",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-multicol-001.html": [
        "69323e0aeffd2fb641cc0bbd1ef952103ed171ab",
        [
@@ -273422,6 +273435,19 @@
         {}
        ]
       ],
+      "input-number-text-size.tentative.html": [
+       "e7b1a1990dcd4f6af2efad70705b7523460c15db",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-number-text-size-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "input-password-background-suppresses-appearance.html": [
        "3c85b100a1dc74e94d0a7f7e187da951d7476209",
        [
@@ -324967,6 +324993,10 @@
        "84a80e160c7ea0eb105a224bdfe5d8e3a491b954",
        []
       ],
+      "text-box-trim-line-clamp-001-ref.html": [
+       "e8d6ba60b18ef9efc24e11560114f1525aed9a11",
+       []
+      ],
       "text-box-trim-multicol-001-ref.html": [
        "aa81e23a26a4900dde31b1943b2774e0449d7249",
        []
@@ -370511,6 +370541,10 @@
        "5b2ea91fe5fa635c221adc8801605f3b14fb66c7",
        []
       ],
+      "input-number-text-size-ref.html": [
+       "4c9b244990d611686614d409d315d74a0f4bd119",
+       []
+      ],
       "input-password-background-suppresses-appearance-ref.html": [
        "33e0e6ac161007679a51f435951f579ab5dfaf09",
        []
@@ -391810,6 +391844,10 @@
      ],
      "credentials-test-helper.py": [
       "575e504e64f7dceb46ba68445d8da47f91ac1ea5",
+      []
+     ],
+     "cross-origin-worklet-in-sandboxed-frame-inner.https.sub.html": [
+      "498fda3078099a1843eca3d7da2fdd96542ec89d",
       []
      ],
      "delete-key.https.html": [
@@ -575924,7 +575962,7 @@
        ]
       ],
       "input-text-size.html": [
-       "4838399405aa93b81e661e437f8fde57de009f9f",
+       "fa69f9977317b83118cc11845897706cb9bbc834",
        [
         null,
         {}
@@ -641134,6 +641172,13 @@
       {}
      ]
     ],
+    "cross-origin-worklet-in-sandboxed-frame.tentative.https.sub.html": [
+     "f44a356bf83c842ac0c665b0e4e39159538eda7d",
+     [
+      null,
+      {}
+     ]
+    ],
     "cross-origin-worklet-select-url-and-verify-data-origin.tentative.https.sub.html": [
      "5b6b9d5f8f5b5e04f89a651eb88e344dae8e957b",
      [
@@ -641305,7 +641350,7 @@
      ]
     ],
     "shared-storage-in-sandboxed-iframe.tentative.https.html": [
-     "662d0ff63441bdb741fb9110152deaea7d08c515",
+     "537f2e99d3850ad51318b9654e67fe579076a882",
      [
       null,
       {}
