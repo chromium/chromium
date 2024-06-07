@@ -3,6 +3,8 @@
  * found in the LICENSE file. */
 
 :root {
+  color-scheme: only dark;
+
   --fast1-duration: 100ms;
   --fast2-duration: 200ms;
   --moderate1-duration: 250ms;
