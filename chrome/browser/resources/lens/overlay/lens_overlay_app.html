@@ -38,20 +38,19 @@
   }
 
   #moreOptions {
-    width: 130px;
+    width: 156px;
   }
 
   #moreOptionsButton {
-    margin-inline-start: 94px;
+    margin-inline-start: 120px;
   }
 
   #moreOptionsMenu {
-    background-color: rgba(var(--color-scrim-rgb), 0.6);
+    background: var(--color-selection-element);
     border-radius: 8px;
     display: none;
-    gap: 8px;
-    margin-top: 11px;
-    padding: 16px 0px;
+    margin-top: 8px;
+    padding: 8px 0px;
     /* Needed to prevent mouse flicker on option hover. */
     cursor: default;
   }
@@ -62,20 +61,48 @@
   }
 
   .menu-item {
-    margin-inline-start: 20px;
-    height: 20px;
+    align-items: center;
+    display: flex;
+    padding-inline-start: 16px;
+    height: 36px;
+  }
+
+  .menu-item:hover {
+    background-color: rgba(var(--color-scrim-rgb), 0.05);
+  }
+
+  .menu-item:active {
+    background-color: rgba(var(--color-scrim-rgb), 0.10);
   }
 
   .menu-item-label {
-    color: white;
+    color: var(--color-scrim);
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
   }
 
-  .menu-item-label:hover {
-    cursor: pointer;
+  .menu-item-icon {
+    background-color: var(--color-primary);
+    height: 20px;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 20px;
+    margin-inline-end: 12px;
+  }
+
+  .feedback {
+    mask-image: url("feedback.svg");
+  }
+
+  .activity {
+    mask-image: url("//resources/cr_components/searchbox/icons/google_g_cr23.svg");
+  }
+
+  .learn-more {
+    mask-image: url("learn_more.svg");
   }
 
   .app-container :not(lens-selection-overlay) {
@@ -133,16 +160,22 @@
           title="$i18n{moreOptions}">
       </cr-icon-button>
       <div id="moreOptionsMenu">
-        <div class="menu-item">
-          <span id="myActivity" on-click="onMyActivityClick"
+        <div class="menu-item" on-click="onMyActivityClick"
+            aria-label="$i18n{myActivity}">
+          <span class="menu-item-icon activity"></span>
+          <span id="myActivity"
               class="menu-item-label">$i18n{myActivity}</span>
         </div>
-        <div class="menu-item">
-          <span id="learnMore" on-click="onLearnMoreClick"
+        <div class="menu-item" on-click="onLearnMoreClick"
+            aria-label="$i18n{learnMore}">
+          <span class="menu-item-icon learn-more"></span>
+          <span id="learnMore"
               class="menu-item-label">$i18n{learnMore}</span>
         </div>
-        <div class="menu-item">
-          <span id="sendFeedback" on-click="onFeedbackClick"
+        <div class="menu-item" on-click="onFeedbackClick"
+            aria-label="$i18n{sendFeedback}">
+          <span class="menu-item-icon feedback"></span>
+          <span id="sendFeedback"
               class="menu-item-label">$i18n{sendFeedback}</span>
         </div>
       </div>

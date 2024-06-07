@@ -29,6 +29,7 @@ build_webui("build_overlay") {
     "feedback.svg",
     "icon_clear.svg",
     "info.svg",
+    "learn_more.svg",
     "lens_overlay.html",
     "side_panel/side_panel.html",
   ]
