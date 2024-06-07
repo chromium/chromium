@@ -71,7 +71,7 @@ const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
 const gfx::VectorIcon& kDarkGoogleGLogoIcon =
     vector_icons::kGoogleGLogoMonochromeIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon =
-    plus_addresses::kPlusAddressesLogoIcon;
+    vector_icons::kPlusAddressLogoLargeIcon;
 #else
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kDarkGoogleGLogoIcon = vector_icons::kProductIcon;

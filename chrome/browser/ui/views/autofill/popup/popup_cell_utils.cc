@@ -223,7 +223,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kGooglePasswordManagerIconSize);
     case Suggestion::Icon::kPlusAddress:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return ImageModelFromVectorIcon(plus_addresses::kPlusAddressesLogoIcon,
+      return ImageModelFromVectorIcon(vector_icons::kPlusAddressLogoSmallIcon,
                                       kIconSize);
 #else
       return ImageModelFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
