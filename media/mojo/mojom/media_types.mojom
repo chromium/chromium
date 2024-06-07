@@ -432,7 +432,6 @@ struct VideoFrame {
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
-  GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
   GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
   MailboxVideoFrameData mailbox_data;
   SharedImageVideoFrameData shared_image_data;
@@ -451,11 +450,6 @@ struct SharedMemoryVideoFrameData {
   // of |frame_data|.
   array<int32> strides;
   array<uint32> offsets;
-};
-
-struct GpuMemoryBufferVideoFrameData {
-  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
 };
 
 struct GpuMemoryBufferSharedImageVideoFrameData {

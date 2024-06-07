@@ -759,27 +759,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-    const gpu::MailboxHolder (&mailbox_holders)[kMaxPlanes],
-    ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
-    base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForGpuMemoryBufferInternal(
-      visible_rect, natural_size, std::move(gpu_memory_buffer),
-      std::move(mailbox_holder_and_gmb_release_cb), timestamp);
-  if (!frame) {
-    return nullptr;
-  }
-
-  for (size_t i = 0; i < kMaxPlanes; ++i) {
-    frame->mailbox_holders_[i] = mailbox_holders[i];
-  }
-  return frame;
-}
-
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     scoped_refptr<gpu::ClientSharedImage> shared_images[kMaxPlanes],
     const gpu::SyncToken& sync_token,
     uint32_t texture_target,
