@@ -23,6 +23,7 @@ per-file facilitated_payments_strings.grdp=file://components/facilitated_payment
 per-file fullscreen_control_strings.grdp=file://components/fullscreen_control/OWNERS
 per-file global_media_controls_strings.grdp=file://components/global_media_controls/OWNERS
 per-file heavy_ad_intervention_strings.grdp=file://components/heavy_ad_intervention/OWNERS
+per-file history_strings.grdp=file://components/history/OWNERS
 per-file history_clusters_strings.grdp=file://components/history_clusters/OWNERS
 per-file javascript_dialogs_strings.grdp=file://components/javascript_dialogs/OWNERS
 per-file live_caption_strings.grdp=file://components/live_caption/OWNERS
