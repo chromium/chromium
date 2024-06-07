@@ -252,7 +252,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontFamily) {
   RunCSSTest(FILE_PATH_LITERAL("font-family.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontSize) {
+// TODO(crbug.com/345718507): Consistently failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityCSSFontSize DISABLED_AccessibilityCSSFontSize
+#else
+#define MAYBE_AccessibilityCSSFontSize AccessibilityCSSFontSize
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityCSSFontSize) {
   RunCSSTest(FILE_PATH_LITERAL("font-size.html"));
 }
 
