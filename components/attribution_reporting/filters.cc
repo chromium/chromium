@@ -421,7 +421,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
       auto config =
           FilterConfig::Create(std::move(filter_values), lookback_window);
       CHECK(config.has_value());
-      disjunction.emplace_back(std::move(*config));
+      disjunction.emplace_back(*std::move(config));
     }
     return base::ok();
   };

@@ -364,9 +364,9 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
                                     result.limits())) {
     event_level_type = event_level_data_type_limit->debug_data_type;
     report_body.Append(GetReportData(
-        event_level_data_type_limit->debug_data_type,
-        GetReportDataBody(std::move(*event_level_data_type_limit), result)));
-    RecordVerboseDebugReportType(event_level_data_type_limit->debug_data_type);
+        *event_level_type,
+        GetReportDataBody(*std::move(event_level_data_type_limit), result)));
+    RecordVerboseDebugReportType(*event_level_type);
   }
 
   if (std::optional<DebugDataTypeAndBody> aggregatable_data_type_limit =
@@ -374,10 +374,12 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
                                     result.limits());
       aggregatable_data_type_limit &&
       aggregatable_data_type_limit->debug_data_type != event_level_type) {
+    DebugDataType aggregatable_type =
+        aggregatable_data_type_limit->debug_data_type;
     report_body.Append(GetReportData(
-        aggregatable_data_type_limit->debug_data_type,
-        GetReportDataBody(std::move(*aggregatable_data_type_limit), result)));
-    RecordVerboseDebugReportType(aggregatable_data_type_limit->debug_data_type);
+        aggregatable_type,
+        GetReportDataBody(*std::move(aggregatable_data_type_limit), result)));
+    RecordVerboseDebugReportType(aggregatable_type);
   }
 
   if (report_body.empty()) {
@@ -428,7 +430,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   RecordVerboseDebugReportType(data_type);
 
   return AttributionDebugReport(std::move(report_body),
-                                std::move(*registration_origin));
+                                *std::move(registration_origin));
 }
 
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(

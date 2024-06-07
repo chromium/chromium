@@ -72,7 +72,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonObject& json_object) {
   // TODO(crbug.com/332721859) Fuzz the `AttributionInteropConfig()` parameter
   // when we define a custom protobuf input for this fuzzer.
   std::ignore =
-      RunAttributionInteropSimulation(std::move(*run), kMockPublicKey);
+      RunAttributionInteropSimulation(*std::move(run), kMockPublicKey);
 }
 
 }  // namespace

@@ -128,7 +128,7 @@ AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
   MaybeAdjustReportBody(req.url, *value, adjuster);
 
   return AttributionInteropOutput::Report(
-      base::Time::Now() - TimeOffset(time_origin), req.url, std::move(*value));
+      base::Time::Now() - TimeOffset(time_origin), req.url, *std::move(value));
 }
 
 class FakeCookieChecker : public AttributionCookieChecker {

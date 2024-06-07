@@ -2020,7 +2020,7 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
   if (source.has_value()) {
     RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
         /*was_fetched_via_service_worker=*/false));
-    attribution_manager_->HandleSource(std::move(*source),
+    attribution_manager_->HandleSource(*std::move(source),
                                        registrations.render_frame_id());
   } else {
     MaybeLogAuditIssueAndReportHeaderError(registrations, pending_decode,
@@ -2060,7 +2060,7 @@ void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
   if (trigger.has_value()) {
     RecordRegistrationMethod(registrations.context().GetRegistrationMethod(
         /*was_fetched_via_service_worker=*/false));
-    attribution_manager_->HandleTrigger(std::move(*trigger),
+    attribution_manager_->HandleTrigger(*std::move(trigger),
                                         registrations.render_frame_id());
   } else {
     MaybeLogAuditIssueAndReportHeaderError(registrations, pending_decode,
@@ -2154,10 +2154,10 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(RegistrationsId id,
 
       if (registrations->navigation_id().has_value()) {
         MaybeBufferOsRegistrations(*registrations->navigation_id(),
-                                   std::move(*registration_items),
+                                   *std::move(registration_items),
                                    registrations->context());
       } else {
-        SubmitOsRegistrations(std::move(*registration_items),
+        SubmitOsRegistrations(*std::move(registration_items),
                               registrations->context(),
                               pending_decode.GetType());
       }

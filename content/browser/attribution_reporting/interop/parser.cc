@@ -284,7 +284,7 @@ class AttributionInteropParser {
           [&](base::Value v) {
             if (std::optional<SuitableOrigin> origin = ParseOrigin(&v)) {
               interop_config.aggregation_coordinator_origins.emplace_back(
-                  std::move(*origin));
+                  *std::move(origin));
             }
           },
           required,
@@ -377,7 +377,7 @@ class AttributionInteropParser {
 
     events.emplace_back(
         time, AttributionSimulationEvent::StartRequest(
-                  request_id, std::move(*context_origin), eligibility, fenced));
+                  request_id, *std::move(context_origin), eligibility, fenced));
 
     std::optional<base::Time> default_response_time = time;
 
@@ -423,7 +423,7 @@ class AttributionInteropParser {
                       // The string must outlive the call to
                       // `net::HttpResponseHeaders::Build()`, so put it back in
                       // the dict.
-                      value = base::Value(std::move(*json));
+                      value = base::Value(*std::move(json));
                       builder.AddHeader(header, value.GetString());
                     }
                   }
@@ -465,7 +465,7 @@ class AttributionInteropParser {
     }
 
     if (std::optional<base::Value> payload = dict.Extract(kPayloadKey)) {
-      report.payload = std::move(*payload);
+      report.payload = *std::move(payload);
     } else {
       auto context = PushContext(kPayloadKey);
       *Error() << "required";

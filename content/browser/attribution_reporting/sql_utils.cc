@@ -129,7 +129,7 @@ void SerializeCommonAggregatableData(
     return false;
   }
 
-  data.aggregatable_trigger_config = std::move(*aggregatable_trigger_config);
+  data.aggregatable_trigger_config = *std::move(aggregatable_trigger_config);
 
   return true;
 }
@@ -436,11 +436,11 @@ std::optional<TriggerSpecs> DeserializeTriggerSpecs(
   }
 
   if (!msg.has_trigger_data()) {
-    return TriggerSpecs(source_type, std::move(*event_report_windows));
+    return TriggerSpecs(source_type, *std::move(event_report_windows));
   }
 
   std::vector<TriggerSpec> specs;
-  specs.emplace_back(std::move(*event_report_windows));
+  specs.emplace_back(*std::move(event_report_windows));
 
   return TriggerSpecs::Create(
       base::MakeFlatMap<uint32_t, uint8_t>(msg.trigger_data().trigger_data(),

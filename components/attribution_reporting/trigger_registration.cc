@@ -132,7 +132,7 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
           AggregatableDebugReportingConfig::Parse(dict);
       aggregatable_debug_reporting_config.has_value()) {
     registration.aggregatable_debug_reporting_config =
-        std::move(*aggregatable_debug_reporting_config);
+        *std::move(aggregatable_debug_reporting_config);
   }
 
   return registration;
@@ -148,8 +148,8 @@ TriggerRegistration::Parse(std::string_view json) {
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
 
   if (value) {
-    if (value->is_dict()) {
-      trigger = Parse(std::move(*value).TakeDict());
+    if (base::Value::Dict* dict = value->GetIfDict()) {
+      trigger = Parse(std::move(*dict));
     } else {
       trigger = base::unexpected(TriggerRegistrationError::kRootWrongType);
     }

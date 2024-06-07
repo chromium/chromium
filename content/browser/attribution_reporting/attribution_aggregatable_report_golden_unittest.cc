@@ -138,7 +138,7 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
               ASSERT_TRUE(assembled_report);
 
               base::Value::Dict report_body =
-                  get_report_body(std::move(*assembled_report));
+                  get_report_body(*std::move(assembled_report));
 
               EXPECT_TRUE(VerifyReport(
                   report_body.Clone(), std::move(expected_report).TakeDict(),
@@ -196,20 +196,21 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
              << kKeySharedInfo << " not present in the report";
     }
 
-    if (!actual_payloads->is_list()) {
+    base::Value::List* actual_payloads_list = actual_payloads->GetIfList();
+    if (!actual_payloads_list) {
       return testing::AssertionFailure() << kKeyAggregationServicePayloads
                                          << " not a list in the actual report";
     }
 
-    if (!expected_payloads->is_list()) {
+    base::Value::List* expected_payloads_list = expected_payloads->GetIfList();
+    if (!expected_payloads_list) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
              << " not a list in the expected report";
     }
 
     return VerifyAggregationServicePayloads(
-        std::move(*actual_payloads).TakeList(),
-        std::move(*expected_payloads).TakeList(),
+        std::move(*actual_payloads_list), std::move(*expected_payloads_list),
         base64_encoded_expected_cleartext_payload, *shared_info);
   }
 
@@ -351,7 +352,7 @@ class AttributionAggregatableReportGoldenLatestVersionTest
       return report.ReportBody();
     };
 
-    AssembleAndVerifyReport(std::move(*request), get_report_body, report_file,
+    AssembleAndVerifyReport(*std::move(request), get_report_body, report_file,
                             cleartext_payloads_file);
   }
 };
@@ -766,7 +767,7 @@ class AggregatableDebugReportGoldenLatestVersionTest
       return assembled_report.GetAsJson();
     };
 
-    AssembleAndVerifyReport(std::move(*request), get_report_body, report_file,
+    AssembleAndVerifyReport(*std::move(request), get_report_body, report_file,
                             cleartext_payloads_file);
   }
 };

@@ -428,12 +428,12 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
                 *trigger_specs, max_event_level_reports, event_level_epsilon);
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
-      CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
+      CommonSourceInfo(*std::move(source_origin), *std::move(reporting_origin),
                        *source_type, debug_cookie_set),
-      source_event_id, std::move(*destination_set), source_time, expiry_time,
-      std::move(*trigger_specs), aggregatable_report_window_time,
-      max_event_level_reports, priority, std::move(*filter_data), debug_key,
-      std::move(*aggregation_keys), *attribution_logic, *active_state,
+      source_event_id, *std::move(destination_set), source_time, expiry_time,
+      *std::move(trigger_specs), aggregatable_report_window_time,
+      max_event_level_reports, priority, *std::move(filter_data), debug_key,
+      *std::move(aggregation_keys), *attribution_logic, *active_state,
       source_id, remaining_aggregatable_attribution_budget,
       randomized_response_rate, trigger_data_matching, event_level_epsilon,
       aggregatable_debug_key_piece, remaining_aggregatable_debug_budget);
@@ -445,7 +445,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
         source_id));
   }
 
-  return StoredSourceData{.source = std::move(*stored_source),
+  return StoredSourceData{.source = *std::move(stored_source),
                           .num_attributions = num_attributions,
                           .num_aggregatable_attribution_reports =
                               num_aggregatable_attribution_reports};
@@ -461,7 +461,7 @@ AttributionStorageSql::ReadSourceToAttribute(StoredSource::Id source_id) {
   }
 
   auto source = ReadSourceFromStatement(statement);
-  return source.has_value() ? std::make_optional(std::move(*source))
+  return source.has_value() ? std::make_optional(*std::move(source))
                             : std::nullopt;
 }
 
@@ -1685,7 +1685,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       if (reporting_origin.has_value()) {
         data = AttributionReport::NullAggregatableData(
             AttributionReport::CommonAggregatableData(),
-            /*reporting_origin=*/std::move(*reporting_origin),
+            /*reporting_origin=*/*std::move(reporting_origin),
             /*fake_source_time=*/base::Time());
         if (!DeserializeReportMetadata(
                 metadata,
@@ -1703,10 +1703,10 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
 
   DCHECK(data.has_value());
   return AttributionReport(AttributionInfo(trigger_time, trigger_debug_key,
-                                           std::move(*context_origin)),
+                                           *std::move(context_origin)),
                            report_id, report_time, initial_report_time,
                            std::move(external_report_id), failed_send_attempts,
-                           std::move(*data));
+                           *std::move(data));
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -1742,7 +1742,7 @@ std::vector<AttributionReport> AttributionStorageSql::GetReportsInternal(
     base::expected<AttributionReport, ReportCorruptionStatusSetAndIds> report =
         ReadReportFromStatement(statement);
     if (report.has_value()) {
-      reports.push_back(std::move(*report));
+      reports.emplace_back(*std::move(report));
     }
   }
 
@@ -1791,7 +1791,7 @@ std::optional<AttributionReport> AttributionStorageSql::GetReportInternal(
     return std::nullopt;
   }
   auto report = ReadReportFromStatement(statement);
-  return report.has_value() ? std::make_optional(std::move(*report))
+  return report.has_value() ? std::make_optional(*std::move(report))
                             : std::nullopt;
 }
 
@@ -3210,7 +3210,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
     DCHECK(data);
     attributed_source_time = data->source.source_time();
 
-    reports.push_back(std::move(*new_aggregatable_report));
+    reports.emplace_back(*std::move(new_aggregatable_report));
     new_aggregatable_report.reset();
   }
 

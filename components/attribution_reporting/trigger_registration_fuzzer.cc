@@ -44,12 +44,13 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << native_input << std::endl;
 
-  std::optional<base::Value> input = base::JSONReader::Read(
+  std::optional<base::Value::Dict> input = base::JSONReader::ReadDict(
       native_input, base::JSONParserOptions::JSON_PARSE_RFC);
-  if (!input || !input->is_dict())
+  if (!input) {
     return;
+  }
 
-  std::ignore = TriggerRegistration::Parse(std::move(*input).TakeDict());
+  std::ignore = TriggerRegistration::Parse(*std::move(input));
 }
 
 }  // namespace attribution_reporting

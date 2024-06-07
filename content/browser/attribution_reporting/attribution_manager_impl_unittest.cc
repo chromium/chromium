@@ -1941,7 +1941,7 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
   ASSERT_TRUE(report_sent_callback);
   ASSERT_TRUE(sent_report);
   std::move(report_sent_callback)
-      .Run(std::move(*sent_report), SendResult(SendResult::Status::kSent));
+      .Run(*std::move(sent_report), SendResult(SendResult::Status::kSent));
 
   histograms.ExpectUniqueSample(
       "Conversions.TimeFromTriggerToReportSentSuccessfully",
@@ -1986,7 +1986,7 @@ TEST_F(AttributionManagerImplTest, ReportRetriesTillSuccessHistogram) {
   ASSERT_TRUE(report_sent_callback);
   ASSERT_TRUE(sent_report);
   std::move(report_sent_callback)
-      .Run(std::move(*sent_report), SendResult(SendResult::Status::kSent));
+      .Run(*std::move(sent_report), SendResult(SendResult::Status::kSent));
 
   // kSuccess = 0.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);

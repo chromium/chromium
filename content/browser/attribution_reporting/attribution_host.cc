@@ -176,7 +176,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
   AttributionDataHostManager* manager = suitable_context->data_host_manager();
   manager->NotifyNavigationRegistrationStarted(
-      std::move(*suitable_context), impression->attribution_src_token,
+      *std::move(suitable_context), impression->attribution_src_token,
 
       navigation_handle->GetNavigationId(),
       // The devtools_navigation_token is going to be used as the
@@ -285,7 +285,7 @@ void AttributionHost::RegisterDataHost(
   }
 
   AttributionDataHostManager* manager = suitable_context->data_host_manager();
-  manager->RegisterDataHost(std::move(data_host), std::move(*suitable_context),
+  manager->RegisterDataHost(std::move(data_host), *std::move(suitable_context),
                             registration_eligibility,
                             is_for_background_requests);
 }

@@ -163,7 +163,7 @@ void AdjustAggregatableReportBody(base::Value::Dict& report_body) {
       shared_info_value->GetDict().Extract(kKeyAttributionDestination);
   CHECK(attribution_destination.has_value());
   report_body.Set(kKeyAttributionDestination,
-                  std::move(*attribution_destination));
+                  *std::move(attribution_destination));
 
   report_body.Set(
       "histograms",

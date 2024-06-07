@@ -268,7 +268,7 @@ ParseSourceConfig(base::Value::Dict& dict) {
   auto source_config =
       SourceAggregatableDebugReportingConfig::Create(budget, std::move(config));
   CHECK(source_config.has_value());
-  return std::move(*source_config);
+  return *std::move(source_config);
 }
 
 base::expected<AggregatableDebugReportingConfig,

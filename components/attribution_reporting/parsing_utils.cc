@@ -166,7 +166,7 @@ ParseAggregationCoordinator(const base::Value::Dict& dict) {
   auto aggregation_coordinator_origin =
       SuitableOrigin::Create(*aggregation_coordinator);
   CHECK(aggregation_coordinator_origin.has_value(), base::NotFatalUntil::M128);
-  return std::move(*aggregation_coordinator_origin);
+  return *std::move(aggregation_coordinator_origin);
 }
 
 void SerializeUint64(base::Value::Dict& dict,

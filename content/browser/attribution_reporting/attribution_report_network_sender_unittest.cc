@@ -95,7 +95,7 @@ AttributionReport DefaultAggregatableReport(
       SourceBuilder(SourceBuilder(base::Time())).BuildStored());
 
   if (trigger_context_id.has_value()) {
-    builder.SetTriggerContextId(std::move(*trigger_context_id))
+    builder.SetTriggerContextId(*std::move(trigger_context_id))
         .SetSourceRegistrationTimeConfig(
             attribution_reporting::mojom::SourceRegistrationTimeConfig::
                 kExclude);
@@ -863,7 +863,7 @@ TEST_F(AttributionReportNetworkSenderTest,
   base::MockCallback<AttributionReportSender::DebugReportSentCallback> callback;
   EXPECT_CALL(callback, Run(_, 200));
 
-  network_sender_->SendReport(std::move(*report), callback.Get());
+  network_sender_->SendReport(*std::move(report), callback.Get());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(
@@ -897,7 +897,7 @@ TEST_F(AttributionReportNetworkSenderTest,
   base::MockCallback<AttributionReportSender::DebugReportSentCallback> callback;
   EXPECT_CALL(callback, Run(_, net::ERR_CONNECTION_ABORTED));
 
-  network_sender_->SendReport(std::move(*report), callback.Get());
+  network_sender_->SendReport(*std::move(report), callback.Get());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(

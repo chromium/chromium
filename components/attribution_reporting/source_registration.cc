@@ -156,7 +156,7 @@ SourceRegistration::Parse(base::Value::Dict registration,
           SourceAggregatableDebugReportingConfig::Parse(registration);
       aggregatable_debug_reporting_config.has_value()) {
     result.aggregatable_debug_reporting_config =
-        std::move(*aggregatable_debug_reporting_config);
+        *std::move(aggregatable_debug_reporting_config);
   }
 
   CHECK(result.IsValid());
@@ -174,8 +174,8 @@ SourceRegistration::Parse(std::string_view json, SourceType source_type) {
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
 
   if (value) {
-    if (value->is_dict()) {
-      source = Parse(std::move(*value).TakeDict(), source_type);
+    if (base::Value::Dict* dict = value->GetIfDict()) {
+      source = Parse(std::move(*dict), source_type);
     } else {
       source = base::unexpected(SourceRegistrationError::kRootWrongType);
     }

@@ -850,7 +850,7 @@ TestAggregatableSourceProvider::TestAggregatableSourceProvider(size_t size) {
   auto source =
       attribution_reporting::AggregationKeys::FromKeys(std::move(keys));
   DCHECK(source.has_value());
-  source_ = std::move(*source);
+  source_ = *std::move(source);
 }
 
 TestAggregatableSourceProvider::~TestAggregatableSourceProvider() = default;

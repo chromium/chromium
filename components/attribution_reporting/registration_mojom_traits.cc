@@ -57,7 +57,7 @@ bool StructTraits<attribution_reporting::mojom::SuitableOriginDataView,
     return false;
   }
 
-  *out = std::move(*suitable_origin);
+  *out = *std::move(suitable_origin);
   return true;
 }
 
@@ -77,7 +77,7 @@ bool StructTraits<attribution_reporting::mojom::FilterDataDataView,
     return false;
   }
 
-  *out = std::move(*filter_data);
+  *out = *std::move(filter_data);
   return true;
 }
 
@@ -122,7 +122,7 @@ bool StructTraits<attribution_reporting::mojom::AggregationKeysDataView,
     return false;
   }
 
-  *out = std::move(*aggregation_keys);
+  *out = *std::move(aggregation_keys);
   return true;
 }
 
@@ -142,7 +142,7 @@ bool StructTraits<attribution_reporting::mojom::DestinationSetDataView,
     return false;
   }
 
-  *out = std::move(*destination_set);
+  *out = *std::move(destination_set);
   return true;
 }
 
@@ -167,7 +167,7 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
     return false;
   }
 
-  *out = std::move(*event_report_windows);
+  *out = *std::move(event_report_windows);
   return true;
 }
 
@@ -206,7 +206,7 @@ bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
     return false;
   }
 
-  *out = std::move(*result);
+  *out = *std::move(result);
   return true;
 }
 
@@ -231,7 +231,7 @@ bool StructTraits<
     return false;
   }
 
-  *out = std::move(*contribution);
+  *out = *std::move(contribution);
   return true;
 }
 
@@ -285,7 +285,7 @@ bool StructTraits<
     return false;
   }
 
-  *out = std::move(*source_config);
+  *out = *std::move(source_config);
   return true;
 }
 
@@ -390,7 +390,7 @@ bool StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
     return false;
   }
 
-  *out = std::move(*aggregatable_trigger_data);
+  *out = *std::move(aggregatable_trigger_data);
   return true;
 }
 
@@ -427,7 +427,7 @@ bool StructTraits<attribution_reporting::mojom::AggregatableValuesDataView,
     return false;
   }
 
-  *out = std::move(*aggregatable_values);
+  *out = *std::move(aggregatable_values);
   return true;
 }
 
@@ -474,7 +474,7 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   if (!aggregatable_trigger_config.has_value()) {
     return false;
   }
-  out->aggregatable_trigger_config = std::move(*aggregatable_trigger_config);
+  out->aggregatable_trigger_config = *std::move(aggregatable_trigger_config);
 
   if (!data.ReadAggregatableDebugReportingConfig(
           &out->aggregatable_debug_reporting_config)) {

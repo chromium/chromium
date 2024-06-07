@@ -1116,7 +1116,7 @@ void AttributionManagerImpl::OnGetReportToSendFromWebUI(
 
   const base::Time now = base::Time::Now();
   report->set_report_time(now);
-  SendReport(std::move(done), now, std::move(*report));
+  SendReport(std::move(done), now, *std::move(report));
 }
 
 void AttributionManagerImpl::SendReports(
@@ -1311,7 +1311,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
   }
 
   aggregation_service->AssembleReport(
-      std::move(*request),
+      *std::move(request),
       base::BindOnce(&AttributionManagerImpl::OnAggregatableReportAssembled,
                      weak_factory_.GetWeakPtr(), std::move(report),
                      is_debug_report, std::move(callback)));
@@ -1388,7 +1388,7 @@ void AttributionManagerImpl::MaybeSendAggregatableDebugReport(
 
     attribution_resolver_
         .AsyncCall(&AttributionResolver::ProcessAggregatableDebugReport)
-        .WithArgs(std::move(*debug_report),
+        .WithArgs(*std::move(debug_report),
                   result.source()
                       .registration()
                       .aggregatable_debug_reporting_config.budget(),
@@ -1420,7 +1420,7 @@ void AttributionManagerImpl::MaybeSendAggregatableDebugReport(
     }
     attribution_resolver_
         .AsyncCall(&AttributionResolver::ProcessAggregatableDebugReport)
-        .WithArgs(std::move(*debug_report),
+        .WithArgs(*std::move(debug_report),
                   /*remaining_budget=*/std::nullopt, source_id)
         .Then(base::BindOnce(
             &AttributionManagerImpl::OnAggregatableDebugReportProcessed,
@@ -1450,7 +1450,7 @@ void AttributionManagerImpl::OnAggregatableDebugReportProcessed(
   }
 
   aggregation_service->AssembleReport(
-      std::move(*request),
+      *std::move(request),
       base::BindOnce(
           &AttributionManagerImpl::OnAggregatableDebugReportAssembled,
           weak_factory_.GetWeakPtr(), std::move(result)));
@@ -1520,7 +1520,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   if (std::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(is_operation_allowed, result)) {
     report_sender_->SendReport(
-        std::move(*debug_report),
+        *std::move(debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
                        weak_factory_.GetWeakPtr()));
   }
@@ -1547,7 +1547,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
           AttributionDebugReport::Create(is_operation_allowed,
                                          is_debug_cookie_set, result)) {
     report_sender_->SendReport(
-        std::move(*debug_report),
+        *std::move(debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
                        weak_factory_.GetWeakPtr()));
   }
@@ -1818,7 +1818,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReports(
             AttributionDebugReport::Create(registration, /*item_index=*/i,
                                            is_operation_allowed)) {
       report_sender_->SendReport(
-          std::move(*debug_report),
+          *std::move(debug_report),
           base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
                          weak_factory_.GetWeakPtr()));
     }
@@ -1876,7 +1876,7 @@ void AttributionManagerImpl::ReportRegistrationHeaderError(
                                          context_origin, is_within_fenced_frame,
                                          is_operation_allowed)) {
     report_sender_->SendReport(
-        std::move(*debug_report),
+        *std::move(debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
                        weak_factory_.GetWeakPtr()));
   }
