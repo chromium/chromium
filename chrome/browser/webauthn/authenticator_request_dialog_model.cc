@@ -1302,23 +1302,26 @@ bool AuthenticatorRequestDialogController::OnWinUserCancelled() {
 
   // If the native Windows API was triggered immediately (i.e. before any Chrome
   // dialog) then start the request over (once) if the user cancels the Windows
-  // UI and there are other options in Chrome's UI. But if Windows supports
-  // hybrid then we've nothing more to offer in practice.
-  if (!WebAuthnApiSupportsHybrid()) {
-    bool have_other_option = base::ranges::any_of(
-        model_->mechanisms, [](const Mechanism& m) -> bool {
-          return absl::holds_alternative<Mechanism::Phone>(m.type) ||
-                 absl::holds_alternative<Mechanism::AddPhone>(m.type);
-        });
-    bool windows_was_priority =
-        ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ ||
-        (model_->priority_mechanism_index &&
-         absl::holds_alternative<Mechanism::WindowsAPI>(
-             model_->mechanisms[*model_->priority_mechanism_index].type));
-    if (have_other_option && windows_was_priority) {
-      StartOver();
-      return true;
-    }
+  // UI and there are other options in Chrome's UI.
+  bool enclave_is_option =
+      base::ranges::any_of(model_->mechanisms, [](const Mechanism& m) {
+        return absl::holds_alternative<Mechanism::Enclave>(m.type);
+      });
+  bool phone_is_option =
+      !WebAuthnApiSupportsHybrid() &&
+      base::ranges::any_of(model_->mechanisms, [](const Mechanism& m) -> bool {
+        return absl::holds_alternative<Mechanism::Phone>(m.type) ||
+               absl::holds_alternative<Mechanism::AddPhone>(m.type);
+      });
+  bool have_other_option = enclave_is_option || phone_is_option;
+  bool windows_was_priority =
+      ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ ||
+      (model_->priority_mechanism_index &&
+       absl::holds_alternative<Mechanism::WindowsAPI>(
+           model_->mechanisms[*model_->priority_mechanism_index].type));
+  if (have_other_option && windows_was_priority) {
+    StartOver();
+    return true;
   }
 #endif
 
