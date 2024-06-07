@@ -770,7 +770,7 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL" desc="The text used for the subtext of the quick settings pod for remaining time in an active session.">
         <ph name="REMAINING_TIME">$1<ex>1 hr, 4 min</ex></ph> left
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_FIRST_TIME_USER_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for focus mode detailed view for first time user.">
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_FIRST_TIME_USER_ACCESSIBLE_NAME" desc="The accessible name for focus mode detailed view for first time user.">
         Focus settings. Set a timer, task, and music to get in the flow.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_EXPERIENCED_USER_ACCESSIBLE_NAME" desc="The accessible name for focus mode detailed view for experienced user.">
@@ -853,8 +853,8 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL" desc="The text used for the label of the toggle button in the focus mode detailed view and countdown view for when focus mode is active.">
         Finish
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL" translateable="false" desc="The text used for the sublabel of the detailed view toggle row for when a user has never used focus mode before.">
-        Set a timer, task, and music to get in the flow
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL" desc="The text used for the sublabel of the detailed view toggle row for when a user has never used focus mode before. The string can be shortened to 'Set a timer and task' if needed to fit within the character limit. [CHAR_LIMIT=30]">
+        Set a timer, task, and music
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON" desc="The text used for the feedback button.">
         Send feedback
@@ -7675,8 +7675,8 @@ New install
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION" desc="Text description used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
         Notifications are muted
       </message>
-      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION" translateable="false" desc="Text description used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
-        Notifications are muted until <ph name="time">$1<ex>1:40 PM</ex></ph>
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION" desc="Text description used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
+        Notifications are muted until <ph name="time">$1<ex>1:40 PM</ex></ph> while focusing
       </message>
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF" desc="Label for a button on the 'Do Not Disturb' notification that turns off 'Do Not Disturb' mode.">
         Turn off
