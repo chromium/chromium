@@ -2511,6 +2511,25 @@ WebViewImpl* WebLocalFrameImpl::ViewImpl() const {
   return GetFrame()->GetPage()->GetChromeClient().GetWebView();
 }
 
+void WebLocalFrameImpl::DidCommitLoad() {
+  // If the page is under prerendering, the page requests compositor warm-up
+  // to minimize its activation time. Please see crbug.com/41496019 for more
+  // details.
+  if (frame_widget_ && GetFrame()->IsOutermostMainFrame() &&
+      GetFrame()->GetPage() && GetFrame()->GetPage()->IsPrerendering() &&
+      base::FeatureList::IsEnabled(::features::kWarmUpCompositor) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kPrerender2WarmUpCompositor) &&
+      blink::features::kPrerender2WarmUpCompositorTriggerPoint.Get() ==
+          blink::features::Prerender2WarmUpCompositorTriggerPoint::
+              kDidCommitLoad) {
+    // TODO(crbug.com/41496019): Limit the use of this warm-up to prerender
+    // trigger types that are most affected by this.
+    // TODO(crbug.com/41496019): Seek the best point to start warm-up.
+    frame_widget_->WarmUpCompositor();
+  }
+}
+
 void WebLocalFrameImpl::DidFailLoad(const ResourceError& error,
                                     WebHistoryCommitType web_commit_type) {
   if (WebPluginContainerImpl* plugin = GetFrame()->GetWebPluginContainer())

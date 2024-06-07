@@ -3814,15 +3814,22 @@ const FeatureEntry::FeatureVariation kDefaultBrowserPromptRefreshVariations[] =
       std::size(kDefaultBrowserPromptRefreshAppMenuItem), nullptr}};
 
 const FeatureEntry::FeatureParam
+    kPrerender2WarmUpCompositorTriggerPointDidCommitLoad[] = {
+        {"trigger_point", "did_commit_load"}};
+const FeatureEntry::FeatureParam
     kPrerender2WarmUpCompositorTriggerPointDidFinishLoad[] = {
         {"trigger_point", "did_finish_load"}};
-
 const FeatureEntry::FeatureVariation
     kPrerender2WarmUpCompositorTriggerPointVariations[] = {
-        {"on DidFinishLoad",
+        {"(on DidCommitLoad)",
+         kPrerender2WarmUpCompositorTriggerPointDidCommitLoad,
+         std::size(kPrerender2WarmUpCompositorTriggerPointDidCommitLoad),
+         nullptr},
+        {"(on DidFinishLoad)",
          kPrerender2WarmUpCompositorTriggerPointDidFinishLoad,
          std::size(kPrerender2WarmUpCompositorTriggerPointDidFinishLoad),
-         nullptr}};
+         nullptr},
+};
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 // The variations of ComposeProactiveNudge

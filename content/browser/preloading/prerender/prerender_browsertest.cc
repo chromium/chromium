@@ -13591,24 +13591,27 @@ IN_PROC_BROWSER_TEST_P(
 
 class PrerenderWarmUpCompositorBrowserTest
     : public PrerenderBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    auto [warm_up_compositor, prerender2_warm_up_compositor] = info.param;
+    auto [warm_up_compositor, prerender2_warm_up_compositor,
+          prerender2_warm_up_compositor_trigger_point] = info.param;
     std::stringstream params_description;
     params_description << "kWarmUpCompositor";
     params_description << (warm_up_compositor ? "Enabled" : "Disabled");
     params_description << "_kPrerender2WarmUpCompositor";
     params_description << (prerender2_warm_up_compositor ? "Enabled"
                                                          : "Disabled");
+    params_description << "_" << prerender2_warm_up_compositor_trigger_point;
     return params_description.str();
   }
 
   PrerenderWarmUpCompositorBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    auto [warm_up_compositor, prerender2_warm_up_compositor] = GetParam();
+    auto [warm_up_compositor, prerender2_warm_up_compositor,
+          prerender2_warm_up_compositor_trigger_point] = GetParam();
     if (warm_up_compositor) {
       enabled_features.push_back({features::kWarmUpCompositor, {}});
     } else {
@@ -13617,7 +13620,8 @@ class PrerenderWarmUpCompositorBrowserTest
 
     if (prerender2_warm_up_compositor) {
       enabled_features.push_back(
-          {blink::features::kPrerender2WarmUpCompositor, {}});
+          {blink::features::kPrerender2WarmUpCompositor,
+           {{"trigger_point", prerender2_warm_up_compositor_trigger_point}}});
     } else {
       disabled_features.push_back(blink::features::kPrerender2WarmUpCompositor);
     }
@@ -13633,14 +13637,20 @@ class PrerenderWarmUpCompositorBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrerenderWarmUpCompositorBrowserTest,
-    // Flips `kWarmUpCompositor` (cc) and `kPrerender2WarmUpCompositor` (blink).
-    // `kWarmUpCompositor` controls the independent cc internal feature of
-    // warming up, and `kPrerender2WarmUpCompositor` manages the trigger point
-    // of that feature for prerender case. Therefore, warming up on
-    // prerender is not performed unless both flags are enabled.
-    testing::Values(std::make_tuple(true, true),
-                    std::make_tuple(true, false),
-                    std::make_tuple(false, true)),
+    // Flips `kWarmUpCompositor` (cc) and `kPrerender2WarmUpCompositor`(blink)
+    // and puts the value of `kPrerender2WarmUpCompositorTriggerPoint` (if
+    // latter flag is enabled).
+    testing::Values(
+        std::make_tuple(true, true, "did_commit_load"),
+        std::make_tuple(true, true, "did_finish_load"),
+        // `kWarmUpCompositor` controls the independent cc internal feature of
+        // warming up, and `kPrerender2WarmUpCompositor` manages the trigger
+        // point of that feature for prerender case. Therefore, warming up on
+        // prerender should not performed in the first place unless both flags
+        // are enabled.
+        std::make_tuple(true, false, ""),
+        std::make_tuple(false, true, "did_commit_load"),
+        std::make_tuple(false, true, "did_finish_load")),
     PrerenderWarmUpCompositorBrowserTest::DescribeParams);
 
 // Test that the prerendering page does not crash when enabling compositor

@@ -1224,6 +1224,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2NoVarySearch);
 // feature. Please see crbug.com/41496019 for more details.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositor);
 enum class Prerender2WarmUpCompositorTriggerPoint {
+  kDidCommitLoad,
   kDidFinishLoad,
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<

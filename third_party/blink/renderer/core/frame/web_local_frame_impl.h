@@ -506,6 +506,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // allows us to navigate by pressing Enter after closing the Find box.
   void SetFindEndstateFocusAndSelection();
 
+  void DidCommitLoad();
   void DidFailLoad(const ResourceError&, WebHistoryCommitType);
   void DidFinish();
   void DidFinishLoadForPrinting();

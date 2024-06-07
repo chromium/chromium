@@ -546,6 +546,8 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
   }
   if (WebDevToolsAgentImpl* dev_tools = DevToolsAgent())
     dev_tools->DidCommitLoadForLocalFrame(web_frame_->GetFrame());
+
+  web_frame_->DidCommitLoad();
 }
 
 void LocalFrameClientImpl::DispatchDidFailLoad(
