@@ -268,6 +268,20 @@ TEST_F(PrivacyHubHandlerHatsTest, DontTriggerHatsIfUserLeftEarly) {
   EXPECT_FALSE(IsTimerStarted());
 }
 
+TEST_F(PrivacyHubHandlerTest, MicrophoneMutedBySecurityCurtainChanged) {
+  privacy_hub_handler_.OnInputMutedBySecurityCurtainChanged(true);
+
+  ExpectValueMatchesBoolParam(
+      true,
+      GetLastWebUIListenerData("microphone-muted-by-security-curtain-changed"));
+
+  privacy_hub_handler_.OnInputMutedBySecurityCurtainChanged(false);
+
+  ExpectValueMatchesBoolParam(
+      false,
+      GetLastWebUIListenerData("microphone-muted-by-security-curtain-changed"));
+}
+
 #if DCHECK_IS_ON()
 using PrivacyHubHandlerDeathTest = PrivacyHubHandlerTest;
 

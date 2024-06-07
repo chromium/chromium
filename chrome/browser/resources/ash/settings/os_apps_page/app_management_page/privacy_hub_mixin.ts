@@ -24,6 +24,7 @@ type Constructor<T> = new (...args: any[]) => T;
 export interface PrivacyHubMixinInterface {
   cameraSwitchForceDisabled: boolean;
   microphoneHardwareToggleActive: boolean;
+  microphoneMutedBySecurityCurtain: boolean;
   isSensorBlocked(permissionType: PermissionTypeIndex|undefined): boolean;
 }
 
@@ -45,11 +46,17 @@ export const PrivacyHubMixin = dedupingMixin(
               type: Boolean,
               value: false,
             },
+
+            microphoneMutedBySecurityCurtain: {
+              type: Boolean,
+              value: false,
+            },
           };
         }
 
         cameraSwitchForceDisabled: boolean;
         microphoneHardwareToggleActive: boolean;
+        microphoneMutedBySecurityCurtain: boolean;
         private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
 
         constructor() {
@@ -78,6 +85,16 @@ export const PrivacyHubMixin = dedupingMixin(
           this.privacyHubBrowserProxy_.getInitialMicrophoneHardwareToggleState()
               .then((enabled: boolean) => {
                 this.microphoneHardwareToggleActive = enabled;
+              });
+          this.addWebUiListener(
+              'microphone-muted-by-security-curtain-changed',
+              (muted: boolean) => {
+                this.microphoneMutedBySecurityCurtain = muted;
+              });
+          this.privacyHubBrowserProxy_
+              .getInitialMicrophoneMutedBySecurityCurtainState()
+              .then((muted: boolean) => {
+                this.microphoneHardwareToggleActive = muted;
               });
         }
 

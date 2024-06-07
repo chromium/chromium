@@ -184,6 +184,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // Called when the state of input mute hw switch state changes.
     virtual void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted);
 
+    // Called when the state of input mute by security curtain changes.
+    virtual void OnInputMutedBySecurityCurtainChanged(bool muted);
+
     // Called when audio nodes changed.
     virtual void OnAudioNodesChanged();
 

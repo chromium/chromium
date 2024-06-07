@@ -83,6 +83,7 @@ export function getPermissionDescriptionString(
     app: App|undefined, permissionType: PermissionTypeIndex|undefined,
     isSensorAvailable: boolean, isSensorBlocked: boolean,
     isMicrophoneHardwareToggleActive: boolean,
+    isMicrophoneMutedBySecurityCurtain: boolean,
     isCameraSwitchForceDisabled: boolean): string {
   if (app === undefined || permissionType === undefined) {
     return '';
@@ -133,7 +134,9 @@ export function getPermissionDescriptionString(
               permission.details) :
           loadTimeData.getString(
               'permissionAllowedTextWithTurnOnLocationAccessButton');
-    } else if (PermissionType[permissionType] === PermissionType.kMicrophone) {
+    } else if (
+        PermissionType[permissionType] === PermissionType.kMicrophone &&
+        !isMicrophoneMutedBySecurityCurtain) {
       return permission.details ?
           loadTimeData.getStringF(
               'permissionAllowedTextWithDetailsAndTurnOnMicrophoneAccessButton',

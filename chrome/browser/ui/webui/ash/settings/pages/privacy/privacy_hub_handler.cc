@@ -14,10 +14,13 @@
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash::settings {
 
-PrivacyHubHandler::PrivacyHubHandler() = default;
+PrivacyHubHandler::PrivacyHubHandler()
+    : mic_muted_by_security_curtain_(
+          CrasAudioHandler::Get()->IsInputMutedBySecurityCurtain()) {}
 
 PrivacyHubHandler::~PrivacyHubHandler() {
   TriggerHatsIfPageWasOpened();
@@ -30,6 +33,12 @@ void PrivacyHubHandler::RegisterMessages() {
       "getInitialMicrophoneHardwareToggleState",
       base::BindRepeating(
           &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getInitialMicrophoneMutedBySecurityCurtainState",
+      base::BindRepeating(
+          &PrivacyHubHandler::
+              HandleInitialMicrophoneMutedBySecurityCurtainState,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getInitialCameraSwitchForceDisabledState",
@@ -85,6 +94,15 @@ void PrivacyHubHandler::SetForceDisableCameraSwitch(bool disabled) {
   NotifyJS("force-disable-camera-switch", base::Value(disabled));
 }
 
+void PrivacyHubHandler::OnInputMutedBySecurityCurtainChanged(bool muted) {
+  if (mic_muted_by_security_curtain_ == muted) {
+    return;
+  }
+  mic_muted_by_security_curtain_ = muted;
+
+  NotifyJS("microphone-muted-by-security-curtain-changed", base::Value(muted));
+}
+
 void PrivacyHubHandler::SetPrivacyPageOpenedTimeStampForTesting(
     base::TimeTicks time_stamp) {
   privacy_page_opened_timestamp_ = time_stamp;
@@ -116,6 +134,13 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
     const base::Value::List& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::MicrophoneSwitchState());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleInitialMicrophoneMutedBySecurityCurtainState(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(mic_muted_by_security_curtain_);
   ResolveJavascriptCallback(callback_id, value);
 }
 

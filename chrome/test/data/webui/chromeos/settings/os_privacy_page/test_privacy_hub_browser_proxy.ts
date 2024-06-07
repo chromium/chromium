@@ -8,6 +8,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
     PrivacyHubBrowserProxy {
   microphoneToggleIsEnabled: boolean;
+  microphoneMutedBySecurityCurtain: boolean;
   cameraSwitchIsForceDisabled: boolean;
   cameraLEDFallbackState: boolean;
   currentTimeZoneName: string;
@@ -16,6 +17,7 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getInitialMicrophoneHardwareToggleState',
+      'getInitialMicrophoneMutedBySecurityCurtainState',
       'getInitialCameraSwitchForceDisabledState',
       'sendLeftOsPrivacyPage',
       'sendOpenedOsPrivacyPage',
@@ -25,6 +27,7 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
       'getCurrentSunsetTime',
     ]);
     this.microphoneToggleIsEnabled = false;
+    this.microphoneMutedBySecurityCurtain = false;
     this.cameraSwitchIsForceDisabled = false;
     this.cameraLEDFallbackState = false;
     this.currentTimeZoneName = 'Test Time Zone';
@@ -35,6 +38,11 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
   getInitialMicrophoneHardwareToggleState(): Promise<boolean> {
     this.methodCalled('getInitialMicrophoneHardwareToggleState');
     return Promise.resolve(this.microphoneToggleIsEnabled);
+  }
+
+  getInitialMicrophoneMutedBySecurityCurtainState(): Promise<boolean> {
+    this.methodCalled('getInitialMicrophoneMutedBySecurityCurtainState');
+    return Promise.resolve(this.microphoneMutedBySecurityCurtain);
   }
 
   getInitialCameraSwitchForceDisabledState(): Promise<boolean> {

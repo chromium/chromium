@@ -262,6 +262,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   int survey_triggerd_count() const { return survey_triggerd_count_; }
 
+  int input_muted_by_security_curtain_changed_count() const {
+    return input_muted_by_security_curtain_changed_count_;
+  }
+
   const CrasAudioHandler::AudioSurvey& survey_triggerd_recv() const {
     return survey_triggerd_recv_;
   }
@@ -345,6 +349,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     number_of_arc_stream_changed_latest_value_ = num;
   }
 
+  void OnInputMutedBySecurityCurtainChanged(bool muted) override {
+    ++input_muted_by_security_curtain_changed_count_;
+  }
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -364,6 +372,7 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int number_of_arc_stream_changed_latest_value_ = 0;
   int number_of_arc_stream_changed_count_ = 0;
   int survey_triggerd_count_ = 0;
+  int input_muted_by_security_curtain_changed_count_ = 0;
   CrasAudioHandler::AudioSurvey survey_triggerd_recv_;
 };
 
@@ -5968,6 +5977,23 @@ TEST_P(CrasAudioHandlerTest,
 
   ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(false);
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+}
+
+TEST_P(CrasAudioHandlerTest, IsInputMutedBySecurityCurtainChangeObserver) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  EXPECT_EQ(0, test_observer_->input_muted_by_security_curtain_changed_count());
+
+  cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(true);
+  EXPECT_EQ(1, test_observer_->input_muted_by_security_curtain_changed_count());
+
+  // Security curtain is already on. Trying to turn it on again should be no-op.
+  cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(true);
+  EXPECT_EQ(1, test_observer_->input_muted_by_security_curtain_changed_count());
+
+  cras_audio_handler_->SetInputMuteLockedBySecurityCurtain(false);
+  EXPECT_EQ(2, test_observer_->input_muted_by_security_curtain_changed_count());
 }
 
 TEST_P(CrasAudioHandlerTest, IsNoiseCancellationSupportedForDeviceNoNC) {

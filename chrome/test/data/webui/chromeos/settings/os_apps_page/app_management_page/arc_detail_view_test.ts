@@ -571,7 +571,7 @@ suite('<app-management-arc-detail-view>', () => {
               const permissionItem =
                   getPermissionItemByType(arcPermissionView, 'kCamera');
 
-              await setPermission(PermissionType.kMicrophone, TriState.kAllow);
+              await setPermission(PermissionType.kCamera, TriState.kAllow);
               arcPermissionView.set(
                   'prefs.ash.user.camera_allowed.value', false);
               await addFakeSensor(mediaDevices, 'kCamera');
@@ -594,6 +594,40 @@ suite('<app-management-arc-detail-view>', () => {
               assertEquals(
                   loadTimeData.getString(
                       'permissionAllowedTextWithTurnOnCameraAccessButton'),
+                  getPermissionDescriptionString(permissionItem));
+            });
+
+        test(
+            'Allow mic access button hidden if mic muted by security curtain',
+            async () => {
+              const permissionItem =
+                  getPermissionItemByType(arcPermissionView, 'kMicrophone');
+
+              await setPermission(PermissionType.kMicrophone, TriState.kAllow);
+              arcPermissionView.set(
+                  'prefs.ash.user.microphone_allowed.value', false);
+              await addFakeSensor(mediaDevices, 'kMicrophone');
+
+              assertEquals(
+                  loadTimeData.getString(
+                      'permissionAllowedTextWithTurnOnMicrophoneAccessButton'),
+                  getPermissionDescriptionString(permissionItem));
+
+              webUIListenerCallback(
+                  'microphone-muted-by-security-curtain-changed', true);
+              await waitAfterNextRender(arcPermissionView);
+
+              assertEquals(
+                  loadTimeData.getString('appManagementPermissionAllowed'),
+                  getPermissionDescriptionString(permissionItem));
+
+              webUIListenerCallback(
+                  'microphone-muted-by-security-curtain-changed', false);
+              await waitAfterNextRender(arcPermissionView);
+
+              assertEquals(
+                  loadTimeData.getString(
+                      'permissionAllowedTextWithTurnOnMicrophoneAccessButton'),
                   getPermissionDescriptionString(permissionItem));
             });
       });

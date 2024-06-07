@@ -374,5 +374,42 @@ suite('AppManagementPermissionItemTest', function() {
                   'permissionAllowedTextWithTurnOnCameraAccessButton'),
               getPermissionDescriptionString());
         });
+
+    test(
+        'Allow mic access button hidden if mic is muted by security curtain',
+        async () => {
+          createPermissionItem('kMicrophone');
+
+          // Permission state is kAsk at the beginning of the test.
+          assertEquals(
+              loadTimeData.getString('appManagementPermissionAsk'),
+              getPermissionDescriptionString());
+
+          await togglePermission();
+          permissionItem.set('prefs.ash.user.microphone_allowed.value', false);
+          await addFakeSensor(mediaDevices, 'kMicrophone');
+
+          assertEquals(
+              loadTimeData.getString(
+                  'permissionAllowedTextWithTurnOnMicrophoneAccessButton'),
+              getPermissionDescriptionString());
+
+          webUIListenerCallback(
+              'microphone-muted-by-security-curtain-changed', true);
+          await waitAfterNextRender(permissionItem);
+
+          assertEquals(
+              loadTimeData.getString('appManagementPermissionAllowed'),
+              getPermissionDescriptionString());
+
+          webUIListenerCallback(
+              'microphone-muted-by-security-curtain-changed', false);
+          await waitAfterNextRender(permissionItem);
+
+          assertEquals(
+              loadTimeData.getString(
+                  'permissionAllowedTextWithTurnOnMicrophoneAccessButton'),
+              getPermissionDescriptionString());
+        });
   });
 });
