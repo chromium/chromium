@@ -964,10 +964,9 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
       // an URLLoaderFactory implementation for MHTML archives.
       WebNavigationParams::FillStaticResponse(
           params, "text/html", "UTF-8",
-          base::span_from_cstring(
-              "<html><body>"
-              "<!-- failed to find resource in MHTML archive -->"
-              "</body></html>"));
+          "<html><body>"
+          "<!-- failed to find resource in MHTML archive -->"
+          "</body></html>");
     }
   }
 
@@ -1010,10 +1009,9 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
   params->url = params->response.CurrentRequestUrl();
   WebNavigationParams::FillStaticResponse(
       params, "text/html", "UTF-8",
-      base::span_from_cstring(
-          "<html><body>"
-          "<!-- no enabled plugin supports this MIME type -->"
-          "</body></html>"));
+      "<html><body>"
+      "<!-- no enabled plugin supports this MIME type -->"
+      "</body></html>");
 }
 
 // The browser navigation code should never send a `CommitNavigation()` request

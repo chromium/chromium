@@ -55,8 +55,7 @@ using ::testing::UnorderedElementsAreArray;
 
 constexpr char kOriginUrl[] = "http://example.com/";
 constexpr char kDocumentUrl[] = "http://example.com/embedder/index.html";
-constexpr base::span<const char> kFakeData =
-    base::span_from_cstring("fake data");
+constexpr base::span<const char> kFakeData = "fake data";
 
 size_t GetRequestHeaderCount(const blink::WebURLRequest& request) {
   struct : public blink::WebHTTPHeaderVisitor {

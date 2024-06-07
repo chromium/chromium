@@ -159,7 +159,6 @@ _CONFIG = [
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::span',
-            'base::span_from_cstring(_with_nul)?',
             'base::Span(Reader|Writer)',
             'base::as_byte_span',
             'base::as_writable_byte_span',
@@ -308,8 +307,8 @@ _CONFIG = [
 
             # Byte order
             'base::BigEndian(Reader|Writer)',
-            'base::(numerics::)?U(8|16|32|64)(To|From)(Big|Little|Native)Endian',
-            'base::(numerics::)?ByteSwap',
+            'base::numerics::U(8|16|32|64)(To|From)(Big|Little|Native)Endian',
+            'base::numerics::ByteSwap',
 
             # (Cryptographic) random number generation
             'base::RandUint64',

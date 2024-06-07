@@ -691,9 +691,10 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
 
   // Set up post data.
   const char raw_data[] = "post \0\ndata";
+  const size_t length = std::size(raw_data);
   scoped_refptr<network::ResourceRequestBody> post_data(
       new network::ResourceRequestBody);
-  post_data->AppendBytes(raw_data, sizeof(raw_data));
+  post_data->AppendBytes(raw_data, length);
   common_params->post_data = post_data;
 
   frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());
@@ -711,18 +712,17 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   bool successful = body.ElementAt(0, element);
   EXPECT_TRUE(successful);
   EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
+  EXPECT_EQ(length, element.data.size());
 
   auto flat_data = base::HeapArray<char>::Uninit(element.data.size());
   element.data.ForEachSegment([&flat_data](const char* segment,
                                            size_t segment_size,
                                            size_t segment_offset) {
-    flat_data.subspan(segment_offset, segment_size)
-        .copy_from(
-            // TODO(crbug.com/40284755): ForEachSegment should be given a span.
-            UNSAFE_BUFFERS(base::span(segment, segment_size)));
+    std::copy(segment, segment + segment_size,
+              flat_data.data() + segment_offset);
     return true;
   });
-  EXPECT_EQ(base::span_from_cstring_with_nul(raw_data), flat_data.as_span());
+  EXPECT_EQ(base::span(raw_data), flat_data.as_span());
 }
 
 #if BUILDFLAG(IS_ANDROID)

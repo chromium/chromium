@@ -9,7 +9,6 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/strings/cstring_view.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -57,11 +56,11 @@ static constexpr unsigned char kZstdSignatureAndHash[] = {
     0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
     0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20};
 static constexpr base::span<const unsigned char> kTooSmallZstdHeader =
-    base::span(kZstdSignatureAndHash)
-        .subspan(sizeof(kZstdSignatureAndHash) / 2u);
+    base::make_span(kZstdSignatureAndHash)
+        .subspan(sizeof(kZstdSignatureAndHash) / 2);
 constexpr size_t kOutputBufferSize = 1024;
 
-constexpr base::cstring_view kTestBodyData = "test body data";
+static constexpr char kTestBodyData[] = "test body data";
 
 }  // namespace
 
@@ -253,8 +252,9 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSync) {
   AddReadResult(kTestBodyData, Mode::SYNC);
   AddReadResult(net::OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
-  CheckSyncRead(kTestBodyData.size());
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  CheckSyncRead(static_cast<int>(sizeof(kTestBodyData)));
+  EXPECT_THAT(base::make_span(buffer()->data(), sizeof(kTestBodyData)),
+              testing::ElementsAreArray(kTestBodyData));
   CheckSyncRead(net::OK);
 }
 
@@ -264,8 +264,9 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedSync) {
   AddReadResult(kTestBodyData, Mode::SYNC);
   AddReadResult(net::OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
-  CheckSyncRead(kTestBodyData.size());
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  CheckSyncRead(static_cast<int>(sizeof(kTestBodyData)));
+  EXPECT_THAT(base::make_span(buffer()->data(), sizeof(kTestBodyData)),
+              testing::ElementsAreArray(kTestBodyData));
   CheckSyncRead(net::OK);
 }
 
@@ -274,8 +275,9 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderAsync) {
   AddReadResult(kTestBodyData, Mode::ASYNC);
   AddReadResult(net::OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
-  CheckAsyncRead(kTestBodyData.size(), 2);
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  CheckAsyncRead(static_cast<int>(sizeof(kTestBodyData)), 2);
+  EXPECT_THAT(base::make_span(buffer()->data(), sizeof(kTestBodyData)),
+              testing::ElementsAreArray(kTestBodyData));
   CheckAsyncRead(net::OK, 1);
 }
 
@@ -285,8 +287,9 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedAsync) {
   AddReadResult(kTestBodyData, Mode::ASYNC);
   AddReadResult(net::OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
-  CheckAsyncRead(kTestBodyData.size(), 3);
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  CheckAsyncRead(static_cast<int>(sizeof(kTestBodyData)), 3);
+  EXPECT_THAT(base::make_span(buffer()->data(), sizeof(kTestBodyData)),
+              testing::ElementsAreArray(kTestBodyData));
   CheckAsyncRead(net::OK, 1);
 }
 
