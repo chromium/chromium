@@ -171,6 +171,10 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUITest, InstallProfileWithSMDS) {
       WaitForElementDoesNotExist(kOSSettingsId,
                                  settings::cellular::EsimDialog()),
 
+      Log("Closing Settings app"),
+
+      Do([&]() { CloseSystemWebApp(SystemWebAppType::SETTINGS); }),
+
       Log("Test complete"));
 }
 

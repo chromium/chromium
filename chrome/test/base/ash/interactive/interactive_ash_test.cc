@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
@@ -94,6 +95,14 @@ ui::ElementContext InteractiveAshTest::LaunchSystemWebApp(
                   }));
   CHECK(browser);
   return browser->window()->GetElementContext();
+}
+
+void InteractiveAshTest::CloseSystemWebApp(ash::SystemWebAppType type) {
+  if (Profile* const profile = GetActiveUserProfile()) {
+    if (Browser* const browser = FindSystemWebAppBrowser(profile, type)) {
+      chrome::CloseWindow(browser);
+    }
+  }
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep

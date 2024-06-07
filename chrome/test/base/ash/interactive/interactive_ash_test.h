@@ -58,6 +58,9 @@ class InteractiveAshTest
       ash::SystemWebAppType type,
       const ui::ElementIdentifier& element_id);
 
+  // Attempts to close the system web app of type `type`.
+  void CloseSystemWebApp(ash::SystemWebAppType type);
+
   // Navigates the Settings app, which is expected to be associated with
   // |element_id|, to the top-level internet page.
   ui::test::internal::InteractiveTestPrivate::MultiStep
