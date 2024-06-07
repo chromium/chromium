@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -21,8 +22,9 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
             Profile profile,
             NativePageHost host,
             TabModelSelector tabModelSelector,
+            TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Tab tab) {
-        super(activity, profile, host, tabModelSelector, tab);
+        super(activity, profile, host, tabModelSelector, tabGroupCreationDialogManager, tab);
     }
 
     /**

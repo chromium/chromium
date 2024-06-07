@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
@@ -18,14 +19,19 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+
+import java.util.List;
 
 /** {@link NativePageNavigationDelegate} implementation. */
 public class NativePageNavigationDelegateImpl implements NativePageNavigationDelegate {
     private final Profile mProfile;
     private final TabModelSelector mTabModelSelector;
+    private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final Tab mTab;
 
     protected final Activity mActivity;
@@ -36,11 +42,13 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
             Profile profile,
             NativePageHost host,
             TabModelSelector tabModelSelector,
+            TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Tab tab) {
         mActivity = activity;
         mProfile = profile;
         mHost = host;
         mTabModelSelector = tabModelSelector;
+        mTabGroupCreationDialogManager = tabGroupCreationDialogManager;
         mTab = tab;
     }
 
@@ -88,11 +96,20 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
 
     @Override
     public Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
-        return mTabModelSelector.openNewTab(
-                loadUrlParams,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
-                mTab,
-                /* incognito= */ false);
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        boolean willMergingCreateNewGroup = filter.willMergingCreateNewGroup(List.of(mTab));
+        Tab newTab =
+                mTabModelSelector.openNewTab(
+                        loadUrlParams,
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                        mTab,
+                        /* incognito= */ false);
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && willMergingCreateNewGroup) {
+            mTabGroupCreationDialogManager.showDialog(mTab.getRootId(), filter);
+        }
+        return newTab;
     }
 
     private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {

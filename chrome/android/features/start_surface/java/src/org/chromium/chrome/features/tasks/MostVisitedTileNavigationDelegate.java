@@ -30,13 +30,20 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
 
     /**
      * Creates a new {@link MostVisitedTileNavigationDelegate}.
+     *
      * @param activity The Android activity.
      * @param profile The currently applicable profile.
      * @param parentTabSupplier Supplies the StartSurface's parent tab.
      */
     public MostVisitedTileNavigationDelegate(
             Activity activity, Profile profile, Supplier<Tab> parentTabSupplier) {
-        super(activity, profile, /* host= */ null, /* tabModelSelector= */ null, /* tab= */ null);
+        super(
+                activity,
+                profile,
+                /* host= */ null,
+                /* tabModelSelector= */ null,
+                /* tabGroupCreationDialogManager= */ null,
+                /* tab= */ null);
         mParentTabSupplier = parentTabSupplier;
         mChromeAsyncTabLauncher = new ChromeAsyncTabLauncher(false);
     }
