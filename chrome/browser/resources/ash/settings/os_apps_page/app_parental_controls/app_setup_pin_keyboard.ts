@@ -69,6 +69,10 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
         value: false,
       },
 
+      ariaLabel: {
+        type: String,
+      },
+
       /**
        * The current PIN keyboard value.
        */

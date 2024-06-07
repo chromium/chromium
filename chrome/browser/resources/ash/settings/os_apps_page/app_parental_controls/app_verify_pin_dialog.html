@@ -56,7 +56,8 @@
     <div id="pinKeyboardDiv" class="settings-box continuation">
       <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
           on-submit="onPinSubmit_" value="{{pinValue_}}"
-          disabled="[[isVerificationPending_]]">
+          disabled="[[isVerificationPending_]]"
+          aria-label="$i18n{appParentalControlsAccessDialogTitle}">
         <div id="errorDiv" invisible$="[[!showError_]]">
           <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
           <span id="errorMessage">

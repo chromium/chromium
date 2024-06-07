@@ -16,8 +16,9 @@
   }
 </style>
 <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
-  on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
-  disabled="[[isSetPinCallPending_]]">
+    on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
+    disabled="[[isSetPinCallPending_]]"
+    aria-label="[[ariaLabel]]">
   <div id="problemDiv" invisible$="[[!problemMessage_]]">
     <span aria-live="assertive">
       [[problemMessage_]]

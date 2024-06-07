@@ -22,7 +22,8 @@
       <app-setup-pin-keyboard id="setupPinKeyboard"
         is-confirm-step="{{isConfirmStep_}}"
         prefs="{{prefs}}"
-        enable-submit="{{enableSubmit_}}">
+        enable-submit="{{enableSubmit_}}"
+        aria-label="[[getTitle_(isConfirmStep_)]]">
       </app-setup-pin-keyboard>
     </div>
   </div>
