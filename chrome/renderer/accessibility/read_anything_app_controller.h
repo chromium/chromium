@@ -15,11 +15,11 @@
 #include "base/memory/safe_ref.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -66,7 +66,8 @@ class ReadAnythingAppControllerTest;
 //     the content nodes, their descendants, and their ancestors.
 //
 class ReadAnythingAppController
-    : public gin::Wrappable<ReadAnythingAppController>,
+    : public content::RenderFrameObserver,
+      public gin::Wrappable<ReadAnythingAppController>,
       public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
@@ -79,6 +80,9 @@ class ReadAnythingAppController
   // Installs v8 context for Read Anything and adds chrome.readingMode binding
   // to page.
   static ReadAnythingAppController* Install(content::RenderFrame* render_frame);
+
+  // content::RenderFrameObserver:
+  void OnDestruct() override;
 
  private:
   friend ReadAnythingAppControllerTest;
@@ -341,9 +345,6 @@ class ReadAnythingAppController
 
   void LogSpeechErrorEvent(const std::string& error_code);
 
-  content::RenderFrame* GetRenderFrame();
-
-  const blink::LocalFrameToken frame_token_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;

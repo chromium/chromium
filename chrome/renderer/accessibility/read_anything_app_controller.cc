@@ -384,7 +384,7 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
-    : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()),
+    : content::RenderFrameObserver(render_frame),
       post_user_entry_draw_timer_(
           FROM_HERE,
           base::Seconds(kPostInputDistillSeconds),
@@ -406,6 +406,10 @@ ReadAnythingAppController::~ReadAnythingAppController() {
   RecordNumSelections();
   // Stop the timer for base::unretained.
   post_user_entry_draw_timer_.Stop();
+}
+
+void ReadAnythingAppController::OnDestruct() {
+  delete this;
 }
 
 void ReadAnythingAppController::OnNodeDataChanged(
@@ -497,13 +501,9 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
-  content::RenderFrame* render_frame = GetRenderFrame();
-  if (!render_frame) {
-    return;
-  }
   // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  render_frame->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  render_frame()->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
@@ -744,7 +744,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 }
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
-  distiller_->ScreenAIServiceReady(GetRenderFrame());
+  distiller_->ScreenAIServiceReady(render_frame());
 }
 
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
@@ -1357,11 +1357,7 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_factory_->CreateUntrustedPageHandler(
       receiver_.BindNewPipeAndPassRemote(),
       page_handler_.BindNewPipeAndPassReceiver());
-  content::RenderFrame* render_frame = GetRenderFrame();
-  if (!render_frame) {
-    return;
-  }
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
       std::move(page_handler_factory_receiver));
 }
 
@@ -1650,12 +1646,8 @@ void ReadAnythingAppController::SetDefaultLanguageCode(
 void ReadAnythingAppController::SetContentForTesting(
     v8::Local<v8::Value> v8_snapshot_lite,
     std::vector<ui::AXNodeID> content_node_ids) {
-  content::RenderFrame* render_frame = GetRenderFrame();
-  if (!render_frame) {
-    return;
-  }
   v8::Isolate* isolate =
-      render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
   ui::AXEvent selection_event;
@@ -1669,14 +1661,6 @@ void ReadAnythingAppController::SetContentForTesting(
   // Trigger a selection event (for testing selections).
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
                              {selection_event});
-}
-
-content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
-  auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token_);
-  if (!web_frame) {
-    return nullptr;
-  }
-  return content::RenderFrame::FromWebFrame(web_frame);
 }
 
 void ReadAnythingAppController::ShouldShowUI() {
