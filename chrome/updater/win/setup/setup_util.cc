@@ -636,13 +636,15 @@ bool DeleteLegacyEntriesPerUser() {
   // registered for system since r1154562. So the code below removes these
   // interfaces from the user hive.
   bool success = true;
-  for (const auto& iid :
-       {__uuidof(IProcessLauncher), __uuidof(IProcessLauncher2)}) {
-    for (const auto& reg_path :
-         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
-      if (!installer::DeleteRegistryKey(HKEY_CURRENT_USER, reg_path,
-                                        WorkItem::kWow64Default)) {
-        success = false;
+  for (REGSAM bitness : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    for (const auto& iid :
+         {__uuidof(IProcessLauncher), __uuidof(IProcessLauncher2)}) {
+      for (const auto& reg_path :
+           {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+        if (!installer::DeleteRegistryKey(HKEY_CURRENT_USER, reg_path,
+                                          bitness)) {
+          success = false;
+        }
       }
     }
   }
