@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -79,10 +80,16 @@
     signin_metrics::SyncButtonsType buttonType;
     switch (canShowUnrestrictedViewCapability) {
       case signin::Tribool::kUnknown:
+        self.actionButtonsVisibility =
+            ActionButtonsVisibility::kEquallyWeightedButtonShown;
+        buttonType = signin_metrics::SyncButtonsType::
+            kHistorySyncEqualWeightedFromDeadline;
+        break;
       case signin::Tribool::kFalse:
         self.actionButtonsVisibility =
             ActionButtonsVisibility::kEquallyWeightedButtonShown;
-        buttonType = signin_metrics::SyncButtonsType::kHistorySyncEqualWeighted;
+        buttonType = signin_metrics::SyncButtonsType::
+            kHistorySyncEqualWeightedFromCapability;
         break;
       case signin::Tribool::kTrue:
         self.actionButtonsVisibility =

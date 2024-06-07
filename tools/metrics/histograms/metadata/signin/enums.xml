@@ -856,7 +856,8 @@ chromium-metrics-reviews@google.com.
   <int value="1"
       label="Not-Equal weighted buttons on sync screen (Android, Windows, Mac
              and Linux)"/>
-  <int value="2" label="Equal weighted buttons on history sync screen (iOS)"/>
+  <int value="2"
+      label="Equal weighted buttons on history sync screen (deprecated)"/>
   <int value="3"
       label="Not-Equal weighted buttons on history sync screen (iOS)"/>
   <int value="4"
@@ -865,6 +866,12 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="Equal weighted buttons on sync screen from capability (Windows,
              Mac and Linux)"/>
+  <int value="6"
+      label="Equal weighted buttons on history sync screen from deadline
+             (iOS)"/>
+  <int value="7"
+      label="Equal weighted buttons on history sync screen from capability
+             (iOS)"/>
 </enum>
 
 <enum name="SyncErrorPromptUIAction">

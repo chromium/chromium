@@ -691,9 +691,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonsType::
-                                              kHistorySyncEqualWeighted)
+                            forBucket:
+                                static_cast<int>(
+                                    signin_metrics::SyncButtonsType::
+                                        kHistorySyncEqualWeightedFromCapability)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
   GREYAssertNil(
@@ -841,9 +842,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonsType::
-                                              kHistorySyncEqualWeighted)
+                            forBucket:
+                                static_cast<int>(
+                                    signin_metrics::SyncButtonsType::
+                                        kHistorySyncEqualWeightedFromDeadline)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
   GREYAssertNil(
@@ -903,9 +905,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonsType::
-                                              kHistorySyncEqualWeighted)
+                            forBucket:
+                                static_cast<int>(
+                                    signin_metrics::SyncButtonsType::
+                                        kHistorySyncEqualWeightedFromDeadline)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
   GREYAssertNil(

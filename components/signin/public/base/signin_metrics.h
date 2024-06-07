@@ -498,14 +498,21 @@ enum class SyncButtonsType : int {
   // numeric values should never be reused.
   kSyncEqualWeighted = 0,
   kSyncNotEqualWeighted = 1,
-  kHistorySyncEqualWeighted = 2,
+
+  // kHistorySyncEqualWeighted = 2,  // no longer used, split into
+  // `kHistorySyncEqualWeightedFromDeadline` and
+  // `kHistorySyncEqualWeightedFromCapability`
+
   kHistorySyncNotEqualWeighted = 3,
 
   // Either use one of the two or kSyncEqualWeighted.
   kSyncEqualWeightedFromDeadline = 4,
   kSyncEqualWeightedFromCapability = 5,
 
-  kMaxValue = kSyncEqualWeightedFromCapability,
+  kHistorySyncEqualWeightedFromDeadline = 6,
+  kHistorySyncEqualWeightedFromCapability = 7,
+
+  kMaxValue = kHistorySyncEqualWeightedFromCapability,
 };
 
 // Tracks type of the button that was clicked by the user.
