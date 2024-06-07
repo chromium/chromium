@@ -226,4 +226,8 @@ constexpr const char kScrollEventDispatchModeUseScrollPredictorForDeadline[] =
 
 BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
+             "SendExplicitDecodeRequestsImmediately",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

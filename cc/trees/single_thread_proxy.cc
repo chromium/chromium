@@ -459,6 +459,13 @@ void SingleThreadProxy::Stop() {
   layer_tree_host_ = nullptr;
 }
 
+void SingleThreadProxy::QueueImageDecode(int request_id,
+                                         const PaintImage& image) {
+  DCHECK(task_runner_provider_->IsMainThread());
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  host_impl_->QueueImageDecode(request_id, image);
+}
+
 void SingleThreadProxy::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {
   DCHECK(task_runner_provider_->IsMainThread());
   DebugScopedSetImplThread impl(task_runner_provider_);
@@ -650,16 +657,24 @@ void SingleThreadProxy::NeedsImplSideInvalidation(
   }
 }
 
-void SingleThreadProxy::NotifyImageDecodeRequestFinished() {
+void SingleThreadProxy::NotifyImageDecodeRequestFinished(
+    int request_id,
+    bool decode_succeeded) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
-  // If we don't have a scheduler, then just issue the callbacks here.
-  // Otherwise, schedule a commit.
-  if (!scheduler_on_impl_thread_) {
+  if (base::FeatureList::IsEnabled(
+          features::kSendExplicitDecodeRequestsImmediately)) {
     DebugScopedSetMainThread main_thread(task_runner_provider_);
-    IssueImageDecodeFinishedCallbacks();
+    layer_tree_host_->NotifyImageDecodeFinished(request_id, decode_succeeded);
   } else {
-    SetNeedsCommitOnImplThread();
+    // If we don't have a scheduler, then just issue the callbacks here.
+    // Otherwise, schedule a commit.
+    if (!scheduler_on_impl_thread_) {
+      DebugScopedSetMainThread main_thread(task_runner_provider_);
+      IssueImageDecodeFinishedCallbacks();
+    } else {
+      SetNeedsCommitOnImplThread();
+    }
   }
 }
 

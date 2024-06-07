@@ -67,7 +67,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override;
   void NeedsImplSideInvalidation(bool needs_first_draw_on_activation) override;
-  void NotifyImageDecodeRequestFinished() override;
+  void NotifyImageDecodeRequestFinished(int request_id,
+                                        bool decode_succeeded) override;
   void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,

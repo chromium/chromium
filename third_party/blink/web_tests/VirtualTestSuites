@@ -116,6 +116,7 @@
               "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html",
               "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header.tentative.https.html",
               "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
+              "external/wpt/html/semantics/embedded-content/the-img-element/decode",
               "external/wpt/long-animation-frame/tentative",
               "external/wpt/permissions-policy/experimental-features",
               "external/wpt/requestidlecallback",

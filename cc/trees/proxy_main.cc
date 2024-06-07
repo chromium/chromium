@@ -148,6 +148,9 @@ void ProxyMain::BeginMainFrame(
   // We need to issue image decode callbacks whether or not we will abort this
   // update and commit, since the request ids are only stored in
   // |begin_main_frame_state|.
+  DCHECK(!base::FeatureList::IsEnabled(
+             features::kSendExplicitDecodeRequestsImmediately) ||
+         begin_main_frame_state->completed_image_decode_requests.empty());
   layer_tree_host_->ImageDecodesFinished(
       std::move(begin_main_frame_state->completed_image_decode_requests));
 
@@ -503,6 +506,13 @@ void ProxyMain::DidObserveFirstScrollDelay(
       source_frame_number, first_scroll_delay, first_scroll_timestamp);
 }
 
+void ProxyMain::NotifyImageDecodeRequestFinished(int request_id,
+                                                 bool decode_succeeded) {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kSendExplicitDecodeRequestsImmediately));
+  layer_tree_host_->NotifyImageDecodeFinished(request_id, decode_succeeded);
+}
+
 void ProxyMain::NotifyTransitionRequestFinished(uint32_t sequence_id) {
   layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
 }
@@ -757,6 +767,14 @@ void ProxyMain::Stop() {
   weak_factory_.InvalidateWeakPtrs();
   layer_tree_host_ = nullptr;
   started_ = false;
+}
+
+void ProxyMain::QueueImageDecode(int request_id, const PaintImage& image) {
+  TRACE_EVENT1("cc", "ProxyMain::QueueImageDecode", "request_id", request_id);
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::QueueImageDecodeOnImpl,
+                                base::Unretained(proxy_impl_.get()), request_id,
+                                std::make_unique<PaintImage>(image)));
 }
 
 void ProxyMain::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {

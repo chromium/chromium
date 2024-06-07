@@ -608,9 +608,18 @@ void ProxyImpl::NeedsImplSideInvalidation(bool needs_first_draw_on_activation) {
   scheduler_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
-void ProxyImpl::NotifyImageDecodeRequestFinished() {
+void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
+                                                 bool decode_succeeded) {
   DCHECK(IsImplThread());
-  SetNeedsCommitOnImplThread();
+  if (base::FeatureList::IsEnabled(
+          features::kSendExplicitDecodeRequestsImmediately)) {
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ProxyMain::NotifyImageDecodeRequestFinished,
+                       proxy_main_weak_ptr_, request_id, decode_succeeded));
+  } else {
+    SetNeedsCommitOnImplThread();
+  }
 }
 
 void ProxyImpl::NotifyTransitionRequestFinished(uint32_t sequence_id) {
@@ -715,6 +724,9 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
                        : nullptr);
   begin_main_frame_state->completed_image_decode_requests =
       host_impl_->TakeCompletedImageDecodeRequests();
+  DCHECK(!base::FeatureList::IsEnabled(
+             features::kSendExplicitDecodeRequestsImmediately) ||
+         begin_main_frame_state->completed_image_decode_requests.empty());
   begin_main_frame_state->mutator_events = host_impl_->TakeMutatorEvents();
   begin_main_frame_state->active_sequence_trackers =
       host_impl_->FrameSequenceTrackerActiveTypes();
@@ -987,6 +999,11 @@ bool ProxyImpl::IsMainThreadBlocked() const {
 
 base::SingleThreadTaskRunner* ProxyImpl::MainThreadTaskRunner() {
   return task_runner_provider_->MainThreadTaskRunner();
+}
+
+void ProxyImpl::QueueImageDecodeOnImpl(int request_id,
+                                       std::unique_ptr<PaintImage> image) {
+  host_impl_->QueueImageDecode(request_id, *image);
 }
 
 void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {

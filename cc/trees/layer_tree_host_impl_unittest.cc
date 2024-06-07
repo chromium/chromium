@@ -270,7 +270,8 @@ class LayerTreeHostImplTest : public testing::Test,
   void NeedsImplSideInvalidation(bool needs_first_draw_on_activation) override {
     did_request_impl_side_invalidation_ = true;
   }
-  void NotifyImageDecodeRequestFinished() override {}
+  void NotifyImageDecodeRequestFinished(int request_id,
+                                        bool decode_succeeded) override {}
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,

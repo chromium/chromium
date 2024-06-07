@@ -226,7 +226,9 @@ void LayerContextImpl::OnDrawForLayerTreeFrameSink(
 void LayerContextImpl::NeedsImplSideInvalidation(
     bool needs_first_draw_on_activation) {}
 
-void LayerContextImpl::NotifyImageDecodeRequestFinished() {}
+void LayerContextImpl::NotifyImageDecodeRequestFinished(int request_id,
+                                                        bool decode_succeeded) {
+}
 
 void LayerContextImpl::NotifyTransitionRequestFinished(uint32_t sequence_id) {}
 

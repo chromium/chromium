@@ -3856,8 +3856,11 @@ void LayerTreeHostImpl::ImageDecodeFinished(int request_id,
   DCHECK(!settings_.is_display_tree);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "LayerTreeHostImpl::ImageDecodeFinished");
-  completed_image_decode_requests_.emplace_back(request_id, decode_succeeded);
-  client_->NotifyImageDecodeRequestFinished();
+  if (!base::FeatureList::IsEnabled(
+          features::kSendExplicitDecodeRequestsImmediately)) {
+    completed_image_decode_requests_.emplace_back(request_id, decode_succeeded);
+  }
+  client_->NotifyImageDecodeRequestFinished(request_id, decode_succeeded);
 }
 
 std::vector<std::pair<int, bool>>

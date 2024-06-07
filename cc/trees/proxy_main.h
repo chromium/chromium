@@ -71,6 +71,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void DidObserveFirstScrollDelay(int source_frame_number,
                                   base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
+  void NotifyImageDecodeRequestFinished(int request_id, bool decode_succeeded);
   void NotifyTransitionRequestFinished(uint32_t sequence_id);
 
   CommitPipelineStage max_requested_pipeline_stage() const {
@@ -108,6 +109,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool CommitRequested() const override;
   void Start() override;
   void Stop() override;
+  void QueueImageDecode(int request_id, const PaintImage& image) override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;

@@ -145,9 +145,9 @@ class LayerTreeHostImplClient {
 
   virtual void NeedsImplSideInvalidation(
       bool needs_first_draw_on_activation) = 0;
-  // Called when a requested image decode completes.
-  virtual void NotifyImageDecodeRequestFinished() = 0;
 
+  virtual void NotifyImageDecodeRequestFinished(int request_id,
+                                                bool decode_succeeded) = 0;
   virtual void NotifyTransitionRequestFinished(uint32_t sequence_id) = 0;
 
   // Called when a presentation time is requested. |frame_token| identifies

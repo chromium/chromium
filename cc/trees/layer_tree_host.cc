@@ -383,13 +383,8 @@ void LayerTreeHost::RequestMainFrameUpdate(bool report_metrics) {
 
 void LayerTreeHost::ImageDecodesFinished(
     const std::vector<std::pair<int, bool>>& results) {
-  DCHECK(IsMainThread());
-  // Issue stored callbacks and remove them from the pending list.
   for (const auto& pair : results) {
-    auto it = pending_image_decodes_.find(pair.first);
-    DCHECK(it != pending_image_decodes_.end());
-    std::move(it->second).Run(pair.second);
-    pending_image_decodes_.erase(it);
+    NotifyImageDecodeFinished(pair.first, pair.second);
   }
 }
 
@@ -498,6 +493,16 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
                           waited_for_protected_sequence_);
   }
   waited_for_protected_sequence_ = false;
+}
+
+void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
+                                              bool decode_succeeded) {
+  DCHECK(IsMainThread());
+  auto it = pending_image_decodes_.find(request_id);
+  DCHECK(it != pending_image_decodes_.end());
+  // Issue stored callback and remove them from the pending list.
+  std::move(it->second).Run(decode_succeeded);
+  pending_image_decodes_.erase(it);
 }
 
 void LayerTreeHost::NotifyTransitionRequestsFinished(
@@ -1980,8 +1985,13 @@ void LayerTreeHost::QueueImageDecode(const PaintImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");
   int next_id = s_image_decode_sequence_number.GetNext();
-  pending_commit_state()->queued_image_decodes.emplace_back(
-      next_id, std::make_unique<PaintImage>(image));
+  if (base::FeatureList::IsEnabled(
+          features::kSendExplicitDecodeRequestsImmediately)) {
+    proxy()->QueueImageDecode(next_id, image);
+  } else {
+    pending_commit_state()->queued_image_decodes.emplace_back(
+        next_id, std::make_unique<PaintImage>(image));
+  }
   pending_image_decodes_.emplace(next_id, std::move(callback));
   SetNeedsCommit();
 }
