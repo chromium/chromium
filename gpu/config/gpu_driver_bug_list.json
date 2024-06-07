@@ -2971,7 +2971,7 @@
       },
       "gpu_count": {
         "op": ">",
-        "value": "2"
+        "value": "1"
       },
       "exceptions": [
         {

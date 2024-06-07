@@ -372,8 +372,7 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
   if (gpu_count.IsSpecified()) {
-    size_t count = gpu_info.secondary_gpus.size() + 1;
-    if (!gpu_count.Contains(std::to_string(count))) {
+    if (!gpu_count.Contains(std::to_string(gpu_info.GpuCount()))) {
       return false;
     }
   }
