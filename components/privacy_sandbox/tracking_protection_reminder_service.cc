@@ -79,10 +79,37 @@ TrackingProtectionReminderService::TrackingProtectionReminderService(
   if (onboarding_service_) {
     onboarding_observation_.Observe(onboarding_service_);
   }
+  CHECK(pref_service_);
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kTrackingProtectionReminderStatus,
+      base::BindRepeating(
+          &TrackingProtectionReminderService::OnReminderStatusChanged,
+          base::Unretained(this)));
 }
 
 TrackingProtectionReminderService::~TrackingProtectionReminderService() =
     default;
+
+void TrackingProtectionReminderService::Shutdown() {
+  observers_.Clear();
+  pref_change_registrar_.Reset();
+}
+
+void TrackingProtectionReminderService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TrackingProtectionReminderService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void TrackingProtectionReminderService::OnReminderStatusChanged() {
+  for (auto& observer : observers_) {
+    observer.OnTrackingProtectionReminderStatusChanged(
+        GetReminderStatus(pref_service_));
+  }
+}
 
 void TrackingProtectionReminderService::OnTrackingProtectionOnboardingUpdated(
     TrackingProtectionOnboarding::OnboardingStatus onboarding_status) {

@@ -9,11 +9,22 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tracking_protection_prefs.h"
 #include "tracking_protection_reminder_service.h"
 
 namespace privacy_sandbox {
+
+class MockTrackingProtectionReminderObserver
+    : public TrackingProtectionReminderService::Observer {
+ public:
+  MOCK_METHOD(
+      void,
+      OnTrackingProtectionReminderStatusChanged,
+      (tracking_protection::TrackingProtectionReminderStatus reminder_status),
+      (override));
+};
 
 class TrackingProtectionReminderServiceTest : public testing::Test {
  public:
@@ -98,6 +109,30 @@ TEST_F(TrackingProtectionReminderServiceReminderTest,
                            kPendingReminder));
 }
 
+TEST_F(TrackingProtectionReminderServiceReminderTest,
+       EmitsOnStatusChangedObservable) {
+  MockTrackingProtectionReminderObserver observer;
+  tracking_protection_reminder_service_->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionReminderStatusChanged(
+                  tracking_protection::TrackingProtectionReminderStatus::
+                      kPendingReminder));
+
+  // Check that the status is not initialized.
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+            static_cast<int>(
+                tracking_protection::TrackingProtectionReminderStatus::kUnset));
+
+  // Simulate a regular onboarding experience.
+  RunOnboardingLogic(/*is_silent_onboarding=*/false);
+
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kPendingReminder));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
 TEST_F(TrackingProtectionReminderServiceReminderTest, UpdatesStatusToInvalid) {
   prefs()->SetInteger(
       prefs::kTrackingProtectionReminderStatus,
@@ -164,6 +199,29 @@ TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
                            kPendingReminder));
 }
 
+TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
+       EmitsOnStatusChangedObservable) {
+  MockTrackingProtectionReminderObserver observer;
+  tracking_protection_reminder_service_->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionReminderStatusChanged(
+                  tracking_protection::TrackingProtectionReminderStatus::
+                      kPendingReminder));
+
+  // Check that the status is not initialized.
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+            static_cast<int>(
+                tracking_protection::TrackingProtectionReminderStatus::kUnset));
+
+  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kPendingReminder));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
 INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceSilentReminderTest,
                          TrackingProtectionReminderServiceSilentReminderTest,
                          /*is_silent_onboarding=*/testing::Bool());
@@ -190,6 +248,29 @@ TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
       static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
                            kFeatureDisabledSkipped));
+}
+
+TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
+       EmitsOnStatusChangedObservable) {
+  MockTrackingProtectionReminderObserver observer;
+  tracking_protection_reminder_service_->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionReminderStatusChanged(
+                  tracking_protection::TrackingProtectionReminderStatus::
+                      kFeatureDisabledSkipped));
+
+  // Check that the status is not initialized.
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+            static_cast<int>(
+                tracking_protection::TrackingProtectionReminderStatus::kUnset));
+
+  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kFeatureDisabledSkipped));
+  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -231,8 +312,68 @@ TEST_P(TrackingProtectionReminderServiceModeBEnabledTest,
                            kModeBUserSkipped));
 }
 
+TEST_P(TrackingProtectionReminderServiceModeBEnabledTest,
+       EmitsOnStatusChangedObservable) {
+  MockTrackingProtectionReminderObserver observer;
+  tracking_protection_reminder_service_->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionReminderStatusChanged(
+                  tracking_protection::TrackingProtectionReminderStatus::
+                      kModeBUserSkipped));
+
+  // Check that the status is not initialized.
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+            static_cast<int>(
+                tracking_protection::TrackingProtectionReminderStatus::kUnset));
+
+  SetIsModeBUser(true);
+  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kModeBUserSkipped));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
 INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceModeBEnabledTest,
                          TrackingProtectionReminderServiceModeBEnabledTest,
                          /*is_silent_onboarding=*/testing::Bool());
+
+class TrackingProtectionReminderServiceObserverTest
+    : public TrackingProtectionReminderServiceTest {
+ public:
+  TrackingProtectionReminderServiceObserverTest() {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+  }
+
+ private:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {{kTrackingProtectionReminder, {{}}}};
+  }
+};
+
+TEST_F(TrackingProtectionReminderServiceObserverTest,
+       EmitsOnStatusChangedObservableForInvalidStatus) {
+  MockTrackingProtectionReminderObserver observer;
+  tracking_protection_reminder_service_->AddObserver(&observer);
+  EXPECT_CALL(
+      observer,
+      OnTrackingProtectionReminderStatusChanged(
+          tracking_protection::TrackingProtectionReminderStatus::kInvalid));
+
+  // Check that the status is not initialized.
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+            static_cast<int>(
+                tracking_protection::TrackingProtectionReminderStatus::kUnset));
+
+  RunOnboardingLogic(/*is_silent_onboarding=*/true);
+
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+      static_cast<int>(
+          tracking_protection::TrackingProtectionReminderStatus::kInvalid));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
 
 }  // namespace privacy_sandbox
