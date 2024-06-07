@@ -242,6 +242,7 @@
 #include "components/policy/content/safe_search_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -1276,7 +1277,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   UnifiedConsentServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
+  if (base::FeatureList::IsEnabled(features::kSafetyHub) ||
+      base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     UnusedSitePermissionsServiceFactory::GetInstance();
   }
 #else   // BUILDFLAG(IS_ANDROID)

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -271,38 +272,40 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
 
   content_settings_observation_.Observe(hcsm());
 
-  if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(prefs);
 
-    pref_change_registrar_->Add(
-        permissions::prefs::kUnusedSitePermissionsRevocationEnabled,
-        base::BindRepeating(&UnusedSitePermissionsService::
-                                OnPermissionsAutorevocationControlChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kSafeBrowsingEnabled,
-        base::BindRepeating(&UnusedSitePermissionsService::
-                                OnPermissionsAutorevocationControlChanged,
-                            base::Unretained(this)));
-  }
+    if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
+      pref_change_registrar_->Add(
+          permissions::prefs::kUnusedSitePermissionsRevocationEnabled,
+          base::BindRepeating(&UnusedSitePermissionsService::
+                                  OnPermissionsAutorevocationControlChanged,
+                              base::Unretained(this)));
+    }
 
-  if (IsAbusiveNotificationAutoRevocationEnabled()) {
-    abusive_notification_manager_ =
-        std::make_unique<AbusiveNotificationPermissionsManager>(
-            g_browser_process->safe_browsing_service()
-                ? g_browser_process->safe_browsing_service()->database_manager()
-                : nullptr,
-            hcsm());
-  }
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+      abusive_notification_manager_ =
+          std::make_unique<AbusiveNotificationPermissionsManager>(
+              g_browser_process->safe_browsing_service()
+                  ? g_browser_process->safe_browsing_service()
+                        ->database_manager()
+                  : nullptr,
+              hcsm());
+
+      pref_change_registrar_->Add(
+          prefs::kSafeBrowsingEnabled,
+          base::BindRepeating(&UnusedSitePermissionsService::
+                                  OnPermissionsAutorevocationControlChanged,
+                              base::Unretained(this)));
+    }
 
   InitializeLatestResult();
 
-  if (!IsUnusedSiteAutoRevocationEnabled()) {
-    return;
+  if (IsUnusedSiteAutoRevocationEnabled() ||
+      IsAbusiveNotificationAutoRevocationEnabled()) {
+    StartRepeatedUpdates();
   }
-
-  StartRepeatedUpdates();
 }
 
 UnusedSitePermissionsService::~UnusedSitePermissionsService() = default;
@@ -620,8 +623,7 @@ UnusedSitePermissionsService::UpdateOnUIThread(
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
   RevokeUnusedPermissions();
   // TODO(crbug.com/40250875): Clean up these checks.
-  if (IsAbusiveNotificationAutoRevocationEnabled() &&
-      safe_browsing::IsSafeBrowsingEnabled(*pref_change_registrar_->prefs())) {
+  if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->CheckNotificationPermissionOrigins();
   }
   return GetRevokedPermissions();
@@ -899,9 +901,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
 void UnusedSitePermissionsService::OnPermissionsAutorevocationControlChanged() {
   // TODO(crbug.com/40250875): Clean up these checks.
   if (IsUnusedSiteAutoRevocationEnabled() ||
-      (IsAbusiveNotificationAutoRevocationEnabled() &&
-       safe_browsing::IsSafeBrowsingEnabled(
-           *pref_change_registrar_->prefs()))) {
+      IsAbusiveNotificationAutoRevocationEnabled()) {
     StartRepeatedUpdates();
   } else {
     StopTimer();
@@ -943,12 +943,9 @@ bool UnusedSitePermissionsService::IsUnusedSiteAutoRevocationEnabled() {
 
 bool UnusedSitePermissionsService::
     IsAbusiveNotificationAutoRevocationEnabled() {
-  if (base::FeatureList::IsEnabled(features::kSafetyHub) &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    return true;
-  }
-  return false;
+  return base::FeatureList::IsEnabled(
+             safe_browsing::kSafetyHubAbusiveNotificationRevocation) &&
+         safe_browsing::IsSafeBrowsingEnabled(*pref_change_registrar_->prefs());
 }
 
 const std::set<ContentSettingsType>

@@ -92,7 +92,7 @@ void AbusiveNotificationPermissionsManager::
   // Set this to true to prevent removal of revoked setting values.
   is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,
-                               ContentSetting::CONTENT_SETTING_ASK);
+                               ContentSetting::CONTENT_SETTING_DEFAULT);
   safety_hub_util::SetRevokedAbusiveNotificationPermission(
       hcsm_.get(), url, /*is_ignored=*/false, constraints);
   // Set this back to false, so that revoked settings can be cleaned up if
@@ -200,7 +200,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   timer_.Stop();
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     UpdateNotificationPermission(hcsm_.get(), url,
-                                 ContentSetting::CONTENT_SETTING_ASK);
+                                 ContentSetting::CONTENT_SETTING_DEFAULT);
     content_settings::ContentSettingConstraints default_constraint(
         clock_->Now());
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());

@@ -87,17 +87,8 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
     return false;
   }
 
-  ContentSetting GetNotificationSettingValue(std::string url) {
-    std::string url_pattern =
-        ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
-    auto notification_permission_settings =
-        hcsm()->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
-    for (const auto& setting : notification_permission_settings) {
-      if (setting.primary_pattern.ToString() == url_pattern) {
-        return setting.GetContentSetting();
-      }
-    }
-    return ContentSetting::CONTENT_SETTING_DEFAULT;
+  ContentSetting GetNotificationSettingValue(const std::string& url) {
+    return hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type);
   }
 
   // TODO(crbug/com/342210522): When we refactor utils to be cleaner, this
