@@ -37,6 +37,7 @@
 #include "base/containers/contains.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
@@ -408,6 +409,12 @@ bool SecurityOrigin::CanReadContent(const KURL& url) const {
 bool SecurityOrigin::CanDisplay(const KURL& url) const {
   if (universal_access_)
     return true;
+
+  // Data URLs can always be displayed.
+  if (base::FeatureList::IsEnabled(features::kOptimizeLoadingDataUrls) &&
+      url.ProtocolIsData()) {
+    return true;
+  }
 
   String protocol = url.Protocol();
   if (SchemeRegistry::CanDisplayOnlyIfCanRequest(protocol))

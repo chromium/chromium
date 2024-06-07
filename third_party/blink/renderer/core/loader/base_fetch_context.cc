@@ -529,12 +529,17 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  if (request_mode == network::mojom::RequestMode::kSameOrigin &&
-      cors::CalculateCorsFlag(url, origin.get(),
-                              resource_request.IsolatedWorldOrigin().get(),
-                              request_mode)) {
-    PrintAccessDeniedMessage(url);
-    return ResourceRequestBlockedReason::kOrigin;
+  if (!(base::FeatureList::IsEnabled(features::kOptimizeLoadingDataUrls) &&
+        url.ProtocolIsData())) {
+    // CORS is defined only for HTTP(S) requests. See
+    // https://fetch.spec.whatwg.org/#http-extensions.
+    if (request_mode == network::mojom::RequestMode::kSameOrigin &&
+        cors::CalculateCorsFlag(url, origin.get(),
+                                resource_request.IsolatedWorldOrigin().get(),
+                                request_mode)) {
+      PrintAccessDeniedMessage(url);
+      return ResourceRequestBlockedReason::kOrigin;
+    }
   }
 
   // User Agent CSS stylesheets should only support loading images and should be
@@ -589,6 +594,12 @@ BaseFetchContext::CanRequestInternal(
           blink::switches::kDataUrlInSvgUseEnabled)) {
     PrintAccessDeniedMessage(url);
     return ResourceRequestBlockedReason::kOrigin;
+  }
+
+  // Nothing below this point applies to data: URL images.
+  if (base::FeatureList::IsEnabled(features::kOptimizeLoadingDataUrls) &&
+      type == ResourceType::kImage && url.ProtocolIsData()) {
+    return std::nullopt;
   }
 
   // Measure the number of embedded-credential ('http://user:password@...')
