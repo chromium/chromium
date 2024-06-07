@@ -4,33 +4,57 @@
 
 package org.chromium.chrome.browser.navigation_predictor;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
+
+import java.util.function.BooleanSupplier;
+
 /** Exposes methods to report tabs moving to foreground/background. */
-public class NavigationPredictorBridge {
-    private NavigationPredictorBridge() {}
+public class NavigationPredictorBridge implements PauseResumeWithNativeObserver {
+    private final Profile mProfile;
+    private final BooleanSupplier mIsWarmStartSupplier;
 
-    /** Reports to native that tabbed activity has resumed. */
-    public static void onActivityWarmResumed() {
-        NavigationPredictorBridgeJni.get().onActivityWarmResumed();
+    /**
+     * Constructs a new {@link NavigationPredictorBridge} instance.
+     *
+     * @param profile The Profile that will utilize the navigation predictions.
+     * @param activityLifecycleDispatcher The activity associated with the navigations.
+     * @param isWarmStartSupplier Supplies whether the current run of the activity is associated
+     *     with a warm start.
+     */
+    public NavigationPredictorBridge(
+            Profile profile,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            BooleanSupplier isWarmStartSupplier) {
+        mProfile = profile;
+        mIsWarmStartSupplier = isWarmStartSupplier;
+        activityLifecycleDispatcher.register(this);
     }
 
-    /** Reports to native that tabbed activity has started. */
-    public static void onColdStart() {
-        NavigationPredictorBridgeJni.get().onColdStart();
+    @Override
+    public void onResumeWithNative() {
+        if (mIsWarmStartSupplier.getAsBoolean()) {
+            NavigationPredictorBridgeJni.get().onActivityWarmResumed(mProfile);
+        } else {
+            NavigationPredictorBridgeJni.get().onColdStart(mProfile);
+        }
     }
 
-    /** Reports to native that tabbed activity has paused (moved to background). */
-    public static void onPause() {
-        NavigationPredictorBridgeJni.get().onPause();
+    @Override
+    public void onPauseWithNative() {
+        NavigationPredictorBridgeJni.get().onPause(mProfile);
     }
 
     @NativeMethods
     interface Natives {
-        void onActivityWarmResumed();
+        void onActivityWarmResumed(@JniType("Profile*") Profile profile);
 
-        void onColdStart();
+        void onColdStart(@JniType("Profile*") Profile profile);
 
-        void onPause();
+        void onPause(@JniType("Profile*") Profile profile);
     }
 }

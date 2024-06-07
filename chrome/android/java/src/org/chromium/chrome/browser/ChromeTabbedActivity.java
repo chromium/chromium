@@ -1219,6 +1219,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void finishNativeInitialization() {
         try (TraceEvent te = TraceEvent.scoped("ChromeTabbedActivity.finishNativeInitialization")) {
+            assert getProfileProviderSupplier().hasValue();
+            new NavigationPredictorBridge(
+                    getProfileProviderSupplier().get().getOriginalProfile(),
+                    getLifecycleDispatcher(),
+                    this::isWarmOnResume);
+
             super.finishNativeInitialization();
 
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
@@ -1268,12 +1274,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mLocaleManager.setSnackbarManager(getSnackbarManager());
         mLocaleManager.startObservingPhoneChanges();
 
-        if (isWarmOnResume()) {
-            NavigationPredictorBridge.onActivityWarmResumed();
-        } else {
-            NavigationPredictorBridge.onColdStart();
-        }
-
         // This call is not guarded by a feature flag.
         SearchEngineChoiceNotification.handleSearchEngineChoice(
                 this, getSnackbarManager(), SETTINGS_LAUNCHER);
@@ -1298,7 +1298,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mLocaleManager.setSnackbarManager(null);
         mLocaleManager.stopObservingPhoneChanges();
 
-        NavigationPredictorBridge.onPause();
         // Always track the last backgrounded time in case others are using the pref.
         mInactivityTracker.setLastBackgroundedTimeInPrefs(System.currentTimeMillis());
 
