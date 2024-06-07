@@ -1396,6 +1396,10 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
       // document, and therefore we ignore that popup and any nodes in it.
       return nullptr;
     }
+    if (!GetPopupDocumentIfShowing()) {
+      // The popup document is either not showing yet, or is no longer showing.
+      return nullptr;
+    }
     // All other document nodes with a parent must match the current popup.
     CHECK_EQ(node, GetPopupDocumentIfShowing());
   }
@@ -4116,6 +4120,11 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
 
     if (was_owned) {
       relation_cache_->UpdateAriaOwnsWithCleanLayout(parent, /*force*/ true);
+    }
+
+    // A previous call could have detached the parent.
+    if (parent->IsDetached()) {
+      return;
     }
 
     // Calling GetOrCreate(node) will not only create a new object with the
