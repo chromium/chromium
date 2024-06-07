@@ -154,6 +154,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   void ScheduleDeviceSettingsRefresh();
   void RefreshAllDeviceSettings();
+  void ShowFirstTimeConnectedNotifications();
 
   void RecordComboDeviceMetric(const mojom::Keyboard& keyboard);
   void RecordComboDeviceMetric(const mojom::Mouse& keyboard);

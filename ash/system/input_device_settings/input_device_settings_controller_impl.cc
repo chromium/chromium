@@ -1042,6 +1042,28 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   // updated due to the active pref service change first. Therefore, schedule
   // a task so other dependencies are updated first.
   ScheduleDeviceSettingsRefresh();
+
+  if (features::IsPeripheralNotificationEnabled()) {
+    // Delay showing the notification for already connected devices by 30
+    // seconds so on first login the user does not get bombarded by a bunch of
+    // notifications until after some delay.
+    sequenced_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&InputDeviceSettingsControllerImpl::
+                           ShowFirstTimeConnectedNotifications,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(30));
+  }
+}
+
+void InputDeviceSettingsControllerImpl::ShowFirstTimeConnectedNotifications() {
+  for (const auto& [id, mouse] : mice_) {
+    notification_controller_->NotifyMouseFirstTimeConnected(*mouse);
+  }
+  for (const auto& [id, graphics_tablet] : graphics_tablets_) {
+    notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
+        *graphics_tablet);
+  }
 }
 
 void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
@@ -1916,6 +1938,8 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     InitializeMouseSettings(mojom_mouse.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_mouse->device_key, mojom_mouse->id);
+    } else if (features::IsPeripheralNotificationEnabled()) {
+      notification_controller_->NotifyMouseFirstTimeConnected(*mojom_mouse);
     }
 
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
@@ -1969,6 +1993,9 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_graphics_tablet->device_key,
                      mojom_graphics_tablet->id);
+    } else if (features::IsPeripheralNotificationEnabled()) {
+      notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
+          *mojom_graphics_tablet);
     }
 
     graphics_tablets_.insert_or_assign(graphics_tablet.id,
