@@ -71,7 +71,7 @@ class FormFetcherImpl : public FormFetcher,
     filter_grouped_credentials_ = filter_grouped_credentials;
   }
 
- protected:
+ private:
   // Actually finds best matches and notifies consumers.
   void FindMatchesAndNotifyConsumers(
       std::vector<std::unique_ptr<PasswordForm>> results);
@@ -79,6 +79,24 @@ class FormFetcherImpl : public FormFetcher,
   // Splits |results| into |federated_|, |non_federated_|,
   // |is_blocklisted_in_profile_store_| and |is_blocklisted_in_account_store_|.
   void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
+
+  // PasswordStoreConsumer:
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsFrom(
+      PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
+
+  // HttpPasswordStoreMigrator::Consumer:
+  void ProcessMigratedForms(
+      std::vector<std::unique_ptr<PasswordForm>> forms) override;
+
+  void AggregatePasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // PasswordStore results will be fetched for this description.
   const PasswordFormDigest form_digest_;
@@ -107,25 +125,6 @@ class FormFetcherImpl : public FormFetcher,
   // Indicates whether HTTP passwords should be migrated to HTTPS. This is
   // always false for non HTML forms.
   const bool should_migrate_http_passwords_;
-
- private:
-  // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-  void OnGetPasswordStoreResultsFrom(
-      PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-  void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
-  void OnGetPasswordStoreResultsOrErrorFrom(
-      PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
-
-  // HttpPasswordStoreMigrator::Consumer:
-  void ProcessMigratedForms(
-      std::vector<std::unique_ptr<PasswordForm>> forms) override;
-
-  void AggregatePasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Does the actual migration.
   base::flat_map<PasswordStoreInterface*,
