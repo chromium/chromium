@@ -10,13 +10,13 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/PreferenceLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/sign_out_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="top|center"
         android:text="@string/sign_out"
         style="@style/TextButton"/>
 
