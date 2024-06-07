@@ -412,18 +412,13 @@ void ImageAnnotationWorker::ProcessNextImage() {
   }
   DCHECK(file_info);
 
-  auto stored_annotations = annotation_storage_->FindImagePath(image_path);
-  if (!stored_annotations.empty()) {
-    DVLOG(1) << "CompareModifiedTime: " << stored_annotations.size()
-             << " same? "
-             << (file_info->last_modified ==
-                 stored_annotations.front().last_modified);
-    // Annotations are updated on a file change and have the file's last
-    // modified time. So skip inserting the image annotations if the file
-    // has not changed since the last update.
-    if (file_info->last_modified == stored_annotations.front().last_modified) {
-      return MaybeProcessNextItem(image_path);
-    }
+  const base::Time last_modified_time =
+      annotation_storage_->GetLastModifiedTime(image_path);
+  // Annotations are updated on a file change and have the file's last
+  // modified time. So skip inserting the image annotations if the file
+  // has not changed since the last update.
+  if (file_info->last_modified == last_modified_time) {
+    return MaybeProcessNextItem(image_path);
   }
 
   DVLOG(1) << "Processing new " << image_path << " "
@@ -538,9 +533,10 @@ void ImageAnnotationWorker::OnPerformOcr(
       }
     }
   }
-  if (!image_info.annotations.empty()) {
-    annotation_storage_->Insert(std::move(image_info));
-  }
+  // Always insert the `image_info` because even if there is no annotation for
+  // this image, we need to save the image last modification time so that we
+  // won't re-process this image in the next user session.
+  annotation_storage_->Insert(std::move(image_info));
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
@@ -570,9 +566,10 @@ void ImageAnnotationWorker::OnPerformIca(
       image_info.annotations.insert(base::UTF16ToUTF8(word));
     }
   }
-  if (!image_info.annotations.empty()) {
-    annotation_storage_->Insert(image_info);
-  }
+  // Always insert the `image_info` because even if there is no annotation for
+  // this image, we need to save the image last modification time so that we
+  // won't re-process this image in the next user session.
+  annotation_storage_->Insert(image_info);
 
   // ICA is the last in the pipeline.
   MaybeProcessNextItem(image_info.path, /*use_timer=*/true);

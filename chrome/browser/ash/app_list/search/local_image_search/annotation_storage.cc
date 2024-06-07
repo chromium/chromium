@@ -307,6 +307,38 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   return matched_paths;
 }
 
+const base::Time AnnotationStorage::GetLastModifiedTime(
+    const base::FilePath& image_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (image_path.empty()) {
+    return base::Time();
+  }
+
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT last_modified_time FROM documents "
+          "WHERE directory_path=? AND file_name=?";
+  // clang-format on
+
+  std::unique_ptr<sql::Statement> statement =
+      sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    LogErrorUma(ErrorStatus::kFailedToFindImagePath);
+    return base::Time();
+  }
+  // Safe on ChromeOS.
+  statement->BindString(0, image_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, image_path.BaseName().AsUTF8Unsafe());
+
+  // We only need the first row because (directory_path, file_name) is the
+  // primary key of the image, which ensures the found result is unique.
+  if (statement->Step()) {
+    return statement->ColumnTime(0);
+  }
+  return base::Time();
+}
+
 std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
     const std::u16string& query_term) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
