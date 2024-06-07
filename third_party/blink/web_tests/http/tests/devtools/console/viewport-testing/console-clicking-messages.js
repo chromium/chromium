@@ -141,9 +141,9 @@ import * as Console from 'devtools/panels/console/console.js';
       name += '#' + element.id;
     if (element.getAttribute('aria-label'))
       name += ':' + element.getAttribute('aria-label');
-    else if (element.title)
+    if (element.title)
       name += ':' + element.title;
-    else if (element.className)
+    if (element.className)
       name += '.' + element.className.split(' ').join('.');
     TestRunner.addResult(name);
   }

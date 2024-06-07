@@ -6,7 +6,7 @@ Evaluating: console.log(1)
 Message count: 1
 Click on message
 Viewport virtual selection: 0
-activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+activeElement: DIV:1.console-message-wrapper.console-from-api.console-info-level.console-selected
 
 Running: testClickOnGroup
 Evaluating: console.group('group1')
