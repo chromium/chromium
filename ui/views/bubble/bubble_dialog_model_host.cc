@@ -158,11 +158,6 @@ class CheckboxControl : public Checkbox {
     return View::CalculatePreferredSize(available_size);
   }
 
-  int GetHeightForWidth(int width) const override {
-    // Skip LabelButton to use LayoutManager.
-    return View::GetHeightForWidth(width);
-  }
-
   void OnThemeChanged() override {
     Checkbox::OnThemeChanged();
     // This offsets the image to align with the first line of text. See

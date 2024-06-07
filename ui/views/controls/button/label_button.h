@@ -161,7 +161,6 @@ class VIEWS_EXPORT LabelButton : public Button,
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  int GetHeightForWidth(int w) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;

@@ -367,10 +367,6 @@ gfx::Size LabelButton::GetMinimumSize() const {
   return size;
 }
 
-int LabelButton::GetHeightForWidth(int width) const {
-  return CalculatePreferredSize(SizeBounds(width, {})).height();
-}
-
 ProposedLayout LabelButton::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layouts;

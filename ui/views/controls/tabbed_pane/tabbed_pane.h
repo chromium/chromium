@@ -180,7 +180,6 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   void OnGestureEvent(ui::GestureEvent* event) override;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
-  int GetHeightForWidth(int w) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnFocus() override;

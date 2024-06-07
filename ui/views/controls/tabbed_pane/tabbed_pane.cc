@@ -140,14 +140,6 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
   return gfx::Size(width, 32);
 }
 
-int TabbedPaneTab::GetHeightForWidth(int w) const {
-  // Because we set the LayoutManager, it will use
-  // LayoutManager::GetPreferredHeightForWidth by default, but this is not
-  // consistent with the fixed height desired by CalculatePreferredSize, so we
-  // override it and call it manually.
-  return CalculatePreferredSize(SizeBounds(w, {})).height();
-}
-
 void TabbedPaneTab::GetAccessibleNodeData(ui::AXNodeData* data) {
   data->role = ax::mojom::Role::kTab;
   data->SetName(title_->GetText());
