@@ -68,23 +68,7 @@ message NigoriKeyBag {
 // Information about the experiment group to auto-upgrade users to trusted vault
 // passphrase type.
 message TrustedVaultAutoUpgradeExperimentGroup {
-  // Each cohort can be ramped in different stages (e.g. 1%, 10%, 100%).
-  // Every ramp stage is differentiated with its own entry in the enum.
-  enum Cohort {
-    COHORT_UNSPECIFIED = 0;
-    // Used for testing the auto-upgrade metrics & infrastructure only.
-    TEST_COHORT_1 = 1;
-    // Evaluation group for the first eligibility criteria (Android device
-    // with LSKF, Gaia PWD public key & between 5 and 50 passwords).
-    ANDROID_LSKF_GAIA_PASSWORD_5_50_PASSWORDS_EVALUATION = 2;
-    // Cohort of users used to validate metrics analysis strategy by comparing
-    // metrics posted by users within CONTROL and VALIDATION groups.
-    CONTROL_AND_VALIDATION_MARKING_EXERCISE = 3;
-  }
-
-  // ID of cohort account belongs to. Only use IDs defined within enum |Cohort|.
-  // An int is used instead of the enum so we can better handle unknown values
-  // coming from later versions.
+  // ID of cohort account belongs to. An integer within the range [1, 99].
   optional int32 cohort = 1;
 
   // Within each cohort, there are multiple experiment groups, and each group
