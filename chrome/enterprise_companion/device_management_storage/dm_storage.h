@@ -49,8 +49,8 @@ class CachedPolicyInfo {
 
  private:
   std::string key_;
-  int32_t key_version_ = 0;
-  int64_t timestamp_ = -1;
+  int32_t key_version_ = -1;
+  int64_t timestamp_ = 0;
 };
 
 // The token service interface defines how to serialize tokens.
