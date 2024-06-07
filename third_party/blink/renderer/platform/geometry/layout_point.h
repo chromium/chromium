@@ -32,7 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_POINT_H_
 
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
+
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -87,12 +88,6 @@ constexpr bool operator!=(const LayoutPoint& a, const LayoutPoint& b) {
 
 inline gfx::Point ToRoundedPoint(const LayoutPoint& point) {
   return gfx::Point(point.X().Round(), point.Y().Round());
-}
-
-inline gfx::Size ToPixelSnappedSize(const DeprecatedLayoutSize& s,
-                                    const LayoutPoint& p) {
-  return gfx::Size(SnapSizeToPixel(s.Width(), p.X()),
-                   SnapSizeToPixel(s.Height(), p.Y()));
 }
 
 inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
