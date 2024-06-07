@@ -15,7 +15,6 @@
 // clients (Chromium, other downstream repos) later.
 // Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
-
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -56,9 +55,11 @@ struct HeatmapPalmRejectionConfig {
   // The index of the output node in TF model.
   uint32 output_node;
   // The threshold to decide whether the TF model result indicates a palm.
-  [MinVersion=1] double palm_threshold;
+  [MinVersion=1]
+  double palm_threshold;
   // Optional crop that should be applied to the heatmap when provided.
-  [MinVersion=3] CropHeatmap? crop_heatmap;
+  [MinVersion=3]
+  CropHeatmap? crop_heatmap;
 };
 
 // The result of processing a frame of heatmap data.

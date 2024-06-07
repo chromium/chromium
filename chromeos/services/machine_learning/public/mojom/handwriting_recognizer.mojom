@@ -160,6 +160,10 @@ interface HandwritingRecognizer {
 };
 
 // Enum indicates the result of LoadHandwritingModel in mlservice.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep this enum in sync with MachineLearningServiceHandwritingModelResultEvent
+// in tools/metrics/histograms/metadata/cros_ml/enums.xml.
 [Stable, Extensible]
 enum LoadHandwritingModelResult {
   OK = 0,
