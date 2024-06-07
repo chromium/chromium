@@ -3253,7 +3253,7 @@ BASE_FEATURE(kEnablePeripheralsLogging,
 // connected to the user's chromebook for the first time.
 BASE_FEATURE(kPeripheralNotification,
              "PeripheralNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable fast ink for software cursor. Fast ink provides a low-latency
 // cursor with possible tearing artifacts.
