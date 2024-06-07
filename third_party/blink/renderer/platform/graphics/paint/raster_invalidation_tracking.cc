@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"

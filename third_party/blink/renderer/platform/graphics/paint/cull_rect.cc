@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"

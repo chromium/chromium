@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {

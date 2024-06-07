@@ -15,7 +15,6 @@
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
