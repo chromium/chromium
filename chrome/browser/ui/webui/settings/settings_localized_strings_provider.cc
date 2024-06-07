@@ -1474,6 +1474,8 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE},
       {"chromeSigninChoiceDescription",
        IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_DESC},
+      {"chromeSigninChoiceSelectOptionPlaceholder",
+       IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_PLACEHOLDER},
       {"chromeSigninChoiceSignin",
        IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_SIGNIN},
       {"chromeSigninChoiceDoNotSignin",

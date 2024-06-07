@@ -1,4 +1,4 @@
-    <style include="settings-shared">
+    <style include="settings-shared md-select">
       :host(.list-frame) settings-toggle-button {
         padding-inline-end: 0;
         padding-inline-start: 0;
@@ -9,50 +9,46 @@
         padding-inline-start: 0;
       }
 
-      #chromeSigninUserChoiceRadioGroup {
-        margin-block-start: 10px;
-        margin-block-end: 10px;
-      }
-
       /* Removes the border of the first hr element.*/
       .hr:not(.hr:not([hidden]) ~ *) {
         border-top: 0;
       }
 
+      #chromeSigninUserChoiceSetting {
+        padding: 10px 0px 10px;
+      }
     </style>
 
 <if expr="not is_chromeos">
-    <cr-radio-group id="chromeSigninUserChoiceRadioGroup"
-        class="hr radio-group-content"
+    <div id="chromeSigninUserChoiceSetting" class="hr cr-row"
         hidden="[[!chromeSigninUserChoiceInfo_.shouldShowSettings]]"
-        aria-label="$i18n{chromeSigninChoiceTitle}"
-        on-selected-changed="onChromeSigninChoiceChanged_"
-        nested-selectable>
+        aria-label="$i18n{chromeSigninChoiceTitle}">
       <div>
-        $i18n{chromeSigninChoiceTitle}
+          <div>
+            $i18n{chromeSigninChoiceTitle}
+          </div>
+          <div id="chromeSigninChoiceDescription" class="secondary">
+            [[i18n('chromeSigninChoiceDescription',
+                chromeSigninUserChoiceInfo_.signedInEmail)]]
+          </div>
       </div>
-      <div id="chromeSigninChoiceDescription" class="secondary">
-        [[i18n('chromeSigninChoiceDescription',
-            chromeSigninUserChoiceInfo_.signedInEmail)]]
-      </div>
-      <div class="list-frame">
-        <cr-radio-button
-            class="list-item"
-            name="[[chromeSigninUserChoiceEnum_.SIGNIN]]"
-            label="$i18n{chromeSigninChoiceSignin}">
-        </cr-radio-button>
-        <cr-radio-button
-            class="list-item"
-            name="[[chromeSigninUserChoiceEnum_.DO_NOT_SIGNIN]]"
-            label="$i18n{chromeSigninChoiceDoNotSignin}">
-        </cr-radio-button>
-        <cr-radio-button
-            class="list-item"
-            name="[[chromeSigninUserChoiceEnum_.ALWAYS_ASK]]"
-            label="$i18n{chromeSigninChoiceAlwaysAsk}">
-        </cr-radio-button>
-      </div>
-    </cr-radio-group>
+      <select id="chromeSigninUserChoiceSelection" class="md-select"
+          on-change="onChromeSigninChoiceSelectionChanged_">
+          <option selected disabled hidden
+              value="[[chromeSigninUserChoiceEnum_.NO_CHOICE]]">
+            $i18n{chromeSigninChoiceSelectOptionPlaceholder}
+          </option>
+          <option value="[[chromeSigninUserChoiceEnum_.SIGNIN]]">
+            $i18n{chromeSigninChoiceSignin}
+          </option>
+          <option value="[[chromeSigninUserChoiceEnum_.DO_NOT_SIGNIN]]">
+            $i18n{chromeSigninChoiceDoNotSignin}
+          </option>
+          <option value="[[chromeSigninUserChoiceEnum_.ALWAYS_ASK]]">
+            $i18n{chromeSigninChoiceAlwaysAsk}
+          </option>
+      </select>
+    </div>
     <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
     <settings-toggle-button id="signinAllowedToggle"
         class="hr"
