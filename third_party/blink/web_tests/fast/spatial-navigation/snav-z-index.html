@@ -6,8 +6,6 @@
   #popup {position: absolute; top:120; left:240; border: 8px solid black; z-index:1000}
 </style>
 
-Test that SpatNav prefers the elements with higher Z-indices.
-
 <div id="popup">
 <table><tr><td>
 <div tabindex="1" id="p11" class="positioned"><img src="resources/green.png" width=160px height=60px></div>
@@ -33,7 +31,10 @@ Test that SpatNav prefers the elements with higher Z-indices.
 <div tabindex="5" id="s25" class="simple"><img src="resources/green.png" width=160px height=60px></div>
 </td></tr></table>
 
-<p>Once focus reaches a popup, we favor its focusables (#p*) over focusables under it (#s*).</p>
+<p>
+  Test that SpatNav prefers the elements with higher Z-indices.<br>
+  Once focus reaches a popup, we favor its focusables (#p*) over focusables under it (#s*).<br>
+</p>
 
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
