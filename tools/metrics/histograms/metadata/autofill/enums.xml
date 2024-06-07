@@ -1734,6 +1734,12 @@ Called by update_autofill_enums.py.-->
              response"/>
 </enum>
 
+<enum name="AutofillPopupInteraction">
+  <int value="0" label="The popup was shown."/>
+  <int value="1" label="A suggestion was selected."/>
+  <int value="2" label="A suggestion was accepted."/>
+</enum>
+
 <enum name="AutofillPredictionsComparisonResult">
 <!-- Generated from components/autofill/core/browser/field_types.h.
 Called by update_autofill_enums.py.-->

@@ -395,6 +395,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
 
+<variants name="AutofillPopupInteractionLevel">
+  <variant name="0"
+      summary="a root popup suggestion(s) was either shown or interacted with
+               by the user (selected or accepted)"/>
+  <variant name="1"
+      summary="a second level popup suggestion(s) was either shown or
+               interacted with by the user (selected or accepted)"/>
+  <variant name="2"
+      summary="a third level popup suggestion(s) was either shown or
+               interacted with by the user (selected or accepted)"/>
+</variants>
+
 <variants name="AutofillProfile.StorableTypes">
   <variant name="ADDRESS_HOME_ADMIN_LEVEL2"/>
   <variant name="ADDRESS_HOME_APT"/>
@@ -3954,6 +3966,50 @@ chromium-metrics-reviews@google.com.
                  credentials."/>
     <variant name="PlusAddresses"
         summary="User chose to fill a field with a plus addresses suggestion."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Autofill.PopupInteraction.PopupLevel.{AutofillPopupInteractionLevel}"
+    enum="AutofillPopupInteraction" expires_after="2024-09-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    This is emitted when {AutofillPopupInteractionLevel}. Its goal is to learn
+    about user's behaviour related to the Autofill popup therefore it is only
+    emitted on desktop.
+  </summary>
+  <token key="AutofillPopupInteractionLevel"
+      variants="AutofillPopupInteractionLevel"/>
+</histogram>
+
+<histogram
+    name="Autofill.PopupInteraction.PopupLevel.{AutofillPopupInteractionLevel}.{FillingProduct}"
+    enum="AutofillPopupInteraction" expires_after="2024-09-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    This is emitted when {AutofillPopupInteractionLevel}. This is also specific
+    for a {FillingProduct}. It is emitted when the popup is shown, a suggestion
+    is selected (hover) or accepted. Its goal is to learn about user's behaviour
+    related to the Autofill popup therefore it is only emitted on desktop.
+  </summary>
+  <token key="AutofillPopupInteractionLevel"
+      variants="AutofillPopupInteractionLevel"/>
+  <token key="FillingProduct">
+    <variant name="Address" summary="popup with address suggestion(s)"/>
+    <variant name="Autocomplete"
+        summary="popup with autocomplete suggestion(s)"/>
+    <variant name="Compose" summary="popup with compose suggestion(s)"/>
+    <variant name="CreditCard" summary="popup with credit card suggestion(s)"/>
+    <variant name="Iban" summary="popup with iban suggestion(s)"/>
+    <variant name="MerchantPromoCode"
+        summary="popup with merchant promo code suggestion(s)"/>
+    <variant name="None"
+        summary="popup with suggestion(s) that match no filling product"/>
+    <variant name="Password" summary="popup with password suggestion(s)"/>
+    <variant name="PlusAddresses"
+        summary="popup with plus addresses suggestion(s)"/>
   </token>
 </histogram>
 

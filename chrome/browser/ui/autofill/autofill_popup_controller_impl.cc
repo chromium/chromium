@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -83,6 +84,38 @@ SuggestionFiltrationResult FilterSuggestions(
   }
 
   return result;
+}
+
+// Returns whether the controller should log the popup interaction shown metric.
+// Some popups can be displayed without a direct user action (i.e. typing into a
+// field or unfocusing a text are with a previous compose suggestion). We do not
+// want to log popup shown interaction logs for them since they defeat the
+// purpose of the metric.
+bool ShouldLogPopupInteractionShown(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::
+        kShowPromptAfterDialogClosedNonManualFallback:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
+      return true;
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+      return false;
+  }
 }
 
 }  // namespace
@@ -253,6 +286,12 @@ void AutofillPopupControllerImpl::Show(
 
     delegate_->OnSuggestionsShown();
   }
+
+  if (ShouldLogPopupInteractionShown(trigger_source_)) {
+    AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
+                                         GetPopupLevel(),
+                                         PopupInteraction::kPopupShown);
+  }
 }
 
 void AutofillPopupControllerImpl::DisableThresholdForTesting(
@@ -393,6 +432,10 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
+
+  AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
+                                       GetPopupLevel(),
+                                       PopupInteraction::kSuggestionAccepted);
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillSuggestionDelegate::SuggestionPosition{
                       .row = index, .sub_popup_level = GetPopupLevel()});
@@ -568,6 +611,7 @@ void AutofillPopupControllerImpl::ClearState() {
   // regenerated and this will cause flickering.
   filtered_suggestions_.clear();
   non_filtered_suggestions_.clear();
+  any_suggestion_selected_ = false;
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
@@ -722,6 +766,18 @@ void AutofillPopupControllerImpl::SelectSuggestion(int index) {
     return;
   }
 
+  if (!any_suggestion_selected_) {
+    // Suggestion selection can happen multiple times for the same popup.
+    // However we only emit it once to keep this metrics close to having a
+    // funnel behaviour. Meaning the number of popups being shown is larger than
+    // the number of popups being selected, which is larger than the number of
+    // popups being accepted.
+    AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
+                                         GetPopupLevel(),
+                                         PopupInteraction::kSuggestionSelected);
+  }
+
+  any_suggestion_selected_ = true;
   delegate_->DidSelectSuggestion(GetSuggestionAt(index));
 }
 

@@ -4467,6 +4467,75 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_PopupInteraction_PopupLevel_0_SuggestionAccepted">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has accepted an Autofill address
+    suggestion in the first level (root) popup. Only logged on desktop
+    platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_0_SuggestionSelected">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has selected (hovered) an Autofill
+    address suggestion in the first level (root) popup. Only logged on desktop
+    platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_1_SuggestionAccepted">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has accepted an Autofill address
+    tools/metrics/actions/actions.xml in the second level popup. Only logged on
+    desktop platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_1_SuggestionSelected">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has selected (hovered) an Autofill
+    address suggestion in the second level popup. Only logged on desktop
+    platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_1_SuggestionShown">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has triggered an Autofill address
+    suggestion in the second level popup. Only logged on desktop platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_2_SuggestionAccepted">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has accepted an Autofill address
+    suggestion in the third level popup. Only logged on desktop platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_2_SuggestionSelected">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has selected (hovered) an Autofill
+    address suggestion in the third level popup. Only logged on desktop
+    platforms.
+  </description>
+</action>
+
+<action name="Autofill_PopupInteraction_PopupLevel_2_SuggestionShown">
+  <owner>brunobraga@google.com</owner>
+  <description>
+    This user action is logged when a user has triggered an Autofill address
+    suggestion in the third level popup. Only logged on desktop platforms.
+  </description>
+</action>
+
 <action name="Autofill_ProfileDisabled">
   <owner>battre@chromium.org</owner>
   <owner>bwolfgang@google.com</owner>
@@ -34877,7 +34946,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SidePanel.Assistant.Shown">
-  <owner>brunobraga@chromium.org</owner>
+  <owner>brunobraga@google.com</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the assistant side panel entry is shown.

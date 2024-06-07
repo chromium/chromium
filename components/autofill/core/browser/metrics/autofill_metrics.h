@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
@@ -707,13 +708,13 @@ class AutofillMetrics {
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
 
-    // Log whether the autofill decided to skip or to fill each
+    // Logs whether the autofill decided to skip or to fill each
     // hidden/representational field.
     void LogHiddenRepresentationalFieldSkipDecision(const FormStructure& form,
                                                     const AutofillField& field,
                                                     bool is_skipped);
 
-    // Log the fields for which the autofill decided to rationalize the server
+    // Logs the fields for which the autofill decided to rationalize the server
     // type predictions due to repetition of the type.
     void LogRepeatedServerTypePredictionRationalized(
         const FormSignature form_signature,
@@ -954,7 +955,7 @@ class AutofillMetrics {
       size_t server_card_count_with_card_art_image,
       base::TimeDelta disused_data_threshold);
 
-  // Log the number of autofill credit card suggestions suppressed because they
+  // Logs the number of autofill credit card suggestions suppressed because they
   // have not been used for a long time and are expired. Note that these cards
   // are only suppressed when the user has not typed any data into the field
   // from which autofill is triggered. Credit cards matching something the user
@@ -962,33 +963,40 @@ class AutofillMetrics {
   // used.
   static void LogNumberOfCreditCardsSuppressedForDisuse(size_t num_cards);
 
-  // Log the number of autofill credit card deleted during major version upgrade
-  // because they have not been used for a long time and are expired.
+  // Logs the number of autofill credit card deleted during major version
+  // upgrade because they have not been used for a long time and are expired.
   static void LogNumberOfCreditCardsDeletedForDisuse(size_t num_cards);
 
-  // Log the number of profiles available when an autofillable form is
+  // Logs the number of profiles available when an autofillable form is
   // submitted.
   static void LogNumberOfProfilesAtAutofillableFormSubmission(
       size_t num_profiles);
 
-  // Log the number of autofill address suggestions suppressed because they have
-  // not been used for a long time. Note that these addresses are only
+  // Logs the number of autofill address suggestions suppressed because they
+  // have not been used for a long time. Note that these addresses are only
   // suppressed when the user has not typed any data into the field from which
   // autofill is triggered. Addresses matching something the user has types are
   // always offered, regardless of how recently they have been used.
   static void LogNumberOfAddressesSuppressedForDisuse(size_t num_profiles);
 
-  // Log the reason for which the Autofill popup disappeared.
+  // Logs the reason for which the Autofill suggestion disappeared.
   static void LogAutofillSuggestionHidingReason(FillingProduct filling_product,
                                                 SuggestionHidingReason reason);
 
-  // Log the number of days since an Autocomplete suggestion was last used.
+  // Logs the behaviour of users interaction with the Autofill popup.
+  // This method also logs user actions when `filling_product` is
+  // `FillingProduct::kAddress`.
+  static void LogPopupInteraction(FillingProduct filling_product,
+                                  int popup_level,
+                                  PopupInteraction action);
+
+  // Logs the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
 
-  // Log the fact that an autocomplete popup was shown.
+  // Logs the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
 
-  // Log that an autocomplete suggestion was deleted directly from the popup
+  // Logs that an autocomplete suggestion was deleted directly from the popup
   // menu.
   static void OnAutocompleteSuggestionDeleted(
       SingleEntryRemovalMethod removal_method);
@@ -1032,7 +1040,7 @@ class AutofillMetrics {
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);
 
-  // Log whether the Autofill query on a credit card form is made in a secure
+  // Logs whether the Autofill query on a credit card form is made in a secure
   // context.
   static void LogIsQueriedCreditCardFormSecure(bool is_secure);
 
@@ -1150,7 +1158,7 @@ class AutofillMetrics {
   static uint64_t FieldGlobalIdToHash64Bit(
       const FieldGlobalId& field_global_id);
 
-  // Log the Autofill2_FieldInfoAfterSubmission UKM event after the form is
+  // Logs the Autofill2_FieldInfoAfterSubmission UKM event after the form is
   // submitted and uploaded for votes to the crowdsourcing server.
   static void LogAutofillFieldInfoAfterSubmission(
       ukm::UkmRecorder* ukm_recorder,

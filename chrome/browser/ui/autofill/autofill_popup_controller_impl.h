@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
@@ -252,6 +253,9 @@ class AutofillPopupControllerImpl
   // The first `IsStandaloneSuggestionType()` is used to define what the
   // `FillingProduct` is.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
+
+  // Whether any suggestion has been selected.
+  bool any_suggestion_selected_ = false;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

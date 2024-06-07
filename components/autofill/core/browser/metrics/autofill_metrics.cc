@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -45,6 +46,25 @@ namespace autofill {
 using mojom::SubmissionSource;
 
 namespace {
+
+constexpr char kUserActionRootPopupShown[] =
+    "Autofill_PopupInteraction_PopupLevel_0_SuggestionShown";
+constexpr char kUserActionSecondLevelPopupShown[] =
+    "Autofill_PopupInteraction_PopupLevel_1_SuggestionShown";
+constexpr char kUserActionThirdLevelPopupShown[] =
+    "Autofill_PopupInteraction_PopupLevel_2_SuggestionShown";
+constexpr char kUserActionRootPopupSuggestionSelected[] =
+    "Autofill_PopupInteraction_PopupLevel_0_SuggestionSelected";
+constexpr char kUserActionSecondLevelPopupSuggestionSelected[] =
+    "Autofill_PopupInteraction_PopupLevel_1_SuggestionSelected";
+constexpr char kUserActionThirdLevelPopupSuggestionSelected[] =
+    "Autofill_PopupInteraction_PopupLevel_2_SuggestionSelected";
+constexpr char kUserActionRootPopupSuggestionAccepted[] =
+    "Autofill_PopupInteraction_PopupLevel_0_SuggestionAccepted";
+constexpr char kUserActionSecondLevelPopupSuggestionAccepted[] =
+    "Autofill_PopupInteraction_PopupLevel_1_SuggestionAccepted";
+constexpr char kUserActionThirdLevelPopupSuggestionAccepted[] =
+    "Autofill_PopupInteraction_PopupLevel_2_SuggestionAccepted";
 
 // Exponential bucket spacing for UKM event data.
 constexpr double kAutofillEventDataBucketSpacing = 2.0;
@@ -1561,6 +1581,73 @@ void AutofillMetrics::LogAutofillSuggestionHidingReason(
                                     FillingProductToString(filling_product),
                                 }),
                                 reason);
+}
+
+void AutofillMetrics::LogPopupInteraction(FillingProduct filling_product,
+                                          int popup_level,
+                                          PopupInteraction action) {
+  // Three level popups are the most we can currently have.
+  CHECK_GE(popup_level, 0);
+  CHECK_LE(popup_level, 2);
+  const std::string histogram_metric_name =
+      base::StrCat({"Autofill.PopupInteraction.PopupLevel.",
+                    base::NumberToString(popup_level)});
+  base::UmaHistogramEnumeration(histogram_metric_name, action);
+  base::UmaHistogramEnumeration(
+      base::StrCat({histogram_metric_name, ".",
+                    FillingProductToString(filling_product)}),
+      action);
+
+  // Only emit user actions for address suggestions.
+  if (filling_product != FillingProduct::kAddress) {
+    return;
+  }
+
+  if (popup_level == 0) {
+    switch (action) {
+      case PopupInteraction::kPopupShown:
+        base::RecordAction(base::UserMetricsAction(kUserActionRootPopupShown));
+        break;
+      case PopupInteraction::kSuggestionSelected:
+        base::RecordAction(
+            base::UserMetricsAction(kUserActionRootPopupSuggestionSelected));
+        break;
+      case PopupInteraction::kSuggestionAccepted:
+        base::RecordAction(
+            base::UserMetricsAction(kUserActionRootPopupSuggestionAccepted));
+        break;
+    }
+  } else if (popup_level == 1) {
+    switch (action) {
+      case PopupInteraction::kPopupShown:
+        base::RecordAction(
+            base::UserMetricsAction(kUserActionSecondLevelPopupShown));
+        break;
+      case PopupInteraction::kSuggestionSelected:
+        base::RecordAction(base::UserMetricsAction(
+            kUserActionSecondLevelPopupSuggestionSelected));
+        break;
+      case PopupInteraction::kSuggestionAccepted:
+        base::RecordAction(base::UserMetricsAction(
+            kUserActionSecondLevelPopupSuggestionAccepted));
+        break;
+    }
+  } else {
+    switch (action) {
+      case PopupInteraction::kPopupShown:
+        base::RecordAction(
+            base::UserMetricsAction(kUserActionThirdLevelPopupShown));
+        break;
+      case PopupInteraction::kSuggestionSelected:
+        base::RecordAction(base::UserMetricsAction(
+            kUserActionThirdLevelPopupSuggestionSelected));
+        break;
+      case PopupInteraction::kSuggestionAccepted:
+        base::RecordAction(base::UserMetricsAction(
+            kUserActionThirdLevelPopupSuggestionAccepted));
+        break;
+    }
+  }
 }
 
 void AutofillMetrics::LogSectioningMetrics(
