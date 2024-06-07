@@ -429,7 +429,10 @@ TEST(KeyframedAnimationCurveTest, StepsTimingFunctionStepAtStart) {
 
   const float time_threshold = 0.0001f;
 
-  for (float i = 0.f; i < num_steps; i += 1.f) {
+  // Transform is applied when time <= 0.
+  EXPECT_FLOAT_EQ(1.f, curve->GetValue(base::Seconds(-1)));
+  EXPECT_FLOAT_EQ(1.f, curve->GetValue(base::TimeDelta()));
+  for (float i = 1.f; i < num_steps; i += 1.f) {
     const base::TimeDelta time1 = base::Seconds(i / num_steps - time_threshold);
     const base::TimeDelta time2 = base::Seconds(i / num_steps + time_threshold);
     EXPECT_FLOAT_EQ(std::ceil(i), curve->GetValue(time1));
@@ -703,6 +706,18 @@ TEST(KeyframedAnimationCurveTest, StepsTimingEndInputsOutsideZeroOneRange) {
 
   EXPECT_FLOAT_EQ(-0.5f, curve->GetValue(base::Seconds(0.25f)));
   EXPECT_FLOAT_EQ(2.f, curve->GetValue(base::Seconds(0.75f)));
+}
+
+TEST(KeyframedAnimationCurveTest, StepTimingAtBounds) {
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      KeyframedFloatAnimationCurve::Create());
+  curve->AddKeyframe(FloatKeyframe::Create(
+      base::TimeDelta(), 0.f,
+      StepsTimingFunction::Create(
+          1, StepsTimingFunction::StepPosition::JUMP_BOTH)));
+  curve->AddKeyframe(FloatKeyframe::Create(base::Seconds(1.0), 2.f, nullptr));
+  EXPECT_FLOAT_EQ(1.f, curve->GetValue(base::Seconds(0.f)));
+  EXPECT_FLOAT_EQ(2.f, curve->GetValue(base::Seconds(1.f)));
 }
 
 // Tests that an animation with a curve timing function and multiple keyframes

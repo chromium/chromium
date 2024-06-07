@@ -67,10 +67,19 @@ size_t GetActiveKeyframe(
     double scaled_duration,
     base::TimeDelta time) {
   DCHECK_GE(keyframes.size(), 2ul);
+  // Keyframes with distinct time values can become equivalent after scaling.
+  // Snap to the first or last keyframe-interval if the time is aligned.
+  if (time == keyframes.front()->Time() * scaled_duration) {
+    return 0;
+  }
+  if (time == keyframes.back()->Time() * scaled_duration) {
+    return keyframes.size() - 2;
+  }
   size_t i = 0;
   while ((i < keyframes.size() - 2) &&  // Last keyframe is never active.
-         (time >= (keyframes[i + 1]->Time() * scaled_duration)))
+         (time >= (keyframes[i + 1]->Time() * scaled_duration))) {
     ++i;
+  }
 
   return i;
 }
@@ -81,9 +90,15 @@ double TransformedKeyframeProgress(
     double scaled_duration,
     base::TimeDelta time,
     size_t i) {
-  const double progress =
-      GetTimeValues(*keyframes[i], *keyframes[i + 1], scaled_duration, time)
-          .progress;
+  base::TimeDelta interval_start = keyframes[i]->Time() * scaled_duration;
+  base::TimeDelta interval_end = keyframes[i + 1]->Time() * scaled_duration;
+  base::TimeDelta duration = interval_end - interval_start;
+  double progress;
+  if (duration.is_zero()) {
+    progress = (time == keyframes.front()->Time() * scaled_duration) ? 0 : 1;
+  } else {
+    progress = (time - interval_start) / duration;
+  }
   return keyframes[i]->timing_function()
              ? keyframes[i]->timing_function()->GetValue(progress)
              : progress;
