@@ -6,9 +6,23 @@ syntax = "proto2";
 
 package related_website_sets.proto;
 
+message AllInputs {
+  required PublicSets public_sets = 1;
+  required Policy policy = 2;
+  required CommandLineSwitch command_line_switch = 3;
+}
+
+message PublicSets {
+  repeated Set sets = 1;
+}
+
 message Policy {
   repeated Set replacements = 1;
   repeated Set additions = 2;
+}
+
+message CommandLineSwitch {
+  optional Set set = 1;
 }
 
 message Set {
