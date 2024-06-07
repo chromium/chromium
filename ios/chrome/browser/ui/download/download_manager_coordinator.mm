@@ -19,6 +19,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
@@ -37,10 +38,13 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -57,6 +61,7 @@
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/web_client.h"
@@ -418,6 +423,26 @@
   [_viewController presentViewController:_openInController
                                 animated:YES
                               completion:nil];
+}
+
+- (void)openDownloadedFileForDownloadManagerViewController:
+    (UIViewController*)controller {
+  base::FilePath path = _mediator.GetDownloadPath();
+  GURL filePathURL =
+      GURL(base::StringPrintf("%s://%s", "file", path.value().c_str()));
+  GURL virtualFilePathURL = GURL(
+      base::StringPrintf("%s://%s/%s", kChromeUIScheme, kChromeUIDownloadsHost,
+                         filePathURL.ExtractFileName().c_str()));
+  OpenNewTabCommand* command = [[OpenNewTabCommand alloc]
+       initWithURL:filePathURL
+        virtualURL:virtualFilePathURL
+          referrer:web::Referrer()
+       inIncognito:self.browser->GetBrowserState()->IsOffTheRecord()
+      inBackground:NO
+          appendTo:OpenPosition::kCurrentTab];
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 #pragma mark - Private

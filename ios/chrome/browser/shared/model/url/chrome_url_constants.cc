@@ -62,6 +62,7 @@ const char kChromeUIURLKeyedMetricsHost[] = "ukm";
 const char kChromeUIUserActionsHost[] = "user-actions";
 const char kChromeUIUserDefaultsInternalsHost[] = "userdefaults-internals";
 const char kChromeUIVersionHost[] = "version";
+const char kChromeUIDownloadsHost[] = "downloads";
 
 // Add hosts here to be included in chrome://chrome-urls (about:about).
 // These hosts will also be suggested by BuiltinProvider.

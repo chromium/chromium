@@ -9,6 +9,7 @@
 
 extern NSString* const kDownloadManagerDownloadAccessibilityIdentifier;
 extern NSString* const kDownloadManagerSaveEllipsisAccessibilityIdentifier;
+extern NSString* const kDownloadManagerOpenAccessibilityIdentifier;
 extern NSString* const kDownloadManagerOpenInAccessibilityIdentifier;
 extern NSString* const kDownloadManagerOpenInDriveAccessibilityIdentifier;
 extern NSString* const kDownloadManagerInstallAppAccessibilityIdentifier;

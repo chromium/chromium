@@ -8,6 +8,7 @@
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -163,6 +164,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   // animation.
   BOOL _needsTransitioningToButton;
   BOOL _needsTransitioningToProgress;
+  BOOL _canOpenFile;
 }
 
 @property(nonatomic, strong) UIImageView* leadingIcon;
@@ -174,6 +176,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 @property(nonatomic, strong) UIImageView* filesProgressIcon;
 @property(nonatomic, strong) UIImageView* driveProgressIcon;
 @property(nonatomic, strong) UIButton* downloadButton;
+@property(nonatomic, strong) UIButton* openButton;
 @property(nonatomic, strong) UIButton* openInButton;
 @property(nonatomic, strong) UIButton* openInDriveButton;
 @property(nonatomic, strong) UIButton* installAppButton;
@@ -236,6 +239,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     self.statusLabel,
     self.detailLabel,
     self.downloadButton,
+    self.openButton,
     self.openInButton,
     self.openInDriveButton,
     self.installAppButton,
@@ -410,6 +414,14 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
 }
 
+- (void)setCanOpenFile:(BOOL)canOpenFile {
+  if (_canOpenFile == canOpenFile) {
+    return;
+  }
+  _canOpenFile = canOpenFile;
+  [self updateViews];
+}
+
 #pragma mark - DownloadManagerViewControllerProtocol
 
 - (UIView*)openInSourceView {
@@ -546,6 +558,21 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
 
   return _driveProgressIcon;
+}
+
+- (UIButton*)openButton {
+  if (!_openButton) {
+    __weak __typeof(self) weakSelf = self;
+    _openButton = CreateActionButton(
+        [l10n_util::GetNSString(IDS_IOS_OPEN_PDF) localizedUppercaseString],
+        kDownloadManagerOpenAccessibilityIdentifier,
+        [UIAction actionWithHandler:^(UIAction* action) {
+          [weakSelf.delegate
+              openDownloadedFileForDownloadManagerViewController:weakSelf];
+        }]);
+  }
+
+  return _openButton;
 }
 
 - (UIButton*)openInButton {
@@ -723,7 +750,10 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     case kDownloadManagerStateSucceeded:
       switch (_downloadFileDestination) {
         case DownloadFileDestination::kFiles:
-          return self.openInButton;
+          return (base::FeatureList::IsEnabled(kDownloadedPDFOpening) &&
+                  _canOpenFile)
+                     ? self.openButton
+                     : self.openInButton;
         case DownloadFileDestination::kDrive:
           return _installDriveButtonVisible ? self.installAppButton
                                             : self.openInDriveButton;

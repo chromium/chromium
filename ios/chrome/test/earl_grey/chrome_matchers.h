@@ -523,6 +523,9 @@ id<GREYMatcher> HistoryClearBrowsingDataButton();
 // Returns a matcher for "Open In..." button.
 id<GREYMatcher> OpenInButton();
 
+// Returns a matcher for "Open" button.
+id<GREYMatcher> OpenPDFButton();
+
 // Returns a matcher for the cell at `index` in the tab grid.
 id<GREYMatcher> TabGridCellAtIndex(unsigned int index);
 

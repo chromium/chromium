@@ -70,6 +70,19 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   });
 }
 
+// Waits until `OPEN` button is shown.
+[[nodiscard]] bool WaitForOpenPDFButton() {
+  // These downloads usually take longer and need a longer timeout.
+  constexpr base::TimeDelta kLongDownloadTimeout = base::Minutes(1);
+  return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenPDFButton()]
+        assertWithMatcher:grey_interactable()
+                    error:&error];
+    return (error == nil);
+  });
+}
+
 // Waits until Download button is shown.
 [[nodiscard]] bool WaitForDownloadButton() {
   return base::test::ios::WaitUntilConditionOrTimeout(
@@ -339,8 +352,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 }
 
 // Tests that a pdf can be downloaded. This also checks that a file can be
-// downloaded and saved locally while an anchor tag has the download attribute.
-- (void)testSuccessfulPDFDownload {
+// downloaded and saved locally while an anchor tag has the download
+// attribute.The `shouldOpen` used to wait for the right button once the
+// download button is tapped.
+- (void)testSuccessfulPDFDownload:(BOOL)shouldOpen {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
   [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
@@ -349,12 +364,17 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  if (shouldOpen) {
+    GREYAssert(WaitForOpenPDFButton(), @"Open button did not show up");
+  } else {
+    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  }
 }
 
 // Tests that a file is downloaded successfully even if it is renderable by the
-// browser.
-- (void)testSuccessfulDownloadWithContentDisposition {
+// browser. The `shouldOpen` used to wait for the right button once the download
+// button is tapped.
+- (void)testSuccessfulDownloadWithContentDisposition:(BOOL)shouldOpen {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/content-disposition")];
   [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
   [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
@@ -363,7 +383,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  if (shouldOpen) {
+    GREYAssert(WaitForOpenPDFButton(), @"Open button did not show up");
+  } else {
+    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  }
 }
 
 @end
@@ -460,13 +484,13 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // Tests that a pdf can be downloaded. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSuccessfulPDFDownload {
-  [_helper testSuccessfulPDFDownload];
+  [_helper testSuccessfulPDFDownload:NO];
 }
 
 // Tests that a file is downloaded successfully even if it is renderable by the
 // browser.
 - (void)testSuccessfulDownloadWithContentDisposition {
-  [_helper testSuccessfulDownloadWithContentDisposition];
+  [_helper testSuccessfulDownloadWithContentDisposition:NO];
 }
 
 @end
@@ -489,6 +513,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration configuration;
   configuration.features_enabled.push_back(kIOSSaveToDrive);
+  configuration.features_enabled.push_back(kDownloadedPDFOpening);
   return configuration;
 }
 
@@ -563,7 +588,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // Tests that a pdf can be downloaded. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSuccessfulPDFDownload {
-  [_helper testSuccessfulPDFDownload];
+  [_helper testSuccessfulPDFDownload:YES];
 }
 
 // Tests that a pdf that is displayed in the web view can be downloaded.
@@ -600,7 +625,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // Tests that a file is downloaded successfully even if it is renderable by the
 // browser.
 - (void)testSuccessfulDownloadWithContentDisposition {
-  [_helper testSuccessfulDownloadWithContentDisposition];
+  [_helper testSuccessfulDownloadWithContentDisposition:YES];
 }
 
 @end

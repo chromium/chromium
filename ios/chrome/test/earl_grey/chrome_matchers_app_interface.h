@@ -489,6 +489,9 @@
 // Returns a matcher for "Open In..." button.
 + (id<GREYMatcher>)openInButton;
 
+// Returns a matcher for "Open" button.
++ (id<GREYMatcher>)openPDFButton;
+
 // Returns the GREYMatcher for the cell at `index` in the tab grid.
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index;
 

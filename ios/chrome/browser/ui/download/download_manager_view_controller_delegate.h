@@ -37,6 +37,11 @@
 - (void)installDriveForDownloadManagerViewController:
     (UIViewController*)controller;
 
+// Called when the open button was tapped. The downloaded file should open
+// automatically in Chrome.
+- (void)openDownloadedFileForDownloadManagerViewController:
+    (UIViewController*)controller;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_DELEGATE_H_

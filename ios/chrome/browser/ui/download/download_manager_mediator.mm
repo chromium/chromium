@@ -185,7 +185,7 @@ void DownloadManagerMediator::UpdateConsumer() {
     return;
   }
   DownloadManagerState state = GetDownloadManagerState();
-
+  base::FilePath filename = download_task_->GenerateFileName();
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
     DownloadFileDestination destination = upload_task_ == nullptr
@@ -199,6 +199,7 @@ void DownloadManagerMediator::UpdateConsumer() {
     [consumer_ setSaveToDriveUserEmail:identity.userEmail];
     [consumer_ setInstallDriveButtonVisible:!IsGoogleDriveAppInstalled()
                                    animated:NO];
+    [consumer_ setCanOpenFile:filename.MatchesExtension(".pdf")];
   } else if (state == kDownloadManagerStateSucceeded &&
              !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
@@ -209,9 +210,7 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setCountOfBytesExpectedToReceive:download_task_->GetTotalBytes()];
   [consumer_ setProgress:GetDownloadManagerProgress()];
 
-  base::FilePath filename = download_task_->GenerateFileName();
   [consumer_ setFileName:base::apple::FilePathToNSString(filename)];
-
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,

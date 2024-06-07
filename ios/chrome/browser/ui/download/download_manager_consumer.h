@@ -55,6 +55,10 @@ enum class DownloadFileDestination {
 // email.
 - (void)setSaveToDriveUserEmail:(NSString*)userEmail;
 
+// Sets whether the downloaded file can be opened in Chrome. If `YES` the `OPEN
+// IN...` button is replaced by `OPEN`.
+- (void)setCanOpenFile:(BOOL)canOpenFile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_CONSUMER_H_

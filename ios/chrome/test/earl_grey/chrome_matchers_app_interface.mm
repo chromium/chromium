@@ -1083,6 +1083,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_interactable(), nil);
 }
 
++ (id<GREYMatcher>)openPDFButton {
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerOpenAccessibilityIdentifier),
+      grey_interactable(), nil);
+}
+
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
   return grey_allOf(grey_accessibilityID(IdentifierForGridCellAtIndex(index)),
                     grey_sufficientlyVisible(), nil);

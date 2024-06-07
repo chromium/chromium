@@ -645,6 +645,10 @@ id<GREYMatcher> OpenInButton() {
   return [ChromeMatchersAppInterface openInButton];
 }
 
+id<GREYMatcher> OpenPDFButton() {
+  return [ChromeMatchersAppInterface openPDFButton];
+}
+
 id<GREYMatcher> TabGridCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCellAtIndex:index];
 }
