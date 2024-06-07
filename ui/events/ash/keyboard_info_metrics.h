@@ -28,12 +28,14 @@ enum class KeyboardTopRowLayoutForMetric {
   kLayout3 = 4,
   kLayout4 = 5,
   kLayoutCustom1 = 6,
-  kMaxValue = kLayoutCustom1,
+  kLayoutCustom2 = 7,
+  kMaxValue = kLayoutCustom2,
 };
 
 void RecordKeyboardInfoMetrics(
     const KeyboardCapability::KeyboardInfo& keyboard_info,
-    bool has_assistant_key);
+    bool has_assistant_key,
+    bool has_right_alt_key);
 
 }  // namespace ui
 

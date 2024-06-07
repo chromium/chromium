@@ -13,7 +13,8 @@ namespace {
 
 KeyboardTopRowLayoutForMetric ConvertTopRowLayoutToMetricEnum(
     ui::KeyboardCapability::KeyboardTopRowLayout top_row_layout,
-    bool has_assistant_key) {
+    bool has_assistant_key,
+    bool has_right_alt_key) {
   switch (top_row_layout) {
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
       return KeyboardTopRowLayoutForMetric::kLayout1;
@@ -28,7 +29,11 @@ KeyboardTopRowLayoutForMetric ConvertTopRowLayoutToMetricEnum(
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
       return KeyboardTopRowLayoutForMetric::kLayout4;
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-      return KeyboardTopRowLayoutForMetric::kLayoutCustom1;
+      if (has_right_alt_key) {
+        return KeyboardTopRowLayoutForMetric::kLayoutCustom2;
+      } else {
+        return KeyboardTopRowLayoutForMetric::kLayoutCustom1;
+      }
     default:
       return KeyboardTopRowLayoutForMetric::kLayoutUnknown;
   }
@@ -38,7 +43,8 @@ KeyboardTopRowLayoutForMetric ConvertTopRowLayoutToMetricEnum(
 
 void RecordKeyboardInfoMetrics(
     const KeyboardCapability::KeyboardInfo& keyboard_info,
-    bool has_assistant_key) {
+    bool has_assistant_key,
+    bool has_right_alt_key) {
   if (keyboard_info.device_type !=
       KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
     return;
@@ -47,7 +53,7 @@ void RecordKeyboardInfoMetrics(
   base::UmaHistogramEnumeration(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
       ConvertTopRowLayoutToMetricEnum(keyboard_info.top_row_layout,
-                                      has_assistant_key));
+                                      has_assistant_key, has_right_alt_key));
 
   base::UmaHistogramCounts100(
       "ChromeOS.Inputs.InternalKeyboard.NumberOfTopRowKeys",

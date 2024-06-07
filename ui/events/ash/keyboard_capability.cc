@@ -825,7 +825,8 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   // GetKeyboardInfo is cached and isn't recomputed unless the keyboard
   // disconnects and reconnects.
   RecordKeyboardInfoMetrics(keyboard_info,
-                            /*has_assistant_key=*/HasAssistantKey(keyboard));
+                            /*has_assistant_key=*/HasAssistantKey(keyboard),
+                            /*has_right_alt_key=*/HasRightAltKey(keyboard));
 
   return &keyboard_info;
 }

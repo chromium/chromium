@@ -1174,6 +1174,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Layout3"/>
   <int value="5" label="Layout4"/>
   <int value="6" label="LayoutCustom1"/>
+  <int value="7" label="LayoutCustom2"/>
 </enum>
 
 <enum name="KeyPermissionsManagerMigrationStatus">

@@ -37,7 +37,8 @@ TEST_F(KeyboardInfoMetricsTest, Layout1) {
       KeyboardTopRowLayout::kKbdTopRowLayout1;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
@@ -50,7 +51,8 @@ TEST_F(KeyboardInfoMetricsTest, Layout2) {
       KeyboardTopRowLayout::kKbdTopRowLayout2;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
@@ -63,7 +65,8 @@ TEST_F(KeyboardInfoMetricsTest, Layout2WithAssistant) {
       KeyboardTopRowLayout::kKbdTopRowLayout2;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/true);
+                                /*has_assistant_key=*/true,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType", 1);
@@ -78,7 +81,8 @@ TEST_F(KeyboardInfoMetricsTest, Layout3) {
       KeyboardTopRowLayout::kKbdTopRowLayoutWilco;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
@@ -91,7 +95,8 @@ TEST_F(KeyboardInfoMetricsTest, Layout4) {
       KeyboardTopRowLayout::kKbdTopRowLayoutDrallion;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
@@ -104,11 +109,28 @@ TEST_F(KeyboardInfoMetricsTest, LayoutCustom1) {
       KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
       ui::KeyboardTopRowLayoutForMetric::kLayoutCustom1, 1);
+}
+
+TEST_F(KeyboardInfoMetricsTest, LayoutCustom2) {
+  KeyboardInfo internal_keyboard_info;
+  internal_keyboard_info.top_row_layout =
+      KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
+  ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/true);
+
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType", 1);
+  histogram_tester_->ExpectUniqueSample(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
+      ui::KeyboardTopRowLayoutForMetric::kLayoutCustom2, 1);
 }
 
 class LayoutsBesidesLayout2WithAssistantKey
@@ -135,7 +157,8 @@ TEST_P(LayoutsBesidesLayout2WithAssistantKey, Layout2WithAssistantNotEmitted) {
   internal_keyboard_info.top_row_layout = keyboard_top_row_layout;
   internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/true);
+                                /*has_assistant_key=*/true,
+                                /*has_right_alt_key=*/false);
 
   // When has_assistant_key is true, kLayout2WithAssistant should not be
   // recorded unless the keyboard layout is Layout2.
@@ -174,7 +197,8 @@ TEST_P(NonInternalTopRowLayoutTest,
       KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   external_keyboard_info.device_type = device_type;
   ui::RecordKeyboardInfoMetrics(external_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType", 0);
@@ -222,7 +246,8 @@ TEST_P(NonCustomLayoutTopRowKeysTest,
       ui::TopRowActionKey::kVolumeUp,
   };
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
@@ -256,7 +281,8 @@ TEST_F(KeyboardInfoMetricsTest, CustomLayout_NumberOfTopRowKeys) {
       ui::TopRowActionKey::kVolumeUp,
   };
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
@@ -271,7 +297,8 @@ TEST_F(KeyboardInfoMetricsTest, CustomLayout_NoKeys) {
   // This shouldn't happen, but the metric should still technically emit.
   internal_keyboard_info.top_row_action_keys = {};
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
@@ -296,7 +323,8 @@ TEST_F(KeyboardInfoMetricsTest, CustomLayout_SpecificTopRowKeys) {
       ui::TopRowActionKey::kVolumeUp,
   };
   ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
-                                /*has_assistant_key=*/false);
+                                /*has_assistant_key=*/false,
+                                /*has_right_alt_key=*/false);
 
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
