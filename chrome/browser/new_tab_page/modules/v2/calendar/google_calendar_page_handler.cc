@@ -100,6 +100,8 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
     attachment->icon_url = GURL(kGoogleCalendarDriveIconUrl);
     event->attachments.push_back(std::move(attachment));
   }
+  event->conference_url =
+      GURL("https://foo.com/conference" + base::NumberToString(index));
   return event;
 }
 
@@ -227,6 +229,7 @@ void GoogleCalendarPageHandler::OnRequestComplete(
         formatted_attachment->icon_url = attachment.icon_link();
         formatted_event->attachments.push_back(std::move(formatted_attachment));
       }
+      formatted_event->conference_url = event->conference_data_uri();
       result.push_back(std::move(formatted_event));
     }
   }

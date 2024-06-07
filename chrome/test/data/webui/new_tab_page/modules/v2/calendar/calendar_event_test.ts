@@ -50,10 +50,13 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     // Assert.
     const locationElement = $$(element, '#location');
     const attachmentsElement = $$(element, '#attachments');
+    const conferenceElement = $$(element, '#conference');
     assertTrue(!!locationElement);
     assertTrue(!!attachmentsElement);
+    assertTrue(!!conferenceElement);
     assertTrue(isVisible(locationElement));
     assertTrue(isVisible(attachmentsElement));
+    assertTrue(isVisible(conferenceElement));
 
     const attachmentChips = element.shadowRoot!.querySelectorAll('cr-chip');
     assertEquals(attachmentChips.length, 3);
@@ -67,8 +70,10 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     // Assert.
     const locationElement = $$(element, '#location');
     const attachmentsElement = $$(element, '#attachments');
+    const conferenceElement = $$(element, '#conference');
     assertTrue(!locationElement);
     assertTrue(!attachmentsElement);
+    assertTrue(!conferenceElement);
   });
 
   test('location hidden if empty', async () => {
@@ -91,5 +96,16 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     const attachmentsElement = $$(element, '#attachments');
     assertTrue(!!attachmentsElement);
     assertFalse(isVisible(attachmentsElement));
+  });
+
+  test('conference button hidden if empty', async () => {
+    element.expanded = true;
+    element.event = createEvent(1, {conferenceUrl: {url: ''}});
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const conferenceElement = $$(element, '#conference');
+    assertTrue(!!conferenceElement);
+    assertFalse(isVisible(conferenceElement));
   });
 });

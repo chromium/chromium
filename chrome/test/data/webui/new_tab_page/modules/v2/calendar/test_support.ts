@@ -25,6 +25,7 @@ export function createEvent(
         url: {url: `https://foo.com/${index}`},
         location: `Location ${index}`,
         attachments: createAttachments(3),
+        conferenceUrl: {url: `https://foo.com/conference${index}`},
       },
       overrides);
 }

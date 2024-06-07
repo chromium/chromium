@@ -83,6 +83,10 @@
     inset-inline-end: -12px;
     width: 30px;
   }
+
+  #conference {
+    margin-top: 16px;
+  }
 </style>
 <a id="header" href="[[event.url.url]]">
   <span id="startTime">[[formattedStartTime_]]</span>
@@ -103,5 +107,12 @@
       </cr-chip>
     </template>
     <div id="fade"></div>
+  </div>
+  <div id="conference" hidden="[[!showConferenceButton_(event.conferenceUrl)]]">
+    <cr-button role="link"
+        on-click="openVideoConference_"
+        class="action-button">
+      $i18n{modulesCalendarJoinMeetingButtonText}
+    </cr-button>
   </div>
 </template>

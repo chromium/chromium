@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
@@ -68,6 +69,14 @@ export class CalendarEventElement extends PolymerElement {
 
   private openAttachment_(e: DomRepeatEvent<Attachment>) {
     window.location.href = e.model.item.resourceUrl.url;
+  }
+
+  private openVideoConference_() {
+    window.location.href = this.event.conferenceUrl!.url;
+  }
+
+  private showConferenceButton_(): boolean {
+    return !!(this.event.conferenceUrl && this.event.conferenceUrl.url);
   }
 
   private showAttachments_(): boolean {

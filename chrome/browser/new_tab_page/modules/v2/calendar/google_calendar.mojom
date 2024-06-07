@@ -29,6 +29,8 @@ struct CalendarEvent {
   string? location;
   // List of attachments for the event.
   array<Attachment> attachments;
+  // Url to video conference, if the event has one.
+  url.mojom.Url? conference_url;
 };
 
 // Browser-side handler for requests from NTP Module UI.

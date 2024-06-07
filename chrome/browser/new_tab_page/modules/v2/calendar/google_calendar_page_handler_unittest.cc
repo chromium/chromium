@@ -191,6 +191,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
       EXPECT_EQ(attachment->resource_url,
                 "https://foo.com/attachment" + base::NumberToString(j));
     }
+    EXPECT_EQ(response[i]->conference_url,
+              GURL("https://foo.com/conference" + base::NumberToString(i)));
   }
 }
 
@@ -221,6 +223,9 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   EXPECT_EQ(
       response[0]->url.spec(),
       "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest");
+  ASSERT_TRUE(response[0]->conference_url);
+  EXPECT_EQ(response[0]->conference_url->spec(),
+            "https://meet.google.com/jbe-test");
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEventWithAttachments) {
