@@ -44,7 +44,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "chrome/browser/ui/tabs/tab_contents_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -209,11 +209,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
     : delegate_(delegate), profile_(profile) {
   DCHECK(delegate_);
 
-  if (base::FeatureList::IsEnabled(features::kTabStripCollectionStorage)) {
-    contents_data_ = std::make_unique<tabs::TabStripCollection>();
-  } else {
-    contents_data_ = std::vector<std::unique_ptr<tabs::TabModel>>();
-  }
+  contents_data_ = CreateTabContentsDataImpl();
 
   if (group_model_factory)
     group_model_ = group_model_factory->Create(this);
@@ -252,62 +248,29 @@ void TabStripModel::RemoveObserver(TabStripModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+int TabStripModel::count() const {
+  return contents_data_->TabCountRecursive();
+}
+
+bool TabStripModel::empty() const {
+  return contents_data_->TabCountRecursive() == 0;
+}
+
 int TabStripModel::GetIndexOfTab(tabs::TabHandle tab_handle) const {
   const tabs::TabModel* tab_model = tab_handle.Get();
   if (tab_model == nullptr) {
     return kNoTab;
   }
 
-  const auto is_same_tab =
-      [tab_model](const std::unique_ptr<tabs::TabModel>& other) {
-        return other.get() == tab_model;
-      };
-
-  const auto iter = std::find_if(GetContentsDataAsVector().cbegin(),
-                                 GetContentsDataAsVector().cend(), is_same_tab);
-  if (iter == GetContentsDataAsVector().cend()) {
-    return kNoTab;
-  }
-  return iter - GetContentsDataAsVector().begin();
+  std::optional<size_t> index_of_tab =
+      contents_data_->GetIndexOfTabRecursive(tab_model);
+  return index_of_tab.value_or(kNoTab);
 }
 
 tabs::TabHandle TabStripModel::GetTabHandleAt(int index) const {
   CHECK(ContainsIndex(index));
 
   return GetTabAtIndex(index)->GetHandle();
-}
-
-const std::vector<std::unique_ptr<tabs::TabModel>>&
-TabStripModel::GetContentsDataAsVector() const {
-  CHECK(IsContentsDataVector());
-  const std::vector<std::unique_ptr<tabs::TabModel>>* contents_data_ptr =
-      std::get_if<std::vector<std::unique_ptr<tabs::TabModel>>>(
-          &contents_data_);
-  return *contents_data_ptr;
-}
-
-const tabs::TabStripCollection* TabStripModel::GetContentsDataAsCollection()
-    const {
-  CHECK(!IsContentsDataVector());
-  const std::unique_ptr<tabs::TabStripCollection>* tab_strip_collection_ptr =
-      std::get_if<std::unique_ptr<tabs::TabStripCollection>>(&contents_data_);
-  return tab_strip_collection_ptr->get();
-}
-
-std::vector<std::unique_ptr<tabs::TabModel>>&
-TabStripModel::GetContentsDataAsVector() {
-  CHECK(IsContentsDataVector());
-  std::vector<std::unique_ptr<tabs::TabModel>>* contents_data_ptr =
-      std::get_if<std::vector<std::unique_ptr<tabs::TabModel>>>(
-          &contents_data_);
-  return *contents_data_ptr;
-}
-
-tabs::TabStripCollection* TabStripModel::GetContentsDataAsCollection() {
-  CHECK(!IsContentsDataVector());
-  std::unique_ptr<tabs::TabStripCollection>* tab_strip_collection_ptr =
-      std::get_if<std::unique_ptr<tabs::TabStripCollection>>(&contents_data_);
-  return tab_strip_collection_ptr->get();
 }
 
 bool TabStripModel::ContainsIndex(int index) const {
@@ -626,24 +589,8 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
   const std::vector<MoveNotification> notifications =
       PrepareTabsToMoveToIndex(tab_indices, to_index);
 
-  std::vector<std::unique_ptr<tabs::TabModel>> moved_tabs;
-
   // Remove all the tabs from the model.
-  for (int tab_index : base::Reversed(tab_indices)) {
-    std::unique_ptr<tabs::TabModel> moved_data =
-        std::move(GetContentsDataAsVector()[tab_index]);
-    moved_tabs.insert(moved_tabs.begin(), std::move(moved_data));
-    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
-                                    tab_index);
-  }
-
-  //  Add all the tabs back to the model.
-  for (size_t i = 0; i < moved_tabs.size(); i++) {
-    moved_tabs[i]->set_group(group);
-    GetContentsDataAsVector().insert(
-        GetContentsDataAsVector().begin() + to_index + i,
-        std::move(moved_tabs[i]));
-  }
+  contents_data_->MoveGroupTo(group_model(), group, to_index);
 
   ValidateTabStripModel();
 
@@ -1316,7 +1263,7 @@ std::u16string TabStripModel::GetTitleAt(int index) const {
 }
 
 int TabStripModel::GetTabCount() const {
-  return static_cast<int>(GetContentsDataAsVector().size());
+  return contents_data_->TabCountRecursive();
 }
 
 // Context menu functions.
@@ -1915,7 +1862,6 @@ void TabStripModel::ForgetOpener(WebContents* contents) {
 void TabStripModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("active_index", active_index());
-  dict.Add("tabs", GetContentsDataAsVector());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2037,7 +1983,7 @@ int TabStripModel::InsertTabAtImpl(
 }
 
 tabs::TabModel* TabStripModel::GetTabAtIndex(int index) const {
-    return GetContentsDataAsVector()[index].get();
+  return contents_data_->GetTabAtIndexRecursive(index);
 }
 
 void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
@@ -2578,8 +2524,7 @@ void TabStripModel::InsertTabAtIndexImpl(
   tab_model->set_group(group);
   tab_model->set_pinned(pin);
 
-  GetContentsDataAsVector().insert(GetContentsDataAsVector().begin() + index,
-                                   std::move(tab_model));
+  contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
 
   // Update selection model and send the notification.
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
@@ -2611,10 +2556,9 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
 
   std::optional<int> next_selected_index = DetermineNewSelectedIndex(index);
 
-  // Remove the tab from `contents_data_`.
-  std::unique_ptr<tabs::TabModel> old_data;
-  old_data = std::move(GetContentsDataAsVector()[index]);
-  GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() + index);
+  // Remove the tab.
+  std::unique_ptr<tabs::TabModel> old_data =
+      contents_data_->RemoveTabAtIndexRecursive(index);
 
   // Update the tab properties.
   old_data->set_group(std::nullopt);
@@ -2669,18 +2613,7 @@ void TabStripModel::MoveTabToIndexImpl(
     FixOpeners(initial_index);
   }
 
-  tab->set_pinned(pin);
-  tab->set_group(group);
-
-  // Move the tab to the destination index.
-  if (initial_index != final_index) {
-    std::unique_ptr<tabs::TabModel> moved_data =
-        std::move(GetContentsDataAsVector()[initial_index]);
-    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
-                                    initial_index);
-    GetContentsDataAsVector().insert(
-        GetContentsDataAsVector().begin() + final_index, std::move(moved_data));
-  }
+  contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
 
   TabStripSelectionChange selection =
       MaybeUpdateSelectionModel(initial_index, final_index, select_after_move);
@@ -2714,6 +2647,7 @@ void TabStripModel::MoveTabsToIndexImpl(
   }
 
   const int pinned_tab_count = IndexOfFirstNonPinnedTab();
+  const bool pin = IsTabPinned(tab_indices[0]);
   const bool all_tabs_pinned = std::all_of(
       tab_indices.begin(), tab_indices.end(),
       [pinned_tab_count](int index) { return index < pinned_tab_count; });
@@ -2727,24 +2661,8 @@ void TabStripModel::MoveTabsToIndexImpl(
   const std::vector<MoveNotification> notifications =
       PrepareTabsToMoveToIndex(tab_indices, destination_index);
 
-  std::vector<std::unique_ptr<tabs::TabModel>> moved_datas;
-
-  // Remove all the tabs from the model.
-  for (int tab_index : base::Reversed(tab_indices)) {
-    std::unique_ptr<tabs::TabModel> moved_data =
-        std::move(GetContentsDataAsVector()[tab_index]);
-    moved_datas.insert(moved_datas.begin(), std::move(moved_data));
-    GetContentsDataAsVector().erase(GetContentsDataAsVector().begin() +
-                                    tab_index);
-  }
-
-  //  Add all the tabs back to the model.
-  for (size_t i = 0; i < moved_datas.size(); i++) {
-    moved_datas[i]->set_group(group);
-    GetContentsDataAsVector().insert(
-        GetContentsDataAsVector().begin() + destination_index + i,
-        std::move(moved_datas[i]));
-  }
+  // Update `contents_data`.
+  contents_data_->MoveTabsRecursive(tab_indices, destination_index, group, pin);
 
   ValidateTabStripModel();
 
@@ -2827,18 +2745,6 @@ void TabStripModel::ValidateTabStripModel() {
         GetTabAtIndex(selection_model_.active().value()));
 
 #if DCHECK_IS_ON()
-  // Check for pinned validity.
-  bool unpinned_found = IsTabPinned(0) ? false : true;
-  for (int i = 1; i < count(); i++) {
-    if (!unpinned_found) {
-      if (!IsTabPinned(i)) {
-        unpinned_found = true;
-      }
-    } else {
-      DCHECK(!IsTabPinned(i));
-    }
-  }
-
   // Check if the selected tab indices are valid.
   const ui::ListSelectionModel::SelectedIndices& selected_indices =
       selection_model_.selected_indices();
@@ -2846,21 +2752,9 @@ void TabStripModel::ValidateTabStripModel() {
   for (auto selection : selected_indices) {
     DCHECK(GetTabAtIndex(selection));
   }
-
-  // If tab groups are not supported return true.
-  if (group_model_) {
-    for (const auto& group_id : group_model_->ListTabGroups()) {
-      gfx::Range tabs_in_group =
-          group_model()->GetTabGroup(group_id)->ListTabs();
-      if (!tabs_in_group.is_empty()) {
-        for (size_t index = tabs_in_group.start(); index < tabs_in_group.end();
-             ++index) {
-          DCHECK(GetTabGroupForTab(index) == group_id);
-        }
-      }
-    }
-  }
 #endif
+
+  contents_data_->ValidateData(group_model());
 }
 
 void TabStripModel::SendMoveNotificationForWebContents(

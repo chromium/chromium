@@ -1604,6 +1604,8 @@ static_library("ui") {
       "tabs/tab_collection.h",
       "tabs/tab_collection_storage.cc",
       "tabs/tab_collection_storage.h",
+      "tabs/tab_contents_data.cc",
+      "tabs/tab_contents_data.h",
       "tabs/tab_features.cc",
       "tabs/tab_group.cc",
       "tabs/tab_group.h",
