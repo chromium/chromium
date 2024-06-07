@@ -68,6 +68,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
     activity_view_controller_class_ =
         OCMClassMock([UIActivityViewController class]);
+    OverlayRequestQueue::CreateForWebState(&web_state_);
     DownloadManagerTabHelper::CreateForWebState(&web_state_);
     coordinator_ = [[DownloadManagerCoordinator alloc]
         initWithBaseViewController:base_view_controller_

@@ -43,6 +43,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+    OverlayRequestQueue::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     std::unique_ptr<MockAutofillSaveUpdateAddressProfileDelegateIOS> delegate =
         delegate_factory_

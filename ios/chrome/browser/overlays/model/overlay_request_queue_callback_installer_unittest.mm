@@ -24,10 +24,10 @@ DEFINE_TEST_OVERLAY_RESPONSE_INFO(DispatchInfo);
 // Test fixture for OverlayRequestQueueCallbackInstaller.
 class OverlayRequestQueueCallbackInstallerTest : public PlatformTest {
  public:
-  OverlayRequestQueueCallbackInstallerTest()
-      : queue_installer_(
-            OverlayRequestQueueCallbackInstaller::Create(&web_state_,
-                                                         kModality)) {
+  OverlayRequestQueueCallbackInstallerTest() {
+    OverlayRequestQueue::CreateForWebState(&web_state_);
+    queue_installer_ =
+        OverlayRequestQueueCallbackInstaller::Create(&web_state_, kModality);
     std::unique_ptr<FakeOverlayRequestCallbackInstaller> request_installer =
         std::make_unique<FakeOverlayRequestCallbackInstaller>(
             &callback_receiver_, std::set<const OverlayResponseSupport*>(

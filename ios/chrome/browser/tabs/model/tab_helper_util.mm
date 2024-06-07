@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/page_info/about_this_site_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
@@ -128,6 +129,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // IOSChromeSessionTabHelper sets up the session ID used by other helpers,
   // so it needs to be created before them.
   IOSChromeSessionTabHelper::CreateForWebState(web_state);
+
+  OverlayRequestQueue::CreateForWebState(web_state);
 
   VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
   IOSChromeSyncedTabDelegate::CreateForWebState(web_state);

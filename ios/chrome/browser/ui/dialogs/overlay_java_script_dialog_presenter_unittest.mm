@@ -19,7 +19,9 @@
 // Test fixture for OverlayJavaScriptDialogPresenter.
 class OverlayJavaScriptDialogPresenterTest : public PlatformTest {
  protected:
-  OverlayJavaScriptDialogPresenterTest() : url_("http://chromium.test") {}
+  OverlayJavaScriptDialogPresenterTest() : url_("http://chromium.test") {
+    OverlayRequestQueue::CreateForWebState(&web_state_);
+  }
 
   const GURL url_;
   web::FakeWebState web_state_;

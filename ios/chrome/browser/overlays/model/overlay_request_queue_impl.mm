@@ -15,10 +15,16 @@
 
 #pragma mark - Factory method
 
+// static
 OverlayRequestQueue* OverlayRequestQueue::FromWebState(
     web::WebState* web_state,
     OverlayModality modality) {
   return OverlayRequestQueueImpl::FromWebState(web_state, modality);
+}
+
+// static
+void OverlayRequestQueue::CreateForWebState(web::WebState* web_state) {
+  OverlayRequestQueueImpl::CreateForWebState(web_state);
 }
 
 #pragma mark - OverlayRequestQueueImpl::Container
@@ -42,9 +48,15 @@ OverlayRequestQueueImpl* OverlayRequestQueueImpl::Container::QueueForModality(
 OverlayRequestQueueImpl* OverlayRequestQueueImpl::FromWebState(
     web::WebState* web_state,
     OverlayModality modality) {
+  auto* container = OverlayRequestQueueImpl::Container::FromWebState(web_state);
+  CHECK(container)
+      << "OverlayRequestQueue::CreateForWebState(...) must be called before "
+         "OverlayRequestQueue::FromWebState(...)";
+  return container->QueueForModality(modality);
+}
+
+void OverlayRequestQueueImpl::CreateForWebState(web::WebState* web_state) {
   OverlayRequestQueueImpl::Container::CreateForWebState(web_state);
-  return OverlayRequestQueueImpl::Container::FromWebState(web_state)
-      ->QueueForModality(modality);
 }
 
 OverlayRequestQueueImpl::OverlayRequestQueueImpl(web::WebState* web_state)

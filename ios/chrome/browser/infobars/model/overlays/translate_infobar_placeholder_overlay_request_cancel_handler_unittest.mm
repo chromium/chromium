@@ -45,6 +45,7 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
+    OverlayRequestQueue::CreateForWebState(web_state_);
     InfoBarManagerImpl::CreateForWebState(web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
         web_state_, &DefaultInfobarOverlayRequestFactory);

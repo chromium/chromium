@@ -123,6 +123,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     FakeAppLauncherAbuseDetector* abuse_detector =
         [[FakeAppLauncherAbuseDetector alloc] init];
     abuse_detectors_[web_state] = abuse_detector;
+    OverlayRequestQueue::CreateForWebState(web_state);
     FakeAppLauncherTabHelper::CreateForWebState(web_state, abuse_detector,
                                                 incognito);
     app_launcher_tab_helper_browser_presentation_provider_ = OCMProtocolMock(

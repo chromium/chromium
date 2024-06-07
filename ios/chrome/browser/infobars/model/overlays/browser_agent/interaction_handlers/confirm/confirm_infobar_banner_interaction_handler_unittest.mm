@@ -22,6 +22,7 @@ class ConfirmInfobarBannerInteractionHandlerTest : public PlatformTest {
   ConfirmInfobarBannerInteractionHandlerTest() {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+    OverlayRequestQueue::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
         &web_state_, &DefaultInfobarOverlayRequestFactory);
     InfoBarManagerImpl::CreateForWebState(&web_state_);

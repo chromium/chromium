@@ -39,6 +39,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/permissions/model:infobar_delegate",
     "//ios/chrome/test:test_support",
     "//ios/web/public/permissions",

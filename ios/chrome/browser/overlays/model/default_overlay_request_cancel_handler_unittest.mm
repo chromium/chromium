@@ -16,6 +16,7 @@
 class DefaultOverlayRequestCancelHandlerTest : public PlatformTest {
  public:
   DefaultOverlayRequestCancelHandlerTest() : PlatformTest() {
+    OverlayRequestQueue::CreateForWebState(&web_state_);
     std::unique_ptr<OverlayRequest> request =
         OverlayRequest::CreateWithConfig<FakeOverlayUserData>();
     queue()->AddRequest(std::move(request));

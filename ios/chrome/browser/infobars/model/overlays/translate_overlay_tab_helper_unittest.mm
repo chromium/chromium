@@ -45,6 +45,7 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
   TranslateInfobarOverlayTranslateOverlayTabHelperTest() {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+    OverlayRequestQueue::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
         &web_state_, &DefaultInfobarOverlayRequestFactory);

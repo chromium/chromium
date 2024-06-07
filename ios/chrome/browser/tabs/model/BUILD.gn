@@ -87,6 +87,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overscroll_actions/model",
     "//ios/chrome/browser/page_info:model",
     "//ios/chrome/browser/passwords/model",
