@@ -740,13 +740,8 @@ class BottomSheet extends FrameLayout
             boolean isAtMinHeight =
                     MathUtils.areFloatsEqual(getCurrentOffsetPx(), minScrollableHeight);
             boolean heightLessThanPeek = getCurrentOffsetPx() < minScrollableHeight;
-            // Trigger the onSheetClosed event when the sheet is moving toward the hidden state if
-            // peek is disabled. This should be fine since touch is disabled when the sheet's target
-            // is hidden.
-            boolean triggerCloseWithHidden =
-                    !isPeekStateEnabled() && mTargetState == SheetState.HIDDEN;
 
-            if (isSheetOpen() && (heightLessThanPeek || isAtMinHeight || triggerCloseWithHidden)) {
+            if (isSheetOpen() && (heightLessThanPeek || isAtMinHeight)) {
                 onSheetClosed(reason);
             } else if (!isSheetOpen()
                     && mTargetState != SheetState.HIDDEN
