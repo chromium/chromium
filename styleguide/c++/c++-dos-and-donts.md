@@ -308,9 +308,12 @@ if existing code uses the old one.
 
 ## Named namespaces
 
-Named namespaces are discouraged in top-level embedders (e.g., `chrome/`). See
-[this thread](https://groups.google.com/a/chromium.org/d/msg/chromium-dev/8ROncnL1t4k/J7uJMCQ8BwAJ)
-for background and discussion.
+Most code should be in a namespace, with the exception of code under
+`//chrome`, which may be in the global namespace (do not use the `chrome::`
+namespace). Minimize use of nested namespaces, as they do not actually
+improve encapsulation; if a nested namespace is needed, do not reuse the
+name of any top-level namespace. For more detailed guidance and rationale,
+see https://abseil.io/tips/130.
 
 ## Guarding with DCHECK_IS_ON()
 
