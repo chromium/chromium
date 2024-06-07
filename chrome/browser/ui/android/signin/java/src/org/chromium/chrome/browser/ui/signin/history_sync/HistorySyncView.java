@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 
@@ -53,60 +52,31 @@ class HistorySyncView extends LinearLayout {
         return mDetailsDescription;
     }
 
-    /**
-     * Creates buttons for history sync screen only when {@link
-     * org.chromium.chrome.browser.ui.signin.MinorModeHelper} has resolved
-     *
-     * @param isButtonBar Should view use a buttons bar
-     * @param restrictionStatus Indicates if MinorModeHelper has resolved and if minor mode
-     *     restrictions apply
-     */
-    void maybeCreateButtons(boolean isButtonBar, @ScreenMode int restrictionStatus) {
-        if (restrictionStatus == ScreenMode.PENDING) {
-            // Do not create buttons if MinorModeHelper has not resolved
-            return;
-        }
-
+    void createButtons(boolean isButtonBar) {
         if (isButtonBar) {
-            createButtonBar(restrictionStatus);
+            createButtonBar();
         } else {
-            createButtonsForPortraitLayout(restrictionStatus);
+            mAcceptButton = findViewById(R.id.button_primary);
+            mDeclineButton = findViewById(R.id.button_secondary);
+            mAcceptButton.setVisibility(VISIBLE);
+            mDeclineButton.setVisibility(VISIBLE);
         }
         assert mAcceptButton != null && mDeclineButton != null;
         mAcceptButton.setText(R.string.history_sync_primary_action);
         mDeclineButton.setText(R.string.history_sync_secondary_action);
-
-        mAcceptButton.setVisibility(VISIBLE);
-        mDeclineButton.setVisibility(VISIBLE);
     }
 
-    private void createButtonBar(@ScreenMode int restrictionStatus) {
-        DualControlLayout buttonBar = findViewById(R.id.dual_control_button_bar);
-
-        @DualControlLayout.ButtonType
-        int acceptButtonType =
-                restrictionStatus == ScreenMode.UNRESTRICTED
-                        ? DualControlLayout.ButtonType.PRIMARY_FILLED
-                        : DualControlLayout.ButtonType.PRIMARY_TEXT;
-
+    private void createButtonBar() {
         mAcceptButton =
-                DualControlLayout.createButtonForLayout(getContext(), acceptButtonType, "", null);
+                DualControlLayout.createButtonForLayout(
+                        getContext(), DualControlLayout.ButtonType.PRIMARY_FILLED, "", null);
         mDeclineButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
-
+        DualControlLayout buttonBar = findViewById(R.id.dual_control_button_bar);
         buttonBar.addView(mAcceptButton);
         buttonBar.addView(mDeclineButton);
         buttonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
         buttonBar.setVisibility(VISIBLE);
-    }
-
-    private void createButtonsForPortraitLayout(@ScreenMode int restrictionStatus) {
-        // TODO(b/345663992) Allow buttons to be added dynamically
-        mAcceptButton =
-                restrictionStatus == ScreenMode.UNRESTRICTED
-                        ? findViewById(R.id.button_primary)
-                        : findViewById(R.id.button_primary_minor_mode);
-        mDeclineButton = findViewById(R.id.button_secondary);
     }
 }

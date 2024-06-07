@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountCapabilities;
@@ -61,9 +62,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     private static final String ADD_ACCOUNT_RESULT = "AddAccountResult";
 
-    private static final String ADDED_ACCOUNT_MINOR_MODE_RESTRICTION_ENABLED =
-            "AddedAccountMinorModeRestrictionEnabled";
-
     /** An {@link Activity} stub to test add account flow. */
     public static final class AddAccountActivityStub extends Activity {
         @Override
@@ -72,21 +70,10 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             Intent data = new Intent();
             int result = getIntent().getIntExtra(ADD_ACCOUNT_RESULT, RESULT_CANCELED);
             String addedAccountName = getIntent().getStringExtra(ADDED_ACCOUNT_NAME);
-            boolean minorModeEnabled =
-                    getIntent()
-                            .getBooleanExtra(ADDED_ACCOUNT_MINOR_MODE_RESTRICTION_ENABLED, false);
             data.putExtra(AccountManager.KEY_ACCOUNT_NAME, addedAccountName);
             if (result != RESULT_CANCELED && addedAccountName != null) {
                 ((FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance())
-                        .addAccount(
-                                new AccountInfo.Builder(
-                                                addedAccountName, toGaiaId(addedAccountName))
-                                        .accountCapabilities(
-                                                new AccountCapabilitiesBuilder()
-                                                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-                                                                !minorModeEnabled)
-                                                        .build())
-                                        .build());
+                        .addAccount(AccountUtils.createAccountFromName(addedAccountName));
             }
             setResult(result, data);
             finish();
@@ -332,21 +319,15 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     /**
      * Sets the result for the next add account flow.
-     *
      * @param result The activity result to return when the intent is launched
      * @param newAccountName The account name to return when the intent is launched
-     * @param isMinorModeEnabled The account is subjected to minor mode restrictions
      */
-    public void setResultForNextAddAccountFlow(
-            int result, @Nullable String newAccountName, boolean isMinorModeEnabled) {
-        // TODO(crbug.com/343872217) Update method to use AccountInfo
+    public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
         assert mAddAccountIntent == null : "mAddAccountIntent is already set";
         mAddAccountIntent =
                 new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
         mAddAccountIntent.putExtra(ADD_ACCOUNT_RESULT, result);
         mAddAccountIntent.putExtra(ADDED_ACCOUNT_NAME, newAccountName);
-        mAddAccountIntent.putExtra(
-                ADDED_ACCOUNT_MINOR_MODE_RESTRICTION_ENABLED, isMinorModeEnabled);
     }
 
     private List<CoreAccountInfo> getCoreAccountInfosInternal() {

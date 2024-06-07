@@ -18,17 +18,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
-import android.app.Activity;
-import android.content.res.Configuration;
-import android.view.View;
-import android.widget.Button;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -48,10 +39,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -87,6 +75,7 @@ public class HistorySyncTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
+        mSigninTestRule.addTestAccountThenSignin();
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
     }
@@ -99,7 +88,6 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testHistorySyncLayout() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Started", SIGNIN_ACCESS_POINT);
@@ -123,7 +111,6 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testFooterStringWithEmail() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         String expectedFooter =
                 mActivityTestRule
                         .getActivity()
@@ -141,7 +128,6 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testPositiveButton() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -158,7 +144,6 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testNegativeButton() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -175,7 +160,6 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testNegativeButton_shouldSignOutOnDecline() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ false, /* shouldSignOutOnDecline= */ true);
         HistogramWatcher histogramWatcher =
@@ -194,7 +178,6 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testOnSignedOut() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -206,205 +189,6 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verify(mHistorySyncDelegateMock).dismissHistorySync();
-    }
-
-    @Test
-    @MediumTest
-    public void testButtonsEquallyWeightedWithMinorAccount_portraitMode() {
-        Activity historySyncActivity = mActivityTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(
-                historySyncActivity, Configuration.ORIENTATION_PORTRAIT);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-
-        buildHistorySyncCoordinator(
-                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
-
-        // History sync opt-in screen should be displayed.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton =
-                            historySyncActivity.findViewById(R.id.button_primary_minor_mode);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
-
-                    Assert.assertEquals(
-                            primaryButton.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testButtonsEquallyWeightedWithMinorAccount_landscapeMode() {
-        Activity historySyncActivity = mActivityTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(
-                historySyncActivity, Configuration.ORIENTATION_LANDSCAPE);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-
-        buildHistorySyncCoordinator(
-                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
-
-        // History sync opt-in screen should be displayed.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = historySyncActivity.findViewById(R.id.button_primary);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
-                    Assert.assertEquals(
-                            primaryButton.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testButtonsUnequallyWeightedWithNonMinorAccount_portraitMode() {
-        Activity historySyncActivity = mActivityTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(
-                historySyncActivity, Configuration.ORIENTATION_PORTRAIT);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-
-        buildHistorySyncCoordinator(
-                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
-
-        // History sync opt-in screen should be displayed.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = historySyncActivity.findViewById(R.id.button_primary);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
-                    Assert.assertNotEquals(
-                            primaryButton.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testButtonsUnequallyWeightedWithNonMinorAccount_landscapeMode() {
-        Activity historySyncActivity = mActivityTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(
-                historySyncActivity, Configuration.ORIENTATION_LANDSCAPE);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-
-        buildHistorySyncCoordinator(
-                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
-
-        // History sync opt-in screen should be displayed.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = historySyncActivity.findViewById(R.id.button_primary);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
-                    Assert.assertNotEquals(
-                            primaryButton.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testButtonsEquallyWeightedWithMinorAccount_CapabilityArrivesBeforeDeadline() {
-        MinorModeHelper.disableTimeoutForTesting();
-        Activity historySyncActivity = mActivityTestRule.getActivity();
-        // Account Capabilities are intentionally empty.
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
-        mSigninTestRule.waitForSeeding();
-
-        buildHistorySyncCoordinator(
-                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
-
-        // History sync opt-in screen should be displayed.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-
-        // Buttons will not be visible before capability/deadline is reached.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = historySyncActivity.findViewById(R.id.button_primary);
-                    Button primaryButtonMinorMode =
-                            historySyncActivity.findViewById(R.id.button_primary_minor_mode);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.GONE, primaryButtonMinorMode.getVisibility());
-                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
-                });
-
-        // Capability is received as MINOR_MODE_REQUIRED after an arbitrary amount of time that is
-        // less than the deadline {@link MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
-        // will be equally weighted.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSigninTestRule.resolveMinorModeToRestricted(
-                            AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
-                });
-
-        onViewWaiting(withId(org.chromium.chrome.R.id.button_secondary));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = historySyncActivity.findViewById(R.id.button_primary);
-                    Button primaryButtonMinorMode =
-                            historySyncActivity.findViewById(R.id.button_primary_minor_mode);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-
-                    // Button for non minor mode users should still be hidden
-                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, primaryButtonMinorMode.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
-                    Assert.assertEquals(
-                            primaryButtonMinorMode.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testButtonsEquallyWeightedWithMinorAccountOnDeadline() throws Exception {
-        Activity historySyncActivity = mActivityTestRule.getActivity();
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
-
-        buildHistorySyncCoordinator(
-                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
-
-        // History sync opt-in screen should be displayed.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-
-        ViewUtils.waitForVisibleView(withId(R.id.button_secondary));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = historySyncActivity.findViewById(R.id.button_primary);
-                    Button primaryButtonMinorMode =
-                            historySyncActivity.findViewById(R.id.button_primary_minor_mode);
-                    Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
-
-                    // Button for non minor mode users should still be hidden
-                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, primaryButtonMinorMode.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
-                    Assert.assertEquals(
-                            primaryButtonMinorMode.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
-                });
     }
 
     private void buildHistorySyncCoordinator() {

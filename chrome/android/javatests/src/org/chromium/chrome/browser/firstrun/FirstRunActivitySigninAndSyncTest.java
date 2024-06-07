@@ -20,8 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -397,14 +395,13 @@ public class FirstRunActivitySigninAndSyncTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void acceptingHistorySyncEndsFreAndEnablesHistorySync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        onViewWaiting(withId(R.id.button_primary));
         clickButton(R.id.button_primary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
@@ -458,14 +455,13 @@ public class FirstRunActivitySigninAndSyncTest {
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void refusingHistorySyncEndsFreAndDoesNotEnableHistorySync() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         clickButton(R.id.signin_fre_continue_button);
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        onViewWaiting(withId(R.id.button_secondary));
         clickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
