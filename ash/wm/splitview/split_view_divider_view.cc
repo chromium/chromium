@@ -6,15 +6,11 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/icon_button.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "base/functional/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -27,6 +23,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -82,6 +79,10 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
 
   SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
+
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      /*corner_radius=*/0,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   set_allow_deactivate_on_esc(true);
