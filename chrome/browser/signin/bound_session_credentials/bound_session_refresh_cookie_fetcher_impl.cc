@@ -138,22 +138,19 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
                 email: "chrome-signin-team@google.com"
             }
           }
-          last_reviewed: "2023-05-09"
+          last_reviewed: "2024-05-30"
         }
         policy {
           cookies_allowed: YES
           cookies_store: "user"
           setting:
-            "This is a new feature being developed behind a flag that is"
-            " disabled by default (kEnableBoundSessionCredentials). This"
-            " request will only be sent if the feature is enabled and once"
-            " a server requests it with a special header."
-
-          policy_exception_justification:
-            "Not implemented. "
-            "If the feature is on, this request must be made to ensure the user"
-            " maintains their signed in status on the web for Google owned"
-            " domains."
+             "This feature cannot be disabled in settings, but this request "
+             "won't be made unless the user signs in to google.com."
+          chrome_policy: {
+            BoundSessionCredentialsEnabled {
+              BoundSessionCredentialsEnabled: false
+            }
+          }
         })");
 
   auto request = std::make_unique<network::ResourceRequest>();
