@@ -829,16 +829,19 @@ void IndexedDBBucketContext::RunTasks() {
 void IndexedDBBucketContext::AddReceiver(
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
+    base::UnguessableToken client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   // When `on_ready_for_destruction` is non-null, `this` hasn't requested its
   // own destruction. When it is null, this is to be torn down and has to bounce
   // the AddReceiver request back to the delegate.
   if (delegate().on_ready_for_destruction) {
-    receivers_.Add(this, std::move(pending_receiver),
-                   ReceiverContext(std::move(client_state_checker_remote)));
+    receivers_.Add(
+        this, std::move(pending_receiver),
+        ReceiverContext(std::move(client_state_checker_remote), client_token));
   } else {
     CHECK(base::FeatureList::IsEnabled(features::kIndexedDBShardBackingStores));
     delegate().on_receiver_bounced.Run(std::move(client_state_checker_remote),
+                                       client_token,
                                        std::move(pending_receiver));
   }
 }
@@ -905,7 +908,7 @@ void IndexedDBBucketContext::Open(
   connection->was_cold_open = was_cold_open;
   connection->data_loss_info = data_loss_info;
   ReceiverContext& client = receivers_.current_context();
-  connection->client_id = receivers_.current_receiver();
+  connection->client_token = client.client_token;
   // Null in unit tests.
   if (client.client_state_checker_remote) {
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -1721,8 +1724,10 @@ void IndexedDBBucketContext::RecordInternalsSnapshot() {
 
 IndexedDBBucketContext::ReceiverContext::ReceiverContext(
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker)
-    : client_state_checker_remote(std::move(client_state_checker)) {}
+        client_state_checker,
+    base::UnguessableToken client_token)
+    : client_state_checker_remote(std::move(client_state_checker)),
+      client_token(client_token) {}
 
 IndexedDBBucketContext::ReceiverContext::ReceiverContext(
     IndexedDBBucketContext::ReceiverContext&&) noexcept = default;

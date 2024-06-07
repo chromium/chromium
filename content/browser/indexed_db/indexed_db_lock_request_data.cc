@@ -9,8 +9,9 @@ namespace content {
 const void* const IndexedDBLockRequestData::kKey =
     &IndexedDBLockRequestData::kKey;
 
-IndexedDBLockRequestData::IndexedDBLockRequestData(uint64_t client_id)
-    : client_id(client_id) {}
+IndexedDBLockRequestData::IndexedDBLockRequestData(
+    const base::UnguessableToken& client_token)
+    : client_token(client_token) {}
 
 IndexedDBLockRequestData::~IndexedDBLockRequestData() = default;
 

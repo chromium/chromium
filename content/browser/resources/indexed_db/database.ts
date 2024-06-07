@@ -50,7 +50,7 @@ export class IndexedDbDatabase extends CustomElement {
                                                IdbTransactionMetadata[]) {
     const groupedTransactions = new Map<string, IdbTransactionMetadata[]>();
     for (const transaction of transactions) {
-      const client = transaction.clientId.toString();
+      const client = transaction.clientToken.toString();
       if (!groupedTransactions.has(client)) {
         groupedTransactions.set(client, []);
       }
@@ -59,9 +59,12 @@ export class IndexedDbDatabase extends CustomElement {
 
     const transactionsBlockElement = this.$a('#transactions');
     transactionsBlockElement.textContent = '';
-    for (const [clientId, clientTransactions] of groupedTransactions) {
-      const container =
-          this.createClientTransactionsContainer(clientId, clientTransactions);
+    let clientId = 0;
+    for (const [_, clientTransactions] of groupedTransactions) {
+      // Instead of displaying the clientToken which is not meaningful to the
+      // web developer, we display an incrementing number as the client ID.
+      const container = this.createClientTransactionsContainer(
+          (++clientId).toString(), clientTransactions);
       container.classList.add('metadata-list-item');
       transactionsBlockElement.appendChild(container);
     }

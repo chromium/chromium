@@ -53,7 +53,7 @@ class CONTENT_EXPORT BucketContext {
   // Returns the `GlobalRenderFrameHostId` for the associated `RenderFrameHost`.
   // For documents, it should be the id of the RenderFrameHost that's holding
   // it. For dedicated workers, it should be the id of the ancestor
-  // RenderFrameHost. For shared workers and dedicated workers, it should be
+  // RenderFrameHost. For shared workers and service workers, it should be
   // empty.
   virtual GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const = 0;
 };

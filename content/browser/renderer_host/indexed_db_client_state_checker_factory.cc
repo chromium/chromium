@@ -148,6 +148,8 @@ class DocumentIndexedDBClientStateChecker final
     Bind(std::move(receiver));
   }
 
+  const base::UnguessableToken token() { return token_; }
+
  private:
   // Keep the association between the receiver and the feature handle it
   // registered.
@@ -167,10 +169,15 @@ class DocumentIndexedDBClientStateChecker final
   };
 
   explicit DocumentIndexedDBClientStateChecker(RenderFrameHost* rfh)
-      : DocumentUserData(rfh) {}
+      : DocumentUserData(rfh), token_(base::UnguessableToken::Create()) {}
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
+
+  // This token uniquely identifies `this`/the "client" to the other side of the
+  // Mojo connection. It's used to prevent IDB code from over-zealously
+  // disallowing BFCache for a render frame based on its own activity.
+  base::UnguessableToken token_;
 
   mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBClientKeepActive,
@@ -183,25 +190,28 @@ class DocumentIndexedDBClientStateChecker final
 DOCUMENT_USER_DATA_KEY_IMPL(DocumentIndexedDBClientStateChecker);
 
 // static
-mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+std::tuple<mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
+           base::UnguessableToken>
 IndexedDBClientStateCheckerFactory::InitializePendingRemote(
     const GlobalRenderFrameHostId& rfh_id) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote;
   if (RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id)) {
-    DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh)
-        ->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
-  } else {
-    // If the `rfh` is null, it means there is actually no valid
-    // `RenderFrameHost` associated with the client. We should use a default
-    // checker instance for it.
-    // See comments from `NoDocumentIndexedDBClientStateChecker`.
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
-        client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+    auto* checker =
+        DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh);
+    checker->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+    return {std::move(client_state_checker_remote), checker->token()};
   }
 
-  return client_state_checker_remote;
+  // If the `rfh` is null, it means there is actually no valid
+  // `RenderFrameHost` associated with the client. We should use a default
+  // checker instance for it.
+  // See comments from `NoDocumentIndexedDBClientStateChecker`.
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
+      client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+  return {std::move(client_state_checker_remote),
+          base::UnguessableToken::Create()};
 }
 
 // static

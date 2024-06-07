@@ -60,7 +60,7 @@ IndexedDBConnection::IndexedDBConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker,
-    uint64_t client_id)
+    base::UnguessableToken client_token)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
       database_(std::move(database)),
@@ -68,7 +68,7 @@ IndexedDBConnection::IndexedDBConnection(
       on_close_(std::move(on_close)),
       callbacks_(std::move(callbacks)),
       client_state_checker_(std::move(client_state_checker)),
-      client_id_(client_id) {
+      client_token_(client_token) {
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
 }

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LOCK_REQUEST_DATA_H_
 
 #include "base/supports_user_data.h"
+#include "base/unguessable_token.h"
 
 namespace content {
 
@@ -14,10 +15,10 @@ namespace content {
 struct IndexedDBLockRequestData : public base::SupportsUserData::Data {
   static const void* const kKey;
 
-  explicit IndexedDBLockRequestData(uint64_t client_id);
+  IndexedDBLockRequestData(const base::UnguessableToken& client_token);
   ~IndexedDBLockRequestData() override;
 
-  uint64_t client_id;
+  base::UnguessableToken client_token;
 };
 
 }  // namespace content

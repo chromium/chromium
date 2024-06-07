@@ -53,7 +53,7 @@ struct IdbTransactionMetadata{
   IdbTransactionMode mode;
   IdbTransactionState status;
   int64 tid;
-  uint64 client_id;
+  string client_token;
   double age;
   double runtime;
   double tasks_scheduled;

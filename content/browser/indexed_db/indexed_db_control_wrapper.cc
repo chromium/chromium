@@ -53,6 +53,7 @@ void IndexedDBControlWrapper::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
+    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (storage_policy_observer_) {
@@ -63,7 +64,7 @@ void IndexedDBControlWrapper::BindIndexedDB(
   }
   GetIndexedDBControl().BindIndexedDB(bucket_locator,
                                       std::move(client_state_checker_remote),
-                                      std::move(receiver));
+                                      client_token, std::move(receiver));
 }
 
 storage::mojom::IndexedDBControl&

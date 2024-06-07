@@ -3251,9 +3251,10 @@ void StoragePartitionImpl::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
+    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   indexed_db_control_wrapper_->BindIndexedDB(
-      bucket_locator, std::move(client_state_checker_remote),
+      bucket_locator, std::move(client_state_checker_remote), client_token,
       std::move(receiver));
 }
 

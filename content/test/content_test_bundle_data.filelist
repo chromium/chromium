@@ -5853,6 +5853,8 @@ data/back_forward_cache/page_with_cross_origin_subframe_with_pageshow.html
 data/back_forward_cache/page_with_dedicated_worker.html
 data/back_forward_cache/page_with_dedicated_worker_and_importscripts.html
 data/back_forward_cache/page_with_dedicated_worker_and_webtransport.html
+data/back_forward_cache/page_with_dedicated_worker_using_indexedDB.html
+data/back_forward_cache/page_with_dedicated_worker_using_indexedDB.js
 data/back_forward_cache/page_with_hung_iframe.html
 data/back_forward_cache/page_with_iframes_without_attributes.html
 data/back_forward_cache/page_with_indexedDB.html
@@ -5882,6 +5884,7 @@ data/back_forward_cache/webusb/nested-worker.js
 data/back_forward_cache/webusb/worker.js
 data/back_forward_cache/worker.js
 data/back_forward_cache/worker_with_importscripts.js
+data/back_forward_cache/worker_with_indexedDB.js
 data/back_forward_cache/worker_with_webtransport.js
 data/background_resource_fetch/404.js
 data/background_resource_fetch/404.js.mock-http-headers

@@ -142,7 +142,7 @@ IndexedDBTransaction::IndexedDBTransaction(
 
   locks_receiver_.SetUserData(
       IndexedDBLockRequestData::kKey,
-      std::make_unique<IndexedDBLockRequestData>(connection->client_id()));
+      std::make_unique<IndexedDBLockRequestData>(connection->client_token()));
 
   database_ = connection_->database();
   if (database_) {
@@ -307,8 +307,8 @@ bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
                       if (!lock_request_data) {
                         return true;
                       }
-                      return lock_request_data->client_id !=
-                             connection_->client_id();
+                      return lock_request_data->client_token !=
+                             connection_->client_token();
                     })) {
       return true;
     }
@@ -833,7 +833,7 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
   }
 
   info->tid = id();
-  info->client_id = connection()->client_id();
+  info->client_token = connection()->client_token().ToString();
   info->age =
       (base::Time::Now() - diagnostics().creation_time).InMillisecondsF();
  if (diagnostics().start_time.InMillisecondsSinceUnixEpoch() > 0) {

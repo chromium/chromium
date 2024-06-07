@@ -1924,10 +1924,11 @@ void RenderProcessHostImpl::BindIndexedDB(
     return;
   }
 
+  auto [state_checker, token] =
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id);
   storage_partition_impl_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(storage_key),
-      IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id),
-      std::move(receiver));
+      std::move(state_checker), token, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindBucketManagerHost(

@@ -2787,6 +2787,40 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// Verifies that transactions from a single client/render frame and a dedicated
+// worker belonging to the frame cannot disable BFCache for that client.
+// Regression test for https://crbug.com/343519262.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       IndexedDBClientWithDedicatedWorkerDoesntBlockSelf) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Use IDB and spam transactions.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com",
+                   "/back_forward_cache/"
+                   "page_with_dedicated_worker_using_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // 1.a) Setup IndexedDB on the main page and a dedicated worker.
+  ASSERT_TRUE(ExecJs(shell(), "setupIndexedDBConnection()"));
+  ASSERT_TRUE(
+      ExecJs(shell(), "sendMessageToWorker('setupIndexedDBConnection')"));
+  // 1.b) Run infinite loops on the worker and the main page.
+  ASSERT_TRUE(ExecJs(
+      shell(), "sendMessageToWorker('runInfiniteIndexedDBTransactionLoop')"));
+  ASSERT_TRUE(ExecJs(shell(), "runInfiniteIndexedDBTransactionLoop()"));
+
+  // 2) Navigate away.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  ASSERT_TRUE(rfh_a.get());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back to the page with IndexedDB.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
 // Verifies that a RF will be evicted from the cache if one of its transactions
 // attempts to start while the RF is already in the cache, assuming the
 // transaction is blocking other clients. That is, the
