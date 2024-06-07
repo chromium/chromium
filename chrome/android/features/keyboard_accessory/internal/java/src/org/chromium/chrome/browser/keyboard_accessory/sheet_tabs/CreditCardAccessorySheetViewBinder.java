@@ -174,6 +174,12 @@ class CreditCardAccessorySheetViewBinder {
                 return use_new_data ? R.drawable.troy_metadata_card : R.drawable.troy_card;
             case "unionPayCC":
                 return use_new_data ? R.drawable.unionpay_metadata_card : R.drawable.unionpay_card;
+            case "verveCC":
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
+                    return use_new_data ? R.drawable.verve_metadata_card : R.drawable.verve_card;
+                }
+                break;
             case "visaCC":
                 return use_new_data ? R.drawable.visa_metadata_card : R.drawable.visa_card;
         }

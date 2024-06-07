@@ -38,6 +38,7 @@ public class FastCheckoutCreditCard {
         map.put(Icon.CARD_MIR, R.drawable.mir_card);
         map.put(Icon.CARD_TROY, R.drawable.troy_card);
         map.put(Icon.CARD_UNION_PAY, R.drawable.unionpay_card);
+        map.put(Icon.CARD_VERVE, R.drawable.verve_card);
         map.put(Icon.CARD_VISA, R.drawable.visa_card);
         map.put(Icon.GOOGLE_PAY, R.drawable.google_pay);
 
@@ -51,6 +52,7 @@ public class FastCheckoutCreditCard {
         metadataMap.put(Icon.CARD_MIR, R.drawable.mir_metadata_card);
         metadataMap.put(Icon.CARD_TROY, R.drawable.troy_metadata_card);
         metadataMap.put(Icon.CARD_UNION_PAY, R.drawable.unionpay_metadata_card);
+        metadataMap.put(Icon.CARD_VERVE, R.drawable.verve_metadata_card);
         metadataMap.put(Icon.CARD_VISA, R.drawable.visa_metadata_card);
         metadataMap.put(Icon.GOOGLE_PAY, R.drawable.google_pay);
 
@@ -216,11 +218,19 @@ public class FastCheckoutCreditCard {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
             if (sResourceMetadataMap.containsKey(issuerIconDrawable)) {
-                return sResourceMetadataMap.get(issuerIconDrawable);
+                if (issuerIconDrawable != Icon.CARD_VERVE
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
+                    return sResourceMetadataMap.get(issuerIconDrawable);
+                }
             }
         } else {
             if (sResourceMap.containsKey(issuerIconDrawable)) {
-                return sResourceMap.get(issuerIconDrawable);
+                if (issuerIconDrawable != Icon.CARD_VERVE
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
+                    return sResourceMap.get(issuerIconDrawable);
+                }
             }
         }
         return R.drawable.ic_credit_card_black;
