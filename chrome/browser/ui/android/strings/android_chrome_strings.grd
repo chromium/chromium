@@ -4826,10 +4826,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       Disabled Add to collection
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SHARE_BUTTON_DESCRIPTION" desc="Content description for share button">
-      Share button
+      Share link
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_PAGE_INSIGHTS_BUTTON_DESCRIPTION" desc="Content description for page insights button">
-      Page insights button
+      View page insights
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_SUPER_G_BUTTON_DESCRIPTION" desc="Content description for super G button in a searchbox that opens Home tab in Google App">
       Go to Google App Home
