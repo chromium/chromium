@@ -26,9 +26,8 @@ export abstract class CommandHandlerInterface {
    * @param {constants.Dir} dir
    * @return {CursorRange} The resulting range.
    */
-  abstract skipLabelOrDescriptionFor(
-      current: CursorRange | undefined,
-      dir: constants.Dir): CursorRange | undefined;
+  abstract skipLabelOrDescriptionFor(current: CursorRange, dir: constants.Dir):
+      CursorRange|null;
 }
 
 export namespace CommandHandlerInterface {

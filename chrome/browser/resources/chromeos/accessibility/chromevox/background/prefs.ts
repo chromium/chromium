@@ -30,6 +30,7 @@ const TARGET = BridgeConstants.ChromeVoxPrefs.TARGET;
 export class ChromeVoxPrefs {
   static instance?: ChromeVoxPrefs;
 
+  static darkScreen = false;
   /**
    * This indicates whether or not the sticky mode pref is toggled on.
    * Use ChromeVoxPrefs.isStickyModeOn() to test if sticky mode is enabled

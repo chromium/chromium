@@ -10,7 +10,7 @@ import {AutomationUtil} from '/common/automation_util.js';
 import {BridgeHelper} from '/common/bridge_helper.js';
 import {BrowserUtil} from '/common/browser_util.js';
 import {constants} from '/common/constants.js';
-import {Cursor, CursorUnit} from '/common/cursors/cursor.js';
+import {CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {EventGenerator} from '/common/event_generator.js';
 import {KeyCode} from '/common/key_code.js';
@@ -20,7 +20,6 @@ import {RectUtil} from '/common/rect_util.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {Command} from '../../common/command.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {GestureGranularity} from '../../common/gesture_command_data.js';
@@ -36,7 +35,7 @@ import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {Color} from '../color.js';
-import {TypingEcho, TypingEchoState} from '../editing/typing_echo.js';
+import {TypingEcho} from '../editing/typing_echo.js';
 import {DesktopAutomationInterface} from '../event/desktop_automation_interface.js';
 import {EventSource} from '../event_source.js';
 import {LogManager} from '../logging/log_manager.js';
@@ -52,19 +51,19 @@ import {CommandHandlerInterface} from './command_handler_interface.js';
 import {GestureInterface} from './gesture_interface.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
-const EventType = chrome.automation.EventType;
+import AutomationNode = chrome.automation.AutomationNode;
+type CreateType = chrome.windows.CreateType;
+import Dir = constants.Dir;
+const Restriction = chrome.automation.Restriction;
 const RoleType = chrome.automation.RoleType;
 const SetNativeChromeVoxResponse =
     chrome.accessibilityPrivate.SetNativeChromeVoxResponse;
+const StateType = chrome.automation.StateType;
 
-/**
- * @typedef {{
- *   node: (AutomationNode|undefined),
- *   range: !CursorRange}}
- */
-let NewRangeData;
+interface NewRangeData {
+  node?: AutomationNode;
+  range: CursorRange;
+}
 
 /**
  * Maps a Command to the method that will perform that action.
@@ -74,14 +73,8 @@ let NewRangeData;
  *
  * When adding new commands, please put the logic in a more relevant spot.
  */
-export class CommandHandler extends CommandHandlerInterface {
-  /** @private */
-  constructor() {
-    super();
-  }
-
-  /** @override */
-  onCommand(command) {
+export class CommandHandler implements CommandHandlerInterface {
+  onCommand(command: Command): boolean {
     // Check for a command denied in incognito contexts and kiosk.
     if (!PermissionChecker.isAllowed(command)) {
       return true;
@@ -98,7 +91,8 @@ export class CommandHandler extends CommandHandlerInterface {
         this.showOptionsPage_();
         break;
       case Command.TOGGLE_STICKY_MODE:
-        SmartStickyMode.instance.toggle();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        SmartStickyMode.instance!.toggle();
         return false;
       case Command.PASS_THROUGH_MODE:
         if (ChromeVoxPrefs.isStickyModeOn()) {
@@ -145,7 +139,8 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case Command.STOP_SPEECH:
         ChromeVox.tts.stop();
-        ChromeVoxState.instance.isReadingContinuously = false;
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        ChromeVoxState.instance!.isReadingContinuously = false;
         return false;
       case Command.TOGGLE_EARCONS:
         ChromeVox.earcons.toggle();
@@ -226,7 +221,8 @@ export class CommandHandler extends CommandHandlerInterface {
 
     // The remaining commands require a current range.
     if (!ChromeVoxRange.current) {
-      if (!ChromeVoxState.instance.talkBackEnabled) {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      if (!ChromeVoxState.instance!.talkBackEnabled) {
         this.announceNoCurrentRange_();
       }
       return true;
@@ -237,16 +233,16 @@ export class CommandHandler extends CommandHandlerInterface {
       return false;
     }
 
-    let currentRange = ChromeVoxRange.current;
-    let node = currentRange.start.node;
+    let currentRange: CursorRange | null = ChromeVoxRange.current;
+    let node: AutomationNode | undefined = currentRange.start.node;
 
     // If true, will check if the predicate matches the current node.
     let matchCurrent = false;
 
     let dir = Dir.FORWARD;
     let newRangeData;
-    let pred = null;
-    let predErrorMsg = undefined;
+    let pred: AutomationPredicate.Unary | null = null;
+    let predErrorMsg: string|undefined = undefined;
     let rootPred = AutomationPredicate.rootOrEditableRoot;
     let unit = null;
     let shouldWrap = true;
@@ -272,7 +268,8 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
       case Command.NATIVE_NEXT_CHARACTER:
       case Command.NATIVE_PREVIOUS_CHARACTER:
-        DesktopAutomationInterface.instance.onNativeNextOrPreviousCharacter();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        DesktopAutomationInterface.instance!.onNativeNextOrPreviousCharacter();
         return true;
       case Command.NEXT_WORD:
         didNavigate = true;
@@ -287,7 +284,8 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
       case Command.NATIVE_NEXT_WORD:
       case Command.NATIVE_PREVIOUS_WORD:
-        DesktopAutomationInterface.instance.onNativeNextOrPreviousWord(
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        DesktopAutomationInterface.instance!.onNativeNextOrPreviousWord(
             command === Command.NATIVE_NEXT_WORD);
         return true;
       case Command.FORWARD:
@@ -335,27 +333,31 @@ export class CommandHandler extends CommandHandlerInterface {
         skipSettingSelection = true;
         pred = AutomationPredicate.editText;
         predErrorMsg = 'no_next_edit_text';
-        SmartStickyMode.instance.startIgnoringRangeChanges();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        SmartStickyMode.instance!.startIgnoringRangeChanges();
         break;
       case Command.PREVIOUS_EDIT_TEXT:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.editText;
         predErrorMsg = 'no_previous_edit_text';
-        SmartStickyMode.instance.startIgnoringRangeChanges();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        SmartStickyMode.instance!.startIgnoringRangeChanges();
         break;
       case Command.NEXT_FORM_FIELD:
         skipSettingSelection = true;
         pred = AutomationPredicate.formField;
         predErrorMsg = 'no_next_form_field';
-        SmartStickyMode.instance.startIgnoringRangeChanges();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        SmartStickyMode.instance!.startIgnoringRangeChanges();
         break;
       case Command.PREVIOUS_FORM_FIELD:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.formField;
         predErrorMsg = 'no_previous_form_field';
-        SmartStickyMode.instance.startIgnoringRangeChanges();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        SmartStickyMode.instance!.startIgnoringRangeChanges();
         break;
       case Command.PREVIOUS_GRAPHIC:
         skipSettingSelection = true;
@@ -467,11 +469,13 @@ export class CommandHandler extends CommandHandlerInterface {
         pred = AutomationPredicate.landmark;
         predErrorMsg = 'no_previous_landmark';
         break;
+      // falls through.
       case Command.LEFT:
+      // @ts-expect-error Fallthrough is disabled by TypeScript.
       case Command.PREVIOUS_OBJECT:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
-      // Falls through.
+        // falls through.
       case Command.RIGHT:
       case Command.NEXT_OBJECT:
         skipSettingSelection = true;
@@ -497,14 +501,19 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case Command.PREVIOUS_SIMILAR_ITEM:
         dir = Dir.BACKWARD;
-      // Falls through.
+        skipSync = true;
+        pred = this.getPredicateForNextOrPreviousSimilarItem_(node);
+        break;
       case Command.NEXT_SIMILAR_ITEM:
         skipSync = true;
         pred = this.getPredicateForNextOrPreviousSimilarItem_(node);
         break;
       case Command.PREVIOUS_INVALID_ITEM:
         dir = Dir.BACKWARD;
-      // Falls through.
+        pred = AutomationPredicate.isInvalid;
+        rootPred = AutomationPredicate.root;
+        predErrorMsg = 'no_invalid_item';
+        break;
       case Command.NEXT_INVALID_ITEM:
         pred = AutomationPredicate.isInvalid;
         rootPred = AutomationPredicate.root;
@@ -580,7 +589,8 @@ export class CommandHandler extends CommandHandlerInterface {
         this.readCurrentTitle_();
         return false;
       case Command.READ_CURRENT_URL:
-        new Output().withString(node.root.docUrl || '').go();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        new Output().withString(node.root!.docUrl || '').go();
         return false;
       case Command.TOGGLE_SELECTION:
         // If the selection was toggled off, return.
@@ -592,7 +602,7 @@ export class CommandHandler extends CommandHandlerInterface {
         const o = new Output();
         o.withContextFirst()
             .withRichSpeechAndBraille(
-                currentRange, null, OutputCustomEvent.NAVIGATE)
+                currentRange, undefined, OutputCustomEvent.NAVIGATE)
             .go();
         return false;
       case Command.VIEW_GRAPHIC_AS_BRAILLE:
@@ -693,7 +703,7 @@ export class CommandHandler extends CommandHandlerInterface {
         this.readPhoneticPronunciation_(node);
         return false;
       case Command.READ_LINK_URL:
-        this.readLinkURL_(node);
+        this.readLinkUrl_(node);
         return false;
       default:
         return true;
@@ -709,7 +719,8 @@ export class CommandHandler extends CommandHandlerInterface {
     if (pred) {
       chrome.metricsPrivate.recordUserAction('Accessibility.ChromeVox.Jump');
 
-      let bound = currentRange.getBound(dir).node;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      let bound = currentRange!.getBound(dir).node;
       if (bound) {
         let node = null;
 
@@ -726,9 +737,10 @@ export class CommandHandler extends CommandHandlerInterface {
         // be hidden. The scroll must happen here because |node| will remain
         // undefined, causing this command to return before the next autoscroll
         // check.
+        // TODO(b/314203187): Not null asserted, check that this is correct.
         if (!node &&
             !AutoScrollHandler.instance.scrollToFindNodes(
-                bound, command, currentRange, dir, () => {
+                bound, command, currentRange!, dir, () => {
                   this.onCommand(command);
                   this.onFinishCommand();
                 })) {
@@ -757,7 +769,7 @@ export class CommandHandler extends CommandHandlerInterface {
             return false;
           }
 
-          let root = bound;
+          let root: AutomationNode | undefined = bound;
           while (root && !AutomationPredicate.rootOrEditableRoot(root)) {
             root = root.parent;
           }
@@ -767,16 +779,16 @@ export class CommandHandler extends CommandHandlerInterface {
           }
 
           if (dir === Dir.FORWARD) {
-            bound = root;
+            // TODO(b/314203187): Not null asserted, check that this is correct.
+            bound = root!;
           } else {
-            bound = AutomationUtil.findNodePost(
-                        /** @type {!AutomationNode} */ (root), dir,
-                        AutomationPredicate.leaf) ??
+            bound =
+                AutomationUtil.findNodePost(
+                    root as AutomationNode, dir, AutomationPredicate.leaf) ??
                 bound;
           }
           node = AutomationUtil.findNextNode(
-              /** @type {!AutomationNode} */ (bound), dir, pred,
-              {root: rootPred});
+              bound as AutomationNode, dir, pred, {root: rootPred});
 
           if (node && !skipSync) {
             node = AutomationUtil.findNodePre(
@@ -822,20 +834,17 @@ export class CommandHandler extends CommandHandlerInterface {
     return false;
   }
 
-  /**
-   * Finishes processing of a command.
-   */
-  onFinishCommand() {
-    SmartStickyMode.instance.stopIgnoringRangeChanges();
+  /** Finishes processing of a command. */
+  onFinishCommand(): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    SmartStickyMode.instance!.stopIgnoringRangeChanges();
   }
 
   /**
    * Handle the command to view the first graphic within the current range
    * as braille.
-   * @param {!CursorRange} currentRange The current range.
-   * @private
    */
-  viewGraphicAsBraille_(currentRange) {
+  private viewGraphicAsBraille_(currentRange: CursorRange): void {
     // Find the first node within the current range that supports image data.
     const imageNode = AutomationUtil.findNodePost(
         currentRange.start.node, Dir.FORWARD,
@@ -848,25 +857,23 @@ export class CommandHandler extends CommandHandlerInterface {
   /**
    * Provides a partial mapping from ChromeVox key combinations to
    * Search-as-a-function key as seen in Chrome OS documentation.
-   * @param {!Command} command
-   * @return {boolean} True if the command should propagate.
-   * @private
+   * @return True if the command should propagate.
    */
-  onEditCommand_(command) {
+  private onEditCommand_(command: Command): boolean {
     if (ChromeVoxPrefs.isStickyModeOn()) {
       return true;
     }
-
-    const textEditHandler = DesktopAutomationInterface.instance.textEditHandler;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const textEditHandler =
+        DesktopAutomationInterface.instance!.textEditHandler;
     if (!textEditHandler ||
         !AutomationUtil.isDescendantOf(
-            ChromeVoxRange.current.start.node, textEditHandler.node)) {
+            ChromeVoxRange.current!.start.node, textEditHandler.node)) {
       return true;
     }
 
     // Skip customized keys for read only text fields.
-    if (textEditHandler.node.restriction ===
-        chrome.automation.Restriction.READ_ONLY) {
+    if (textEditHandler.node.restriction === Restriction.READ_ONLY) {
       return true;
     }
 
@@ -946,8 +953,8 @@ export class CommandHandler extends CommandHandlerInterface {
     return false;
   }
 
-  /** @override */
-  skipLabelOrDescriptionFor(currentRange, dir) {
+  skipLabelOrDescriptionFor(currentRange: CursorRange, dir: Dir):
+      CursorRange | null {
     if (!currentRange) {
       return null;
     }
@@ -955,10 +962,9 @@ export class CommandHandler extends CommandHandlerInterface {
     // Keep moving past all nodes acting as labels or descriptions.
     while (currentRange?.start?.node?.role === RoleType.STATIC_TEXT) {
       // We must scan upwards as any ancestor might have a label or description.
-      let ancestor = currentRange.start.node;
+      let ancestor: AutomationNode | undefined = currentRange.start.node;
       while (ancestor) {
-        if (ancestor.labelFor?.length > 0 ||
-            ancestor.descriptionFor?.length > 0) {
+        if (ancestor.labelFor?.length || ancestor.descriptionFor?.length) {
           break;
         }
         ancestor = ancestor.parent;
@@ -973,8 +979,7 @@ export class CommandHandler extends CommandHandlerInterface {
     return currentRange;
   }
 
-  /** @private */
-  announceBatteryDescription_() {
+  private announceBatteryDescription_(): void {
     chrome.accessibilityPrivate.getBatteryDescription(batteryDescription => {
       new Output()
           .withString(batteryDescription)
@@ -983,8 +988,7 @@ export class CommandHandler extends CommandHandlerInterface {
     });
   }
 
-  /** @private */
-  announceNoCurrentRange_() {
+  private announceNoCurrentRange_(): void {
     new Output()
         .withString(Msgs.getMsg(
             EventSource.get() === EventSourceType.TOUCH_GESTURE ?
@@ -994,11 +998,7 @@ export class CommandHandler extends CommandHandlerInterface {
         .go();
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @private
-   */
-  announceRichTextDescription_(node) {
+  private announceRichTextDescription_(node: AutomationNode): void {
     const optSubs = [];
     node.fontSize ? optSubs.push('font size: ' + node.fontSize) :
                     optSubs.push('');
@@ -1019,8 +1019,7 @@ export class CommandHandler extends CommandHandlerInterface {
         .go();
   }
 
-  /** @private */
-  disableChromeVoxArcSupportForCurrentApp_() {
+  private disableChromeVoxArcSupportForCurrentApp_(): void {
     chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
         false, response => {
           if (response === SetNativeChromeVoxResponse.TALKBACK_NOT_INSTALLED) {
@@ -1039,30 +1038,32 @@ export class CommandHandler extends CommandHandlerInterface {
         });
   }
 
-  /** @private */
-  enableChromeVoxArcSupportForCurrentApp_() {
+  private enableChromeVoxArcSupportForCurrentApp_(): void {
     chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-        true, response => {});
+        true, _response => {});
   }
 
-  /** @private */
-  forceClickOnCurrentItem_() {
+  private forceClickOnCurrentItem_(): void {
     if (!ChromeVoxRange.current) {
       return;
     }
-    let actionNode = ChromeVoxRange.current.start.node;
+    let actionNode: AutomationNode | undefined =
+        ChromeVoxRange.current.start.node;
     // Scan for a clickable, which overrides the |actionNode|.
-    let clickable = actionNode;
-    while (!clickable?.clickable && actionNode.root === clickable?.root) {
-      clickable = clickable.parent;
+    let clickableNode: AutomationNode | undefined = actionNode;
+    while (!clickableNode?.clickable &&
+           actionNode.root === clickableNode?.root) {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      clickableNode = clickableNode!.parent;
     }
-    if (actionNode.root === clickable?.root) {
-      clickable?.doDefault();
+    if (actionNode.root === clickableNode?.root) {
+      clickableNode?.doDefault();
       return;
     }
 
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (EventSource.get() === EventSourceType.TOUCH_GESTURE &&
-        actionNode.state.editable) {
+        actionNode.state![StateType.EDITABLE]) {
       // Dispatch a click to ensure the VK gets shown.
       const center = RectUtil.center(actionNode.location);
       EventGenerator.sendMouseClick(center.x, center.y);
@@ -1072,37 +1073,29 @@ export class CommandHandler extends CommandHandlerInterface {
     while (actionNode && AutomationPredicate.text(actionNode)) {
       actionNode = actionNode.parent;
     }
-    if (actionNode.inPageLinkTarget) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (actionNode!.inPageLinkTarget) {
       ChromeVoxRange.navigateTo(
-          CursorRange.fromNode(actionNode.inPageLinkTarget));
+          CursorRange.fromNode(actionNode!.inPageLinkTarget));
       return;
     }
-    actionNode.doDefault();
+    actionNode!.doDefault();
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {!NewRangeData}
-   * @private
-   */
-  getNewRangeForGoToColLastCell_(node) {
+  private getNewRangeForGoToColLastCell_(node: AutomationNode): NewRangeData {
     // Try to start on the last cell of the table and allow
     // matching that node.
     let startNode = node.lastChild;
-    while (startNode.lastChild && !AutomationPredicate.cellLike(startNode)) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    while (startNode?.lastChild && !AutomationPredicate.cellLike(startNode!)) {
       startNode = startNode.lastChild;
     }
-    return {node: startNode, range: CursorRange.fromNode(startNode)};
+    return {node: startNode, range: CursorRange.fromNode(startNode!)};
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @param {!CursorRange} currentRange
-   * @param {!Command} command
-   * @return {!NewRangeData}
-   * @private
-   */
-  getNewRangeForGoToFirstOrLastCell_(node, currentRange, command) {
+  private getNewRangeForGoToFirstOrLastCell_(
+      node: AutomationNode, currentRange: CursorRange, command: Command)
+      : NewRangeData {
     const end = AutomationUtil.findNodePost(
         node, command === Command.GO_TO_LAST_CELL ? Dir.BACKWARD : Dir.FORWARD,
         AutomationPredicate.leaf);
@@ -1112,12 +1105,8 @@ export class CommandHandler extends CommandHandlerInterface {
     return {node, range: currentRange};
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @return {!NewRangeData}
-   * @private
-   */
-  getNewRangeForJumpToBottom_(node, currentRange) {
+  private getNewRangeForJumpToBottom_(
+      node: AutomationNode, currentRange: CursorRange): NewRangeData {
     if (!currentRange.start.node || !currentRange.start.node.root) {
       return {node, range: currentRange};
     }
@@ -1129,12 +1118,8 @@ export class CommandHandler extends CommandHandlerInterface {
     return {node, range: currentRange};
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @return {!NewRangeData}
-   * @private
-   */
-  getNewRangeForJumpToTop_(node, currentRange) {
+  private getNewRangeForJumpToTop_(
+      node: AutomationNode, currentRange: CursorRange): NewRangeData {
     const root = currentRange.start.node?.root;
     if (!root) {
       return {node, range: currentRange};
@@ -1147,15 +1132,10 @@ export class CommandHandler extends CommandHandlerInterface {
     return {node, range: currentRange};
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @param {!CursorRange} currentRange
-   * @param {!Command} command
-   * @return {!NewRangeData}
-   * @private
-   */
-  getNewRangeForGoToRowFirstOrLastCell_(node, currentRange, command) {
-    let current = node;
+  private getNewRangeForGoToRowFirstOrLastCell_(
+      node: AutomationNode, currentRange: CursorRange, command: Command)
+      : NewRangeData {
+    let current: AutomationNode | undefined = node;
     while (current && current.role !== RoleType.ROW) {
       current = current.parent;
     }
@@ -1172,68 +1152,44 @@ export class CommandHandler extends CommandHandlerInterface {
     return {node: current, range: currentRange};
   }
 
-  /**
-   * @param {AutomationNode} node
-   * @param {!CursorRange} currentRange
-   * @return {!NewRangeData}
-   * @private
-   */
-  getNewRangeForJumpToDetails_(node, currentRange) {
-    let current = node;
+  private getNewRangeForJumpToDetails_(
+      node: AutomationNode, currentRange: CursorRange): NewRangeData {
+    let current: AutomationNode | undefined = node;
     while (current && !current.details) {
       current = current.parent;
     }
-    if (current?.details.length) {
+    if (current?.details?.length) {
       // TODO currently can only jump to first detail.
       currentRange = CursorRange.fromNode(current.details[0]);
     }
     return {node: current, range: currentRange};
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @param {constants.Dir} dir
-   * @return {?AutomationPredicate.Unary}
-   * @private
-   */
-  getPredicateForGoToColFirstOrLastCell_(currentRange, dir) {
+  private getPredicateForGoToColFirstOrLastCell_(
+      currentRange: CursorRange, dir: Dir): AutomationPredicate.Unary | null {
     const tableOpts = {col: true, dir, end: true};
     return AutomationPredicate.makeTableCellPredicate(
         currentRange.start.node, tableOpts);
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @param {constants.Dir} dir
-   * @return {?AutomationPredicate.Unary}
-   * @private
-   */
-  getPredicateForNextCol_(currentRange, dir) {
+  private getPredicateForNextCol_(
+      currentRange: CursorRange, dir: Dir): AutomationPredicate.Unary | null {
     const tableOpts = {col: true, dir};
     return AutomationPredicate.makeTableCellPredicate(
         currentRange.start.node, tableOpts);
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @param {constants.Dir} dir
-   * @return {?AutomationPredicate.Unary}
-   * @private
-   */
-  getPredicateForNextRow_(currentRange, dir) {
+  private getPredicateForNextRow_(
+      currentRange: CursorRange, dir: Dir): AutomationPredicate.Unary | null {
     const tableOpts = {row: true, dir};
     return AutomationPredicate.makeTableCellPredicate(
         currentRange.start.node, tableOpts);
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {?AutomationPredicate.Unary}
-   * @private
-   */
-  getPredicateForNextOrPreviousSimilarItem_(node) {
+  private getPredicateForNextOrPreviousSimilarItem_(
+      node: AutomationNode): AutomationPredicate.Unary | null {
     const originalNode = node;
-    let current = node;
+    let current: AutomationNode | undefined = node;
 
     // Scan upwards until we get a role we don't want to ignore.
     while (current && AutomationPredicate.ignoreDuringJump(current)) {
@@ -1241,51 +1197,33 @@ export class CommandHandler extends CommandHandlerInterface {
     }
 
     const useNode = current ?? originalNode;
-    return AutomationPredicate.roles([current.role]);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    return AutomationPredicate.roles([useNode.role!]);
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @param {!constants.Dir} dir
-   * @return {?AutomationPredicate.Unary}
-   * @private
-   */
-  getPredicateForPreviousCol_(currentRange, dir) {
+  private getPredicateForPreviousCol_(
+      currentRange: CursorRange, dir: Dir): AutomationPredicate.Unary | null {
     const tableOpts = {col: true, dir};
     return AutomationPredicate.makeTableCellPredicate(
         currentRange.start.node, tableOpts);
   }
 
-  /**
-   * @param {!CursorRange} currentRange
-   * @param {!constants.Dir} dir
-   * @return {?AutomationPredicate.Unary}
-   * @private
-   */
-  getPredicateForPreviousRow_(currentRange, dir) {
+  private getPredicateForPreviousRow_(
+      currentRange: CursorRange, dir: Dir): AutomationPredicate.Unary | null {
     const tableOpts = {row: true, dir};
     return AutomationPredicate.makeTableCellPredicate(
         currentRange.start.node, tableOpts);
   }
 
-  /**
-   * @param {AutomationNode} node
-   * @return {AutomationNode|undefined} node
-   * @private
-   */
-  getTableNode_(node) {
-    let current = node;
+  private getTableNode_(node: AutomationNode): AutomationNode | undefined {
+    let current: AutomationNode | undefined = node;
     while (current && current.role !== RoleType.TABLE) {
       current = current.parent;
     }
     return current;
   }
 
-  /**
-   * @param {boolean} isPrevious
-   * @private
-   */
-  nextOrPreviousAtGranularity_(isPrevious) {
+  private nextOrPreviousAtGranularity_(isPrevious: boolean): void {
     let command;
     switch (GestureInterface.getGranularity()) {
       case GestureGranularity.CHARACTER:
@@ -1314,12 +1252,8 @@ export class CommandHandler extends CommandHandlerInterface {
     }
   }
 
-  /**
-   * @param {!Command} command
-   * @param {!CursorRange} currentRange
-   * @private
-   */
-  nextOrPreviousPage_(command, currentRange) {
+  private nextOrPreviousPage_(
+      command: Command, currentRange: CursorRange): void {
     const root = AutomationUtil.getTopLevelRoot(currentRange.start.node);
     if (root?.scrollY !== undefined) {
       let page = Math.ceil(root.scrollY / root.location.height) || 1;
@@ -1329,13 +1263,13 @@ export class CommandHandler extends CommandHandlerInterface {
     }
   }
 
-  /** @private */
-  readCurrentTitle_() {
-    let target = ChromeVoxRange.current.start.node;
+  private readCurrentTitle_(): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    let target: AutomationNode | undefined = ChromeVoxRange.current!.start.node;
     const output = new Output();
 
     if (!target) {
-      return false;
+      return;
     }
 
     let firstWindow;
@@ -1375,11 +1309,12 @@ export class CommandHandler extends CommandHandlerInterface {
     output.go();
   }
 
-  /** @private */
-  readFromHere_() {
-    ChromeVoxState.instance.isReadingContinuously = true;
-    const continueReading = () => {
-      if (!ChromeVoxState.instance.isReadingContinuously ||
+  private readFromHere_(): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    ChromeVoxState.instance!.isReadingContinuously = true;
+    const continueReading = (): void => {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      if (!ChromeVoxState.instance!.isReadingContinuously ||
           !ChromeVoxRange.current) {
         return;
       }
@@ -1391,7 +1326,8 @@ export class CommandHandler extends CommandHandlerInterface {
       // Stop if we've wrapped back to the document.
       const maybeDoc = newRange.start.node;
       if (AutomationPredicate.root(maybeDoc)) {
-        ChromeVoxState.instance.isReadingContinuously = false;
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        ChromeVoxState.instance!.isReadingContinuously = false;
         return;
       }
 
@@ -1414,7 +1350,8 @@ export class CommandHandler extends CommandHandlerInterface {
     };
 
     {
-      const startNode = ChromeVoxRange.current.start.node;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      const startNode = ChromeVoxRange.current!.start.node;
       const collapsedRange = CursorRange.fromNode(startNode);
       const o =
           new Output()
@@ -1431,13 +1368,9 @@ export class CommandHandler extends CommandHandlerInterface {
     }
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @private
-   */
-  readLinkURL_(node) {
+  private readLinkUrl_(node: AutomationNode): void {
     const rootNode = node.root;
-    let current = node;
+    let current: AutomationNode | undefined = node;
     while (current && !current.url) {
       // URL could be an ancestor of current range.
       current = current.parent;
@@ -1453,13 +1386,10 @@ export class CommandHandler extends CommandHandlerInterface {
         .go();
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @private
-   */
-  readPhoneticPronunciation_(node) {
+  private readPhoneticPronunciation_(node: AutomationNode): void {
     // Get node info.
-    const index = ChromeVoxRange.current.start.index;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const index = ChromeVoxRange.current!.start.index;
     const name = node.name;
     // If there is no text to speak, inform the user and return early.
     if (!name) {
@@ -1471,14 +1401,15 @@ export class CommandHandler extends CommandHandlerInterface {
     }
 
     // Get word start and end indices.
-    let wordStarts;
-    let wordEnds;
+    let wordStarts: number[];
+    let wordEnds: number[];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (node.role === RoleType.INLINE_TEXT_BOX) {
-      wordStarts = node.wordStarts;
-      wordEnds = node.wordEnds;
+      wordStarts = node.wordStarts!;
+      wordEnds = node.wordEnds!;
     } else {
-      wordStarts = node.nonInlineTextWordStarts;
-      wordEnds = node.nonInlineTextWordEnds;
+      wordStarts = node.nonInlineTextWordStarts!;
+      wordEnds = node.nonInlineTextWordEnds!;
     }
     // Find the word we want to speak phonetically. If index === -1, then
     // the index represents an entire node.
@@ -1504,13 +1435,12 @@ export class CommandHandler extends CommandHandlerInterface {
     }
   }
 
-  /** @private */
-  reportIssue_() {
+  private reportIssue_(): void {
     let url =
         'https://issuetracker.google.com/issues/new?component=1272895&type=BUG' +
         '&priority=P2&severity=S2&description=';
-    const description = {};
-    description['Chrome OS Version'] = chrome.runtime.getManifest().version;
+    const description: {[key: string]: string} = {};
+    description['Chrome OS Version'] = chrome.runtime.getManifest()['version'];
     description['Lacros Version (if applicable)'] =
         '(copy from chrome://version)';
     description['Reproduction Steps'] = '%0a1.%0a2.%0a3.';
@@ -1522,28 +1452,26 @@ export class CommandHandler extends CommandHandlerInterface {
     BrowserUtil.openBrowserUrl(url);
   }
 
-  /** @private */
-  showLearnModePage_() {
+  private showLearnModePage_(): void {
     const explorerPage = {
       url: 'chromevox/learn_mode/learn_mode.html',
-      type: 'panel',
+      type: 'panel' as CreateType,
     };
     // Use chrome.windows API to ensure page is opened in Ash-chrome.
     chrome.windows.create(explorerPage);
   }
 
-  /** @private */
-  showTalkBackKeyboardShortcuts_() {
+  private showTalkBackKeyboardShortcuts_(): void {
     BrowserUtil.openBrowserUrl(
         'https://support.google.com/accessibility/android/answer/6110948');
   }
 
-  /** @private */
-  speakTimeAndDate_() {
+  private speakTimeAndDate_(): void {
     chrome.automation.getDesktop(d => {
       // First, try speaking the on-screen time.
       const allTime = d.findAll({role: RoleType.TIME});
-      allTime.filter(time => time.root.role === RoleType.DESKTOP);
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      allTime.filter(time => time.root!.role === RoleType.DESKTOP);
 
       let timeString = '';
       allTime.forEach(time => {
@@ -1570,18 +1498,13 @@ export class CommandHandler extends CommandHandlerInterface {
   /**
    * Launch ChromeVox options page in settings app.
    * TODO(b/268196299): Add test for showing options page.
-   * @private
    */
-  async showOptionsPage_() {
+  private showOptionsPage_(): void {
     // Launch ChromeVox settings (inside ChromeOS Settings App).
     chrome.accessibilityPrivate.openSettingsSubpage('textToSpeech/chromeVox');
   }
 
-  /**
-   * @param {boolean} isPrevious
-   * @private
-   */
-  nextOrPreviousGranularity_(isPrevious) {
+  private nextOrPreviousGranularity_(isPrevious: boolean): void {
     let gran = GestureInterface.getGranularity();
     const next = isPrevious ?
         (--gran >= 0 ? gran : GestureGranularity.COUNT - 1) :
@@ -1613,14 +1536,13 @@ export class CommandHandler extends CommandHandlerInterface {
     ChromeVox.tts.speak(announce, QueueMode.FLUSH);
   }
 
-  /** @private */
-  toggleScreen_() {
+  private toggleScreen_(): void {
     const newState = !ChromeVoxPrefs.darkScreen;
     if (newState && !LocalStorage.get('acceptToggleScreen')) {
       // If this is the first time, show a confirmation dialog.
       chrome.accessibilityPrivate.showConfirmationDialog(
           Msgs.getMsg('toggle_screen_title'),
-          Msgs.getMsg('toggle_screen_description'), /*cancelName=*/ null,
+          Msgs.getMsg('toggle_screen_description'), /*cancelName=*/ undefined,
           confirmed => {
             if (confirmed) {
               ChromeVoxPrefs.darkScreen = true;
@@ -1638,20 +1560,18 @@ export class CommandHandler extends CommandHandlerInterface {
     }
   }
 
-  /**
-   * Performs global initialization.
-   */
-  static init() {
+  /** Performs global initialization. */
+  static init(): void {
     CommandHandlerInterface.instance = new CommandHandler();
     ChromeVoxKbHandler.commandHandler = command =>
         CommandHandlerInterface.instance.onCommand(command);
 
     BridgeHelper.registerHandler(
         BridgeConstants.CommandHandler.TARGET,
-        BridgeConstants.CommandHandler.Action.ON_COMMAND, command => {
+        BridgeConstants.CommandHandler.Action.ON_COMMAND,
+        (command: Command) => {
           if (Object.values(Command).includes(command)) {
-            CommandHandlerInterface.instance.onCommand(
-                /** @type {Command} */ (command));
+            CommandHandlerInterface.instance.onCommand(command);
           } else {
             console.warn('ChromeVox got an unrecognized command: ' + command);
           }
