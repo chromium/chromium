@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -21,11 +22,20 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 namespace {
 
 constexpr gfx::Rect kOutputRect(100, 100);
+constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
+
+SurfaceId MakeSurfaceId() {
+  return SurfaceId(kArbitraryFrameSinkId,
+                   LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
+}
 
 CompositorFrame MakeSimpleFrame(const gfx::Rect& damage_rect = kOutputRect) {
   return CompositorFrameBuilder()
@@ -307,6 +317,181 @@ TEST_F(ResolvedFrameDataTest, ReusePreviousRootPassId) {
 
   EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
             prev_root_pass_id);
+}
+
+// Verify OffsetTag creating a modified copy of original CompositorRenderPasses.
+TEST_F(ResolvedFrameDataTest, OffsetTags) {
+  auto offset_tag = OffsetTag::CreateRandom();
+
+  OffsetTagDefinition tag_def;
+  tag_def.tag = offset_tag;
+  tag_def.provider = SurfaceRange(MakeSurfaceId());
+  tag_def.constraints = OffsetTagConstraints(-30.0f, 30.0f, -30.0f, 30.0f);
+
+  // Build a frame with one tagged quad and one not tagged quad.
+  auto frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(kOutputRect)
+                  .AddSolidColorQuad(kOutputRect, SkColors::kRed)
+                  .AddSolidColorQuad(gfx::Rect(10, 10), SkColors::kBlack)
+                  .SetQuadOffsetTag(offset_tag))
+          .AddOffsetTagDefinition(tag_def)
+          .Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+
+  constexpr gfx::Vector2dF first_offset(20.0f, -20.0f);
+  constexpr gfx::Vector2dF second_offset(20.0f, 0);
+
+  {
+    // First aggregation.
+    resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+    EXPECT_TRUE(resolved_frame.is_valid());
+
+    resolved_frame.UpdateOffsetTags(
+        [&first_offset](const OffsetTagDefinition&) { return first_offset; });
+
+    ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
+    const CompositorRenderPass& resolved_render_pass =
+        resolved_frame.GetResolvedPasses()[0].render_pass();
+
+    // When SetOffsetTagValues runs it makes a copy of the render pass to update
+    // quad positions.
+    auto& original_render_pass = surface->GetActiveFrame().render_pass_list[0];
+    EXPECT_NE(&resolved_render_pass, original_render_pass.get());
+
+    // Verify that the tagged quad has offset applied and the non-tagged quad
+    // doesn't.
+    EXPECT_THAT(
+        resolved_render_pass.quad_list,
+        testing::ElementsAre(
+            testing::AllOf(IsSolidColorQuad(SkColors::kRed),
+                           HasTransform(gfx::Transform::MakeTranslation({}))),
+            testing::AllOf(
+                IsSolidColorQuad(SkColors::kBlack),
+                HasTransform(gfx::Transform::MakeTranslation(first_offset)))));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  {
+    // Next aggregation with no updated CompositorFrame.
+    resolved_frame.SetRenderPassPointers();
+
+    // Send the same OffsetTagValues. This should reuse the
+    // same modified render passes as the last aggregation.
+    resolved_frame.UpdateOffsetTags(
+        [&first_offset](const OffsetTagDefinition&) { return first_offset; });
+
+    // TODO: Verify that RebuildRenderPassesForOffsetTags() wasn't called.
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  {
+    // Next aggregation with no updated CompositorFrame.
+    resolved_frame.SetRenderPassPointers();
+
+    // Change the offset. This should require a new copy of the render passes.
+    resolved_frame.UpdateOffsetTags(
+        [&second_offset](const OffsetTagDefinition&) { return second_offset; });
+
+    const CompositorRenderPass& resolved_render_pass =
+        resolved_frame.GetResolvedPasses()[0].render_pass();
+
+    // Verify that the tagged quad has the new offset applied.
+    EXPECT_THAT(
+        resolved_render_pass.quad_list,
+        testing::ElementsAre(
+            testing::AllOf(IsSolidColorQuad(SkColors::kRed),
+                           HasTransform(gfx::Transform::MakeTranslation({}))),
+            testing::AllOf(
+                IsSolidColorQuad(SkColors::kBlack),
+                HasTransform(gfx::Transform::MakeTranslation(second_offset)))));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  {
+    // Next aggregation with new CompositorFrame but same OffsetTag values.
+    auto new_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(kOutputRect)
+                    .AddSolidColorQuad(gfx::Rect(10, 10), SkColors::kBlack)
+                    .SetQuadOffsetTag(offset_tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    SubmitCompositorFrame(std::move(new_frame));
+
+    resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+    EXPECT_TRUE(resolved_frame.is_valid());
+
+    resolved_frame.UpdateOffsetTags(
+        [&second_offset](const OffsetTagDefinition&) { return second_offset; });
+
+    ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
+    const CompositorRenderPass& resolved_render_pass =
+        resolved_frame.GetResolvedPasses()[0].render_pass();
+
+    // Verify that a new modified copy of render passes has been made that now
+    // only contains the modified quad.
+    EXPECT_THAT(
+        resolved_render_pass.quad_list,
+        testing::ElementsAre(testing::AllOf(
+            IsSolidColorQuad(SkColors::kBlack),
+            HasTransform(gfx::Transform::MakeTranslation(second_offset)))));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+}
+
+TEST_F(ResolvedFrameDataTest, OffsetTagValueIsClamped) {
+  auto offset_tag = OffsetTag::CreateRandom();
+
+  OffsetTagDefinition tag_def;
+  tag_def.tag = offset_tag;
+  tag_def.provider = SurfaceRange(MakeSurfaceId());
+  tag_def.constraints = OffsetTagConstraints(-10.0f, 10.0f, -10.0f, 10.0f);
+
+  auto frame = CompositorFrameBuilder()
+                   .AddRenderPass(RenderPassBuilder(kOutputRect)
+                                      .AddSolidColorQuad(gfx::Rect(10, 10),
+                                                         SkColors::kBlack)
+                                      .SetQuadOffsetTag(offset_tag))
+                   .AddOffsetTagDefinition(tag_def)
+                   .Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+
+  constexpr gfx::Vector2dF offset(20.0f, -20.0f);
+
+  // This offset will be clamped to 10, -10 by constraints.
+  constexpr gfx::Vector2dF clamped_offset(10.0f, -10.0f);
+  EXPECT_EQ(clamped_offset, tag_def.constraints.Clamp(offset));
+
+  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  EXPECT_TRUE(resolved_frame.is_valid());
+
+  resolved_frame.UpdateOffsetTags(
+      [&offset](const OffsetTagDefinition&) { return offset; });
+
+  ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
+  const CompositorRenderPass& resolved_render_pass =
+      resolved_frame.GetResolvedPasses()[0].render_pass();
+
+  // Verify that the tagged quad has clamped offset applied.
+  EXPECT_THAT(
+      resolved_render_pass.quad_list,
+      testing::ElementsAre(testing::AllOf(
+          IsSolidColorQuad(SkColors::kBlack),
+          HasTransform(gfx::Transform::MakeTranslation(clamped_offset)))));
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 }  // namespace

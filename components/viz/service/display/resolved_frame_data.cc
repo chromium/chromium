@@ -9,10 +9,13 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 
@@ -119,6 +122,10 @@ void ResolvedFrameData::ForceReleaseResource() {
 
 void ResolvedFrameData::UpdateForActiveFrame(
     AggregatedRenderPassId::Generator& render_pass_id_generator) {
+  // If there are modified render passes they need to be rebuilt based on
+  // current active CompositorFrame.
+  offset_tag_render_passes.clear();
+
   auto& compositor_frame = surface_->GetActiveFrame();
   auto& resource_list = compositor_frame.resource_list;
   auto& render_passes = compositor_frame.render_pass_list;
@@ -237,6 +244,79 @@ void ResolvedFrameData::UpdateForActiveFrame(
       child_resource_id_, ResourceIdSet(std::move(referenced_resources)));
 }
 
+void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
+  auto& offset_tags_to_find =
+      surface_->GetActiveFrameMetadata().offset_tag_definitions;
+
+  if (tag_values_.empty() && offset_tags_to_find.empty()) {
+    // Early return if there were no offset tags last and this aggregation. This
+    // is the common case so avoid doing any work on this path.
+    return;
+  }
+
+  base::flat_map<OffsetTag, gfx::Vector2dF> new_tag_values;
+  new_tag_values.reserve(offset_tags_to_find.size());
+  for (auto& tag_def : offset_tags_to_find) {
+    new_tag_values.insert(
+        {tag_def.tag, tag_def.constraints.Clamp(lookup_value_fn(tag_def))});
+  }
+
+  // TODO(kylechar): If there are added/removed tags with value 0,0 that can be
+  // considered not changing from last frame as an optimization.
+  offset_tag_values_changed_from_last_frame_ = tag_values_ != new_tag_values;
+
+  if (offset_tag_values_changed_from_last_frame_) {
+    tag_values_ = std::move(new_tag_values);
+    offset_tag_render_passes.clear();
+    has_non_zero_offset_tag_value_ = std::ranges::any_of(
+        tag_values_, [](auto& entry) { return !entry.second.IsZero(); });
+  } else if (!offset_tag_render_passes.empty()) {
+    // If offset tag values haven't changed and the copied render passes weren't
+    // cleared elsewhere they can be reused.
+    CHECK_EQ(offset_tag_render_passes.size(), resolved_passes_.size());
+    for (size_t i = 0; i < offset_tag_render_passes.size(); ++i) {
+      resolved_passes_[i].SetCompositorRenderPass(
+          offset_tag_render_passes[i].get());
+    }
+    return;
+  }
+
+  RebuildRenderPassesForOffsetTags();
+}
+
+void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
+  CHECK(offset_tag_render_passes.empty());
+
+  if (!has_non_zero_offset_tag_value_) {
+    // No modifications are required so don't make a copy of render passes.
+    return;
+  }
+
+  // Create copies of the render passes and modify tagged quad positions by
+  // adjusting `quad_to_target_transform` transform.
+  offset_tag_render_passes.reserve(resolved_passes_.size());
+  for (auto& resolved_pass : resolved_passes_) {
+    CHECK(resolved_pass.fixed_.render_pass);
+
+    // TODO(kylechar): This only needs to make a copy of render passes that have
+    // tagged quads.
+    auto modified_pass = resolved_pass.fixed_.render_pass->DeepCopy();
+
+    for (auto* sqs : modified_pass->shared_quad_state_list) {
+      if (sqs->offset_tag) {
+        if (auto& offset = tag_values_[sqs->offset_tag]; !offset.IsZero()) {
+          sqs->quad_to_target_transform.PostTranslate(offset);
+        }
+      }
+    }
+
+    // Replace the CompositorRenderPass pointer so that modified frame is used
+    // during aggregation.
+    resolved_pass.fixed_.render_pass = modified_pass.get();
+    offset_tag_render_passes.push_back(std::move(modified_pass));
+  }
+}
+
 void ResolvedFrameData::SetInvalid() {
   frame_index_ = surface_->GetActiveFrameIndex();
   render_pass_id_map_.clear();
@@ -311,6 +391,13 @@ FrameDamageType ResolvedFrameData::GetFrameDamageType() const {
 }
 
 gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
+  if (has_non_zero_offset_tag_value_ ||
+      offset_tag_values_changed_from_last_frame_) {
+    // TODO(kylechar): If the current or last aggregation had OffsetTags then
+    // just assume full damage. This should be replaced with proper damage
+    // computations based on shifted content.
+    return GetOutputRect();
+  }
   switch (GetFrameDamageType()) {
     case FrameDamageType::kFull:
       return GetOutputRect();

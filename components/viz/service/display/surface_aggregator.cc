@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -50,6 +51,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/overlay_transform_utils.h"
 
 namespace viz {
@@ -764,6 +766,22 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
       // applicable to valid `ResolvedFrameData`.
       resolved_frame.SetRenderPassPointers();
     }
+
+    // Lookup function allows ResolvedFrameData to find OffsetTagValues.
+    auto lookup_fn = [this](const OffsetTagDefinition& tag_def) {
+      if (auto* provider_frame = GetResolvedFrame(tag_def.provider)) {
+        auto& tag_values = provider_frame->surface()
+                               ->GetActiveFrameMetadata()
+                               .offset_tag_values;
+        for (auto& tag_value : tag_values) {
+          if (tag_def.tag == tag_value.tag) {
+            return tag_value.offset;
+          }
+        }
+      }
+      return gfx::Vector2dF();
+    };
+    resolved_frame.UpdateOffsetTags(lookup_fn);
   }
 
   return &resolved_frame;

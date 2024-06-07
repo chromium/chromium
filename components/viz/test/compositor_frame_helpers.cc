@@ -282,6 +282,12 @@ RenderPassBuilder& RenderPassBuilder::SetQuadLayerId(uint32_t layer_id) {
   return *this;
 }
 
+RenderPassBuilder& RenderPassBuilder::SetQuadOffsetTag(const OffsetTag& tag) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->offset_tag = tag;
+  return *this;
+}
+
 SharedQuadState* RenderPassBuilder::AppendDefaultSharedQuadState(
     const gfx::Rect rect,
     const gfx::Rect visible_rect) {
@@ -448,6 +454,12 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddDelegatedInkMetadata(
     const gfx::DelegatedInkMetadata& metadata) {
   frame_->metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
+  return *this;
+}
+
+CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagDefinition(
+    const OffsetTagDefinition& definition) {
+  frame_->metadata.offset_tag_definitions.push_back(definition);
   return *this;
 }
 

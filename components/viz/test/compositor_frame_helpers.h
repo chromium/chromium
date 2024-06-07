@@ -13,6 +13,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -170,6 +171,9 @@ class RenderPassBuilder {
   // Sets SharedQuadState::layer_id for the last quad.
   RenderPassBuilder& SetQuadLayerId(uint32_t layer_id);
 
+  // Sets SharedQuadState::offset_tag for the last quad.
+  RenderPassBuilder& SetQuadOffsetTag(const OffsetTag& tag);
+
  private:
   // Appends and returns a new SharedQuadState for quad.
   SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,
@@ -241,6 +245,8 @@ class CompositorFrameBuilder {
 
   CompositorFrameBuilder& AddDelegatedInkMetadata(
       const gfx::DelegatedInkMetadata& metadata);
+  CompositorFrameBuilder& AddOffsetTagDefinition(
+      const OffsetTagDefinition& definition);
 
  private:
   CompositorFrame MakeInitCompositorFrame() const;

@@ -77,7 +77,7 @@ struct VIZ_COMMON_EXPORT OffsetTagConstraints {
   OffsetTagConstraints(float min_x, float max_x, float min_y, float max_y);
 
   // Clamps `offset` so it satisfies constraints.
-  gfx::Vector2dF Clamp(const OffsetTagValue& offset) const;
+  gfx::Vector2dF Clamp(gfx::Vector2dF offset) const;
 
   // Validates that constrains include 0,0 offset and that min is smaller max.
   bool IsValid() const;
