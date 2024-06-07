@@ -12,6 +12,8 @@ static_library("backend") {
     "destination_provider.h",
     "pdf_printer_handler.cc",
     "pdf_printer_handler.h",
+    "print_preview_pdf_store.cc",
+    "print_preview_pdf_store.h",
   ]
 
   deps = [

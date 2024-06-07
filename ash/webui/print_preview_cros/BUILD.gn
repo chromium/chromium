@@ -45,6 +45,7 @@ source_set("unit_tests") {
   sources = [
     "backend/destination_provider_unittest.cc",
     "backend/pdf_printer_handler_unittest.cc",
+    "backend/print_preview_pdf_store_unittest.cc",
   ]
 
   deps = [
