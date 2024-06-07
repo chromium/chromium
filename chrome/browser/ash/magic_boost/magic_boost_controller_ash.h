@@ -35,7 +35,7 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
  private:
   mojo::ReceiverSet<crosapi::mojom::MagicBoostController> receivers_;
 
-  views::UniqueWidgetPtr widget_;
+  views::UniqueWidgetPtr disclaimer_widget_;
 };
 
 }  // namespace ash

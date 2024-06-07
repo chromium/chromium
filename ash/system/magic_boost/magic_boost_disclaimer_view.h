@@ -11,29 +11,45 @@
 #include "ui/views/view.h"
 
 namespace views {
+
+class MdTextButton;
 class UniqueWidgetPtr;
+
 }  // namespace views
 
 namespace ash {
 
-// A bubble style view to show the disclaimer view.
+// A bubble style view to show the disclaimer view. It contains an accept button
+// and a decline button, which will call the corresponding passed in callbacks
+// when they are on pressed.
 class ASH_EXPORT MagicBoostDisclaimerView : public views::View {
   METADATA_HEADER(MagicBoostDisclaimerView, views::View)
 
  public:
-  MagicBoostDisclaimerView();
+  MagicBoostDisclaimerView(
+      base::RepeatingClosure press_accept_button_callback,
+      base::RepeatingClosure press_decline_button_callback);
   MagicBoostDisclaimerView(const MagicBoostDisclaimerView&) = delete;
   MagicBoostDisclaimerView& operator=(const MagicBoostDisclaimerView&) = delete;
   ~MagicBoostDisclaimerView() override;
 
+  // views::View:
+  void RequestFocus() override;
+
   // Creates a widget that contains a `DisclaimerView`, shown in the middle of
   // the screen.
-  static views::UniqueWidgetPtr CreateWidget();
+  static views::UniqueWidgetPtr CreateWidget(
+      int64_t display_id,
+      base::RepeatingClosure press_accept_button_callback,
+      base::RepeatingClosure press_decline_button_callback);
 
   // Returns the host widget's name.
   static const char* GetWidgetName();
 
  private:
+  // Owned by the views hierarchy.
+  raw_ptr<views::MdTextButton> accept_button_ = nullptr;
+
   base::WeakPtrFactory<MagicBoostDisclaimerView> weak_ptr_factory_{this};
 };
 

@@ -23,8 +23,16 @@ void MagicBoostControllerAsh::BindReceiver(
 void MagicBoostControllerAsh::ShowDisclaimerUi(
     int64_t display_id,
     crosapi::mojom::MagicBoostController::TransitionAction action) {
-  // TODO(b/341832244): Show disclaimer widget here.
-  widget_ = MagicBoostDisclaimerView::CreateWidget();
+  if (disclaimer_widget_) {
+    return;
+  }
+
+  // TODO(b/341832244): Pass in the correct callback to set the feature state.
+  disclaimer_widget_ = MagicBoostDisclaimerView::CreateWidget(
+      display_id,
+      /*press_accept_button_callback*/ base::DoNothing(),
+      /*press_decline_button_callback*/ base::DoNothing());
+  disclaimer_widget_->Show();
 }
 
 }  // namespace ash

@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
 
 namespace crosapi {
 
@@ -20,12 +21,13 @@ namespace {
 // Calls all crosapi::mojom::MagicBoostControlle methods over mojo.
 void CallMagicBoostControllerMethods(
     mojo::Remote<mojom::MagicBoostController>& remote) {
+  auto display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   remote->ShowDisclaimerUi(
-      /*display_id=*/0,
+      /*display_id=*/display_id,
       /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
           kDoNothing);
   remote->ShowDisclaimerUi(
-      /*display_id=*/0,
+      /*display_id=*/display_id,
       /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
           kShowEditorPanel);
 }
@@ -33,12 +35,13 @@ void CallMagicBoostControllerMethods(
 // Calls all crosapi::mojom::MagicBoostController methods directly.
 void CallMagicBoostControllerMethods(
     ash::MagicBoostControllerAsh* magic_boost_controller) {
+  auto display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   magic_boost_controller->ShowDisclaimerUi(
-      /*display_id=*/0,
+      /*display_id=*/display_id,
       /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
           kDoNothing);
   magic_boost_controller->ShowDisclaimerUi(
-      /*display_id=*/0,
+      /*display_id=*/display_id,
       /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
           kShowEditorPanel);
 }
