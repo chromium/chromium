@@ -26,7 +26,7 @@ import {cleanUpSwitchingTemplate} from 'chrome://resources/ash/common/sea_pen/se
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {logSeaPenTemplateSelect} from 'chrome://resources/ash/common/sea_pen/sea_pen_metrics_logger.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
-import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {getTemplateIdFromString, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {getTransitionEnabled, setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -347,10 +347,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     // Then resets it back to the original value after routing is done to not
     // interfere with other page transitions.
     setTransitionsEnabled(false);
+
     // log metrics for the selected template.
-    if (templateId && templateId in SeaPenTemplateId) {
-      logSeaPenTemplateSelect(parseInt(templateId) as SeaPenTemplateId);
+    if (templateId) {
+      logSeaPenTemplateSelect(getTemplateIdFromString(templateId));
     }
+
     PersonalizationRouterElement.instance()
         .goToRoute(Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId})
         ?.finally(() => {

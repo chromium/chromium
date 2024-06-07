@@ -1922,7 +1922,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 </enum>
 
 <enum name="SeaPenTemplateId">
-<!-- Defined in ash/webui/common/mojom/sea_pen.mojom -->
+<!-- Defined in ash/webui/common/mojom/sea_pen.mojom for Wallpaper and VC Background templates-->
+
+<!-- Include additional kFreeform (999) for Wallpaper and kVcBackgroundFreeform (1000) for VC Background -->
 
   <int value="0" label="kFlower"/>
   <int value="1" label="kMineral"/>
@@ -1945,6 +1947,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="105" label="kVcBackgroundDreamscapesVc"/>
   <int value="106" label="kVcBackgroundCharacters"/>
   <int value="107" label="kVcBackgroundGlowscapes"/>
+  <int value="999" label="kFreeform"/>
+  <int value="1000" label="kVcBackgroundFreeform"/>
 </enum>
 
 <enum name="SeaPenWallpaperManagerMigrationStatus">

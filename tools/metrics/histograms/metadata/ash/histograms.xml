@@ -7365,6 +7365,29 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="SeaPenApiType"/>
 </histogram>
 
+<histogram name="Ash.SeaPen.Freeform.{AppName}.RecentImage.ActionMenu"
+    enum="SeaPenActionMenuItem" expires_after="2025-06-06">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Record the action menu item click for SeaPen recent image generated from
+    free text query of each {AppName} from the user.
+  </summary>
+  <token key="AppName" variants="SeaPenAppName"/>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.{AppName}.{Source}.ImageSet"
+    enum="BooleanHit" expires_after="2025-06-06">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emmitted when the user sets a {Source} SeaPen image that generated from free
+    text query as {AppName}.
+  </summary>
+  <token key="AppName" variants="SeaPenAppName"/>
+  <token key="Source" variants="SeaPenImageSource"/>
+</histogram>
+
 <histogram name="Ash.SeaPen.MigrationStatus"
     enum="SeaPenWallpaperManagerMigrationStatus" expires_after="2024-12-01">
   <owner>cowmoo@google.com</owner>

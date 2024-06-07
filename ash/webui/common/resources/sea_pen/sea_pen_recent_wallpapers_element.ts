@@ -314,7 +314,6 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private onClickCreateMore_(event: Event&{
     model: {index: number, image: SeaPenImageId},
   }) {
-    logRecentImageActionMenuItemClick(RecentImageActionMenuItem.CREATE_MORE);
     assert(
         isSeaPenImageId(event.model.image),
         'selected Sea Pen image is a positive number');
@@ -331,6 +330,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
     const templateId =
         seaPenQuery.textQuery ? 'Query' : seaPenQuery.templateQuery?.id;
+    // Log metrics for 'Create More' button click.
+    logRecentImageActionMenuItemClick(
+        !!seaPenQuery.textQuery, RecentImageActionMenuItem.CREATE_MORE);
     // Route to the results page and search thumbnails for the Sea Pen query.
     SeaPenRouterElement.instance().selectSeaPenTemplate(templateId);
     getSeaPenThumbnails(seaPenQuery, getSeaPenProvider(), this.getStore());
@@ -350,7 +352,12 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
     await deleteRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
-    logRecentImageActionMenuItemClick(RecentImageActionMenuItem.DELETE);
+
+    // Log metrics for 'Delete' button click.
+    const isTextQuery =
+        !!this.recentImageData_[event.model.image]?.imageInfo?.query?.textQuery;
+    logRecentImageActionMenuItemClick(
+        isTextQuery, RecentImageActionMenuItem.DELETE);
     this.closeAllActionMenus_();
 
     // If the deleted image is the last image or the only image in recent
@@ -377,13 +384,15 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     });
   }
 
-  private onClickWallpaperInfo_(e: Event) {
-    const eventTarget = e.currentTarget as HTMLElement;
-    const id = eventTarget.dataset['id'];
-    if (id !== undefined) {
-      this.currentShowWallpaperInfoDialog_ = parseInt(id, 10);
-    }
-    logRecentImageActionMenuItemClick(RecentImageActionMenuItem.ABOUT);
+  private onClickWallpaperInfo_(event: Event&{
+    model: {index: number, image: SeaPenImageId},
+  }) {
+    this.currentShowWallpaperInfoDialog_ = event.model.index;
+    // Log metrics for 'About' button click.
+    const isTextQuery =
+        !!this.recentImageData_[event.model.image]?.imageInfo?.query?.textQuery;
+    logRecentImageActionMenuItemClick(
+        isTextQuery, RecentImageActionMenuItem.ABOUT);
     this.closeAllActionMenus_();
   }
 

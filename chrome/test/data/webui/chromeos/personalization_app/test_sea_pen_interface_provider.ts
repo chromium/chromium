@@ -37,26 +37,28 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     333,
   ];
 
-  recentImageInfo2: RecentSeaPenImageInfo = {
-    query: {
-      templateQuery: {
-        id: SeaPenTemplateId.kGlowscapes,
-        options: Object.fromEntries([
-          [
-            SeaPenTemplateChip.kGlowscapesLandscape,
-            SeaPenTemplateOption.kGlowscapesLandscapeCoralReef,
-          ],
-          [
-            SeaPenTemplateChip.kGlowscapesFeature,
-            SeaPenTemplateOption.kGlowscapesFeatureFlower,
-          ],
-        ]),
-        userVisibleQuery: {
-          text: 'test template query',
-          templateTitle: 'test template title',
-        },
+  seaPenQuery: SeaPenQuery = {
+    templateQuery: {
+      id: SeaPenTemplateId.kGlowscapes,
+      options: Object.fromEntries([
+        [
+          SeaPenTemplateChip.kGlowscapesLandscape,
+          SeaPenTemplateOption.kGlowscapesLandscapeCoralReef,
+        ],
+        [
+          SeaPenTemplateChip.kGlowscapesFeature,
+          SeaPenTemplateOption.kGlowscapesFeatureFlower,
+        ],
+      ]),
+      userVisibleQuery: {
+        text: 'test template query',
+        templateTitle: 'test template title',
       },
     },
+  };
+
+  recentImageInfo2: RecentSeaPenImageInfo = {
+    query: this.seaPenQuery,
     creationTime: stringToMojoString16('Dec 15, 2023'),
   };
 

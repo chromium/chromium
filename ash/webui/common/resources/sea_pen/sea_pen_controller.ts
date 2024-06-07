@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenImageId} from './constants.js';
+import {QUERY, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {logSeaPenImageSet} from './sea_pen_metrics_logger.js';
@@ -40,7 +40,9 @@ export async function selectRecentSeaPenImage(
   store.endBatchUpdate();
 
   if (success) {
-    logSeaPenImageSet(/*source=*/ 'Recent');
+    const isTextQuery =
+        !!store.data.recentImageData[id]?.imageInfo?.query?.textQuery;
+    logSeaPenImageSet(isTextQuery, /*source=*/ 'Recent');
   }
 }
 
@@ -66,7 +68,7 @@ export async function getSeaPenThumbnails(
   const templateIdParam = params.get('seaPenTemplateId');
   if (!templateIdParam ||
       (templateIdParam === query.templateQuery?.id.toString()) ||
-      (templateIdParam === 'Query' && !!query.textQuery)) {
+      (templateIdParam === QUERY && !!query.textQuery)) {
     store.dispatch(
         seaPenAction.setThumbnailResponseStatusCodeAction(statusCode));
     store.dispatch(seaPenAction.setSeaPenThumbnailsAction(query, thumbnails));
@@ -107,7 +109,8 @@ export async function selectSeaPenThumbnail(
   // Re-fetches the recent SeaPen image if setting SeaPen thumbnail
   // successfully, which means the file has been downloaded successfully.
   if (success) {
-    logSeaPenImageSet(/*source=*/ 'Create');
+    const isTextQuery = !!store.data.currentSeaPenQuery?.textQuery;
+    logSeaPenImageSet(isTextQuery, /*source=*/ 'Create');
     await fetchRecentSeaPenData(provider, store);
   }
 }

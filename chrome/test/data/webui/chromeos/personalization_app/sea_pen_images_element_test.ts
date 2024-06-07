@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
@@ -125,14 +125,15 @@ suite('SeaPenImagesElementTest', function() {
 
   test('manages loading and selected when thumbnail clicked', async () => {
     personalizationStore.setReducersEnabled(true);
-    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
-    personalizationStore.data.wallpaper.seaPen.thumbnails =
-        seaPenProvider.thumbnails;
-    // Index 1 is currently set as wallpaper.
-    personalizationStore.data.wallpaper.seaPen.currentSelected =
-        seaPenProvider.thumbnails[1]!.id;
+    seaPenImagesElement = initElement(SeaPenImagesElement, {templateId: 10});
+    await waitAfterNextRender(seaPenImagesElement);
 
-    seaPenImagesElement = initElement(SeaPenImagesElement);
+    // Simulate a query was run and we got the thumbnails, one of the sea pen
+    // thumbnails was selected.
+    personalizationStore.dispatch(setSeaPenThumbnailsAction(
+        seaPenProvider.seaPenQuery, seaPenProvider.thumbnails));
+    personalizationStore.dispatch(
+        setSelectedRecentSeaPenImageAction(seaPenProvider.thumbnails[1]!.id));
     await waitAfterNextRender(seaPenImagesElement);
 
     let thumbnails = getWallpaperGridItems();

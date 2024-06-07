@@ -15,7 +15,7 @@ import './sea_pen_toast_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {Query} from './constants.js';
+import {QUERY, Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {cleanUpSwitchingTemplate, closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
@@ -24,6 +24,7 @@ import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenTemplateQueryElement} from './sea_pen_template_query_element.js';
+import {getTemplateIdFromString} from './sea_pen_utils.js';
 import {maybeDoPageTransition} from './transition.js';
 
 export enum SeaPenPaths {
@@ -158,7 +159,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   private shouldShowTextInputQuery_(
       relativePath: string|null, templateId: string|null): boolean {
     return isSeaPenTextInputEnabled() && relativePath === SeaPenPaths.RESULTS &&
-        templateId === 'Query';
+        templateId === QUERY;
   }
 
   private shouldShowTemplateQuery_(
@@ -191,10 +192,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
 
   private getTemplateIdFromQueryParams_(templateId: string): SeaPenTemplateId
       |Query {
-    if (templateId === 'Query') {
-      return 'Query';
-    }
-    return parseInt(templateId) as SeaPenTemplateId;
+    return getTemplateIdFromString(templateId);
   }
 
   private async fetchIntroductionDialogStatus() {

@@ -9,6 +9,7 @@ import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 
 export type Query = 'Query';
+export const QUERY: Query = 'Query';
 
 // SeaPen images are identified by a positive integer. For a newly generated
 // thumbnail, this is `SeaPenThumbnail.id`.
@@ -47,7 +48,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       }],
       title: 'Freeform',
       text: 'Freeform',
-      id: 'Query',
+      id: QUERY,
       options: new Map(),
     });
   }
