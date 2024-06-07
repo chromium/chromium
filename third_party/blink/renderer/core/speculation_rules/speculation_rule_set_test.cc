@@ -729,6 +729,44 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_CaseInsensitive) {
             mojom::blink::SpeculationTargetHint::kBlank);
 }
 
+// Test that only prefetch rule supports "anonymous-client-ip-when-cross-origin"
+// requirement.
+TEST_F(SpeculationRuleSetTest,
+       RulesWithRequiresAnonymousClientIpWhenCrossOrigin) {
+  auto* rule_set =
+      CreateRuleSet(R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/requires-proxy.html"],
+          "requires": ["anonymous-client-ip-when-cross-origin"]
+        }],
+        "prefetch_with_subresources": [{
+          "source": "list",
+          "urls": ["https://example.com/requires-proxy.html"],
+          "requires": ["anonymous-client-ip-when-cross-origin"]
+        }],
+        "prerender": [{
+          "source": "list",
+          "urls": ["https://example.com/requires-proxy.html"],
+          "requires": ["anonymous-client-ip-when-cross-origin"]
+        }]
+      })",
+                    KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_EQ(rule_set->error_message(),
+            "requirement \"anonymous-client-ip-when-cross-origin\" for "
+            "\"prefetch_with_subresources\" is not supported.");
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesListOfURLs(
+                  "https://example.com/requires-proxy.html")));
+  EXPECT_TRUE(rule_set->prefetch_rules()[0]
+                  ->requires_anonymous_client_ip_when_cross_origin());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+}
+
 TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
   auto* rule_set =
       CreateRuleSet(R"({

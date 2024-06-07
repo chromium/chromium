@@ -195,6 +195,37 @@ TEST_F(SpeculationHostImplTest,
   EXPECT_EQ(bad_message_error, "SH_TARGET_HINT_ON_PREFETCH");
 }
 
+// Tests that SpeculationHostImpl crashes the renderer process if it receives
+// non-prefetch candidates requiring "anonymous-client-ip-when-cross-origin".
+TEST_F(SpeculationHostImplTest,
+       ReportInvalidRequiresAnonymousClientIpWhenCrossOrigin) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(render_frame_host,
+                            remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        EXPECT_FALSE(error.empty());
+        EXPECT_TRUE(bad_message_error.empty());
+        bad_message_error = error;
+      }));
+
+  auto candidate =
+      CreatePrerenderCandidate(GetSameOriginUrl("/same-origin.html"));
+  candidate->requires_anonymous_client_ip_when_cross_origin = true;
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(std::move(candidate));
+
+  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote.FlushForTesting();
+  EXPECT_EQ("SH_INVALID_REQUIRES_ANONYMOUS_CLIENT_IP_WHEN_CROSS_ORIGIN",
+            bad_message_error);
+}
+
 class TestSpeculationHostDelegate : public SpeculationHostDelegate {
  public:
   TestSpeculationHostDelegate() = default;

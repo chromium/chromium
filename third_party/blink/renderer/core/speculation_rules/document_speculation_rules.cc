@@ -672,8 +672,11 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         if (!referrer)
           continue;
 
+        // Ensured by `SpeculationRuleSet`.
         CHECK(!rule->target_browsing_context_name_hint() ||
               action == mojom::blink::SpeculationAction::kPrerender);
+        CHECK(!rule->requires_anonymous_client_ip_when_cross_origin() ||
+              action == mojom::blink::SpeculationAction::kPrefetch);
 
         candidates.push_back(MakeGarbageCollected<SpeculationCandidate>(
             url, action, referrer.value(),

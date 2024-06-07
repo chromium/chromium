@@ -623,7 +623,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
-          bool allow_target_hint) {
+          bool allow_target_hint,
+          bool allow_requires_anonymous_client_ip_when_cross_origin) {
         // If key doesn't exist, it is not an error and is nop.
         JSONValue* value = parsed->Get(key);
         if (!value) {
@@ -668,13 +669,23 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
             continue;
           }
 
-          // If rule's target browsing context name hint is not null, then
-          // continue.
+          // Rejects if "target_hint" is set but not allowed.
           if (!allow_target_hint &&
               rule->target_browsing_context_name_hint().has_value()) {
             result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
                              "\"target_hint\" may not be set for " +
                                  String(key) + " rules.");
+            continue;
+          }
+
+          // Rejects if "anonymous-client-ip-when-cross-origin" is required but
+          // not allowed.
+          if (!allow_requires_anonymous_client_ip_when_cross_origin &&
+              rule->requires_anonymous_client_ip_when_cross_origin()) {
+            result->SetError(
+                SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                "requirement \"anonymous-client-ip-when-cross-origin\" for \"" +
+                    String(key) + "\" is not supported.");
             continue;
           }
 
@@ -696,15 +707,23 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       };
 
   // If parsed["prefetch"] exists and is a list, then for each...
-  parse_for_action("prefetch", result->prefetch_rules_, false);
+  parse_for_action(
+      "prefetch", result->prefetch_rules_,
+      /*allow_target_hint=*/false,
+      /*allow_requires_anonymous_client_ip_when_cross_origin=*/true);
 
   // If parsed["prefetch_with_subresources"] exists and is a list, then for
   // each...
-  parse_for_action("prefetch_with_subresources",
-                   result->prefetch_with_subresources_rules_, false);
+  parse_for_action(
+      "prefetch_with_subresources", result->prefetch_with_subresources_rules_,
+      /*allow_target_hint=*/false,
+      /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
 
   // If parsed["prerender"] exists and is a list, then for each...
-  parse_for_action("prerender", result->prerender_rules_, true);
+  parse_for_action(
+      "prerender", result->prerender_rules_,
+      /*allow_target_hint=*/true,
+      /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
 
   return result;
 }
