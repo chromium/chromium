@@ -321,6 +321,32 @@ suite('UpdateVoicePack', () => {
       });
 
       test(
+          'and when language-pack lang does not match voice lang, ' +
+              'still disables language',
+          () => {
+            enabledLangs().push('it-it');
+            setAvailableVoices([]);
+
+            app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
+
+            assertFalse(enabledLangs().includes('it-it'));
+          });
+
+      test(
+          'and when language-pack lang does not match voice lang, with ' +
+              'e-speak voices, still disables language',
+          () => {
+            enabledLangs().push('it-it');
+            setAvailableVoices([
+              {lang: 'it', name: 'eSpeak Italian '} as SpeechSynthesisVoice,
+            ]);
+
+            app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
+
+            assertFalse(enabledLangs().includes('it-it'));
+          });
+
+      test(
           'and has other Google voices for language, keeps language enabled',
           () => {
             setAvailableVoices([

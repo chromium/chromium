@@ -930,7 +930,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (availableVoicesForLang.length === 0 ||
           availableVoicesForLang.every(v => isEspeak(v))) {
         this.enabledLanguagesInPref = this.enabledLanguagesInPref.filter(
-            enabledLang => enabledLang !== lang);
+            enabledLang =>
+                this.getVoicePackConvertedLangIfExists_(enabledLang) !== lang);
       }
     } else {
       // Do not rely on the status from Install response. It has responded
