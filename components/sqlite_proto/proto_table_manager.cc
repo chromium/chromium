@@ -69,12 +69,10 @@ void ProtoTableManager::CreateOrClearTablesIfNecessary() {
                                        /*compatible_version=*/schema_version_);
 
   for (const std::string& table_name : table_names_) {
-    success =
-        success &&
-        (db->DoesTableExist(table_name.c_str()) ||
-         db->Execute(base::StringPrintf(kCreateProtoTableStatementTemplate,
-                                        table_name.c_str())
-                         .c_str()));
+    success = success &&
+              (db->DoesTableExist(table_name.c_str()) ||
+               db->Execute(base::StringPrintf(
+                   kCreateProtoTableStatementTemplate, table_name.c_str())));
   }
 
   if (!success || !transaction.Commit())

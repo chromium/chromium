@@ -71,7 +71,7 @@ bool CreateRequestQueueTable(sql::Database* db) {
 //
 // |upgrade_sql| is the SQL statement that copies data from the temporary
 // table back into the primary table.
-bool UpgradeWithQuery(sql::Database* db, const char* upgrade_sql) {
+bool UpgradeWithQuery(sql::Database* db, const base::cstring_view upgrade_sql) {
   if (!db->Execute("ALTER TABLE " REQUEST_QUEUE_TABLE_NAME
                    " RENAME TO temp_" REQUEST_QUEUE_TABLE_NAME)) {
     return false;

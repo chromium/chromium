@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 
@@ -47,7 +48,7 @@ class SqlDatabase {
   // a statement that can Bind* and Run(), otherwise nullptr.
   std::unique_ptr<sql::Statement> GetStatementForQuery(
       const sql::StatementID& sql_from_here,
-      const char* query);
+      base::cstring_view query);
 
   base::FilePath GetPathToDb() const;
 

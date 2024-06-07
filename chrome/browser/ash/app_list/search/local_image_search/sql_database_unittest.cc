@@ -30,7 +30,7 @@ constexpr char SELECT_ALL_QUERY[] =
 // clang-format on
 
 int CreateTestSchema(SqlDatabase* db) {
-  const char* query =
+  static constexpr char query[] =
       // clang-format off
             "CREATE TABLE test("
               "key TEXT NOT NULL,"
@@ -42,7 +42,7 @@ int CreateTestSchema(SqlDatabase* db) {
 }
 
 int CreateOldTestSchema(SqlDatabase* db) {
-  const char* query =
+  static constexpr char query[] =
       // clang-format off
             "CREATE TABLE test("
               "key TEXT NOT NULL)";
@@ -53,7 +53,7 @@ int CreateOldTestSchema(SqlDatabase* db) {
 
 int MigrateTestSchema(SqlDatabase* db, int current_version_number) {
   DCHECK_EQ(current_version_number, 2);
-  const char* query =
+  static constexpr char query[] =
       // clang-format off
             "ALTER TABLE test "
               "ADD value TEXT";

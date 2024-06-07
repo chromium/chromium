@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_database.h"
@@ -38,7 +39,6 @@ namespace constants = activity_log_constants;
 
 namespace extensions {
 
-const char FullStreamUIPolicy::kTableName[] = "activitylog_full";
 const char* const FullStreamUIPolicy::kTableContentFields[] = {
   "extension_id", "time", "action_type", "api_name", "args", "page_url",
   "page_title", "arg_url", "other"
@@ -59,9 +59,9 @@ FullStreamUIPolicy::~FullStreamUIPolicy() {}
 
 bool FullStreamUIPolicy::InitDatabase(sql::Database* db) {
   // Create the unified activity log entry table.
-  return ActivityDatabase::InitializeTable(db, kTableName, kTableContentFields,
-                                           kTableFieldTypes,
-                                           std::size(kTableContentFields));
+  return ActivityDatabase::InitializeTable(
+      db, "activitylog_full", kTableContentFields, kTableFieldTypes,
+      std::size(kTableContentFields));
 }
 
 bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {
@@ -72,12 +72,12 @@ bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {
   if (!transaction.Begin())
     return false;
 
-  std::string sql_str =
-      "INSERT INTO " + std::string(FullStreamUIPolicy::kTableName) +
-      " (extension_id, time, action_type, api_name, args, "
+  static constexpr char kSql[] =
+      "INSERT INTO activitylog_full (extension_id, time, action_type, "
+      "api_name, args, "
       "page_url, page_title, arg_url, other) VALUES (?,?,?,?,?,?,?,?,?)";
-  sql::Statement statement(db->GetCachedStatement(
-      sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+  sql::Statement statement(
+      db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE), kSql));
 
   for (const auto& action : queued_actions_) {
     statement.Reset(true);
@@ -104,7 +104,7 @@ bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {
     }
 
     if (!statement.Run()) {
-      LOG(ERROR) << "Activity log database I/O failed: " << sql_str;
+      LOG(ERROR) << "Activity log database I/O failed: " << kSql;
       return false;
     }
   }
@@ -159,11 +159,10 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
     where_str += where_next + "time BETWEEN ? AND ?";
   std::string query_str = base::StringPrintf(
       "SELECT extension_id,time,action_type,api_name,args,page_url,page_title,"
-      "arg_url,other,rowid FROM %s %s %s ORDER BY time DESC LIMIT 300",
-      kTableName,
-      where_str.empty() ? "" : "WHERE",
-      where_str.c_str());
-  sql::Statement query(db->GetUniqueStatement(query_str.c_str()));
+      "arg_url,other,rowid FROM activitylog_full %s %s ORDER BY time DESC "
+      "LIMIT 300",
+      where_str.empty() ? "" : "WHERE", where_str.c_str());
+  sql::Statement query(db->GetUniqueStatement(query_str));
   int i = -1;
   if (!extension_id.empty())
     query.BindString(++i, extension_id);
@@ -234,10 +233,9 @@ void FullStreamUIPolicy::DoRemoveActions(
   if (!transaction.Begin())
     return;
 
-  std::string statement_str =
-      base::StringPrintf("DELETE FROM %s WHERE rowid = ?", kTableName);
-  sql::Statement statement(db->GetCachedStatement(
-      sql::StatementID(SQL_FROM_HERE), statement_str.c_str()));
+  static constexpr char kSql[] = "DELETE FROM activitylog_full WHERE rowid = ?";
+  sql::Statement statement(
+      db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE), kSql));
   for (long action_id : action_ids) {
     statement.Reset(true);
     statement.BindInt64(0, action_id);
@@ -266,11 +264,11 @@ void FullStreamUIPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
   // If no restrictions then then all URLs need to be removed.
   if (restrict_urls.empty()) {
     sql::Statement statement;
-    std::string sql_str = base::StringPrintf(
-        "UPDATE %s SET page_url=NULL,page_title=NULL,arg_url=NULL",
-        kTableName);
-    statement.Assign(db->GetCachedStatement(
-        sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+    static constexpr char kSql[] =
+        "UPDATE activitylog_full"
+        " SET page_url=NULL,page_title=NULL,arg_url=NULL";
+    statement.Assign(
+        db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE), kSql));
 
     if (!statement.Run()) {
       LOG(ERROR) << "Removing URLs from database failed: "
@@ -287,11 +285,10 @@ void FullStreamUIPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
 
     // Remove any matching page url info.
     sql::Statement statement;
-    std::string sql_str = base::StringPrintf(
-      "UPDATE %s SET page_url=NULL,page_title=NULL WHERE page_url=?",
-      kTableName);
     statement.Assign(db->GetCachedStatement(
-        sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+        sql::StatementID(SQL_FROM_HERE),
+        "UPDATE activitylog_full SET page_url=NULL,page_title=NULL WHERE "
+        "page_url=?"));
     statement.BindString(0, url.spec());
 
     if (!statement.Run()) {
@@ -301,10 +298,9 @@ void FullStreamUIPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
     }
 
     // Remove any matching arg urls.
-    sql_str = base::StringPrintf("UPDATE %s SET arg_url=NULL WHERE arg_url=?",
-                                 kTableName);
     statement.Assign(db->GetCachedStatement(
-        sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+        sql::StatementID(SQL_FROM_HERE),
+        "UPDATE activitylog_full SET arg_url=NULL WHERE arg_url=?"));
     statement.BindString(0, url.spec());
 
     if (!statement.Run()) {
@@ -329,11 +325,8 @@ void FullStreamUIPolicy::DoRemoveExtensionData(
   // Make sure any queued in memory are sent to the database before cleaning.
   activity_database()->AdviseFlush(ActivityDatabase::kFlushImmediately);
 
-  std::string sql_str = base::StringPrintf(
-      "DELETE FROM %s WHERE extension_id=?", kTableName);
-  sql::Statement statement;
-  statement.Assign(
-      db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM activitylog_full WHERE extension_id=?"));
   statement.BindString(0, extension_id);
   if (!statement.Run()) {
     LOG(ERROR) << "Removing URLs for extension "
@@ -353,9 +346,8 @@ void FullStreamUIPolicy::DoDeleteDatabase() {
 
   // Not wrapped in a transaction because the deletion should happen even if
   // the vacuuming fails.
-  std::string sql_str = base::StringPrintf("DELETE FROM %s;", kTableName);
-  sql::Statement statement(db->GetCachedStatement(
-      sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, "DELETE FROM activitylog_full"));
   if (!statement.Run()) {
     LOG(ERROR) << "Deleting the database failed: "
                << statement.GetSQLStatement();

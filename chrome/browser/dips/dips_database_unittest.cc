@@ -554,12 +554,10 @@ INSTANTIATE_TEST_SUITE_P(All, DIPSDatabasePopupsTest, ::testing::Bool());
 TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
   base::HistogramTester histograms;
 
-  ASSERT_TRUE(db_->ExecuteSqlForTesting(
-      base::StringPrintf(
-          "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',NULL,0)",
-          GetVariableColumnNames().first.c_str(),
-          GetVariableColumnNames().second.c_str())
-          .c_str()));
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(base::StringPrintf(
+      "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',NULL,0)",
+      GetVariableColumnNames().first.c_str(),
+      GetVariableColumnNames().second.c_str())));
   db_->Read("site.test");
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_OpenEndedRange_NullStart,
@@ -568,12 +566,10 @@ TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
 
 TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullEnd) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(db_->ExecuteSqlForTesting(
-      base::StringPrintf(
-          "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',0,NULL)",
-          GetVariableColumnNames().first.c_str(),
-          GetVariableColumnNames().second.c_str())
-          .c_str()));
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(base::StringPrintf(
+      "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',0,NULL)",
+      GetVariableColumnNames().first.c_str(),
+      GetVariableColumnNames().second.c_str())));
   db_->Read("site.test");
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_OpenEndedRange_NullEnd, 1);
@@ -586,8 +582,7 @@ TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_EmptyRangeExcluded) {
       base::StringPrintf("INSERT INTO bounces(site,%s,%s) VALUES "
                          "('empty-site.test',NULL,NULL)",
                          GetVariableColumnNames().first.c_str(),
-                         GetVariableColumnNames().second.c_str())
-          .c_str()));
+                         GetVariableColumnNames().second.c_str())));
   db_->Read("empty-site.test");
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_None, 1);
@@ -1617,7 +1612,7 @@ class DIPSDatabaseInitializationTest : public testing::Test {
 
   std::string RowCount(sql::Database* db, const char* table) {
     return sql::test::ExecuteWithResult(
-        db, base::StringPrintf("SELECT COUNT(*) FROM %s", table).c_str());
+        db, base::StringPrintf("SELECT COUNT(*) FROM %s", table));
   }
 
  private:

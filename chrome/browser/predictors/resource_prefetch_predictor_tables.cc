@@ -162,19 +162,15 @@ bool ResourcePrefetchPredictorTables::DropTablesIfOutdated(sql::Database* db) {
           kUrlRedirectTableName, kHostRedirectTableName, kManifestTableName,
           kUrlMetadataTableName, kHostMetadataTableName, kOriginTableName,
           kLcppTableName}) {
-      success =
-          success &&
-          db->Execute(base::StringPrintf("DROP TABLE IF EXISTS %s", table_name)
-                          .c_str());
+      success = success && db->Execute(base::StringPrintf(
+                               "DROP TABLE IF EXISTS %s", table_name));
     }
   }
 
   if (incompatible_version) {
-    success =
-        success &&
-        db->Execute(base::StringPrintf(kCreateGlobalMetadataStatementTemplate,
-                                       kMetadataTableName)
-                        .c_str());
+    success = success &&
+              db->Execute(base::StringPrintf(
+                  kCreateGlobalMetadataStatementTemplate, kMetadataTableName));
     success = success && SetDatabaseVersion(db, kDatabaseVersion);
   }
 
@@ -185,10 +181,8 @@ bool ResourcePrefetchPredictorTables::DropTablesIfOutdated(sql::Database* db) {
 int ResourcePrefetchPredictorTables::GetDatabaseVersion(sql::Database* db) {
   int version = 0;
   if (db->DoesTableExist(kMetadataTableName)) {
-    sql::Statement statement(db->GetUniqueStatement(
-        base::StringPrintf("SELECT value FROM %s WHERE key='version'",
-                           kMetadataTableName)
-            .c_str()));
+    sql::Statement statement(db->GetUniqueStatement(base::StringPrintf(
+        "SELECT value FROM %s WHERE key='version'", kMetadataTableName)));
     if (statement.Step())
       version = statement.ColumnInt(0);
   }
@@ -198,11 +192,9 @@ int ResourcePrefetchPredictorTables::GetDatabaseVersion(sql::Database* db) {
 // static
 bool ResourcePrefetchPredictorTables::SetDatabaseVersion(sql::Database* db,
                                                          int version) {
-  sql::Statement statement(db->GetUniqueStatement(
-      base::StringPrintf(
-          "INSERT OR REPLACE INTO %s (key,value) VALUES ('version',%d)",
-          kMetadataTableName, version)
-          .c_str()));
+  sql::Statement statement(db->GetUniqueStatement(base::StringPrintf(
+      "INSERT OR REPLACE INTO %s (key,value) VALUES ('version',%d)",
+      kMetadataTableName, version)));
   return statement.Run();
 }
 
@@ -224,11 +216,9 @@ void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
 
   for (const char* table_name :
        {kHostRedirectTableName, kOriginTableName, kLcppTableName}) {
-    success = success &&
-              (db->DoesTableExist(table_name) ||
-               db->Execute(base::StringPrintf(
-                               kCreateProtoTableStatementTemplate, table_name)
-                               .c_str()));
+    success = success && (db->DoesTableExist(table_name) ||
+                          db->Execute(base::StringPrintf(
+                              kCreateProtoTableStatementTemplate, table_name)));
   }
 
   if (success) {

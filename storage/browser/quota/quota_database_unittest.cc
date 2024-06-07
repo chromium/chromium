@@ -129,7 +129,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database->sequence_checker_);
     ASSERT_TRUE(quota_database->db_);
     for (const auto& entry : entries) {
-      const char* kSql =
+      static constexpr char kSql[] =
           // clang-format off
           "INSERT INTO buckets("
               "id,"

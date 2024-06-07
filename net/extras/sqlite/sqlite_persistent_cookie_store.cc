@@ -645,7 +645,7 @@ class IncrementTimeDelta {
 bool CreateV20Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
 
-  const char* kCreateTableQuery =
+  static constexpr char kCreateTableQuery[] =
       "CREATE TABLE cookies("
       "creation_utc INTEGER NOT NULL,"
       "host_key TEXT NOT NULL,"
@@ -667,7 +667,7 @@ bool CreateV20Schema(sql::Database* db) {
       "is_same_party INTEGER NOT NULL,"
       "last_update_utc INTEGER NOT NULL);";
 
-  const char* kCreateIndexQuery =
+  static constexpr char kCreateIndexQuery[] =
       "CREATE UNIQUE INDEX cookies_unique_index "
       "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
       "source_port)";
@@ -678,7 +678,7 @@ bool CreateV20Schema(sql::Database* db) {
 bool CreateV21Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
 
-  const char* kCreateTableQuery =
+  static constexpr char kCreateTableQuery[] =
       "CREATE TABLE cookies("
       "creation_utc INTEGER NOT NULL,"
       "host_key TEXT NOT NULL,"
@@ -699,7 +699,7 @@ bool CreateV21Schema(sql::Database* db) {
       "source_port INTEGER NOT NULL,"
       "last_update_utc INTEGER NOT NULL);";
 
-  const char* kCreateIndexQuery =
+  static constexpr char kCreateIndexQuery[] =
       "CREATE UNIQUE INDEX cookies_unique_index "
       "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
       "source_port)";
@@ -710,7 +710,7 @@ bool CreateV21Schema(sql::Database* db) {
 bool CreateV22Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
 
-  const char* kCreateTableQuery =
+  static constexpr char kCreateTableQuery[] =
       "CREATE TABLE cookies("
       "creation_utc INTEGER NOT NULL,"
       "host_key TEXT NOT NULL,"
@@ -732,7 +732,7 @@ bool CreateV22Schema(sql::Database* db) {
       "last_update_utc INTEGER NOT NULL,"
       "source_type INTEGER NOT NULL);";
 
-  const char* kCreateIndexQuery =
+  static constexpr char kCreateIndexQuery[] =
       "CREATE UNIQUE INDEX cookies_unique_index "
       "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
       "source_port)";
@@ -743,7 +743,7 @@ bool CreateV22Schema(sql::Database* db) {
 bool CreateV23Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
 
-  const char* kCreateTableQuery =
+  static constexpr char kCreateTableQuery[] =
       "CREATE TABLE cookies("
       "creation_utc INTEGER NOT NULL,"
       "host_key TEXT NOT NULL,"
@@ -766,7 +766,7 @@ bool CreateV23Schema(sql::Database* db) {
       "source_type INTEGER NOT NULL,"
       "has_cross_site_ancestor INTEGER NOT NULL);";
 
-  const char* kCreateIndexQuery =
+  static constexpr char kCreateIndexQuery[] =
       "CREATE UNIQUE INDEX cookies_unique_index "
       "ON cookies(host_key, top_frame_site_key, has_cross_site_ancestor, "
       "name, path, source_scheme, source_port)";

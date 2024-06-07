@@ -236,11 +236,11 @@ bool ContextDatabase::RemoveItemsByIds(std::vector<int64_t> item_ids) {
 
   const std::string remove_items_by_id_sql = base::StrCat(
       {"DELETE FROM items WHERE id IN ('", delete_in_clause.str(), "')"});
-  CHECK(db_.IsSQLValid(remove_items_by_id_sql.c_str()));
+  CHECK(db_.IsSQLValid(remove_items_by_id_sql));
 
   // TODO(b/341833149): Cache the statement.
   std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
-      db_.GetUniqueStatement(remove_items_by_id_sql.c_str()));
+      db_.GetUniqueStatement(remove_items_by_id_sql));
   if (!statement) {
     LOG(ERROR) << "Couldn't create SQL statement";
     return {};

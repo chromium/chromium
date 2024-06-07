@@ -103,8 +103,7 @@ class DIPSDatabaseMigrationTest : public testing::Test {
         db,
         base::StringPrintf("SELECT first_%s_time,last_%s_time FROM bounces "
                            "WHERE site='%s'",
-                           column, column, site)
-            .c_str(),
+                           column, column, site),
         "|", ",");
 
     return base::SplitString(both_times, "|", base::KEEP_WHITESPACE,
@@ -118,8 +117,7 @@ class DIPSDatabaseMigrationTest : public testing::Test {
         sql::test::ExecuteWithResult(
             db,
             base::StringPrintf("SELECT COUNT(*) FROM %s WHERE %s IS NOT NULL",
-                               table, column)
-                .c_str());
+                               table, column));
     EXPECT_EQ(num_rows_with_non_null_column_value, "0");
   }
 

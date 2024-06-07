@@ -1392,7 +1392,7 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
 }
 
 TEST_F(AttributionStorageSqlTest, NegativeTriggerMoment_HistogramRecorded) {
-  const char* sql = "UPDATE sources SET source_time=?";
+  const char sql[] = "UPDATE sources SET source_time=?";
   base::HistogramTester histograms;
 
   OpenDatabase();
@@ -1501,7 +1501,7 @@ TEST_F(AttributionStorageSqlTest,
 TEST_F(AttributionStorageSqlTest,
        InvalidSourceOriginOrSite_FailsDeserialization) {
   const struct {
-    const char* sql;
+    const std::string sql;
     const char* value;
   } kTestCases[] = {
       {
@@ -1697,7 +1697,7 @@ TEST_F(AttributionStorageSqlTest,
       },
   };
 
-  for (const char* update_sql : kUpdateSqls) {
+  for (const std::string update_sql : kUpdateSqls) {
     for (const auto& test_case : kTestCases) {
       OpenDatabase();
 

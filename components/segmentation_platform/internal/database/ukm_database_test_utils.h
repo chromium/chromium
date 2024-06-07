@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_UKM_DATABASE_TEST_UTILS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_UKM_DATABASE_TEST_UTILS_H_
 
-#include <string_view>
-
+#include "base/strings/cstring_view.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "url/gurl.h"
@@ -16,7 +15,7 @@ namespace segmentation_platform::test_util {
 // Runs a `SELECT * FROM metrics WHERE cond` type query and returns the metrics
 // rows.
 std::vector<UkmMetricsTable::MetricsRow> GetMetricsRowWithQuery(
-    std::string_view query,
+    base::cstring_view query,
     sql::Database& db);
 
 // Gets all rows from metrics table.
@@ -43,7 +42,7 @@ std::vector<UmaMetricEntry> GetAllUmaMetrics(sql::Database& db);
 
 // Runs a `SELECT * FROM uma_metrics WHERE cond` type query and returns the
 // metrics rows.
-std::vector<UmaMetricEntry> GetUmaMetricsRowWithQuery(std::string_view query,
+std::vector<UmaMetricEntry> GetUmaMetricsRowWithQuery(base::cstring_view query,
                                                       sql::Database& db);
 
 // Checks UMA rows are equal.

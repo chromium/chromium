@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -63,7 +64,7 @@ bool CreateOfflinePagesTable(sql::Database* db) {
   return db->Execute(kCreateLatestOfflinePagesTableSql);
 }
 
-bool UpgradeWithQuery(sql::Database* db, const char* upgrade_sql) {
+bool UpgradeWithQuery(sql::Database* db, const base::cstring_view upgrade_sql) {
   if (!db->Execute("ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
                    " RENAME TO temp_" OFFLINE_PAGES_TABLE_NAME)) {
     return false;

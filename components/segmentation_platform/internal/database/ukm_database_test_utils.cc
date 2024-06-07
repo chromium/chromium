@@ -4,8 +4,6 @@
 
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 
-#include <string_view>
-
 #include "base/strings/string_number_conversions.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "sql/database.h"
@@ -61,9 +59,9 @@ bool operator==(const UrlMatcher& row1, const UrlMatcher& row2) {
 }
 
 std::vector<UkmMetricsTable::MetricsRow> GetMetricsRowWithQuery(
-    std::string_view query,
+    base::cstring_view query,
     sql::Database& db) {
-  sql::Statement statement(db.GetUniqueStatement(query.data()));
+  sql::Statement statement(db.GetUniqueStatement(query));
   std::vector<UkmMetricsTable::MetricsRow> rows;
   while (statement.Step()) {
     rows.emplace_back(GetMetricsRowWithQuery(statement));
@@ -111,9 +109,9 @@ void AssertUrlsInTable(sql::Database& db, const std::vector<UrlMatcher>& urls) {
   EXPECT_THAT(actual_rows, UnorderedElementsAreArray(urls));
 }
 
-std::vector<UmaMetricEntry> GetUmaMetricsRowWithQuery(std::string_view query,
+std::vector<UmaMetricEntry> GetUmaMetricsRowWithQuery(base::cstring_view query,
                                                       sql::Database& db) {
-  sql::Statement statement(db.GetUniqueStatement(query.data()));
+  sql::Statement statement(db.GetUniqueStatement(query));
   std::vector<UmaMetricEntry> rows;
   while (statement.Step()) {
     rows.emplace_back(GetUmaMetricsRowWithQuery(statement));

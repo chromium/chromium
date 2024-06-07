@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -31,16 +32,16 @@
 using base::Time;
 
 // static
-const char KeywordTable::kDefaultSearchProviderKey[] =
+constexpr char KeywordTable::kDefaultSearchProviderKey[] =
     "Default Search Provider ID";
 
 namespace {
 
 // Keys used in the meta table.
-const char kBuiltinKeywordDataVersion[] = "Builtin Keyword Version";
-const char kBuiltinKeywordMilestone[] = "Builtin Keyword Milestone";
-const char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
-const char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
+constexpr char kBuiltinKeywordDataVersion[] = "Builtin Keyword Version";
+constexpr char kBuiltinKeywordMilestone[] = "Builtin Keyword Milestone";
+constexpr char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
+constexpr char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
 const std::string ColumnsForVersion(int version, bool concatenated) {
   std::vector<std::string_view> columns;
@@ -300,9 +301,9 @@ bool KeywordTable::PerformOperations(const Operations& operations) {
 }
 
 bool KeywordTable::GetKeywords(Keywords* keywords) {
-  std::string query("SELECT " + GetKeywordColumns() +
-                    " FROM keywords ORDER BY id ASC");
-  sql::Statement s(db_->GetUniqueStatement(query.c_str()));
+  const std::string query = base::StrCat(
+      {"SELECT ", GetKeywordColumns(), " FROM keywords ORDER BY id ASC"});
+  sql::Statement s(db_->GetUniqueStatement(query));
 
   std::set<TemplateURLID> bad_entries;
   while (s.Step()) {
@@ -389,10 +390,9 @@ bool KeywordTable::MigrateToVersion59RemoveExtensionKeywords() {
 // the new table is renamed to it.
 bool KeywordTable::MigrateToVersion68RemoveShowInDefaultListColumn() {
   sql::Transaction transaction(db_);
-  std::string query_str =
-      std::string("INSERT INTO temp_keywords SELECT " +
-                  ColumnsForVersion(68, false) + " FROM keywords");
-  const char* clone_query = query_str.c_str();
+  const std::string query_str =
+      base::StrCat({"INSERT INTO temp_keywords SELECT ",
+                    ColumnsForVersion(68, false), " FROM keywords"});
   return transaction.Begin() &&
          db_->Execute(
              "CREATE TABLE temp_keywords ("
@@ -420,7 +420,7 @@ bool KeywordTable::MigrateToVersion68RemoveShowInDefaultListColumn() {
              "instant_url_post_params VARCHAR,"
              "image_url_post_params VARCHAR,"
              "new_tab_url VARCHAR)") &&
-         db_->Execute(clone_query) && db_->Execute("DROP TABLE keywords") &&
+         db_->Execute(query_str) && db_->Execute("DROP TABLE keywords") &&
          db_->Execute("ALTER TABLE temp_keywords RENAME TO keywords") &&
          transaction.Commit();
 }
@@ -436,10 +436,9 @@ bool KeywordTable::MigrateToVersion69AddLastVisitedColumn() {
 // table is renamed to it.
 bool KeywordTable::MigrateToVersion76RemoveInstantColumns() {
   sql::Transaction transaction(db_);
-  std::string query_str =
-      std::string("INSERT INTO temp_keywords SELECT " +
-                  ColumnsForVersion(76, false) + " FROM keywords");
-  const char* clone_query = query_str.c_str();
+  const std::string query_str =
+      base::StrCat({"INSERT INTO temp_keywords SELECT ",
+                    ColumnsForVersion(76, false), " FROM keywords"});
   return transaction.Begin() &&
          db_->Execute(
              "CREATE TABLE temp_keywords ("
@@ -465,7 +464,7 @@ bool KeywordTable::MigrateToVersion76RemoveInstantColumns() {
              "image_url_post_params VARCHAR,"
              "new_tab_url VARCHAR,"
              "last_visited INTEGER DEFAULT 0)") &&
-         db_->Execute(clone_query) && db_->Execute("DROP TABLE keywords") &&
+         db_->Execute(query_str) && db_->Execute("DROP TABLE keywords") &&
          db_->Execute("ALTER TABLE temp_keywords RENAME TO keywords") &&
          transaction.Commit();
 }
@@ -475,9 +474,9 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
   if (!transaction.Begin())
     return false;
 
-  std::string query(
-      "SELECT id, date_created, last_modified, last_visited FROM keywords");
-  sql::Statement s(db_->GetUniqueStatement(query.c_str()));
+  static constexpr char kQuery[] =
+      "SELECT id, date_created, last_modified, last_visited FROM keywords";
+  sql::Statement s(db_->GetUniqueStatement(kQuery));
   std::vector<std::tuple<TemplateURLID, Time, Time, Time>> updates;
   while (s.Step()) {
     updates.emplace_back(std::make_tuple(s.ColumnInt64(0), s.ColumnTime(1),
@@ -584,11 +583,11 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
 
 bool KeywordTable::AddKeyword(const TemplateURLData& data) {
   DCHECK(data.id);
-  std::string query(
-      "INSERT INTO keywords (" + GetKeywordColumns() +
-      ") "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query.c_str()));
+  const std::string query = base::StrCat(
+      {"INSERT INTO keywords (", GetKeywordColumns(),
+       ") "
+       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"});
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query));
   BindURLToStatement(data, &s, 0, 1);
 
   return s.Run();
@@ -623,10 +622,10 @@ bool KeywordTable::UpdateKeyword(const TemplateURLData& data) {
 bool KeywordTable::GetKeywordAsString(TemplateURLID id,
                                       const std::string& table_name,
                                       std::string* result) {
-  std::string query("SELECT " +
-      ColumnsForVersion(WebDatabase::kCurrentVersionNumber, true) +
-      " FROM " + table_name + " WHERE id=?");
-  sql::Statement s(db_->GetUniqueStatement(query.c_str()));
+  const std::string query = base::StrCat(
+      {"SELECT ", ColumnsForVersion(WebDatabase::kCurrentVersionNumber, true),
+       " FROM ", table_name, " WHERE id=?"});
+  sql::Statement s(db_->GetUniqueStatement(query));
   s.BindInt64(0, id);
 
   if (!s.Step()) {

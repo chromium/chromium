@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This fuzzer exercises recovery like sql_recovery_fuzzer, but employs a
-// different strategy for generating database files. Rather than directly
-// interpreting the fuzzer input as a SQLite database file, this fuzzer
-// constructs a DB from fuzzer-derived SQL statements and then mutates the file
-// with fuzzer-derived XOR masks before exercising recovery.
+// This fuzzer constructs a DB from fuzzer-derived SQL statements and then
+// mutates the file with fuzzer-derived XOR masks before exercising recovery.
 
 #include <fuzzer/FuzzedDataProvider.h>
 
@@ -32,6 +29,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -148,8 +147,8 @@ class TestCase {
   sql::Recovery::Strategy strategy() const { return strategy_; }
   bool wal_mode() const { return wal_mode_; }
   base::span<const Mutation> mutations() const { return mutations_; }
-  std::string_view sql_statement() const { return sql_statement_; }
-  std::string_view sql_statement_after_open() const {
+  base::cstring_view sql_statement() const { return sql_statement_; }
+  base::cstring_view sql_statement_after_open() const {
     return sql_statement_after_open_;
   }
 
@@ -236,7 +235,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     // foo". Temporarily silence those warnings.
     logging::ScopedLoggingSettings scoped_logging;
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
-    std::ignore = database.Execute(test_case.sql_statement().data());
+    std::ignore = database.Execute(test_case.sql_statement());
   }
   database.Close();
 
@@ -293,7 +292,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   if (opened) {
     logging::ScopedLoggingSettings scoped_logging;
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
-    std::ignore = database.Execute(test_case.sql_statement_after_open().data());
+    std::ignore = database.Execute(test_case.sql_statement_after_open());
 
     database.Close();
   }

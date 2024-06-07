@@ -5,6 +5,7 @@
 #include "components/payments/content/payment_method_manifest_table.h"
 
 #include <time.h>
+
 #include <string>
 
 #include "base/feature_list.h"
@@ -277,7 +278,7 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
   return credentials;
 }
 
-bool PaymentMethodManifestTable::ExecuteForTest(const char* sql) {
+bool PaymentMethodManifestTable::ExecuteForTest(const base::cstring_view sql) {
   return db_->Execute(sql);
 }
 
@@ -286,8 +287,8 @@ bool PaymentMethodManifestTable::RazeForTest() {
 }
 
 bool PaymentMethodManifestTable::DoesColumnExistForTest(
-    const char* table_name,
-    const char* column_name) {
+    const base::cstring_view table_name,
+    const base::cstring_view column_name) {
   return db_->DoesColumnExist(table_name, column_name);
 }
 

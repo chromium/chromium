@@ -214,7 +214,7 @@ void InMemoryURLIndexTest::SetUp() {
         ASSERT_TRUE(base::ReadFileToString(golden_path, &sql));
         sql::Database& db(GetDB());
         ASSERT_TRUE(db.is_open());
-        ASSERT_TRUE(db.Execute(sql.c_str()));
+        ASSERT_TRUE(db.Execute(sql));
 
         // Update [urls.last_visit_time] and [visits.visit_time] to represent a
         // time relative to 'now'.

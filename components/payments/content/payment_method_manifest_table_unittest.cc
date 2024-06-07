@@ -495,8 +495,7 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
        " x''," +
        base::NumberToString(
            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()) +
-       ")")
-          .c_str()));
+       ")")));
 
   EXPECT_FALSE(payment_method_manifest_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "user_id"));

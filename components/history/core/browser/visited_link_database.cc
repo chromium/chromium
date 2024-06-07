@@ -13,8 +13,6 @@
 #include "sql/statement.h"
 #include "url/gurl.h"
 
-namespace history {
-
 // The VisitedLinkDatabase contains the following fields:
 // `id` - the unique int64 ID assigned to this row.
 // `link_url_id` - the unique URLID assigned to the row where this link url is
@@ -26,8 +24,11 @@ namespace history {
 // `visit_count` - the number of entries in the VisitDatabase corresponding to
 //               this row (must exactly match the <link_url, top_level_url,
 //               frame_url> partition key).
-const char VisitedLinkDatabase::kVisitedLinkRowFields[] =
-    HISTORY_VISITED_LINK_ROW_FIELDS;
+#define HISTORY_VISITED_LINK_ROW_FIELDS                                        \
+  "visited_links.id, visited_links.link_url_id, visited_links.top_level_url, " \
+  "visited_links.frame_url, visited_links.visit_count"
+
+namespace history {
 
 VisitedLinkDatabase::VisitedLinkEnumerator::VisitedLinkEnumerator()
     : initialized_(false) {}
@@ -48,7 +49,7 @@ VisitedLinkDatabase::VisitedLinkDatabase() = default;
 VisitedLinkDatabase::~VisitedLinkDatabase() = default;
 
 // Convenience to fill a VisitedLinkRow. Must be in sync with the fields in
-// kVisitedLinkRowFields.
+// HISTORY_VISITED_LINK_ROW_FIELDS.
 void VisitedLinkDatabase::FillVisitedLinkRow(sql::Statement& s,
                                              VisitedLinkRow& i) {
   i.id = s.ColumnInt64(0);
@@ -137,10 +138,8 @@ bool VisitedLinkDatabase::DeleteVisitedLinkRow(VisitedLinkID id) {
 bool VisitedLinkDatabase::InitVisitedLinkEnumeratorForEverything(
     VisitedLinkEnumerator& enumerator) {
   DCHECK(!enumerator.initialized_);
-  std::string sql("SELECT ");
-  sql.append(kVisitedLinkRowFields);
-  sql.append(" FROM visited_links");
-  enumerator.statement_.Assign(GetDB().GetUniqueStatement(sql.c_str()));
+  enumerator.statement_.Assign(GetDB().GetUniqueStatement(
+      "SELECT " HISTORY_VISITED_LINK_ROW_FIELDS " FROM visited_links"));
   enumerator.initialized_ = enumerator.statement_.is_valid();
   return enumerator.statement_.is_valid();
 }
@@ -151,15 +150,14 @@ bool VisitedLinkDatabase::CreateVisitedLinkTable() {
   }
   // Note: revise implementation for InsertOrUpdateVisitedLinkRowByID() if you
   // add any new constraints to the schema.
-  std::string sql;
-  sql.append("CREATE TABLE visited_links(");
-  sql.append(
+  static constexpr char kSql[] =
+      "CREATE TABLE visited_links("
       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
       "link_url_id INTEGER NOT NULL,"
       "top_level_url LONGVARCHAR NOT NULL,"
       "frame_url LONGVARCHAR NOT NULL,"
-      "visit_count INTEGER DEFAULT 0 NOT NULL)");
-  if (!GetDB().Execute(sql.c_str())) {
+      "visit_count INTEGER DEFAULT 0 NOT NULL)";
+  if (!GetDB().Execute(kSql)) {
     return false;
   }
 

@@ -36,7 +36,7 @@ void HistoryUnitTestBase::ExecuteSQLScript(const base::FilePath& sql_path,
 
   sql::Database connection;
   ASSERT_TRUE(connection.Open(db_path));
-  ASSERT_TRUE(connection.Execute(sql.c_str()));
+  ASSERT_TRUE(connection.Execute(sql));
 }
 
 HistoryUnitTestBase::HistoryUnitTestBase() {

@@ -88,7 +88,7 @@ template <typename T>
 void KeyValueTable<T>::GetAllData(std::map<std::string, T>* data_map,
                                   sql::Database* db) const {
   sql::Statement reader(db->GetUniqueStatement(
-      ::sqlite_proto::internal::GetSelectAllSql(table_name_).c_str()));
+      ::sqlite_proto::internal::GetSelectAllSql(table_name_)));
   while (reader.Step()) {
     auto it = data_map->emplace(reader.ColumnString(0), T()).first;
     base::span<const uint8_t> blob = reader.ColumnBlob(1);
@@ -101,7 +101,7 @@ void KeyValueTable<T>::UpdateData(const std::string& key,
                                   const T& data,
                                   sql::Database* db) {
   sql::Statement inserter(db->GetUniqueStatement(
-      ::sqlite_proto::internal::GetReplaceSql(table_name_).c_str()));
+      ::sqlite_proto::internal::GetReplaceSql(table_name_)));
   ::sqlite_proto::internal::BindDataToStatement(key, data, &inserter);
   inserter.Run();
 }
@@ -110,7 +110,7 @@ template <typename T>
 void KeyValueTable<T>::DeleteData(const std::vector<std::string>& keys,
                                   sql::Database* db) {
   sql::Statement deleter(db->GetUniqueStatement(
-      ::sqlite_proto::internal::GetDeleteSql(table_name_).c_str()));
+      ::sqlite_proto::internal::GetDeleteSql(table_name_)));
   for (const auto& key : keys) {
     deleter.BindString(0, key);
     deleter.Run();
@@ -121,7 +121,7 @@ void KeyValueTable<T>::DeleteData(const std::vector<std::string>& keys,
 template <typename T>
 void KeyValueTable<T>::DeleteAllData(sql::Database* db) {
   sql::Statement deleter(db->GetUniqueStatement(
-      ::sqlite_proto::internal::GetDeleteAllSql(table_name_).c_str()));
+      ::sqlite_proto::internal::GetDeleteAllSql(table_name_)));
   deleter.Run();
 }
 

@@ -44,8 +44,7 @@ bool CreateTable(
   return db->Execute(
       base::StrCat({"CREATE TABLE ", table_name, " (",
                     base::JoinString(combined_names_and_types, ", "),
-                    primary_key_clause, ")"})
-          .c_str());
+                    primary_key_clause, ")"}));
 }
 
 bool CreateTableIfNotExists(
@@ -66,8 +65,7 @@ bool CreateIndex(sql::Database* db,
       base::StrCat({table_name, "_", base::JoinString(columns, "_")});
   return db->Execute(
       base::StrCat({"CREATE INDEX ", index_name, " ON ", table_name, "(",
-                    base::JoinString(columns, ", "), ")"})
-          .c_str());
+                    base::JoinString(columns, ", "), ")"}));
 }
 
 void InsertBuilder(sql::Database* db,
@@ -82,31 +80,29 @@ void InsertBuilder(sql::Database* db,
   statement.Assign(db->GetUniqueStatement(
       base::StrCat({insert_or_replace, "INTO ", table_name, " (",
                     base::JoinString(column_names, ", "), ") VALUES (",
-                    placeholders, ")"})
-          .c_str()));
+                    placeholders, ")"})));
 }
 
 bool RenameTable(sql::Database* db,
                  std::string_view from,
                  std::string_view to) {
-  return db->Execute(
-      base::StrCat({"ALTER TABLE ", from, " RENAME TO ", to}).c_str());
+  return db->Execute(base::StrCat({"ALTER TABLE ", from, " RENAME TO ", to}));
 }
 
 bool DoesColumnExist(sql::Database* db,
                      std::string_view table_name,
                      std::string_view column_name) {
-  return db->DoesColumnExist(std::string(table_name).c_str(),
-                             std::string(column_name).c_str());
+  return db->DoesColumnExist(
+      base::cstring_view(table_name.data(), table_name.size()),
+      base::cstring_view(column_name.data(), column_name.size()));
 }
 
 bool AddColumn(sql::Database* db,
                std::string_view table_name,
                std::string_view column_name,
                std::string_view type) {
-  return db->Execute(base::StrCat({"ALTER TABLE ", table_name, " ADD COLUMN ",
-                                   column_name, " ", type})
-                         .c_str());
+  return db->Execute(base::StrCat(
+      {"ALTER TABLE ", table_name, " ADD COLUMN ", column_name, " ", type}));
 }
 
 bool AddColumnIfNotExists(sql::Database* db,
@@ -121,14 +117,12 @@ bool DropColumn(sql::Database* db,
                 std::string_view table_name,
                 std::string_view column_name) {
   return db->Execute(
-      base::StrCat({"ALTER TABLE ", table_name, " DROP COLUMN ", column_name})
-          .c_str());
+      base::StrCat({"ALTER TABLE ", table_name, " DROP COLUMN ", column_name}));
   ;
 }
 
 bool DropTableIfExists(sql::Database* db, std::string_view table_name) {
-  return db->Execute(
-      base::StrCat({"DROP TABLE IF EXISTS ", table_name}).c_str());
+  return db->Execute(base::StrCat({"DROP TABLE IF EXISTS ", table_name}));
 }
 
 void DeleteBuilder(sql::Database* db,
@@ -138,7 +132,7 @@ void DeleteBuilder(sql::Database* db,
   auto where =
       where_clause.empty() ? "" : base::StrCat({" WHERE ", where_clause});
   statement.Assign(db->GetUniqueStatement(
-      base::StrCat({"DELETE FROM ", table_name, where}).c_str()));
+      base::StrCat({"DELETE FROM ", table_name, where})));
 }
 
 bool Delete(sql::Database* db,
@@ -178,10 +172,8 @@ void UpdateBuilder(sql::Database* db,
       base::JoinString(column_names, " = ?, ") + " = ?";
   auto where =
       where_clause.empty() ? "" : base::StrCat({" WHERE ", where_clause});
-  statement.Assign(
-      db->GetUniqueStatement(base::StrCat({"UPDATE ", table_name, " SET ",
-                                           columns_with_placeholders, where})
-                                 .c_str()));
+  statement.Assign(db->GetUniqueStatement(base::StrCat(
+      {"UPDATE ", table_name, " SET ", columns_with_placeholders, where})));
 }
 
 void SelectBuilder(sql::Database* db,
@@ -191,8 +183,7 @@ void SelectBuilder(sql::Database* db,
                    std::string_view modifiers) {
   statement.Assign(db->GetUniqueStatement(
       base::StrCat({"SELECT ", base::JoinString(columns, ", "), " FROM ",
-                    table_name, " ", modifiers})
-          .c_str()));
+                    table_name, " ", modifiers})));
 }
 
 bool SelectByGuid(sql::Database* db,

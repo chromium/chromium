@@ -299,7 +299,7 @@ void UkmDatabaseBackend::RunReadOnlyQueries(QueryList&& queries,
     const UkmDatabase::CustomSqlQuery& query = index_and_query.second;
     std::string debug_query = query.query;
 
-    sql::Statement statement(db_.GetReadonlyStatement(query.query.c_str()));
+    sql::Statement statement(db_.GetReadonlyStatement(query.query));
     debug_query +=
         " Bind values: " + BindValuesToStatement(query.bind_values, statement);
 

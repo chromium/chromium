@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -132,7 +133,7 @@ class ActivityDatabase {
   // columns (e.g., INTEGER or LONGVARCHAR). There should be the same number of
   // field_types as content_fields, since the two arrays should correspond.
   static bool InitializeTable(sql::Database* db,
-                              const char* table_name,
+                              base::cstring_view table_name,
                               const char* const content_fields[],
                               const char* const field_types[],
                               const int num_content_fields);

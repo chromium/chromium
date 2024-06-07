@@ -64,7 +64,7 @@ using sql::test::ExecuteWithResult;
 // Helper to return the count of items in sqlite_schema.  Return -1 in
 // case of error.
 int SqliteSchemaCount(Database* db) {
-  const char* kSchemaCount = "SELECT COUNT(*) FROM sqlite_schema";
+  static constexpr char kSchemaCount[] = "SELECT COUNT(*) FROM sqlite_schema";
   Statement s(db->GetUniqueStatement(kSchemaCount));
   return s.Step() ? s.ColumnInt(0) : -1;
 }
@@ -268,8 +268,8 @@ TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_StopsOnStepError) {
 TEST_P(SQLDatabaseTest, CachedStatement) {
   StatementID id1 = SQL_FROM_HERE;
   StatementID id2 = SQL_FROM_HERE;
-  static const char kId1Sql[] = "SELECT a FROM foo";
-  static const char kId2Sql[] = "SELECT b FROM foo";
+  static constexpr char kId1Sql[] = "SELECT a FROM foo";
+  static constexpr char kId2Sql[] = "SELECT b FROM foo";
 
   ASSERT_TRUE(db_->Execute("CREATE TABLE foo (a, b)"));
   ASSERT_TRUE(db_->Execute("INSERT INTO foo(a, b) VALUES (12, 13)"));
@@ -406,7 +406,7 @@ TEST_P(SQLDatabaseTest, GetLastInsertRowId) {
 // Test the scoped error expecter by attempting to insert a duplicate
 // value into an index.
 TEST_P(SQLDatabaseTest, ScopedErrorExpecter) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_TRUE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
 
@@ -419,7 +419,7 @@ TEST_P(SQLDatabaseTest, ScopedErrorExpecter) {
 }
 
 TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_FALSE(db_->DoesTableExist("bar"));
   ASSERT_TRUE(db_->DoesTableExist("foo"));
@@ -804,7 +804,8 @@ TEST_P(SQLDatabaseTest, GetCachedStatement_NoContents) {
 }
 
 TEST_P(SQLDatabaseTest, GetReadonlyStatement) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_TRUE(db_->Execute("INSERT INTO foo (value) VALUES (12)"));
 
@@ -863,7 +864,8 @@ TEST_P(SQLDatabaseTest, IsSQLValid_NoContents) {
 // Test that Database::Raze() results in a database without the
 // tables from the original database.
 TEST_P(SQLDatabaseTest, Raze) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_TRUE(db_->Execute("INSERT INTO foo (value) VALUES (12)"));
 
@@ -943,9 +945,11 @@ void TestPageSize(const base::FilePath& db_prefix,
                   const std::string& expected_initial_page_size,
                   int final_page_size,
                   const std::string& expected_final_page_size) {
-  static const char kCreateSql[] = "CREATE TABLE x (t TEXT)";
-  static const char kInsertSql1[] = "INSERT INTO x VALUES ('This is a test')";
-  static const char kInsertSql2[] = "INSERT INTO x VALUES ('That was a test')";
+  static constexpr char kCreateSql[] = "CREATE TABLE x (t TEXT)";
+  static constexpr char kInsertSql1[] =
+      "INSERT INTO x VALUES ('This is a test')";
+  static constexpr char kInsertSql2[] =
+      "INSERT INTO x VALUES ('That was a test')";
 
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
@@ -1007,7 +1011,8 @@ TEST_P(SQLDatabaseTest, RazePageSize) {
 
 // Test that Raze() results are seen in other connections.
 TEST_P(SQLDatabaseTest, RazeMultiple) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
 
   Database other_db(GetDBOptions());
@@ -1109,7 +1114,8 @@ TEST_P(SQLDatabaseTest, RazeNOTADB) {
 
 // Verify that Raze() can handle a database overwritten with garbage.
 TEST_P(SQLDatabaseTest, RazeNOTADB2) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_EQ(1, SqliteSchemaCount(db_.get()));
   db_->Close();
@@ -1138,7 +1144,8 @@ TEST_P(SQLDatabaseTest, RazeNOTADB2) {
 // Raze() cannot happen later.  Additionally test that when the
 // callback does this during Open(), the open is retried and succeeds.
 TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_EQ(1, SqliteSchemaCount(db_.get()));
   db_->Close();
@@ -1361,7 +1368,8 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   ASSERT_GT(expected_size, 0);
 
   // Cause the database to take a few pages.
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   for (size_t i = 0; i < 24; ++i) {
     ASSERT_TRUE(
@@ -1724,7 +1732,7 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
   EXPECT_TRUE(base::Contains(corruption_info, "integrity_check"));
 
   // A statement to see in the results.
-  const char* kSimpleSql = "SELECT 'mountain'";
+  static constexpr char kSimpleSql[] = "SELECT 'mountain'";
   Statement s(db_->GetCachedStatement(SQL_FROM_HERE, kSimpleSql));
 
   // Error includes the statement.
@@ -1972,7 +1980,7 @@ TEST_P(SQLDatabaseTest, DoubleQuotedStringLiteralsDisabledByDefault) {
   ASSERT_TRUE(db_->Execute("CREATE TABLE data(item TEXT NOT NULL);"));
 
   struct TestCase {
-    const char* sql;
+    const std::string sql;
     bool is_valid;
   };
   std::vector<TestCase> test_cases = {

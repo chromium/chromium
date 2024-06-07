@@ -12,6 +12,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/strings/cstring_view.h"
+
 // Collection of test-only convenience functions.
 
 namespace base {
@@ -94,11 +96,11 @@ bool CountTableRows(sql::Database* db, const char* table, size_t* count);
 //   EXPECT_EQ("<NULL>", ExecuteWithResult(
 //       db, "SELECT c || '<NULL>' FROM t WHERE id = 1"));
 // To test blobs use the HEX() function.
-std::string ExecuteWithResult(sql::Database* db, const char* sql);
+std::string ExecuteWithResult(sql::Database* db, const base::cstring_view sql);
 std::string ExecuteWithResults(sql::Database* db,
-                               const char* sql,
-                               const char* column_sep,
-                               const char* row_sep);
+                               const base::cstring_view sql,
+                               const base::cstring_view column_sep,
+                               const base::cstring_view row_sep);
 
 // Returns the database size, in pages. Crashes on SQLite errors.
 int GetPageCount(sql::Database* db);

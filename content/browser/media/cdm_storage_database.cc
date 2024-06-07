@@ -592,19 +592,15 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
     return false;
   }
 
-  // Alter SQL strings cannot be stored in a char[] because we want to
-  // populate the default last_modified as base::Time::Now() but ALTER TABLE
-  // ADD COLUMN DEFAULT must be a literal-value (see
-  // https://www.sqlite.org/syntax/column-constraint.html), so ? not allowed.
-  // We get around this by making it into a string and then calling .c_str().
-  const std::string alter_last_modified_string =
-      "ALTER TABLE cdm_storage ADD COLUMN last_modified INTEGER NOT NULL "
-      "DEFAULT " +
-      base::NumberToString(sql::Statement::TimeToSqlValue(base::Time::Now()));
-  DCHECK(db_.IsSQLValid(alter_last_modified_string.c_str()));
+  const std::string alter_last_modified_string = base::StrCat(
+      {"ALTER TABLE cdm_storage ADD COLUMN last_modified INTEGER NOT NULL "
+       "DEFAULT ",
+       base::NumberToString(
+           sql::Statement::TimeToSqlValue(base::Time::Now()))});
+  DCHECK(db_.IsSQLValid(alter_last_modified_string));
 
   sql::Statement last_modified_statement(
-      db_.GetUniqueStatement(alter_last_modified_string.c_str()));
+      db_.GetUniqueStatement(alter_last_modified_string));
 
   last_operation_ = "AlterDatabaseForLastModified";
 

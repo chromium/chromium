@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -541,7 +542,7 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // `sql` cannot have parameters. Statements with parameters can be handled by
   // sql::Statement. See GetCachedStatement() and GetUniqueStatement().
-  [[nodiscard]] bool Execute(const char* sql);
+  [[nodiscard]] bool Execute(base::cstring_view sql);
 
   // Executes a sequence of SQL statements.
   //
@@ -551,7 +552,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // The database's error handler is not invoked when errors occur. This method
   // is a convenience for setting up a complex on-disk database state, such as
   // an old schema version with test contents.
-  [[nodiscard]] bool ExecuteScriptForTesting(const char* sql_script);
+  [[nodiscard]] bool ExecuteScriptForTesting(base::cstring_view sql_script);
 
   // Returns a statement for the given SQL using the statement cache. It can
   // take a nontrivial amount of work to parse and compile a statement, so
@@ -581,25 +582,26 @@ class COMPONENT_EXPORT(SQL) Database {
   //   if (!stmt)
   //     return false;  // Error creating statement.
   scoped_refptr<StatementRef> GetCachedStatement(StatementID id,
-                                                 const char* sql);
+                                                 base::cstring_view sql);
 
   // Used to check a |sql| statement for syntactic validity. If the statement is
   // valid SQL, returns true.
-  bool IsSQLValid(const char* sql);
+  bool IsSQLValid(base::cstring_view sql);
 
   // Returns a non-cached statement for the given SQL. Use this for SQL that
   // is only executed once or only rarely (there is overhead associated with
   // keeping a statement cached).
   //
   // See GetCachedStatement above for examples and error information.
-  scoped_refptr<StatementRef> GetUniqueStatement(const char* sql);
+  scoped_refptr<StatementRef> GetUniqueStatement(base::cstring_view sql);
 
   // Returns a non-cached statement same as `GetUniqueStatement()`, except
   // returns an invalid statement if the statement makes direct changes to the
   // database file. This readonly check does not include changes made by
   // application-defined functions. See more at:
   // https://www.sqlite.org/c3ref/stmt_readonly.html.
-  scoped_refptr<Database::StatementRef> GetReadonlyStatement(const char* sql);
+  scoped_refptr<Database::StatementRef> GetReadonlyStatement(
+      base::cstring_view sql);
 
   // Performs a passive checkpoint on the main attached database if it is in
   // WAL mode. Returns true if the checkpoint was successful and false in case
@@ -614,6 +616,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns true if the given structure exists.  Instead of test-then-create,
   // callers should almost always prefer the "IF NOT EXISTS" version of the
   // CREATE statement.
+  // TODO(https://crbug.com/341639215): these should take a `base::cstring`.
   bool DoesIndexExist(std::string_view index_name);
   bool DoesTableExist(std::string_view table_name);
   bool DoesViewExist(std::string_view table_name);
@@ -625,7 +628,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // This should only be used by migration code for legacy features that do not
   // use MetaTable, and need an alternative way of figuring out the database's
   // current version.
-  bool DoesColumnExist(const char* table_name, const char* column_name);
+  bool DoesColumnExist(base::cstring_view table_name,
+                       base::cstring_view column_name);
 
   // Returns sqlite's internal ID for the last inserted row. Valid only
   // immediately after an insert.
@@ -867,14 +871,15 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // This method is only exposed to the Database implementation. Code that uses
   // sql::Database should not be concerned with SQLite result codes.
-  [[nodiscard]] SqliteResultCode ExecuteAndReturnResultCode(const char* sql);
+  [[nodiscard]] SqliteResultCode ExecuteAndReturnResultCode(
+      base::cstring_view sql);
 
   // Like |Execute()|, but retries if the database is locked.
-  [[nodiscard]] bool ExecuteWithTimeout(const char* sql,
+  [[nodiscard]] bool ExecuteWithTimeout(base::cstring_view sql,
                                         base::TimeDelta ms_timeout);
 
   // Implementation helper for GetUniqueStatement() and GetCachedStatement().
-  scoped_refptr<StatementRef> GetStatementImpl(const char* sql,
+  scoped_refptr<StatementRef> GetStatementImpl(base::cstring_view sql,
                                                bool is_readonly);
 
   // Release page-cache memory if memory-mapped I/O is enabled and the database

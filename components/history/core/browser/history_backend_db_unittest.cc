@@ -591,8 +591,8 @@ TEST_F(HistoryBackendDBTest, MigrateHashHttpMethodAndGenerateGuids) {
       url_insert_query += base::StringPrintf("(%" PRId64 ", 0, 'url')",
                                              static_cast<int64_t>(download_id));
     }
-    ASSERT_TRUE(db.Execute(download_insert_query.c_str()));
-    ASSERT_TRUE(db.Execute(url_insert_query.c_str()));
+    ASSERT_TRUE(db.Execute(download_insert_query));
+    ASSERT_TRUE(db.Execute(url_insert_query));
   }
 
   CreateBackendAndDatabase();

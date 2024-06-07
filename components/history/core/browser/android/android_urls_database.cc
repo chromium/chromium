@@ -29,7 +29,7 @@ bool AndroidURLsDatabase::CreateAndroidURLsTable() {
                "raw_url LONGVARCHAR,"              // Passed in raw url.
                "url_id INTEGER NOT NULL"           // url id in urls table.
                ")");
-    if (!GetDB().Execute(sql.c_str())) {
+    if (!GetDB().Execute(sql)) {
       LOG(ERROR) << GetDB().GetErrorMessage();
       return false;
     }
@@ -109,7 +109,7 @@ bool AndroidURLsDatabase::DeleteAndroidURLRows(
     sql.append(" )");
   }
 
-  if (!GetDB().Execute(sql.c_str())) {
+  if (!GetDB().Execute(sql)) {
     LOG(ERROR) << GetDB().GetErrorMessage();
     return false;
   }

@@ -1013,7 +1013,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteExtendedTreatedAsUnspecified) {
       "UPDATE cookies SET samesite=3"  // 3 is Extended.
       " WHERE samesite=2"              // 2 is Strict.
   );
-  ASSERT_TRUE(connection.Execute(update_stmt.c_str()));
+  ASSERT_TRUE(connection.Execute(update_stmt));
   connection.Close();
 
   // Create a store that loads session cookie and test that the

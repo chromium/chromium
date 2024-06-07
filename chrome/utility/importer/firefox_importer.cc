@@ -521,7 +521,7 @@ void FirefoxImporter::GetWholeBookmarkFolder(sql::Database* db,
       "LEFT JOIN moz_keywords k ON k.id = b.keyword_id "
       "WHERE b.type IN (1,2) AND b.parent = ? "
       "ORDER BY b.position";
-  sql::Statement s(db->GetUniqueStatement(query.c_str()));
+  sql::Statement s(db->GetUniqueStatement(query));
   s.BindInt(0, (*list)[position]->id);
 
   BookmarkList temp_list;

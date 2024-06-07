@@ -154,7 +154,7 @@ void WebDatabaseMigrationTest::LoadDatabase(
 
   sql::Database connection;
   ASSERT_TRUE(connection.Open(GetDatabasePath()));
-  ASSERT_TRUE(connection.Execute(contents.data()));
+  ASSERT_TRUE(connection.Execute(contents));
 }
 
 // Tests that migrating from the golden files version_XX.sql results in the same

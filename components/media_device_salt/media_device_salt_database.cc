@@ -134,9 +134,9 @@ void MediaDeviceSaltDatabase::DeleteEntries(
       base::StrCat({"DELETE FROM media_device_salts "
                     "WHERE storage_key IN ('",
                     base::JoinString(serialized_storage_keys, "','"), "')"});
-  DCHECK(db_.IsSQLValid(delete_storage_keys_sql.c_str()));
+  DCHECK(db_.IsSQLValid(delete_storage_keys_sql));
   sql::Statement delete_statement(
-      db_.GetUniqueStatement(delete_storage_keys_sql.c_str()));
+      db_.GetUniqueStatement(delete_storage_keys_sql));
   delete_statement.Run() && transaction.Commit();
 }
 

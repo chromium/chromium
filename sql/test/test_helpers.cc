@@ -253,7 +253,7 @@ size_t CountTableColumns(sql::Database* db, const char* table) {
   }
 
   std::string sql = "PRAGMA table_info(" + quoted_table + ")";
-  sql::Statement s(db->GetUniqueStatement(sql.c_str()));
+  sql::Statement s(db->GetUniqueStatement(sql));
   size_t rows = 0;
   while (s.Step()) {
     ++rows;
@@ -268,7 +268,7 @@ bool CountTableRows(sql::Database* db, const char* table, size_t* count) {
   // will throw an error.
   std::string sql = "SELECT COUNT(*) FROM ";
   sql += table;
-  sql::Statement s(db->GetUniqueStatement(sql.c_str()));
+  sql::Statement s(db->GetUniqueStatement(sql));
   if (!s.Step())
     return false;
 
@@ -295,7 +295,7 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   // http://crbug.com/307303 is for exploring this test issue.
   std::ignore = db.Execute("PRAGMA auto_vacuum = 0");
 
-  return db.Execute(sql.c_str());
+  return db.Execute(sql);
 }
 
 std::string IntegrityCheck(sql::Database& db) {
@@ -305,15 +305,15 @@ std::string IntegrityCheck(sql::Database& db) {
   return base::JoinString(messages, "\n");
 }
 
-std::string ExecuteWithResult(sql::Database* db, const char* sql) {
+std::string ExecuteWithResult(sql::Database* db, const base::cstring_view sql) {
   sql::Statement s(db->GetUniqueStatement(sql));
   return s.Step() ? s.ColumnString(0) : std::string();
 }
 
 std::string ExecuteWithResults(sql::Database* db,
-                               const char* sql,
-                               const char* column_sep,
-                               const char* row_sep) {
+                               const base::cstring_view sql,
+                               const base::cstring_view column_sep,
+                               const base::cstring_view row_sep) {
   sql::Statement s(db->GetUniqueStatement(sql));
   std::string ret;
   while (s.Step()) {

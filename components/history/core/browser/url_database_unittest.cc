@@ -43,9 +43,8 @@ class URLDatabaseTest : public testing::Test,
   void CreateVersion33URLTable() {
     EXPECT_TRUE(GetDB().Execute("DROP TABLE urls"));
 
-    std::string sql;
     // create a version 33 urls table
-    sql.append(
+    static constexpr char kSql[] =
         "CREATE TABLE urls ("
         "id INTEGER PRIMARY KEY,"
         "url LONGVARCHAR,"
@@ -54,9 +53,9 @@ class URLDatabaseTest : public testing::Test,
         "typed_count INTEGER DEFAULT 0 NOT NULL,"
         "last_visit_time INTEGER NOT NULL,"
         "hidden INTEGER DEFAULT 0 NOT NULL,"
-        "favicon_id INTEGER DEFAULT 0 NOT NULL)");  // favicon_id is not used
-                                                    // now.
-    EXPECT_TRUE(GetDB().Execute(sql.c_str()));
+        "favicon_id INTEGER DEFAULT 0 NOT NULL)";  // favicon_id is not used
+                                                   // now.
+    EXPECT_TRUE(GetDB().Execute(kSql));
   }
 
  protected:

@@ -613,8 +613,8 @@ PowerBookmarkDatabaseImpl::GetPowersForGUIDs(
                     "FROM blobs JOIN saves ON blobs.id=saves.id "
                     "WHERE saves.id IN ('",
                     base::JoinString(guids, "','"), "')"});
-  db_.IsSQLValid(query.c_str());
-  sql::Statement statement(db_.GetUniqueStatement(query.c_str()));
+  db_.IsSQLValid(query);
+  sql::Statement statement(db_.GetUniqueStatement(query));
   std::vector<std::unique_ptr<Power>> powers;
   while (statement.Step()) {
     DCHECK_EQ(3, statement.ColumnCount());

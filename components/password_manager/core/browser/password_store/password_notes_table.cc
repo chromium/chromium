@@ -135,8 +135,7 @@ bool PasswordNotesTable::InsertOrReplace(FormPrimaryKey parent_id,
       SQL_FROM_HERE,
       base::StringPrintf("INSERT OR REPLACE INTO %s (parent_id, key, value, "
                          "date_created, confidential) VALUES (?, ?, ?, ?, ?)",
-                         kTableName)
-          .c_str()));
+                         kTableName)));
 
   s.BindInt(0, parent_id.value());
   s.BindString16(1, note.unique_display_name);
@@ -151,8 +150,7 @@ bool PasswordNotesTable::RemovePasswordNotes(FormPrimaryKey parent_id) {
   DCHECK(db_);
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      base::StringPrintf("DELETE FROM %s WHERE parent_id = ?", kTableName)
-          .c_str()));
+      base::StringPrintf("DELETE FROM %s WHERE parent_id = ?", kTableName)));
   s.BindInt(0, parent_id.value());
 
   return s.Run() && db_->GetLastChangeCount();
@@ -166,8 +164,7 @@ std::vector<PasswordNote> PasswordNotesTable::GetPasswordNotes(
       base::StringPrintf(
           "SELECT parent_id, key, value, date_created, confidential "
           "FROM %s WHERE parent_id = ? ",
-          kTableName)
-          .c_str()));
+          kTableName)));
   s.BindInt(0, parent_id.value());
   return StatementToPasswordNotes(&s)[parent_id];
 }
@@ -180,8 +177,7 @@ PasswordNotesTable::GetAllPasswordNotesForTest() const {
       base::StringPrintf(
           "SELECT parent_id, key, value, date_created, confidential "
           "FROM %s",
-          kTableName)
-          .c_str()));
+          kTableName)));
   return StatementToPasswordNotes(&s);
 }
 }  // namespace password_manager

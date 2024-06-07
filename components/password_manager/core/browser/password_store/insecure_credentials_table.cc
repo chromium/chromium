@@ -86,7 +86,8 @@ bool operator==(const InsecureCredential& lhs, const InsecureCredential& rhs) {
              *rhs.trigger_notification_from_backend;
 }
 
-const char InsecureCredentialsTable::kTableName[] = "insecure_credentials";
+#define INSECURE_CREDENTIALS_TABLE "insecure_credentials"
+const char InsecureCredentialsTable::kTableName[] = INSECURE_CREDENTIALS_TABLE;
 
 void InsecureCredentialsTable::Init(sql::Database* db) {
   db_ = db;
@@ -99,13 +100,11 @@ bool InsecureCredentialsTable::InsertOrReplace(FormPrimaryKey parent_key,
   DCHECK(db_->DoesTableExist(kTableName));
 
   sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("INSERT OR REPLACE INTO %s (parent_id, "
-                         "insecurity_type, create_time, is_muted, "
-                         "trigger_notification_from_backend) "
-                         "VALUES (?, ?, ?, ?, ?)",
-                         kTableName)
-          .c_str()));
+      SQL_FROM_HERE, "INSERT OR REPLACE INTO " INSECURE_CREDENTIALS_TABLE
+                     " (parent_id, "
+                     "insecurity_type, create_time, is_muted, "
+                     "trigger_notification_from_backend) "
+                     "VALUES (?, ?, ?, ?, ?)"));
   s.BindInt(0, parent_key.value());
   s.BindInt(1, static_cast<int>(type));
   s.BindInt64(2,
@@ -123,11 +122,8 @@ bool InsecureCredentialsTable::RemoveRow(FormPrimaryKey parent_key,
   DCHECK(db_->DoesTableExist(kTableName));
 
   sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf(
-          "DELETE FROM %s WHERE parent_id = ? AND insecurity_type = ?",
-          kTableName)
-          .c_str()));
+      SQL_FROM_HERE, "DELETE FROM " INSECURE_CREDENTIALS_TABLE
+                     " WHERE parent_id = ? AND insecurity_type = ?"));
   s.BindInt(0, parent_key.value());
   s.BindInt(1, static_cast<int>(insecure_type));
 
@@ -142,13 +138,11 @@ std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
-                         "insecurity_type, create_time, is_muted, "
-                         "trigger_notification_from_backend FROM %s "
-                         "INNER JOIN logins ON parent_id = logins.id "
-                         "WHERE parent_id = ? ",
-                         kTableName)
-          .c_str()));
+      "SELECT parent_id, signon_realm, username_value, "
+      "insecurity_type, create_time, is_muted, "
+      "trigger_notification_from_backend FROM " INSECURE_CREDENTIALS_TABLE
+      " INNER JOIN logins ON parent_id = logins.id "
+      "WHERE parent_id = ? "));
   s.BindInt(0, *parent_key);
   return StatementToInsecureCredential(&s);
 }

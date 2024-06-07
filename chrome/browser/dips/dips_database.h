@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/cstring_view.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -225,7 +226,7 @@ class DIPSDatabase {
   void SetMaxEntriesForTesting(size_t entries) { max_entries_ = entries; }
   void SetPurgeEntriesForTesting(size_t entries) { purge_entries_ = entries; }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-  bool ExecuteSqlForTesting(const char* sql);
+  bool ExecuteSqlForTesting(const base::cstring_view sql);
 
   bool SetConfigValueForTesting(std::string_view name, int64_t value) {
     return SetConfigValue(name, value);

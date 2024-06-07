@@ -1144,7 +1144,7 @@ bool QuotaDatabase::CreateTable(const TableSchema& table) {
   std::string sql("CREATE TABLE ");
   sql += table.table_name;
   sql += table.columns;
-  if (!db_->Execute(sql.c_str())) {
+  if (!db_->Execute(sql)) {
     VLOG(1) << "Failed to execute " << sql;
     return false;
   }
@@ -1164,7 +1164,7 @@ bool QuotaDatabase::CreateIndex(const IndexSchema& index) {
   sql += " ON ";
   sql += index.table_name;
   sql += index.columns;
-  if (!db_->Execute(sql.c_str())) {
+  if (!db_->Execute(sql)) {
     VLOG(1) << "Failed to execute " << sql;
     return false;
   }

@@ -81,13 +81,10 @@ class PaymentsAutofillTableTest : public testing::Test {
   time_t GetDateModified(std::string_view table_name,
                          std::string_view column,
                          absl::variant<std::string, int64_t> id) {
-    sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-        base::StrCat({"SELECT ", column, " FROM ", table_name, " WHERE ",
-                      absl::holds_alternative<std::string>(id)
-                          ? "guid"
-                          : "instrument_id",
-                      " = ?"})
-            .c_str()));
+    sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(base::StrCat(
+        {"SELECT ", column, " FROM ", table_name, " WHERE ",
+         absl::holds_alternative<std::string>(id) ? "guid" : "instrument_id",
+         " = ?"})));
     if (const std::string* guid = absl::get_if<std::string>(&id)) {
       s.BindString(0, *guid);
     } else {

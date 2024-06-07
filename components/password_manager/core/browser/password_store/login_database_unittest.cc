@@ -192,7 +192,7 @@ std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
   std::string statement = base::StringPrintf(
       "SELECT %s FROM logins ORDER BY username_value, %s DESC",
       column_name.c_str(), column_name.c_str());
-  sql::Statement s(db.GetCachedStatement(SQL_FROM_HERE, statement.c_str()));
+  sql::Statement s(db.GetUniqueStatement(statement));
   EXPECT_TRUE(s.is_valid());
 
   while (s.Step()) {
@@ -210,9 +210,9 @@ void UpdatePasswordValueForUsername(const base::FilePath& database_path,
   sql::Database db;
   CHECK(db.Open(database_path));
 
-  std::string statement =
-      "UPDATE logins SET password_value = ? WHERE username_value = ?";
-  sql::Statement s(db.GetCachedStatement(SQL_FROM_HERE, statement.c_str()));
+  sql::Statement s(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "UPDATE logins SET password_value = ? WHERE username_value = ?"));
   EXPECT_TRUE(s.is_valid());
   s.BindString16(0, password);
   s.BindString16(1, username);
@@ -2221,10 +2221,10 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 
     // Change encrypted password in the database if the login should be
     // corrupted.
-    std::string statement =
+    static constexpr char kStatement[] =
         "UPDATE logins SET password_value = password_value || 'trash' "
         "WHERE signon_realm = ? AND username_value = ?";
-    sql::Statement s(db.GetCachedStatement(SQL_FROM_HERE, statement.c_str()));
+    sql::Statement s(db.GetCachedStatement(SQL_FROM_HERE, kStatement));
     s.BindString(0, form.signon_realm);
     s.BindString(1, base::UTF16ToUTF8(form.username_value));
 

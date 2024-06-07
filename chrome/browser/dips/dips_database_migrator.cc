@@ -95,7 +95,7 @@ bool DIPSDatabaseMigrator::MigrateSchemaVersionFrom1To2() {
         "SET %s=NULL "
         "WHERE %s=0 ",
         column.c_str(), column.c_str());
-    sql::Statement s_nullify(db_->GetUniqueStatement(command.c_str()));
+    sql::Statement s_nullify(db_->GetUniqueStatement(command));
 
     if (!s_nullify.Run()) {
       return false;

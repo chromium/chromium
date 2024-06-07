@@ -214,13 +214,13 @@ void ActivityDatabase::SetTimerForTesting(int ms) {
 
 // static
 bool ActivityDatabase::InitializeTable(sql::Database* db,
-                                       const char* table_name,
+                                       base::cstring_view table_name,
                                        const char* const content_fields[],
                                        const char* const field_types[],
                                        const int num_content_fields) {
   if (!db->DoesTableExist(table_name)) {
     std::string table_creator =
-        base::StringPrintf("CREATE TABLE %s (", table_name);
+        base::StringPrintf("CREATE TABLE %s (", table_name.c_str());
     for (int i = 0; i < num_content_fields; i++) {
       table_creator += base::StringPrintf("%s%s %s",
                                           i == 0 ? "" : ", ",
@@ -228,20 +228,20 @@ bool ActivityDatabase::InitializeTable(sql::Database* db,
                                           field_types[i]);
     }
     table_creator += ")";
-    if (!db->Execute(table_creator.c_str()))
-      return false;
-  } else {
-    // In case we ever want to add new fields, this initializes them to be
-    // empty strings.
-    for (int i = 0; i < num_content_fields; i++) {
-      if (!db->DoesColumnExist(table_name, content_fields[i])) {
-        std::string table_updater = base::StringPrintf(
-            "ALTER TABLE %s ADD COLUMN %s %s; ",
-             table_name,
-             content_fields[i],
-             field_types[i]);
-        if (!db->Execute(table_updater.c_str()))
-          return false;
+    return db->Execute(table_creator);
+  }
+
+  // In case we ever want to add new fields, this initializes them to be
+  // empty strings.
+  for (int i = 0; i < num_content_fields; i++) {
+    if (!db->DoesColumnExist(
+            table_name,
+            base::cstring_view(content_fields[i], strlen(content_fields[i])))) {
+      std::string table_updater = base::StringPrintf(
+          "ALTER TABLE %s ADD COLUMN %s %s; ", table_name.c_str(),
+          content_fields[i], field_types[i]);
+      if (!db->Execute(table_updater)) {
+        return false;
       }
     }
   }

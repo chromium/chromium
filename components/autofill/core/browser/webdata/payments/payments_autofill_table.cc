@@ -961,8 +961,7 @@ PaymentsAutofillTable::DeleteOrphanedServerCvcs() {
   sql::Statement s(db_->GetUniqueStatement(
       base::StrCat({"DELETE FROM ", kServerStoredCvcTable, " WHERE ",
                     kInstrumentId, " NOT IN (SELECT ", kInstrumentId, " FROM ",
-                    kMaskedCreditCardsTable, ") RETURNING *"})
-          .c_str()));
+                    kMaskedCreditCardsTable, ") RETURNING *"})));
   while (s.Step()) {
     cvcs_to_be_deleted.push_back(
         ServerCvcFromStatement(s, *autofill_table_encryptor_));
@@ -1938,8 +1937,7 @@ bool PaymentsAutofillTable::MigrateToVersion115EncryptIbanValue() {
 
   return db_->Execute(
              base::StrCat({"ALTER TABLE ", kIbansTable, " RENAME COLUMN ",
-                           kValue, " TO ", kValueEncrypted})
-                 .c_str()) &&
+                           kValue, " TO ", kValueEncrypted})) &&
          transaction.Commit();
 }
 

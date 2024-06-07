@@ -298,7 +298,7 @@ bool SQLTableBuilder::CreateTable(sql::Database* db) const {
           : base::StringPrintf("CREATE TABLE %s (%s, %s)", table_name_.c_str(),
                                names.c_str(), constraints.c_str());
 
-  auto execute = [&db](const auto& sql) { return db->Execute(sql.c_str()); };
+  auto execute = [&db](const auto& sql) { return db->Execute(sql); };
   sql::Transaction transaction(db);
   return transaction.Begin() && execute(create_table_statement) &&
          base::ranges::all_of(create_index_sqls, execute) &&
@@ -465,20 +465,18 @@ bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
                   "CREATE TABLE %s (%s, %s)", temp_table_name.c_str(),
                   names_of_all_columns.c_str(), constraints.c_str());
     sql::Transaction transaction(db);
-    if (!(transaction.Begin() && db->Execute(create_table_statement.c_str()) &&
+    if (!(transaction.Begin() && db->Execute(create_table_statement) &&
           db->Execute(base::StringPrintf(
-                          "INSERT OR REPLACE INTO %s (%s) SELECT %s FROM %s",
-                          temp_table_name.c_str(),
-                          new_names_of_existing_columns_without_types.c_str(),
-                          old_names_of_existing_columns_without_types.c_str(),
-                          table_name_.c_str())
-                          .c_str()) &&
-          db->Execute(base::StringPrintf("DROP TABLE %s", table_name_.c_str())
-                          .c_str()) &&
+              "INSERT OR REPLACE INTO %s (%s) SELECT %s FROM %s",
+              temp_table_name.c_str(),
+              new_names_of_existing_columns_without_types.c_str(),
+              old_names_of_existing_columns_without_types.c_str(),
+              table_name_.c_str())) &&
+          db->Execute(
+              base::StringPrintf("DROP TABLE %s", table_name_.c_str())) &&
           db->Execute(base::StringPrintf("ALTER TABLE %s RENAME TO %s",
                                          temp_table_name.c_str(),
-                                         table_name_.c_str())
-                          .c_str()) &&
+                                         table_name_.c_str())) &&
           CheckForeignKeyConstraints(*db) && transaction.Commit() &&
           db->Execute("PRAGMA foreign_keys = ON"))) {
       return false;
@@ -488,8 +486,7 @@ bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
     // any.
     auto add_column = [this, &db](const auto& name) {
       return db->Execute(
-          base::StrCat({"ALTER TABLE ", table_name_, " ADD COLUMN ", name})
-              .c_str());
+          base::StrCat({"ALTER TABLE ", table_name_, " ADD COLUMN ", name}));
     };
     sql::Transaction transaction(db);
     if (!(transaction.Begin() &&
@@ -524,8 +521,9 @@ bool SQLTableBuilder::MigrateIndicesToNextFrom(unsigned old_version,
       continue;
     }
 
-    if (!db->Execute(sql.c_str()))
+    if (!db->Execute(sql)) {
       return false;
+    }
   }
 
   return transaction.Commit();

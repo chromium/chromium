@@ -110,9 +110,6 @@ class VisitedLinkDatabase {
  protected:
   friend class VisitDatabase;
 
-  // See HISTORY_VISITED_LINK_ROW_FIELDS below.
-  static const char kVisitedLinkRowFields[];
-
   // Creates and initializes the SQLite database. Must be called before anything
   // else.
   bool CreateVisitedLinkTable();
@@ -129,18 +126,6 @@ class VisitedLinkDatabase {
   // this class implements these functions to return its objects.
   virtual sql::Database& GetDB() = 0;
 };
-
-// The fields and order expected by FillVisitedLinkRow(). ID is guaranteed to be
-// first so that DISTINCT can be prepended to get distinct visited links.
-//
-// This is available BOTH as a macro and a static string
-// (kVisitedLinkRowFields). Use the macro if you want to put this in the middle
-// of an otherwise constant string, it will save time doing string appends. If
-// you have to build a SQL string dynamically anyway, use the constant, it will
-// save space.
-#define HISTORY_VISITED_LINK_ROW_FIELDS                                        \
-  "visited_links.id, visited_links.link_url_id, visited_links.top_level_url, " \
-  "visited_links.frame_url, visited_links.visit_count"
 
 }  // namespace history
 

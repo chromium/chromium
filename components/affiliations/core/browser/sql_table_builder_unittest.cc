@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "sql/database.h"
@@ -33,8 +34,8 @@ void CheckTableContent(sql::Database& db,
                        const char table_name[],
                        const std::vector<TableRow>& expected_rows) {
   SCOPED_TRACE(testing::Message() << "table_name = " << table_name);
-  sql::Statement table_check(db.GetUniqueStatement(
-      base::StringPrintf("SELECT * FROM %s", table_name).c_str()));
+  sql::Statement table_check(
+      db.GetUniqueStatement(base::StrCat({"SELECT * FROM ", table_name})));
   for (const TableRow& row : expected_rows) {
     EXPECT_TRUE(table_check.Step());
     for (unsigned col = 0; col < row.size(); ++col) {
@@ -389,14 +390,10 @@ TEST_F(SQLTableBuilderTest, MigrateFromWithUnsuccessfulCallback) {
 
 TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_AddColumn) {
   SetupChildTable();
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (signon_realm) VALUES ('abc.com')", kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
 
   // Now, specify some modifications for version 1.
   builder()->AddColumn("new_column", "INTEGER DEFAULT 789");
@@ -409,22 +406,16 @@ TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_AddColumn) {
   CheckTableContent(*db(), kMyLoginTable, {{"abc.com", 1, 789}});
 
   // The foreign key still works.
-  EXPECT_FALSE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (name, parent_id) VALUES ('Co.', 15)",
-                         kChildTable)
-          .c_str()));
+  EXPECT_FALSE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Co.', 15)", kChildTable)));
 }
 
 TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_RenameColumn) {
   SetupChildTable();
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (signon_realm) VALUES ('abc.com')", kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
 
   // Now, specify some modifications for version 1.
   builder()->RenameColumn("signon_realm", "signon_real_realm");
@@ -442,14 +433,10 @@ TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_RenameColumn) {
 
 TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_DropColumn) {
   SetupChildTable();
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (signon_realm) VALUES ('abc.com')", kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
 
   // Now, specify some modifications for version 1.
   builder()->AddColumn("new_column", "INTEGER DEFAULT 789");
@@ -476,21 +463,15 @@ TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_PreventMigration) {
   EXPECT_TRUE(db()->Execute(
       base::StringPrintf("INSERT INTO %s (signon_realm, new_column) "
                          "VALUES ('abc.com', 'aaa')",
-                         kMyLoginTable)
-          .c_str()));
+                         kMyLoginTable)));
   EXPECT_TRUE(db()->Execute(
       base::StringPrintf("INSERT INTO %s (signon_realm, new_column) "
                          "VALUES ('abc.com', 'bbb')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Bbc Co.', 2)", kChildTable)
-          .c_str()));
+                         kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Bbc Co.', 2)", kChildTable)));
 
   builder()->DropColumn("new_column");
   EXPECT_EQ(2u, builder()->SealVersion());
@@ -501,23 +482,17 @@ TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_PreventMigration) {
 
 TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_ChildTable_AddColumn) {
   SetupChildTable();
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (signon_realm) VALUES ('abc.com')", kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
 
   child_builder()->AddColumn("new_column", "TEXT");
   EXPECT_EQ(1u, child_builder()->SealVersion());
   EXPECT_TRUE(child_builder()->MigrateFrom(0, db()));
 
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("UPDATE %s SET new_column='value' WHERE parent_id=1",
-                         kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "UPDATE %s SET new_column='value' WHERE parent_id=1", kChildTable)));
 
   CheckTableContent(*db(), kChildTable, {{"Abc Co.", 1, "value"}});
   CheckTableContent(*db(), kMyLoginTable, {{"abc.com", 1}});
@@ -530,14 +505,10 @@ TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_ChildTable_AddColumn) {
 TEST_F(SQLTableBuilderTest,
        MigrateFrom_WithForeignKey_ChildTable_RenameColumn) {
   SetupChildTable();
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (signon_realm) VALUES ('abc.com')", kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
 
   child_builder()->RenameColumn("name", "new_name");
   EXPECT_EQ(1u, child_builder()->SealVersion());
@@ -553,14 +524,10 @@ TEST_F(SQLTableBuilderTest,
 
 TEST_F(SQLTableBuilderTest, MigrateFrom_WithForeignKey_ChildTable_DropColumn) {
   SetupChildTable();
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf("INSERT INTO %s (signon_realm) VALUES ('abc.com')",
-                         kMyLoginTable)
-          .c_str()));
-  EXPECT_TRUE(db()->Execute(
-      base::StringPrintf(
-          "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)
-          .c_str()));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (signon_realm) VALUES ('abc.com')", kMyLoginTable)));
+  EXPECT_TRUE(db()->Execute(base::StringPrintf(
+      "INSERT INTO %s (name, parent_id) VALUES ('Abc Co.', 1)", kChildTable)));
 
   child_builder()->DropColumn("name");
   EXPECT_EQ(1u, child_builder()->SealVersion());

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -96,7 +97,7 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   //
   // Returns true if all statements execute successfully. If a statement fails,
   // stops and returns false. Calls should be wrapped in ASSERT_TRUE().
-  bool ExecuteForTest(const char* sql);
+  bool ExecuteForTest(const base::cstring_view sql);
 
   // Raze the database to the ground for testing.
   //
@@ -105,7 +106,8 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   bool RazeForTest();
 
   // Returns true if a column with the given name exists in the given table.
-  bool DoesColumnExistForTest(const char* table_name, const char* column_name);
+  bool DoesColumnExistForTest(const base::cstring_view table_name,
+                              const base::cstring_view column_name);
 
   // Gets the list of secure payment confirmation credentials for the given list
   // of `credential_ids`.
