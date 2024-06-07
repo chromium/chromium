@@ -111,8 +111,13 @@ void FocusModeFeaturePodController::OnInactiveSessionDurationChanged(
     return;
   }
 
-  tile_->SetSubLabel(focus_mode_util::GetDurationString(
-      session_duration, /*digital_format=*/false));
+  const std::u16string duration_string = focus_mode_util::GetDurationString(
+      session_duration, /*digital_format=*/false);
+  tile_->SetSubLabel(duration_string);
+  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INACTIVE, duration_string));
+  tile_->SetIconButtonTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE, duration_string));
 }
 
 void FocusModeFeaturePodController::OnActiveSessionDurationChanged(
