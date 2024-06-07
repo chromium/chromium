@@ -33,21 +33,20 @@ class FakeBoundSessionRequestThrottledHandler
 
   void HandleRequestBlockedOnCookie(
       HandleRequestBlockedOnCookieCallback callback) override {
-    // There shouldn't be more than one notification at a time of requests being
-    // blocked.
-    EXPECT_FALSE(callback_);
-    callback_ = std::move(callback);
+    callbacks_.push(std::move(callback));
   }
 
   void SimulateHandleRequestBlockedOnCookieCompleted() {
-    EXPECT_TRUE(callback_);
-    std::move(callback_).Run(ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
+    EXPECT_FALSE(callbacks_.empty());
+    std::move(callbacks_.front())
+        .Run(ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
+    callbacks_.pop();
   }
 
-  bool IsRequestBlocked() { return !callback_.is_null(); }
+  size_t NumberOfBlockedRequests() { return callbacks_.size(); }
 
  private:
-  HandleRequestBlockedOnCookieCallback callback_;
+  std::queue<HandleRequestBlockedOnCookieCallback> callbacks_;
   mojo::Receiver<chrome::mojom::BoundSessionRequestThrottledHandler> receiver_;
 };
 }  // namespace
@@ -87,7 +86,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, SingleRequest) {
   manager()->HandleRequestBlockedOnCookie(future.GetCallback());
 
   RunUntilIdle();
-  EXPECT_TRUE(handler()->IsRequestBlocked());
+  EXPECT_EQ(handler()->NumberOfBlockedRequests(), 1U);
 
   handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   EXPECT_THAT(future.Get(),
@@ -107,13 +106,13 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
-  EXPECT_TRUE(handler()->IsRequestBlocked());
+  EXPECT_EQ(handler()->NumberOfBlockedRequests(), kBlockedRequests);
   for (auto& future : futures) {
     EXPECT_FALSE(future.IsReady());
   }
 
-  handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   for (auto& future : futures) {
+    handler()->SimulateHandleRequestBlockedOnCookieCompleted();
     EXPECT_THAT(future.Get(),
                 FieldsAre(UnblockAction::kResume,
                           ResumeBlockedRequestsTrigger::kCookieAlreadyFresh));
@@ -133,7 +132,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
-  EXPECT_TRUE(handler()->IsRequestBlocked());
+  EXPECT_EQ(handler()->NumberOfBlockedRequests(), kBlockedRequests);
 
   ResetHandler();
   for (auto& future : futures) {
