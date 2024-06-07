@@ -693,9 +693,8 @@ TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForAbusiveSite) {
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
   // Check there is no origin in revoked permissions list.
-  EXPECT_EQ(
-      0U,
-      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size());
+  EXPECT_TRUE(safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm())
+                  .empty());
   // Check if the permissions of url is regranted.
   EXPECT_EQ(
       ContentSetting::CONTENT_SETTING_ALLOW,
@@ -720,9 +719,8 @@ TEST_F(SafetyHubHandlerTest,
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
   // Check there is no origin in revoked permissions list.
-  EXPECT_EQ(
-      0U,
-      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size());
+  EXPECT_TRUE(safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm())
+                  .empty());
   EXPECT_EQ(0U, hcsm()
                     ->GetSettingsForOneType(
                         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)
@@ -1314,4 +1312,159 @@ TEST_F(SafetyHubHandlerTest, ExtensionPrefAndInitialization) {
   safety_hub_test_util::RemoveExtension("jadkojfancihcakelhdnpkcidencgdjg",
                                         ManifestLocation::kInternal, profile());
   EXPECT_EQ(2u, web_ui()->call_data().size());
+}
+
+class SafetyHubHandlerUnusedSitePermissionsDisabledTest : public testing::Test {
+ public:
+  SafetyHubHandlerUnusedSitePermissionsDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kSafetyHub,
+         safe_browsing::kSafetyHubAbusiveNotificationRevocation},
+        /*disabled_features=*/
+        {content_settings::features::kSafetyCheckUnusedSitePermissions,
+         content_settings::features::
+             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions});
+  }
+
+  void SetUp() override {
+    hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
+
+    // Set up safe browsing service.
+    SetUpSafeBrowsingService();
+
+    handler_ = std::make_unique<SafetyHubHandler>(profile());
+    handler()->set_web_ui(web_ui());
+    handler()->AllowJavascript();
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+  }
+
+  TestingProfile* profile() { return &profile_; }
+  content::TestWebUI* web_ui() { return &web_ui_; }
+  SafetyHubHandler* handler() { return handler_.get(); }
+  HostContentSettingsMap* hcsm() { return hcsm_.get(); }
+  MockSafeBrowsingDatabaseManager* mock_database_manager() {
+    return mock_database_manager_.get();
+  }
+
+  void AddAbusiveNotificationPermission() {
+    mock_database_manager()->SetThreatTypeForUrl(
+        GURL(kAbusiveTestSite),
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    hcsm()->SetWebsiteSettingDefaultScope(
+        GURL(kAbusiveTestSite), GURL(kAbusiveTestSite),
+        ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+        base::Value(base::Value::Dict().Set(
+            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)));
+  }
+
+  void ExpectRevokedAbusiveNotificationPermission(const std::string& url) {
+    EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
+              hcsm()->GetContentSetting(GURL(url), GURL(url),
+                                        ContentSettingsType::NOTIFICATIONS));
+  }
+
+ private:
+  void SetUpSafeBrowsingService() {
+    mock_database_manager_ =
+        base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
+    safe_browsing_factory_ =
+        std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
+    safe_browsing_factory_->SetTestDatabaseManager(
+        mock_database_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
+        safe_browsing_factory_->CreateSafeBrowsingService());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  content::TestWebUI web_ui_;
+  scoped_refptr<HostContentSettingsMap> hcsm_;
+  std::unique_ptr<SafetyHubHandler> handler_;
+  scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
+  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
+      safe_browsing_factory_;
+};
+
+TEST_F(SafetyHubHandlerUnusedSitePermissionsDisabledTest,
+       PopulateAbusiveSitePermissionsData) {
+  AddAbusiveNotificationPermission();
+
+  // Revoked permissions list should contain the abusive url.
+  const auto& revoked_permissions =
+      handler()->PopulateUnusedSitePermissionsData();
+  EXPECT_EQ(revoked_permissions.size(), 1UL);
+  EXPECT_EQ(GURL(kAbusiveTestSite),
+            GURL(*revoked_permissions[0].GetDict().FindString(
+                site_settings::kOrigin)));
+
+  // Abusive notification url should have notifications in permission list.
+  auto* revoked_permission_list_abusive =
+      revoked_permissions[0].GetDict().FindList(site_settings::kPermissions);
+  EXPECT_EQ((*revoked_permission_list_abusive)[0], "notifications");
+
+  // Notifications should not be allowed.
+  ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
+}
+
+TEST_F(SafetyHubHandlerUnusedSitePermissionsDisabledTest,
+       HandleAllowPermissionsAgainForAbusiveSite) {
+  AddAbusiveNotificationPermission();
+  base::Value::List initial_abusive_site_permissions =
+      handler()->PopulateUnusedSitePermissionsData();
+  ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
+
+  // Allow the revoked permission for the unused site again.
+  base::Value::List args;
+  args.Append(base::Value(kAbusiveTestSite));
+  handler()->HandleAllowPermissionsAgainForUnusedSite(args);
+
+  // Check there is no origin in revoked permissions list.
+  EXPECT_TRUE(safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm())
+                  .empty());
+  // Check if the permissions of url is regranted.
+  EXPECT_EQ(
+      ContentSetting::CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(GURL(kAbusiveTestSite), GURL(kAbusiveTestSite),
+                                ContentSettingsType::NOTIFICATIONS));
+
+  // Undoing restores the initial state.
+  handler()->HandleUndoAllowPermissionsAgainForUnusedSite(
+      std::move(initial_abusive_site_permissions));
+  ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
+}
+
+TEST_F(SafetyHubHandlerUnusedSitePermissionsDisabledTest,
+       HandleAcknowledgeRevokedAbusiveSitePermissionsList) {
+  AddAbusiveNotificationPermission();
+  const auto& revoked_permissions_before =
+      handler()->PopulateUnusedSitePermissionsData();
+  EXPECT_EQ(revoked_permissions_before.size(), 1U);
+  ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
+  EXPECT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      1U);
+
+  // Acknowledging revoked permissions clears the list.
+  base::Value::List args;
+  handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(args);
+  const auto& revoked_permissions_after =
+      handler()->PopulateUnusedSitePermissionsData();
+  EXPECT_TRUE(revoked_permissions_after.empty());
+  EXPECT_TRUE(safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm())
+                  .empty());
+
+  // Undo reverts the list to its initial state.
+  base::Value::List undo_args;
+  undo_args.Append(revoked_permissions_before.Clone());
+  handler()->HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(undo_args);
+  EXPECT_EQ(revoked_permissions_before,
+            handler()->PopulateUnusedSitePermissionsData());
+  EXPECT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      1U);
 }

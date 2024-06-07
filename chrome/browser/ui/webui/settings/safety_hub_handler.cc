@@ -294,7 +294,9 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
 base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   base::Value::List result;
   if (!base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions)) {
+          content_settings::features::kSafetyCheckUnusedSitePermissions) &&
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     return result;
   }
 
