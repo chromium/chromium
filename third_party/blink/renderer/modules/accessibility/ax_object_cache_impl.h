@@ -730,9 +730,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
     virtual ~TreeUpdateParams() = default;
     void Trace(Visitor* visitor) const { visitor->Trace(node); }
-#if DCHECK_IS_ON()
     std::string ToString();
-#endif
   };
 
  protected:

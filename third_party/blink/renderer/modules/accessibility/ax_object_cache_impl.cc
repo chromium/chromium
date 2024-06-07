@@ -737,7 +737,6 @@ void LogNodeDataSizeDistribution(
 
 }  // namespace
 
-#if DCHECK_IS_ON()
 #define DEBUG_STRING_CASE(ReasonName)                   \
   case AXObjectCacheImpl::TreeUpdateReason::ReasonName: \
     return #ReasonName
@@ -801,7 +800,6 @@ std::string AXObjectCacheImpl::TreeUpdateParams::ToString() {
 
   return str.str();
 }
-#endif  // DCHECK_IS_ON()
 
 // static
 AXObjectCache* AXObjectCacheImpl::Create(Document& document,
@@ -3552,7 +3550,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent()) << ax_object;
+  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+      << tree_update->ToString() << " on " << ax_object;
 
   // Update cached attributes for all changed nodes before serialization,
   // because updating ignored/included can cause tree structure changes, and
@@ -3617,6 +3616,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
   if (ax_object->IsDetached()) {
     return;
   }
+
+  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+      << tree_update->ToString() << " on " << ax_object;
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
       &active_event_from_, tree_update->event_from);
