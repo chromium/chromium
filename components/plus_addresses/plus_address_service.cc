@@ -267,7 +267,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
         SuggestionType::kCreateNewPlusAddress);
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
-    if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
+    if constexpr (!BUILDFLAG(IS_ANDROID)) {
       if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
         create_plus_address_suggestion.labels = {
             {Suggestion::Text(l10n_util::GetStringUTF16(
@@ -285,8 +285,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     Suggestion suggestion =
         Suggestion(base::UTF8ToUTF16(profile.plus_address),
                    SuggestionType::kFillExistingPlusAddress);
-    // TODO(b/343153116): Implement iOS labels as well.
-    if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
+    if constexpr (!BUILDFLAG(IS_ANDROID)) {
       if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
         suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
             IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};

@@ -52,6 +52,7 @@ source_set("browser") {
     "//components/resources:components_resources_grit",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/deprecated",

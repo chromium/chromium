@@ -2,6 +2,7 @@ include_rules = [
   "+components/autofill/ios/common",
   "+components/grit/components_resources.h",
   "+components/ukm/ios",
+  "+ios/chrome/browser/shared/public/features/features.h",
   "+ios/web/common",
   "+ios/web/public",
   "+services/metrics/public",

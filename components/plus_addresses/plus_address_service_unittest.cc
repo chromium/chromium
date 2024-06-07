@@ -77,7 +77,7 @@ auto IsSingleCreatePlusAddressSuggestion() {
 
 auto EqualsFillPlusAddressSuggestion(std::string_view address) {
   std::vector<std::vector<Suggestion::Text>> labels;
-  if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
+  if constexpr (!BUILDFLAG(IS_ANDROID)) {
     if (base::FeatureList::IsEnabled(
             plus_addresses::features::kPlusAddressUIRedesign)) {
       labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
