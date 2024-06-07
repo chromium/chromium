@@ -4,6 +4,7 @@
 
 #include "content/renderer/render_thread_impl.h"
 
+#include <atomic>
 #include <limits>
 #include <map>
 #include <memory>
@@ -27,6 +28,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -1439,6 +1441,15 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
       *this, std::move(agent_scheduling_group), std::move(broker_remote)));
+}
+
+void RenderThreadImpl::TransferSharedLastForegroundTime(
+    base::ReadOnlySharedMemoryRegion last_foreground_time_region) {
+  last_foreground_time_mapping_ = last_foreground_time_region.Map();
+  CHECK(last_foreground_time_mapping_.IsValid());
+  base::internal::SetSharedLastForegroundTimeForMetrics(
+      last_foreground_time_mapping_
+          .GetMemoryAs<std::atomic<base::TimeTicks>>());
 }
 
 void RenderThreadImpl::OnNetworkConnectionChanged(

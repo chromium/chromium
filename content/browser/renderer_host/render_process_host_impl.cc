@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 
 #include <algorithm>
+#include <atomic>
 #include <limits>
 #include <list>
 #include <map>
@@ -1835,6 +1836,42 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   // We start the Channel in a paused state. It will be briefly unpaused again
   // in Init() if applicable, before process launch is initiated.
   channel_->Pause();
+
+  InitializeSharedMemoryRegionsOnceChannelIsUp();
+}
+
+void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
+  // It's possible for InitializeChannelProxy() to be called multiple times for
+  // the same host (e.g. from AgentSchedulingGroupHost::RenderProcessExited()).
+  // In that case, we only need to resend the read-only memory region.
+  if (!last_foreground_time_region_.IsValid()) {
+    static_assert(
+        std::atomic<base::TimeTicks>::is_always_lock_free,
+        "Atomically sharing TimeTicks across processes might be unsafe");
+
+    last_foreground_time_region_ = base::ReadOnlySharedMemoryRegion::Create(
+        sizeof(std::atomic<base::TimeTicks>));
+    CHECK(last_foreground_time_region_.IsValid());
+
+    // Placement new to initialize the std::atomic in place.
+    new (last_foreground_time_region_.mapping.memory())
+        std::atomic<base::TimeTicks>;
+    // Then initialized to the appropriate value. `std::memory_order_relaxed` is
+    // sufficient as reads on the renderer side will happen-after this per the
+    // ordering relationship implicitly established between this operation and
+    // the renderer via TransferSharedLastForegroundTime().
+    last_foreground_time_region_.mapping
+        .GetMemoryAs<std::atomic<base::TimeTicks>>()
+        ->store(priority_.is_background() ? base::TimeTicks()
+                                          : base::TimeTicks::Now(),
+                std::memory_order_relaxed);
+  }
+  CHECK(last_foreground_time_region_.IsValid());
+
+  // Duplicate the ReadOnlySharedMemoryRegion so it can be shared again if this
+  // host switches to hosting a new renderer.
+  renderer_interface_->TransferSharedLastForegroundTime(
+      last_foreground_time_region_.region.Duplicate());
 }
 
 void RenderProcessHostImpl::ResetChannelProxy() {
@@ -5318,6 +5355,15 @@ void RenderProcessHostImpl::UpdateControllerServiceWorkerProcessPriority() {
 }
 
 void RenderProcessHostImpl::SendProcessStateToRenderer() {
+  // `std::memory_order_relaxed` is sufficient as the recipient only reads the
+  // latest TimeTicks value it sees and doesn't depend on it reflecting anything
+  // about the state of other memory.
+  last_foreground_time_region_.mapping
+      .GetMemoryAs<std::atomic<base::TimeTicks>>()
+      ->store(priority_.is_background() ? base::TimeTicks()
+                                        : base::TimeTicks::Now(),
+              std::memory_order_relaxed);
+
   mojom::RenderProcessBackgroundState background_state =
       priority_.is_background()
           ? mojom::RenderProcessBackgroundState::kBackgrounded

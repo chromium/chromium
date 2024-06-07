@@ -410,6 +410,8 @@ class CONTENT_EXPORT RenderThreadImpl
           agent_scheduling_group,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
       override;
+  void TransferSharedLastForegroundTime(
+      base::ReadOnlySharedMemoryRegion last_foreground_time_region) override;
   void OnNetworkConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type,
       double max_bandwidth_mbps) override;
@@ -489,6 +491,13 @@ class CONTENT_EXPORT RenderThreadImpl
   // process has yet to send an update and the state is unknown.
   std::optional<mojom::RenderProcessBackgroundState> background_state_;
   std::optional<mojom::RenderProcessVisibleState> visible_state_;
+
+  // A read-only mapping of a std::atomic<base::TimeTicks> set to
+  // TimeTicks::Now() by RenderProcessHostImpl when this process is foregrounded
+  // and back to a null TimeTicks when it's backgrounded. Used to track the
+  // exact state of this process without relying on IPC (which can itself be
+  // delayed) for use cases that require that precision.
+  base::ReadOnlySharedMemoryMapping last_foreground_time_mapping_;
 
   blink::WebString user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;

@@ -602,6 +602,28 @@ class BASE_EXPORT CustomHistogram : public Histogram {
   static bool ValidateCustomRanges(const std::vector<Sample>& custom_ranges);
 };
 
+namespace internal {
+
+// Controls whether invocations of UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY in
+// this process log to their ".BestEffort" suffix or not. Timing metrics
+// reported through UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY which overlap a
+// best-effort range will be suffixed with ".BestEffort".
+BASE_EXPORT void SetSharedLastForegroundTimeForMetrics(
+    const std::atomic<TimeTicks>* last_foreground_time_ref);
+
+// Reports whether the interval [`now - range`, `now`] overlaps with a period
+// where this process was running at Process::Priority::kBestEffort. Defaults to
+// false if `last_foreground_time_ref` was never set (e.g. in processes not
+// affected by priorities) but otherwise defaults to true if there's ambiguity
+// (might have overlapped a best-effort range; as the reported timing might have
+// been affected and shouldn't be reported as "definitely measured in
+// foreground").
+// This method is atomic and suitable for performance critical histogram
+// samples.
+BASE_EXPORT bool OverlapsBestEffortRange(TimeTicks now, TimeDelta range);
+
+}  // namespace internal
+
 }  // namespace base
 
 #endif  // BASE_METRICS_HISTOGRAM_H_

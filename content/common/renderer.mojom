@@ -8,6 +8,7 @@ import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
@@ -81,6 +82,13 @@ interface Renderer {
   CreateAssociatedAgentSchedulingGroup(
     pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group,
     pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
+
+  // Transfers the ReadOnlySharedMemoryRegion which is used to communicate the
+  // `std::atomic<base::TimeTicks>` representing the time at which this renderer
+  // was last upgraded to run at foreground priority or a null TimeTicks if it's
+  // currently running at best-effort priority.
+  TransferSharedLastForegroundTime(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion last_foreground_time_region);
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.

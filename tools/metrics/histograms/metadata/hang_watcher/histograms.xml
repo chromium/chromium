@@ -36,6 +36,14 @@ chromium-metrics-reviews@google.com.
   <variant name="Shutdown" summary="shutdown"/>
 </variants>
 
+<variants name="MaybeBestEffort">
+  <variant name=""
+      summary="Sampled while running in a normal priority process for the
+               entire sample."/>
+  <variant name=".BestEffort"
+      summary="Sampled while running at Process::Priority::kBestEffort."/>
+</variants>
+
 <variants name="NonBrowserProcessAndThreadType">
   <variant name="RendererProcess.IOThread"
       summary="the IO-Thread of a Renderer process"/>
@@ -96,7 +104,8 @@ chromium-metrics-reviews@google.com.
   <token key="LifetimePhase" variants="LifetimePhase"/>
 </histogram>
 
-<histogram name="HangWatcher.IsThreadHung.{NonBrowserProcessAndThreadType}"
+<histogram
+    name="HangWatcher.IsThreadHung.{NonBrowserProcessAndThreadType}{MaybeBestEffort}"
     enum="BooleanHung" expires_after="never">
 <!-- expires-never: Staple top-level metric for chrome-catan@. -->
 
@@ -116,6 +125,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="NonBrowserProcessAndThreadType"
       variants="NonBrowserProcessAndThreadType"/>
+  <token key="MaybeBestEffort" variants="MaybeBestEffort"/>
 </histogram>
 
 <histogram name="HangWatcher.SleepDrift.{ProcessType}" units="ms"

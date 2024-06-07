@@ -20,6 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/observer_list.h"
@@ -929,6 +930,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // connected to the next child process launched for this host, if any.
   void InitializeChannelProxy();
 
+  // Initializes shared memory regions between this host and its renderer.
+  // Called at the end of each call to InitializeChannelProxy() so the shared
+  // memory regions can be sent to the (new) renderer.
+  void InitializeSharedMemoryRegionsOnceChannelIsUp();
+
   // Resets |channel_|, removing it from the attachment broker if necessary.
   // Always call this in lieu of directly resetting |channel_|.
   void ResetChannelProxy();
@@ -1392,6 +1398,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::AssociatedReceiver<mojom::RendererHost> renderer_host_receiver_{this};
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
       coordinator_connector_receiver_{this};
+
+  // A shared memory version mapping of a std::atomic<TimeTicks> used to
+  // atomically communicate the last time the hosted renderer was foregrounded.
+  // This is preferable to IPC as it ensures the timing is visible immediately
+  // after recovering from a jank (e.g. important for metrics).
+  base::MappedReadOnlyRegion last_foreground_time_region_;
 
   // Tracks active audio and video streams within the render process; used to
   // determine if if a process should be backgrounded.
