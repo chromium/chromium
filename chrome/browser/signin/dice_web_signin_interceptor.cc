@@ -1022,6 +1022,12 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
     const std::string& gaia_id) {
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   SigninPrefs signin_prefs(*profile_->GetPrefs());
+  // When in `ChromeSigninUserChoice::kAlwaysAsk` setting mode, the bubble
+  // result should not be remembered or affect the setting mode.
+  if (signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id) ==
+      ChromeSigninUserChoice::kAlwaysAsk) {
+    return result;
+  }
 
   SigninInterceptionResult processed_result = result;
   // Treat dismiss case: might turn into a decline if max dismiss count is
@@ -1029,9 +1035,7 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
   if (processed_result == SigninInterceptionResult::kDismissed) {
     size_t dismiss_count =
         signin_prefs.IncrementChromeSigninInterceptionDismissCount(gaia_id);
-    if (dismiss_count >= kMaxChromeSigninInterceptionDismissCount &&
-        signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id) !=
-            ChromeSigninUserChoice::kAlwaysAsk) {
+    if (dismiss_count >= kMaxChromeSigninInterceptionDismissCount) {
       // Proceed with the result treated as declined since we reached the max
       // dismissal count, or the user is in the always ask mode.
       // TODO(crbug.com/319396084): Should we record something here?

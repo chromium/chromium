@@ -777,8 +777,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test to sign in to Chrome from the Chrome Signin Bubble Intercept with
-// the full `switches::kExplicitBrowserSigninUIOnDesktop` enabled.
-class DiceWebSigninInterceptorWithBrowserSigninFullPhaseBrowserTest
+// `switches::kExplicitBrowserSigninUIOnDesktop` enabled.
+class DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_{
@@ -796,8 +796,8 @@ class DiceWebSigninInterceptorWithBrowserSigninFullPhaseBrowserTest
 // - Account1 changes it's pref to always ask and should show the bubble even
 // after 5 dismisses.
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithBrowserSigninFullPhaseBrowserTest,
-    ChromeSigninInerceptDismissBehavior) {
+    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
+    ChromeSigninInterceptDismissBehavior) {
   base::HistogramTester histogram_tester;
 
   // Setup a first account for interception.
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithBrowserSigninFullPhaseBrowserTest,
+    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
     OverrideUserChoicePrefAfterAccept) {
   // Setup an account for interception.
   const std::string email("alice1@example.com");
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithBrowserSigninFullPhaseBrowserTest,
+    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
     OverrideUserChoicePrefAfterDecline) {
   // Setup an account for interception.
   const std::string email("alice1@example.com");
@@ -954,6 +954,45 @@ IN_PROC_BROWSER_TEST_F(
   // Showing the bubble should succeed -- result is not important.
   ShowAndCompleteSigninBubbleWithResult(info,
                                         SigninInterceptionResult::kDismissed);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
+    ChromeSigninBubbleResultsWithAlwaysAskUserChoice) {
+  // Setup an account for interception.
+  const std::string email("alice1@example.com");
+  AccountInfo info = MakeAccountInfoAvailableAndUpdate(email);
+
+  // Set user choice to `ChromeSigninUserChoice::kAlwaysAsk` mode.
+  SigninPrefs(*GetProfile()->GetPrefs())
+      .SetChromeSigninInterceptionUserChoice(
+          info.gaia, ChromeSigninUserChoice::kAlwaysAsk);
+
+  int current_dismiss_count = GetChromeSigninInterceptDismissCountPref(info);
+
+  // Dismiss action.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDismissed);
+  // Should not alter the dismiss count when in
+  // `ChromeSigninUserChoice::kAlwaysAsk` mode.
+  EXPECT_EQ(current_dismiss_count,
+            GetChromeSigninInterceptDismissCountPref(info));
+
+  // Decline action.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kDeclined);
+  // Choice should not be remembered when in
+  // `ChromeSigninUserChoice::kAlwaysAsk` mode.
+  EXPECT_EQ(GetChromeSigninUserChoicePref(info),
+            ChromeSigninUserChoice::kAlwaysAsk);
+
+  // Accept action.
+  ShowAndCompleteSigninBubbleWithResult(info,
+                                        SigninInterceptionResult::kAccepted);
+  // Choice should not be remembered when in
+  // `ChromeSigninUserChoice::kAlwaysAsk` mode.
+  EXPECT_EQ(GetChromeSigninUserChoicePref(info),
+            ChromeSigninUserChoice::kAlwaysAsk);
 }
 
 // Test Suite where PRE_* tests are with
