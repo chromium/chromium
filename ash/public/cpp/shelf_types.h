@@ -61,6 +61,8 @@ enum ShelfAutoHideState {
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           ShelfAlignment alignment);
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
                                            ShelfAutoHideState state);
 
 enum ShelfVisibilityState {

@@ -75,6 +75,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
     return previous_event_location_;
   }
 
+  // Returns the divider widget's native window, or nullptr if none exists.
+  aura::Window* GetDividerWindow();
+
   // Returns true if the divider widget is created.
   bool HasDividerWidget() const;
 

@@ -944,11 +944,9 @@ TEST_F(SplitViewControllerTest, SplitDividerBasicTest) {
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
             split_view_divider()->divider_widget()->GetZOrderLevel());
   EXPECT_TRUE(window_util::IsStackedBelow(
-      window1.get(),
-      split_view_divider()->divider_widget()->GetNativeWindow()));
+      window1.get(), split_view_divider()->GetDividerWindow()));
   EXPECT_TRUE(window_util::IsStackedBelow(
-      window2.get(),
-      split_view_divider()->divider_widget()->GetNativeWindow()));
+      window2.get(), split_view_divider()->GetDividerWindow()));
 
   // Test that activating an non-snappable window ends the split view mode.
   std::unique_ptr<aura::Window> window3(CreateNonSnappableWindow(bounds));
@@ -989,8 +987,7 @@ TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
             split_view_divider()->divider_widget()->GetZOrderLevel());
   EXPECT_TRUE(window_util::IsStackedBelow(window1.get(), window3.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(
-      window3.get(),
-      split_view_divider()->divider_widget()->GetNativeWindow()));
+      window3.get(), split_view_divider()->GetDividerWindow()));
 }
 
 // Tests that the split divider has the correct state when the drag of the
@@ -1029,11 +1026,9 @@ TEST_F(SplitViewControllerTest, DividerStateWhenOverviewItemDragCancelled) {
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
             split_view_divider()->divider_widget()->GetZOrderLevel());
   EXPECT_TRUE(window_util::IsStackedBelow(
-      window1.get(),
-      split_view_divider()->divider_widget()->GetNativeWindow()));
+      window1.get(), split_view_divider()->GetDividerWindow()));
   EXPECT_TRUE(window_util::IsStackedBelow(
-      window3.get(),
-      split_view_divider()->divider_widget()->GetNativeWindow()));
+      window3.get(), split_view_divider()->GetDividerWindow()));
 }
 
 // Verifys that the bounds of the two windows in splitview are as expected.
@@ -3781,8 +3776,7 @@ TEST_F(SplitViewControllerTest, StackingOrderWithDivider) {
   EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
   SplitViewDivider* divider = split_view_divider();
   ASSERT_TRUE(divider->divider_widget());
-  aura::Window* divider_widget_native_window =
-      divider->divider_widget()->GetNativeWindow();
+  aura::Window* divider_widget_native_window = divider->GetDividerWindow();
   EXPECT_TRUE(
       window_util::IsStackedBelow(w1.get(), divider_widget_native_window));
   EXPECT_TRUE(
@@ -3811,7 +3805,7 @@ TEST_F(SplitViewControllerTest, DividerStaysVisibleDuringMinimizeAndRestore) {
   EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
   SplitViewDivider* divider = split_view_divider();
   ASSERT_TRUE(divider->divider_widget());
-  EXPECT_TRUE(divider->divider_widget()->GetNativeWindow()->IsVisible());
+  EXPECT_TRUE(divider->GetDividerWindow()->IsVisible());
 
   // Tests that the divider stays visible on `w1` minimized and restore.
   // To simulate the actual CUJ when user minimizes a window i.e. the minimized
@@ -3821,12 +3815,12 @@ TEST_F(SplitViewControllerTest, DividerStaysVisibleDuringMinimizeAndRestore) {
   WMEvent w1_minimize(WM_EVENT_MINIMIZE);
   WindowState::Get(w1.get())->OnWMEvent(&w1_minimize);
   EXPECT_FALSE(w1->IsVisible());
-  EXPECT_TRUE(divider->divider_widget()->GetNativeWindow()->IsVisible());
+  EXPECT_TRUE(divider->GetDividerWindow()->IsVisible());
 
   // Restoring the window will refresh the widget but keep it visible.
   WMEvent w1_restore(WM_EVENT_RESTORE);
   WindowState::Get(w1.get())->OnWMEvent(&w1_restore);
-  EXPECT_TRUE(divider->divider_widget()->GetNativeWindow()->IsVisible());
+  EXPECT_TRUE(divider->GetDividerWindow()->IsVisible());
 }
 
 // Tests the windows stay onscreen during fast resize. Regression test for
@@ -3885,8 +3879,7 @@ TEST_F(SplitViewControllerTest, SnapWindowsWithDifferentParentContainers) {
 
   SplitViewDivider* divider = split_view_divider();
   ASSERT_TRUE(divider->divider_widget());
-  aura::Window* divider_widget_native_window =
-      divider->divider_widget()->GetNativeWindow();
+  aura::Window* divider_widget_native_window = divider->GetDividerWindow();
   EXPECT_EQ(divider_widget_native_window->parent(),
             always_on_top_window->parent());
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,

@@ -869,7 +869,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
   // Test that, even though the target window is the divider, we don't try to
   // create the menu on the split view divider.
   CHECK_EQ(GetMultitaskMenuController()->target_window_for_test(),
-           split_view_divider->divider_widget()->GetNativeWindow());
+           split_view_divider->GetDividerWindow());
   EXPECT_FALSE(GetMultitaskMenu());
 }
 

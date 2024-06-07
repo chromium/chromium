@@ -168,6 +168,10 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(
   }
 }
 
+aura::Window* SplitViewDivider::GetDividerWindow() {
+  return divider_widget_ ? divider_widget_->GetNativeWindow() : nullptr;
+}
+
 bool SplitViewDivider::HasDividerWidget() const {
   return !!divider_widget_;
 }

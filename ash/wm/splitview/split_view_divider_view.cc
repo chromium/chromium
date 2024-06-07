@@ -221,7 +221,7 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 ui::Cursor SplitViewDividerView::GetCursor(const ui::MouseEvent& event) {
-  return IsLayoutHorizontal(divider_->divider_widget()->GetNativeWindow())
+  return IsLayoutHorizontal(divider_->GetDividerWindow())
              ? ui::mojom::CursorType::kColumnResize
              : ui::mojom::CursorType::kRowResize;
 }
