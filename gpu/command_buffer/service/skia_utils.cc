@@ -363,11 +363,42 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
       return GrVkYcbcrConversionInfo();
     }
 
-    // YCbCr sampler is required
+    // YCbCr sampler is required.
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/233667677): AllowColorSpaceCombination() in
+    // overlay_processor_ozone.cc ensures that the only NV12/YV12/P010 quads
+    // that we allow to be promoted to overlays are those that don't use
+    // the BT.2020 matrix and that don't use full range. Furthermore, since
+    // https://crrev.com/c/2336347, we force the DRM/KMS driver to use BT.601
+    // with limited range. Therefore, for compositing purposes, we need to
+    //
+    // a) Use VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601 for any YUV quads that
+    //    might be promoted to overlays - we shouldn't use
+    //    VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709 because we might then see
+    //    a slight difference in compositing vs. overlays (note that the BT.601
+    //    and BT.709 primaries are close to each other, so this shouldn't be a
+    //    huge correctness issue, though we'll need to address this at some
+    //    point);
+    //
+    //    and
+    //
+    // b) Use VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020 for BT.2020 quads in
+    //    order to composite them correctly (and we won't need to worry about a
+    //    difference in compositing vs. overlays in this case since those frames
+    //    won't be promoted to overlays).
+    //
+    // We'll need to revisit this once we plumb the color space and range to
+    // DRM/KMS.
+    VkSamplerYcbcrModelConversion ycbcr_model =
+        (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT2020_NCL)
+            ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020
+            : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+#else
     VkSamplerYcbcrModelConversion ycbcr_model =
         (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
             ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
             : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+#endif  // BUILDFLAG(IS_CHROMEOS)
     VkSamplerYcbcrRange ycbcr_range =
         (color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)
             ? VK_SAMPLER_YCBCR_RANGE_ITU_FULL
