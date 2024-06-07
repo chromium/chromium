@@ -31,7 +31,7 @@ namespace {
 bool DrawingShouldFillScrollingContentsLayer(
     const PropertyTreeState& layer_state,
     const cc::PictureLayer& layer) {
-  if (!RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     return false;
   }
   if (!layer.draws_content()) {

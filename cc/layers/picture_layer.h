@@ -72,7 +72,6 @@ class CC_EXPORT PictureLayer : public Layer {
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
 
-  bool CanUseRecordedBoundsForTiling() const;
   const DisplayItemList* GetDisplayItemList() const;
 
   // These fields are not protected because they are only modified during

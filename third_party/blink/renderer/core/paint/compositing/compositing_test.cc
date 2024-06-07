@@ -909,16 +909,8 @@ TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
                 ->transform_tree_index());
 }
 
-constexpr unsigned kFillScrollingContentsLayer = 1 << 10;
-
-class CompositingSimTest : public PaintTestConfigurations,
-                           public SimTest,
-                           private ScopedFillScrollingContentsLayerForTest {
+class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
-  CompositingSimTest()
-      : ScopedFillScrollingContentsLayerForTest(GetParam() &
-                                                kFillScrollingContentsLayer) {}
-
   void InitializeWithHTML(const String& html) {
     SimRequest request("https://example.com/test.html", "text/html");
     LoadURL("https://example.com/test.html");
@@ -988,11 +980,7 @@ class CompositingSimTest : public PaintTestConfigurations,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CompositingSimTest,
-                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
-                                           kHitTestOpaqueness |
-                                               kFillScrollingContentsLayer));
+INSTANTIATE_PAINT_TEST_SUITE_P(CompositingSimTest);
 
 TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
   InitializeWithHTML(R"HTML(
@@ -3408,13 +3396,9 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
                                                     ->GetScrollableArea()
                                                     ->GetScrollElementId()));
   ASSERT_TRUE(layer);
-  if (RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
-              layer->GetRecordingSourceForTesting().recorded_bounds());
-  } else if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
-    EXPECT_EQ(gfx::Rect(0, 2000, 2000, 2000),
               layer->GetRecordingSourceForTesting().recorded_bounds());
   } else {
     EXPECT_EQ(gfx::Size(2000, 2000), layer->bounds());

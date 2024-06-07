@@ -532,8 +532,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
-        Flag.baseFeature(CcFeatures.USE_RECORDED_BOUNDS_FOR_TILING),
-        Flag.baseFeature(BlinkFeatures.FILL_SCROLLING_CONTENTS_LAYER),
         Flag.baseFeature(BlinkFeatures.DYNAMIC_SCROLL_CULL_RECT_EXPANSION),
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),

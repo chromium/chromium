@@ -106,7 +106,8 @@ bool PictureLayer::Update() {
   recording_source.SetBackgroundColor(SafeOpaqueBackgroundColor());
   recording_source.SetRequiresClear(!contents_opaque() &&
                                     !client_->FillsBoundsCompletely());
-  recording_source.SetCanUseRecordedBounds(CanUseRecordedBoundsForTiling());
+  recording_source.SetCanUseRecordedBounds(
+      layer_tree_host()->GetSettings().enable_hit_test_opaqueness);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "PictureLayer::Update",
                "source_frame_number", layer_tree_host()->SourceFrameNumber());
@@ -130,12 +131,6 @@ bool PictureLayer::Update() {
   SetNeedsPushProperties();
   IncreasePaintCount();
   return true;
-}
-
-bool PictureLayer::CanUseRecordedBoundsForTiling() const {
-  // For now the feature is for blink (using layer list mode) only.
-  return IsUsingLayerLists() &&
-         base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling);
 }
 
 sk_sp<const SkPicture> PictureLayer::GetPicture() const {

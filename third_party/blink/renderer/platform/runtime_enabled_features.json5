@@ -1727,10 +1727,6 @@
       status: "experimental",
     },
     {
-      name: "FillScrollingContentsLayer",
-      status: "experimental",
-    },
-    {
       name: "FindTextInReadonlyTextInput",
       status: "experimental",
     },
