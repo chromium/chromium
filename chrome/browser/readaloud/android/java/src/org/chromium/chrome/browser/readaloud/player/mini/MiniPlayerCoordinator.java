@@ -12,7 +12,7 @@ import android.view.ViewStub;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
@@ -42,7 +42,7 @@ public class MiniPlayerCoordinator {
      *     R.id.readaloud_mini_player.
      * @param context View-inflation-capable Context for read_aloud_playback isolated split.
      * @param sharedModel Player UI property model for properties shared with expanded player.
-     * @param browserControlsSizer Allows observing and changing browser controls heights.
+     * @param bottomControlsStacker Allows observing and changing browser controls heights.
      * @param layoutManager Involved in showing the compositor view.
      * @param playerCoordinator PlayerCoordinator to be notified of mini player updates.
      */
@@ -50,14 +50,14 @@ public class MiniPlayerCoordinator {
             Activity activity,
             Context context,
             PropertyModel sharedModel,
-            BrowserControlsSizer browserControlsSizer,
+            BottomControlsStacker bottomControlsStacker,
             @Nullable LayoutManager layoutManager,
             PlayerCoordinator playerCoordinator) {
         this(
                 sharedModel,
-                new MiniPlayerMediator(browserControlsSizer),
+                new MiniPlayerMediator(bottomControlsStacker),
                 inflateLayout(activity, context),
-                new ReadAloudMiniPlayerSceneLayer(browserControlsSizer),
+                new ReadAloudMiniPlayerSceneLayer(bottomControlsStacker.getBrowserControls()),
                 layoutManager,
                 playerCoordinator);
     }

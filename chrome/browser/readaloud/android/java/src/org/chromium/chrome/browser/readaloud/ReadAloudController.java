@@ -30,7 +30,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -104,7 +104,7 @@ public class ReadAloudController
     private boolean mPausedForIncognito;
 
     private final BottomSheetController mBottomSheetController;
-    private final BrowserControlsSizer mBrowserControlsSizer;
+    private final BottomControlsStacker mBottomControlsStacker;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
@@ -449,7 +449,7 @@ public class ReadAloudController
             TabModel tabModel,
             TabModel incognitoTabModel,
             BottomSheetController bottomSheetController,
-            BrowserControlsSizer browserControlsSizer,
+            BottomControlsStacker bottomControlsStacker,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
@@ -462,7 +462,7 @@ public class ReadAloudController
         mBottomSheetController = bottomSheetController;
         mCurrentLanguageVoices = new ObservableSupplierImpl<>();
         mSelectedVoiceId = new ObservableSupplierImpl<>();
-        mBrowserControlsSizer = browserControlsSizer;
+        mBottomControlsStacker = bottomControlsStacker;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
@@ -1308,8 +1308,8 @@ public class ReadAloudController
     }
 
     @Override
-    public BrowserControlsSizer getBrowserControlsSizer() {
-        return mBrowserControlsSizer;
+    public BottomControlsStacker getBottomControlsStacker() {
+        return mBottomControlsStacker;
     }
 
     @Override

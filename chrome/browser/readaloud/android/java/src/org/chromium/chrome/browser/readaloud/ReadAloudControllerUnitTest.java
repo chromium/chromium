@@ -57,7 +57,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -142,7 +142,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private Extractor mExtractor;
     @Mock private Highlighter mHighlighter;
     @Mock private PlaybackListener.PhraseTiming mPhraseTiming;
-    @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private LayoutManager mLayoutManager;
     @Mock private ReadAloudPrefs.Natives mReadAloudPrefsNatives;
     @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
@@ -267,7 +267,7 @@ public class ReadAloudControllerUnitTest {
                         mTabModelSelector.getModel(false),
                         mTabModelSelector.getModel(true),
                         mBottomSheetController,
-                        mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mLayoutManagerSupplier,
                         mActivityWindowAndroid,
                         mActivityLifecycleDispatcher);
@@ -2274,7 +2274,7 @@ public class ReadAloudControllerUnitTest {
                         mTabModelSelector.getModel(false),
                         mTabModelSelector.getModel(true),
                         mBottomSheetController,
-                        mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mLayoutManagerSupplier,
                         mActivityWindowAndroid,
                         mActivityLifecycleDispatcher);

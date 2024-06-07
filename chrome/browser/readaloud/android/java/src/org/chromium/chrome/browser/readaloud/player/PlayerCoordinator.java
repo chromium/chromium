@@ -66,7 +66,7 @@ public class PlayerCoordinator implements Player {
                         delegate.getActivity(),
                         contextForInflation,
                         model,
-                        delegate.getBrowserControlsSizer(),
+                        delegate.getBottomControlsStacker(),
                         delegate.getLayoutManager(),
                         this);
         mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);

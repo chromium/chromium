@@ -22,7 +22,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -426,8 +425,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * Set the new height for the tab strip. This on high level consists with 3 steps:
      *
      * <ul>
-     *   <li>1. Use {@link BrowserControlsSizer} to change the browser control height. This will
-     *       kick off the scene layer transition.
+     *   <li>1. Use BrowserControlsSizer to change the browser control height. This will kick off
+     *       the scene layer transition.
      *   <li>2. Add / remove margins from the toolbar and toolbar hairline based on tab strip's new
      *       height.
      *   <li>3. Notify the tab strip scene layer for the new height. This will in turn notify

@@ -10,7 +10,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,7 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class MiniPlayerMediator {
     private final PropertyModel mModel;
-    private final BrowserControlsSizer mBrowserControlsSizer;
+    private final BottomControlsStacker mBottomControlsStacker;
     private MiniPlayerCoordinator mCoordinator;
     // Height of MiniPlayerLayout's background (without shadow).
     private int mLayoutHeightPx;
@@ -69,14 +69,13 @@ public class MiniPlayerMediator {
                     // to prevent that from happening by forcing fading in player controls if bottom
                     // controls are visible and no animation is running.
                     if (getVisibility() == VisibilityState.SHOWING
-                            && mBrowserControlsSizer.getBottomControlsHeight() > 0) {
+                            && getBrowserControls().getBottomControlsHeight() > 0) {
                         PostTask.postDelayedTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
                                     if (getVisibility() == VisibilityState.SHOWING
                                             && !mIsAnimationStarted
-                                            && mBrowserControlsSizer.getBottomControlsHeight()
-                                                    > 0) {
+                                            && getBrowserControls().getBottomControlsHeight() > 0) {
                                         onBottomControlsGrown();
                                     }
                                 },
@@ -85,7 +84,7 @@ public class MiniPlayerMediator {
                 }
             };
 
-    MiniPlayerMediator(BrowserControlsSizer browserControlsSizer) {
+    MiniPlayerMediator(BottomControlsStacker bottomControlsStacker) {
         mModel =
                 new PropertyModel.Builder(Properties.ALL_KEYS)
                         .with(Properties.VISIBILITY, VisibilityState.GONE)
@@ -93,8 +92,8 @@ public class MiniPlayerMediator {
                         .with(Properties.COMPOSITED_VIEW_VISIBLE, false)
                         .with(Properties.MEDIATOR, this)
                         .build();
-        mBrowserControlsSizer = browserControlsSizer;
-        mBrowserControlsSizer.addObserver(mBrowserControlsStateObserver);
+        mBottomControlsStacker = bottomControlsStacker;
+        mBottomControlsStacker.getBrowserControls().addObserver(mBrowserControlsStateObserver);
     }
 
     void setCoordinator(MiniPlayerCoordinator coordinator) {
@@ -102,7 +101,7 @@ public class MiniPlayerMediator {
     }
 
     void destroy() {
-        mBrowserControlsSizer.removeObserver(mBrowserControlsStateObserver);
+        getBrowserControls().removeObserver(mBrowserControlsStateObserver);
     }
 
     @VisibilityState
@@ -202,9 +201,9 @@ public class MiniPlayerMediator {
     }
 
     private void growBottomControls() {
-        mBrowserControlsSizer.notifyBackgroundColor(mModel.get(Properties.BACKGROUND_COLOR_ARGB));
+        mBottomControlsStacker.notifyBackgroundColor(mModel.get(Properties.BACKGROUND_COLOR_ARGB));
         setBottomControlsHeight(
-                mBrowserControlsSizer.getBottomControlsHeight() + mLayoutHeightPx, mLayoutHeightPx);
+                getBrowserControls().getBottomControlsHeight() + mLayoutHeightPx, mLayoutHeightPx);
     }
 
     private void shrinkBottomControls() {
@@ -212,18 +211,22 @@ public class MiniPlayerMediator {
         // to 1 pixel instead in this case.
         // TODO(b/320750931): fix the underlying issue in browser controls code
         setBottomControlsHeight(
-                Math.max(mBrowserControlsSizer.getBottomControlsHeight() - mLayoutHeightPx, 1), 0);
+                Math.max(getBrowserControls().getBottomControlsHeight() - mLayoutHeightPx, 1), 0);
     }
 
     private void setBottomControlsHeight(int height, int minHeight) {
         mIsAnimationStarted = false;
         boolean animate = mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES);
         if (animate) {
-            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
+            mBottomControlsStacker.setAnimateBrowserControlsHeightChanges(true);
         }
-        mBrowserControlsSizer.setBottomControlsHeight(height, minHeight);
+        mBottomControlsStacker.setBottomControlsHeight(height, minHeight);
         if (animate) {
-            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+            mBottomControlsStacker.setAnimateBrowserControlsHeightChanges(false);
         }
+    }
+
+    private BrowserControlsStateProvider getBrowserControls() {
+        return mBottomControlsStacker.getBrowserControls();
     }
 }

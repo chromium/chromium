@@ -27,7 +27,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
@@ -52,7 +53,8 @@ public class MiniPlayerCoordinatorUnitTest {
     @Mock private Context mContextForInflation;
     @Mock private LayoutInflater mLayoutInflater;
     @Mock private ViewStub mViewStub;
-    @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private LayoutManager mLayoutManager;
     @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
@@ -76,6 +78,7 @@ public class MiniPlayerCoordinatorUnitTest {
         mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
         doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
         doReturn(mModel).when(mMediator).getModel();
+        doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mCoordinator =
                 new MiniPlayerCoordinator(
                         mSharedModel,
@@ -96,7 +99,7 @@ public class MiniPlayerCoordinatorUnitTest {
                         mActivity,
                         mContextForInflation,
                         mSharedModel,
-                        mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mLayoutManager,
                         mPlayerCoordinator);
         verify(mViewStub).inflate();

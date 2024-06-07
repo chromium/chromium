@@ -32,7 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -55,7 +55,7 @@ public class BottomControlsMediatorTest {
 
     private static final int DEFAULT_HEIGHT = 80;
     private static final int DEFAULT_INSET = 56;
-    @Mock BrowserControlsSizer mBrowserControlsSizer;
+    @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock WindowAndroid mWindowAndroid;
     @Mock TabObscuringHandler mTabObscuringHandler;
@@ -75,6 +75,7 @@ public class BottomControlsMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
+        doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mModel =
                 new PropertyModel.Builder(BottomControlsProperties.ALL_KEYS)
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
@@ -85,7 +86,7 @@ public class BottomControlsMediatorTest {
                 new BottomControlsMediator(
                         mWindowAndroid,
                         mModel,
-                        mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
@@ -100,7 +101,7 @@ public class BottomControlsMediatorTest {
                 new BottomControlsMediator(
                         mWindowAndroid,
                         mModel,
-                        mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
@@ -145,7 +146,7 @@ public class BottomControlsMediatorTest {
                 new BottomControlsMediator(
                         mWindowAndroid,
                         mModel,
-                        mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
@@ -172,7 +173,7 @@ public class BottomControlsMediatorTest {
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,
-                mBrowserControlsSizer,
+                mBottomControlsStacker,
                 mFullscreenManager,
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,

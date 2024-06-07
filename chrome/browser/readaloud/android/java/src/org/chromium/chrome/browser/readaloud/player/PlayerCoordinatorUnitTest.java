@@ -30,7 +30,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
@@ -56,6 +57,8 @@ public class PlayerCoordinatorUnitTest {
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private BottomControlsStacker mBottomControlsStacker;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Playback mPlayback;
     @Mock private PlayerCoordinator.Observer mObserver;
     @Mock private PlayerMediator mMediator;
@@ -74,6 +77,8 @@ public class PlayerCoordinatorUnitTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
         doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
+        doReturn(mBottomControlsStacker).when(mDelegate).getBottomControlsStacker();
+        doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mPlayerCoordinator =
                 new PlayerCoordinator(mMiniPlayer, mMediator, mDelegate, mExpandedPlayer);
     }
@@ -105,9 +110,6 @@ public class PlayerCoordinatorUnitTest {
         ReadAloudPrefs.setSpeed(prefs, 2f);
         doReturn(prefs).when(mDelegate).getPrefService();
         doReturn(Mockito.mock(LayoutManager.class)).when(mDelegate).getLayoutManager();
-        doReturn(Mockito.mock(BrowserControlsSizer.class))
-                .when(mDelegate)
-                .getBrowserControlsSizer();
         doReturn(new ObservableSupplierImpl<List<PlaybackVoice>>())
                 .when(mDelegate)
                 .getCurrentLanguageVoicesSupplier();

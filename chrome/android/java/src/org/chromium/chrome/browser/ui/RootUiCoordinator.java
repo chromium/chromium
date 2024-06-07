@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -326,6 +327,7 @@ public class RootUiCoordinator
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     protected final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
+    protected final BottomControlsStacker mBottomControlsStacker;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private ContextualSearchSelectionObserver mContextualSearchSelectionObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
@@ -575,6 +577,7 @@ public class RootUiCoordinator
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
         mOverviewColorSupplier = overviewColorSupplier;
         mBaseChromeLayout = baseChromeLayout;
+        mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsManager);
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -775,7 +778,7 @@ public class RootUiCoordinator
             mBoardingPassController.destroy();
             mBoardingPassController = null;
         }
-
+        mBottomControlsStacker.destroy();
         mActivity = null;
     }
 
@@ -907,7 +910,7 @@ public class RootUiCoordinator
                             tabModelSelector.getModel(/* incognito= */ false),
                             tabModelSelector.getModel(/* incognito= */ true),
                             getBottomSheetController(),
-                            mBrowserControlsManager,
+                            mBottomControlsStacker,
                             mLayoutManagerSupplier,
                             mWindowAndroid,
                             mActivityLifecycleDispatcher);
@@ -1455,6 +1458,7 @@ public class RootUiCoordinator
             mToolbarManager =
                     new ToolbarManager(
                             mActivity,
+                            mBottomControlsStacker,
                             mBrowserControlsManager,
                             mFullscreenManager,
                             mEdgeToEdgeControllerSupplier,

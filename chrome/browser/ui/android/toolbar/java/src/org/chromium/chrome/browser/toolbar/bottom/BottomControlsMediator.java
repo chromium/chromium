@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -42,7 +42,7 @@ class BottomControlsMediator
     private final FullscreenManager mFullscreenManager;
 
     /** The browser controls sizer/manager to observe browser controls events. */
-    private final BrowserControlsSizer mBrowserControlsSizer;
+    private final BottomControlsStacker mBottomControlsStacker;
 
     private final TabObscuringHandler mTabObscuringHandler;
 
@@ -84,7 +84,7 @@ class BottomControlsMediator
      * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
      * @param model The {@link BottomControlsProperties} that holds all the view state for the
      *     bottom controls component.
-     * @param controlsSizer The {@link BrowserControlsSizer} to manipulate browser controls.
+     * @param controlsStacker The {@link BottomControlsStacker} to manipulate browser controls.
      * @param fullscreenManager A {@link FullscreenManager} for events related to the browser
      *     controls.
      * @param tabObscuringHandler Delegate object handling obscuring views.
@@ -98,7 +98,7 @@ class BottomControlsMediator
     BottomControlsMediator(
             WindowAndroid windowAndroid,
             PropertyModel model,
-            BrowserControlsSizer controlsSizer,
+            BottomControlsStacker controlsStacker,
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
@@ -108,8 +108,8 @@ class BottomControlsMediator
         mModel = model;
 
         mFullscreenManager = fullscreenManager;
-        mBrowserControlsSizer = controlsSizer;
-        mBrowserControlsSizer.addObserver(this);
+        mBottomControlsStacker = controlsStacker;
+        getBrowserControls().addObserver(this);
         mTabObscuringHandler = tabObscuringHandler;
         tabObscuringHandler.addObserver(this);
 
@@ -155,7 +155,7 @@ class BottomControlsMediator
     /** Clean up anything that needs to be when the bottom controls component is destroyed. */
     void destroy() {
         mCallbackController.destroy();
-        mBrowserControlsSizer.removeObserver(this);
+        getBrowserControls().removeObserver(this);
         mWindowAndroid.getKeyboardDelegate().removeKeyboardVisibilityListener(this);
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(this);
@@ -175,7 +175,7 @@ class BottomControlsMediator
             int bottomOffset,
             int bottomControlsMinHeightOffset,
             boolean needsAnimate) {
-        int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
+        int minHeight = getBrowserControls().getBottomControlsMinHeight();
         mModel.set(BottomControlsProperties.Y_OFFSET, bottomOffset - minHeight);
 
         // This call also updates the view's position if the animation has just finished.
@@ -197,7 +197,7 @@ class BottomControlsMediator
         // A min height greater than 0 suggests the presence of some other UI component underneath
         // the bottom controls.
         if (bottomControlsMinHeight == 0) {
-            mBrowserControlsSizer.notifyBackgroundColor(mBottomControlsColor);
+            mBottomControlsStacker.notifyBackgroundColor(mBottomControlsColor);
         }
     }
 
@@ -236,9 +236,9 @@ class BottomControlsMediator
 
     /**
      * The composited view is the composited version of the Android View. It is used to be able to
-     * scroll the bottom controls off-screen synchronously. Since the bottom controls live below
-     * the webcontents we re-size the webcontents through
-     * {@link BrowserControlsSizer#setBottomControlsHeight(int,int)} whenever the composited view
+     * scroll the bottom controls off-screen synchronously. Since the bottom controls live below the
+     * webcontents we re-size the webcontents through {@link
+     * BottomControlsStacker#setBottomControlsHeight(int,int)} whenever the composited view
      * visibility changes.
      */
     private void updateCompositedViewVisibility() {
@@ -248,7 +248,7 @@ class BottomControlsMediator
     }
 
     private int getBrowserControlsHeight() {
-        int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
+        int minHeight = getBrowserControls().getBottomControlsMinHeight();
         int androidViewHeight = getAndroidViewHeight();
 
         return isCompositedViewVisible() ? androidViewHeight + minHeight : minHeight;
@@ -267,8 +267,8 @@ class BottomControlsMediator
     }
 
     private void updateBrowserControlsHeight() {
-        mBrowserControlsSizer.setBottomControlsHeight(
-                getBrowserControlsHeight(), mBrowserControlsSizer.getBottomControlsMinHeight());
+        mBottomControlsStacker.setBottomControlsHeight(
+                getBrowserControlsHeight(), getBrowserControls().getBottomControlsMinHeight());
     }
 
     boolean isCompositedViewVisible() {
@@ -279,19 +279,19 @@ class BottomControlsMediator
      * The Android View is the interactive view. The composited view should always be behind the
      * Android view which means we hide the Android view whenever the composited view is hidden. We
      * also hide the Android view as we are scrolling the bottom controls off screen this is done by
-     * checking if {@link BrowserControlsSizer#getBottomControlOffset()} is non-zero.
+     * checking if {@link BrowserControlsStateProvider#getBottomControlOffset()} is non-zero.
      */
     private void updateAndroidViewVisibility() {
         final boolean visible =
                 isCompositedViewVisible()
                         && !mIsOverlayPanelShowing
                         && !mIsInSwipeLayout
-                        && mBrowserControlsSizer.getBottomControlOffset() == 0;
+                        && getBrowserControls().getBottomControlOffset() == 0;
         if (visible) {
             // Translate view so that its bottom is aligned with browser controls min height.
             mModel.set(
                     BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
-                    -mBrowserControlsSizer.getBottomControlsMinHeight());
+                    -getBrowserControls().getBottomControlsMinHeight());
         }
         mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE, visible);
     }
@@ -299,6 +299,10 @@ class BottomControlsMediator
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
         mModel.set(BottomControlsProperties.IS_OBSCURED, obscureToolbar);
+    }
+
+    private BrowserControlsStateProvider getBrowserControls() {
+        return mBottomControlsStacker.getBrowserControls();
     }
 
     ChangeObserver getEdgeToEdgeChangeObserverForTesting() {

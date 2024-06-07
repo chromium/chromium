@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -62,8 +62,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
      * @param layoutManager A {@link LayoutManager} to attach overlays to.
      * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
-     * @param controlsSizer A {@link BrowserControlsSizer} to update the bottom controls height for
-     *     the renderer.
+     * @param controlsStacker A {@link BottomControlsStacker} to update the bottom controls.
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
      * @param edgeToEdgeControllerSupplier A supplier to control drawing to the edge of the screen.
      * @param root The parent {@link ViewGroup} for the bottom controls.
@@ -80,7 +79,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             WindowAndroid windowAndroid,
             LayoutManager layoutManager,
             ResourceManager resourceManager,
-            BrowserControlsSizer controlsSizer,
+            BottomControlsStacker controlsStacker,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ScrollingBottomViewResourceFrameLayout root,
@@ -111,7 +110,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                 new BottomControlsMediator(
                         windowAndroid,
                         model,
-                        controlsSizer,
+                        controlsStacker,
                         fullscreenManager,
                         tabObscuringHandler,
                         bottomControlsHeightRes,
