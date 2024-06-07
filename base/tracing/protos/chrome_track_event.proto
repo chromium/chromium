@@ -1695,7 +1695,7 @@ message ChromeCompositorStateMachineV2 {
   }
   optional MajorStateV2 major_state = 1;
 
-  // Next id: 47
+  // Next id: 48
   message MinorStateV2 {
     enum TreePriority {
       TREE_PRIORITY_UNSPECIFIED = 0;
@@ -1753,6 +1753,7 @@ message ChromeCompositorStateMachineV2 {
     optional bool processing_animation_worklets_for_active_tree = 44;
     optional bool processing_animation_worklets_for_pending_tree = 45;
     optional bool processing_paint_worklets_for_pending_tree = 46;
+    optional bool should_warm_up = 47;
 
     reserved 35;
   }
