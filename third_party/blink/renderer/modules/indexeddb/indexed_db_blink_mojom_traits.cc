@@ -159,17 +159,17 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 }
 
 // static
-Vector<uint8_t>
+base::span<const uint8_t>
 UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     binary(const std::unique_ptr<blink::IDBKey>& key) {
-  return Vector<uint8_t>(key->Binary()->data);
+  return base::as_byte_span(key->Binary()->data);
 }
 
 // static
-Vector<uint8_t>
+base::span<const uint8_t>
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return Vector<uint8_t>(*input->Data());
+  return base::as_byte_span(*input->Data());
 }
 
 // static
