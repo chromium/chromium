@@ -90,6 +90,12 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
+    public void testHideRefreshButton_callsBottomSheetHideRefreshButton() {
+        mMediator.hideRefreshButton();
+        verify(mBottomSheetContent).hideRefreshButton();
+    }
+
+    @Test
     public void testDestroy_hidesBottomSheetContentAndRemovesObservers() {
         mMediator.destroy();
 

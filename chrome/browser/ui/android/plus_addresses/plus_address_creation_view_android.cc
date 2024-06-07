@@ -41,7 +41,8 @@ PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() {
 }
 
 void PlusAddressCreationViewAndroid::ShowInit(
-    const std::string& primary_email_address) {
+    const std::string& primary_email_address,
+    bool refresh_supported) {
   JNIEnv* env = base::android::AttachCurrentThread();
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
   if (!tab_model) {
@@ -114,7 +115,7 @@ void PlusAddressCreationViewAndroid::ShowInit(
       env, java_object_, j_title, j_formatted_description,
       j_proposed_plus_address_placeholder, j_plus_address_modal_ok,
       j_plus_address_modal_cancel, j_error_report_instruction, j_manage_url,
-      j_error_report_url);
+      j_error_report_url, refresh_supported);
 }
 
 void PlusAddressCreationViewAndroid::OnRefreshClicked(
@@ -163,5 +164,10 @@ void PlusAddressCreationViewAndroid::ShowConfirmResult(
   } else {
     Java_PlusAddressCreationViewBridge_showError(env, java_object_);
   }
+}
+
+void PlusAddressCreationViewAndroid::HideRefreshButton() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PlusAddressCreationViewBridge_hideRefreshButton(env, java_object_);
 }
 }  // namespace plus_addresses

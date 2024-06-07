@@ -29,6 +29,7 @@ public class PlusAddressCreationCoordinator {
             String plusAddressModalOkText,
             String plusAddressModalCancelText,
             String errorReportInstruction,
+            boolean refreshSupported,
             GURL manageUrl,
             GURL errorReportUrl) {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
@@ -41,7 +42,8 @@ public class PlusAddressCreationCoordinator {
                         plusAddressModalCancelText,
                         errorReportInstruction,
                         manageUrl,
-                        errorReportUrl);
+                        errorReportUrl,
+                        refreshSupported);
         mMediator =
                 new PlusAddressCreationMediator(
                         bottomSheetContent,
@@ -62,6 +64,10 @@ public class PlusAddressCreationCoordinator {
 
     public void showError() {
         mMediator.showError();
+    }
+
+    public void hideRefreshButton() {
+        mMediator.hideRefreshButton();
     }
 
     public void finishConfirm() {

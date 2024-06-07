@@ -41,10 +41,7 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({
-    ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN,
-    ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
 public class PlusAddressCreationBottomSheetContentTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
     private static final String MODAL_TITLE = "lorem ipsum title";
@@ -60,18 +57,20 @@ public class PlusAddressCreationBottomSheetContentTest {
     private static final String MODAL_FORMATTED_ERROR_MESSAGE = "error! test link";
     private static final GURL MANAGE_URL = new GURL("manage.com");
     private static final GURL ERROR_URL = new GURL("bug.com");
+    private static final boolean REFRESH_SUPPORTED = true;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PlusAddressCreationDelegate mDelegate;
 
+    private Activity mActivity;
     private PlusAddressCreationBottomSheetContent mBottomSheetContent;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.setupActivity(TestActivity.class);
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        activity,
+                        mActivity,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
@@ -79,7 +78,8 @@ public class PlusAddressCreationBottomSheetContentTest {
                         MODAL_CANCEL,
                         MODAL_ERROR_MESSAGE,
                         MANAGE_URL,
-                        ERROR_URL);
+                        ERROR_URL,
+                        REFRESH_SUPPORTED);
         mBottomSheetContent.setDelegate(mDelegate);
     }
 
@@ -117,10 +117,40 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN,
-        ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
+    public void testRefreshButton_RefreshSupported() {
+        ImageView refreshIcon =
+                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+
+        mBottomSheetContent.hideRefreshButton();
+        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
+    public void testRefreshButton_RefreshNotSupported() {
+        PlusAddressCreationBottomSheetContent bottomSheetContent =
+                new PlusAddressCreationBottomSheetContent(
+                        mActivity,
+                        MODAL_TITLE,
+                        MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
+                        MODAL_OK,
+                        MODAL_CANCEL,
+                        MODAL_ERROR_MESSAGE,
+                        MANAGE_URL,
+                        ERROR_URL,
+                        /* refreshSupported= */ false);
+        ImageView refreshIcon =
+                bottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
     public void testRefreshButton_NotClickableUntilPlusAddressIsSet() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
@@ -131,10 +161,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN,
-        ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
     public void testRefreshButton_ClickableAfterPlusAddressIsSet() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
@@ -147,10 +174,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN,
-        ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
     public void testRefreshButton_OnlyOneClickIsHandledPerRefresh() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
@@ -164,10 +188,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN,
-        ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
     public void testRefreshButton_RefreshSeveralTimes() {
         ImageView refreshIcon =
                 mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
@@ -179,6 +200,18 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         refreshIcon.callOnClick();
         verify(mDelegate, times(2)).onRefreshClicked();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
+    public void testRefreshButton_HideRefreshButton() {
+        ImageView refreshIcon =
+                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        Assert.assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+
+        mBottomSheetContent.hideRefreshButton();
+        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
     }
 
     @Test
@@ -322,8 +355,5 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testUiRedesignEnabled_noCancelButton() {
         assertNull(
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button));
-        ImageView refreshIcon =
-                mBottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
-        Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
     }
 }

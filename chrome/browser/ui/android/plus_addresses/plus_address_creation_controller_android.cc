@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -55,7 +56,11 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
   if (!suppress_ui_for_testing_) {
     view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
                                                              &GetWebContents());
-    view_->ShowInit(maybe_email.value());
+    view_->ShowInit(
+        maybe_email.value(),
+        plus_address_service->IsRefreshingSupported(relevant_origin_) &&
+            base::FeatureList::IsEnabled(
+                plus_addresses::features::kPlusAddressRefreshUiInAndroid));
   }
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
@@ -133,6 +138,12 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
   // prior to service response, `view_` will be null.
   if (view_) {
     view_->ShowReserveResult(maybe_plus_profile);
+    PlusAddressService* plus_address_service =
+        PlusAddressServiceFactory::GetForBrowserContext(
+            GetWebContents().GetBrowserContext());
+    if (!plus_address_service->IsRefreshingSupported(relevant_origin_)) {
+      view_->HideRefreshButton();
+    }
   }
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();

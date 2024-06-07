@@ -54,6 +54,7 @@ public class PlusAddressCreationViewBridgeTest {
     private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
     private static final String MANAGE_URL = "manage.com";
     private static final String ERROR_URL = "bug.com";
+    private static final boolean REFRESH_SUPPORTED = true;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
@@ -109,6 +110,7 @@ public class PlusAddressCreationViewBridgeTest {
                         MODAL_OK,
                         MODAL_CANCEL,
                         MODAL_ERROR_MESSAGE,
+                        REFRESH_SUPPORTED,
                         new GURL(MANAGE_URL),
                         new GURL(ERROR_URL)))
                 .thenReturn(mCoordinator);
@@ -123,7 +125,8 @@ public class PlusAddressCreationViewBridgeTest {
                 MODAL_CANCEL,
                 MODAL_ERROR_MESSAGE,
                 MANAGE_URL,
-                ERROR_URL);
+                ERROR_URL,
+                REFRESH_SUPPORTED);
     }
 
     @Test
@@ -233,6 +236,15 @@ public class PlusAddressCreationViewBridgeTest {
         showBottomSheet();
         mPlusAddressCreationViewBridge.showError();
         verify(mCoordinator, times(1)).showError();
+    }
+
+    @Test
+    @SmallTest
+    public void testHideRefreshButton_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.hideRefreshButton();
+        verify(mCoordinator).hideRefreshButton();
     }
 
     @Test

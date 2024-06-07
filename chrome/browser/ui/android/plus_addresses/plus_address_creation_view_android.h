@@ -26,7 +26,8 @@ class PlusAddressCreationViewAndroid {
       content::WebContents* web_contents);
   ~PlusAddressCreationViewAndroid();
 
-  void ShowInit(const std::string& primary_email_address);
+  void ShowInit(const std::string& primary_email_address,
+                bool refresh_supported);
   void OnRefreshClicked(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
   void OnConfirmRequested(JNIEnv* env,
@@ -40,6 +41,9 @@ class PlusAddressCreationViewAndroid {
   void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile);
   // Either shows an error message on the bottomsheet or closes the bottomsheet.
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile);
+  // Hides the refresh icon in case no more plus address refreshes are available
+  // to the user.
+  void HideRefreshButton();
 
  private:
   // The corresponding java object.

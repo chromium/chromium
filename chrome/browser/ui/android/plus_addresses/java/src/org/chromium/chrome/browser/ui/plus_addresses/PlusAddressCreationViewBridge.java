@@ -66,6 +66,7 @@ public class PlusAddressCreationViewBridge {
                 String plusAddressModalOkText,
                 String plusAddressModalCancelText,
                 String errorReportInstruction,
+                boolean refreshSupported,
                 GURL manageUrl,
                 GURL errorReportUrl);
     }
@@ -93,7 +94,8 @@ public class PlusAddressCreationViewBridge {
             String plusAddressModalCancelText,
             String errorReportInstruction,
             String manageUrl,
-            String errorReportUrl) {
+            String errorReportUrl,
+            boolean refreshSupported) {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             mCoordinator =
                     mCoordinatorFactory.create(
@@ -109,6 +111,7 @@ public class PlusAddressCreationViewBridge {
                             plusAddressModalOkText,
                             plusAddressModalCancelText,
                             errorReportInstruction,
+                            refreshSupported,
                             new GURL(manageUrl),
                             new GURL(errorReportUrl));
             mCoordinator.requestShowContent();
@@ -133,6 +136,13 @@ public class PlusAddressCreationViewBridge {
     void showError() {
         if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
             mCoordinator.showError();
+        }
+    }
+
+    @CalledByNative
+    void hideRefreshButton() {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.hideRefreshButton();
         }
     }
 

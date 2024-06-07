@@ -51,7 +51,8 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             String plusAddressModalCancelText,
             String errorReportInstruction,
             GURL manageUrl,
-            GURL errorReportUrl) {
+            GURL errorReportUrl,
+            boolean refreshSupported) {
         View layout =
                 LayoutInflater.from(activity)
                         .inflate(
@@ -126,7 +127,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
             mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID)) {
+            if (refreshSupported) {
                 mRefreshIcon.setVisibility(View.VISIBLE);
                 mRefreshIcon.setOnClickListener(
                         v -> {
@@ -168,6 +169,12 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         // Disable Confirm button if attempts to Confirm() fail.
         mPlusAddressConfirmButton.setEnabled(false);
         hideLoadingIndicator();
+    }
+
+    public void hideRefreshButton() {
+        if (mRefreshIcon != null) {
+            mRefreshIcon.setVisibility(View.GONE);
+        }
     }
 
     /** Sets the delegate listening for actions the user performs on this bottom sheet. */

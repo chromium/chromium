@@ -83,6 +83,10 @@ import org.chromium.url.GURL;
         mBottomSheetContent.showError();
     }
 
+    void hideRefreshButton() {
+        mBottomSheetContent.hideRefreshButton();
+    }
+
     /** Hide the bottom sheet (if showing) and clean up observers. */
     void destroy() {
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
