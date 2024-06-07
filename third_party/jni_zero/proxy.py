@@ -55,7 +55,7 @@ def create_method_names(java_class, method_name, is_test_only):
 
 
 def needs_implicit_array_element_class_param(return_type):
-  return (return_type.is_object_array() and return_type.converted_type()
+  return (return_type.is_object_array() and return_type.converted_type
           and not return_type.java_class.is_system_class())
 
 

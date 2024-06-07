@@ -9,7 +9,7 @@ import common
 
 
 def _return_type_cpp(java_type):
-  if converted_type := java_type.converted_type():
+  if converted_type := java_type.converted_type:
     return converted_type
   if java_type.is_primitive():
     return java_type.to_cpp()
@@ -17,7 +17,7 @@ def _return_type_cpp(java_type):
 
 
 def _param_type_cpp(java_type):
-  if converted_type := java_type.converted_type():
+  if converted_type := java_type.converted_type:
     # Drop & when the type is obviously a pointer to avoid "const char *&".
     if not java_type.is_primitive() and not converted_type.endswith('*'):
       converted_type += '&'
@@ -58,10 +58,10 @@ def _prep_param(sb, param, proxy_type):
   orig_name = param.cpp_name()
   java_type = param.java_type
 
-  if java_type.converted_type():
+  if java_type.converted_type:
     ret = f'{param.name}_converted'
     with sb.statement():
-      sb(f'{java_type.converted_type()} {ret} = ')
+      sb(f'{java_type.converted_type} {ret} = ')
       convert_type.from_jni_expression(sb, orig_name, java_type)
     return ret
 
@@ -114,7 +114,7 @@ def _single_method(sb, jni_obj, native):
     if return_type.is_void():
       return
 
-    if not return_type.converted_type():
+    if not return_type.converted_type:
       with sb.statement():
         sb('return _ret')
         if not return_type.is_primitive():

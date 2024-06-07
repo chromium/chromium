@@ -303,14 +303,14 @@ def _CollectReferencedClasses(jni_obj):
     ret.add(called_by_native.java_class)
     for param in called_by_native.params:
       java_type = param.java_type
-      if java_type.is_object_array() and java_type.converted_type():
+      if java_type.is_object_array() and java_type.converted_type:
         ret.add(java_type.java_class)
 
 
   # Find any classes needed for @JniType conversions.
   for native in jni_obj.proxy_natives:
     return_type = native.return_type
-    if return_type.is_object_array() and return_type.converted_type():
+    if return_type.is_object_array() and return_type.converted_type:
       ret.add(return_type.java_class)
   return sorted(ret)
 

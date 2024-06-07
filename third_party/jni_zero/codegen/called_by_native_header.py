@@ -22,7 +22,7 @@ def constants_enums(java_class, constant_fields):
 
 
 def _return_type_cpp(return_type):
-  if ret := return_type.converted_type():
+  if ret := return_type.converted_type:
     return ret
   ret = return_type.to_cpp()
   if not return_type.is_primitive():
@@ -31,7 +31,7 @@ def _return_type_cpp(return_type):
 
 
 def _param_type_cpp(java_type):
-  if type_str := java_type.converted_type():
+  if type_str := java_type.converted_type:
     if java_type.is_primitive():
       return type_str
     return f'{type_str} const&'
@@ -48,7 +48,7 @@ def _prep_param(sb, param):
   orig_name = param.cpp_name()
   java_type = param.java_type
 
-  if converted_type := java_type.converted_type():
+  if converted_type := java_type.converted_type:
     converted_name = f'converted_{param.name}'
     convert_type.to_jni_assignment(sb, converted_name, orig_name, java_type)
     orig_name = converted_name
@@ -127,11 +127,14 @@ def _single_method(sb, cbn):
       sb.param_list([receiver_arg, 'call_context.method_id()'] + param_rvalues)
 
     if not is_void:
-      if return_type.is_primitive() or return_type.converted_type():
+      if return_type.is_primitive() or return_type.converted_type:
         with sb.statement():
           sb('return ')
-          if return_type.converted_type():
-            convert_type.from_jni_expression(sb, return_rvalue, return_type, release_ref=True)
+          if return_type.converted_type:
+            convert_type.from_jni_expression(sb,
+                                             return_rvalue,
+                                             return_type,
+                                             release_ref=True)
           else:
             sb(return_rvalue)
         return
