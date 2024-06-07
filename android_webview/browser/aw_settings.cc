@@ -26,6 +26,7 @@
 #include "base/supports_user_data.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/viz/common/features.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
@@ -479,7 +480,9 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
 
   if (!current_enabled && previous_enabled && web_contents()) {
     AwContents* contents = AwContents::FromWebContents(web_contents());
-    contents->FlushBackForwardCache(env);
+    contents->FlushBackForwardCache(
+        env, static_cast<int>(content::BackForwardCache::NotRestoredReason::
+                                  kWebViewSettingsChanged));
   }
 }
 

@@ -133,6 +133,7 @@ using content::RenderFrameHost;
 using content::WebContents;
 using js_injection::JsCommunicationHost;
 using navigation_interception::InterceptNavigationDelegate;
+using NotRestoredReason = content::BackForwardCache::NotRestoredReason;
 
 namespace android_webview {
 
@@ -1317,7 +1318,8 @@ jint AwContents::AddDocumentStartJavaScript(
   std::vector<std::string> native_allowed_origin_rule_strings;
   AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
                                       &native_allowed_origin_rule_strings);
-  web_contents()->GetController().GetBackForwardCache().Flush();
+  web_contents()->GetController().GetBackForwardCache().Flush(
+      NotRestoredReason::kWebViewDocumentStartJavascriptChanged);
   web_contents()->CancelAllPrerendering();
   auto result = GetJsCommunicationHost()->AddDocumentStartJavaScript(
       base::android::ConvertJavaStringToUTF16(env, script),
@@ -1392,8 +1394,9 @@ AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
   return script_objects;
 }
 
-void AwContents::FlushBackForwardCache(JNIEnv* env) {
-  web_contents()->GetController().GetBackForwardCache().Flush();
+void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
+  web_contents()->GetController().GetBackForwardCache().Flush(
+      static_cast<NotRestoredReason>(reason));
 }
 
 void AwContents::CancelAllPrerendering(JNIEnv* env) {
@@ -1630,7 +1633,8 @@ AwContents::RenderProcessGoneResult AwContents::OnRenderProcessGone(
 }
 
 void AwContents::OnSafeBrowsingAllowListSet() {
-  web_contents()->GetController().GetBackForwardCache().Flush();
+  web_contents()->GetController().GetBackForwardCache().Flush(
+      NotRestoredReason::kWebViewSafeBrowsingAllowlistChanged);
 }
 
 }  // namespace android_webview

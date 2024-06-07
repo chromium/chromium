@@ -1709,6 +1709,21 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kBroadcastChannelOnMessage:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           BroadcastChannelOnMessage;
+    case Reason::kWebViewSettingsChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewSettingsChanged;
+    case Reason::kWebViewJavaScriptObjectChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewJavaScriptObjectChanged;
+    case Reason::kWebViewMessageListenerInjected:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewMessageListenerInjected;
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewSafeBrowsingAllowlistChanged;
+    case Reason::kWebViewDocumentStartJavascriptChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewDocumentStartJavascriptChanged;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1996,6 +2011,11 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kHTTPAuthRequired:
     case Reason::kCookieFlushed:
     case Reason::kBroadcastChannelOnMessage:
+    case Reason::kWebViewSettingsChanged:
+    case Reason::kWebViewJavaScriptObjectChanged:
+    case Reason::kWebViewMessageListenerInjected:
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+    case Reason::kWebViewDocumentStartJavascriptChanged:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:

@@ -31,8 +31,94 @@ class RenderFrameHost;
 // All methods of this class should be called from the UI thread.
 class CONTENT_EXPORT BackForwardCache {
  public:
-  // Returns true if BackForwardCache is enabled.
-  static bool IsBackForwardCacheFeatureEnabled();
+  // LINT.IfChange(NotRestoredReason)
+  enum class NotRestoredReason : uint8_t {
+    kMinValue = 0,
+    kNotPrimaryMainFrame = 0,
+    // BackForwardCache is disabled due to low memory device, base::Feature or
+    // command line. Note that the more specific NotRestoredReasons
+    // kBackForwardCacheDisabledByLowMemory and
+    // kBackForwardCacheDisabledByCommandLine will also be set as other reasons
+    // along with this when appropriate.
+    kBackForwardCacheDisabled = 1,
+    kRelatedActiveContentsExist = 2,
+    kHTTPStatusNotOK = 3,
+    kSchemeNotHTTPOrHTTPS = 4,
+    // DOMContentLoaded event has not yet fired. This means that deferred
+    // scripts have not run yet and pagehide/pageshow event handlers may not be
+    // installed yet.
+    kLoading = 5,
+    // 6: WasGrantedMediaAccess is no longer blocking.
+    kBlocklistedFeatures = 7,
+    kDisableForRenderFrameHostCalled = 8,
+    kDomainNotAllowed = 9,
+    kHTTPMethodNotGET = 10,
+    kSubframeIsNavigating = 11,
+    kTimeout = 12,
+    kCacheLimit = 13,
+    kJavaScriptExecution = 14,
+    kRendererProcessKilled = 15,
+    kRendererProcessCrashed = 16,
+    // 17: Dialogs are no longer a reason to exclude from BackForwardCache
+    // 18: GrantedMediaStreamAccess is no longer blocking.
+    // 19: kSchedulerTrackedFeatureUsed is no longer used.
+    kConflictingBrowsingInstance = 20,
+    kCacheFlushed = 21,
+    kServiceWorkerVersionActivation = 22,
+    kSessionRestored = 23,
+    kUnknown = 24,
+    kServiceWorkerPostMessage = 25,
+    kEnteredBackForwardCacheBeforeServiceWorkerHostAdded = 26,
+    // 27: kRenderFrameHostReused_SameSite was removed.
+    // 28: kRenderFrameHostReused_CrossSite was removed.
+    // 29: kNotMostRecentNavigationEntry was removed.
+    kServiceWorkerClaim = 30,
+    kIgnoreEventAndEvict = 31,
+    kHaveInnerContents = 32,
+    kTimeoutPuttingInCache = 33,
+    // BackForwardCache is disabled due to low memory device.
+    kBackForwardCacheDisabledByLowMemory = 34,
+    // BackForwardCache is disabled due to command-line switch (may include
+    // cases where the embedder disabled it due to, e.g., enterprise policy).
+    kBackForwardCacheDisabledByCommandLine = 35,
+    // 36: kFrameTreeNodeStateReset was removed.
+    // 37: kNetworkRequestDatapipeDrained = 37 was removed and broken into 43
+    // and 44.
+    kNetworkRequestRedirected = 38,
+    kNetworkRequestTimeout = 39,
+    kNetworkExceedsBufferLimit = 40,
+    kNavigationCancelledWhileRestoring = 41,
+    // 42: kBackForwardCacheDisabledForPrerender was removed and merged into 0.
+    kUserAgentOverrideDiffers = 43,
+    // 44: kNetworkRequestDatapipeDrainedAsDatapipe was removed now that
+    // ScriptStreamer is supported.
+    kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
+    kForegroundCacheLimit = 46,
+    kBrowsingInstanceNotSwapped = 47,
+    kBackForwardCacheDisabledForDelegate = 48,
+    // 49: kOptInUnloadHeaderNotPresent was removed as the experiments ended.
+    kUnloadHandlerExistsInMainFrame = 50,
+    kUnloadHandlerExistsInSubFrame = 51,
+    kServiceWorkerUnregistration = 52,
+    kCacheControlNoStore = 53,
+    kCacheControlNoStoreCookieModified = 54,
+    kCacheControlNoStoreHTTPOnlyCookieModified = 55,
+    // 56: kNoResponseHead was fixed.
+    // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
+    kErrorDocument = 58,
+    // 59: kFencedFramesEmbedder was removed.
+    kCookieDisabled = 60,
+    kHTTPAuthRequired = 61,
+    kCookieFlushed = 62,
+    kBroadcastChannelOnMessage = 63,
+    kWebViewSettingsChanged = 64,
+    kWebViewJavaScriptObjectChanged = 65,
+    kWebViewMessageListenerInjected = 66,
+    kWebViewSafeBrowsingAllowlistChanged = 67,
+    kWebViewDocumentStartJavascriptChanged = 68,
+    kMaxValue = kWebViewDocumentStartJavascriptChanged,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:BackForwardCacheNotRestoredReason)
 
   // Back/forward cache can be disabled from within content and also from
   // embedders. This means we cannot have a unified enum that covers reasons
@@ -169,8 +255,15 @@ class CONTENT_EXPORT BackForwardCache {
     TEST_ASSUMES_NO_RENDER_FRAME_CHANGE,
   };
 
-  // Evict all entries from the BackForwardCache.
+  // Returns true if BackForwardCache is enabled.
+  static bool IsBackForwardCacheFeatureEnabled();
+
+  // TODO(crbug.com/345117894): Add reasons to all the callsites of Flush().
+  // Evict all entries from the BackForwardCache with reason kCacheFlushed.
   virtual void Flush() = 0;
+
+  // Evict all entries from the BackForwardCache with specific reason.
+  virtual void Flush(NotRestoredReason reason) = 0;
 
   // Evict back/forward cache entries from the least recently used ones until
   // the cache is within the given size limit.

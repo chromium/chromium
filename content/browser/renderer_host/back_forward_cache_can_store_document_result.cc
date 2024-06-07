@@ -187,6 +187,16 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::COOKIE_FLUSHED;
     case Reason::kBroadcastChannelOnMessage:
       return ProtoEnum::BROADCAST_CHANNEL_ON_MESSAGE;
+    case Reason::kWebViewSettingsChanged:
+      return ProtoEnum::WEBVIEW_SETTINGS_CHANGED;
+    case Reason::kWebViewJavaScriptObjectChanged:
+      return ProtoEnum::WEBVIEW_JAVASCRIPT_OBJECT_CHANGED;
+    case Reason::kWebViewMessageListenerInjected:
+      return ProtoEnum::WEBVIEW_MESSAGE_LISTENER_INJECTED;
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+      return ProtoEnum::WEBVIEW_SAFE_BROWSING_ALLOWLIST_CHANGED;
+    case Reason::kWebViewDocumentStartJavascriptChanged:
+      return ProtoEnum::WEBVIEW_DOCUMENT_START_JAVASCRIPT_CHANGED;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -441,6 +451,16 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Cookie is flushed.";
     case Reason::kBroadcastChannelOnMessage:
       return "Broadcast channel in bfcache received a message";
+    case Reason::kWebViewSettingsChanged:
+      return "Android WebView settings changed";
+    case Reason::kWebViewJavaScriptObjectChanged:
+      return "Android WebView injected javascript object changed";
+    case Reason::kWebViewMessageListenerInjected:
+      return "Android WebView injected new message listener";
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+      return "Android WebView safe browsing allowlist changed";
+    case Reason::kWebViewDocumentStartJavascriptChanged:
+      return "Android WebView document start script changed";
   }
 }
 
@@ -526,6 +546,11 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kRendererProcessKilled:
     case Reason::kRendererProcessCrashed:
     case Reason::kTimeoutPuttingInCache:
+    case Reason::kWebViewSettingsChanged:
+    case Reason::kWebViewJavaScriptObjectChanged:
+    case Reason::kWebViewMessageListenerInjected:
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+    case Reason::kWebViewDocumentStartJavascriptChanged:
     case Reason::kUnknown:
       return "masked";
   }

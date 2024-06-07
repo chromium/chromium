@@ -1310,10 +1310,13 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 }
 
 void BackForwardCacheImpl::Flush() {
+  Flush(NotRestoredReason::kCacheFlushed);
+}
+
+void BackForwardCacheImpl::Flush(NotRestoredReason reason) {
   TRACE_EVENT0("navigation", "BackForwardCache::Flush");
   for (std::unique_ptr<Entry>& entry : entries_) {
-    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
-        BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed);
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(reason);
   }
 }
 

@@ -9248,6 +9248,11 @@ domain Page
       HTTPAuthRequired
       CookieFlushed
       BroadcastChannelOnMessage
+      WebViewSettingsChanged
+      WebViewJavaScriptObjectChanged
+      WebViewMessageListenerInjected
+      WebViewSafeBrowsingAllowlistChanged
+      WebViewDocumentStartJavascriptChanged
       #Blocklisted features
       WebSocket
       WebTransport

@@ -30,6 +30,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
+import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.AttributionBehavior;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
@@ -454,7 +455,8 @@ public class AwSettings {
         if (contents != null && backForwardCacheEnabled) {
             AwContents awContents = AwContents.fromWebContents(contents);
             if (awContents != null) {
-                awContents.flushBackForwardCache();
+                awContents.flushBackForwardCache(
+                        BackForwardCacheNotRestoredReason.WEBVIEW_SETTINGS_CHANGED);
             }
         }
     }

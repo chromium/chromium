@@ -196,7 +196,7 @@ class AwContents : public FindHelper::Listener,
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
   GetDocumentStartupJavascripts(JNIEnv* env);
 
-  void FlushBackForwardCache(JNIEnv* env);
+  void FlushBackForwardCache(JNIEnv* env, jint reason);
 
   void CancelAllPrerendering(JNIEnv* env);
 

@@ -9,6 +9,7 @@ import("//printing/buildflags/buildflags.gni")
 java_cpp_enum("browser_enums") {
   sources = [
     "aw_apk_type.h",
+    "aw_backforward_cache_not_restored_reason.h",
     "aw_renderer_priority.h",
     "aw_settings.h",
     "lifecycle/webview_app_state_observer.h",
@@ -24,6 +25,7 @@ source_set("browser") {
     "android_protocol_handler.cc",
     "android_protocol_handler.h",
     "aw_apk_type.h",
+    "aw_backforward_cache_not_restored_reason.h",
     "aw_browser_context.cc",
     "aw_browser_context.h",
     "aw_browser_context_store.cc",

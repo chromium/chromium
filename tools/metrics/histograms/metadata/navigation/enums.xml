@@ -104,6 +104,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Not restored"/>
 </enum>
 
+<!-- LINT.IfChange(BackForwardCacheNotRestoredReason) -->
+
 <enum name="BackForwardCacheNotRestoredReason">
   <int value="0" label="Not main frame (should not be happening)"/>
   <int value="1" label="Back forward cache disabled"/>
@@ -184,7 +186,14 @@ chromium-metrics-reviews@google.com.
       label="Same-origin HTTP authentication is required from another tab"/>
   <int value="62" label="Cookie is flushed"/>
   <int value="63" label="BroadcastChannel in bfcache received a message"/>
+  <int value="64" label="WebView settings changed"/>
+  <int value="65" label="WebView injected javascript object changed"/>
+  <int value="66" label="WebView injected message listener"/>
+  <int value="67" label="WebView safe browsing allowlist changed"/>
+  <int value="68" label="WebView added document start javascript"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/public/browser/back_forward_cache.h:NotRestoredReason) -->
 
 <enum name="BackForwardCachePageWithFormStorable">
   <int value="0" label="PageSeen"/>

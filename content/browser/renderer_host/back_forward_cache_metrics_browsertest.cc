@@ -198,6 +198,9 @@ class BackForwardCacheMetricsBrowserTest
     return info.param ? "BFCacheEnabled" : "BFCacheDisabled";
   }
 
+  static constexpr char kNotRestoredReasonUMAName[] =
+      "BackForwardCache.HistoryNavigationOutcome.NotRestoredReason";
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -359,6 +362,84 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
   EXPECT_EQ(recorded_not_restored_reasons[0][not_restored_reasons],
             1 << static_cast<int>(
                 BackForwardCacheMetrics::NotRestoredReason::kSessionRestored));
+}
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+                       FlushRecordsNotRestoredReasons) {
+  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+    return;
+  }
+
+  ukm::TestAutoSetUkmRecorder recorder;
+  base::HistogramTester histogram_tester;
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+
+  histogram_tester.ExpectBucketCount(
+      kNotRestoredReasonUMAName,
+      BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed, 0);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+
+  web_contents()->GetController().GetBackForwardCache().Flush();
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  shell()->GoBackOrForward(-1);
+  navigation_observer.WaitForNavigationFinished();
+  // Ensure that the not restored reason is correctly collected for the flush.
+  std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
+  std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+      recorded_not_restored_reasons =
+          recorder.FilteredHumanReadableMetricForEntry("HistoryNavigation",
+                                                       not_restored_reasons);
+  EXPECT_EQ(recorded_not_restored_reasons[0][not_restored_reasons],
+            1 << static_cast<int>(
+                BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed));
+  histogram_tester.ExpectBucketCount(
+      kNotRestoredReasonUMAName,
+      BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+                       WebViewFlushRecordsExtendedNotRestoredReasons) {
+  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+    return;
+  }
+
+  ukm::TestAutoSetUkmRecorder recorder;
+  using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+  const std::vector<NotRestoredReason> webview_flush_reasons = {
+      NotRestoredReason::kWebViewSettingsChanged,
+      NotRestoredReason::kWebViewJavaScriptObjectChanged,
+      NotRestoredReason::kWebViewMessageListenerInjected,
+      NotRestoredReason::kWebViewSafeBrowsingAllowlistChanged,
+      NotRestoredReason::kWebViewDocumentStartJavascriptChanged,
+  };
+  const int kExtendedReasonOffset = 64;
+
+  for (NotRestoredReason reason : webview_flush_reasons) {
+    const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+    const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+    base::HistogramTester histogram_tester;
+
+    EXPECT_TRUE(NavigateToURL(shell(), url1));
+    EXPECT_TRUE(NavigateToURL(shell(), url2));
+    histogram_tester.ExpectBucketCount(kNotRestoredReasonUMAName, reason, 0);
+
+    web_contents()->GetController().GetBackForwardCache().Flush(reason);
+    TestNavigationObserver navigation_observer(shell()->web_contents());
+    shell()->GoBackOrForward(-1);
+    navigation_observer.WaitForNavigationFinished();
+    // Ensure that the not restored reason is correctly collected for the flush.
+    std::string not_restored_reasons2 = "BackForwardCache.NotRestoredReasons2";
+    std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+        recorded_not_restored_reasons =
+            recorder.FilteredHumanReadableMetricForEntry("HistoryNavigation",
+                                                         not_restored_reasons2);
+    EXPECT_EQ(recorded_not_restored_reasons.back()[not_restored_reasons2],
+              1 << (static_cast<int>(reason) - kExtendedReasonOffset));
+    histogram_tester.ExpectBucketCount(kNotRestoredReasonUMAName, reason, 1);
+  }
 }
 
 // Confirms that UKMs are not recorded on reloading.

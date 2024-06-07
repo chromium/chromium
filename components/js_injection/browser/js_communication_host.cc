@@ -208,7 +208,9 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
   // when these features are involved vs not, evict all BFCached and prerendered
   // pages so that we won't activate any pages that don't have this object
   // injected.
-  web_contents()->GetController().GetBackForwardCache().Flush();
+  web_contents()->GetController().GetBackForwardCache().Flush(
+      content::BackForwardCache::NotRestoredReason::
+          kWebViewMessageListenerInjected);
   web_contents()->CancelAllPrerendering();
 
   ForEachRenderFrameHostWithinSameWebContents(

@@ -67,6 +67,7 @@ import org.chromium.android_webview.gfx.AwPicture;
 import org.chromium.android_webview.gfx.RectUtils;
 import org.chromium.android_webview.metrics.AwOriginVisitLogger;
 import org.chromium.android_webview.metrics.AwSiteVisitLogger;
+import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
@@ -2117,8 +2118,12 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void flushBackForwardCache() {
+        flushBackForwardCache(BackForwardCacheNotRestoredReason.CACHE_FLUSHED);
+    }
+
+    public void flushBackForwardCache(int reason) {
         if (isDestroyed(NO_WARN)) return;
-        AwContentsJni.get().flushBackForwardCache(mNativeAwContents);
+        AwContentsJni.get().flushBackForwardCache(mNativeAwContents, reason);
     }
 
     public void cancelAllPrerendering() {
@@ -5124,7 +5129,7 @@ public class AwContents implements SmartClipProvider {
 
         void onConfigurationChanged(long nativeAwContents);
 
-        void flushBackForwardCache(long nativeAwContents);
+        void flushBackForwardCache(long nativeAwContents, int reason);
 
         void cancelAllPrerendering(long nativeAwContents);
     }
