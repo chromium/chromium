@@ -16,6 +16,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
 // TODO(crbug.com/40625383): Move the baselines to skia gold for easier
@@ -45,6 +46,19 @@ const auto mac_loose_comparator = cc::FuzzyPixelComparator()
                                       .SetAvgAbsErrorLimit(20.f)
                                       .SetAbsErrorLimit(43);
 #endif
+
+// The ChromeRefresh2023 trybot has very slightly different rendering output
+// than normal linux bots. It is currently unclear if this is due to the flag or
+// some configuration on the bot. In addition, this bot does not get run on CQ+1
+// so having a separate golden file to rebaseline is not good enough. This fuzzy
+// comparator accounts for this and still make sure that the output is sane.
+// TODO(http://crbug.com/1443584): Remove this fuzzy matcher when
+// ChromeRefresh2023 is enabled by default.
+const auto cr23_comparator = cc::FuzzyPixelComparator()
+                                 .DiscardAlpha()
+                                 .SetErrorPixelsPercentageLimit(3.f)
+                                 .SetAvgAbsErrorLimit(20.f)
+                                 .SetAbsErrorLimit(49);
 
 const auto exact_comparator = cc::AlphaDiscardingExactPixelComparator();
 
@@ -118,6 +132,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Checkbox) {
   auto* comparator = &mac_strict_comparator;
 #else
   const cc::PixelComparator* comparator = &exact_comparator;
+  if (features::IsChromeRefresh2023()) {
+    comparator = &cr23_comparator;
+  }
 #endif
   RunTest("focus_ring_browsertest_checkbox",
           "<input type=checkbox autofocus>"
@@ -138,6 +155,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Radio) {
   auto* comparator = &mac_loose_comparator;
 #else
   const cc::PixelComparator* comparator = &exact_comparator;
+  if (features::IsChromeRefresh2023()) {
+    comparator = &cr23_comparator;
+  }
 #endif
   RunTest("focus_ring_browsertest_radio",
           "<input type=radio autofocus>"
@@ -157,6 +177,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Button) {
   auto* comparator = &mac_strict_comparator;
 #else
   const cc::PixelComparator* comparator = &exact_comparator;
+  if (features::IsChromeRefresh2023()) {
+    comparator = &cr23_comparator;
+  }
 #endif
   RunTest("focus_ring_browsertest_button",
           "<button autofocus style=\"width:40px;height:20px;\"></button>"
@@ -179,6 +202,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Anchor) {
   auto* comparator = &mac_strict_comparator;
 #else
   const cc::PixelComparator* comparator = &exact_comparator;
+  if (features::IsChromeRefresh2023()) {
+    comparator = &cr23_comparator;
+  }
 #endif
   RunTest("focus_ring_browsertest_anchor",
           "<div style='text-align: center; width: 80px;'>"
@@ -203,6 +229,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_DarkModeButton) {
   auto* comparator = &mac_strict_comparator;
 #else
   const cc::PixelComparator* comparator = &exact_comparator;
+  if (features::IsChromeRefresh2023()) {
+    comparator = &cr23_comparator;
+  }
 #endif
   RunTest("focus_ring_browsertest_dark_mode_button",
           "<meta name=\"color-scheme\" content=\"dark\">"
