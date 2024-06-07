@@ -78,7 +78,7 @@ gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(
     int total_width) const {
   const int x = available_space_leading_x_;
   const int available_width = available_space_trailing_x_ - x;
-  return gfx::Rect(x, GetTabStripInsetsTop(false), std::max(0, available_width),
+  return gfx::Rect(x, NonClientTopHeight(false), std::max(0, available_width),
                    tabstrip_minimum_size.height());
 }
 
@@ -181,15 +181,6 @@ int OpaqueBrowserFrameViewLayout::NonClientTopHeight(bool restored) const {
          kContentEdgeShadowThickness;
 }
 
-int OpaqueBrowserFrameViewLayout::GetTabStripInsetsTop(bool restored) const {
-  const int top = NonClientTopHeight(restored);
-  const bool start_at_top_of_frame = !restored &&
-                                     delegate_->IsFrameCondensed() &&
-                                     !features::IsChromeRefresh2023();
-  return start_at_top_of_frame ? top
-                               : (top + GetNonClientRestoredExtraThickness());
-}
-
 gfx::Insets OpaqueBrowserFrameViewLayout::FrameEdgeInsets(bool restored) const {
   return IsFrameEdgeVisible(restored) ? RestoredFrameEdgeInsets()
                                       : gfx::Insets();
@@ -199,12 +190,7 @@ int OpaqueBrowserFrameViewLayout::DefaultCaptionButtonY(bool restored) const {
   // Maximized buttons start at window top, since the window has no border. This
   // offset is for the image (the actual clickable bounds extend all the way to
   // the top to take Fitts' Law into account).
-  const bool start_at_top_of_frame = !restored &&
-                                     delegate_->IsFrameCondensed() &&
-                                     !features::IsChromeRefresh2023();
-  return start_at_top_of_frame
-             ? FrameBorderInsets(false).top()
-             : views::NonClientFrameView::kFrameShadowThickness;
+  return views::NonClientFrameView::kFrameShadowThickness;
 }
 
 int OpaqueBrowserFrameViewLayout::CaptionButtonY(views::FrameButton button_id,
@@ -248,21 +234,6 @@ int OpaqueBrowserFrameViewLayout::GetWindowCaptionSpacing(
       return forced_window_caption_spacing_;
   }
   return 0;
-}
-
-int OpaqueBrowserFrameViewLayout::GetNonClientRestoredExtraThickness() const {
-  // In Refresh, the tabstrip controls its own top padding.
-  if (features::IsChromeRefresh2023()) {
-    return 0;
-  }
-  // Besides the frame border, there's empty space atop the window in restored
-  // mode, to use to drag the window around.
-  int thickness = 4;
-  if (delegate_->EverHasVisibleBackgroundTabShapes()) {
-    thickness =
-        std::max(thickness, BrowserNonClientFrameView::kMinimumDragHeight);
-  }
-  return thickness;
 }
 
 void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(

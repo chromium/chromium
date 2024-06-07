@@ -315,16 +315,14 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // pixels at the end of the top and bottom edges trigger diagonal resizing.
   constexpr int kResizeCornerWidth = 16;
 
-  const int top_border_thickness = features::IsChromeRefresh2023()
-                                 ? GetLayoutConstant(TAB_STRIP_PADDING)
-                                 : FrameTopBorderThickness(false);
+  const int top_border_thickness = GetLayoutConstant(TAB_STRIP_PADDING);
 
-  int window_component = GetHTComponentForFrame(
+  const int window_component = GetHTComponentForFrame(
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
       top_border_thickness, kResizeCornerWidth - FrameBorderThickness(),
       frame()->widget_delegate()->CanResize());
 
-  int frame_component = frame()->client_view()->NonClientHitTest(point);
+  const int frame_component = frame()->client_view()->NonClientHitTest(point);
 
   // See if we're in the sysmenu region.  We still have to check the tabstrip
   // first so that clicks in a tab don't get treated as sysmenu clicks.
@@ -350,8 +348,8 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   }
 
   // Then see if the point is within any of the window controls.
-  gfx::Point local_point = point;
-  ConvertPointToTarget(parent(), caption_button_container_, &local_point);
+  const gfx::Point local_point =
+      ConvertPointToTarget(parent(), caption_button_container_, point);
   if (caption_button_container_->HitTestPoint(local_point)) {
     const int hit_test_result =
         caption_button_container_->NonClientHitTest(local_point);
@@ -497,7 +495,7 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
       // default. When maximized, the OS sizes the window such that the border
       // extends beyond the screen edges. In that case, we must return the
       // default value.
-      const int kTopResizeFrameArea = features::IsChromeRefresh2023() ? 0 : 5;
+      const int kTopResizeFrameArea = 0;
       return kTopResizeFrameArea;
     }
 
@@ -557,26 +555,8 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
     return top;
   }
 
-  // In Refresh, the tabstrip controls its own top padding.
-  if (features::IsChromeRefresh2023()) {
-    return top;
-  }
-
-  // In maximized mode, we do not add any additional thickness to the grab
-  // handle above the tabs; just return the frame thickness.
-  if (maximized) {
-    return top;
-  }
-
-  // Besides the frame border, there's empty space atop the window in restored
-  // mode, to use to drag the window around.
-  constexpr int kNonClientRestoredExtraThickness = 4;
-  int thickness = kNonClientRestoredExtraThickness;
-  if (EverHasVisibleBackgroundTabShapes()) {
-    thickness =
-        std::max(thickness, BrowserNonClientFrameView::kMinimumDragHeight);
-  }
-  return top + thickness;
+  // The tabstrip controls its own top padding.
+  return top;
 }
 
 int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
@@ -823,30 +803,17 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
 
   const gfx::Size preferred_size =
       caption_button_container_->GetPreferredSize();
-  int height = preferred_size.height();
-  // We use the standard caption bar height when maximized in tablet mode, which
-  // is smaller than our preferred button size.
-  if (IsWebUITabStrip() && IsMaximized()) {
-    height = std::min(height, TitlebarMaximizedVisualHeight());
-  }
-  if (!browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
-    height = IsMaximized() ? TitlebarMaximizedVisualHeight()
-                           : TitlebarHeight(false) - WindowTopY();
-  }
 
   const int system_caption_buttons_width =
       ShouldBrowserCustomDrawTitlebar(browser_view())
           ? 0
           : width() - frame()->GetMinimizeButtonOffset();
 
-  height = features::IsChromeRefresh2023() ? GetFrameHeight()
-                                           : std::min(GetFrameHeight(), height);
-
   caption_button_container_->SetBounds(
       CaptionButtonsOnLeadingEdge()
           ? system_caption_buttons_width
           : width() - system_caption_buttons_width - preferred_size.width(),
-      WindowTopY(), preferred_size.width(), height);
+      WindowTopY(), preferred_size.width(), GetFrameHeight());
 }
 
 void BrowserFrameViewWin::LayoutClientView() {

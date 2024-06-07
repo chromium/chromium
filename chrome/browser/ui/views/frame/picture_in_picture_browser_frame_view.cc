@@ -502,12 +502,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), this, this, font_list);
 
-    // The ContentSettingImageView loses 4px of margin in Chrome Refresh that we
-    // don't want to lose in the document picture-in-picture toolbar.
-    if (features::IsChromeRefresh2023()) {
-      image_view->SetProperty(views::kMarginsKey,
-                              gfx::Insets::TLBR(0, 0, 0, 4));
-    }
+    // The ContentSettingImageView loses 4px of margin that we don't want to
+    // lose in the document picture-in-picture toolbar.
+    image_view->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 4));
 
     content_setting_views_.push_back(
         button_container_view_->AddChildView(std::move(image_view)));

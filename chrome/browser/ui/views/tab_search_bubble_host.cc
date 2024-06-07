@@ -201,11 +201,12 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     // not drawn, and potentially positioned offscreen, in fullscreen mode.
     // Place the anchor similar to where the button would be in non-fullscreen
     // mode.
-    gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
-    int offset = GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
+    const gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
+    const int offset = GetLayoutConstant(TAB_STRIP_PADDING);
 
-    int x = ShouldTabSearchRenderBeforeTabStrip() ? bounds.x() + offset
-                                                  : bounds.right() - offset;
+    const int x = ShouldTabSearchRenderBeforeTabStrip()
+                      ? bounds.x() + offset
+                      : bounds.right() - offset;
 
     anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
   }

@@ -254,9 +254,7 @@ void OpaqueBrowserFrameView::LayoutWebAppWindowTitle(
 }
 
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
-  return browser_view()->ShouldDrawTabStrip()
-             ? layout_->GetTabStripInsetsTop(restored)
-             : layout_->NonClientTopHeight(restored);
+  return layout_->NonClientTopHeight(restored);
 }
 
 void OpaqueBrowserFrameView::UpdateThrobber(bool running) {

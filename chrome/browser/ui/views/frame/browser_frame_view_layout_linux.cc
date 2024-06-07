@@ -73,7 +73,5 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {
 }
 
 int BrowserFrameViewLayoutLinux::NonClientExtraTopThickness() const {
-  return (features::IsChromeRefresh2023() && delegate_->IsTabStripVisible())
-             ? 0
-             : kExtraTopBorder;
+  return delegate_->IsTabStripVisible() ? 0 : kExtraTopBorder;
 }

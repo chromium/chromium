@@ -244,29 +244,18 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameColorProviderTest,
             GetColorProviderKey(browser()).color_mode);
 
   // Set the BrowserColorScheme pref. The BrowserFrame should ignore the system
-  // color scheme if running ChromeRefresh2023. Otherwise BrowserFrame should
-  // track the system color scheme.
+  // color scheme.
   test_native_theme_.SetDarkMode(false);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
   browser_frame->SetNativeThemeForTest(&test_native_theme_);
-  if (features::IsChromeRefresh2023()) {
-    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
-              GetColorProviderKey(browser()).color_mode);
-  } else {
-    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
-              GetColorProviderKey(browser()).color_mode);
-  }
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
+            GetColorProviderKey(browser()).color_mode);
 
   test_native_theme_.SetDarkMode(true);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
   browser_frame->SetNativeThemeForTest(&test_native_theme_);
-  if (features::IsChromeRefresh2023()) {
-    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
-              GetColorProviderKey(browser()).color_mode);
-  } else {
-    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
-              GetColorProviderKey(browser()).color_mode);
-  }
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
+            GetColorProviderKey(browser()).color_mode);
 }
 
 // Verifies incognito browsers will always use the dark ColorMode.

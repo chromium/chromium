@@ -280,7 +280,6 @@ class OpaqueBrowserFrameViewLayoutTest
     } else {
       const int tabstrip_nonexcluded_y =
           OpaqueBrowserFrameViewLayout::kFrameBorderThickness +
-          layout_manager_->GetNonClientRestoredExtraThickness() +
           OpaqueBrowserFrameViewLayout::kNonClientExtraTopThickness;
       EXPECT_LE(tabstrip_region_bounds.y(), tabstrip_nonexcluded_y);
     }

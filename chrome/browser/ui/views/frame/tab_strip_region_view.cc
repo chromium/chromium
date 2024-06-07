@@ -217,16 +217,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           AddChildView(std::move(product_specifications_button));
     }
     tab_search_container_ = AddChildView(std::move(tab_search_container));
-    if (features::IsChromeRefresh2023()) {
-      tab_search_container_->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
-    } else {
-      const gfx::Insets control_padding = gfx::Insets::TLBR(
-          0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
-
-      tab_search_container_->SetProperty(views::kMarginsKey, control_padding);
-    }
+    tab_search_container_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
   }
 
   UpdateTabStripMargin();

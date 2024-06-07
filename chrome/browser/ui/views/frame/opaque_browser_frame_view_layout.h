@@ -89,8 +89,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // if the window was restored, regardless of its current state.
   int NonClientTopHeight(bool restored) const;
 
-  int GetTabStripInsetsTop(bool restored) const;
-
   // Returns the y-coordinate of the caption button when native frame buttons
   // are disabled.  If |restored| is true, acts as if the window is restored
   // regardless of the real mode.
@@ -126,9 +124,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   }
 
   const gfx::Rect& client_view_bounds() const { return client_view_bounds_; }
-
-  // Returns the extra thickness of the area above the tabs.
-  int GetNonClientRestoredExtraThickness() const;
 
   // Enables or disables WCO and updates child views accordingly.
   void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);

@@ -104,11 +104,8 @@ class TabStripRegionViewTest : public TabStripRegionViewTestBase,
   ~TabStripRegionViewTest() override = default;
 };
 
-TEST_P(TabStripRegionViewTest, GrabHandleSpaceStaysVisible) {
-  // TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
+TEST_P(TabStripRegionViewTest, DISABLED_GrabHandleSpaceStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
@@ -123,11 +120,8 @@ TEST_P(TabStripRegionViewTest, GrabHandleSpaceStaysVisible) {
   }
 }
 
-TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
-  // TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
+TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
@@ -140,11 +134,8 @@ TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
   }
 }
 
-TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
-  // TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
+TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonRightOfTabs) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
@@ -156,8 +147,8 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
             tab_strip_->tab_at(0)->bounds().right());
 }
 
+// TODO (crbug/1523257): Skip for now due to test failing when CR2023 enabled.
 TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
-  // TODO (crbug/1523257): Skip for now due to test failing when CR2023 enabled.
   if (features::IsChromeRefresh2023()) {
     GTEST_SKIP();
   }
@@ -165,30 +156,17 @@ TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth,
                                     GetLayoutConstant(TAB_STRIP_HEIGHT));
 
-  // CR2023 has a different button type for the new tab button. While both
-  // versions are supported make sure that tests handle both.
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
-  if (features::IsChromeRefresh2023()) {
-    auto* button = static_cast<TabStripControlButton*>(
-        tab_strip_region_view_->new_tab_button());
-    for (int i = 0; i < 10; ++i) {
-      button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
-      controller_->AddTab(i, TabActive::kActive);
-      CompleteAnimationAndLayout();
-      button->AnimateToStateForTesting(views::InkDropState::HIDDEN);
-    }
-  } else {
-    auto* button =
-        static_cast<NewTabButton*>(tab_strip_region_view_->new_tab_button());
-    for (int i = 0; i < 10; ++i) {
-      button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
-      controller_->AddTab(i, TabActive::kActive);
-      CompleteAnimationAndLayout();
-      button->AnimateToStateForTesting(views::InkDropState::HIDDEN);
-    }
+  auto* button = static_cast<TabStripControlButton*>(
+      tab_strip_region_view_->new_tab_button());
+  for (int i = 0; i < 10; ++i) {
+    button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
+    controller_->AddTab(i, TabActive::kActive);
+    CompleteAnimationAndLayout();
+    button->AnimateToStateForTesting(views::InkDropState::HIDDEN);
   }
 }
 

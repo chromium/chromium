@@ -50,8 +50,6 @@ namespace {
 // Keep in sync with web_app_frame_toolbar_browsertest.cc
 constexpr double kTitlePaddingWidthFraction = 0.1;
 
-constexpr int kResizeHandleHeight = 1;
-
 // Empirical measurements of the traffic lights.
 constexpr int kCaptionButtonsWidth = 52;
 constexpr int kCaptionButtonsInsetsCatalinaOrOlder = 70;
@@ -179,8 +177,7 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
   // the tab strip. Normally, we would naturally have an inset from either the
   // caption buttons or the tab search button.
   if (frame()->IsFullscreen()) {
-    if (features::IsChromeRefresh2023() &&
-        !browser_view()->UsesImmersiveFullscreenMode()) {
+    if (!browser_view()->UsesImmersiveFullscreenMode()) {
       bounds.Inset(
           gfx::Insets::TLBR(0, GetLayoutConstant(TOOLBAR_CORNER_RADIUS), 0, 0));
     }
@@ -228,47 +225,7 @@ void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
-  if (!browser_view()->ShouldDrawTabStrip()) {
-    return 0;
-  }
-
-  // In Refresh, the tabstrip controls its own top padding.
-  if (features::IsChromeRefresh2023()) {
-    return 0;
-  }
-
-  // Mac seems to reserve 1 DIP of the top inset as a resize handle.
-  const int kTabstripTopInset = 8;
-  int top_inset = kTabstripTopInset;
-  if (EverHasVisibleBackgroundTabShapes()) {
-    top_inset =
-        std::max(top_inset, BrowserNonClientFrameView::kMinimumDragHeight +
-                                kResizeHandleHeight);
-  }
-
-  // Immersive fullscreen attaches the tab strip to the title bar, no need to
-  // calculate the y_offset below.
-  if (browser_view()->UsesImmersiveFullscreenMode()) {
-    return top_inset;
-  }
-
-  // Calculate the y offset for the tab strip because in fullscreen mode the tab
-  // strip may need to move under the slide down menu bar.
-  CGFloat y_offset = TopUIFullscreenYOffset();
-  if (y_offset > 0) {
-    // When menubar shows up, we need to update mouse tracking area.
-    NSWindow* window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
-    NSRect content_bounds = [[window contentView] bounds];
-    // Backing bar tracking area uses native coordinates.
-    CGFloat tracking_height =
-        FullscreenBackingBarHeight() + top_inset + y_offset;
-    NSRect backing_bar_area =
-        NSMakeRect(0, NSMaxY(content_bounds) - tracking_height,
-                   NSWidth(content_bounds), tracking_height);
-    [fullscreen_toolbar_controller_ updateToolbarFrame:backing_bar_area];
-  }
-
-  return y_offset + top_inset;
+  return 0;
 }
 
 void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
@@ -529,21 +486,6 @@ void BrowserNonClientFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
                        SkTileMode::kMirror);
   gfx::ImageSkia overlay = GetFrameOverlayImage();
   canvas->DrawImageInt(overlay, 0, 0);
-}
-
-CGFloat BrowserNonClientFrameViewMac::FullscreenBackingBarHeight() const {
-  BrowserView* browser_view = this->browser_view();
-  DCHECK(browser_view->IsFullscreen());
-
-  CGFloat total_height = 0;
-  if (browser_view->ShouldDrawTabStrip()) {
-    total_height += browser_view->GetTabStripHeight();
-  }
-
-  if (browser_view->IsToolbarVisible())
-    total_height += browser_view->toolbar()->bounds().height();
-
-  return total_height;
 }
 
 int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
