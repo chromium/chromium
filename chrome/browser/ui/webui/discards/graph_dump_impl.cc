@@ -155,26 +155,22 @@ void DiscardsGraphDumpImpl::SubscribeToChanges(
   change_subscriber_.Bind(std::move(change_subscriber));
 
   // Give all existing nodes an ID.
-  graph_->VisitAllFrameNodes(
-      [this](const performance_manager::FrameNode* frame_node) {
-        AddNode(frame_node);
-        return true;
-      });
-  graph_->VisitAllPageNodes(
-      [this](const performance_manager::PageNode* page_node) {
-        AddNode(page_node);
-        return true;
-      });
-  graph_->VisitAllProcessNodes(
-      [this](const performance_manager::ProcessNode* process_node) {
-        AddNode(process_node);
-        return true;
-      });
-  graph_->VisitAllWorkerNodes(
-      [this](const performance_manager::WorkerNode* worker_node) {
-        AddNode(worker_node);
-        return true;
-      });
+  for (const performance_manager::FrameNode* frame_node :
+       graph_->GetAllFrameNodes()) {
+    AddNode(frame_node);
+  }
+  for (const performance_manager::PageNode* page_node :
+       graph_->GetAllPageNodes()) {
+    AddNode(page_node);
+  }
+  for (const performance_manager::ProcessNode* process_node :
+       graph_->GetAllProcessNodes()) {
+    AddNode(process_node);
+  }
+  for (const performance_manager::WorkerNode* worker_node :
+       graph_->GetAllWorkerNodes()) {
+    AddNode(worker_node);
+  }
 
   // Send creation notifications for all existing nodes.
   SendNotificationToAllNodes(/* created = */ true);
@@ -439,14 +435,13 @@ void DiscardsGraphDumpImpl::StartFrameFaviconRequest(
 }
 
 void DiscardsGraphDumpImpl::SendNotificationToAllNodes(bool created) {
-  graph_->VisitAllProcessNodes(
-      [this, created](const performance_manager::ProcessNode* process_node) {
-        SendProcessNotification(process_node, created);
-        return true;
-      });
+  for (const performance_manager::ProcessNode* process_node :
+       graph_->GetAllProcessNodes()) {
+    SendProcessNotification(process_node, created);
+  }
 
-  graph_->VisitAllPageNodes([this, created](const performance_manager::PageNode*
-                                                page_node) {
+  for (const performance_manager::PageNode* page_node :
+       graph_->GetAllPageNodes()) {
     SendPageNotification(page_node, created);
     if (created)
       StartPageFaviconRequest(page_node);
@@ -462,14 +457,12 @@ void DiscardsGraphDumpImpl::SendNotificationToAllNodes(bool created) {
               this->StartFrameFaviconRequest(frame_node);
           });
     }
-    return true;
-  });
+  }
 
-  graph_->VisitAllWorkerNodes(
-      [this, created](const performance_manager::WorkerNode* worker_node) {
-        SendWorkerNotification(worker_node, created);
-        return true;
-      });
+  for (const performance_manager::WorkerNode* worker_node :
+       graph_->GetAllWorkerNodes()) {
+    SendWorkerNotification(worker_node, created);
+  }
 }
 
 void DiscardsGraphDumpImpl::SendFrameNotification(

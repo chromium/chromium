@@ -34,7 +34,7 @@ UserPerformanceTuningNotifier::UserPerformanceTuningNotifier(
 UserPerformanceTuningNotifier::~UserPerformanceTuningNotifier() = default;
 
 void UserPerformanceTuningNotifier::OnPassedToGraph(Graph* graph) {
-  CHECK_EQ(graph->GetPageNodeCount(), 0u);
+  CHECK_EQ(graph->GetAllPageNodes().size(), 0u);
   graph_ = graph;
   graph->AddPageNodeObserver(this);
 
@@ -77,10 +77,9 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
 void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     const SystemNode* system_node) {
   uint64_t total_rss = 0;
-  graph_->VisitAllProcessNodes([&](const ProcessNode* process_node) {
+  for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
     total_rss += process_node->GetResidentSetKb();
-    return true;
-  });
+  }
 
   // Only notify when the threshold is crossed, not if an update keeps the total
   // RSS above the threshold.
@@ -92,12 +91,13 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
   previous_total_rss_ = total_rss;
 
   std::vector<WebContentsAndPmf> web_contents_and_pmf;
-  web_contents_and_pmf.reserve(graph_->GetPageNodeCount());
-  graph_->VisitAllPageNodes([&](const PageNode* page_node) {
+  Graph::NodeSetView<const PageNode*> all_page_nodes =
+      graph_->GetAllPageNodes();
+  web_contents_and_pmf.reserve(all_page_nodes.size());
+  for (const PageNode* page_node : all_page_nodes) {
     web_contents_and_pmf.emplace_back(
         page_node->GetWebContents(), page_node->EstimatePrivateFootprintSize());
-    return true;
-  });
+  }
 }
 
 void UserPerformanceTuningNotifier::MaybeAddTabAndNotify(

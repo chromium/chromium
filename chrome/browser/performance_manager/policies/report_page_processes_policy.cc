@@ -176,8 +176,11 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
   PageDiscardingHelper* discarding_helper =
       PageDiscardingHelper::GetFromGraph(graph_);
 
+  Graph::NodeSetView<const PageNode*> all_page_nodes =
+      graph_->GetAllPageNodes();
   std::vector<PageNodeSortProxy> candidates;
-  graph_->VisitAllPageNodes([&](const PageNode* page_node) {
+  candidates.reserve(all_page_nodes.size());
+  for (const PageNode* page_node : all_page_nodes) {
     PageDiscardingHelper::CanDiscardResult can_discard_result =
         discarding_helper->CanDiscard(
             page_node, PageDiscardingHelper::DiscardReason::URGENT);
@@ -190,8 +193,7 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
     candidates.emplace_back(page_node, is_marked, is_visible, is_protected,
                             is_focused,
                             page_node->GetTimeSinceLastVisibilityChange());
-    return true;
-  });
+  }
 
   // Sorts with descending importance.
   std::sort(candidates.begin(), candidates.end(),

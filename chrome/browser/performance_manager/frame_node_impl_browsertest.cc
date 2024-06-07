@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   // First, set up the observer on the PM graph.
   auto frame_node_matcher =
       base::BindRepeating([](const FrameNode* frame_node) {
-        DCHECK_EQ(frame_node->GetGraph()->GetPageNodeCount(), 1u);
+        DCHECK_EQ(frame_node->GetGraph()->GetAllPageNodes().size(), 1u);
 
         // Only match the only child node of the main frame.
         const FrameNode* main_frame_node =
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   // First, set up the observer on the PM graph.
   auto frame_node_matcher =
       base::BindRepeating([](const FrameNode* frame_node) {
-        DCHECK_EQ(frame_node->GetGraph()->GetPageNodeCount(), 1u);
+        DCHECK_EQ(frame_node->GetGraph()->GetAllPageNodes().size(), 1u);
 
         // Only match the only child node of the main frame.
         const FrameNode* main_frame_node =
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   // First, set up the observer on the PM graph.
   auto frame_node_matcher =
       base::BindRepeating([](const FrameNode* frame_node) {
-        DCHECK_EQ(frame_node->GetGraph()->GetPageNodeCount(), 1u);
+        DCHECK_EQ(frame_node->GetGraph()->GetAllPageNodes().size(), 1u);
 
         // Only match the only child node of the main frame.
         const FrameNode* main_frame_node =
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   // First, set up the observer on the PM graph.
   auto frame_node_matcher =
       base::BindRepeating([](const FrameNode* frame_node) {
-        DCHECK_EQ(frame_node->GetGraph()->GetPageNodeCount(), 1u);
+        DCHECK_EQ(frame_node->GetGraph()->GetAllPageNodes().size(), 1u);
 
         // Only match the only child node of the main frame.
         const FrameNode* main_frame_node =
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   // First, set up the observer on the PM graph.
   auto frame_node_matcher =
       base::BindRepeating([](const FrameNode* frame_node) {
-        DCHECK_EQ(frame_node->GetGraph()->GetPageNodeCount(), 1u);
+        DCHECK_EQ(frame_node->GetGraph()->GetAllPageNodes().size(), 1u);
 
         // Only match the only child node of the main frame.
         const FrameNode* main_frame_node =

@@ -128,13 +128,11 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
 
   // Start monitoring CPU usage for all existing processes. Can't read their CPU
   // usage until they have a pid assigned.
-  graph_->VisitAllProcessNodes([this](const ProcessNode* process_node) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
     if (delegate_factory_->ShouldMeasureProcess(process_node)) {
       MonitorCPUUsage(process_node);
     }
-    return true;
-  });
+  }
 }
 
 void CPUMeasurementMonitor::StopMonitoring() {

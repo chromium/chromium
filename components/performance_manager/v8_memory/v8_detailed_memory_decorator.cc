@@ -338,16 +338,15 @@ NodeAttachedProcessData::NodeAttachedProcessData(
 void NodeAttachedProcessData::ApplyToAllRenderers(
     Graph* graph,
     base::FunctionRef<void(NodeAttachedProcessData*)> func) {
-  graph->VisitAllProcessNodes([&](const ProcessNode* node) {
+  for (const ProcessNode* node : graph->GetAllProcessNodes()) {
     if (node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
-      return true;
+      continue;
     }
 
     NodeAttachedProcessData* process_data = NodeAttachedProcessData::Get(node);
     DCHECK(process_data);
     func(process_data);
-    return true;
-  });
+  }
 }
 
 void NodeAttachedProcessData::ScheduleNextMeasurement() {
@@ -672,10 +671,9 @@ void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
   graph->RegisterObject(this);
 
   // Iterate over the existing process nodes to put them under observation.
-  graph->VisitAllProcessNodes([this](const ProcessNode* process_node) {
+  for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
     OnProcessNodeAdded(process_node);
-    return true;
-  });
+  }
 
   graph->AddProcessNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(

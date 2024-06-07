@@ -115,18 +115,16 @@ void MetricsCollector::OnMainFrameDocumentChanged(const PageNode* page_node) {
     return;
   }
 
-  graph_->VisitAllPageNodes([&](const PageNode* page_node_it) {
-    if (page_node_it != page_node) {
-      if (page_node_it->GetBrowserContextID() ==
-              page_node->GetBrowserContextID() &&
-          url::IsSameOriginWith(page_node_it->GetMainFrameUrl(),
+  for (const PageNode* page : graph_->GetAllPageNodes()) {
+    if (page != page_node) {
+      if (page->GetBrowserContextID() == page_node->GetBrowserContextID() &&
+          url::IsSameOriginWith(page->GetMainFrameUrl(),
                                 page_node->GetMainFrameUrl())) {
         found_same_origin_page = true;
-        return false;
+        break;
       }
     }
-    return true;
-  });
+  }
   record->previous_url = page_node->GetMainFrameUrl();
   base::UmaHistogramBoolean(kTabNavigationWithSameOriginTabHistogramName,
                             found_same_origin_page);

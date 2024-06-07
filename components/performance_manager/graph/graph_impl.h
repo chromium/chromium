@@ -13,7 +13,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
@@ -45,11 +44,6 @@ class WorkerNodeImpl;
 // a list of observers that are notified of node addition and removal.
 class GraphImpl : public Graph {
  public:
-  using FrameNodeImplVisitor = base::FunctionRef<bool(FrameNodeImpl*)>;
-  using PageNodeImplVisitor = base::FunctionRef<bool(PageNodeImpl*)>;
-  using ProcessNodeImplVisitor = base::FunctionRef<bool(ProcessNodeImpl*)>;
-  using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
-
   // An ObserverList that DCHECK's if any observers are still in it when the
   // graph is deleted. `allow_reentrancy` is true because some observers update
   // node properties that also trigger observers. (For example
@@ -89,18 +83,10 @@ class GraphImpl : public Graph {
   void RegisterObject(GraphRegistered* object) override;
   void UnregisterObject(GraphRegistered* object) override;
   const SystemNode* GetSystemNode() const override;
-  size_t GetProcessNodeCount() const override;
-  size_t GetFrameNodeCount() const override;
-  size_t GetPageNodeCount() const override;
-  size_t GetWorkerNodeCount() const override;
   NodeSetView<const ProcessNode*> GetAllProcessNodes() const override;
   NodeSetView<const FrameNode*> GetAllFrameNodes() const override;
   NodeSetView<const PageNode*> GetAllPageNodes() const override;
   NodeSetView<const WorkerNode*> GetAllWorkerNodes() const override;
-  bool VisitAllProcessNodes(ProcessNodeVisitor visitor) const override;
-  bool VisitAllFrameNodes(FrameNodeVisitor visitor) const override;
-  bool VisitAllPageNodes(PageNodeVisitor visitor) const override;
-  bool VisitAllWorkerNodes(WorkerNodeVisitor visitor) const override;
 
   bool HasOnlySystemNode() const override;
   ukm::UkmRecorder* GetUkmRecorder() const override;
@@ -137,10 +123,6 @@ class GraphImpl : public Graph {
   NodeSetView<FrameNodeImpl*> GetAllFrameNodeImpls() const;
   NodeSetView<PageNodeImpl*> GetAllPageNodeImpls() const;
   NodeSetView<WorkerNodeImpl*> GetAllWorkerNodeImpls() const;
-  bool VisitAllProcessNodeImpls(ProcessNodeImplVisitor visitor) const;
-  bool VisitAllFrameNodeImpls(FrameNodeImplVisitor visitor) const;
-  bool VisitAllPageNodeImpls(PageNodeImplVisitor visitor) const;
-  bool VisitAllWorkerNodeImpls(WorkerNodeImplVisitor visitor) const;
 
   // Retrieves the process node with PID |pid|, if any.
   ProcessNodeImpl* GetProcessNodeByPid(base::ProcessId pid);
@@ -241,10 +223,6 @@ class GraphImpl : public Graph {
   void UnregisterFrameNodeForId(RenderProcessHostId render_process_id,
                                 int render_frame_id,
                                 FrameNodeImpl* frame_node);
-
-  template <typename NodeType, typename VisitedNodeType>
-  bool VisitAllNodesOfType(
-      base::FunctionRef<bool(VisitedNodeType)> visitor) const;
 
   void CreateSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ReleaseSystemNode() VALID_CONTEXT_REQUIRED(sequence_checker_);

@@ -152,21 +152,20 @@ void PageDiscardingHelper::DiscardMultiplePages(
   };
 
   std::vector<PageNodeSortProxy> candidates;
-  graph_->VisitAllPageNodes([&](const PageNode* page_node) {
+  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
     CanDiscardResult can_discard_result =
         CanDiscard(page_node, discard_reason, minimum_time_in_background);
     if (can_discard_result == CanDiscardResult::kMarked) {
-      return true;
+      continue;
     }
     bool is_protected = (can_discard_result == CanDiscardResult::kProtected);
     if (!discard_protected_tabs && is_protected) {
-      return true;
+      continue;
     }
     candidates.emplace_back(page_node, false, page_node->IsVisible(),
                             is_protected, page_node->IsFocused(),
                             page_node->GetTimeSinceLastVisibilityChange());
-    return true;
-  });
+  }
 
   // Sorts with ascending importance.
   std::sort(candidates.begin(), candidates.end());

@@ -141,13 +141,12 @@ void BFCachePolicy::OnMemoryPressure(MemoryPressureLevel new_level) {
   }
 
   // Apply the cache limit to all pages.
-  graph_->VisitAllPageNodes([&, this](const PageNode* page_node) {
+  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
     if (page_node->GetPageState() == PageNode::PageState::kActive &&
         PageMightHaveFramesInBFCache(page_node)) {
       MaybeFlushBFCache(page_node, new_level);
     }
-    return true;
-  });
+  }
 }
 
 }  // namespace performance_manager::policies

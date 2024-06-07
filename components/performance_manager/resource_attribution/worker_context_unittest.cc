@@ -119,7 +119,7 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   EXPECT_EQ(worker_token, worker_context->GetWorkerToken());
   EXPECT_FALSE(WorkerContext::FromWorkerToken(worker_token).has_value());
   performance_manager::RunInGraph([&](Graph* graph) {
-    EXPECT_EQ(graph->GetWorkerNodeCount(), 0u);
+    EXPECT_EQ(graph->GetAllWorkerNodes().size(), 0u);
     EXPECT_FALSE(worker_node);
     EXPECT_EQ(nullptr, worker_context->GetWorkerNode());
     EXPECT_EQ(std::nullopt, WorkerContext::FromWeakWorkerNode(worker_node));

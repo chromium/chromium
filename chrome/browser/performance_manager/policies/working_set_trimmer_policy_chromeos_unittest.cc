@@ -486,7 +486,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimIfInvisibleLongEnough) {
   auto parent_frame =
       CreateFrameNodeAutoId(process_node.get(), page_node.get());
 
-  ASSERT_EQ(1u, graph()->GetPageNodeCount());
+  ASSERT_EQ(1u, graph()->GetAllPageNodes().size());
 
   // Create a Process so this process node doesn't bail on Process.IsValid();
   const base::Process self = base::Process::Current();

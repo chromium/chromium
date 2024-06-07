@@ -122,15 +122,14 @@ bool MemorySaverModePolicy::IsMemorySaverDiscardingEnabled() const {
 }
 
 void MemorySaverModePolicy::StartAllDiscardTimers() {
-  graph_->VisitAllPageNodes([this](const PageNode* page_node) {
+  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
     TabPageDecorator::TabHandle* tab_handle =
         TabPageDecorator::FromPageNode(page_node);
     if (tab_handle && !page_node->IsVisible()) {
       StartDiscardTimerIfEnabled(tab_handle,
                                  GetTimeBeforeDiscardForCurrentMode());
     }
-    return true;
-  });
+  }
 }
 
 void MemorySaverModePolicy::StartDiscardTimerIfEnabled(

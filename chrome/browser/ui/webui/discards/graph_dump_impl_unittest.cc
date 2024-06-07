@@ -233,12 +233,13 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   // an update for each node as part of the initial state dump, except the
   // system node.
   size_t expected_changes =
-      graph_.GetFrameNodeCount() + graph_.GetPageNodeCount() +
-      graph_.GetProcessNodeCount() + graph_.GetWorkerNodeCount();
+      graph_.GetAllFrameNodes().size() + graph_.GetAllPageNodes().size() +
+      graph_.GetAllProcessNodes().size() + graph_.GetAllWorkerNodes().size();
   EXPECT_EQ(expected_changes, change_stream.num_changes());
   EXPECT_EQ(expected_changes, change_stream.id_set().size());
 
-  EXPECT_EQ(graph_.GetProcessNodeCount(), change_stream.process_map().size());
+  EXPECT_EQ(graph_.GetAllProcessNodes().size(),
+            change_stream.process_map().size());
   for (const auto& kv : change_stream.process_map()) {
     const auto* process_info = kv.second.get();
     EXPECT_NE(0u, process_info->id);
@@ -246,12 +247,13 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
               base::JSONReader::Read(process_info->description_json));
   }
 
-  EXPECT_EQ(graph_.GetFrameNodeCount(), change_stream.frame_map().size());
+  EXPECT_EQ(graph_.GetAllFrameNodes().size(), change_stream.frame_map().size());
   for (const auto& kv : change_stream.frame_map()) {
     EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"frame\"}}"),
               base::JSONReader::Read(kv.second->description_json));
   }
-  EXPECT_EQ(graph_.GetWorkerNodeCount(), change_stream.worker_map().size());
+  EXPECT_EQ(graph_.GetAllWorkerNodes().size(),
+            change_stream.worker_map().size());
   for (const auto& kv : change_stream.worker_map()) {
     EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"worker\"}}"),
               base::JSONReader::Read(kv.second->description_json));
@@ -278,7 +280,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   // Make sure we have one top-level frame per page.
   EXPECT_EQ(change_stream.page_map().size(), top_level_frames);
 
-  EXPECT_EQ(graph_.GetPageNodeCount(), change_stream.page_map().size());
+  EXPECT_EQ(graph_.GetAllPageNodes().size(), change_stream.page_map().size());
   for (const auto& kv : change_stream.page_map()) {
     const auto& page = kv.second;
     EXPECT_NE(0u, page->id);

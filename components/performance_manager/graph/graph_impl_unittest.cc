@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -24,7 +25,7 @@ namespace performance_manager {
 
 using GraphImplTest = GraphTestHarness;
 
-using ::testing::UnorderedElementsAreArray;
+using ::testing::ElementsAreArray;
 
 TEST_F(GraphImplTest, SafeCasting) {
   const Graph* graph_base = graph();
@@ -112,118 +113,54 @@ TEST_F(GraphImplTest, GetAllCUsByType) {
   EXPECT_NE(nullptr, pages[1]);
 }
 
-TEST_F(GraphImplTest, Visitors) {
+TEST_F(GraphImplTest, GetAllNodes) {
+  // This mock graphs contains 2 pages with 2 main frames in a single process.
+  // There is a total of 2 process nodes because of the browser process node.
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
-  std::vector<const FrameNode*> visited_frame_nodes;
-  EXPECT_EQ(true, graph()->VisitAllFrameNodes([&](const FrameNode* node) {
-    visited_frame_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_frame_nodes,
-              UnorderedElementsAreArray(graph()->GetAllFrameNodes()));
+  // 1 renderer and 1 browser process.
+  auto process_nodes = graph()->GetAllProcessNodes().AsVector();
+  EXPECT_EQ(process_nodes.size(), 2u);
+  EXPECT_TRUE(base::Contains(process_nodes, mock_graph.process.get()));
 
-  std::vector<const PageNode*> visited_page_nodes;
-  EXPECT_EQ(true, graph()->VisitAllPageNodes([&](const PageNode* node) {
-    visited_page_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_page_nodes,
-              UnorderedElementsAreArray(graph()->GetAllPageNodes()));
+  // 2 pages.
+  EXPECT_THAT(graph()->GetAllPageNodes().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.page.get(),
+                                              mock_graph.other_page.get()));
 
-  std::vector<const ProcessNode*> visited_process_nodes;
-  EXPECT_EQ(true, graph()->VisitAllProcessNodes([&](const ProcessNode* node) {
-    visited_process_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_process_nodes,
-              UnorderedElementsAreArray(graph()->GetAllProcessNodes()));
+  // 2 frames.
+  EXPECT_THAT(graph()->GetAllFrameNodes().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.frame.get(),
+                                              mock_graph.other_frame.get()));
 
-  std::vector<const WorkerNode*> visited_worker_nodes;
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodes([&](const WorkerNode* node) {
-    visited_worker_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_worker_nodes,
-              UnorderedElementsAreArray(graph()->GetAllWorkerNodes()));
-
-  size_t visited_nodes = 0;
-  EXPECT_EQ(false, graph()->VisitAllFrameNodes([&](const FrameNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllPageNodes([&](const PageNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllProcessNodes([&](const ProcessNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // There are no worker nodes, so the visitor never runs.
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodes([&](const WorkerNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // Visited one node of each type except workers.
-  EXPECT_EQ(visited_nodes, 3u);
+  // No workers.
+  EXPECT_THAT(graph()->GetAllWorkerNodes().AsVector(),
+              ::testing::UnorderedElementsAre());
 }
 
-TEST_F(GraphImplTest, ImplVisitors) {
+TEST_F(GraphImplTest, GetAllNodeImpls) {
+  // This mock graphs contains 2 pages with 2 main frames in a single process.
+  // There is a total of 2 process nodes because of the browser process node.
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
-  std::vector<FrameNodeImpl*> visited_frame_nodes;
-  EXPECT_EQ(true, graph()->VisitAllFrameNodeImpls([&](FrameNodeImpl* node) {
-    visited_frame_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_frame_nodes,
-              UnorderedElementsAreArray(graph()->GetAllFrameNodeImpls()));
+  // 1 renderer and 1 browser process.
+  auto process_nodes = graph()->GetAllProcessNodeImpls().AsVector();
+  EXPECT_EQ(process_nodes.size(), 2u);
+  EXPECT_TRUE(base::Contains(process_nodes, mock_graph.process.get()));
 
-  std::vector<PageNodeImpl*> visited_page_nodes;
-  EXPECT_EQ(true, graph()->VisitAllPageNodeImpls([&](PageNodeImpl* node) {
-    visited_page_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_page_nodes,
-              UnorderedElementsAreArray(graph()->GetAllPageNodeImpls()));
+  // 2 pages.
+  EXPECT_THAT(graph()->GetAllPageNodeImpls().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.page.get(),
+                                              mock_graph.other_page.get()));
 
-  std::vector<ProcessNodeImpl*> visited_process_nodes;
-  EXPECT_EQ(true, graph()->VisitAllProcessNodeImpls([&](ProcessNodeImpl* node) {
-    visited_process_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_process_nodes,
-              UnorderedElementsAreArray(graph()->GetAllProcessNodeImpls()));
+  // 2 frames.
+  EXPECT_THAT(graph()->GetAllFrameNodeImpls().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.frame.get(),
+                                              mock_graph.other_frame.get()));
 
-  std::vector<WorkerNodeImpl*> visited_worker_nodes;
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodeImpls([&](WorkerNodeImpl* node) {
-    visited_worker_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_worker_nodes,
-              UnorderedElementsAreArray(graph()->GetAllWorkerNodeImpls()));
-
-  size_t visited_nodes = 0;
-  EXPECT_EQ(false, graph()->VisitAllFrameNodeImpls([&](FrameNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllPageNodeImpls([&](PageNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllProcessNodeImpls([&](ProcessNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // There are no worker nodes, so the visitor never runs.
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodeImpls([&](WorkerNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // Visited one node of each type except workers.
-  EXPECT_EQ(visited_nodes, 3u);
+  // No workers.
+  EXPECT_THAT(graph()->GetAllWorkerNodeImpls().AsVector(),
+              ::testing::UnorderedElementsAre());
 }
 
 namespace {

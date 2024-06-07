@@ -54,8 +54,8 @@ TEST_F(ProcessHostedContentTypesAggregatorTest,
   // an extension.
   frame_node.reset();
   page_node.reset();
-  EXPECT_EQ(graph()->GetFrameNodeCount(), 0u);
-  EXPECT_EQ(graph()->GetPageNodeCount(), 0u);
+  EXPECT_EQ(graph()->GetAllFrameNodes().size(), 0u);
+  EXPECT_EQ(graph()->GetAllPageNodes().size(), 0u);
 
   EXPECT_TRUE(IsHosting(process_node, ContentType::kExtension));
   EXPECT_TRUE(IsHosting(process_node, ContentType::kMainFrame));
@@ -118,7 +118,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
   // Remove the frames. This shouldn't affect hosted content types.
   child_frame_node.reset();
   main_frame_node.reset();
-  EXPECT_EQ(graph()->GetFrameNodeCount(), 0u);
+  EXPECT_EQ(graph()->GetAllFrameNodes().size(), 0u);
 
   EXPECT_FALSE(IsHosting(process_node_1, ContentType::kExtension));
   EXPECT_TRUE(IsHosting(process_node_1, ContentType::kMainFrame));
@@ -187,7 +187,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, Worker) {
   // Remove the worker node. The process is still counted as having hosted a
   // worker.
   worker_node.reset();
-  EXPECT_EQ(graph()->GetWorkerNodeCount(), 0u);
+  EXPECT_EQ(graph()->GetAllWorkerNodes().size(), 0u);
 
   EXPECT_FALSE(IsHosting(process_node, ContentType::kExtension));
   EXPECT_FALSE(IsHosting(process_node, ContentType::kMainFrame));
