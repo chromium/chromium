@@ -388,12 +388,17 @@ std::optional<net::IsolationInfo> ContentAutofillDriver::GetIsolationInfo() {
 base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
+    base::span<const FormFieldData> data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
+  // If this driver is active, then its main frame is identical to the main
+  // frame at the time the form was received from a renderer and their origins
+  // are the same.
+  const url::Origin& main_origin =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
   return RouteToAgent(router(), &AutofillDriverRouter::ApplyFormAction,
                       &mojom::AutofillAgent::ApplyFieldsAction, action_type,
-                      action_persistence, form, triggered_origin,
+                      action_persistence, data, main_origin, triggered_origin,
                       field_type_map);
 }
 

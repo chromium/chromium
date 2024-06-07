@@ -120,7 +120,7 @@ bool AutofillDriverIOS::CanShowAutofillUi() const {
 base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
-    const FormData& data,
+    base::span<const FormFieldData> fields,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   switch (action_type) {
@@ -131,12 +131,12 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
       web::WebFrame* frame = web_frame();
       std::vector<FieldGlobalId> safe_field_ids;
       if (frame) {
-        std::vector<FormFieldData::FillData> fields;
-        for (const FormFieldData& field : data.fields) {
+        std::vector<FormFieldData::FillData> fill_data;
+        for (const FormFieldData& field : fields) {
           safe_field_ids.push_back(field.global_id());
-          fields.push_back(FormFieldData::FillData(field));
+          fill_data.push_back(FormFieldData::FillData(field));
         }
-        [bridge_ fillData:fields inFrame:frame];
+        [bridge_ fillData:fill_data inFrame:frame];
       }
       return safe_field_ids;
   }

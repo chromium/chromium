@@ -446,8 +446,8 @@ TEST_F(AutofillAcrossIframesTest, FillForm) {
   }
 
   main_frame_driver()->ApplyFormAction(
-      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, form,
-      form.main_frame_origin(), field_type_map);
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+      form.fields, form.main_frame_origin(), field_type_map);
 
   ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
   ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);

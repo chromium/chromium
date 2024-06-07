@@ -240,7 +240,8 @@ class AutofillDriverRouter {
                      const std::vector<FormFieldData::FillData>&> callback,
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
-      const FormData& data,
+      base::span<const FormFieldData> data,
+      const url::Origin& main_origin,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map);
   void ApplyFieldAction(RoutedCallback<mojom::FieldActionType,

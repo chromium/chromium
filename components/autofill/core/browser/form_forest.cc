@@ -503,9 +503,13 @@ const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
 }
 
 FormForest::SecurityOptions::SecurityOptions(
+    const url::Origin* main_origin,
     const url::Origin* triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>* field_type_map)
-    : triggered_origin_(triggered_origin), field_type_map_(field_type_map) {
+    : main_origin_(main_origin),
+      triggered_origin_(triggered_origin),
+      field_type_map_(field_type_map) {
+  CHECK(main_origin);
   CHECK(triggered_origin);
 }
 
@@ -524,26 +528,25 @@ FormForest::RendererForms& FormForest::RendererForms::operator=(
     RendererForms&&) = default;
 FormForest::RendererForms::~RendererForms() = default;
 
-FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
-    const FormData& browser_form,
+FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
+    base::span<const FormFieldData> browser_fields,
     const SecurityOptions& security_options) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration");
-  CHECK(browser_form.host_frame());
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
 
-  // Reinstates the fields of |browser_form| in copies of their renderer forms.
-  // See the function's documentation in the header for details on the security
-  // policy |IsSafeToFill|.
+  // Reinstates the `browser_fields` in copies of their renderer forms. See the
+  // function's documentation in the header for details on the security policy
+  // `IsSafeToFill`.
   RendererForms result;
-  result.safe_fields.reserve(browser_form.fields.size());
-  for (const FormFieldData& browser_field : browser_form.fields) {
+  result.safe_fields.reserve(browser_fields.size());
+  for (const FormFieldData& browser_field : browser_fields) {
     FormGlobalId form_id = browser_field.renderer_form_id();
 
-    // Finds or creates the renderer form from which |browser_field| originated.
-    // The form with |form_id| may have been removed from the tree, for example,
+    // Finds or creates the renderer form from which `browser_field` originated.
+    // The form with `form_id` may have been removed from the tree, for example,
     // between a fill and a refill.
     auto renderer_form = base::ranges::find(result.renderer_forms.rbegin(),
                                             result.renderer_forms.rend(),
@@ -555,15 +558,15 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       }
       result.renderer_forms.push_back(*original_form);
       renderer_form = result.renderer_forms.rbegin();
-      renderer_form->fields.clear();  // In case |original_form| is a root form.
+      renderer_form->fields.clear();  // In case `original_form` is a root form.
     }
     DCHECK(renderer_form != result.renderer_forms.rend());
 
-    auto IsSafeToFill = [&mutable_this, &browser_form, &renderer_form,
+    auto IsSafeToFill = [&mutable_this, &renderer_form,
                          &security_options](const FormFieldData& field) {
       // Non-sensitive values may be filled into fields that belong to the
       // main frame's origin. This is independent of the origin of the
-      // field that triggered the autofill, |triggered_origin|.
+      // field that triggered the autofill.
       auto IsSensitiveFieldType = [](FieldType field_type) {
         switch (field_type) {
           case CREDIT_CARD_TYPE:
@@ -588,14 +591,14 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
             return frame && frame->driver &&
                    frame->driver->HasSharedAutofillPermission();
           };
-      const url::Origin& main_origin = browser_form.main_frame_origin();
       return security_options.all_origins_are_trusted() ||
              field.origin() == security_options.triggered_origin() ||
-             (field.origin() == main_origin &&
+             (field.origin() == security_options.main_origin() &&
               !IsSensitiveFieldType(
                   security_options.GetFieldType(field.global_id())) &&
               HasSharedAutofillPermission(renderer_form->host_frame())) ||
-             (security_options.triggered_origin() == main_origin &&
+             (security_options.triggered_origin() ==
+                  security_options.main_origin() &&
               HasSharedAutofillPermission(renderer_form->host_frame()));
     };
 

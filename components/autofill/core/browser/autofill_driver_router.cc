@@ -56,8 +56,8 @@ void AutofillDriverRouter::UnregisterDriver(AutofillDriver& driver,
 
 // Routing of events called by the renderer:
 
-// Calls TriggerFormExtraction() on all ContentAutofillDrivers in |form_forest_|
-// as well as their ancestor ContentAutofillDrivers.
+// Calls TriggerFormExtraction() on all AutofillDrivers in |form_forest_| as
+// well as their ancestor AutofillDrivers.
 //
 // An ancestor might not be contained in the form tree known to FormForest: if
 // the ancestor contained only invisible iframe(s) and no interesting fields, it
@@ -384,7 +384,8 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
                    const std::vector<FormFieldData::FillData>&> callback,
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
-    const FormData& data,
+    base::span<const FormFieldData> data,
+    const url::Origin& main_origin,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   // Since Undo only affects fields that were already filled, and only sets
@@ -392,11 +393,11 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
   // filling, it is okay to bypass the filling security checks and hence passing
   // `TrustAllOrigins()`.
   internal::FormForest::RendererForms renderer_forms =
-      form_forest_.GetRendererFormsOfBrowserForm(
+      form_forest_.GetRendererFormsOfBrowserFields(
           data, action_type == mojom::FormActionType::kUndo
                     ? internal::FormForest::SecurityOptions::TrustAllOrigins()
-                    : internal::FormForest::SecurityOptions(&triggered_origin,
-                                                            &field_type_map));
+                    : internal::FormForest::SecurityOptions(
+                          &main_origin, &triggered_origin, &field_type_map));
   // Collect the fields per frame and emit a single fill operation per frame,
   // even if multiple renderer forms belong to the same iframe due to
   // flattening.
@@ -488,9 +489,10 @@ void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
     // Builds the FormDataPredictions of each renderer form and groups them by
     // the renderer form's frame in |renderer_fdps|.
     internal::FormForest::RendererForms renderer_forms =
-        form_forest_.GetRendererFormsOfBrowserForm(
-            browser_fdp.data, {&browser_fdp.data.main_frame_origin(),
-                               /*field_type_map=*/nullptr});
+        form_forest_.GetRendererFormsOfBrowserFields(
+            browser_fdp.data.fields, {&browser_fdp.data.main_frame_origin(),
+                                      &browser_fdp.data.main_frame_origin(),
+                                      /*field_type_map=*/nullptr});
     for (FormData& renderer_form : renderer_forms.renderer_forms) {
       LocalFrameToken frame = renderer_form.host_frame();
       FormDataPredictions renderer_fdp;
@@ -551,8 +553,8 @@ void AutofillDriverRouter::RendererShouldSetSuggestionAvailability(
 std::vector<FormData> AutofillDriverRouter::GetRendererForms(
     const FormData& browser_form) const {
   return form_forest_
-      .GetRendererFormsOfBrowserForm(
-          browser_form,
+      .GetRendererFormsOfBrowserFields(
+          browser_form.fields,
           internal::FormForest::SecurityOptions::TrustAllOrigins())
       .renderer_forms;
 }

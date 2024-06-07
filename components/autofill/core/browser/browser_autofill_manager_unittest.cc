@@ -162,6 +162,15 @@ const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
 Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 
+// Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
+// `k`th (0-based) argument of the mock function by moving it to `*pointer`.
+ACTION_TEMPLATE(SaveArgElementsTo,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  auto span = testing::get<k>(args);
+  pointer->assign(span.begin(), span.end());
+}
+
 gfx::Rect GetFakeCaretBounds(const FormFieldData& focused_field) {
   gfx::PointF p = focused_field.bounds().origin();
   return gfx::Rect(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
@@ -746,7 +755,7 @@ class MockAutofillDriver : public TestAutofillDriver {
               ApplyFormAction,
               (mojom::FormActionType action_type,
                mojom::ActionPersistence action_persistence,
-               const FormData& data,
+               base::span<const FormFieldData> data,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, FieldType>&)),
               (override));
@@ -928,20 +937,22 @@ class BrowserAutofillManagerTest : public testing::Test {
       std::string guid,
       AutofillTriggerDetails trigger_details = {
           .trigger_source = AutofillTriggerSource::kPopup}) {
-    FormData filled_form;
+    std::vector<FormFieldData> filled_fields;
     std::vector<FieldGlobalId> global_ids;
     for (const auto& field : input_form.fields) {
       global_ids.push_back(field.global_id());
     }
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
-        .WillOnce(DoAll(SaveArg<2>(&filled_form), Return(global_ids)));
+        .WillOnce(
+            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
     FillAutofillFormData(input_form, input_field, guid, trigger_details);
     FormData result_form = input_form;
     // Copy the filled data into the form.
     for (FormFieldData& field : result_form.fields) {
-      if (const FormFieldData* filled_field =
-              filled_form.FindFieldByGlobalId(field.global_id())) {
-        field = *filled_field;
+      if (auto it = base::ranges::find(filled_fields, field.global_id(),
+                                       &FormFieldData::global_id);
+          it != filled_fields.end()) {
+        field = *it;
       }
     }
     return result_form;
