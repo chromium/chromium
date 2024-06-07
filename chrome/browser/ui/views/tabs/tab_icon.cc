@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/paint/paint_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/views/dotted_icon.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
@@ -53,18 +53,6 @@ namespace {
 
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
-constexpr float kDiscardRingStrokeWidthDp = 1.5;
-
-// Discard Ring Segments
-constexpr int kNumSmallSegments = 4;
-constexpr int kNumSpacingSegments = kNumSmallSegments + 1;
-constexpr int kLargeSegmentSweepAngle = 160;
-
-// Split the remaining space in half so that half is allocated for the small
-// segmant of the ring and the other half is for the spacing between segments
-constexpr int kAllocatedSpace = (360 - kLargeSegmentSweepAngle) / 2;
-constexpr int kSpacingSweepAngle = kAllocatedSpace / kNumSpacingSegments;
-constexpr int kSmallSegmentSweepAngle = kAllocatedSpace / kNumSmallSegments;
 
 constexpr double kDiscardedIconFinalOpacity = 0.8;
 
@@ -73,24 +61,6 @@ bool NetworkStateIsAnimated(TabNetworkState network_state) {
          network_state != TabNetworkState::kError;
 }
 
-// Paints arc starting at `start_angle` with a `sweep` in degrees.
-// A starting angle of 0 means that the arc starts on the right side of `bounds`
-// and continues drawing the arc in a clockwise direction for `sweep` degrees
-void PaintArc(gfx::Canvas* canvas,
-              const gfx::Rect& bounds,
-              const SkScalar start_angle,
-              const SkScalar sweep,
-              const cc::PaintFlags& flags) {
-  gfx::RectF oval(bounds);
-  // Inset by half the stroke width to make sure the whole arc is inside
-  // the visible rect.
-  const double inset = kDiscardRingStrokeWidthDp / 2.0;
-  oval.Inset(inset);
-
-  SkPath path;
-  path.arcTo(RectFToSkRect(oval), start_angle, sweep, true);
-  canvas->DrawPath(path, flags);
-}
 }  // namespace
 
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kDiscardAnimationFinishes);
@@ -353,7 +323,6 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
   gfx::Rect discard_ring_bounds = icon_bounds;
   discard_ring_bounds.Outset(increased_discard_indicator_radius_);
 
-  // Painting Discard Ring
   const ui::ColorProvider* color_provider = GetColorProvider();
   const views::Widget* widget = GetWidget();
   SkColor ring_color =
@@ -361,34 +330,10 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
                                    ? kColorTabDiscardRingFrameActive
                                    : kColorTabDiscardRingFrameInactive);
 
-  float ring_color_opacity =
-      static_cast<float>(SkColorGetA(ring_color)) / SK_AlphaOPAQUE;
-  cc::PaintFlags flags;
-  flags.setColor(ring_color);
-  flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-  flags.setStrokeWidth(kDiscardRingStrokeWidthDp);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setAntiAlias(true);
-  flags.setAlphaf(static_cast<float>(
-      gfx::Tween::CalculateValue(gfx::Tween::EASE_IN,
-                                 tab_discard_animation_.GetCurrentValue()) *
-      ring_color_opacity));
-
-  // Draw the large segment centered on the left side.
-  const int large_segment_start_angle = 180 - kLargeSegmentSweepAngle / 2;
-  PaintArc(canvas, discard_ring_bounds, large_segment_start_angle,
-           kLargeSegmentSweepAngle, flags);
-
-  // Draw the small segments evenly spaced around the rest of the ring.
-  const int small_segments_start_angle =
-      180 + (kLargeSegmentSweepAngle / 2) + kSpacingSweepAngle;
-  for (int i = 0; i < kNumSmallSegments; i++) {
-    const int start_angle =
-        small_segments_start_angle +
-        (i * (kSmallSegmentSweepAngle + kSpacingSweepAngle));
-    PaintArc(canvas, discard_ring_bounds, start_angle % 360,
-             kSmallSegmentSweepAngle, flags);
-  }
+  // Painting Discard Ring
+  PaintRingDottedPath(
+      canvas, discard_ring_bounds, ring_color,
+      /*opacity_ratio=*/tab_discard_animation_.GetCurrentValue());
 }
 
 void TabIcon::PaintLoadingAnimation(gfx::Canvas* canvas, gfx::Rect bounds) {

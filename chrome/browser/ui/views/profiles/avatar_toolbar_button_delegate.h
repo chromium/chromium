@@ -31,6 +31,11 @@ class StateManager;
 enum class ButtonState;
 }  // namespace internal
 
+namespace gfx {
+class Canvas;
+class Rect;
+}  // namespace gfx
+
 // Handles the business logic for AvatarToolbarButton.
 // Listens to Chrome and Profile changes in order to compute the proper state of
 // the button. This state is used to compute the information requested by
@@ -69,6 +74,7 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const;
   ui::ImageModel GetAvatarIcon(int icon_size, SkColor icon_color) const;
   bool ShouldPaintBorder() const;
+  void PaintIcon(gfx::Canvas* canvas, const gfx::Rect& icon_bounds) const;
 
   [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
       const std::u16string& text);

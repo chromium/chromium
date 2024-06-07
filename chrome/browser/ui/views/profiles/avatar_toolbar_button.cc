@@ -441,5 +441,14 @@ void AvatarToolbarButton::NotifyShowSigninPausedDelayEnded() const {
   }
 }
 
+void AvatarToolbarButton::PaintButtonContents(gfx::Canvas* canvas) {
+  int icon_size = GetIconSize();
+  gfx::Rect avatar_image_bounds = image_container_view()->bounds();
+  // Override image bounds width and height to match the icon size used.
+  avatar_image_bounds.set_width(icon_size);
+  avatar_image_bounds.set_height(icon_size);
+  delegate_->PaintIcon(canvas, avatar_image_bounds);
+}
+
 BEGIN_METADATA(AvatarToolbarButton)
 END_METADATA
