@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -20,23 +24,32 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
- * This class creates a view for adding and editing a local IBAN. A local IBAN gets saved to the
- * user's device only.
+ * This class creates a view for adding, editing, and deleting a local IBAN. A local IBAN gets saved
+ * to the user's device only.
  */
-public class AutofillLocalIbanEditor extends AutofillIbanEditor {
+public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
     private static Callback<Fragment> sObserverForTest;
 
     protected Button mDoneButton;
     protected EditText mNickname;
-    protected TextInputLayout mNicknameLabel;
+    private TextInputLayout mNicknameLabel;
     protected EditText mValue;
+    private Iban mIban;
+    private Profile mProfile;
+    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillLocalIbanEditor() {}
@@ -45,6 +58,18 @@ public class AutofillLocalIbanEditor extends AutofillIbanEditor {
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
+
+        // Do not use autofill for the fields.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getActivity()
+                    .getWindow()
+                    .getDecorView()
+                    .setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
+        }
+
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(getProfile());
+        mIban = personalDataManager.getIban(mGUID);
 
         mDoneButton = (Button) v.findViewById(R.id.button_primary);
         mNickname = (EditText) v.findViewById(R.id.iban_nickname_edit);
@@ -115,6 +140,29 @@ public class AutofillLocalIbanEditor extends AutofillIbanEditor {
         mValue.addTextChangedListener(this);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.delete_menu_id) {
+            showDeletePaymentMethodConfirmationDialog();
+            return true;
+        }
+        // TODO(b/332954304): Add help button to IBAN editor.
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
+    }
+
+    /** Return the {@link Profile} associated with the IBAN being edited. */
+    public Profile getProfile() {
+        return mProfile;
+    }
+
     @VisibleForTesting
     public static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
@@ -138,5 +186,34 @@ public class AutofillLocalIbanEditor extends AutofillIbanEditor {
         mDoneButton.setEnabled(
                 PersonalDataManagerFactory.getForProfile(getProfile())
                         .isValidIban(mValue.getText().toString()));
+    }
+
+    /**
+     * Sets Supplier for {@link ModalDialogManager} used to display {@link
+     * AutofillDeletePaymentMethodConfirmationDialog}.
+     */
+    public void setModalDialogManagerSupplier(
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+    }
+
+    private void showDeletePaymentMethodConfirmationDialog() {
+        assert mModalDialogManagerSupplier != null;
+
+        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        assert modalDialogManager != null;
+
+        AutofillDeletePaymentMethodConfirmationDialog dialog =
+                new AutofillDeletePaymentMethodConfirmationDialog(
+                        modalDialogManager,
+                        getContext(),
+                        dismissalCause -> {
+                            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                                deleteEntry();
+                                getActivity().finish();
+                            }
+                        },
+                        /* titleResId= */ R.string.autofill_iban_delete_confirmation_title);
+        dialog.show();
     }
 }
