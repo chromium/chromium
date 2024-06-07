@@ -11,16 +11,17 @@ build_webui("build") {
 
   static_files = [ "app_home.html" ]
 
-  web_component_files = [
-    "app_home_empty_page.ts",
-    "app_item.ts",
-    "app_list.ts",
-    "deprecated_apps_link.ts",
-  ]
-
   non_web_component_files = [
-    "browser_proxy.ts",
+    "app_home_empty_page.html.ts",
+    "app_home_empty_page.ts",
     "app_home_utils.ts",
+    "app_item.html.ts",
+    "app_item.ts",
+    "app_list.html.ts",
+    "app_list.ts",
+    "browser_proxy.ts",
+    "deprecated_apps_link.html.ts",
+    "deprecated_apps_link.ts",
   ]
 
   css_files = [
@@ -39,8 +40,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/web_applications/mojom/user_display_mode.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/app_home/app_home.mojom-webui.ts",
   ]
-
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_deps = [
