@@ -145,6 +145,13 @@ BackForwardTransitionAnimator::Factory::Create(
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   WebContentsObserver::Observe(nullptr);
+  auto* window = animation_manager_->web_contents_view_android()
+                     ->GetTopLevelNativeWindow();
+  CHECK(window);
+  window->RemoveObserver(this);
+  animation_manager_->web_contents_view_android()
+      ->GetNativeView()
+      ->RemoveObserver(this);
 
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
@@ -166,7 +173,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   }
 
   CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
-  RemoveWindowAndroidObserverAndDeleteUIResource(ui_resource_id_);
+  DeleteUIResource(ui_resource_id_);
 
   if (navigation_state_ != NavigationState::kCommitted) {
     CHECK(screenshot_);
@@ -513,6 +520,12 @@ void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
   }
 }
 
+void BackForwardTransitionAnimator::OnDetachedFromWindow() {
+  // The WebContentsViewAndroid's native view is detached from the top level
+  // window. We must abort the transition.
+  animation_manager_->SynchronouslyDestroyAnimator();
+}
+
 void BackForwardTransitionAnimator::OnRootWindowVisibilityChanged(
     bool visible) {
   if (!visible) {
@@ -853,11 +866,13 @@ void BackForwardTransitionAnimator::ProcessState() {
       // and URL in the URL bar.
       WebContentsObserver::Observe(
           animation_manager_->web_contents_view_android()->web_contents());
-      // Become a `WindowAndroidObserver` right away as well.
-      CHECK(animation_manager_->web_contents_view_android()
-                ->GetTopLevelNativeWindow());
+      // Become `WindowAndroidObserver` and `ViewAndroidObserver` right away.
+      auto* window = animation_manager_->web_contents_view_android()
+                         ->GetTopLevelNativeWindow();
+      CHECK(window);
+      window->AddObserver(this);
       animation_manager_->web_contents_view_android()
-          ->GetTopLevelNativeWindow()
+          ->GetNativeView()
           ->AddObserver(this);
       break;
       // `this` will be waiting for the `OnGestureProgressed` call.
@@ -1085,13 +1100,11 @@ cc::UIResourceId BackForwardTransitionAnimator::CreateUIResource(
   return static_cast<CompositorImpl*>(compositor)->CreateUIResource(client);
 }
 
-void BackForwardTransitionAnimator::
-    RemoveWindowAndroidObserverAndDeleteUIResource(
-        cc::UIResourceId resource_id) {
+void BackForwardTransitionAnimator::DeleteUIResource(
+    cc::UIResourceId resource_id) {
   ui::WindowAndroid* window = animation_manager_->web_contents_view_android()
                                   ->GetTopLevelNativeWindow();
   CHECK(window);
-  window->RemoveObserver(this);
   ui::WindowAndroidCompositor* compositor = window->GetCompositor();
   CHECK(compositor);
   static_cast<CompositorImpl*>(compositor)->DeleteUIResource(ui_resource_id_);

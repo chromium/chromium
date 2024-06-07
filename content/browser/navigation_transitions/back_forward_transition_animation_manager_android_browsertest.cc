@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/numerics/ranges.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,6 +22,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
+#include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
@@ -2147,6 +2149,34 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   TestNavigationManager back_to_red(web_contents(), RedURL());
   // Invoke the gesture and start the navigation.
   manager->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+}
+
+// Regression test for https://crbug.com/344761329: If the
+// WebContentsViewAndroid's native view is detached from the root window, we
+// should abort the transition.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       AnimatorDestroyedWhenViewAndroidDetachedFromWindow) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->SetFinishedStateToDisplayingInvokeAnimation();
+
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+  web_contents()
+      ->GetBackForwardTransitionAnimationManager()
+      ->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForResponse());
+
+  web_contents()->GetWebContentsAndroid()->SetTopLevelNativeWindow(
+      /*env=*/nullptr,
+      /*jwindow_android=*/base::android::JavaParamRef<jobject>(nullptr));
   ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
 }
 
