@@ -26,6 +26,14 @@ void LogStoredProfileTokenQualityMetrics(
 void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
                                                const PersonalDataManager& pdm);
 
+// Records the {number of observations (bits 0-3, capped at 10), quality score
+// (bits 4-7), profile token (bits 8-15)} as a bitmask, if there were any
+// observations. The score is an integer ranging from 0 to 10, as is the number
+// of observations. Observations are from the profile that was used for filling.
+// Emitted on form submission, after the profile's observations were updated.
+void LogProfileTokenQualityScoreMetric(const FormStructure& form,
+                                       const PersonalDataManager& pdm);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_TOKEN_QUALITY_METRICS_H_

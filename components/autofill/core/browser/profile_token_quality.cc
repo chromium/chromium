@@ -205,6 +205,8 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       pdm.address_data_manager().UpdateProfile(updatable_profile);
     }
   }
+
+  autofill_metrics::LogProfileTokenQualityScoreMetric(form_structure, pdm);
 }
 
 std::vector<ObservationType>
