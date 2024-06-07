@@ -1474,25 +1474,17 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
         LOG(ERROR) << "Unable to create SharedTextureMemory - device lost?";
         return nullptr;
       }
-      // NOTE: We currently do not cache SharedTextureMemory objects that are
-      // associated with devices created for WebGPU. The reason is that
-      // SharedTextureMemory holds on to a reference for the device, and
-      // WebGPUDecoderImpl does not currently destroy devices that it creates
-      // on its own destruction. Hence, caching SharedTextureMemory objects for
-      // these devices could lead to memory leakage over time (e.g., for
-      // SharedImages maintained in a client-side pool on which WebGPU is used
-      // repeatedly). If Graphite is being used, however, we can and do cache
-      // the SharedTextureMemory instance that is associated with the Graphite
-      // device.
-      // TODO(crbug.com/40936879): Cache SharedTextureMemory objects for WebGPU
-      // as well once crbug.com/1515822 is resolved.
+
+      // We cache the SharedTextureMemory instance that is associated with the
+      // Graphite device.
+      // TODO(crbug.com/345674550): Extend caching to WebGPU devices as well.
       // NOTE: `dawn_context_provider` may be null if Graphite is not being
       // used.
       auto* dawn_context_provider = context_state->dawn_context_provider();
       if (dawn_context_provider &&
           dawn_context_provider->GetDevice().Get() == device.Get()) {
-        // This is the Graphite device, so its SharedTextureMemory instance can
-        // and should be cached.
+        // This is the Graphite device, so we cache its SharedTextureMemory
+        // instance.
         SharedTextureData shared_texture_data;
         shared_texture_data.memory = shared_texture_memory;
         shared_texture_data_cache_.emplace(device.Get(),
