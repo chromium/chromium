@@ -1487,4 +1487,38 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
       IsSingleFillPlusAddressSuggestion(group_profile.plus_address)));
 }
 
+// Verifies that no affiliated suggestions are returned when there are no
+// matches. Instead, the creation chip is offered.
+TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
+  PlusProfile stored_profile1 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://foo.com"));
+  PlusProfile stored_profile2 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://bar.com"));
+
+  service().SavePlusProfile(stored_profile1);
+  service().SavePlusProfile(stored_profile2);
+  ASSERT_THAT(service().GetPlusProfiles(),
+              UnorderedElementsAre(stored_profile1, stored_profile2));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin,
+      /*is_off_the_record=*/false, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      // There are no PLS, group or exact matches.
+      IsSingleCreatePlusAddressSuggestion()));
+}
+
 }  // namespace plus_addresses
