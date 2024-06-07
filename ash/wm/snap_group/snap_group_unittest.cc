@@ -3052,11 +3052,11 @@ TEST_F(SnapGroupTest, UseShortcutToGroupSnappedWindows) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kKeyboardShortcutToSnap);
 
+  // Press 'Search + Shift + G' to to group `w1` and `w2`.
   auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_G,
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
 
-  // Press 'Search + Shift + G' to to group `w1` and `w2`.
   SnapGroupController* snap_group_controller =
       Shell::Get()->snap_group_controller();
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
@@ -8085,13 +8085,13 @@ TEST_F(SnapGroupA11yTest, ResizeVertical) {
 }
 
 // -----------------------------------------------------------------------------
-// SnapGroupHistogramTest:
+// SnapGroupMetricsTest:
 
-class SnapGroupHistogramTest : public SnapGroupTest {
+class SnapGroupMetricsTest : public SnapGroupTest {
  public:
-  SnapGroupHistogramTest()
+  SnapGroupMetricsTest()
       : SnapGroupTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~SnapGroupHistogramTest() override = default;
+  ~SnapGroupMetricsTest() override = default;
 
   void AdvanceClock(base::TimeDelta delta) {
     task_environment()->AdvanceClock(delta);
@@ -8105,7 +8105,7 @@ class SnapGroupHistogramTest : public SnapGroupTest {
 // Tests that the pipeline to get snap action source info all the way to be
 // stored in the `SplitViewOverviewSession` is working. This test focuses on the
 // snap action source with top-usage in clamshell.
-TEST_F(SnapGroupHistogramTest, SnapActionSourcePipeline) {
+TEST_F(SnapGroupMetricsTest, SnapActionSourcePipeline) {
   UpdateDisplay("800x600");
   std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 100)));
@@ -8147,7 +8147,7 @@ TEST_F(SnapGroupHistogramTest, SnapActionSourcePipeline) {
 
 // Verifies that the recorded duration of a snap group accurately reflects both
 // its persistence and actual duration.
-TEST_F(SnapGroupHistogramTest, SnapGroupDuration) {
+TEST_F(SnapGroupMetricsTest, SnapGroupDuration) {
   const std::string persistence_duration_histogram_name =
       BuildHistogramName(kSnapGroupPersistenceDurationRootWord);
   histogram_tester_.ExpectTotalCount(persistence_duration_histogram_name, 0);
@@ -8197,7 +8197,7 @@ TEST_F(SnapGroupHistogramTest, SnapGroupDuration) {
 
 // Verify `SnapGroupExitPoint` is correctly recorded across various Snap Group
 // exit points (drag, window state change, destruction, tablet transition).
-TEST_F(SnapGroupHistogramTest, SnapGroupExitPoint) {
+TEST_F(SnapGroupMetricsTest, SnapGroupExitPoint) {
   const std::string snap_group_exit_point =
       BuildHistogramName(kSnapGroupExitPointRootWord);
   histogram_tester_.ExpectTotalCount(snap_group_exit_point, 0);
@@ -8283,7 +8283,7 @@ TEST_F(SnapGroupHistogramTest, SnapGroupExitPoint) {
                                       SnapGroupExitPoint::kTabletTransition, 1);
 }
 
-TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
+TEST_F(SnapGroupMetricsTest, SnapGroupsCount) {
   UpdateDisplay("800x600");
 
   const std::string snap_groups_count_histogram =
@@ -8334,7 +8334,54 @@ TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
   histogram_tester_.ExpectTotalCount(snap_groups_count_histogram, 3);
 }
 
-TEST_F(SnapGroupHistogramTest, SnapGroupUserActions) {
+// Validate the accurate recording for 'Search + Shift + G' shortcut histogram.
+TEST_F(SnapGroupMetricsTest, KeyboardshortcutToCreateSnapGroupHistogram) {
+  const std::string histogram_name = "Ash.Accelerators.Actions.CreateSnapGroup";
+
+  // Initially histogram is recorded as 0.
+  histogram_tester_.ExpectTotalCount(histogram_name, 0);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+
+  // Press 'Search + Shift + G' to to group `w1` and `w2`.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Verify that the histogram is recorded correctly.
+  histogram_tester_.ExpectTotalCount(histogram_name, 1);
+
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w3.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+
+  // Press 'Search + Shift + G' to to perform snap-to-replace.
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w3.get()));
+  EXPECT_TRUE(snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w3.get(), snap_group_divider());
+
+  // Validate histogram counter increments.
+  histogram_tester_.ExpectTotalCount(histogram_name, 2);
+}
+
+TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
   UpdateDisplay("800x600");
   base::UserActionTester user_action_tester;
 
@@ -8371,7 +8418,7 @@ TEST_F(SnapGroupHistogramTest, SnapGroupUserActions) {
   EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RemoveSnapGroup"), 1);
 }
 
-TEST_F(SnapGroupHistogramTest, RecallSnapGroupUserAction) {
+TEST_F(SnapGroupMetricsTest, RecallSnapGroupUserAction) {
   UpdateDisplay("800x600");
   base::UserActionTester user_action_tester;
 
@@ -8414,7 +8461,7 @@ TEST_F(SnapGroupHistogramTest, RecallSnapGroupUserAction) {
   EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
 }
 
-TEST_F(SnapGroupHistogramTest, SkipFormSnapGroupAfterSnapping) {
+TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
   UpdateDisplay("800x600");
   base::UserActionTester user_action_tester;
 
