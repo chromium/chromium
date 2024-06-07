@@ -540,7 +540,7 @@ DocumentLoader::DocumentLoader(
                                      WillLoadUrlAsEmpty(url_)),
       is_static_data_(params_->is_static_data),
       ukm_source_id_(params_->document_ukm_source_id),
-      clock_(params_->tick_clock ? params_->tick_clock
+      clock_(params_->tick_clock ? params_->tick_clock.get()
                                  : base::DefaultTickClock::GetInstance()),
       initiator_origin_trial_features_(
           CopyInitiatorOriginTrials(params_->initiator_origin_trial_features)),

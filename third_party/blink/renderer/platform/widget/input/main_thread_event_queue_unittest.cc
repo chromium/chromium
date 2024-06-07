@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -201,7 +202,7 @@ class HandledEventCallbackTracker {
     callbacks_received_[index] = ReceivedCallback(
         handling_event_ ? CallbackReceivedState::kCalledWhileHandlingEvent
                         : CallbackReceivedState::kCalledAfterHandleEvent,
-        latency.coalesced(), handled_tasks_.size());
+        latency.coalesced(), handled_tasks_->size());
   }
 
   const Vector<ReceivedCallback>& GetReceivedCallbacks() const {
@@ -212,7 +213,7 @@ class HandledEventCallbackTracker {
 
  private:
   Vector<ReceivedCallback> callbacks_received_;
-  const Vector<std::unique_ptr<HandledTask>>& handled_tasks_;
+  const raw_ref<const Vector<std::unique_ptr<HandledTask>>> handled_tasks_;
   base::WeakPtr<HandledEventCallbackTracker> weak_this_;
   base::WeakPtrFactory<HandledEventCallbackTracker> weak_ptr_factory_{this};
 };
@@ -1481,6 +1482,9 @@ TEST_P(MainThreadEventQueueTest,
   touch_moves[0].touch_start_or_first_touch_move = true;
 
   struct WillHandleInputEventCallback {
+    STACK_ALLOCATED();
+
+   public:
     void Run(const WebCoalescedInputEvent& event) {
       test.set_main_thread_ack_state(
           blink::mojom::InputEventResultState::kNotConsumed);

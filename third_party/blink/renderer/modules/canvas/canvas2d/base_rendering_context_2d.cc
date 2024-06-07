@@ -25,6 +25,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -444,19 +445,19 @@ class ScopedResetCtm {
   ScopedResetCtm(const CanvasRenderingContext2DState& state,
                  cc::PaintCanvas& canvas) : canvas_(canvas) {
     if (!state.GetTransform().IsIdentity()) {
-      ctm_to_restore_ = canvas_.getLocalToDevice();
-      canvas_.save();
-      canvas_.setMatrix(SkM44());
+      ctm_to_restore_ = canvas_->getLocalToDevice();
+      canvas_->save();
+      canvas_->setMatrix(SkM44());
     }
   }
   ~ScopedResetCtm() {
     if (ctm_to_restore_.has_value()) {
-      canvas_.setMatrix(*ctm_to_restore_);
+      canvas_->setMatrix(*ctm_to_restore_);
     }
   }
 
  private:
-  cc::PaintCanvas& canvas_;
+  const raw_ref<cc::PaintCanvas> canvas_;
   std::optional<SkM44> ctm_to_restore_;
 };
 

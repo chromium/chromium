@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -42,16 +43,16 @@ class FrameFetchContext : public ResourceFetchContext {
   FrameFetchContext& operator=(const FrameFetchContext&) = delete;
   ~FrameFetchContext() override = default;
 
-  WebLocalFrame& frame() const { return frame_; }
+  WebLocalFrame& frame() const { return *frame_; }
 
   // ResourceFetchContext:
   std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
       const WebAssociatedURLLoaderOptions& options) override {
-    return frame_.CreateAssociatedURLLoader(options);
+    return frame_->CreateAssociatedURLLoader(options);
   }
 
  private:
-  WebLocalFrame& frame_;
+  const raw_ref<WebLocalFrame> frame_;
 };
 
 }  // namespace

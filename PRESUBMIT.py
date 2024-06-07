@@ -7179,12 +7179,6 @@ def _IsMiraclePtrDisallowed(input_api, affected_file):
             or "third_party/blink/renderer/platform/wtf/" in path):
         return True
 
-    # Blink's public/web API is only used/included by Renderer-only code.  Note
-    # that public/platform API may be used in non-Renderer processes (e.g. there
-    # are some includes in code used by Utility, PDF, or Plugin processes).
-    if "/blink/public/web/" in path:
-        return True
-
     # We assume that everything else may be used outside of Renderer processes.
     return False
 

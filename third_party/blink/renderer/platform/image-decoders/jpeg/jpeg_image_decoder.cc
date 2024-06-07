@@ -41,6 +41,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -752,7 +753,7 @@ class JPEGImageReader final {
   // we set to next_input_byte. libjpeg will update next_input_byte when it
   // has found the next restart position, so if it no longer matches this
   // value, we know we've reached the next restart position.
-  const JOCTET* last_set_byte_;
+  raw_ptr<const JOCTET> last_set_byte_;
 
   jpeg_decompress_struct info_;
   decoder_error_mgr err_;

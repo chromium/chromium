@@ -77,7 +77,7 @@ class BufferAutoMapper {
 
   bool needs_unmap_;
 
-  const uint8_t* data_;
+  raw_ptr<const uint8_t> data_;
   uint32_t size_;
 };
 

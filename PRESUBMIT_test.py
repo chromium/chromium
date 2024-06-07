@@ -4841,7 +4841,6 @@ class CheckRawPtrUsageTest(unittest.TestCase):
         MockAffectedFile(
             'test3/third_party/blink/renderer/platform/wtf/foo.cc',
             ['raw_ptr<int>']),
-        MockAffectedFile('test4/blink/public/web/foo.cc', ['raw_ptr<int>']),
     ]
     mock_output_api = MockOutputApi()
     errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)

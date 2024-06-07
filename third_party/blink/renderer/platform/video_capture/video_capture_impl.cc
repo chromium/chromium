@@ -258,7 +258,7 @@ struct VideoCaptureImpl::BufferContext
 
   // These point into one of the above mappings, which hold the mapping open for
   // the lifetime of this object.
-  const uint8_t* data_ = nullptr;
+  raw_ptr<const uint8_t> data_ = nullptr;
   size_t data_size_ = 0;
 
   // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLES|.

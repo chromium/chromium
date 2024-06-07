@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
@@ -431,7 +432,7 @@ struct BLINK_EXPORT WebNavigationParams {
       prefetched_signed_exchanges;
   // An optional tick clock to be used for document loader timing. This is used
   // for testing.
-  const base::TickClock* tick_clock = nullptr;
+  raw_ptr<const base::TickClock> tick_clock = nullptr;
   // The origin trial features activated in the document initiating this
   // navigation that should be applied in the document being navigated to.
   WebVector<int> initiator_origin_trial_features;

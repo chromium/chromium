@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -415,7 +416,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   State state_;
 
   struct PendingTrackInfo {
-    MediaStreamVideoTrack* track;
+    raw_ptr<MediaStreamVideoTrack> track;
     VideoCaptureDeliverFrameCB frame_callback;
     VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback;
     EncodedVideoFrameCB encoded_frame_callback;
