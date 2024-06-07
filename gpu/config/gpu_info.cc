@@ -211,8 +211,12 @@ bool GPUInfo::GPUDevice::IsSoftwareRenderer() const {
     case 0x0000:  // Info collection failed to identify a GPU
     case 0xffff:  // Chromium internal flag for software rendering
     case 0x15ad:  // VMware
-    case 0x1414:  // Microsoft software renderer
       return true;
+    case 0x1414:  // Microsoft software renderer
+      // Specifically check for the Warp device id. The Microsoft
+      // vendor id is also used for other, non-software devices such
+      // as XBox.
+      return (device_id == 0x008c);
     default:
       return false;
   }
