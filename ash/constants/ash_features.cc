@@ -1487,7 +1487,7 @@ BASE_FEATURE(kGrowthCampaignsTriggerByEvent,
 // the feature introduces any unexpected behaviours.
 BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
              "GrowthCampaignsTriggerByBrowser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the Help app will render the App Detail Page and entry point.
 BASE_FEATURE(kHelpAppAppDetailPage,
