@@ -959,23 +959,29 @@ void CreateFileURLLoaderBypassingSecurityChecks(
   // TODO(crbug.com/41436919): Re-evaluate how TaskPriority is set here and in
   // other file URL-loading-related code. Some callers require USER_VISIBLE
   // (i.e., BEST_EFFORT is not enough).
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  auto create_and_start_cb = base::BindPostTask(
-      task_runner,
-      base::BindOnce(
-          &FileURLLoader::CreateAndStart, base::FilePath(), request,
-          network::mojom::FetchResponseType::kBasic, std::move(loader),
-          std::move(client),
-          allow_directory_listing ? DirectoryLoadingPolicy::kRespondWithListing
-                                  : DirectoryLoadingPolicy::kFail,
-          FileAccessPolicy::kUnrestricted, LinkFollowingPolicy::kDoNotFollow,
-          std::move(observer), std::move(extra_response_headers)));
   base::FilePath path;
-  CHECK(net::FileURLToFilePath(request.url, &path));
-  file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
-      {path}, std::move(create_and_start_cb));
+  if (net::FileURLToFilePath(request.url, &path)) {
+    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    auto create_and_start_cb = base::BindPostTask(
+        task_runner,
+        base::BindOnce(&FileURLLoader::CreateAndStart, base::FilePath(),
+                       request, network::mojom::FetchResponseType::kBasic,
+                       std::move(loader), std::move(client),
+                       allow_directory_listing
+                           ? DirectoryLoadingPolicy::kRespondWithListing
+                           : DirectoryLoadingPolicy::kFail,
+                       FileAccessPolicy::kUnrestricted,
+                       LinkFollowingPolicy::kDoNotFollow, std::move(observer),
+                       std::move(extra_response_headers)));
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+        {path}, std::move(create_and_start_cb));
+  } else {
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_INVALID_URL));
+    return;
+  }
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>

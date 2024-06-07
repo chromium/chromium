@@ -14,20 +14,27 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/test/mock_url_loader_client.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -119,6 +126,22 @@ class FileURLLoaderFactoryTest : public testing::Test {
     return loader->NetError();
   }
 
+  ::network::URLLoaderCompletionStatus CreateLoaderBypassingSecurityAndRun(
+      std::unique_ptr<network::ResourceRequest> request) {
+    mojo::Receiver<network::mojom::URLLoaderClient> client_receiver{&client_};
+    base::test::TestFuture<::network::URLLoaderCompletionStatus> future;
+    content::CreateFileURLLoaderBypassingSecurityChecks(
+        *request, loader_.BindNewPipeAndPassReceiver(),
+        client_receiver.BindNewPipeAndPassRemote(),
+        /*observer*/ nullptr,
+        /*allow_directory_listing*/ true);
+    EXPECT_CALL(client_, OnComplete)
+        .WillOnce([&future](::network::URLLoaderCompletionStatus st) {
+          future.SetValue(st);
+        });
+    return future.Get();
+  }
+
   std::unique_ptr<network::ResourceRequest> CreateRequestWithMode(
       network::mojom::RequestMode request_mode) {
     auto request = std::make_unique<network::ResourceRequest>();
@@ -150,6 +173,8 @@ class FileURLLoaderFactoryTest : public testing::Test {
   scoped_refptr<SharedCorsOriginAccessListForTesting> access_list_;
   mojo::Remote<network::mojom::URLLoaderFactory> factory_;
   network::mojom::URLResponseHeadPtr response_info_;
+  testing::NiceMock<network::MockURLLoaderClient> client_;
+  mojo::Remote<network::mojom::URLLoader> loader_;
 };
 
 TEST_F(FileURLLoaderFactoryTest, LastModified) {
@@ -323,6 +348,39 @@ TEST_F(FileURLLoaderFactoryTest, DlpNoInitiatorDeny) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = net::FilePathToFileURL(file);
   ASSERT_EQ(net::ERR_FAILED, CreateLoaderAndRun(std::move(request)));
+}
+
+TEST_F(FileURLLoaderFactoryTest, DlpRemoteValidFileUrl) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+  base::MockCallback<base::RepeatingCallback<void(
+      const std::vector<base::FilePath>&,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>)>>
+      cb;
+  EXPECT_CALL(cb, Run).WillOnce(
+      base::test::RunOnceCallback<1>(file_access::ScopedFileAccess::Denied()));
+  file_access::ScopedFileAccessDelegate::
+      ScopedRequestFilesAccessCallbackForTesting scoped_callback(cb.Get());
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("file:///test");
+
+  EXPECT_EQ(net::ERR_FAILED,
+            CreateLoaderBypassingSecurityAndRun(std::move(request)).error_code);
+}
+
+TEST_F(FileURLLoaderFactoryTest, DlpRemoteInvalidFileUrl) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+  base::MockCallback<base::RepeatingCallback<void(
+      const std::vector<base::FilePath>&,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>)>>
+      cb;
+  EXPECT_CALL(cb, Run).Times(0);
+  file_access::ScopedFileAccessDelegate::
+      ScopedRequestFilesAccessCallbackForTesting scoped_callback(cb.Get());
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("file:///%00");
+
+  EXPECT_EQ(net::ERR_INVALID_URL,
+            CreateLoaderBypassingSecurityAndRun(std::move(request)).error_code);
 }
 
 }  // namespace content
