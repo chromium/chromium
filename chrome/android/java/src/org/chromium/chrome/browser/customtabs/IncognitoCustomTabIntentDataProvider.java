@@ -113,7 +113,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     private static boolean isEphemeralTabRequested(Intent intent) {
-        if (ChromeFeatureList.sCctEphemeralMode.isEnabled()) return false;
+        if (!ChromeFeatureList.sCctEphemeralMode.isEnabled()) return false;
         return IntentUtils.safeGetBooleanExtra(
                 intent, IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, false);
     }

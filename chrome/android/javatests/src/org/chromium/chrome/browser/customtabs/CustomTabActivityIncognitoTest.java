@@ -104,6 +104,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
 public class CustomTabActivityIncognitoTest {
 
     @ParameterAnnotations.ClassParameter
@@ -255,6 +256,27 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         assertTrue(activity.getActivityTab().isIncognito());
         assertProfileUsedIsNonPrimary();
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void launchesInRegularProfileWhenDisabled_ForEphemeralCCT() throws Exception {
+        Intent intent = createTestCustomTabIntent();
+        CustomTabActivity activity = launchIncognitoCustomTab(intent);
+
+        if (mEphemeralTab) {
+            CustomTabToolbar customTabToolbar =
+                    mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
+                        assertFalse(profile.isOffTheRecord());
+                    });
+        } else {
+            assertTrue(activity.getActivityTab().isIncognito());
+            assertProfileUsedIsNonPrimary();
+        }
     }
 
     @Test
