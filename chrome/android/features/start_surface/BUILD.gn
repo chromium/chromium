@@ -14,9 +14,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/home_surface_ui_background.xml",
     "java/res/layout/query_tiles_layout.xml",
-    "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
-    "java/res/layout/tasks_view_layout_polish.xml",
     "java/res/values-night/dimens.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",

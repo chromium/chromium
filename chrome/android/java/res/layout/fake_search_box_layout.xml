@@ -18,7 +18,7 @@ found in the LICENSE file.
     android:layout_marginTop="0dp"
     android:layout_marginBottom="@dimen/ntp_search_box_bottom_margin"
     android:gravity="center_vertical"
-    android:background="@drawable/ntp_search_box"
+    android:background="@drawable/home_surface_search_box_background"
     android:orientation="horizontal"
     android:paddingStart="@dimen/fake_search_box_lateral_padding" >
 
@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:gravity="center_vertical">
         <EditText
             tools:ignore="Autofill,LabelFor"
-            style="@style/TextAppearance.SearchBoxText.NewTabPage"
+            style="@style/TextAppearance_FakeSearchBoxText_NewTabPage"
             android:id="@+id/search_box_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -45,12 +45,12 @@ found in the LICENSE file.
     </RelativeLayout>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"
-        style="@style/LocationBarActionButtonPolish"
+        style="@style/LocationBarActionButtonForFakeSearchBox"
         android:contentDescription="@string/accessibility_toolbar_btn_mic"
         android:src="@drawable/ic_mic_white_24dp" />
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/lens_camera_button"
-        style="@style/LocationBarActionButtonPolish"
+        style="@style/LocationBarActionButtonForFakeSearchBox"
         android:contentDescription="@string/accessibility_btn_lens_camera"
         android:src="@drawable/lens_camera_icon"
         android:visibility="gone" />

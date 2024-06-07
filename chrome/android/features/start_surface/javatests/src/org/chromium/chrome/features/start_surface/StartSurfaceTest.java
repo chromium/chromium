@@ -1029,8 +1029,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         assertEquals(
                 cta.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                        .getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_height),
                 cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
     }
 

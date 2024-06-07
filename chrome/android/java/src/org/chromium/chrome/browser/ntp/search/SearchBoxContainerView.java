@@ -49,7 +49,7 @@ public class SearchBoxContainerView extends LinearLayout {
 
             TextView searchBoxTextView = findViewById(R.id.search_box_text);
             searchBoxTextView.setTextAppearance(
-                    getContext(), R.style.TextAppearance_SearchBoxText_NewTabPage_SurfacePolish);
+                    getContext(), R.style.TextAppearance_FakeSearchBoxText_NewTabPage);
             Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
             searchBoxTextView.setTypeface(typeface);
         }

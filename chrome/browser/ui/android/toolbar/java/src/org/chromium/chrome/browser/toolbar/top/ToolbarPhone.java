@@ -1415,8 +1415,7 @@ public class ToolbarPhone extends ToolbarLayout
             if (mIsSurfacePolishEnabled) {
                 int baseInset =
                         resources.getDimensionPixelSize(R.dimen.modern_toolbar_background_size)
-                                - resources.getDimensionPixelSize(
-                                        R.dimen.ntp_search_box_height_polish);
+                                - resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
                 verticalInset = (int) (((float) (baseInset) / 2) * urlExpansionFractionComplement);
 
                 int locationBarUrlActionOffsetChangeForSurfacePolish =

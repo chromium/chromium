@@ -87,10 +87,6 @@ public class SearchBoxCoordinator {
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, textWatcher);
     }
 
-    public void setSearchBoxHintColor(int hintTextColor) {
-        mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_COLOR, hintTextColor);
-    }
-
     public void setVoiceSearchButtonVisibility(boolean visible) {
         mModel.set(SearchBoxProperties.VOICE_SEARCH_VISIBILITY, visible);
     }
@@ -134,18 +130,6 @@ public class SearchBoxCoordinator {
 
     public void setTextViewTranslationX(float translationX) {
         mMediator.setTextViewTranslationX(translationX);
-    }
-
-    public void setButtonsHeight(int height) {
-        mMediator.setButtonsHeight(height);
-    }
-
-    public void setButtonsWidth(int width) {
-        mMediator.setButtonsWidth(width);
-    }
-
-    public void setLensButtonLeftMargin(int leftMargin) {
-        mMediator.setLensButtonLeftMargin(leftMargin);
     }
 
     public void setSearchTextSize(float textSize) {

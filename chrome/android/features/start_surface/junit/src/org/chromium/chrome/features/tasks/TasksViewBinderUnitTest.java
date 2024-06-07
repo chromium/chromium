@@ -315,7 +315,7 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetMagicStackVisibility() {
-        createTasksView(R.layout.tasks_view_layout_polish);
+        createTasksView(R.layout.tasks_view_layout);
 
         mTasksViewPropertyModel.set(MAGIC_STACK_VISIBLE, true);
         assertTrue(isViewVisible(R.id.home_modules_recycler_view));

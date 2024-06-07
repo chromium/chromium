@@ -164,18 +164,6 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
         mModel.set(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X, translationX);
     }
 
-    void setButtonsHeight(int height) {
-        mModel.set(SearchBoxProperties.BUTTONS_HEIGHT, height);
-    }
-
-    void setButtonsWidth(int width) {
-        mModel.set(SearchBoxProperties.BUTTONS_WIDTH, width);
-    }
-
-    void setLensButtonLeftMargin(int leftMargin) {
-        mModel.set(SearchBoxProperties.LENS_BUTTON_LEFT_MARGIN, leftMargin);
-    }
-
     private Drawable getRoundedDrawable(Bitmap bitmap) {
         if (bitmap == null) return null;
         RoundedBitmapDrawable roundedBitmapDrawable =

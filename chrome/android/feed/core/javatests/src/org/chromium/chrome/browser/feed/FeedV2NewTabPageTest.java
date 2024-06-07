@@ -447,8 +447,7 @@ public class FeedV2NewTabPageTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertEquals(
                 cta.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                        .getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_height),
                 cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
 
         // Drag the Feed header title to scroll the toolbar to the top.
@@ -472,7 +471,7 @@ public class FeedV2NewTabPageTest {
             assertEquals(
                     toolbar.getLocationBarBackgroundHeightForTesting(),
                     cta.getResources()
-                            .getDimension(org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                            .getDimension(org.chromium.chrome.R.dimen.ntp_search_box_height),
                     0.5);
         }
     }

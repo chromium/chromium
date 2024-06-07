@@ -7,9 +7,7 @@ package org.chromium.chrome.features.tasks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,7 +16,6 @@ import android.view.ViewStub;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -35,7 +32,6 @@ import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -59,14 +55,11 @@ public class TasksView extends CoordinatorLayoutForPointer {
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
-    private final boolean mIsSurfacePolishEnabled;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
     }
 
     public void initialize(
@@ -160,45 +153,17 @@ public class TasksView extends CoordinatorLayoutForPointer {
             searchBackground =
                     AppCompatResources.getDrawable(
                             mContext, R.drawable.fake_search_box_bg_incognito);
-        } else if (mIsSurfacePolishEnabled) {
+        } else {
             searchBackground =
                     AppCompatResources.getDrawable(
                             mContext, R.drawable.home_surface_search_box_background);
-        } else {
-            searchBackground = AppCompatResources.getDrawable(mContext, R.drawable.ntp_search_box);
-        }
-        if (searchBackground instanceof LayerDrawable) {
-            Drawable shapeDrawable =
-                    ((LayerDrawable) searchBackground)
-                            .findDrawableByLayerId(R.id.fake_search_box_bg_shape);
-            if (shapeDrawable != null) {
-                @ColorInt
-                int searchBackgroundColor =
-                        isIncognito
-                                ? mContext.getColor(R.color.toolbar_text_box_background_incognito)
-                                : ChromeColors.getSurfaceColor(
-                                        mContext, R.dimen.toolbar_text_box_elevation);
-                shapeDrawable.mutate();
-                // TODO(crbug.com/40193794): Change back to #setTint once our min API level
-                // is 23.
-                shapeDrawable.setColorFilter(searchBackgroundColor, PorterDuff.Mode.SRC_IN);
-            }
         }
         mSearchBoxCoordinator.setBackground(searchBackground);
-
-        if (!mIsSurfacePolishEnabled) {
-            int hintTextColor =
-                    mContext.getColor(
-                            isIncognito
-                                    ? R.color.locationbar_light_hint_text
-                                    : R.color.locationbar_dark_hint_text);
-            mSearchBoxCoordinator.setSearchBoxHintColor(hintTextColor);
-        }
     }
 
     /**
-     * Initialize incognito description view.
-     * Note that this interface is supposed to be called only once.
+     * Initialize incognito description view. Note that this interface is supposed to be called only
+     * once.
      */
     void initializeIncognitoDescriptionView() {
         assert mIncognitoDescriptionView == null;
@@ -346,30 +311,20 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
     /**
      * Update the fake search box layout.
+     *
      * @param height Current height of the fake search box layout.
      * @param topMargin Current top margin of the fake search box layout.
      * @param endPadding Current end padding of the fake search box layout.
      * @param translationX Current translationX of text view in fake search box layout.
-     * @param buttonSize Current height and width of the buttons in fake search box layout.
-     * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
      * @param searchTextSize Current size for the search text in the fake search box.
      */
     public void updateFakeSearchBox(
-            int height,
-            int topMargin,
-            int endPadding,
-            float translationX,
-            int buttonSize,
-            int lensButtonLeftMargin,
-            float searchTextSize) {
+            int height, int topMargin, int endPadding, float translationX, float searchTextSize) {
         if (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE) return;
         mSearchBoxCoordinator.setHeight(height);
         mSearchBoxCoordinator.setTopMargin(topMargin);
         mSearchBoxCoordinator.setEndPadding(endPadding);
         mSearchBoxCoordinator.setTextViewTranslationX(translationX);
-        mSearchBoxCoordinator.setButtonsHeight(buttonSize);
-        mSearchBoxCoordinator.setButtonsWidth(buttonSize);
-        mSearchBoxCoordinator.setLensButtonLeftMargin(lensButtonLeftMargin);
         mSearchBoxCoordinator.setSearchTextSize(searchTextSize);
     }
 
@@ -379,21 +334,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     public void updateFakeSearchBoxHeight(int height) {
         mSearchBoxCoordinator.setHeight(height);
-    }
-
-    /**
-     * Update the fake search box container.
-     * @param height Current height of the fake search box container.
-     */
-    public void updateFakeSearchBoxContainer(int height) {
-        View fakeSearchBoxContainer = findViewById(R.id.fake_search_box);
-        ViewGroup.LayoutParams lpForContainer = fakeSearchBoxContainer.getLayoutParams();
-
-        if (lpForContainer.height == height) {
-            return;
-        }
-
-        lpForContainer.height = height;
     }
 
     private void forceHeaderScrollable() {

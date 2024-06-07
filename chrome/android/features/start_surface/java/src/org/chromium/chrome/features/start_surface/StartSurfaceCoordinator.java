@@ -502,17 +502,9 @@ public class StartSurfaceCoordinator implements StartSurface {
             tabSwitcherType = TabSwitcherType.SINGLE;
         }
 
-        if (!mIsSurfacePolishEnabled) {
-            mView =
-                    (TasksView)
-                            LayoutInflater.from(mActivity)
-                                    .inflate(R.layout.tasks_view_layout, null);
-        } else {
-            mView =
-                    (TasksView)
-                            LayoutInflater.from(mActivity)
-                                    .inflate(R.layout.tasks_view_layout_polish, null);
-        }
+        mView =
+                (TasksView)
+                        LayoutInflater.from(mActivity).inflate(R.layout.tasks_view_layout, null);
         mView.setId(R.id.primary_tasks_surface_view);
         mView.initialize(
                 mActivityLifecycleDispatcher,
@@ -620,7 +612,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         //     variables are fake*ForAnimation.
         //   Phase 3: Fake box is at top: Match real box states (e.g., small height). Related
         //     variables are real*.
-        // For Surface Polish, Phase 2 is more complex:
+        // Phase 2 is more complex:
         //   Phase 2A: Fake box *nearing* top: Interpolate height reduction to reach some fixed
         //     intermediate value (fakeHeightForAnimation). The top border also linear reaches the
         //     final at a slower rate. This phase encroaches upon Phase 1. Related variables are
@@ -634,19 +626,13 @@ public class StartSurfaceCoordinator implements StartSurface {
         // The following |fake*| values mean the values of the fake search box; |real*| values
         // mean the values of the real search box.
         int realHeight = getPixelSize(R.dimen.toolbar_height_no_shadow) - realVerticalMargin * 2;
-        int fakeHeightForAnimation = getPixelSize(R.dimen.ntp_search_box_height);
-        int fakeHeightBeforeAnimation =
-                mIsSurfacePolishEnabled
-                        ? getPixelSize(R.dimen.ntp_search_box_height_polish)
-                        : fakeHeightForAnimation;
+        int fakeHeightForAnimation =
+                getPixelSize(R.dimen.ntp_search_box_height_for_start_animation);
+        int fakeHeightBeforeAnimation = getPixelSize(R.dimen.ntp_search_box_height);
         // The gap between the top of fake box and its final position for Phase 2A to start.
         int heightReducedBeforeRealAnimation = fakeHeightBeforeAnimation - fakeHeightForAnimation;
 
-        int fakeEndPadding =
-                mIsSurfacePolishEnabled
-                        ? getPixelSize(R.dimen.fake_search_box_end_padding)
-                        : getPixelSize(R.dimen.search_box_end_padding);
-        // realEndPadding is 0 when surface is not polished;
+        int fakeEndPadding = getPixelSize(R.dimen.fake_search_box_end_padding);
         int realEndPadding =
                 mIsSurfacePolishEnabled
                         ? getPixelSize(R.dimen.location_bar_end_padding)
@@ -655,43 +641,14 @@ public class StartSurfaceCoordinator implements StartSurface {
         int endPaddingDiff = fakeEndPadding - realEndPadding;
 
         // fakeTranslationX is 0;
-        int realTranslationX;
-        if (mIsSurfacePolishEnabled) {
-            realTranslationX =
-                    OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
-                            + getPixelSize(R.dimen.status_view_highlight_size)
-                            + getPixelSize(R.dimen.location_bar_icon_end_padding_focused_smaller)
-                            - getPixelSize(R.dimen.fake_search_box_start_padding);
-        } else {
-            realTranslationX =
-                    getPixelSize(R.dimen.location_bar_status_icon_width)
-                            + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
-                            + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
-                                    - (getPixelSize(R.dimen.search_box_start_padding)));
-        }
+        int realTranslationX =
+                OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
+                        + getPixelSize(R.dimen.status_view_highlight_size)
+                        + getPixelSize(R.dimen.location_bar_icon_end_padding_focused_smaller)
+                        - getPixelSize(R.dimen.fake_search_box_start_padding);
 
-        int fakeButtonSize =
-                mIsSurfacePolishEnabled
-                        ? getPixelSize(R.dimen.location_bar_action_icon_width)
-                        : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
-        int realButtonSize = getPixelSize(R.dimen.location_bar_action_icon_width);
-
-        int fakeLensButtonStartMargin =
-                mIsSurfacePolishEnabled
-                        ? 0
-                        : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
-        // realLensButtonStartMargin is 0;
-
-        float fakeSearchTextSize =
-                mIsSurfacePolishEnabled
-                        ? getTextSizeFromDimen(R.dimen.location_bar_url_text_size_polish)
-                        : getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
+        float fakeSearchTextSize = getTextSizeFromDimen(R.dimen.ntp_fake_search_box_text_size);
         float realSearchTextSize = getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
-
-        // Explicitly assign fake search box container height, so it won't resizes in Phase 2* along
-        // with its interior. This prevents content underneath from shifting, which can have adverse
-        // interaction with scroll from swiping.
-        mView.updateFakeSearchBoxContainer(fakeHeightBeforeAnimation);
 
         mOffsetChangedListenerToGenerateScrollEvents =
                 (appBarLayout, verticalOffset) -> {
@@ -707,29 +664,24 @@ public class StartSurfaceCoordinator implements StartSurface {
                                     - realVerticalMargin;
                     int scrolledHeight = -verticalOffset;
                     int fakeHeight;
-                    if (mIsSurfacePolishEnabled) {
-                        // Detect and handle Phase 2A. Otherwise reuse the original flow, but tweak
-                        // |fakeHeight| for Phase 2B.
-                        int startPointToReduceHeight =
-                                fakeSearchBoxToRealSearchBoxTop - heightReducedBeforeRealAnimation;
+                    // Detect and handle Phase 2A. Otherwise reuse the original flow, but tweak
+                    // |fakeHeight| for Phase 2B.
+                    int startPointToReduceHeight =
+                            fakeSearchBoxToRealSearchBoxTop - heightReducedBeforeRealAnimation;
 
-                        if (scrolledHeight < startPointToReduceHeight) {
-                            // Phase 1.
-                            fakeHeight = fakeHeightBeforeAnimation;
-
-                        } else if (scrolledHeight < fakeSearchBoxToRealSearchBoxTop) {
-                            // Phase 2A: Shrink height at the same rate as scrolling.
-                            int reducedHeight = scrolledHeight - startPointToReduceHeight;
-                            mView.updateFakeSearchBoxHeight(
-                                    fakeHeightBeforeAnimation - reducedHeight);
-                            return;
-
-                        } else {
-                            // Phase 2B and Phase 3.
-                            fakeHeight = fakeHeightForAnimation;
-                        }
-                    } else {
+                    if (scrolledHeight < startPointToReduceHeight) {
+                        // Phase 1.
                         fakeHeight = fakeHeightBeforeAnimation;
+
+                    } else if (scrolledHeight < fakeSearchBoxToRealSearchBoxTop) {
+                        // Phase 2A: Shrink height at the same rate as scrolling.
+                        int reducedHeight = scrolledHeight - startPointToReduceHeight;
+                        mView.updateFakeSearchBoxHeight(fakeHeightBeforeAnimation - reducedHeight);
+                        return;
+
+                    } else {
+                        // Phase 2B and Phase 3.
+                        fakeHeight = fakeHeightForAnimation;
                     }
 
                     int fakeAndRealHeightDiff = fakeHeight - realHeight;
@@ -752,16 +704,11 @@ public class StartSurfaceCoordinator implements StartSurface {
                             reducedHeight,
                             (int) (endPaddingDiff * (1 - expansionFraction) + realEndPadding),
                             realTranslationX * expansionFraction,
-                            (int)
-                                    (fakeButtonSize
-                                            + (realButtonSize - fakeButtonSize)
-                                                    * expansionFraction),
-                            (int) (fakeLensButtonStartMargin * (1 - expansionFraction)),
                             fakeSearchTextSize
                                     + (realSearchTextSize - fakeSearchTextSize)
                                             * expansionFraction);
 
-                    if (mIsSurfacePolishEnabled && scrolledHeight > appBarLayout.getHeight()) {
+                    if (scrolledHeight > appBarLayout.getHeight()) {
                         ViewUtils.requestLayout(
                                 appBarLayout,
                                 "StartSurfaceCoordinator#initializeOffsetChangedListener "

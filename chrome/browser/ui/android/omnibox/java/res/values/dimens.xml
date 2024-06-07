@@ -25,7 +25,7 @@ found in the LICENSE file.
     <dimen name="toolbar_edge_padding_modern_polish">16dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
     <dimen name="location_bar_url_text_size">16sp</dimen>
-    <dimen name="location_bar_url_text_size_polish">18sp</dimen>
+    <dimen name="ntp_fake_search_box_text_size">18sp</dimen>
     <dimen name="location_bar_icon_width">28dp</dimen>
     <dimen name="location_bar_action_icon_width">@dimen/min_touch_target_size</dimen>
     <dimen name="location_bar_action_icon_height">@dimen/min_touch_target_size</dimen>

@@ -14,10 +14,6 @@ found in the LICENSE file.
     <color name="answers_description_text_negative">@color/default_red</color>
     <color name="answers_description_text_positive">@color/default_green</color>
 
-    <!-- LocationBar colors -->
-    <color name="locationbar_dark_hint_text">@color/default_text_color_secondary_list</color>
-    <color name="locationbar_light_hint_text">@color/default_text_color_secondary_light</color>
-
     <color name="locationbar_status_offline_color_dark">@color/default_text_color_secondary_dark</color>
     <color name="locationbar_status_offline_color_light">@android:color/white</color>
     <color name="locationbar_status_offline_color_incognito">@color/default_text_color_secondary_light</color>

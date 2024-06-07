@@ -245,11 +245,9 @@ public class NewTabPageLayout extends LinearLayout {
         mSearchBoxCoordinator.initialize(
                 lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
         if (isSurfacePolishEnabled) {
-            int searchBoxHeightPolish =
-                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
-            mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;
+            int searchBoxHeight = mSearchBoxCoordinator.getView().getLayoutParams().height;
             mSearchBoxBoundsVerticalInset =
-                    (searchBoxHeightPolish
+                    (searchBoxHeight
                                     - getResources()
                                             .getDimensionPixelSize(
                                                     R.dimen.toolbar_height_no_shadow))
