@@ -40,7 +40,7 @@
           <iron-icon id="parentalControlsRowIcon"
               icon="[[rowIcons_.parentalControls]]">
           </iron-icon>
-          <div id="appParentalControlsTitle" class="start settings-box-text">
+          <div class="start settings-box-text">
             $i18n{appParentalControlsTitle}
             <div class="secondary">
               <localized-link
@@ -72,9 +72,9 @@
             </cr-icon-button>
             <div class="separator"></div>
             <cr-toggle id="toggle"
+                aria-label="$i18n{appParentalControlsTitle}"
                 checked="[[prefs.on_device_app_controls.setup_completed.value]]"
-                on-change="disableParentalControls_"
-                aria-labelledby="appParentalControlsTitle">
+                on-change="disableParentalControls_">
             </cr-toggle>
           </template>
         </div>
