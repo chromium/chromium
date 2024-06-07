@@ -69,7 +69,7 @@ FetchOptions CreateFetchOptionsForTabResumptionWithLocalTab(
     base::Time current_time) {
   return FetchOptions(
       {
-          {Fetcher::kSession, FetchOptions::kOriginSources},
+          {Fetcher::kSession, kForeignSources},
           {Fetcher::kTabModel, FetchOptions::kOriginSources},
       },
       current_time - kFreshSuggestionWindow,
