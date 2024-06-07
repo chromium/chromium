@@ -276,6 +276,15 @@ void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {
   }
 }
 
+void PickerZeroStateView::MovePseudoFocusToTopIfNeeded() {
+  // TODO: b/345609546 - It would be better to centrally track and check pseudo
+  // focus across all Picker views. As is, we can run into situations where
+  // multiple views all claim to have a `pseudo_focused_view_`.
+  if (pseudo_focused_view_ != nullptr) {
+    SetPseudoFocusedView(section_list_view_->GetTopItem());
+  }
+}
+
 void PickerZeroStateView::OnFetchRecentResults(
     std::vector<PickerSearchResult> results) {
   if (results.empty()) {
@@ -296,7 +305,7 @@ void PickerZeroStateView::OnFetchRecentResults(
       list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
     }
   }
-  SetPseudoFocusedView(section_list_view_->GetTopItem());
+  MovePseudoFocusToTopIfNeeded();
 }
 
 void PickerZeroStateView::OnFetchZeroStateEditorResults(
@@ -325,7 +334,7 @@ void PickerZeroStateView::OnFetchZeroStateEditorResults(
     section_view->AddListItem(std::move(item_view));
   }
   section_view->SetVisible(true);
-  SetPseudoFocusedView(section_list_view_->GetTopItem());
+  MovePseudoFocusToTopIfNeeded();
 }
 
 BEGIN_METADATA(PickerZeroStateView)
