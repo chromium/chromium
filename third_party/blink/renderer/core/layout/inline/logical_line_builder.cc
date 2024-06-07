@@ -428,26 +428,33 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
   InlineItemResultRubyColumn& ruby_column = *item_result.ruby_column;
   bool on_start_edge = false;
   bool on_end_edge = false;
-  if (!node_.IsBidiEnabled()) {
+  std::optional<LayoutUnit> line_available_size;
+  if (!node_.IsBidiEnabled() && !line_info.IsRubyBase() &&
+      !line_info.IsRubyText() &&
+      (line_info.TextAlign() == ETextAlign::kJustify ||
+       (line_info.IsLastLine() &&
+        line_info.LineStyle().GetTextAlign(/* is_last_line */ false) ==
+            ETextAlign::kJustify))) {
     on_start_edge = ruby_column.base_line.InflowStartOffset() ==
                     line_info.InflowStartOffset();
-    wtf_size_t end_text_offset = ruby_column.base_line.EndTextOffset();
-    wtf_size_t inflow_end = line_info.InflowEndOffsetWithoutForcedBreak();
-    on_end_edge = end_text_offset == inflow_end;
-  }
-  std::optional<LayoutUnit> line_available_size;
-  // If this is the only item in the line and is a base-shorter ruby and the
-  // line has text-align:justify, ApplyJustification() did nothing because this
-  // item is represented as an OBJECT REPLACEMENT CHARACTER. We expand the item
-  // by ruby-align processing.
-  if (on_start_edge && on_end_edge &&
-      line_info.TextAlign() == ETextAlign::kJustify &&
-      item_result.inline_size > ruby_column.base_line.Width()) {
-    line_available_size = line_info.AvailableWidth();
-  }
-  if (!RuntimeEnabledFeatures::RubyLineEdgeAlignmentEnabled()) {
-    on_start_edge = false;
-    on_end_edge = false;
+    if (line_info.TextAlign() == ETextAlign::kJustify) {
+      wtf_size_t end_text_offset = ruby_column.base_line.EndTextOffset();
+      wtf_size_t inflow_end = line_info.InflowEndOffsetWithoutForcedBreak();
+      on_end_edge = end_text_offset == inflow_end;
+
+      // If this is the only item in the line and is a base-shorter ruby and
+      // the line has text-align:justify, ApplyJustification() did nothing
+      // because this item is represented as an OBJECT REPLACEMENT CHARACTER.
+      // We expand the item by ruby-align processing.
+      if (on_start_edge && on_end_edge &&
+          item_result.inline_size > ruby_column.base_line.Width()) {
+        line_available_size = line_info.AvailableWidth();
+      }
+    }
+    if (!RuntimeEnabledFeatures::RubyLineEdgeAlignmentEnabled()) {
+      on_start_edge = false;
+      on_end_edge = false;
+    }
   }
   std::pair<LayoutUnit, LayoutUnit> base_insets =
       ApplyRubyAlign(line_available_size.value_or(item_result.inline_size),
