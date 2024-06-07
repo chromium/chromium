@@ -392,11 +392,11 @@ AudioSelectionNotificationHandler::GetNotificationTemplate(
 }
 
 void AudioSelectionNotificationHandler::RemoveNotificationIfNecessary(
-    const AudioDeviceList& removed_devices) {
-  const AudioDeviceList& hotplug_devices = removed_devices.front().is_input
-                                               ? hotplug_input_devices_
-                                               : hotplug_output_devices_;
-  for (const AudioDevice& device : removed_devices) {
+    const AudioDeviceList& removed_or_activated_devices) {
+  const AudioDeviceList& hotplug_devices =
+      removed_or_activated_devices.front().is_input ? hotplug_input_devices_
+                                                    : hotplug_output_devices_;
+  for (const AudioDevice& device : removed_or_activated_devices) {
     if (IsDeviceInList(device, hotplug_devices)) {
       // Remove notification and hotplug_input/output_devices_.
       auto* message_center = message_center::MessageCenter::Get();

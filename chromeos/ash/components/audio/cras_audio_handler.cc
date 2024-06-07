@@ -1234,6 +1234,11 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
   if (features::IsAudioSelectionImprovementEnabled()) {
     SyncDevicePrefSetMap(active_device.is_input);
     audio_pref_handler_->UpdateMostRecentActivatedDeviceIdList(active_device);
+
+    // Remove notification if the hotplugged device that triggered the
+    // notification has already been activated.
+    audio_selection_notification_handler_.RemoveNotificationIfNecessary(
+        {active_device});
   }
 
   // Save active state for the nodes.

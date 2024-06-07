@@ -7655,4 +7655,51 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(device2->device_name, input_device_name);
 }
 
+// Tests that notification is removed if the hot plugged device that triggered
+// the notification has already been activated via settings or quick settings.
+TEST_P(
+    CrasAudioHandlerTest,
+    RemoveNotificationIfHotPluggedDeviceHasBeenActivated_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Initialize with internal speaker.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/std::nullopt,
+      /*expected_has_alternative_output=*/false);
+
+  // Expect that notification is not displayed since there is only one output
+  // device connected.
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug in a usb headphone.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  AudioNode usb_headphone_1 = GenerateAudioNode(kUSBHeadphone1);
+  audio_nodes.push_back(usb_headphone_1);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the active output device is not switched because the new connected
+  // device is not seen before.
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  ExpectActiveDevice(/*is_input=*/false,
+                     /*expected_active_device=*/kInternalSpeaker,
+                     /*has_alternative_device=*/true);
+
+  // Verify notification is displayed.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Manually activate the kUSBHeadphone1, expect that notification is removed.
+  AudioDevice usb_headphone_device(usb_headphone_1);
+  cras_audio_handler_->SwitchToDevice(usb_headphone_device, true,
+                                      DeviceActivateType::kActivateByUser);
+  EXPECT_EQ(0u, GetNotificationCount());
+}
+
 }  // namespace ash
