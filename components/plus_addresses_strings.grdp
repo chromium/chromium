@@ -5,10 +5,14 @@
     <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
       Lorem Ipsum
     </message>
+
     <!-- Creation dialog strings -->
     <!-- Deprecated strings - to be removed once M127 UI refresh is default-enabled. -->
     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2" desc="The error message shown on the android bottom sheet." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_V2" desc="An illustrative description of the plus addresses modal" translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">&lt;link&gt;</ph>Ut enim ad minim veniam<ph name="END_LINK">&lt;/link&gt;</ph> for <ph name="BEGIN_BOLD">&lt;b&gt;</ph><ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph><ph name="END_BOLD">&lt;/b&gt;</ph>.
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_IOS" desc="The error message shown on the iOS bottom sheet." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
@@ -63,6 +67,7 @@
       Refreshing ...
     </message>
 
+    <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum
     </message>
@@ -93,19 +98,18 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
       Sit
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_V2" desc="An illustrative description of the plus addresses modal" translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">&lt;link&gt;</ph>Ut enim ad minim veniam<ph name="END_LINK">&lt;/link&gt;</ph> for <ph name="BEGIN_BOLD">&lt;b&gt;</ph><ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph><ph name="END_BOLD">&lt;/b&gt;</ph>.
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME" desc="The acessible name of the refresh button on the plus address modal" translateable="false">
+    <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME" desc="The acessible name of the refresh button on the plus address modal" translateable="false">
       Refresh
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a refresh is ongoing" translateable="false">
+    <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a refresh is ongoing" translateable="false">
       Refreshing ...
     </message>
+
     <!-- Settings strings -->
     <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
       Lorem Ipsum
     </message>
+
     <!-- Suggestion strings -->
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT" desc="The main text in the Autofill suggestion for create a new plus address." translateable="false">
       Lorem Ipsum

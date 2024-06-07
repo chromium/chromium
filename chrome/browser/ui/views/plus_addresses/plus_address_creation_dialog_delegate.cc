@@ -305,7 +305,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     refresh_button_->SetProperty(views::kElementIdentifierKey,
                                  kPlusAddressRefreshButtonElementId);
     refresh_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME));
+        IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME));
     refresh_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
   }
 
@@ -511,7 +511,7 @@ void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
 
 void PlusAddressCreationDialogDelegate::OnRefreshClicked() {
   plus_address_label_->SetText(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT));
+      IDS_PLUS_ADDRESS_MODAL_REFRESH_TEMPORARY_LABEL_CONTENT));
   confirm_button_->SetEnabled(false);
   controller_->OnRefreshClicked();
 }
