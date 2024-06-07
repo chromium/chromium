@@ -17,8 +17,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/json/json_writer.h"
-#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -30,6 +28,8 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -146,31 +146,35 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
   return resource_request;
 }
 
-std::string BuildRealTimeReport(
+std::vector<uint8_t> BuildRealTimeReport(
     const std::vector<uint8_t>& real_time_histogram) {
-  base::Value::Dict contents_dict;
   size_t num_user_buckets =
       blink::features::kFledgeRealTimeReportingNumBuckets.Get();
   size_t num_platform_buckets =
       auction_worklet::RealTimeReportingPlatformError::kNumValues;
-  contents_dict.Set("version", kRealTimeReportDataVersion);
   CHECK_EQ(real_time_histogram.size(), num_user_buckets + num_platform_buckets);
-  base::Value::List histogram_list;
-  histogram_list.reserve(num_user_buckets);
-  base::Value::List platform_histogram_list;
-  platform_histogram_list.reserve(num_platform_buckets);
+
+  cbor::Value::MapValue report;
+  report.emplace("version", kRealTimeReportDataVersion);
+
+  std::vector<uint8_t> histogram_list;
+  std::vector<uint8_t> platform_histogram_list;
   for (size_t i = 0; i < real_time_histogram.size(); i++) {
     if (i < num_user_buckets) {
-      histogram_list.Append(real_time_histogram[i]);
+      histogram_list.push_back(real_time_histogram[i]);
     } else {
-      platform_histogram_list.Append(real_time_histogram[i]);
+      platform_histogram_list.push_back(real_time_histogram[i]);
     }
   }
-  contents_dict.Set("histogram", std::move(histogram_list));
-  contents_dict.Set("platformHistogram", std::move(platform_histogram_list));
-  std::optional<std::string> contents_json = base::WriteJson(contents_dict);
-  CHECK(contents_json.has_value());
-  return *contents_json;
+
+  report.emplace("histogram", std::move(histogram_list));
+  report.emplace("platformHistogram", std::move(platform_histogram_list));
+  std::optional<std::vector<uint8_t>> report_cbor =
+      cbor::Writer::Write(cbor::Value(std::move(report)));
+  if (!report_cbor.has_value()) {
+    return {};
+  }
+  return *report_cbor;
 }
 
 // Makes a SimpleURLLoader for a given request. Returns the SimpleURLLoader
@@ -185,8 +189,9 @@ std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
   simple_url_loader->SetAllowHttpErrorResults(true);
 
   if (real_time_histogram.has_value()) {
+    auto report = BuildRealTimeReport(*real_time_histogram);
     simple_url_loader->AttachStringForUpload(
-        BuildRealTimeReport(*real_time_histogram), "application/json");
+        std::string(report.begin(), report.end()), "application/cbor");
   }
 
   return simple_url_loader;

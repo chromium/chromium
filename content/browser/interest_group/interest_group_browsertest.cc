@@ -53,6 +53,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/cbor/reader.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -105,6 +106,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/test/test_network_context.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -24514,10 +24516,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                            /*attest_signals_origin=*/false);
 }
 
-class AuctionConfigRealTimeReportingEnabledTest
-    : public InterestGroupBrowserTest {
+class RealTimeReportingEnabledTest : public InterestGroupBrowserTest {
  public:
-  AuctionConfigRealTimeReportingEnabledTest() {
+  RealTimeReportingEnabledTest() {
     feature_list_.InitAndEnableFeature(
         {blink::features::kFledgeRealTimeReporting});
   }
@@ -24531,8 +24532,7 @@ class AuctionConfigRealTimeReportingEnabledTest
 // always replaces requests' hosts to "127.0.0.1" and only handles requests
 // based on their paths, we cannot test different origin sellers' and buyers'
 // real time reports at the same time (they'll be treated as the same request).
-IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
-                       RealTimeReporting) {
+IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
   const char kHostA[] = "a.test";
   const char kHostB[] = "b.test";
 
@@ -24598,7 +24598,7 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   std::string content_type;
   EXPECT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kContentType,
                                          &content_type));
-  EXPECT_EQ("application/json", content_type);
+  EXPECT_EQ("application/cbor", content_type);
 
   ASSERT_TRUE(request->trusted_params);
   const net::IsolationInfo& isolation_info =
@@ -24607,11 +24607,39 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
             isolation_info.request_type());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+
+  // Check the request body, which is the real time report in cbor.
+  std::string body = network::GetUploadData(*request);
+  const auto maybe_map =
+      cbor::Reader::Read(base::as_bytes(base::make_span(body)));
+  ASSERT_TRUE(maybe_map && maybe_map->is_map());
+  const auto& map = maybe_map->GetMap();
+
+  const auto version_it = map.find(cbor::Value("version"));
+  ASSERT_TRUE(version_it != map.end() && version_it->second.is_integer());
+  EXPECT_EQ(1, version_it->second.GetInteger());
+
+  const auto histogram_it = map.find(cbor::Value("histogram"));
+  ASSERT_TRUE(histogram_it != map.end() &&
+              histogram_it->second.is_bytestring());
+  std::vector<uint8_t> histogram = histogram_it->second.GetBytestring();
+  CHECK_EQ(1024u, histogram.size());
+  EXPECT_TRUE(base::ranges::all_of(
+      histogram, [](uint8_t bit) { return bit == 0 || bit == 1; }));
+
+  const auto platform_histogram_it = map.find(cbor::Value("platformHistogram"));
+  ASSERT_TRUE(platform_histogram_it != map.end() &&
+              platform_histogram_it->second.is_bytestring());
+  std::vector<uint8_t> platform_histogram =
+      platform_histogram_it->second.GetBytestring();
+  CHECK_EQ(4u, platform_histogram.size());
+  EXPECT_TRUE(base::ranges::all_of(
+      platform_histogram, [](uint8_t bit) { return bit == 0 || bit == 1; }));
 }
 
 // Opted-in sellers will receive real time histograms, even though they don't
 // call the API (same for buyers).
-IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
+IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
                        RealTimeReportingWithoutCallingAPI) {
   const char kHostA[] = "a.test";
   const char kHostB[] = "b.test";
@@ -24673,8 +24701,7 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   std::string content_type;
   EXPECT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kContentType,
                                          &content_type));
-  EXPECT_EQ("application/json", content_type);
-
+  EXPECT_EQ("application/cbor", content_type);
   ASSERT_TRUE(request->trusted_params);
   const net::IsolationInfo& isolation_info =
       request->trusted_params->isolation_info;
@@ -24684,7 +24711,7 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
 }
 
-IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
+IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
                        RealTimeReportingRateLimitIsPerPagePerReportOrigin) {
   const GURL kRealTimeReportUrlA = embedded_https_test_server().GetURL(
       "a.test", "/.well-known/interest-group/real-time-report");
@@ -24814,10 +24841,10 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   WaitForUrl(kRealTimeReportUrlA);
 }
 
-class AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest
+class RealTimeReportingAndCookieDeprecationEnabledTest
     : public InterestGroupBrowserTest {
  public:
-  AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest() {
+  RealTimeReportingAndCookieDeprecationEnabledTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kFledgeRealTimeReporting,
                               features::kCookieDeprecationFacilitatedTesting},
@@ -24828,9 +24855,8 @@ class AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    AuctionConfigRealTimeReportingAndCookieDeprecationEnabledTest,
-    RealTimeReporting) {
+IN_PROC_BROWSER_TEST_F(RealTimeReportingAndCookieDeprecationEnabledTest,
+                       RealTimeReporting) {
   const char kHostA[] = "a.test";
   const char kHostB[] = "b.test";
   GURL test_url =

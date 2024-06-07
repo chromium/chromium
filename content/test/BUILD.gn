@@ -1738,6 +1738,7 @@ test("content_browsertests") {
     "//build:chromeos_buildflags",
     "//cc/slim",
     "//components/attribution_reporting:mojom",
+    "//components/cbor",
     "//components/discardable_memory/client",
     "//components/discardable_memory/common",
     "//components/discardable_memory/service",
@@ -2142,7 +2143,6 @@ test("content_browsertests") {
       "../browser/webauth/webauth_browsertest.cc",
     ]
     deps += [
-      "//components/cbor",
       "//device/base",
       "//device/fido:fido",
       "//device/fido:mocks",
