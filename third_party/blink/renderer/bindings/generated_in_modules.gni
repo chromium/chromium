@@ -2588,6 +2588,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_receiver.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_sender.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_sender.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transport.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transport.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_sctp_transport.cc",

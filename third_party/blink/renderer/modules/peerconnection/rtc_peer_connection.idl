@@ -138,6 +138,8 @@ enum RTCPeerConnectionState {
     // https://w3c.github.io/webrtc-pc/#sec.cert-mgmt
     [RaisesException, CallWith=ScriptState] static Promise<RTCCertificate> generateCertificate(AlgorithmIdentifier keygenAlgorithm);
 
+    [SameObject, RuntimeEnabled=RTCRtpTransport] readonly attribute RTCRtpTransport rtpTransport;
+
     // Non-standard or removed from the spec:
     [Measure] sequence<MediaStream> getLocalStreams();
     [Measure] sequence<MediaStream> getRemoteStreams();

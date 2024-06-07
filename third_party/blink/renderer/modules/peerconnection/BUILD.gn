@@ -112,6 +112,8 @@ blink_modules_sources("peerconnection") {
     "rtc_rtp_transceiver.h",
     "rtc_rtp_transceiver_impl.cc",
     "rtc_rtp_transceiver_impl.h",
+    "rtc_rtp_transport.cc",
+    "rtc_rtp_transport.h",
     "rtc_sctp_transport.cc",
     "rtc_sctp_transport.h",
     "rtc_session_description.cc",

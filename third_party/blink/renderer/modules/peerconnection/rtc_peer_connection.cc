@@ -581,7 +581,10 @@ RTCPeerConnection::RTCPeerConnection(
       peer_handler_unregistered_(true),
       closed_(true),
       suppress_events_(true),
-      encoded_insertable_streams_(encoded_insertable_streams) {
+      encoded_insertable_streams_(encoded_insertable_streams),
+      rtp_transport_(RuntimeEnabledFeatures::RTCRtpTransportEnabled(context)
+                         ? MakeGarbageCollected<RTCRtpTransport>()
+                         : nullptr) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
   InstanceCounters::IncrementCounter(
@@ -2794,6 +2797,7 @@ void RTCPeerConnection::Trace(Visitor* visitor) const {
   visitor->Trace(dtls_transports_by_native_transport_);
   visitor->Trace(ice_transports_by_native_transport_);
   visitor->Trace(sctp_transport_);
+  visitor->Trace(rtp_transport_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   MediaStreamObserver::Trace(visitor);

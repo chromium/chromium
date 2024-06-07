@@ -3392,6 +3392,10 @@
       status: "stable",
     },
     {
+      name: "RTCRtpTransport",
+      status: "test",
+    },
+    {
       name: "RTCStatsRelativePacketArrivalDelay",
       origin_trial_feature_name: "RTCStatsRelativePacketArrivalDelay",
       status: "experimental",
