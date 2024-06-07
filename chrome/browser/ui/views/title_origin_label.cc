@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/title_origin_label.h"
 
-#include "ui/base/ui_base_features.h"
-
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
     const std::u16string& text) {
   auto label =
@@ -21,10 +19,7 @@ std::unique_ptr<views::Label> CreateTitleOriginLabel(
   label->SetElideBehavior(gfx::NO_ELIDE);
   label->SetMultiLine(true);
   label->SetAllowCharacterBreak(true);
-
-  if (features::IsChromeRefresh2023()) {
-    label->SetTextStyle(views::style::STYLE_HEADLINE_4);
-  }
+  label->SetTextStyle(views::style::STYLE_HEADLINE_4);
 
   return label;
 }
