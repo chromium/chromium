@@ -130,6 +130,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
@@ -388,13 +389,19 @@ Node* Node::PseudoAwarePreviousSibling() const {
 
   // Note the [[fallthrough]] attributes, the order of the cases matters and
   // corresponds to the ordering of pseudo elements in a traversal:
-  // ::marker, ::before, non-pseudo Elements, ::after, ::view-transition.
-  // The fallthroughs ensure this ordering by checking for each kind of node
-  // in-turn.
+  // ::scroll-marker-group(before), ::marker, ::before, non-pseudo Elements,
+  // ::after, ::scroll-marker-group(after), ::view-transition. The fallthroughs
+  // ensure this ordering by checking for each kind of node in-turn.
   switch (GetPseudoId()) {
     case kPseudoIdViewTransition:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdAfter)) {
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
         return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarkerGroupAfter:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdAfter)) {
+        return next;
       }
       [[fallthrough]];
     case kPseudoIdAfter:
@@ -411,6 +418,12 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarkerGroupBefore:
       return nullptr;
     // The pseudos of the view transition subtree have a known structure and
     // cannot create other pseudos so these are handled separately of the above
