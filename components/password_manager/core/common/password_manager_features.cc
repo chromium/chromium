@@ -46,9 +46,7 @@ BASE_FEATURE(kPasswordIssuesInSpecificsMetadata,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sending credentials from the settings UI.
-BASE_FEATURE(kSendPasswords,
-             "SendPasswords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSendPasswords, "SendPasswords", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables filling and saving for forms in shadow DOM.
 BASE_FEATURE(kShadowDomSupport,

@@ -15720,27 +15720,6 @@
             ]
         }
     ],
-    "PasswordSharingSendingUI": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_PasswordSharingFeature",
-                        "SendPasswords"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [
