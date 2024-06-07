@@ -7901,12 +7901,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePeripheralCustomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPeripheralCustomization)},
 
-    {"enable-peripheral-notification",
-     flag_descriptions::kEnablePeripheralNotificationName,
-     flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},
-
     {"enable-peripherals-logging",
+     flag_descriptions::kEnablePeripheralsLoggingName,
+     flag_descriptions::kEnablePeripheralsLoggingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnablePeripheralsLogging)},
+
+    {"enable-peripheral-notification",
      flag_descriptions::kEnablePeripheralNotificationName,
      flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},

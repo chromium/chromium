@@ -18555,6 +18555,7 @@ from previous Chrome versions.
   <int value="-793921836" label="ShowAllDialogsWithViewsToolkit:disabled"/>
   <int value="-793383355" label="StrictOriginIsolation:enabled"/>
   <int value="-792785226" label="TemporaryUnexpireFlagsM78:disabled"/>
+  <int value="-792594495" label="PeripheralsLogging:disabled"/>
   <int value="-792079435" label="EnableAppsGridGapFeature:disabled"/>
   <int value="-791778534" label="LauncherQueryHighlighting:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
@@ -18832,6 +18833,7 @@ from previous Chrome versions.
   <int value="-673149604" label="RelatedSearches:enabled"/>
   <int value="-672031550" label="HttpsFirstModeV2ForEngagedSites:enabled"/>
   <int value="-671992446" label="TranslateRankerEnforcement:disabled"/>
+  <int value="-670732156" label="PeripheralsLogging:enabled"/>
   <int value="-670188266" label="enable-zip-archiver-unpacker"/>
   <int value="-669761849" label="SplitSettings:disabled"/>
   <int value="-669400536" label="FastPairSoftwareScanning:disabled"/>
@@ -20052,7 +20054,6 @@ from previous Chrome versions.
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
   <int value="-143382681" label="InstantTethering:enabled"/>
   <int value="-143121333" label="WebXRIncubations:enabled"/>
-  <int value="-142609434" label="EnablePeripheralsLogging:enabled"/>
   <int value="-142004292" label="QuickActionShowBubbleLauncher:disabled"/>
   <int value="-141516902" label="UseModernMediaControls:enabled"/>
   <int value="-140763100"
@@ -23813,7 +23814,6 @@ from previous Chrome versions.
       label="EnableExtensionsPermissionsForSupervisedUsersOnDesktop:disabled"/>
   <int value="1491996914" label="TetheringExperimentalFunctionality:disabled"/>
   <int value="1492079800" label="AutofillUpstreamAllowAllEmailDomains:enabled"/>
-  <int value="1492184741" label="EnablePeripheralsLogging:disabled"/>
   <int value="1492255992" label="OnDeviceGrammarCheck:enabled"/>
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
   <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
