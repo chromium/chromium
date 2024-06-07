@@ -240,12 +240,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         mRenderHost.requestRender();
                     }
 
-                    if (mTabGroupModelFilter.getTabGroupCollapsed(movedTab.getRootId())) {
-                        StripLayoutTab tab = findTabById(movedTab.getId());
-                        if (tab != null) {
-                            updateTabCollapsed(tab, false, false);
-                            resizeTabStrip(true, false, false);
-                        }
+                    // Expand the tab if necessary.
+                    StripLayoutTab tab = findTabById(movedTab.getId());
+                    if (tab != null && tab.isCollapsed()) {
+                        updateTabCollapsed(tab, false, false);
+                        resizeTabStrip(true, false, false);
                     }
                 }
 
