@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/auth/views/test_support/mock_auth_textfield_observer.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
@@ -27,19 +28,6 @@ namespace {
 
 constexpr std::u16string kPassword = u"password";
 constexpr std::u16string kPIN = u"123456";
-
-class MockObserver : public AuthTextfield::Observer {
- public:
-  MockObserver() {}
-  ~MockObserver() override = default;
-
-  MOCK_METHOD(void, OnTextfieldBlur, (), (override));
-  MOCK_METHOD(void, OnTextfieldFocus, (), (override));
-  MOCK_METHOD(void, OnContentsChanged, (const std::u16string&), (override));
-  MOCK_METHOD(void, OnTextVisibleChanged, (bool), (override));
-  MOCK_METHOD(void, OnSubmit, (), (override));
-  MOCK_METHOD(void, OnEscape, (), (override));
-};
 
 }  // namespace
 
@@ -66,7 +54,7 @@ class PasswordTextfieldUnitTest : public AshTestBase {
 
     auth_textfield_ = widget_->SetContentsView(
         std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPassword));
-    mock_observer_ = std::make_unique<MockObserver>();
+    mock_observer_ = std::make_unique<MockAuthTextfieldObserver>();
     auth_textfield_->AddObserver(mock_observer_.get());
   }
 
@@ -79,7 +67,7 @@ class PasswordTextfieldUnitTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<MockObserver> mock_observer_;
+  std::unique_ptr<MockAuthTextfieldObserver> mock_observer_;
   raw_ptr<AuthTextfield> auth_textfield_;
 };
 
@@ -152,7 +140,7 @@ class PinTextfieldUnitTest : public AshTestBase {
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
-    mock_observer_ = std::make_unique<MockObserver>();
+    mock_observer_ = std::make_unique<MockAuthTextfieldObserver>();
     auth_textfield_ = widget_->SetContentsView(
         std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPin));
     auth_textfield_->SetText(kPIN);
@@ -169,7 +157,7 @@ class PinTextfieldUnitTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AuthTextfield> auth_textfield_;
-  std::unique_ptr<MockObserver> mock_observer_;
+  std::unique_ptr<MockAuthTextfieldObserver> mock_observer_;
 };
 
 // Testing PIN textfield OnContentsChanged Observer.
