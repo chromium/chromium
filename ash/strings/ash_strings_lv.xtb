@@ -178,6 +178,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1610778689852195798">“Undo” (Atsaukt)</translation>
 <translation id="1611993646327628135">Ieslēgts</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Sakļaut pakalpojumu Google Classroom</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ierīces</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
@@ -300,9 +301,11 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="216955976692983107">Loga izmēra mainīšana mozaīkas skatā — pa labi</translation>
 <translation id="2185166372312820725">Pāriet uz iepriekšējo cilni</translation>
 <translation id="2185444992308415167">Secīgi pāriet no 1. līdz 8. cilnei</translation>
+<translation id="2195732836444333448">Šobrīd funkcija ir pārslogota. Atgriezieties pēc brīža!</translation>
 <translation id="2198625180564913276">Notiek profila pievienošana. Tas var ilgt dažas minūtes.</translation>
 <translation id="219905428774326614">Palaišanas programma, visas lietotnes</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. jaunākais fotoattēls no <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Sakļaut pakalpojumu Google uzdevumi</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
 <translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="2222841058024245321">7. darbvieta</translation>
@@ -364,6 +367,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2427507373259914951">Noklikšķināt ar peles kreiso pogu</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2437771564543046790">Zems akumulatora uzlādes līmenis; akumulatora enerģijas taupīšanas režīms ir ieslēgts</translation>
 <translation id="243878895369688216">Atvērts vakar</translation>
 <translation id="2440978926514840421">Tika ierakstīts GIF attēls</translation>
 <translation id="2441427462554639370">Ierakstīšana tika pārtraukta, jo krātuvē ir ļoti maz brīvas vietas.</translation>
@@ -811,6 +815,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4086921558679520050">Ieslēdziet ierīces mikrofona fizisko slēdzi</translation>
 <translation id="4101772068965291327">Atvērt sākumlapu</translation>
 <translation id="4112140312785995938">Pārtīt atpakaļ</translation>
+<translation id="4113030288477039509">Pārvalda jūsu administrators</translation>
 <translation id="4114315158543974537">Ieslēdziet funkciju Phone Hub</translation>
 <translation id="4115378294792113321">Fuksīnsarkana</translation>
 <translation id="411881149140864134">Aktivizēt darbvietu kreisajā pusē</translation>
@@ -844,6 +849,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4201033867194214117">Funkcija “<ph name="FEATURE_NAME" />” nav pieejama.</translation>
 <translation id="4201051445878709314">Rādīt iepriekšējo mēnesi</translation>
 <translation id="4209973997261364186">Wi-Fi ir ieslēgts</translation>
+<translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
 <translation id="4212472694152630271">Izmantot PIN kodu</translation>
 <translation id="4215497585250573029">VPN iestatījumi</translation>
 <translation id="4217571870635786043">Diktēšana</translation>
@@ -1200,6 +1206,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="550391772491508736">Atsākt apraidi</translation>
 <translation id="5506975627792768506">Ieslēgt vai izslēgt lupu</translation>
 <translation id="5512042095225963688">Dzēst iepriekšējo vārdu</translation>
+<translation id="5519005148254860683">Izvērst pakalpojumu Google uzdevumi</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Jūsu administrators ir noņēmis visus eSIM profilus. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5520909879404821039">“Sveiki” franču valodā</translation>
@@ -1235,7 +1242,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5599242528220103262">Īsinājumtaustiņi ir izslēgti</translation>
 <translation id="5600415762228455511">Fokusa režīms ir ieslēgts, atlikušais laiks: <ph name="REMAINING_TIME" />, fokusa režīma uzdevums: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Nospiediet Ctrl+Alt+Z, lai atspējotu balss komentārus.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Pirms &lt; 1 stundas}=1{Pirms 1 stundas}zero{Pirms # stundām}one{Pirms # stundas}other{Pirms # stundām}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Mēs pārslēdzām jūs uz labāku tīklu.</translation>
 <translation id="5619862035903135339">Administratora politika atspējo ekrānuzņēmumu izveidi</translation>
@@ -1408,6 +1414,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6200515304866777730">Lietotne neatbalsta šo funkciju</translation>
 <translation id="6210042900243040400">Savienojums ar ierīci <ph name="NAME" /> iepriekš saglabāts kontā <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Izveidot daļēju ekrānuzņēmumu vai ekrāna ierakstu</translation>
+<translation id="621606890568890214">Izvērst pakalpojumu Google Classroom</translation>
 <translation id="6220928844947387476">Tagad varat ierakstīt gan savu video, gan savu ekrānu vienlaikus.</translation>
 <translation id="622484624075952240">Lejup</translation>
 <translation id="6228457605945141550">Samazināt spilgtumu</translation>
@@ -1687,6 +1694,7 @@ Jauna instalācija</translation>
 <translation id="7340731148882810149">Automātisko klikšķu izvēlne</translation>
 <translation id="7346909386216857016">Labi, sapratu</translation>
 <translation id="7348093485538360975">Ekrāntastatūra</translation>
+<translation id="7352651011704765696">Radās problēma</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>
 <translation id="7360036564632145207">Mainot datu piekļuves aizsardzības iestatījumu perifērajām ierīcēm, var tikt optimizēta veiktspēja.</translation>
 <translation id="736045644501761622">Iestatīt fona tapeti un stilu</translation>
@@ -1829,7 +1837,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Lai izmantotu ierīci viesa režīmā, izrakstieties un pēc tam ekrāna apakšdaļā atlasiet Pārlūkot kā viesim.</translation>
 <translation id="7866482334467279021">ieslēgts</translation>
-<translation id="7866727328666668290">Pēdējā atvērtā cilne</translation>
 <translation id="7872786842639831132">Izslēgts</translation>
 <translation id="7875575368831396199">Šķiet, jūsu ierīcē (<ph name="DEVICE_TYPE" />) ir izslēgts Bluetooth savienojums. Lai izmantotu funkciju Tālruņa centrmezgls, ieslēdziet Bluetooth savienojumu.</translation>
 <translation id="7884446017008693258">Tīklāja iestatījumi</translation>
@@ -2136,7 +2143,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9002204506712855687">Izpētiet jaunākās funkcijas.</translation>
 <translation id="9005984960510803406">Atvērt Crosh logu</translation>
 <translation id="9017320285115481645">Ievadiet Family Link vecāku piekļuves kodu.</translation>
-<translation id="9022774213089566801">Bieži apmeklētas vietnes</translation>
 <translation id="9024331582947483881">pilnekrāna režīms</translation>
 <translation id="9029736946581028033">Ierīce drīz tiks izslēgta</translation>
 <translation id="9030319654231318877">Izslēgts līdz saulrietam</translation>

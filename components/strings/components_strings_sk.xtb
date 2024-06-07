@@ -2982,7 +2982,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6753269504797312559">Hodnota pravidla</translation>
 <translation id="6753434778807740853">Odstrániť záznam <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Sporiace účty</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Vaše zariadenie prešlo do režimu spánku.</translation>
 <translation id="6760548828952594090">Túto kartu nebolo možné uložiť vo vašom účte Google. Namiesto toho bola uložená do Chromu v tomto zariadení.</translation>
 <translation id="6766558780547452153">Varenie a recepty</translation>
@@ -4247,7 +4246,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9155646082713385498">Časopisy</translation>
 <translation id="9157595877708044936">Prebieha nastavenie...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> môže mať citlivý obsah}few{<ph name="FILE_COUNT" /> súbory môžu mať citlivý obsah}many{<ph name="FILE_COUNT" /> files may contain sensitive content}other{<ph name="FILE_COUNT" /> súborov môže mať nebezpečné obsah}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Weby, ktoré navštívite, môžu tiež na základe vašej aktivity na nich odhadovať, čo sa vám páči. Ak napríklad navštívite web predávajúci bežeckú obuv na dlhé trate, web môže usúdiť, že máte záujem o behanie maratónov.</translation>
 <translation id="9166851138617700776">Ďalšie informácie o reklamách navrhovaných webmi a meraní reklamy</translation>
 <translation id="9167054383925257837">informácie o prehliadači a operačnom systéme zariadenia (napríklad verzie prehliadača a operačného systému),</translation>

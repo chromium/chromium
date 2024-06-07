@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> No dispositivo <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
 <translation id="4336566011000459927">O Chrome vai limitar os cookies de novo hoje</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Sua última guia</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impedir que sites saibam quando você está usando este dispositivo</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Sua última guia</translation>
 <translation id="6064125863973209585">Downloads concluídos</translation>
 <translation id="6071501408666570960">Sua conta pode ser desconectada deste site</translation>
 <translation id="6120483543004435978">Quando essa configuração está ativada, os sites podem pedir para saber quando você está usando o dispositivo ativamente. Quando está desativada, os sites não conseguem saber quando você está usando o dispositivo ativamente.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
 <translation id="6864395892908308021">O dispositivo não consegue ler a NFC</translation>
-<translation id="6867014948848323204">De <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Impedir que sites leiam textos e imagens da área de transferência</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6950072572526089586">Um site que você visita pode salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada em um site ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Selecione um contato</translation>
 <translation id="7990211076305263060">Quando essa configuração está ativada, os sites podem pedir para usar o microfone. Quando está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativado neste dispositivo</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Assistir vídeo</translation>

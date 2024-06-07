@@ -2983,7 +2983,6 @@
 <translation id="6753269504797312559">Siyasət dəyəri</translation>
 <translation id="6753434778807740853">Daxiletməni silin: <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Əmanət hesabı</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Cihazınız yatmağa getdi.</translation>
 <translation id="6760548828952594090">Bu kart Google Hesabınızda yadda saxlanılmadı. Bu cihazda Chrome-da yadda saxlanılıb.</translation>
 <translation id="6766558780547452153">Kulinariya və Reseptlər</translation>
@@ -4248,7 +4247,6 @@
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Ayarlanır...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> faylında həssas kontent ola bilər}other{<ph name="FILE_COUNT" /> faylda həssas kontent ola bilər}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Ziyarət etdiyiniz saytlar saytdakı fəaliyyətinizə əsasən nəyi bəyəndiyinizi də müəyyən edə bilər. Məsələn, uzun məsafəli qaçış ayaqqabıları satan sayta baş çəksəniz, sayt marafonlarda qaçmaqda maraqlı olduğunuza qərar verə bilər.</translation>
 <translation id="9166851138617700776">Saytın təklif etdiyi reklamlar və reklamın ölçülməsi haqqında ətraflı</translation>
 <translation id="9167054383925257837">Brauzer və cihazın ƏS məlumatı (məsələn, brauzer və ƏS versiyaları)</translation>

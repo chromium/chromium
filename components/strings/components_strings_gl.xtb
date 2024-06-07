@@ -2986,7 +2986,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6753269504797312559">Valor de política</translation>
 <translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Contas de aforro</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">O teu dispositivo entrou no modo de suspensión.</translation>
 <translation id="6760548828952594090">Esta tarxeta non se puido gardar na túa Conta de Google. En lugar diso, gardouse en Chrome neste dispositivo.</translation>
 <translation id="6766558780547452153">Cociña e receitas</translation>
@@ -4248,7 +4247,6 @@ Detalles adicionais:
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluír contido delicado}other{<ph name="FILE_COUNT" /> ficheiros poden incluír contido delicado}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Os sitios que visitas tamén poden determinar o que che gusta en función da túa actividade neles. Por exemplo, se visitas un sitio que vende zapatillas deportivas para carreiras de longa distancia, ese sitio podería determinar que che interesa participar en maratóns.</translation>
 <translation id="9166851138617700776">Máis información sobre os anuncios suxeridos polos sitios e a medición de anuncios</translation>
 <translation id="9167054383925257837">A información do sistema operativo do dispositivo e do navegador (por exemplo, as súas versións)</translation>

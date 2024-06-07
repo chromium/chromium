@@ -302,6 +302,7 @@
 <translation id="216955976692983107">Размясціць акно ў правай частцы экрана</translation>
 <translation id="2185166372312820725">Вярнуцца на папярэднюю ўкладку</translation>
 <translation id="2185444992308415167">Перайсці па ўкладках 1-8</translation>
+<translation id="2195732836444333448">Не хапае рэсурсаў. Вярніцеся крыху пазней.</translation>
 <translation id="2198625180564913276">Ідзе дадаванне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="219905428774326614">Панэль запуску, усе праграмы</translation>
 <translation id="2201071101391734388">Нядаўняе фота <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@
 <translation id="4086921558679520050">Пераключыце фізічны выключальнік мікрафона на прыладзе</translation>
 <translation id="4101772068965291327">Адкрыць галоўную старонку</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
+<translation id="4113030288477039509">Кіруецца адміністратарам</translation>
 <translation id="4114315158543974537">Уключэнне Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурны</translation>
 <translation id="411881149140864134">Актываваць працоўны стол злева</translation>
@@ -848,6 +850,7 @@
 <translation id="4201033867194214117">Функцыя "<ph name="FEATURE_NAME" />" недаступная.</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
 <translation id="4209973997261364186">Wi-Fi уключаны</translation>
+<translation id="4212246570487010370">Працягвайце прагляд</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
 <translation id="4217571870635786043">Галасавы ўвод</translation>
@@ -1240,7 +1243,6 @@
 <translation id="5599242528220103262">Спалучэнне клавіш выключана</translation>
 <translation id="5600415762228455511">Канцэнтрацыя ўвагі ўключана, засталося часу: <ph name="REMAINING_TIME" />. Канцэнтрацыя на задачы: <ph name="TASK_NAME" />.</translation>
 <translation id="5600837773213129531">Каб выключыць галасавую зваротную сувязь, націсніце Ctrl + Alt + Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Менш чым гадзіну таму}=1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5618148318840095371">Мы пераключылі вас на лепшую сетку</translation>
 <translation id="5619862035903135339">Згодна з палітыкай, зададзенай адміністратарам, здыманне экрана адключана</translation>
@@ -1693,6 +1695,7 @@
 <translation id="7340731148882810149">Меню аўтаматычных націсканняў</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Экранная клавіятура</translation>
+<translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
 <translation id="7360036564632145207">Вы можаце аптымізаваць прадукцыйнасць, змяняючы налады абмежавання доступу да даных для перыферыйных прылад</translation>
 <translation id="736045644501761622">Задаць шпалеры і стыль</translation>
@@ -1835,7 +1838,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Каб карыстацца прыладай у гасцявым рэжыме, вам неабходна выйсці з уліковага запісу, а затым у ніжняй частцы экрана выбраць "Праглядаць як госць".</translation>
 <translation id="7866482334467279021">ўключаны</translation>
-<translation id="7866727328666668290">Апошняя адкрытая ўкладка</translation>
 <translation id="7872786842639831132">Выключана</translation>
 <translation id="7875575368831396199">Здаецца, на прыладзе <ph name="DEVICE_TYPE" /> выключана падключэнне па Bluetooth. Уключыце яго, каб выкарыстоваць функцыю "Тэлефонны цэнтр".</translation>
 <translation id="7884446017008693258">Налады хот-спота</translation>
@@ -2142,7 +2144,6 @@
 <translation id="9002204506712855687">Азнаёмцеся з апошнімі функцыямі</translation>
 <translation id="9005984960510803406">Адкрыць старонку-кансоль</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
-<translation id="9022774213089566801">Часта наведваюцца</translation>
 <translation id="9024331582947483881">увесь экран</translation>
 <translation id="9029736946581028033">Прылада ў хуткім часе выключыцца</translation>
 <translation id="9030319654231318877">Выключана да захаду сонца</translation>

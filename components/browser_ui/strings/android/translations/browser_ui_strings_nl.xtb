@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
 <translation id="4194328954146351878">Vragen voordat sites informatie op NFC-apparaten mogen zien en wijzigen (aanbevolen)</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegestaan</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Uitvouwen</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
 <translation id="4336566011000459927">Chrome beperkt vandaag weer cookies</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Je laatste tabblad</translation>
 <translation id="4338831206024587507">Alle sites onder <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Voorkomen dat sites weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="4412992751769744546">Cookies van derden toestaan</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">De toegang van deze site tot je apparaat beheren</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Je laatste tabblad</translation>
 <translation id="6064125863973209585">Voltooide downloads</translation>
 <translation id="6071501408666570960">Je wordt misschien uitgelogd bij deze site</translation>
 <translation id="6120483543004435978">Als deze optie aanstaat, kunnen sites vragen om ze mogen weten wanneer je je apparaat actief gebruikt. Staat de optie uit, dan mogen sites niet weten wanneer je je apparaat actief gebruikt.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
-<translation id="6867014948848323204">Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6950072572526089586">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagen op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Van <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8067883171444229417">Video afspelen</translation>

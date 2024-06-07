@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">Suspendre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
 <translation id="414641094616694804">Impossible de modifier la résolution de cet appareil photo</translation>
-<translation id="4176463684765177261">Désactivé</translation>
 <translation id="428234092390943511">Vignette de la page</translation>
-<translation id="4349714250734879769">Mise à l'échelle des images par Chrome</translation>
 <translation id="4383571725254449280">Imprimer les journaux concernant les performances</translation>
 <translation id="4445542136948522167">Arrêter de prendre la photo</translation>
 <translation id="4570032796877367747">Caméra avant</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">Liste des pages numérisées</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Copier l'adresse du lien <ph name="URL" /></translation>
-<translation id="491895758387112773">Enregistrement vidéo sur plusieurs flux</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Format photo</translation>
@@ -157,7 +154,6 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8145038249676204903">Passer à la prise de photo</translation>
 <translation id="8167081290930651932">Enregistrer en tant que photo</translation>
 <translation id="8239780215768881278">Prendre un instantané vidéo</translation>
-<translation id="8346544573713510785">Mise à l'échelle des images par l'HAL de la caméra</translation>
 <translation id="8425673304802773841">Incliner</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8609951387004618906">Ouvrir <ph name="URL" /></translation>

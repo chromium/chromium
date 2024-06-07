@@ -344,6 +344,7 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 
       Waarschuwing: Met Wipe en MinimalMigrate worden lokale gegevens verwijderd.</translation>
 <translation id="1248955696540150266">Downloads van automatische peer-to-peer-updates toestaan</translation>
+<translation id="1249640740800891502">Instellingen voor SkyVault (alle gegevens in de cloud)</translation>
 <translation id="1250597158212586309">Als je het beleid toepast of niet instelt, krijgt de gebruiker de optie om meldingen voor gehackte wachtwoorden af te wijzen/te herstellen.
 
       Als je deze instelling uitzet, kunnen gebruikers meldingen over gehackte wachtwoorden niet afwijzen. Als je deze instelling aanzet, kunnen gebruikers meldingen over gehackte wachtwoorden afwijzen.</translation>
@@ -2031,6 +2032,7 @@ Als je het beleid niet instelt, is <ph name="POLICY_VALUE_VISIBLE" /> de standaa
 
       Houd er rekening mee dat voor een correcte werking van deze functie extra componenten vereist zijn die niet beschikbaar zijn buiten de Google-netwerkomgeving.</translation>
 <translation id="2536525645274582300">De gebruiker beslist of Locatieservices van Google moeten worden aangezet</translation>
+<translation id="2536717624356629471">Geluiden in Focusmodus aanzetten voor ChromeOS</translation>
 <translation id="254653220329944566">Zet cloudrapportage voor <ph name="PRODUCT_NAME" /> aan</translation>
 <translation id="2547854230073316008">Als je het beleid instelt, worden de resolutie en schaalfactor voor elk scherm ingesteld. De instellingen voor externe schermen worden toegepast op aangesloten schermen. (Het beleid wordt niet toegepast als een scherm de opgegeven resolutie of schaal niet ondersteunt.)
 
@@ -3021,6 +3023,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="3338431256935927407">Bepaalt de instellingen met betrekking tot de Cloud Upload-functie.</translation>
 <translation id="3339271789059866414">Configureert de beschikbaarheid van de systeemproxyservice en de proxygegevens voor systeemservices.
       Als het beleid niet is ingesteld, is de systeemproxyservice niet beschikbaar.</translation>
+<translation id="3341649870321644698">Focusmodus met alleen focusgeluiden aanzetten.</translation>
 <translation id="334231891933432876">De gebruiker uitloggen zodra de verificatie van het account is ingetrokken</translation>
 <translation id="3345323903592385588">De volgorde waarin de VM-configuratie wordt getoond in het installatieprogramma. Als je meerdere VM-configuraties opgeeft, wordt de configuratie met de kleinste display_order-waarde bovenaan de lijst weergegeven. De standaardwaarde is nul.</translation>
 <translation id="3351661569026056296">Als je dit beleid instelt op True, fungeert de bovenste rij toetsen van het toetsenbord als functietoetsopdrachten. De zoektoets moet worden ingedrukt om het gedrag terug te zetten naar mediatoetsen.
@@ -3349,6 +3352,7 @@ Zorg dat je dit beleid niet altijd toepast, vooral niet tijdens productie-implem
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587766503874071316">Snelkoppelingen voor toegankelijkheid uitzetten</translation>
 <translation id="3589193811812796052">Voorkomen dat WebAssembly-modules cross-origin worden verstuurd</translation>
+<translation id="3591518189681300697">De migratie van lokale bestanden naar de cloud aanzetten</translation>
 <translation id="3591527072193107424">Zet de functie Ondersteuning voor oudere browsers aan.</translation>
 <translation id="3591584750136265240">Het verificatiegedrag voor inloggen configureren</translation>
 <translation id="3593905652755912452">Het oude gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
@@ -3873,6 +3877,7 @@ Beide beleidsregels kunnen worden gebruikt, maar dit beleid wordt binnenkort be�
 Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="4016700865356669962">Als je het beleid toepast, kunnen gebruikers templates voor bureaubladindelingen gebruiken.  Als je het beleid niet toepast of niet instelt, zijn deze templates niet beschikbaar.</translation>
 <translation id="4020682745012723568">Cookies die worden overgedragen naar het profiel van de gebruiker, zijn niet toegankelijk voor Android-apps.</translation>
+<translation id="4021684548211845008">Geluiden in Focusmodus uitzetten.</translation>
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
@@ -4113,6 +4118,7 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
 
           Als dit beleid niet is ingesteld, staat de functie voor automatisch klikken in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="4212181786686887763">De URL waar de achtergrondafbeelding kan worden gedownload.</translation>
+<translation id="4221677608399717135">SkyVault aan- of uitzetten</translation>
 <translation id="4224610387358583899">Drempels voor schermvergrendeling</translation>
 <translation id="42267415200641481">Als je dit beleid instelt op True, wordt de DNS-omzetting van het systeem (getaddrinfo()) misschien uitgevoerd buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.
 
@@ -6005,6 +6011,15 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 <translation id="5775235485119094648">Laad de batterij op wanneer de lading zich binnen een bepaald bereik bevindt.</translation>
 <translation id="5776485039795852974">Altijd goedkeuring vragen wanneer een site bureaubladmeldingen wil tonen</translation>
 <translation id="5783009211970309878">Kop- en voetteksten afdrukken</translation>
+<translation id="5786733040432065904">Focusmodus is een functie die Niet storen regelt op basis van een timer en is bedoeld om afleidingen voor de gebruiker te verminderen. Met een functie van Focusmodus kunnen gebruikers naar een beperkte reeks muziek luisteren zodat ze zich kunnen focussen. Dit beleid bepaalt de toegang tot deze functie.
+
+Als je het beleid niet instelt, worden alle geluiden uitgezet voor beheerde gebruikers.
+
+Als je het beleid toepast, wordt toegang gegeven tot alle geluiden in Focusmodus.
+
+Als je het beleid instelt op Alleen focusgeluiden, wordt de geluidsfunctie aangezet met alleen focusgeluiden.
+
+Als je het beleid niet toepast, worden geluiden in Focusmodus uitgezet.</translation>
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
@@ -6314,6 +6329,10 @@ Dit beleid is beëindigd vanaf M124.</translation>
       Als je het beleid niet instelt (als dit wordt ondersteund op het apparaat), is de standaard batterijoplaadmodus van toepassing en kunnen gebruikers dit niet wijzigen.
 
       Opmerking: Als de aangepaste batterijoplaadmodus is geselecteerd, moeten <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> en <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> ook worden opgegeven.</translation>
+<translation id="6064418365347066084">Hiermee wordt de migratie van bestaande lokale bestanden naar de cloud gestart.
+Geldt alleen voor SkyVault-gebruikers, d.w.z. als LocalUserFilesAllowed is ingesteld op False en DownloadDirectory is ingesteld op Google Drive of OneDrive. Anders wordt dit genegeerd.
+    Als je dit beleid instelt op True, worden lokale bestanden verplaatst naar de cloud en worden lokale mappen daarna verborgen voor de gebruiker.
+    Als je dit beleid niet instelt of instelt op False, blijven lokale bestanden in de modus Alleen lezen staan.</translation>
 <translation id="60655674079349516">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
 
 Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
@@ -8135,6 +8154,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
       Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
+<translation id="7388618954884540850">De migratie van lokale bestanden naar de cloud uitzetten</translation>
 <translation id="7389872682701720082">Als je deze instelling aanzet, worden plug-ins altijd uitgevoerd als ze niet verouderd zijn.
 
       Als deze instelling is uitgezet of niet is ingesteld, wordt gebruikers om toestemming gevraagd voordat plug-ins worden uitgevoerd waarvoor toestemming is vereist. Dit zijn de plug-ins die een beveiligingsrisico kunnen vormen.</translation>
@@ -8307,6 +8327,7 @@ Als je dit beleid instelt op True, probeert <ph name="PRODUCT_OS_NAME" /> payloa
 
       Als je het beleid niet instelt of instelt op True, zien gebruikers een melding om ze eraan te herinneren dat ze het volledige scherm moeten verlaten voordat ze een wachtwoord opgeven. Als je het beleid instelt op False, zien gebruikers geen melding.</translation>
 <translation id="7531630046107845550">Uitgaande SSH-clientverbindingen toestaan in Terminal System App</translation>
+<translation id="753332207298659209">Stel beleid in om te bepalen of gebruikersgegevens zijn toegestaan op het apparaat en of bestaande gegevens moeten worden geüpload naar de cloud.</translation>
 <translation id="7533385610709354870">Als je <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> toepast, maakt <ph name="PRODUCT_NAME" /> verbinding met cast-apparaten op alle IP-adressen en niet alleen op RFC1918/RFC4193-privéadressen, tenzij je <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast.
 
 Als je het beleid niet toepast, maakt <ph name="PRODUCT_NAME" /> alleen verbinding met cast-apparaten op RFC1918/RFC4193.
@@ -8827,6 +8848,7 @@ Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, he
 <translation id="7962093600142350905">Met dit beleid bepaal je of gebruikers beschikbare Privet-printers te zien krijgen in het dialoogvenster met afdrukvoorbeeld.
       Als je dit beleid aanzet, worden beschikbare Privet-printers getoond.
       Als je dit beleid niet toepast of niet instelt, worden Privet-printers niet getoond in het dialoogvenster met afdrukvoorbeeld, omdat deze afdrukmethode is verouderd.</translation>
+<translation id="7969865441622729072">Alle geluiden in Focusmodus aanzetten.</translation>
 <translation id="7970660709107174905">Instellingen voor partitionering van opslag door derden</translation>
 <translation id="7972223739742725350">De Save and Share API niet aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden.</translation>
 <translation id="7972642710812569707">Afdwingen dat WebSQL in contexten van derden opnieuw wordt aangezet.</translation>
@@ -9407,6 +9429,7 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
+<translation id="8418438383184278931">Migratie van lokale gebruikersbestanden naar de cloudopslag aanzetten</translation>
 <translation id="841977920223099909">Waarschuwingstrigger voor wachtwoordbeveiliging</translation>
 <translation id="8419965165591256432">Snelheid waarmee de apparaatactiviteitsstatus wordt verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 1 minuut.
 

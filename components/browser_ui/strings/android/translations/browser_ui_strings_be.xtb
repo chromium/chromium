@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Выканана падключэнне да прылады USB</translation>
 <translation id="4194328954146351878">Пытацца, перш чым дазваляць сайтам праглядаць і змяняць інфармацыю на прыладах NFC (рэкамендуецца)</translation>
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Прылада: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Апавяшчэнні могуць уключаць вібрацыю прылады</translation>
 <translation id="4259722352634471385">Пераход па наступным адрасе заблакіраваны: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Дазволена</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Разгарнуць</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння закончыцца праз # дзень}few{Тэрмін дзеяння закончыцца праз # дні}many{Тэрмін дзеяння закончыцца праз # дзён}other{Тэрмін дзеяння закончыцца праз # дня}}</translation>
 <translation id="4336566011000459927">Сягоння Chrome зноў абмяжуе выкарыстанне файлаў cookie</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ваша апошняя ўкладка</translation>
 <translation id="4338831206024587507">Усе сайты дамена <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Не даваць сайтам знаць, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4412992751769744546">Дазволіць староннія файлы cookie</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Кіруйце доступам гэтага сайта да вашай прылады</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ваша апошняя ўкладка</translation>
 <translation id="6064125863973209585">Завершаныя спампоўкі</translation>
 <translation id="6071501408666570960">Вы выйдзеце з уліковага запісу на гэтым сайце</translation>
 <translation id="6120483543004435978">Калі гэты параметр уключаны, сайты могуць запытваць звесткі пра тое, калі вы актыўна карыстаецеся прыладай. Калі параметр выключаны, сайты не могуць атрымліваць доступ да такіх звестак.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6818926723028410516">Выберыце элементы</translation>
 <translation id="6864395892908308021">Гэта прылада не падтрымлівае функцыю NFC</translation>
-<translation id="6867014948848323204">Прылада: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Заблакіраваць сайтам доступ да чытання тэксту і відарысаў з буфера абмену</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6950072572526089586">Каб працаваць належным чынам, сайты, якія вы наведваеце, могуць захоўваць даныя пра вашы дзеянні, напрыклад інфармацыю пра дададзеныя ў кошык тавары або пра тое, што вы ўвайшлі ва ўліковы запіс. Часцей за ўсё гэта інфармацыя часова захоўваецца на прыладзе.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Выберыце кантакт</translation>
 <translation id="7990211076305263060">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне мікрафона. Калі параметр выключаны, сайты не могуць выкарыстоўваць мікрафон.</translation>
 <translation id="8007176423574883786">Выключана для гэтай прылады</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Крыніца: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8042586301629853791">Сартаваць па:</translation>
 <translation id="8067883171444229417">Прайграць відэа</translation>

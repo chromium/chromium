@@ -2680,6 +2680,7 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6167577165590485365">Последняя попытка получения:</translation>
 <translation id="617256461084925519">Google Chrome пытается подтвердить вашу личность, чтобы ввести платежные данные.</translation>
+<translation id="6173208311907792313">Завершите покупку с помощью Windows Hello.</translation>
 <translation id="6176387967264100435">Это высокая цена</translation>
 <translation id="6177128806592000436">Подключение к сайту не защищено</translation>
 <translation id="6177531123306197852">Конверт C2</translation>
@@ -2985,7 +2986,6 @@
 <translation id="6753269504797312559">Значение правила</translation>
 <translation id="6753434778807740853">Удалить запись "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="6754547388777247439">Сберегательные счета</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Устройство находится в спящем режиме.</translation>
 <translation id="6760548828952594090">Не удалось сохранить карту в аккаунте Google. Она была сохранена в Chrome на этом устройстве.</translation>
 <translation id="6766558780547452153">Кулинария и рецепты</translation>
@@ -3838,6 +3838,7 @@
 <translation id="8332188693563227489">Доступ к <ph name="HOST_NAME" /> запрещен</translation>
 <translation id="833262891116910667">Выделить</translation>
 <translation id="8339163506404995330">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически</translation>
+<translation id="8339275256517065202">Завершите покупку с помощью Touch ID.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
@@ -4031,6 +4032,7 @@
 <translation id="8726549941689275341">Размер страницы:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Защитный код</translation>
+<translation id="8731917264694569036">Завершите покупку с помощью устройства.</translation>
 <translation id="8733345475331865475">Автострахование</translation>
 <translation id="8733764070897080460">Вы можете заблокировать темы, которыми не хотите делиться с сайтами. Кроме того, Chrome автоматически удаляет темы, добавленные более четырех недель назад. Подробнее…</translation>
 <translation id="8734529307927223492">Вашим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" /></translation>
@@ -4224,6 +4226,7 @@
 <translation id="9116548361133462832">Подробнее о рекламе в Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы посмотреть похожие запросы в истории Chrome.</translation>
 <translation id="9119042192571987207">Загружен</translation>
+<translation id="9119308212838450857">Чтобы войти на сайт <ph name="PROVIDER_ORIGIN" />, подтвердите свою личность</translation>
 <translation id="912327514020027767">Юбки</translation>
 <translation id="912414390325846156">Ранее вы запретили использовать эту функцию на сайте.</translation>
 <translation id="9128870381267983090">Подключитесь к сети</translation>
@@ -4247,7 +4250,6 @@
 <translation id="9155646082713385498">Журналы</translation>
 <translation id="9157595877708044936">Настройка...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файл "<ph name="FILE_NAME" />" может содержать конфиденциальные данные.}one{<ph name="FILE_COUNT" /> файл может содержать конфиденциальные данные.}few{<ph name="FILE_COUNT" /> файла могут содержать конфиденциальные данные.}many{<ph name="FILE_COUNT" /> файлов могут содержать конфиденциальные данные.}other{<ph name="FILE_COUNT" /> файла могут содержать конфиденциальные данные.}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Посещаемые вами сайты также могут определять ваши интересы исходя из ваших действий. Например, если вы посетите сайт, на котором продаются кроссовки для бега на длинные дистанции, он может определить, что вам интересны марафоны.</translation>
 <translation id="9166851138617700776">Подробнее о рекламе, предлагаемой сайтами, и оценке ее эффективности</translation>
 <translation id="9167054383925257837">Сведения о браузере и операционной системе устройства, например их версии.</translation>

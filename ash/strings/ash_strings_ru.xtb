@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Сохраненные сети</translation>
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1240638468526743569">приложение</translation>
+<translation id="1242198791279543032">Звук уведомлений отключен</translation>
 <translation id="1242883863226959074">устройстве</translation>
 <translation id="1245644940275736236">Перейти к Ассистенту</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">Растянуть окно в многооконном режиме вправо</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
 <translation id="2185444992308415167">Перейти по вкладкам 1–8</translation>
+<translation id="2195732836444333448">На сервере недостаточно ресурсов. Попробуйте ещё раз немного позже.</translation>
 <translation id="2198625180564913276">Профиль добавляется. Это может занять несколько минут.</translation>
 <translation id="219905428774326614">Панель запуска, все приложения</translation>
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
@@ -814,6 +816,7 @@
 <translation id="4086921558679520050">Переключите физический выключатель микрофона на устройстве</translation>
 <translation id="4101772068965291327">Открытие главной страницы</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
+<translation id="4113030288477039509">Управляется администратором</translation>
 <translation id="4114315158543974537">Включите Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
 <translation id="411881149140864134">Включить рабочий стол слева</translation>
@@ -847,6 +850,7 @@
 <translation id="4201033867194214117">Функция "<ph name="FEATURE_NAME" />" недоступна</translation>
 <translation id="4201051445878709314">Показать предыдущий месяц</translation>
 <translation id="4209973997261364186">Wi-Fi включен</translation>
+<translation id="4212246570487010370">Продолжить просмотр</translation>
 <translation id="4212472694152630271">Войти с помощью PIN-кода</translation>
 <translation id="4215497585250573029">Настройки VPN</translation>
 <translation id="4217571870635786043">Голосовой ввод</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5599242528220103262">Сочетание клавиш отключено</translation>
 <translation id="5600415762228455511">Режим концентрации внимания включен. Вы сфокусировались на задаче "<ph name="TASK_NAME" />". Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Менее 1 часа назад}=1{1 час назад}one{# час назад}few{# часа назад}many{# часов назад}other{# часа назад}}</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5618148318840095371">Мы переключили вас на лучшую сеть.</translation>
 <translation id="5619862035903135339">Администратор запретил запись экрана.</translation>
@@ -1692,6 +1695,7 @@
 <translation id="7340731148882810149">Меню автоматического нажатия</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
+<translation id="7352651011704765696">Ошибка</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
 <translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
 <translation id="736045644501761622">Выбрать обои и стиль</translation>
@@ -1834,7 +1838,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Чтобы пользоваться устройством в гостевом режиме, выйдите из текущего аккаунта и выберите "Войти в гостевой режим" внизу экрана.</translation>
 <translation id="7866482334467279021">включена</translation>
-<translation id="7866727328666668290">Последняя открытая вкладка</translation>
 <translation id="7872786842639831132">Отключено</translation>
 <translation id="7875575368831396199">Включите Bluetooth на устройстве <ph name="DEVICE_TYPE" />, чтобы использовать функцию "Управление телефоном".</translation>
 <translation id="7884446017008693258">Настройки точки доступа</translation>
@@ -2141,7 +2144,6 @@
 <translation id="9002204506712855687">Посмотрите, какие функции мы добавили</translation>
 <translation id="9005984960510803406">Открыть окно Crosh</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
-<translation id="9022774213089566801">Часто посещаемые</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>
 <translation id="9029736946581028033">Устройство скоро выключится</translation>
 <translation id="9030319654231318877">Выкл. до заката</translation>

@@ -2981,7 +2981,6 @@
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6753434778807740853">删除条目“<ph name="ENTRY_VOICEOVER" />”</translation>
 <translation id="6754547388777247439">储蓄账户</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
 <translation id="6760548828952594090">此卡无法保存到您的 Google 账号中。它已改为保存到此设备上的 Chrome 中。</translation>
 <translation id="6766558780547452153">烹饪与食谱</translation>
@@ -4243,7 +4242,6 @@
 <translation id="9155646082713385498">杂志</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9161794544616754735">{0,plural, =1{“<ph name="FILE_NAME" />”可能包含敏感内容}other{<ph name="FILE_COUNT" /> 个文件可能包含敏感内容}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">您访问的网站也可根据您在网站上的活动来判断您的喜好。例如，如果您访问一个销售长跑鞋的网站，该网站可能会推测您对跑马拉松感兴趣。</translation>
 <translation id="9166851138617700776">详细了解网站建议的广告和广告衡量功能</translation>
 <translation id="9167054383925257837">浏览器和设备操作系统信息（例如浏览器和操作系统版本）</translation>

@@ -301,6 +301,7 @@
 <translation id="216955976692983107">将平铺窗口向右调整大小</translation>
 <translation id="2185166372312820725">转到上一个标签页</translation>
 <translation id="2185444992308415167">逐一浏览第 1 至 8 个标签页</translation>
+<translation id="2195732836444333448">目前已达到资源上限。请稍后再试。</translation>
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
@@ -814,6 +815,7 @@
 <translation id="4086921558679520050">在设备上开启物理麦克风开关</translation>
 <translation id="4101772068965291327">打开主页</translation>
 <translation id="4112140312785995938">快退</translation>
+<translation id="4113030288477039509">由您的管理员管理</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="411881149140864134">启用左侧桌面</translation>
@@ -846,6 +848,7 @@
 <translation id="4201033867194214117">“<ph name="FEATURE_NAME" />”不可用。</translation>
 <translation id="4201051445878709314">显示上一个月</translation>
 <translation id="4209973997261364186">Wi-Fi 处于开启状态</translation>
+<translation id="4212246570487010370">继续浏览</translation>
 <translation id="4212472694152630271">切换到 PIN 码</translation>
 <translation id="4215497585250573029">VPN 设置</translation>
 <translation id="4217571870635786043">语音输入</translation>
@@ -1237,7 +1240,6 @@
 <translation id="5599242528220103262">键盘快捷键处于停用状态</translation>
 <translation id="5600415762228455511">已开启专注模式，还剩 <ph name="REMAINING_TIME" />，正在专注于：<ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{不到 1 小时前}=1{1 小时前}other{# 小时前}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我们已将您切换到更好的网络</translation>
 <translation id="5619862035903135339">管理员政策已停用截屏功能</translation>
@@ -1690,6 +1692,7 @@
 <translation id="7340731148882810149">“自动点击”菜单</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
+<translation id="7352651011704765696">出了点问题</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="736045644501761622">设置壁纸与样式</translation>
@@ -1832,7 +1835,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">要以访客身份使用设备，您需要退出账号，然后选择屏幕底部的“以访客身份浏览”。</translation>
 <translation id="7866482334467279021">开启</translation>
-<translation id="7866727328666668290">上次打开的标签页</translation>
 <translation id="7872786842639831132">关闭</translation>
 <translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7884446017008693258">热点设置</translation>
@@ -2139,7 +2141,6 @@
 <translation id="9002204506712855687">探索最新功能</translation>
 <translation id="9005984960510803406">打开 Crosh 窗口</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>
-<translation id="9022774213089566801">经常访问</translation>
 <translation id="9024331582947483881">全屏</translation>
 <translation id="9029736946581028033">设备很快就会关机</translation>
 <translation id="9030319654231318877">已关闭，直到日落</translation>

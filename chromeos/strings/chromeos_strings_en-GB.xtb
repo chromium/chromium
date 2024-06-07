@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Edit APN details</translation>
 <translation id="2195732836444333448">At capacity right now. Come back soon.</translation>
 <translation id="2201758491318984023">bicycle</translation>
-<translation id="2203222757805818543">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. To automatically update the dark mode schedule, <ph name="BEGIN_LINK" />turn on location access<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">hot spring</translation>
 <translation id="2203642483788377106">cliff</translation>
 <translation id="2208388655216963643">impressionist</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">sand dune</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2637303424821734920">OFF – to display local weather <ph name="BEGIN_LINK" />turn on system location access<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Sign-in image</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selected</translation>
 <translation id="2645380101799517405">Controls</translation>

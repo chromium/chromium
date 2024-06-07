@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">已知網絡</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">有應用程式</translation>
+<translation id="1242198791279543032">已忽略通知</translation>
 <translation id="1242883863226959074">裝置</translation>
 <translation id="1245644940275736236">前往「Google 助理」</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">向右調整並排視窗大小</translation>
 <translation id="2185166372312820725">前往上一個分頁</translation>
 <translation id="2185444992308415167">瀏覽分頁 1 至 8</translation>
+<translation id="2195732836444333448">目前已達資源上限，請稍後再回來。</translation>
 <translation id="2198625180564913276">正在新增設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="219905428774326614">啟動器，顯示緊全部應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片 (共 <ph name="TOTAL_COUNT" /> 張)。</translation>
@@ -366,7 +368,7 @@
 <translation id="2427507373259914951">按一下左鍵</translation>
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
-<translation id="2437771564543046790">電力不足，省電模式已開啟</translation>
+<translation id="2437771564543046790">電量不足，「慳電模式」已開啟</translation>
 <translation id="243878895369688216">昨天開啟過</translation>
 <translation id="2440978926514840421">已錄製 GIF</translation>
 <translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄影</translation>
@@ -814,6 +816,7 @@
 <translation id="4086921558679520050">開啟裝置上的實體麥克風開關</translation>
 <translation id="4101772068965291327">開啟首頁</translation>
 <translation id="4112140312785995938">向後回轉</translation>
+<translation id="4113030288477039509">由管理員管理</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="411881149140864134">啟用左側桌面</translation>
@@ -847,6 +850,7 @@
 <translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
 <translation id="4201051445878709314">顯示上個月</translation>
 <translation id="4209973997261364186">Wi-Fi 已開啟</translation>
+<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4212472694152630271">改用 PIN</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">語音輸入</translation>
@@ -1238,7 +1242,6 @@
 <translation id="5599242528220103262">鍵盤快速鍵已關閉</translation>
 <translation id="5600415762228455511">開咗「專注模式」，宜家專心處理緊<ph name="TASK_NAME" />，淨返 <ph name="REMAINING_TIME" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{不到 1 小時前}=1{1 小時前}other{# 小時前}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我們已將您的連線切換至更優質的網絡</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
@@ -1690,6 +1693,7 @@
 <translation id="7340731148882810149">自動點擊選單</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
+<translation id="7352651011704765696">發生問題</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360036564632145207">變更周邊裝置的資料存取保護可以優化效能</translation>
 <translation id="736045644501761622">設定桌布和樣式</translation>
@@ -1832,7 +1836,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">如要透過訪客身分使用這部置，請務必登出並選取畫面底部的 [以訪客身分瀏覽]。</translation>
 <translation id="7866482334467279021">開啟</translation>
-<translation id="7866727328666668290">上次開啟的分頁</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 上的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
 <translation id="7884446017008693258">熱點設定</translation>
@@ -2139,7 +2142,6 @@
 <translation id="9002204506712855687">探索最新功能</translation>
 <translation id="9005984960510803406">開啟 Crosh Window</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
-<translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9029736946581028033">裝置即將關閉</translation>
 <translation id="9030319654231318877">關閉，直到日落</translation>

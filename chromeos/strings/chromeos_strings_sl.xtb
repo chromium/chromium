@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Urejanje podrobnosti APN-ja</translation>
 <translation id="2195732836444333448">Trenutno ni prostih zmogljivosti. Vrnite se pozneje.</translation>
 <translation id="2201758491318984023">kolo</translation>
-<translation id="2203222757805818543">Trenutni razpored je nastavljen na <ph name="SUNRISE" />–<ph name="SUNSET" />. Če želite samodejno posodobiti razpored temnega načina, <ph name="BEGIN_LINK" />vklopite dostop do lokacije<ph name="END_LINK" />.</translation>
 <translation id="2203272733515928691">termalni vrelci</translation>
 <translation id="2203642483788377106">pečina</translation>
 <translation id="2208388655216963643">impresionizem</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">peščena sipina</translation>
 <translation id="2619761439309613843">Dnevno osveževanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2637303424821734920">IZKLOPLJENO – Za prikaz lokalnega vremena <ph name="BEGIN_LINK" />vklopite dostop do lokacije sistema<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Slika za prijavo</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> je bil izbran</translation>
 <translation id="2645380101799517405">Kontrolniki</translation>

@@ -301,6 +301,7 @@
 <translation id="216955976692983107">လေးထောင့်ကွက်ဝင်းဒိုး၏ ညာဘက်တွင် အရွယ်ပြင်ရန်</translation>
 <translation id="2185166372312820725">ယခင်တဘ်သို့ သွားရန်</translation>
 <translation id="2185444992308415167">တဘ် ၁ မှ ၈ အထိ သွားရန်</translation>
+<translation id="2195732836444333448">လုပ်နိုင်စွမ်း ပြည့်နေပါပြီ။ မကြာမီ ပြန်လာပါ။</translation>
 <translation id="2198625180564913276">ပရိုဖိုင် ထည့်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="219905428774326614">Launcher၊ အက်ပ်များအားလုံး</translation>
 <translation id="2201071101391734388">လတ်တလောဓာတ်ပုံ <ph name="TOTAL_COUNT" /> ပုံအနက် <ph name="INDEX" /> ပုံမြောက်။</translation>
@@ -814,6 +815,7 @@
 <translation id="4086921558679520050">သင့်စက်ပေါ်ရှိ ပကတိမိုက်ခလုတ် ဖွင့်ပါ</translation>
 <translation id="4101772068965291327">ပင်မစာမျက်နှာကို ဖွင့်ရန်</translation>
 <translation id="4112140312785995938">နောက်သို့ ပြန်ရစ်ရန်</translation>
+<translation id="4113030288477039509">သင်၏ ကြီးကြပ်သူက စီမံသည်</translation>
 <translation id="4114315158543974537">'ဖုန်းပင်မ' ဖွင့်ခြင်း</translation>
 <translation id="4115378294792113321">ပန်းခရမ်းရောင်</translation>
 <translation id="411881149140864134">ဘယ်ဘက်မျက်နှာပြင်ကို ဖွင့်ရန်</translation>
@@ -847,6 +849,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> မရနိုင်ပါ။</translation>
 <translation id="4201051445878709314">ယခင် လကို ပြရန်</translation>
 <translation id="4209973997261364186">Wi-Fi ဖွင့်ထားသည်</translation>
+<translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4212472694152630271">ပင်နံပါတ်သို့ပြောင်းရန်</translation>
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
@@ -1239,7 +1242,6 @@
 <translation id="5599242528220103262">လက်ကွက်ဖြတ်လမ်းများ ပိတ်ထားသည်</translation>
 <translation id="5600415762228455511">အထူးပြသမှု ဖွင့်ထားပြီး <ph name="REMAINING_TIME" /> ကျန်သည်။ အထူးပြသနေသည်- <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">စကားပြောတုံ့ပြန်မှုကို ပိတ်ရန် Ctrl + Alt + Z ကို နှိပ်ပါ။</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{ပြီးခဲ့သော &lt; ၁ နာရီ}=1{ပြီးခဲ့သော ၁ နာရီ}other{ပြီးခဲ့သော # နာရီ}}</translation>
 <translation id="5601503069213153581">ပင်နံပါတ်</translation>
 <translation id="5618148318840095371">ပိုကောင်းသည့်ကွန်ရက်သို့ ပြောင်းပေးထားသည်</translation>
 <translation id="5619862035903135339">ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
@@ -1692,6 +1694,7 @@
 <translation id="7340731148882810149">အလိုအလျောက်နှိပ်ခြင်း မီနူး</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">ဖန်သားပြင်လက်ကွက်</translation>
+<translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="735745346212279324">VPN ချိတ်ဆက်မှု ဖြတ်ခဲ့</translation>
 <translation id="7360036564632145207">ချိတ်ဆက်ပစ္စည်းများ ဆက်တင်အတွက် ဒေတာသုံးခွင့်အကာအကွယ်ကို ပြောင်းခြင်းက စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်အောင်ပြုလုပ်နိုင်သည်</translation>
 <translation id="736045644501761622">နောက်ခံနှင့် စတိုင် သတ်မှတ်ရန်</translation>
@@ -1834,7 +1837,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">စက်ကို ဧည့်သည်အဖြစ်သုံးရန်အတွက် အကောင့်ထွက်ရမည်ဖြစ်ပြီး ဖန်သားပြင်အောက်ခြေရှိ ‘ဧည့်သည်အဖြစ် ကြည့်ရန်’ ကို ရွေးပါ။</translation>
 <translation id="7866482334467279021">ဖွင့်</translation>
-<translation id="7866727328666668290">နောက်ဆုံးတဘ် ဖွင့်ထားသည်</translation>
 <translation id="7872786842639831132">ပိတ်</translation>
 <translation id="7875575368831396199">သင့် <ph name="DEVICE_TYPE" /> တွင် ဘလူးတုသ် ပိတ်ထားပုံရသည်။ 'ဖုန်းစင်တာ' အသုံးပြုရန် ဘလူးတုသ် ဖွင့်ပါ။</translation>
 <translation id="7884446017008693258">ဟော့စပေါ့ ဆက်တင်</translation>
@@ -2142,7 +2144,6 @@
 <translation id="9002204506712855687">နောက်ဆုံးထွက်ဝန်ဆောင်မှုများ စူးစမ်းလေ့လာပါ</translation>
 <translation id="9005984960510803406">Crosh ဝင်းဒိုးကို ဖွင့်ရန်</translation>
 <translation id="9017320285115481645">Family Link မိဘသုံးကုဒ် ထည့်ပါ။</translation>
-<translation id="9022774213089566801">မကြာခဏ ဝင်ကြည့်ခဲ့သည်</translation>
 <translation id="9024331582947483881">မျက်နှာပြင်အပြည့်</translation>
 <translation id="9029736946581028033">စက်သည် မကြာမီ အားကုန်တော့မည်</translation>
 <translation id="9030319654231318877">နေဝင်ချိန်အထိ ပိတ်ရန်</translation>

@@ -302,6 +302,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="216955976692983107">Zmień rozmiar okna kafelkowego w prawo</translation>
 <translation id="2185166372312820725">Przejdź do poprzedniej karty</translation>
 <translation id="2185444992308415167">Poruszaj się między kartami 1–8</translation>
+<translation id="2195732836444333448">Usługa zajęta. Spróbuj ponownie wkrótce.</translation>
 <translation id="2198625180564913276">Dodaję profil. Może to potrwać kilka minut.</translation>
 <translation id="219905428774326614">Menu ze wszystkimi aplikacjami</translation>
 <translation id="2201071101391734388">Najnowsze zdjęcie <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4086921558679520050">Włącz fizyczny przełącznik mikrofonu na urządzeniu</translation>
 <translation id="4101772068965291327">Otwórz stronę główną</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
+<translation id="4113030288477039509">Zarządzany przez administratora</translation>
 <translation id="4114315158543974537">Włącz Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktywuj biurko po lewej</translation>
@@ -848,6 +850,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4201033867194214117">Funkcja <ph name="FEATURE_NAME" /> jest niedostępna.</translation>
 <translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
 <translation id="4209973997261364186">Wi-Fi jest włączone</translation>
+<translation id="4212246570487010370">Przeglądaj dalej</translation>
 <translation id="4212472694152630271">Zmień na PIN</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
@@ -1130,6 +1133,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5208059991603368177">Włączono</translation>
 <translation id="5216991270656129561">Wyłączone do <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
+<translation id="5228195526683428788">Linia dzielenia ekranu</translation>
 <translation id="5229343007215035173">Włącz/wyłącz filtr prywatności</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Zamknij</translation>
@@ -1240,7 +1244,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="5599242528220103262">Skrót klawiszowy jest wyłączony</translation>
 <translation id="5600415762228455511">Tryb skupienia jest włączony, zostało <ph name="REMAINING_TIME" />. Zadanie: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Naciśnij Ctrl + Alt + Z, by wyłączyć komunikaty głosowe.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Mniej niż godzinę temu}=1{1 godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Przełączyliśmy Cię do lepszej sieci</translation>
 <translation id="5619862035903135339">Możliwość robienia zrzutów ekranu jest wyłączona przez zasadę administratora</translation>
@@ -1516,6 +1519,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6613765291890844037">Pamięć w użyciu <ph name="STORAGE_IN_USE_SIZE" /> | Łącznie <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
 <translation id="6622679827379792051">Skonfiguruj wyświetlanie aplikacji z telefonu</translation>
+<translation id="662279009180869175">Aby zmienić rozmiar podzielonego ekranu, użyj strzałek w lewo i w prawo</translation>
 <translation id="6624493541160101248">Bieżące biurko: <ph name="DESK_NAME" /> Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> oraz inne powiadomienia zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="6627638273713273709">Szukaj + Shift + K</translation>
@@ -1534,6 +1538,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6670153871843998651">Biurko 3</translation>
 <translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6671661918848783005">Nie udało się odblokować Chromebooka</translation>
+<translation id="6676552993057022464">Aby zmienić rozmiar podzielonego ekranu, użyj strzałek w górę i w dół</translation>
 <translation id="6682029141988159141">Wklej zawartość schowka</translation>
 <translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6686023075541098243">Skonfiguruj wyświetlanie powiadomień z telefonu</translation>
@@ -1692,6 +1697,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7340731148882810149">Menu automatycznego klikania</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
+<translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
 <translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="736045644501761622">Ustaw tapetę i styl</translation>
@@ -1834,7 +1840,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Aby korzystać z urządzenia jako gość, musisz się wylogować i kliknąć Przeglądaj jako gość u dołu ekranu.</translation>
 <translation id="7866482334467279021">włączono</translation>
-<translation id="7866727328666668290">Ostatnio otwarta karta</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7884446017008693258">Ustawienia hotspota</translation>
@@ -2141,7 +2146,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9002204506712855687">Poznaj najnowsze funkcje</translation>
 <translation id="9005984960510803406">Otwórz okno terminala Crosh</translation>
 <translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>
-<translation id="9022774213089566801">Często odwiedzane</translation>
 <translation id="9024331582947483881">pełny ekran</translation>
 <translation id="9029736946581028033">Urządzenie wkrótce straci zasilanie</translation>
 <translation id="9030319654231318877">Wyłączony do zachodu słońca</translation>

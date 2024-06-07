@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">I-edit ang mga detalye ng APN</translation>
 <translation id="2195732836444333448">Masyadong abala sa ngayon. Bumalik sa ibang pagkakataon.</translation>
 <translation id="2201758491318984023">bisikleta</translation>
-<translation id="2203222757805818543">Nakatakda ang kasalukuyang iskedyul sa <ph name="SUNRISE" /> - <ph name="SUNSET" />. Para awtomatikong i-update ang iskedyul ng dark mode, <ph name="BEGIN_LINK" />i-on ang access sa lokasyon<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">bukal</translation>
 <translation id="2203642483788377106">bangin</translation>
 <translation id="2208388655216963643">impressionist</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">sand dune</translation>
 <translation id="2619761439309613843">Araw-araw na Pag-refresh</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2637303424821734920">NAKA-OFF - Para ipakita ang lokal na lagay ng panahon, <ph name="BEGIN_LINK" />i-on ang access sa lokasyon ng system<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Larawan sa pag-sign in</translation>
 <translation id="2640549051766135490">Pinili ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Mga Kontrol</translation>

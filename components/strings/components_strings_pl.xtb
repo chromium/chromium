@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Przewijanie i powiększanie zawartości udostępnionej karty</translation>
 <translation id="1089439967362294234">Zmień hasło</translation>
 <translation id="1090629319939036170">Menu VR</translation>
+<translation id="1091779689406092804">zrzutów ekranu</translation>
 <translation id="1094777233105318927">Informacje o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu i plikach</translation>
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
 <translation id="1097803577928227769">Regionalne parki i ogrody</translation>
@@ -472,6 +473,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1840009953725035797">Systemy kina domowego</translation>
 <translation id="1842969606798536927">Zapłać</translation>
 <translation id="1846432862466000825">Plastik (materiały archiwalne)</translation>
+<translation id="1848640291751752317">pobranych plików</translation>
 <translation id="1848982255014129637">Zdjęcie (wysoki połysk)</translation>
 <translation id="1853392626017747777">Rejestracja karty wirtualnej została zamknięta</translation>
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
@@ -754,6 +756,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2366689192918515749">Mięso i owoce morza</translation>
 <translation id="2367567093518048410">Poziom</translation>
 <translation id="23703388716193220">Sprzęt golfowy</translation>
+<translation id="2370368710215137370">Przesyłanie plików</translation>
 <translation id="2374629208601905275">Zgodnie z przepisami prawa obowiązującymi w Twoim regionie Chrome prosi Cię o wybranie domyślnej wyszukiwarki. Te wyszukiwarki są popularne w Twoim regionie. Pokazujemy je w kolejności losowej.</translation>
 <translation id="2377241607395428273">Oprogramowanie do tworzenia grafiki i animacji</translation>
 <translation id="2378084239755710604">Zapisywanie karty zostało zamknięte.</translation>
@@ -1423,6 +1426,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3682094733650754138">Wybrano opcję wypełnienia adresu</translation>
 <translation id="3687920599421452763">Vany i minivany</translation>
 <translation id="3693327506115126094">Wybierz sposób weryfikacji tożsamości</translation>
+<translation id="3698353241727597930">Administrator skonfigurował zapisywanie <ph name="FILES" /> w pamięci zarządzanej przez firmę <ph name="CLOUD_STORAGE" />. Te pliki mogą być monitorowane, kontrolowane i przechowywane po ich usunięciu.</translation>
 <translation id="3698629142018988477">Przycisk Utwórz witrynę; aktywuj, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
 <translation id="3701325639446035885">Sprzedaż biletów na wydarzenia</translation>
 <translation id="3701427423622901115">Zresetowanie zostało potwierdzone.</translation>
@@ -1498,6 +1502,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3826050100957962900">Logowanie przez inną usługę</translation>
 <translation id="3827112369919217609">Bezwzględna</translation>
 <translation id="3828924085048779000">Puste hasło wielowyrazowe jest niedozwolone.</translation>
+<translation id="3830139096297532361">Ten plik PDF jest niedostępny. Nie udało się pobrać plików wyodrębniania tekstu. Spróbuj ponownie później.</translation>
 <translation id="3830470485672984938">Użyj innego klucza dostępu</translation>
 <translation id="3831065134033923230">Sprawdzanie zapisanych haseł</translation>
 <translation id="3831915413245941253">Administrator <ph name="ENROLLMENT_DOMAIN" /> zainstalował rozszerzenia obsługujące dodatkowe funkcje. Rozszerzenia mają dostęp do niektórych Twoich danych.</translation>
@@ -1672,6 +1677,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4202554117186904723">Rolka 5</translation>
 <translation id="4203769790323223880">Kamera nie jest dozwolona</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Sprawdź konfigurację zapory sieciowej i oprogramowania antywirusowego<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">na Dysku Google</translation>
 <translation id="4209092469652827314">Duży</translation>
 <translation id="4210602799576081649">Kod weryfikacyjny stracił ważność, poproś o nowy</translation>
 <translation id="421066178035138955">Używać urządzeń i danych rzeczywistości wirtualnej</translation>
@@ -2734,6 +2740,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6270066318535733958">Wioślarstwo</translation>
 <translation id="6272088941196661550">Wznów swoją serię czynności, aby zobaczyć odpowiednią aktywność w historii Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">na Dysku Google i w usłudze OneDrive</translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6284292079994426700">26 x 38 cali</translation>
 <translation id="6284449872909111707">Wiadomości tekstowe i czat</translation>
@@ -2987,7 +2994,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6753269504797312559">Wartość zasady</translation>
 <translation id="6753434778807740853">Usuń wpis <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Konta oszczędnościowe</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Twoje urządzenie przeszło w tryb uśpienia.</translation>
 <translation id="6760548828952594090">Nie udało się zapisać tej karty na Twoim koncie Google. Zamiast tego została ona zapisana w Chrome na tym urządzeniu.</translation>
 <translation id="6766558780547452153">Gotowanie i przepisy</translation>
@@ -3173,6 +3179,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7119063404975271297">Dramaty telewizyjne</translation>
 <translation id="7119371694555167493">Przekroczono limit czasu kopiowania</translation>
 <translation id="7119414471315195487">Zamknij inne karty lub programy</translation>
+<translation id="7120588595737538743">pobranych plików i zrzutów ekranu</translation>
 <translation id="7124354851782353862">Wpisz kod CVC</translation>
 <translation id="7129409597930077180">Nie można wysłać pod ten adres. Wybierz inny.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3372,6 +3379,7 @@ Dodatkowe informacje:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />. Aby zamknąć wskazówkę dotyczącą Chrome, naciśnij Tab, a następnie Enter.</translation>
 <translation id="7485085230273446323">Biznes i przemysł</translation>
 <translation id="7485870689360869515">Nie znaleziono danych.</translation>
+<translation id="7486880426035242089">w usłudze OneDrive</translation>
 <translation id="7489392576326061356">Szampony i odżywki</translation>
 <translation id="7495528107193238112">Ta zawartość jest zablokowana. Aby rozwiązać problem, skontaktuj się z właścicielem witryny.</translation>
 <translation id="749865518782565832">Hydraulika</translation>
@@ -4251,7 +4259,6 @@ Dodatkowe informacje:
 <translation id="9155646082713385498">Czasopisma</translation>
 <translation id="9157595877708044936">Konfigurowanie...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Plik <ph name="FILE_NAME" /> może zawierać treści poufne}few{<ph name="FILE_COUNT" /> pliki mogą zawierać treści poufne}many{<ph name="FILE_COUNT" /> plików może zawierać treści poufne}other{<ph name="FILE_COUNT" /> pliku może zawierać treści poufne}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Witryny, które odwiedzasz, mogą też określać Twoje zainteresowania na podstawie Twojej aktywności w danej witrynie. Na przykład jeśli odwiedzasz stronę internetową, na której można kupić buty do biegania na długie dystanse, może ona uznać, że interesują Cię maratony.</translation>
 <translation id="9166851138617700776">Więcej informacji o reklamach sugerowanych przez witryny i pomiarze skuteczności reklam</translation>
 <translation id="9167054383925257837">informacje o przeglądarce i systemie operacyjnym urządzenia (np. nazwa przeglądarki i wersja systemu operacyjnego),</translation>

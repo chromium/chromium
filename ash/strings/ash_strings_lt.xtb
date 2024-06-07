@@ -301,6 +301,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="216955976692983107">Išklotinės dydžio keitimo langas dešinėje</translation>
 <translation id="2185166372312820725">Eiti į ankstesnį skirtuką</translation>
 <translation id="2185444992308415167">Peržiūrėti pirmą–aštuntą skirtukus</translation>
+<translation id="2195732836444333448">Šiuo metu esame užimti. Pabandykite vėliau.</translation>
 <translation id="2198625180564913276">Pridedamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="219905428774326614">Paleidimo priemonė, visos programos</translation>
 <translation id="2201071101391734388">Naujausia <ph name="INDEX" /> nuotrauka iš <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +815,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4086921558679520050">Įjunkite įrenginio fizinį mikrofono jungiklį</translation>
 <translation id="4101772068965291327">Atidaryti pagrindinį puslapį</translation>
 <translation id="4112140312785995938">Prasukti atgal</translation>
+<translation id="4113030288477039509">Tvarko jūsų administratorius</translation>
 <translation id="4114315158543974537">„Phone Hub“ įjungimas</translation>
 <translation id="4115378294792113321">Purpurinė</translation>
 <translation id="411881149140864134">Suaktyvinti darbalaukį kairėje</translation>
@@ -847,6 +849,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4201033867194214117">Funkcija „<ph name="FEATURE_NAME" />“ nepasiekiama</translation>
 <translation id="4201051445878709314">Rodyti ankstesnį mėnesį</translation>
 <translation id="4209973997261364186">„Wi-Fi“ įjungtas</translation>
+<translation id="4212246570487010370">Tęsti naršymą</translation>
 <translation id="4212472694152630271">Perjungti į PIN kodą</translation>
 <translation id="4215497585250573029">VPN nustatymai</translation>
 <translation id="4217571870635786043">Diktavimas</translation>
@@ -1239,7 +1242,6 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5599242528220103262">Spartusis klavišas išjungtas</translation>
 <translation id="5600415762228455511">„Focus“ įjungtas, liko <ph name="REMAINING_TIME" />, dėmesys sutelktas į užduotį „<ph name="TASK_NAME" />“</translation>
 <translation id="5600837773213129531">Paspauskite „Ctrl“ + „Alt“ + Z, kad išjungtumėte ekrano skaitymą balsu.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Mažiau nei prieš 1 val.}=1{Prieš 1 val.}one{Prieš # val.}few{Prieš # val.}many{Prieš # val.}other{Prieš # val.}}</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
 <translation id="5618148318840095371">Prijungėme jus prie geresnio tinklo</translation>
 <translation id="5619862035903135339">Ekrano fiksavimo funkcija yra išjungta remiantis administratoriaus politika</translation>
@@ -1692,6 +1694,7 @@ Naujas įdiegimas</translation>
 <translation id="7340731148882810149">Automatinių paspaudimų meniu</translation>
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="7348093485538360975">Ekraninė klaviatūra</translation>
+<translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>
 <translation id="7360036564632145207">Našumą gali pavykti optimizuoti pakeičiant duomenų prieigos apsaugos išoriniams įrenginiams nustatymą</translation>
 <translation id="736045644501761622">Nustatyti ekrano foną ir stilių</translation>
@@ -1834,7 +1837,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7851768487828137624">Kanarų</translation>
 <translation id="7862292329216937261">Jei norite naudoti įrenginį kaip svečias, turite atsijungti ir ekrano apačioje pasirinkti „Naršyti kaip svečiui“.</translation>
 <translation id="7866482334467279021">įjungta</translation>
-<translation id="7866727328666668290">Paskutinis atidarytas skirtukas</translation>
 <translation id="7872786842639831132">Išjungta</translation>
 <translation id="7875575368831396199">Panašu, kad „Bluetooth“ ryšys išjungtas jūsų „<ph name="DEVICE_TYPE" />“ įrenginyje. Įjunkite „Bluetooth“, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="7884446017008693258">Viešosios interneto prieigos taško nustatymai</translation>
@@ -2141,7 +2143,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="9002204506712855687">Tyrinėkite naujausias funkcijas</translation>
 <translation id="9005984960510803406">Atidaryti „Crosh“ langą</translation>
 <translation id="9017320285115481645">Įveskite „Family Link“ tėvų prieigos kodą.</translation>
-<translation id="9022774213089566801">Dažnai lankytasi</translation>
 <translation id="9024331582947483881">visas ekranas</translation>
 <translation id="9029736946581028033">Įrenginys netrukus išsijungs</translation>
 <translation id="9030319654231318877">Išjungta iki saulėlydžio</translation>

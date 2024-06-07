@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Modifier les détails du nom de point d'accès</translation>
 <translation id="2195732836444333448">Le serveur est au maximum de sa capacité pour le moment. Revenez plus tard.</translation>
 <translation id="2201758491318984023">vélo</translation>
-<translation id="2203222757805818543">La programmation actuelle est définie de <ph name="SUNRISE" /> à <ph name="SUNSET" />. Pour mettre à jour la programmation du mode Sombre automatiquement, <ph name="BEGIN_LINK" />activez l'accès à la localisation<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">source hydrothermale</translation>
 <translation id="2203642483788377106">falaise</translation>
 <translation id="2208388655216963643">impressionniste</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">dunes</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
+<translation id="2637303424821734920">DÉSACTIVÉ : pour afficher la météo locale, <ph name="BEGIN_LINK" />activez l'accès à la position du système<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> sélectionné</translation>
 <translation id="2645380101799517405">Commandes</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB qurilmaga ulandi</translation>
 <translation id="4194328954146351878">Saytlar NFC qurilmalarni koʻrishi va ulardagi axborotni oʻzgartirishidan oldin ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="4200726100658658164">Joylashuv sozlamalarini ochish</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Manba: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Bildirishnoma kelganida qurilma tebranishi mumkin</translation>
 <translation id="4259722352634471385">Sahifa bloklandi: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
 <translation id="4336566011000459927">Chrome cookie fayllarni bugun yana cheklaydi</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Oxirgi varaq</translation>
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Bu saytning qurilmangizni boshqarish ruxsatlarini boshqaring</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6042308850641462728">Yana</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Oxirgi varaq</translation>
 <translation id="6064125863973209585">Yuklab olinganlar</translation>
 <translation id="6071501408666570960">Bu saytda hisobingizdan chiqasiz</translation>
 <translation id="6120483543004435978">Yoqilsa, saytlar qachon qurilmadan faol foydalanishingizni soʻrashi mumkin. Oʻchirilsa, saytlar bu maʼlumotlarni bila olmaydi.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6818926723028410516">Fayllarni tanlang</translation>
 <translation id="6864395892908308021">Bu qurilma NFC teglarni oʻqiy olmaydi</translation>
-<translation id="6867014948848323204">Manba: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Saytlarga klipboarddagi matn va rasmlarni ko‘rishni taqiqlash</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6950072572526089586">Ochilgan saytlar sizni hisobda qoldirish yoki mahsulotlarni xarid savatida saqlash uchun saytdagi harakatlaringiz haqidagi maʼlumotlarni saqlashi mumkin. Odatda bu maʼlumotlar qurilmangizda vaqtincha saqlanadi.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Kontaktni tanlang</translation>
 <translation id="7990211076305263060">Yoqilsa, saytlar mikrofondan foydalanishni soʻrashi mumkin. Oʻchirilsa, mikrofondan foydalana olmaydi.</translation>
 <translation id="8007176423574883786">Ushbu qurilma uchun o‘chirilgan</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Manba: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
 <translation id="8042586301629853791">Saralash:</translation>
 <translation id="8067883171444229417">Videoni ijro qilish</translation>

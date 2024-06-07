@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Scroll en zoom de content van je gedeelde tabblad</translation>
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
 <translation id="1090629319939036170">VR-menu</translation>
+<translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden</translation>
 <translation id="1096545575934602868">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Verdere items worden verwijderd.</translation>
 <translation id="1097803577928227769">Natuurparken en tuinen</translation>
@@ -472,6 +473,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1840009953725035797">Thuisbioscoopsystemen</translation>
 <translation id="1842969606798536927">Betalen</translation>
 <translation id="1846432862466000825">Plastic (archief)</translation>
+<translation id="1848640291751752317">downloads</translation>
 <translation id="1848982255014129637">Foto (hoogglans)</translation>
 <translation id="1853392626017747777">Inschrijving via virtuele kaart gesloten</translation>
 <translation id="1854180393107901205">Casten stoppen</translation>
@@ -754,6 +756,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2366689192918515749">Vlees en vis</translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="23703388716193220">Golfbenodigdheden</translation>
+<translation id="2370368710215137370">Bestanden uploaden</translation>
 <translation id="2374629208601905275">Op basis van een wet in je regio vraagt Chrome je om je standaard zoekmachine te kiezen. Deze zoekmachines zijn populair in je regio en worden in willekeurige volgorde getoond.</translation>
 <translation id="2377241607395428273">Grafische en animatiesoftware</translation>
 <translation id="2378084239755710604">Kaart opslaan gesloten.</translation>
@@ -1418,6 +1421,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3682094733650754138">De optie Adres invullen is geselecteerd</translation>
 <translation id="3687920599421452763">Bestelauto's en minibestelauto's</translation>
 <translation id="3693327506115126094">Kies hoe je wilt bevestigen dat jij het bent</translation>
+<translation id="3698353241727597930">Je beheerder heeft ingesteld dat <ph name="FILES" /> worden opgeslagen in je door het bedrijf beheerde <ph name="CLOUD_STORAGE" />-opslag. Deze bestanden kunnen worden gemonitord, gecontroleerd en bewaard als je ze verwijdert.</translation>
 <translation id="3698629142018988477">Knop Site maken. Activeer deze om snel een nieuwe site in Google Sites te maken.</translation>
 <translation id="3701325639446035885">Kaartverkoop voor evenementen</translation>
 <translation id="3701427423622901115">Reset bevestigd.</translation>
@@ -1493,6 +1497,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3826050100957962900">Externe login</translation>
 <translation id="3827112369919217609">Absoluut</translation>
 <translation id="3828924085048779000">Een lege wachtwoordzin is niet toegestaan.</translation>
+<translation id="3830139096297532361">Deze pdf is niet toegankelijk. Kan bestanden voor tekstextractie niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="3830470485672984938">Een andere toegangssleutel gebruiken</translation>
 <translation id="3831065134033923230">Je opgeslagen wachtwoorden checken</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> heeft extensies voor aanvullende functies geïnstalleerd. Extensies hebben toegang tot sommige van je gegevens.</translation>
@@ -1667,6 +1672,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4202554117186904723">5e rol</translation>
 <translation id="4203769790323223880">Camera niet toegestaan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controleer firewall- en antivirusconfiguraties<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4210602799576081649">De verificatiecode is verlopen. Vraag een nieuwe code aan.</translation>
 <translation id="421066178035138955">Virtualreality-apparaten en -gegevens gebruiken</translation>
@@ -2728,6 +2734,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6270066318535733958">Roeien en zeilen</translation>
 <translation id="6272088941196661550">Hervat je traject om relevante activiteit in je Chrome-geschiedenis te bekijken</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive en OneDrive</translation>
 <translation id="6280223929691119688">Kan niet bezorgen op dit adres. Selecteer een ander adres.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
 <translation id="6284449872909111707">Sms en chatten</translation>
@@ -2981,7 +2988,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6753269504797312559">Beleidswaarde</translation>
 <translation id="6753434778807740853">Item <ph name="ENTRY_VOICEOVER" /> verwijderen</translation>
 <translation id="6754547388777247439">Spaarrekeningen</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">De slaapstand van je apparaat is geactiveerd.</translation>
 <translation id="6760548828952594090">Deze kaart kan niet worden opgeslagen in je Google-account. De informatie is opgeslagen in Chrome op dit apparaat.</translation>
 <translation id="6766558780547452153">Koken en recepten</translation>
@@ -3167,6 +3173,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7119063404975271297">Tv-drama's</translation>
 <translation id="7119371694555167493">Time-out bij kopiëren</translation>
 <translation id="7119414471315195487">Andere tabbladen of programma's sluiten</translation>
+<translation id="7120588595737538743">downloads en screenshots</translation>
 <translation id="7124354851782353862">Geef je CVC op</translation>
 <translation id="7129409597930077180">Kan niet verzenden naar dit adres. Selecteer een ander adres.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3366,6 +3373,7 @@ Aanvullende informatie:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, druk op Tab en dan op Enter om de Chrome-tip te sluiten.</translation>
 <translation id="7485085230273446323">Bedrijven en industrie</translation>
 <translation id="7485870689360869515">Geen gegevens gevonden.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Shampoos en conditioners</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="749865518782565832">Loodgieter</translation>
@@ -4245,7 +4253,6 @@ Aanvullende informatie:
 <translation id="9155646082713385498">Tijdschriften</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat misschien gevoelige content}other{<ph name="FILE_COUNT" /> bestanden bevatten misschien gevoelige content}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt op basis van je activiteit op de site. Als je bijvoorbeeld een site bezoekt die hardloopschoenen voor lange afstanden verkoopt, kan de site besluiten dat je geïnteresseerd bent in marathons.</translation>
 <translation id="9166851138617700776">Meer over door sites voorgestelde advertenties en advertentiemetingen</translation>
 <translation id="9167054383925257837">Informatie over browser en apparaat-OS (zoals de browser- en OS-versies)</translation>

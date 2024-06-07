@@ -2986,7 +2986,6 @@
 <translation id="6753269504797312559">নীতি মান</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> এন্ট্রি মুছুন</translation>
 <translation id="6754547388777247439">সেভিংস অ্যাকাউন্ট</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">আপনার ডিভাইস নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="6760548828952594090">এই কার্ড আপনার Google অ্যাকাউন্টে সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ এটি সেভ করা হয়েছে।</translation>
 <translation id="6766558780547452153">রান্না ও রেসিপি</translation>
@@ -4248,7 +4247,6 @@
 <translation id="9155646082713385498">ম্যাগাজিন</translation>
 <translation id="9157595877708044936">সেট-আপ হচ্ছে...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}one{<ph name="FILE_COUNT" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}other{<ph name="FILE_COUNT" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">আপনি যে সাইটগুলি ভিজিট করেন সেগুলি সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে আপনি কী পছন্দ করেন তা নির্ধারণ করতে পারে। যেমন, আপনি যদি দৌড়োনোর জুতো বিক্রি করে এমন একটি ওয়েবসাইট ভিজিট করেন, তাহলে সাইটগুলি অনুমান করতে পারে যে আপনি ম্যারাথনে দৌড়তে আগ্রহী।</translation>
 <translation id="9166851138617700776">সাইট-প্রস্তাবিত বিজ্ঞাপন এবং বিজ্ঞাপন পরিমাপ সম্পর্কে আরও অনেক কিছু</translation>
 <translation id="9167054383925257837">ব্রাউজার ও ডিভাইস OS সম্পর্কিত তথ্য (যেমন ব্রাউজার ও OS ভার্সন)</translation>

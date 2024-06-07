@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Endre APN-detaljene</translation>
 <translation id="2195732836444333448">Full kapasitet akkurat nå. Kom tilbake senere.</translation>
 <translation id="2201758491318984023">sykkel</translation>
-<translation id="2203222757805818543">Den nåværende tidsplanen er satt til <ph name="SUNRISE" />–<ph name="SUNSET" />. For å oppdatere tidsplanen for mørk modus automatisk, <ph name="BEGIN_LINK" />slå på posisjonstilgang<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">varm kilde</translation>
 <translation id="2203642483788377106">klippe</translation>
 <translation id="2208388655216963643">impresjonisme</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">sanddyne</translation>
 <translation id="2619761439309613843">Daglig oppdatering</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2637303424821734920">AV – For å vise lokalt vær, <ph name="BEGIN_LINK" />slå på posisjonstilgang for systemet<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Påloggingsbilde</translation>
 <translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
 <translation id="2645380101799517405">Kontroller</translation>

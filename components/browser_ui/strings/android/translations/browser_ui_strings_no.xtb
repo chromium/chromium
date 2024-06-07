@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Koblet til en USB-enhet</translation>
 <translation id="4194328954146351878">Spør før nettsteder får lov til å se og endre informasjon på NFC-enheter (anbefales)</translation>
 <translation id="4200726100658658164">Åpne posisjonsinnstillingene</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> fra <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Varsler kan gjøre at enheten vibrerer</translation>
 <translation id="4259722352634471385">Nettadressen er blokkert: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tillatt</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Vis</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Utløper i morgen}other{Utløper om # dager}}</translation>
 <translation id="4336566011000459927">Chrome begynner å begrense informasjonskapsler igjen i dag</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Den siste fanen du brukte</translation>
 <translation id="4338831206024587507">Alle nettsteder under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blokkér nettsteder fra å vite når du bruker denne enheten aktivt</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Kontroller dette nettstedets tilgang til enheten din</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6042308850641462728">Mer</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Den siste fanen du brukte</translation>
 <translation id="6064125863973209585">Fullførte nedlastinger</translation>
 <translation id="6071501408666570960">Du kan være logget av dette nettstedet</translation>
 <translation id="6120483543004435978">Når dette er på, kan nettsteder be om å få vite når du bruker enheten aktivt. Når dette er av, kan ikke nettsteder vite når du bruker enheten aktivt.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6818926723028410516">Velg elementer</translation>
 <translation id="6864395892908308021">Denne enheten kan ikke lese NFC</translation>
-<translation id="6867014948848323204">Fra <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokkér nettsteder fra å få tilgang til tekst og bilder fra utklippstavlen</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6950072572526089586">Nettsteder du besøker, kan lagre informasjon om hva du gjør, slik at nettstedene fungerer som forventet – for eksempel for å holde deg pålogget eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Velg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er på, kan nettsteder be om å få bruke mikrofonen din. Når dette er av, kan ikke nettsteder bruke mikrofonen din.</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Fra <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8042586301629853791">Sorter etter:</translation>
 <translation id="8067883171444229417">Spill av videoen</translation>

@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"Болих"</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
 <translation id="1620510694547887537">Камер</translation>
+<translation id="1623768535032616219">Google Classroom-г хураах</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
@@ -300,9 +301,11 @@
 <translation id="216955976692983107">Хавтан болгосон цонхны хэмжээг баруун тийш татаж өөрчлөх</translation>
 <translation id="2185166372312820725">Өмнөх табад очих</translation>
 <translation id="2185444992308415167">1-ээс 8 дахь таб руу очих</translation>
+<translation id="2195732836444333448">Ачаалалтай байна. Удахгүй эргэн ирээрэй.</translation>
 <translation id="2198625180564913276">Профайл нэмж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="219905428774326614">Эхлүүлэгч, бүх апп</translation>
 <translation id="2201071101391734388">Саяхны <ph name="TOTAL_COUNT" />-с <ph name="INDEX" />-р зураг.</translation>
+<translation id="2201687081523799384">Google Tasks-г хураах</translation>
 <translation id="2208323208084708176">Компьютерийн нэгдмэл горим</translation>
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2222841058024245321">Дэлгэц 7</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">Зүүн талыг товших</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж нь холбогдох зөвшөөрөл хүсч байна. Хүлээж авахаасаа өмнө <ph name="PASSKEY" /> дамжуулах түлхүүр үг нь энэ төхөөрөмж дээр гарч ирсэн байгаа эсэхийг шалгана уу.</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
+<translation id="2437771564543046790">Батарей бага байна. Батарей хэмнэгч асаалттай байна</translation>
 <translation id="243878895369688216">Өчигдөр нээсэн</translation>
 <translation id="2440978926514840421">GIF бичлэгийг хийсэн</translation>
 <translation id="2441427462554639370">Хадгалах сангийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
@@ -812,6 +816,7 @@
 <translation id="4086921558679520050">Төхөөрөмж дээрээ микрофоны биет унтраалгыг асаана уу</translation>
 <translation id="4101772068965291327">Нүүр хуудсыг нээх</translation>
 <translation id="4112140312785995938">Ухраах</translation>
+<translation id="4113030288477039509">Администратор хариуцаж байна</translation>
 <translation id="4114315158543974537">Phone Hub-г асаах</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
 <translation id="411881149140864134">Зүүн талын дэлгэцийг идэвхжүүлэх</translation>
@@ -845,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> боломжгүй.</translation>
 <translation id="4201051445878709314">Өмнөх сарыг харуулах</translation>
 <translation id="4209973997261364186">Wi-Fi асаалттай байна</translation>
+<translation id="4212246570487010370">Тасралтгүй үзэх</translation>
 <translation id="4212472694152630271">ПИН рүү сэлгэх</translation>
 <translation id="4215497585250573029">VPN тохиргоо</translation>
 <translation id="4217571870635786043">Заавар</translation>
@@ -1201,6 +1207,7 @@
 <translation id="550391772491508736">Дамжуулахыг үргэлжлүүлэх</translation>
 <translation id="5506975627792768506">Томруулагчийг асаах эсвэл унтраах</translation>
 <translation id="5512042095225963688">Өмнөх үгийг устгах</translation>
+<translation id="5519005148254860683">Google Tasks-г дэлгэх</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Танай администратор бүх eSIM профайлыг хассан. Нэмэлт мэдээлэл авах бол администратортайгаа холбогдоно уу.</translation>
 <translation id="5520909879404821039">Сайн байна уу? франц хэлээр</translation>
@@ -1236,7 +1243,6 @@
 <translation id="5599242528220103262">Товчлуурын шууд холбоос унтраалттай байна</translation>
 <translation id="5600415762228455511">Төвлөрөх горим асаалттай байна. <ph name="REMAINING_TIME" /> үлдсэн, дараах ажилд төвлөрч байна: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Хэлсэн саналыг идэвхгүй болгохын тулд Ctrl + Alt + Z-г дарна уу.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 цагийн өмнө}=1{1 цагийн өмнө}other{# цагийн өмнө}}</translation>
 <translation id="5601503069213153581">ПИН</translation>
 <translation id="5618148318840095371">Бид таныг илүү сайн сүлжээ рүү сэлгэлээ</translation>
 <translation id="5619862035903135339">Администраторын бодлого нь дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
@@ -1409,6 +1415,7 @@
 <translation id="6200515304866777730">Аппаас дэмждэггүй</translation>
 <translation id="6210042900243040400">Өмнө нь <ph name="EMAIL" />-д хадгалсан <ph name="NAME" />-г холбоно уу</translation>
 <translation id="6213808132343683860">Дэлгэцийн хэсэгчилсэн агшин авах эсвэл дэлгэцийн үйлдэл бичих</translation>
+<translation id="621606890568890214">Google Classroom-г дэлгэх</translation>
 <translation id="6220928844947387476">Та одоо өөрийгөө болон дэлгэцээ зэрэг бичих боломжтой</translation>
 <translation id="622484624075952240">Бууруулсан жагсаалт</translation>
 <translation id="6228457605945141550">Гэрэлтүүлгийг бууруулах</translation>
@@ -1688,6 +1695,7 @@
 <translation id="7340731148882810149">Автомат товшилтын цэс</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
+<translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="735745346212279324">VPN салгагдсан</translation>
 <translation id="7360036564632145207">Та дагалдах төхөөрөмжүүдийн тохиргооны өгөгдлийн хандалтын хамгаалалтаа өөрчилснөөр гүйцэтгэлийг оновчлох боломжтой</translation>
 <translation id="736045644501761622">Дэлгэцийн зураг ба загвар тохируулах</translation>
@@ -1830,7 +1838,6 @@
 <translation id="7851768487828137624">Канар</translation>
 <translation id="7862292329216937261">Төхөөрөмжийг зочноор ашиглахын тулд та гараад дараа нь дэлгэцийн доор байх Зочноор үзэхийг сонгох шаардлагатай.</translation>
 <translation id="7866482334467279021">асаалттай</translation>
-<translation id="7866727328666668290">Сүүлд нээсэн таб</translation>
 <translation id="7872786842639831132">Унтраалттай</translation>
 <translation id="7875575368831396199">Таны <ph name="DEVICE_TYPE" /> дээр Bluetooth-г унтраасан бололтой. Phone Hub-г ашиглахын тулд Bluetooth-г асаана уу.</translation>
 <translation id="7884446017008693258">Сүлжээний цэгийн тохиргоо</translation>
@@ -2138,7 +2145,6 @@
 <translation id="9002204506712855687">Сүүлийн үеийн онцлогуудыг судлаарай</translation>
 <translation id="9005984960510803406">Crosh цонхыг нээх</translation>
 <translation id="9017320285115481645">Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу.</translation>
-<translation id="9022774213089566801">Байнга зочилдог</translation>
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>
 <translation id="9029736946581028033">Төхөөрөмж удахгүй унтарна</translation>
 <translation id="9030319654231318877">Нар жаргах хүртэл унтраалттай</translation>

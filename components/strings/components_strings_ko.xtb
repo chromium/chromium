@@ -2681,6 +2681,7 @@
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6167577165590485365">마지막 가져오기 시도:</translation>
 <translation id="617256461084925519">Chrome에서 결제 정보를 입력할 수 있도록 본인 인증을 시도하고 있습니다.</translation>
+<translation id="6173208311907792313">Windows Hello를 사용하여 구매를 완료하세요.</translation>
 <translation id="6176387967264100435">높은 가격</translation>
 <translation id="6177128806592000436">이 사이트는 보안 연결(HTTPS)이 사용되지 않았습니다.</translation>
 <translation id="6177531123306197852">봉투 C2</translation>
@@ -2986,7 +2987,6 @@
 <translation id="6753269504797312559">정책 값</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> 항목 삭제</translation>
 <translation id="6754547388777247439">저축 예금</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">기기가 절전 모드 상태입니다.</translation>
 <translation id="6760548828952594090">이 카드는 Google 계정에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장되었습니다.</translation>
 <translation id="6766558780547452153">요리 및 레시피</translation>
@@ -3838,6 +3838,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" />에 대한 액세스가 거부됨</translation>
 <translation id="833262891116910667">강조표시</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
+<translation id="8339275256517065202">Touch ID를 사용하여 구매를 완료하세요.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
 <translation id="8344776605855290140">가상 카드 등록이 전체 높이로 열림</translation>
 <translation id="8349305172487531364">북마크바</translation>
@@ -4031,6 +4032,7 @@
 <translation id="8726549941689275341">페이지 크기:</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731268612289859741">보안 코드</translation>
+<translation id="8731917264694569036">기기를 사용하여 구매를 완료하세요.</translation>
 <translation id="8733345475331865475">자동차 보험</translation>
 <translation id="8733764070897080460">사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다. 또한 Chrome에서는 4주가 지난 주제를 자동으로 삭제합니다. 자세히 알아보기</translation>
 <translation id="8734529307927223492">내 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다</translation>
@@ -4224,6 +4226,7 @@
 <translation id="9116548361133462832">Chrome 광고에 관해 자세히 알아보기</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, 검색을 계속하고 Chrome 방문 기록에서 관련 활동을 보려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="9119042192571987207">업로드됨</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" />에서 본인 인증을 요청합니다</translation>
 <translation id="912327514020027767">스커트</translation>
 <translation id="912414390325846156">이전에 이 사이트에 대해 허용하지 않음을 선택했습니다.</translation>
 <translation id="9128870381267983090">네트워크에 연결</translation>
@@ -4246,7 +4249,6 @@
 <translation id="9155646082713385498">잡지</translation>
 <translation id="9157595877708044936">설정 중...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}other{파일 <ph name="FILE_COUNT" />개에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">방문하는 사이트에서 내 사이트 활동을 기반으로 내 관심분야를 파악할 수도 있습니다. 예를 들어 장거리용 러닝화를 판매하는 사이트를 방문한 경우 사이트에서 내가 마라톤에 관심이 있다고 판단할 수 있습니다.</translation>
 <translation id="9166851138617700776">사이트 추천 광고 및 광고 측정에 관해 자세히 알아보기</translation>
 <translation id="9167054383925257837">브라우저 및 기기 OS 정보(예: 브라우저 및 OS 버전)</translation>

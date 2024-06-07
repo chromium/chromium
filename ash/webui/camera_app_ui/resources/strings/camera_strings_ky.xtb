@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">Видео жаздырууну тындыруу</translation>
 <translation id="4121305183798804752">Документ аныкталды</translation>
 <translation id="414641094616694804">Камеранын резолюциясын өзгөртүүгө болбойт</translation>
-<translation id="4176463684765177261">Өчүк</translation>
 <translation id="428234092390943511">Беттин эскизи</translation>
-<translation id="4349714250734879769">Chrome менен кадрлардын өлчөмүн өзгөртүү</translation>
 <translation id="4383571725254449280">Басып чыгаруу майнаптуулугунун таржымалы</translation>
 <translation id="4445542136948522167">Сүрөткө тартууну токтотуу</translation>
 <translation id="4570032796877367747">Маңдайкы камера</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">Скандалган барактардын тизмеси</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Шилтеменин дарегин (<ph name="URL" />) көчүрүү</translation>
-<translation id="491895758387112773">Бир нече агымдагы видеону жаздыруу</translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Сүрөттүн тараптарынын катнашы</translation>
@@ -157,7 +154,6 @@
 <translation id="8145038249676204903">Сүрөт режимине которулуу</translation>
 <translation id="8167081290930651932">Сүрөт катары сактоо</translation>
 <translation id="8239780215768881278">Видео жаздыруу учурунда сүрөткө тартып алуу</translation>
-<translation id="8346544573713510785">Camera HAL менен кадрлардын өлчөмүн өзгөртүү</translation>
 <translation id="8425673304802773841">Төмөн кыйшайтуу</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8609951387004618906"><ph name="URL" /> шилтемесин ачуу</translation>

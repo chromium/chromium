@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">Jeda rekaman</translation>
 <translation id="4121305183798804752">Dokumen terdeteksi</translation>
 <translation id="414641094616694804">Kamera ini tidak dapat mengubah resolusi</translation>
-<translation id="4176463684765177261">Dinonaktifkan</translation>
 <translation id="428234092390943511">Thumbnail halaman</translation>
-<translation id="4349714250734879769">Skalakan frame di Chrome</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
 <translation id="4570032796877367747">Kamera depan</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">Daftar halaman yang dipindai</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Salin alamat link <ph name="URL" /></translation>
-<translation id="491895758387112773">Multi-streaming perekaman video</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Rasio lebar tinggi foto</translation>
@@ -157,7 +154,6 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8145038249676204903">Beralih ke mode mengambil foto</translation>
 <translation id="8167081290930651932">Simpan sebagai Foto</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
-<translation id="8346544573713510785">Skalakan frame di HAL Kamera</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8609951387004618906">Buka <ph name="URL" /></translation>

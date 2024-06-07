@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">તમારા શેર કરેલા ટૅબનું કન્ટેન્ટ સ્ક્રોલ કરો અને નાનું-મોટું કરો</translation>
 <translation id="1089439967362294234">પાસવર્ડ બદલો</translation>
 <translation id="1090629319939036170">VR મેનૂ</translation>
+<translation id="1091779689406092804">સ્ક્રીનશૉટ</translation>
 <translation id="1094777233105318927">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર અને ફાઇલો વિશેની માહિતી</translation>
 <translation id="1096545575934602868">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની બધી એન્ટ્રીને કાઢી નાખવામાં આવશે.</translation>
 <translation id="1097803577928227769">પ્રાદેશિક પાર્ક અને બગીચા</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">હોમ થિયેટર સિસ્ટમ</translation>
 <translation id="1842969606798536927">ચુકવણી કરો</translation>
 <translation id="1846432862466000825">પ્લાસ્ટિક (આર્કાઇવલ)</translation>
+<translation id="1848640291751752317">ડાઉનલોડ</translation>
 <translation id="1848982255014129637">ફોટો (હાઇ-ગ્લોસ)</translation>
 <translation id="1853392626017747777">વર્ચ્યુઅલ કાર્ડની નોંધણી બંધ છે</translation>
 <translation id="1854180393107901205">કાસ્ટ કરવાનું રોકો</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">માંસ અને દરિયાઈ ભોજન</translation>
 <translation id="2367567093518048410">સ્તર</translation>
 <translation id="23703388716193220">ગોલ્ફનું સાધન</translation>
+<translation id="2370368710215137370">ફાઇલોના અપલોડના પ્રકારો</translation>
 <translation id="2374629208601905275">તમારા પ્રદેશના કાયદાના આધારે, Chrome તમને તમારું ડિફૉલ્ટ શોધ એન્જિન પસંદ કરવા માટે કહે છે. આ શોધ એન્જિન તમારા પ્રદેશમાં લોકપ્રિય છે અને તેમને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે.</translation>
 <translation id="2377241607395428273">ગ્રાફિક અને ઍનિમેશન સૉફ્ટવેર</translation>
 <translation id="2378084239755710604">"કાર્ડ સાચવો" બોટમ શીટ બંધ છે.</translation>
@@ -1423,6 +1426,7 @@
 <translation id="3682094733650754138">"સરનામું ભરો" વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="3687920599421452763">વૅન અને મિનીવૅન</translation>
 <translation id="3693327506115126094">આ તમે જ છો, તે તમે કેવી રીતે ચકાસશો, તે પસંદ કરો</translation>
+<translation id="3698353241727597930">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="FILES" />ને એન્ટરપ્રાઇઝ દ્વારા મેનેજ કરવામાં આવતા તમારા <ph name="CLOUD_STORAGE" /> સ્ટોરેજમાં સાચવવાનું કન્ફિગ્યુર કરવામાં આવ્યું છે. આ ફાઇલોને મૉનિટર કરવામાં, ઑડિટ કરવામાં તેમજ તમે તેને ડિલીટ કરો ત્યારે જાળવી રાખવામાં આવી શકે છે.</translation>
 <translation id="3698629142018988477">'સાઇટ બનાવો' બટન, Google Sitesમાં ઝડપથી કોઈ નવી સાઇટ બનાવવા માટે સક્રિય કરો</translation>
 <translation id="3701325639446035885">ઇવેન્ટની ટિકિટનું વેચાણ</translation>
 <translation id="3701427423622901115">રીસેટ કરવાનું સ્વીકાર્યું હતું.</translation>
@@ -1498,6 +1502,7 @@
 <translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3827112369919217609">ચોક્કસ</translation>
 <translation id="3828924085048779000">ખાલી પાસફ્રેઝને અનુમતિ નથી. </translation>
+<translation id="3830139096297532361">આ PDF ઍક્સેસિબલ નથી. ટેક્સ્ટ એક્સટ્રેક્શન ફાઇલો ડાઉનલોડ કરી શક્યા નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3830470485672984938">કોઈ જુદી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="3831065134033923230">તમારા સાચવેલા પાસવર્ડ ચેક કરો</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" />એ વધારાના કાર્યો માટે એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે. એક્સ્ટેંશન પાસે તમારા કેટલાક ડેટાનો ઍક્સેસ છે.</translation>
@@ -1672,6 +1677,7 @@
 <translation id="4202554117186904723">પાંચમો રોલ</translation>
 <translation id="4203769790323223880">કૅમેરાની મંજૂરી નથી</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ફાયરવોલ અને એન્ટીવાઇરસ ગોઠવણી તપાસીને<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">મોટું</translation>
 <translation id="4210602799576081649">ચકાસણી કોડની સમયસીમા સમાપ્ત થઈ ગઈ છે, નવા કોડની વિનંતી કરો</translation>
 <translation id="421066178035138955">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરો</translation>
@@ -2734,6 +2740,7 @@
 <translation id="6270066318535733958">નૌકાવિહાર</translation>
 <translation id="6272088941196661550">તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે, તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="6272383483618007430">Google અપડેટ</translation>
+<translation id="6278015583149890680">Google Drive અને OneDrive</translation>
 <translation id="6280223929691119688">આ સરનામે વિતરણ કરી શકતા નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="6284292079994426700">26 x 38 ઇંચ</translation>
 <translation id="6284449872909111707">ટેક્સ્ટ અને ઇન્સ્ટન્ટ મેસેજિંગ</translation>
@@ -2987,7 +2994,6 @@
 <translation id="6753269504797312559">પૉલિસી મૂલ્ય</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> એન્ટ્રી ડિલીટ કરો</translation>
 <translation id="6754547388777247439">બચત ખાતા</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">તમારું ઉપકરણ નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="6760548828952594090">આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવી શકાયું નથી. તેના બદલે તેને આ ડિવાઇસ પર Chromeમાં સાચવવામાં આવ્યું છે.</translation>
 <translation id="6766558780547452153">કૂકીંગ અને રૅસિપિ</translation>
@@ -3173,6 +3179,7 @@
 <translation id="7119063404975271297">ટીવી ડ્રામા</translation>
 <translation id="7119371694555167493">કૉપિ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="7119414471315195487">અન્ય ટૅબ અથવા પ્રોગ્રામ બંધ કરો</translation>
+<translation id="7120588595737538743">ડાઉનલોડ અને સ્ક્રીનશૉટ</translation>
 <translation id="7124354851782353862">તમારો CVC દાખલ કરો</translation>
 <translation id="7129409597930077180">આ સરનામે વિતરણ કરી શકાતું નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3372,6 +3379,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chromeની ટિપ છોડી દેવા માટે, Tab પછી Enter દબાવો.</translation>
 <translation id="7485085230273446323">વ્યાવસાયિક અને ઔદ્યોગિક</translation>
 <translation id="7485870689360869515">કોઈ ડેટા મળ્યો નથી.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">શૅમ્પૂ અને કંડિશનર</translation>
 <translation id="7495528107193238112">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે. સમસ્યાનાં નિરાકરણ માટે, સાઇટના માલિકનો સંપર્ક કરો.</translation>
 <translation id="749865518782565832">પ્લમ્બિંગ</translation>
@@ -4252,7 +4260,6 @@
 <translation id="9155646082713385498">સામાયિકો</translation>
 <translation id="9157595877708044936">સેટિંગ અપ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}one{<ph name="FILE_COUNT" /> ફાઇલ સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}other{<ph name="FILE_COUNT" /> ફાઇલ સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">તમે મુલાકાત લેશો તે સાઇટ, સાઇટ પરની તમારી પ્રવૃત્તિના આધારે તમને શું ગમ્યું, તે પણ નક્કી કરી શકશે. ઉદાહરણ તરીકે, જો તમે લાંબા અંતર માટે દોડવાના શૂઝ વેચતી કોઈ સાઇટની મુલાકાત લો, તો સાઇટ કદાચ એવું તારણ કાઢી શકે કે તમે મેરેથોન દોડવામાં રુચિ ધરાવતા હોઈ શકો છો.</translation>
 <translation id="9166851138617700776">સાઇટ દ્વારા સૂચવેલી જાહેરાતો અને જાહેરાતની માપણી વિશે વધુ</translation>
 <translation id="9167054383925257837">બ્રાઉઝર અને ડિવાઇસની OSની માહિતી (જેમ કે બ્રાઉઝર અને OSના વર્ઝન)</translation>

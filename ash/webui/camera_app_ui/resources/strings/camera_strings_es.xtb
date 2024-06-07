@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">Pausar grabación</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta cámara no puede cambiar de resolución</translation>
-<translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="428234092390943511">Miniatura de la página</translation>
-<translation id="4349714250734879769">Escalar marcos con Chrome</translation>
 <translation id="4383571725254449280">Imprimir registros de rendimiento</translation>
 <translation id="4445542136948522167">Detener foto</translation>
 <translation id="4570032796877367747">Cámara frontal</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">Lista de páginas escaneadas</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="4892746741161549733">Copiar dirección de enlace <ph name="URL" /></translation>
-<translation id="491895758387112773">Grabación de vídeo con varias emisiones</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Relación de aspecto de la foto</translation>
@@ -157,7 +154,6 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="8145038249676204903">Cambiar al modo de cámara de fotos</translation>
 <translation id="8167081290930651932">Guardar como foto</translation>
 <translation id="8239780215768881278">Hacer una captura de vídeo</translation>
-<translation id="8346544573713510785">Escalar marcos con cámara HAL</translation>
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8609951387004618906">Abrir <ph name="URL" /></translation>

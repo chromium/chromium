@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"पहले जैसा करें"</translation>
 <translation id="1611993646327628135">चालू है</translation>
 <translation id="1620510694547887537">कैमरा</translation>
+<translation id="1623768535032616219">Google Classroom को छोटा करें</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिवाइस</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
@@ -300,9 +301,11 @@
 <translation id="216955976692983107">दाईं ओर से विंडो की टाइल का साइज़ बदलें</translation>
 <translation id="2185166372312820725">पिछले टैब पर जाएं</translation>
 <translation id="2185444992308415167">टैब 1 से 8 तक जाएं</translation>
+<translation id="2195732836444333448">अब और अनुरोध नहीं किए जा सकते. कुछ समय बाद दोबारा कोशिश करें.</translation>
 <translation id="2198625180564913276">प्रोफ़ाइल जोड़ी जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="219905428774326614">लॉन्चर, सभी ऐप्लिकेशन</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> में से <ph name="INDEX" /> हाल ही की फ़ोटो.</translation>
+<translation id="2201687081523799384">Google Tasks को छोटा करें</translation>
 <translation id="2208323208084708176">संयुक्त डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्क 7</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">बायां क्लिक</translation>
 <translation id="2429753432712299108">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" जोड़ने की अनुमति चाहता है. स्वीकार करने से पहले, कृपया पुष्टि करें कि यह पासकी उस डिवाइस पर दिखाई जा रही है: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
+<translation id="2437771564543046790">बैटरी कम है. 'बैटरी सेवर' चालू है</translation>
 <translation id="243878895369688216">इसे कल खोला गया था</translation>
 <translation id="2440978926514840421">GIF की रिकॉर्डिंग की गई</translation>
 <translation id="2441427462554639370">स्टोरेज के लिए बची जगह कम होने की वजह से रिकॉर्डिंग बंद हो गई है</translation>
@@ -812,6 +816,7 @@
 <translation id="4086921558679520050">अपने डिवाइस पर, माइक के फ़िज़िकल स्विच को चालू करें</translation>
 <translation id="4101772068965291327">होम पेज खोलें</translation>
 <translation id="4112140312785995938">पीछे जाएं</translation>
+<translation id="4113030288477039509">आपके व्यवस्थापक द्वारा प्रबंधित</translation>
 <translation id="4114315158543974537">Phone Hub चालू करें</translation>
 <translation id="4115378294792113321">मैजेंटा</translation>
 <translation id="411881149140864134">बाईं ओर मौजूद डेस्क चालू करें</translation>
@@ -845,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> उपलब्ध नहीं है.</translation>
 <translation id="4201051445878709314">पिछला महीना दिखाएं</translation>
 <translation id="4209973997261364186">वाई-फ़ाई चालू है</translation>
+<translation id="4212246570487010370">लगातार ब्राउज़िंग</translation>
 <translation id="4212472694152630271">पिन पर स्विच करें</translation>
 <translation id="4215497585250573029">वीपीएन की सेटिंग</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
@@ -1201,6 +1207,7 @@
 <translation id="550391772491508736">कास्ट करना फिर से शुरू करें</translation>
 <translation id="5506975627792768506">ज़ूम करने की सुविधा को चालू या बंद करने के लिए</translation>
 <translation id="5512042095225963688">पिछला शब्द मिटाएं</translation>
+<translation id="5519005148254860683">Google Tasks को बड़ा करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">आपके एडमिन ने सभी ई-सिम प्रोफ़ाइलों को हटा दिया है. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="5520909879404821039">फ़्रेंच में नमस्ते</translation>
@@ -1236,7 +1243,6 @@
 <translation id="5599242528220103262">कीबोर्ड शॉर्टकट बंद है</translation>
 <translation id="5600415762228455511">फ़ोकस मोड चालू है और <ph name="REMAINING_TIME" /> का समय बाकी है. इस टास्क पर फ़ोकस किया जा रहा है: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">बोला गया फ़ीडबैक अक्षम करने के लिए Ctrl + Alt + Z दबाएं.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{1 घंटे से भी पहले}=1{1 घंटा पहले}one{# घंटा पहले}other{# घंटे पहले}}</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5618148318840095371">हमने आपको बेहतर नेटवर्क से कनेक्ट किया है</translation>
 <translation id="5619862035903135339">एडमिन नीति के तहत, स्क्रीन कैप्चर की सुविधा को बंद कर दिया जाता है</translation>
@@ -1409,6 +1415,7 @@
 <translation id="6200515304866777730">यह ऐप्लिकेशन पर काम नहीं करता</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> में पहले से सेव किए गए <ph name="NAME" /> को कनेक्ट करें</translation>
 <translation id="6213808132343683860">स्क्रीन के कुछ हिस्से का स्क्रीनशॉट लेने या स्क्रीन रिकॉर्डिंग करने के लिए</translation>
+<translation id="621606890568890214">Google Classroom को बड़ा करें</translation>
 <translation id="6220928844947387476">अब, कैमरे और स्क्रीन दोनों पर दिख रही चीज़ों की रिकॉर्डिंग एक साथ की जा सकती है</translation>
 <translation id="622484624075952240">नीचे</translation>
 <translation id="6228457605945141550">स्‍क्रीन की रोशनी कम करें</translation>
@@ -1688,6 +1695,7 @@
 <translation id="7340731148882810149">अपने-आप क्लिक होने की सुविधा वाला मेन्यू</translation>
 <translation id="7346909386216857016">ठीक है, समझ लिया</translation>
 <translation id="7348093485538360975">ऑन-स्‍क्रीन कीबोर्ड</translation>
+<translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="735745346212279324">VPN डिसकनेक्ट है</translation>
 <translation id="7360036564632145207">सहायक डिवाइसों के लिए, डेटा ऐक्सेस का सुरक्षा सिस्टम बदलने या सेट करने से, उनकी परफ़ॉर्मेंस को बेहतर बनाया जा सकता है</translation>
 <translation id="736045644501761622">वॉलपेपर और स्टाइल सेट करें</translation>
@@ -1830,7 +1838,6 @@
 <translation id="7851768487828137624">कैनरी</translation>
 <translation id="7862292329216937261">डिवाइस का इस्तेमाल मेहमान के तौर पर करने के लिए, आपको साइन आउट करना होगा. इसके बाद, स्क्रीन पर सबसे नीचे मौजूद 'मेहमान के तौर पर ब्राउज़ करें' को चुनें.</translation>
 <translation id="7866482334467279021">चालू</translation>
-<translation id="7866727328666668290">खोला गया पिछला टैब</translation>
 <translation id="7872786842639831132">बंद है</translation>
 <translation id="7875575368831396199">ऐसा लगता है कि आपके <ph name="DEVICE_TYPE" /> पर ब्लूटूथ बंद है. फ़ोन हब का इस्तेमाल करने के लिए, कृपया ब्लूटूथ चालू करें.</translation>
 <translation id="7884446017008693258">हॉटस्पॉट सेटिंग</translation>
@@ -2137,7 +2144,6 @@
 <translation id="9002204506712855687">नई सुविधाओं के बारे में जानें</translation>
 <translation id="9005984960510803406">Crosh विंडो खोलें</translation>
 <translation id="9017320285115481645">Family Link का अभिभावक ऐक्सेस कोड डालें.</translation>
-<translation id="9022774213089566801">अक्सर देखी जाने वाली वेबसाइटें</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9029736946581028033">डिवाइस की बैटरी जल्द ही खत्म होने वाली है</translation>
 <translation id="9030319654231318877">सूरज ढलने तक यह सुविधा बंद रहेगी</translation>

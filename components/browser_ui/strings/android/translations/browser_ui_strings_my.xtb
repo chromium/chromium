@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB ကိရိယာသို့ ချိတ်ဆက်ပြီး</translation>
 <translation id="4194328954146351878">NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ဝဘ်ဆိုက်များအား ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4200726100658658164">'တည်နေရာပြဆက်တင်များ' ကို ဖွင့်ပါ</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> ထံမှ</translation>
 <translation id="4226663524361240545">အကြောင်းကြားချက်သည် စက်ပစ္စည်းကို တုန်ခါစေပါမည်</translation>
 <translation id="4259722352634471385">သွားလာမှုပြလမ်းညွှန်အား ပိတ်ထား၏- <ph name="URL" /></translation>
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">တိုးချဲ့</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{မနက်ဖြန် သက်တမ်းကုန်မည်}other{# ရက်အကြာတွင် သက်တမ်းကုန်မည်}}</translation>
 <translation id="4336566011000459927">Chrome သည် ကွတ်ကီးများကို ယနေ့ ထပ်မံကန့်သတ်ပါမည်</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> အောက်ရှိ ဝဘ်ဆိုက်အားလုံး</translation>
 <translation id="4402755511846832236">ဤကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်များကသိခြင်းအား ပိတ်ထားရန်</translation>
 <translation id="4412992751769744546">တတိယပါတီ ကွတ်ကီးများ ခွင့်ပြု</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">ဤဝဘ်ဆိုက်သုံးခွင့်ကို သင့်စက်တွင် ထိန်းချုပ်ပါ</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6042308850641462728">နောက်ထပ်</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="6064125863973209585">ပြီးသွားသည့် ဒေါင်းလုဒ်များ</translation>
 <translation id="6071501408666570960">ဤဝဘ်ဆိုက်မှ ထွက်သွားနိုင်သည်</translation>
 <translation id="6120483543004435978">ဖွင့်ထားသောအခါ သင့်စက်အသုံးပြုချိန်ကို သိရှိရန် ဝဘ်ဆိုက်များက တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ သင့်စက်အသုံးပြုချိန်ကို ဝဘ်ဆိုက်များက မသိနိုင်ပါ။</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6818926723028410516">စာရင်းမှ ရွေးရန်</translation>
 <translation id="6864395892908308021">ဤစက်က NFC ဖတ်၍မရပါ</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> မှ</translation>
 <translation id="6912998170423641340">ကလစ်ဘုတ်ရှိ စာနှင့် ပုံများအား မကြည့်နိုင်ရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6950072572526089586">သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်တွင် မျှော်မှန်းထားသည့်အတိုင်း လုပ်ဆောင်နိုင်ရန်အတွက် သင်လုပ်ဆောင်နေသည့် အချက်အလက်ကို သိမ်းနိုင်သည် — ဥပမာ ဝဘ်ဆိုက်တစ်ခုတွင် လက်မှတ်ထိုးဝင်ထားစေရန် (သို့) ဈေးခြင်းတောင်းထဲရှိ ပစ္စည်းများကို မှတ်ထားရန်။ အများအားဖြင့် ဝဘ်ဆိုက်များသည် ဤအချက်အလက်ကို သင့်စက်တွင် ယာယီသိမ်းသည်။</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="7990211076305263060">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းကို မသုံးနိုင်ပါ။</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> မှ</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
 <translation id="8042586301629853791">စီရန်-</translation>
 <translation id="8067883171444229417">ဗီဒီယို ဖွင့်ရန်</translation>

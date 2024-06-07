@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">„Врати“</translation>
 <translation id="1611993646327628135">Вклучено</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1623768535032616219">Собери го Google Classroom</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
@@ -300,9 +301,11 @@
 <translation id="216955976692983107">Прозорец за променување големина со плочки надесно</translation>
 <translation id="2185166372312820725">Одете на претходната картичка</translation>
 <translation id="2185444992308415167">Оди од 1. до 8. картичка</translation>
+<translation id="2195732836444333448">Нема ништо ново во моментов. Вратете се пак наскоро.</translation>
 <translation id="2198625180564913276">Се додава профил. Може да потрае неколку минути.</translation>
 <translation id="219905428774326614">Стартер, сите апликации</translation>
 <translation id="2201071101391734388">Неодамнешна фотографија: <ph name="INDEX" /> од <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Собери го Google Tasks</translation>
 <translation id="2208323208084708176">Режим на единствена работна површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222841058024245321">Работна површина 7</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">Лев клик</translation>
 <translation id="2429753432712299108">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Пред да прифатите, потврдете дека оваа шифра се покажува на уредот: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
+<translation id="2437771564543046790">Слаба батерија. „Штедачот на батерија“ е вклучен</translation>
 <translation id="243878895369688216">Отворено вчера</translation>
 <translation id="2440978926514840421">GIF-датотеката е снимена</translation>
 <translation id="2441427462554639370">Снимањето заврши бидејќи речиси нема простор за складирање на дискот</translation>
@@ -812,6 +816,7 @@
 <translation id="4086921558679520050">Вклучете физички прекинувач за микрофонот на вашиот уред</translation>
 <translation id="4101772068965291327">Ја отвора почетната страница</translation>
 <translation id="4112140312785995938">Премотај наназад</translation>
+<translation id="4113030288477039509">Управувано од вашиот администратор</translation>
 <translation id="4114315158543974537">Вклучете ја Phone Hub</translation>
 <translation id="4115378294792113321">Магента</translation>
 <translation id="411881149140864134">Активирајте работна површина одлево</translation>
@@ -845,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> не е достапна.</translation>
 <translation id="4201051445878709314">Прикажи го претходниот месец</translation>
 <translation id="4209973997261364186">Wi-Fi мрежата е вклучена</translation>
+<translation id="4212246570487010370">Продолжете да прелистувате</translation>
 <translation id="4212472694152630271">Префрли на PIN</translation>
 <translation id="4215497585250573029">Поставки за VPN</translation>
 <translation id="4217571870635786043">Диктат</translation>
@@ -1201,6 +1207,7 @@
 <translation id="550391772491508736">Продолжи со емитување</translation>
 <translation id="5506975627792768506">Вклучете/исклучете ја лупата</translation>
 <translation id="5512042095225963688">Го брише претходниот збор</translation>
+<translation id="5519005148254860683">Прошири го Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администраторот ги отстрани сите профили на eSIM. Контактирајте со администраторот за повеќе информации.</translation>
 <translation id="5520909879404821039">„Здраво“ на француски</translation>
@@ -1236,7 +1243,6 @@
 <translation id="5599242528220103262">Кратенката од тастатура е исклучена</translation>
 <translation id="5600415762228455511">„Режимот за концентрација“ е вклучен, преостанато време: <ph name="REMAINING_TIME" />, се концентрирате на: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Притиснете Ctrl + Alt + Z за да ги оневозможите говорните повратни информации.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Пред &lt; 1 час}=1{Пред 1 час}one{Пред # час}other{Пред # часа}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Ве префрливме на подобра мрежа</translation>
 <translation id="5619862035903135339">Администраторското правило оневозможува снимање на екранот</translation>
@@ -1409,6 +1415,7 @@
 <translation id="6200515304866777730">Не е поддржано од апликацијата</translation>
 <translation id="6210042900243040400">Поврзете го уредот (<ph name="NAME" />) претходно зачуван на <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Снимете делумна слика од екранот или снимка од екранот</translation>
+<translation id="621606890568890214">Прошири го Google Classroom</translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
 <translation id="6228457605945141550">Намалете ја осветленоста</translation>
@@ -1688,6 +1695,7 @@
 <translation id="7340731148882810149">Мени за автоматски кликнувања</translation>
 <translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="7348093485538360975">Тастатура на екран</translation>
+<translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="735745346212279324">VPN е исклучен</translation>
 <translation id="7360036564632145207">Ако ја промените поставката за заштита на пристапот до податоци за перфиферните уреди, перформансите може да се оптимизираат</translation>
 <translation id="736045644501761622">Поставете тапет и стил</translation>
@@ -1830,7 +1838,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">За да го користите уредот како гостин, треба да се одјавите, па да изберете „Прелистувај како гостин“ најдолу на екранот.</translation>
 <translation id="7866482334467279021">вклучено</translation>
-<translation id="7866727328666668290">Последната отворена картичка</translation>
 <translation id="7872786842639831132">Исклучено</translation>
 <translation id="7875575368831396199">Се чини дека Bluetooth е исклучен на вашиот <ph name="DEVICE_TYPE" />. Вклучете го Bluetooth за да користите Phone Hub.</translation>
 <translation id="7884446017008693258">Поставки за точка на пристап</translation>
@@ -2137,7 +2144,6 @@
 <translation id="9002204506712855687">Истражете ги најновите функции</translation>
 <translation id="9005984960510803406">Отвора прозорец на Crosh</translation>
 <translation id="9017320285115481645">Внесете го кодот за пристап на родители на Family Link.</translation>
-<translation id="9022774213089566801">Често посетувани</translation>
 <translation id="9024331582947483881">цел екран</translation>
 <translation id="9029736946581028033">Уредот ќе се исклучи наскоро</translation>
 <translation id="9030319654231318877">Исклучено до зајдисонце</translation>

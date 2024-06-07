@@ -295,6 +295,7 @@
 <translation id="1203942045716040624">공유한 작업자: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">미리보기 링크</translation>
 <translation id="1206832039833782423">보안 코드는 카드 뒷면에 있습니다</translation>
+<translation id="1208392090861059168">현재 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />(으)로 설정되어 있습니다. 일몰 및 일출 일정을 자동으로 업데이트하려면 <ph name="BEGIN_LINK" />시스템 위치 액세스를 사용 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="1210678701920254279">프린터를 확인 또는 추가하고 활성화된 인쇄 작업 보기</translation>
 <translation id="1211769675100312947">내가 선별한 바로가기입니다.</translation>
 <translation id="1213254615020057352">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
@@ -812,6 +813,7 @@
 <translation id="1594703455918849716">진단 페이지로 이동합니다.</translation>
 <translation id="1594781465361405478">볼륨 켜기/끄기</translation>
 <translation id="1594963087419619323">화면 분할 개요</translation>
+<translation id="1595018168143352126">Chrome에서 웹사이트 카메라 권한 관리하기</translation>
 <translation id="1595492813686795610">Linux 업그레이드 중</translation>
 <translation id="1596286373007273895">사용 가능</translation>
 <translation id="1596709061955594992">블루투스가 사용 중지되어 있습니다. 사용 가능한 기기를 보려면 블루투스를 사용 설정하세요</translation>
@@ -885,7 +887,6 @@
 <translation id="1634224622052500893">Wi-Fi 네트워크 발견됨</translation>
 <translation id="1634783886312010422"><ph name="WEBSITE" />에서 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="1636212173818785548">확인</translation>
-<translation id="1636542522761359943"><ph name="PROFILE_NAME" />님, 환영합니다</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진을 비롯하여 개발자 설정에 따라 앱에서 저장한 모든 데이터가 포함될 수 있습니다. 백업 데이터는 Drive 스토리지 저장용량에 포함되지 않습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />이 서비스는 설정에서 사용 중지할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">iPhone에서 이 북마크 이용하기</translation>
@@ -1258,6 +1259,7 @@
 <translation id="1900305421498694955">Google Play의 앱이 외부 저장장치에 있는 파일을 읽고 쓰기 위해 전체 파일 시스템 액세스 권한을 요구할 수도 있습니다. 이 기기에서 생성된 파일 및 폴더는 외장 드라이브를 사용하는 모든 사람이 볼 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">관리자에게 앱 업데이트를 요청하세요</translation>
 <translation id="1901303067676059328">전체 선택(&amp;A)</translation>
+<translation id="1901760057081700494">현재 시간대가 <ph name="TIME_ZONE_ENTRY" />(으)로 설정되어 있습니다. 시간대를 자동으로 업데이트하려면 <ph name="BEGIN_LINK" />시스템 위치 액세스를 사용 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="1904580727789512086">내가 방문한 URL이 Google 계정에 저장됩니다.</translation>
 <translation id="1906181697255754968">사이트에서는 일반적으로 작업 자동 저장 등의 기능을 위해 기기의 파일과 폴더에 액세스합니다.</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />에서 더 많은 확장 프로그램 및 테마를 찾아보세요.</translation>
@@ -1630,7 +1632,6 @@
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="217631816678106981">붙여넣지 않음</translation>
-<translation id="2177306523871626993">텍스트 인식 파일 다운로드 중… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">시크릿 탭: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">sshd 데몬을 설정하고 USB 드라이브에서 부팅할 수 있도록 하는 ChromeOS Flex 디버깅 기능을 사용 설정합니다.</translation>
@@ -1839,6 +1840,7 @@
 <translation id="2314774579020744484">페이지 번역 시 사용하는 언어</translation>
 <translation id="2316129865977710310">아니요, 괜찮습니다.</translation>
 <translation id="2316433409811863464">앱 스트리밍</translation>
+<translation id="2316709634732130529">추천 비밀번호 사용</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 완료</translation>
 <translation id="2318143611928805047">용지 크기</translation>
 <translation id="2318817390901984578">Android 앱을 사용하려면 <ph name="DEVICE_TYPE" />을(를) 충전하고 업데이트하세요.</translation>
@@ -1885,7 +1887,6 @@
 <translation id="2350182423316644347">애플리케이션 초기화 중...</translation>
 <translation id="235028206512346451">기기를 두고 떠나면 화면이 자동으로 잠깁니다. 기기 앞에 있으면 화면의 절전모드 해제 상태가 더 오래 유지됩니다. 잠금 화면을 사용하고 있지 않은 경우 기기가 잠기지 않고 절전 모드로 전환됩니다.</translation>
 <translation id="2351923523007389195">허용됨 – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />시스템 위치 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
-<translation id="2352305801620974284">이 기기에 로그인하면 Google 계정에서 비밀번호 등을 가져옵니다.</translation>
 <translation id="2352662711729498748">1MB 미만</translation>
 <translation id="2352810082280059586">잠금 화면 메모는 자동으로 <ph name="LOCK_SCREEN_APP_NAME" />에 저장됩니다. 가장 최근 메모는 잠금 화면에 계속 표시됩니다.</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
@@ -2215,6 +2216,7 @@
 <translation id="2581992808349413349">보안 연결을 사용하여 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회합니다. 이는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />(플랫폼 <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos 티켓을 가져올 수 없습니다. 다시 시도해 보거나 조직의 기기 관리자에게 문의하세요. (오류 코드 <ph name="ERROR_CODE" />)</translation>
+<translation id="2584974473573720127">Chrome에서 웹사이트 마이크 권한 관리하기</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> 앱을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2586672484245266891">더 짧은 URL을 입력하세요.</translation>
@@ -2404,6 +2406,9 @@
 <translation id="2727744317940422214">죄송합니다. 문제가 발생했습니다. 설명에 의견을 작성하고 #bruschetta라고 표시하여 제출해 주세요. 오류 코드는 <ph name="ERROR" />입니다. 데이터를 지울 수 없습니다. 직접 삭제해야 할 수도 있습니다.</translation>
 <translation id="2729327310379176711">Chrome은 사용자 추적을 줄이고 안전은 강화하는 새로운 브라우징 방식을 모색 중입니다. 또한 Chrome은 <ph name="ESTIMATE_INTERESTS_LINK" />하고 내가 직접 이를 관리할 수 있도록 합니다. 이후 방문하는 사이트에서는 Chrome이 알려주는 내 관심분야에 따라 광고를 표시할 수 있습니다.</translation>
 <translation id="2729577602370119849">간편한 프린터 액세스 및 관리</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 이 기기 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google은 이 기기에서 수집된 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다. 이 정보는 개인을 식별하는 데 사용되지 않습니다.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />언제든지 이 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 위치 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux 앱 및 파일 백업 중</translation>
 <translation id="2730596696987224099">내 비밀번호 선택</translation>
 <translation id="2730647855013151888">모든 개인 정보 포함</translation>
@@ -3257,6 +3262,7 @@
 <translation id="338323348408199233">VPN 없는 트래픽 차단</translation>
 <translation id="3384362484379805487">디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">위치 정확도는 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 사용자의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 전반적으로 개선, 제공, 유지하는 데 사용됩니다.</translation>
 <translation id="338583716107319301">구분자</translation>
 <translation id="3385916046075724800">이제 탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3678,7 +3684,6 @@
 <translation id="3694590407685276748">텍스트 커서 강조표시</translation>
 <translation id="369489984217678710">비밀번호 및 기타 로그인 데이터</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{보안 확인이 완료되었습니다. 데이터가 업로드됩니다.}=1{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}other{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}}</translation>
-<translation id="3696817060563289264">텍스트 인식 파일 다운로드됨</translation>
 <translation id="369736917241079046">런처 + 왼쪽 화살표</translation>
 <translation id="3697716475445175867">마지막으로 열어본 날짜</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
@@ -3990,7 +3995,6 @@
 <translation id="3898768766145818464">동영상 재생 또는 일시중지</translation>
 <translation id="389901847090970821">키보드 선택</translation>
 <translation id="3900966090527141178">비밀번호 내보내기</translation>
-<translation id="3902789559055749153"><ph name="APP_NAME" />의 패스키 생성 방법을 선택하세요.</translation>
 <translation id="3903187154317825986">내장 키보드</translation>
 <translation id="3903696968689283281">Wi-Fi Direct 소유자 정보:</translation>
 <translation id="3904326018476041253">위치 서비스</translation>
@@ -4064,6 +4068,7 @@
 <translation id="3950841222883198950">음성 입력</translation>
 <translation id="3953834000574892725">내 계정</translation>
 <translation id="3954354850384043518">진행 중</translation>
+<translation id="3954468641195530330">앱에서 마이크를 사용하도록 허용되지 않습니다.</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" />x<ph name="HEIGHT" />(<ph name="REFRESH_RATE" />Hz)</translation>
 <translation id="3954953195017194676">최근 캡처한 WebRTC 이벤트 로그가 없습니다.</translation>
 <translation id="3955321697524543127">사이트에서 USB 기기에 연결하도록 허용하지 않음</translation>
@@ -4122,6 +4127,10 @@
 <translation id="3988124842897276887">이 탭이 USB 기기에 연결되었습니다</translation>
 <translation id="3988996860813292272">시간대 선택</translation>
 <translation id="3991055816270226534">서드 파티 쿠키 및 추적 보호 기능 관리</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 이 기기 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google은 이 기기에서 수집된 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다. 이 정보는 개인을 식별하는 데 사용되지 않습니다.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />언제든지 이 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 위치 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />위치 정확도 자세히 알아보기<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">가져온 북마크</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> 다운로드 중, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">데이터 백업</translation>
@@ -4163,7 +4172,6 @@
 <translation id="4028467762035011525">입력 방법 추가</translation>
 <translation id="4029024445166427442">런처 + Shift + 백스페이스</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> 페이지에서 돌아오기</translation>
-<translation id="403088439874411464">텍스트 인식 파일 다운로드 중</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4031527940632463547">센서 차단됨</translation>
 <translation id="4033471457476425443">새 폴더 추가</translation>
@@ -4275,6 +4283,10 @@
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 사용자 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google은 사용자를 식별하지 않고 이 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />언제든지 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 위치 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />위치 정확도 자세히 알아보기<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Google Drive에서 최근 활동으로 쉽게 돌아갈 수 있도록 표시된 추천 파일입니다.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4399,7 +4411,6 @@
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4222917615373664617">가격 추적이 사용 설정되었습니다. 가격은 <ph name="CURRENT_PRICE" />입니다.</translation>
 <translation id="4223404254440398437">마이크가 허용되지 않음</translation>
-<translation id="4223845867739585293">패스키 생성</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
 <translation id="4228071595943929139">조직의 이메일 주소 사용</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>
@@ -4710,7 +4721,6 @@
 <translation id="4449948729197510913">사용자 이름이 조직의 회사 계정에 속합니다. 기기를 계정에 등록하려면 먼저 관리 콘솔에서 도메인 소유권을 인증하세요. 인증하려면 계정에서 관리자 권한이 있어야 합니다.</translation>
 <translation id="4450974146388585462">진단</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" />에서 데이터를 더욱 안전하게 저장할 수 있는 활성 상태의 TPM을 감지했습니다.</translation>
-<translation id="4451203458188403050">PDF에서 텍스트 추출</translation>
 <translation id="4452898361839215358">또는 PPD를 선택합니다 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">키보드 오른쪽 상단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />에서 검색하거나 URL을 입력하세요.</translation>
@@ -5053,6 +5063,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4716483597559580346">파워워시를 사용하여 보안 강화</translation>
 <translation id="4716715661140829720">저장공간이 충분하지 않음</translation>
 <translation id="471759229191973607">테마 변경</translation>
+<translation id="4719276504493791870">앱에서 내 위치를 사용할 수 없습니다.</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />의 비밀번호</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />에서 내 화면을 공유하는 중입니다.</translation>
 <translation id="4722989931633062466">서드 파티 로그인 메시지 표시가 허용되지 않음</translation>
@@ -5266,6 +5277,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4879491255372875719">자동(기본값)</translation>
 <translation id="4880315242806573837">보안 업데이트가 곧 종료됩니다. 새 Chromebook으로 업그레이드하세요.</translation>
 <translation id="4880827082731008257">기록 검색</translation>
+<translation id="4881632956374597321">위치 정보 액세스 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 위치 정보를 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
@@ -5511,6 +5523,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5079010647467150187">기본 제공 VPN 추가...</translation>
 <translation id="5079460277417557557">이제 로그인한 데스크톱 기기에서 저장된 탭 그룹을 사용할 수 있습니다.</translation>
 <translation id="5079699784114005398">이 기능을 사용 설정하면 Google 계정으로 로그인한 후 모든 ChromeOS 기기에서 앱을 사용할 수 있습니다. 브라우저 동기화가 사용 중지되어 있어도 Chrome 브라우저에서 설치된 웹 앱이 동기화됩니다.</translation>
+<translation id="5079950360618752063">추천 비밀번호 사용</translation>
 <translation id="508059534790499809">Kerberos 티켓 새로고침</translation>
 <translation id="5081124414979006563">게스트 프로필 열기(&amp;O)</translation>
 <translation id="5083035541015925118">Ctrl + Alt + 위쪽 화살표</translation>
@@ -5661,6 +5674,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5186788525428341874">이 패스키를 사용하여 모든 기기에서 더 빠르게 로그인할 수 있습니다. 비밀번호가 <ph name="ACCOUNT_NAME" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="5187641678926990264">&amp;다음 앱으로 페이지 설치(&amp;I)...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />(<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">위치를 사용합니다. 위치 정보 액세스 권한이 있는 ChromeOS 및 Android의 앱, 웹사이트, 서비스에서 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 사용자의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다. <ph name="BEGIN_LINK1" />위치 사용 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> 사용 중</translation>
 <translation id="5190926251776387065">포트 활성화</translation>
 <translation id="5190959794678983197">마이크 없음</translation>
@@ -5706,6 +5720,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
 <translation id="52254442782792731">현재 공개 범위가 아직 설정되어 있지 않음</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
+<translation id="5226731562812684363">웹사이트에서 내 위치를 사용할 수 없습니다.</translation>
 <translation id="5227679487546032910">기본 청록색 아바타</translation>
 <translation id="5228245824943774148">기기 <ph name="NUM_DEVICES_CONNECTED" />대 연결됨</translation>
 <translation id="5228579091201413441">동기화 사용</translation>
@@ -6580,6 +6595,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5885314688092915589">이 프로필은 조직에서 관리합니다</translation>
 <translation id="5885470467814103868">검색 시작</translation>
 <translation id="5885631909150054232">토큰 복사</translation>
+<translation id="5886000783338788034">ChromeOS 설정에서 위치가 사용 중지됨</translation>
 <translation id="5886009770935151472">지문 1</translation>
 <translation id="5886112770923972514">근처의 빠른 페어링 기기를 연결하고 간단히 설정합니다</translation>
 <translation id="5886384907280980632">지금 끄기</translation>
@@ -7112,6 +7128,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="628352644014831790">4초</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 다운로드하지 않습니다.</translation>
 <translation id="6285770818046456882">나와 공유 중인 기기에서 전송을 취소했습니다.</translation>
+<translation id="628699625505156622">위치를 사용합니다. 위치 정보 액세스 권한이 있는 ChromeOS 및 Android 앱, 웹사이트, 서비스가 이 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 개인의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다. <ph name="BEGIN_LINK1" />위치 사용 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">프린터 설정에서 프린터 관리</translation>
 <translation id="6287828400772161253">Android 휴대전화(<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">근처에 공유 가능한 기기가 없습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -7282,7 +7299,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6429384232893414837">업데이트 오류</translation>
 <translation id="6430814529589430811">Base64-인코딩 ASCII, 단일 인증서</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />에서 이 컴퓨터의 모든 사용자에 대해 자동 업데이트를 설정합니다.</translation>
-<translation id="6432072919019816301">PDF를 스캔하여 보조 기술용 텍스트를 추출합니다</translation>
 <translation id="6434104957329207050">지점 스캔 속도</translation>
 <translation id="6434309073475700221">삭제</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 업데이트해야 합니다.</translation>
@@ -7636,6 +7652,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6703613667804166784">이 파일로 인해 개인 및 소셜 네트워크 계정(<ph name="USER_EMAIL" /> 포함)이 손상될 수 있습니다.</translation>
 <translation id="6707122714992751648">ChromeOS 진단 테스트를 실행합니다.</translation>
 <translation id="6707389671160270963">SSL 클라이언트 인증서</translation>
+<translation id="6707671917294473995">웹사이트에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 외 탭 1개}other{<ph name="PAGE_TITLE" /> 외 탭 #개}}</translation>
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />을(를) 사용하여 연결</translation>
@@ -7645,6 +7662,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6713233729292711163">직장 프로필 추가</translation>
 <translation id="6713441551032149301">런처 키를 길게 눌러 기능 키와 시스템 맨 위 키 간에 전환</translation>
 <translation id="6713668088933662563">다음 언어 번역 제공 안 함</translation>
+<translation id="6715735940363172819">웹사이트에서 마이크를 사용할 수 없습니다.</translation>
 <translation id="6715803357256707211">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다. 알림을 클릭하면 자세한 정보를 확인할 수 있습니다.</translation>
 <translation id="6716798148881908873">네트워크 연결이 끊어졌습니다. 네트워크 연결을 확인하거나 다른 Wi-Fi 네트워크를 사용해 보세요.</translation>
 <translation id="6718849325281682232">어두운 모드를 사용하든 밝은 모드를 사용하든 모든 사용자가 더 나은 경험을 할 수 있도록 Chrome 테마 색상이 업데이트되었습니다.</translation>
@@ -8669,6 +8687,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7489761397368794366">기기에서 전화 걸기</translation>
 <translation id="749028671485790643">사용자 이름 <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">나머지 비밀번호 확인</translation>
+<translation id="7490938136316476492">위치가 사용 중지되었습니다. ChromeOS 기기에서 위치에 액세스하지 않습니다. 하지만 앱과 웹사이트에서 IP 주소와 같은 정보를 통해 대략적인 위치를 확인할 수는 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{쿠키 1개}other{쿠키 {NUM_COOKIES}개}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 확장 프로그램에서 비밀번호와 신용카드 번호 등의 개인정보를 포함해 입력하는 모든 텍스트를 수집할 수 있습니다. 이 확장 프로그램을 사용하시겠어요?</translation>
@@ -8890,7 +8909,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7660146600670077843">탭을 마우스 오른쪽 버튼으로 클릭하고 '새 그룹에 탭 추가'를 선택합니다.</translation>
 <translation id="7661259717474717992">사이트에서 쿠키 데이터 저장 및 읽기 허용</translation>
 <translation id="7661451191293163002">등록 인증서를 확인할 수 없습니다.</translation>
-<translation id="7662164944369232556">텍스트 인식 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7663719505383602579">수신기: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">단축키 사용 가능</translation>
@@ -9031,6 +9049,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7758450972308449809">디스플레이 경계를 조정합니다.</translation>
 <translation id="7758884017823246335">사이트 검색 추가</translation>
 <translation id="7759809451544302770">선택사항</translation>
+<translation id="7760176388948986635">위치 정보 액세스 권한이 있는 ChromeOS 및 Android 앱, 웹사이트, 서비스가 이 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 개인의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다.</translation>
 <translation id="7762024824096060040">이 계정을 사용할 수 없음</translation>
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />에서 <ph name="DOWNLOAD_RECEIVED" />을(를) 다운로드함</translation>
@@ -9150,6 +9169,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7839051173341654115">미디어 보기/백업</translation>
 <translation id="7839192898639727867">인증서 대상 키 ID</translation>
 <translation id="7839696104613959439">네트워크 선택 렌더링</translation>
+<translation id="7840222916565569061">앱에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="7842062217214609161">단축키 없음</translation>
 <translation id="7842692330619197998">새 계정을 만들려면 g.co/ChromeEnterpriseAccount를 방문하세요.</translation>
 <translation id="784273751836026224">Linux 제거</translation>
@@ -10163,12 +10183,13 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8584843865238667486">사용량 페이지 <ph name="USAGE_PAGE" />의 HID 기기(사용량: <ph name="USAGE" />)</translation>
 <translation id="8585480574870650651">Crostini 삭제</translation>
 <translation id="8585841788766257444">다음 사이트는 기본 설정이 아닌 맞춤 설정을 따릅니다.</translation>
+<translation id="8586421813321819377">위치 정보 액세스 권한이 있는 ChromeOS 및 Android의 앱, 웹사이트, 서비스에서 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 사용자의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다.</translation>
 <translation id="8587660243683137365">이 페이지를 앱으로 설치</translation>
 <translation id="8588866096426746242">프로필 통계 보기</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 헤드셋에 VR 전송 중</translation>
 <translation id="8590375307970699841">자동 업데이트 설정</translation>
 <translation id="8591783563402255548">1초</translation>
-<translation id="8592141010104017453">알림 표시 안함</translation>
+<translation id="8592141010104017453">알림 표시 안 함</translation>
 <translation id="859246725979739260">이 사이트는 위치에 액세스할 수 없도록 차단되었습니다.</translation>
 <translation id="8593450223647418235">설정이 완료될 때까지 Microsoft 365에서 파일을 열 수 없습니다.</translation>
 <translation id="8593686980889923154"><ph name="DEVICE_TYPE" />에서 <ph name="APP_NAME" /> 앱이 차단되었습니다</translation>
@@ -10384,6 +10405,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8736288397686080465">이 사이트는 백그라운드에서 업데이트되었습니다.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">페이지를 번역할 언어 선택</translation>
+<translation id="8737966899544698733">위치 정확도(Android만 해당)</translation>
 <translation id="8738418093147087440">국가, 언어 또는 입력 이름으로 검색</translation>
 <translation id="8740086188450289493">Google 계정 비밀번호 사용</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
@@ -10455,12 +10477,16 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8793390639824829328">사이트에서 이 기능을 사용하여 공유한 탭을 스크롤하고 확대/축소합니다</translation>
 <translation id="879413103056696865">핫스팟이 사용 설정되어 있는 동안 <ph name="PHONE_NAME" />이(가) 다음과 같이 작동함</translation>
 <translation id="8795916974678578410">새 창</translation>
+<translation id="8796907593900732741">시스템 서비스에서만 내 위치 정보를 사용할 수 있습니다. 하지만 앱과 웹사이트에서 IP 주소와 같은 정보를 통해 대략적인 위치를 확인할 수는 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Chrome 맞춤설정(&amp;U)</translation>
 <translation id="8797459392481275117">이 사이트 번역 안함</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8803953437405899238">클릭 한 번으로 새 탭을 열 수 있습니다.</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 사용자 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google은 사용자를 식별하지 않고 이 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />언제든지 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 위치 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">사용할 브라우저</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{탭을 다른 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
 <translation id="8805140816472474147">동기화를 시작하려면 동기화 설정을 확인하세요.</translation>

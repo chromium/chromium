@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">แก้ไขรายละเอียด APN</translation>
 <translation id="2195732836444333448">ขณะนี้ถึงขีดจำกัดแล้ว โปรดกลับมาใหม่เร็วๆ นี้</translation>
 <translation id="2201758491318984023">จักรยาน</translation>
-<translation id="2203222757805818543">กำหนดเวลาปัจจุบันคือ <ph name="SUNRISE" /> - <ph name="SUNSET" /> หากต้องการอัปเดตกำหนดเวลาของโหมดมืดโดยอัตโนมัติ ให้<ph name="BEGIN_LINK" />เปิดการเข้าถึงตำแหน่ง<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">น้ำพุร้อน</translation>
 <translation id="2203642483788377106">หน้าผา</translation>
 <translation id="2208388655216963643">อิมเพรสชันนิสม์</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">เนินทราย</translation>
 <translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
 <translation id="2620436844016719705">ระบบ</translation>
+<translation id="2637303424821734920">ปิด - หากต้องการแสดงสภาพอากาศในพื้นที่ ให้<ph name="BEGIN_LINK" />เปิดการเข้าถึงตำแหน่งของระบบ<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
 <translation id="2640549051766135490">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /> อยู่</translation>
 <translation id="2645380101799517405">ตัวควบคุม</translation>
@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">พื้นหลัง</translation>
 <translation id="3027578600144895987">ปิดกล้อง</translation>
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
+<translation id="3051968340259309715">การตั้งค่านี้จะช่วยให้บริการของระบบใช้ความแม่นยำของตำแหน่งเพื่อระบุตำแหน่งของคุณได้ ความแม่นยำของตำแหน่งจะใช้ข้อมูลเกี่ยวกับสัญญาณไร้สาย เช่น จุดเข้าใช้งาน Wi-Fi, เสาเครือข่ายมือถือ และ GPS ตลอดจนข้อมูลเซ็นเซอร์ของอุปกรณ์ เช่น ตัวตรวจวัดความเร่งและเครื่องวัดการหมุน เพื่อประมาณตำแหน่งของอุปกรณ์ คุณปิดตำแหน่งได้ในการตั้งค่า &gt; ความเป็นส่วนตัวและความปลอดภัย &gt; การควบคุมความเป็นส่วนตัว &gt; การเข้าถึงตำแหน่ง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ปลายทาง</translation>
 <translation id="3060579846059757016">โครงร่าง</translation>

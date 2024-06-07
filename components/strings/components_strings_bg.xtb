@@ -2681,6 +2681,7 @@
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6167577165590485365">Последен опит за извличане:</translation>
 <translation id="617256461084925519">Google Chrome се опитва да потвърди, че това сте вие, за да може да попълни данните ви за плащане.</translation>
+<translation id="6173208311907792313">Завършете покупката посредством Windows Hello</translation>
 <translation id="6176387967264100435">Тази цена е висока</translation>
 <translation id="6177128806592000436">Връзката ви с този сайт не е защитена</translation>
 <translation id="6177531123306197852">Плик C2</translation>
@@ -2986,7 +2987,6 @@
 <translation id="6753269504797312559">Стойност за правилото</translation>
 <translation id="6753434778807740853">Изтриване на записа <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Спестовни сметки</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Устройството ви премина в спящ режим.</translation>
 <translation id="6760548828952594090">Тази карта не бе запазена в профила ви в Google. Вместо това е запазена в Chrome на това устройство.</translation>
 <translation id="6766558780547452153">Готварство и рецепти</translation>
@@ -3839,6 +3839,7 @@
 <translation id="8332188693563227489">Достъпът до <ph name="HOST_NAME" /> бе отказан</translation>
 <translation id="833262891116910667">Открояване</translation>
 <translation id="8339163506404995330">Страниците на <ph name="LANGUAGE" /> няма да се превеждат</translation>
+<translation id="8339275256517065202">Завършете покупката посредством Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Диалоговият прозорец за регистриране на виртуална карта е отворен на пълната височина</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
@@ -4032,6 +4033,7 @@
 <translation id="8726549941689275341">Размер на страниците:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Код за сигурност</translation>
+<translation id="8731917264694569036">Завършете покупката посредством устройството си</translation>
 <translation id="8733345475331865475">Автомобилно застраховане</translation>
 <translation id="8733764070897080460">Можете да блокирате темите, които не искате да се споделят със сайтовете. Също така Chrome автоматично изтрива темите, по-стари от 4 седмици. Научете повече</translation>
 <translation id="8734529307927223492">Вашият <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
@@ -4225,6 +4227,7 @@
 <translation id="9116548361133462832">Повече за рекламите в Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, натиснете Tab и след това Enter, за да продължите пътешествието си и да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="9119042192571987207">Качено</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> иска да потвърди, че това сте вие</translation>
 <translation id="912327514020027767">Поли</translation>
 <translation id="912414390325846156">По-рано избрахте да не се разрешава за този сайт</translation>
 <translation id="9128870381267983090">Свързване към мрежа</translation>
@@ -4248,7 +4251,6 @@
 <translation id="9155646082713385498">Списания</translation>
 <translation id="9157595877708044936">Настройва се...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файлът „<ph name="FILE_NAME" />“ може да включва деликатно съдържание}other{<ph name="FILE_COUNT" /> файла може да включват деликатно съдържание}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Посещаваните от вас сайтове също могат да определят какво харесвате въз основа на активността ви в тях. Ако например посетите даден сайт, в който се продават обувки за бягане на дълги разстояния, той може да реши, че се интересувате от участие в маратони.</translation>
 <translation id="9166851138617700776">Още за предложените от сайтовете реклами и измерването на рекламите</translation>
 <translation id="9167054383925257837">информацията за браузъра и операционната система на устройството (например версиите на браузъра и операционната система);</translation>

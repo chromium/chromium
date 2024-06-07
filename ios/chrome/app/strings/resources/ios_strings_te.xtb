@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
 <translation id="1753905327828125965">అధికంగా సందర్శించేది</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} బలహీనమైన పాస్‌వర్డ్}other{{count} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
+<translation id="1764070164487214210">దిశలు</translation>
 <translation id="1766411844240160513">ఆటోఫిల్ ఫారమ్</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">వ్యక్తిగతీకరించిన కంటెంట్</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">అజ్ఞాత ట్యాబ్‌లు</translation>
 <translation id="3775743491439407556">సింక్ పని చేయడం లేదు</translation>
 <translation id="3779810277399252432">ఇంటర్నెట్ కనెక్షన్ లేదు.</translation>
+<translation id="3785672280731998727">డిస్‌ప్లే పేరు</translation>
 <translation id="3789294999358192700">కింది దశలను ఫాలో అవ్వండి:</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3803696231112616155">ఈ సైట్‌కు అనువాదం అందించే సూచన</translation>
 <translation id="3808311849069021992">సెర్చ్ ఇంజిన్ వివరాలను చూడండి</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
+<translation id="3812308602011798782">రివ్యూలు</translation>
 <translation id="3818045793209708987">ఈ ప్యాకేజీని ట్రాక్ చేయడం ఆపివేయబడింది</translation>
 <translation id="3818293389945649617">తరువాతది కనుగొనండి</translation>
 <translation id="3819183753496523827">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">సేవ్ చేసిన మీ పాస్‌వర్డ్‌లను ఏ యాప్‌లో అయినా ఒక్క ట్యాప్‌తో పొందండి</translation>
 <translation id="4049507953662678203">మీ ఇంట‌ర్నెట్ ప‌ని చేస్తోందో లేదో చెక్ చేసుకుని మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4054572406751135230">వార్తలు, క్రీడలు, ఇంకా మరిన్ని వాటి గురించి తెలుసుకోండి.</translation>
+<translation id="4068959193278821990">మెరుగైన రక్షణను ఆన్ చేయండి...</translation>
 <translation id="4092655288299341041">సహాయాన్ని చూడండి</translation>
 <translation id="4105841739161771091">{count,plural, =1{అడ్రస్‌ను తొలగించండి}other{అడ్రస్‌లను తొలగించండి}}</translation>
 <translation id="4108998448622696017">ప్రమాదకరమైన సంఘటనలు జరిగినప్పుడు గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">నికర ఎగుమతి డేటాను పంపడానికి, దయచేసి సెట్టింగ్‌ల యాప్‌లో మీ ఈమెయిల్‌ ఖాతాను కాన్ఫిగర్ చేయండి.</translation>
 <translation id="4124987746317609294">సమయ పరిధి</translation>
 <translation id="4133265950310064865">మెరుగైన రక్షణ</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">ఈ వెబ్‌సైట్ ఒక ఫైల్‌ను డౌన్‌లోడ్ చేసి, దానిని మీ క్యాలెండర్‌కు జోడించాలనుకుంటోంది.</translation>
 <translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
@@ -1034,6 +1039,7 @@
 <translation id="6232329973559504466">అజ్ఞాత సెర్చ్</translation>
 <translation id="6236952928980352967">హెచ్చరికను రీస్టోర్ చేయండి</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6251835855431997163"><ph name="VALUE" />‌ను ఆటోఫిల్ చేయండి</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
 <translation id="6255097610484507482">క్రెడిట్ కార్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6266039999629596120">చర్య అవసరం</translation>
@@ -1212,6 +1218,7 @@
 <translation id="7022197654033719543">సైట్ సమాచారం</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
 <translation id="704692552158601232">ఆటోమేటిక్ బ్రౌజర్ యాప్</translation>
+<translation id="7055240621761583113">పాస్‌వర్డ్‌ను ఆటోఫిల్ చేయండి</translation>
 <translation id="7063811929043357292">మీ ఖాతాను మీ తల్లి/తండ్రి మేనేజ్ చేస్తున్నారు.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">ఈ పరికరం నుండి తీసివేయండి</translation>
@@ -1470,6 +1477,7 @@
 <translation id="834783239627985533">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
 <translation id="8358401059263985056">నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> కోసం Google Photosలో ఇమేజ్‌ను సేవ్ చేస్తోంది...</translation>
+<translation id="8369246252708539904">పాస్-కీని తొలగించండి</translation>
 <translation id="8370406443343902172">సెట్టింగ్‌లకు వెళ్లండి...</translation>
 <translation id="8374977641764177587">నోటిఫికేషన్‌లను ఆన్ చేయాలా?</translation>
 <translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>

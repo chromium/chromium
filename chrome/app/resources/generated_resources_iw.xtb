@@ -884,7 +884,6 @@
 <translation id="1634224622052500893">‏נמצאה רשת Wi-Fi</translation>
 <translation id="1634783886312010422">האם כבר שינית את הסיסמה הזו באתר <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">אישור</translation>
-<translation id="1636542522761359943">שלום, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760">‏<ph name="BEGIN_PARAGRAPH1" />נתוני האפליקציות כוללים את כל הנתונים שאפליקציה מסוימת שמרה (בהתאם להגדרות המפתח), כולל נתונים כמו אנשי קשר, הודעות ותמונות. נתוני גיבוי לא נחשבים כחלק ממכסת האחסון שלך ב-Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />אפשר להשבית את השירות הזה ב'הגדרות'.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">‏שליחה של סימנייה זו למכשיר ה-iPhone</translation>
@@ -1628,7 +1627,6 @@
 <translation id="217576141146192373">לא ניתן להוסיף מדפסת. יש לבדוק את הגדרת המדפסת ולנסות שוב.</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="217631816678106981">לא להדביק</translation>
-<translation id="2177306523871626993">מתבצעת הורדה של קובצי זיהוי טקסט… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">כרטיסייה אנונימית: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">‏פעולה זו מאפשרת פעילות של תכונות לניפוי באגים במערכת ההפעלה של ChromeOS Flex שיגדירו sshd daemon ויאפשרו אתחול מכונני USB.</translation>
@@ -1836,6 +1834,7 @@
 <translation id="2314774579020744484">השפה שאליה דפים יתורגמו</translation>
 <translation id="2316129865977710310">לא, תודה</translation>
 <translation id="2316433409811863464">סטרימינג של אפליקציה</translation>
+<translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
 <translation id="2317842250900878657">%<ph name="PROGRESS_PERCENT" />הושלמו</translation>
 <translation id="2318143611928805047">גודל נייר</translation>
 <translation id="2318817390901984578">‏כדי להשתמש באפליקציות Android עליך לטעון את ה-<ph name="DEVICE_TYPE" /> ולעדכן אותו.</translation>
@@ -1882,7 +1881,6 @@
 <translation id="2350182423316644347">אתחול היישום מתבצע...</translation>
 <translation id="235028206512346451">אם מתרחקים מהמכשיר, המסך ננעל באופן אוטומטי. כשנמצאים מול המכשיר, המסך לא נכנס למצב שינה למשך יותר זמן. אם לא משתמשים במסך נעילה, המכשיר נכנס למצב שינה במקום להינעל.</translation>
 <translation id="2351923523007389195">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את ה<ph name="LINK_BEGIN" />גישה למיקום המערכת<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">‏אם נכנסת לחשבון במכשיר הזה, תהיה לך אפשרות להשתמש בסיסמאות ובפרטים נוספים מהחשבון שלך ב-Google</translation>
 <translation id="2352662711729498748">‏&lt; MB‏ 1</translation>
 <translation id="2352810082280059586">הערות שנכתבות כשמסך הנעילה פועל נשמרות באופן אוטומטי ב-<ph name="LOCK_SCREEN_APP_NAME" />. ההערה האחרונה שכתבת תמשיך להופיע במסך הנעילה.</translation>
 <translation id="2353297238722298836">ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
@@ -3675,7 +3673,6 @@
 <translation id="3694590407685276748">הדגשת סמן הטקסט</translation>
 <translation id="369489984217678710">סיסמאות ונתוני כניסה אחרים</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{בדיקות האבטחה הסתיימו. הנתונים שלך יועלו.}=1{בדיקות האבטחה הסתיימו. הקובץ שלך יועלה.}one{בדיקות האבטחה הסתיימו. הקבצים שלך יועלו.}two{בדיקות האבטחה הסתיימו. הקבצים שלך יועלו.}other{בדיקות האבטחה הסתיימו. הקבצים שלך יועלו.}}</translation>
-<translation id="3696817060563289264">ההורדה של קובצי זיהוי הטקסט הסתיימה</translation>
 <translation id="369736917241079046">מרכז האפליקציות + חץ שמאלה</translation>
 <translation id="3697716475445175867">נפתחו לאחרונה</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{יש לך אפשרות להפסיק את שליחת ההתראות העתידיות מהאתר הזה.}one{יש לך אפשרות להפסיק את שליחת ההתראות העתידיות מהאתרים האלה.}two{יש לך אפשרות להפסיק את שליחת ההתראות העתידיות מהאתרים האלה.}other{יש לך אפשרות להפסיק את שליחת ההתראות העתידיות מהאתרים האלה.}}</translation>
@@ -3987,7 +3984,6 @@
 <translation id="3898768766145818464">הפעלה או השהיה של הסרטון</translation>
 <translation id="389901847090970821">בחירת מקלדת</translation>
 <translation id="3900966090527141178">ייצוא סיסמאות</translation>
-<translation id="3902789559055749153">עליך לבחור איך ברצונך ליצור מפתח גישה עבור <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">מקלדת מובנית</translation>
 <translation id="3903696968689283281">‏פרטי הבעלים של Wi-Fi ישיר:</translation>
 <translation id="3904326018476041253">שירותי מיקום</translation>
@@ -4160,7 +4156,6 @@
 <translation id="4028467762035011525">הוספה של שיטות קלט</translation>
 <translation id="4029024445166427442">‏מרכז האפליקציות + Shift + מקש Backspace</translation>
 <translation id="4029556917477724407">חזרה מהדף <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">מתבצעת הורדה של קובצי זיהוי טקסט</translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4031527940632463547">החיישנים חסומים</translation>
 <translation id="4033471457476425443">הוספת תיקייה חדשה</translation>
@@ -4398,7 +4393,6 @@
 <translation id="4220648711404560261">קרתה שגיאה בזמן ההפעלה.</translation>
 <translation id="4222917615373664617">המעקב אחר מחירים מופעל. המחיר הוא <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">אין הרשאת גישה למיקרופון</translation>
-<translation id="4223845867739585293">יצירה של מפתח גישה</translation>
 <translation id="4225397296022057997">בכל האתרים</translation>
 <translation id="4228071595943929139">שימוש בכתובת האימייל של הארגון שלך</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{אסור להתקין את התוסף הזה}one{אסור להתקין את חלק מהתוספים האלה}two{אסור להתקין את חלק מהתוספים האלה}other{אסור להתקין את חלק מהתוספים האלה}}</translation>
@@ -4710,7 +4704,6 @@
 <translation id="4449948729197510913">‏שם המשתמש שלך שייך לחשבון הארגוני של הארגון שלך. כדי לרשום מכשירים בחשבון, תחילה יש לאמת שיש לך בעלות על הדומיין במסוף Admin. נדרשות הרשאות אדמין בחשבון כדי לבצע את האימות.</translation>
 <translation id="4450974146388585462">אבחן</translation>
 <translation id="445099924538929605">‏מערכת <ph name="DEVICE_OS" /> זיהתה TPM פעיל שניתן לשמור בו את הנתונים שלך באופן מאובטח יותר.</translation>
-<translation id="4451203458188403050">‏חילוץ טקסט מקובץ PDF</translation>
 <translation id="4452898361839215358">‏או לבחור קובץ PPD חדש. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">יש לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">אפשר לחפש ב-<ph name="SEARCH_ENGINE_NAME" /> או להקליד כתובת אתר</translation>
@@ -5510,6 +5503,7 @@
 <translation id="5079010647467150187">‏הוספת רשת VPN מובנית…</translation>
 <translation id="5079460277417557557">עכשיו אפשר להשתמש בקבוצות שמורות של כרטיסיות במחשבים שמחוברים לחשבון</translation>
 <translation id="5079699784114005398">‏לאחר ההפעלה, האפליקציות שלך יהיו זמינות בכל מכשיר ChromeOS שנכנסת אליו באמצעות חשבון Google. אפליקציות אינטרנט שהותקנו מדפדפן Chrome יסונכרנו גם אם סנכרון הדפדפן מושבת.</translation>
+<translation id="5079950360618752063">שימוש בסיסמה המוצעת</translation>
 <translation id="508059534790499809">‏רענון של כרטיס Kerberos</translation>
 <translation id="5081124414979006563">&amp;פתיחת פרופיל אורח</translation>
 <translation id="5083035541015925118">‏Ctrl +‏ Alt + חץ למעלה</translation>
@@ -7281,7 +7275,6 @@
 <translation id="6429384232893414837">שגיאת עדכון</translation>
 <translation id="6430814529589430811">‏ASCII בקידוד Base64, אישור יחיד</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> יגדיר עדכונים אוטומטיים לכל המשתמשים במחשב זה.</translation>
-<translation id="6432072919019816301">‏אפשר לסרוק קובץ PDF כדי לחלץ טקסט לשימוש בטכנולוגיה מסייעת</translation>
 <translation id="6434104957329207050">מהירות סריקה של נקודות</translation>
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6434325376267409267">יש לעדכן את המכשיר כדי שאפשר יהיה להשתמש ב-<ph name="APP_NAME" />.</translation>
@@ -8894,7 +8887,6 @@
 <translation id="7660146600670077843">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה חדשה'</translation>
 <translation id="7661259717474717992">‏לאפשר לאתרים לשמור ולקרוא נתונים של קובצי Cookie</translation>
 <translation id="7661451191293163002">לא ניתן להשיג אישור הרשמה.</translation>
-<translation id="7662164944369232556">אין אפשרות להוריד קובצי זיהוי טקסט. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="7662283695561029522">יש להקיש כדי להגדיר</translation>
 <translation id="7663719505383602579">מקבל: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">יש מקשי קיצור</translation>

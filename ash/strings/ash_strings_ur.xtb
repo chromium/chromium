@@ -301,6 +301,7 @@
 <translation id="216955976692983107">ٹائل شدہ ونڈو کا سائز دائیں طرف بدلیں</translation>
 <translation id="2185166372312820725">پچھلے ٹیب پر جائیں</translation>
 <translation id="2185444992308415167">ٹیبز 1 سے 8 تک جائیں</translation>
+<translation id="2195732836444333448">فی الحال گنجائش نہیں ہے۔ بعد میں واپس آئیں۔</translation>
 <translation id="2198625180564913276">پروفائل شامل کی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="219905428774326614">لانچر، سبھی ایپس</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> میں سے حالیہ تصویر <ph name="INDEX" />۔</translation>
@@ -814,6 +815,7 @@
 <translation id="4086921558679520050">اپنے آلے پر فزیکل مائیک سوئچ کو آن کریں</translation>
 <translation id="4101772068965291327">ہوم صفحہ کھولیں</translation>
 <translation id="4112140312785995938">پیچھے کریں</translation>
+<translation id="4113030288477039509">آپ کے منتظم کے زیر انتظام</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="4115378294792113321">میجنٹا</translation>
 <translation id="411881149140864134">بائیں ڈیسک کی طرف فعال کریں</translation>
@@ -847,6 +849,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دستیاب نہیں ہے۔</translation>
 <translation id="4201051445878709314">پچھلا مہینہ دکھائیں</translation>
 <translation id="4209973997261364186">‏Wi-Fi آن ہے</translation>
+<translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
 <translation id="4212472694152630271">‏PIN پر سوئچ کریں</translation>
 <translation id="4215497585250573029">‏VPN کی ترتیبات</translation>
 <translation id="4217571870635786043">املاء</translation>
@@ -1129,6 +1132,7 @@
 <translation id="5208059991603368177">آن</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> تک آف</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
+<translation id="5228195526683428788">اسپلٹ اسکرین ڈیوائیڈر</translation>
 <translation id="5229343007215035173">رازداری کی اسکرین آن/آف کریں</translation>
 <translation id="5230516054153933099">ونڈو</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5599242528220103262">کی بورڈ شارٹ کٹ آف ہے</translation>
 <translation id="5600415762228455511">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے، اس پر فوکس کیا جا رہا ہے: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">‏صوتی تاثرات کو غیر فعال کرنے کے لیے Ctrl + Alt + Z دبائیں۔</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{‏‎&lt; 1‎ گھنٹہ پہلے}=1{1 گھنٹہ پہلے}other{# گھنٹے پہلے}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ہم نے آپ کو بہتر نیٹ ورک پر سوئچ کر دیا ہے</translation>
 <translation id="5619862035903135339">منتظم پالیسی کی وجہ سے اسکرین کیپچر کی وضع غیر فعال ہو جاتی ہے</translation>
@@ -1515,6 +1518,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج استعمال میں ہے | کل <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
 <translation id="6622679827379792051">اپنے فون کی ایپس دیکھنے کو سیٹ اپ کریں</translation>
+<translation id="662279009180869175">اسپلٹ اسکرین کا سائز تبدیل کرنے کیلئے، بائیں اور دائیں تیر کے نشانات والی کلیدوں کا استعمال کریں</translation>
 <translation id="6624493541160101248">موجودہ ڈیسک: <ph name="DESK_NAME" />۔ <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" /> اور دیگر اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1533,6 +1537,7 @@
 <translation id="6670153871843998651">ڈیسک 3</translation>
 <translation id="6671495933530132209">تصویر کاپی کریں</translation>
 <translation id="6671661918848783005">‏اپنے Chromebook کو غیر مقفل نہیں کر سکتے</translation>
+<translation id="6676552993057022464">اسپلٹ اسکرین کا سائز تبدیل کرنے کیلئے، اوپر اور نیچے تیر کے نشانات والی کلیدوں کا استعمال کریں</translation>
 <translation id="6682029141988159141">کلپ بورڈ کے مواد کو پیسٹ کریں</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6686023075541098243">اپنے فون کی اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
@@ -1691,6 +1696,7 @@
 <translation id="7340731148882810149">خودکار کلکس مینیو</translation>
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>
+<translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
 <translation id="7360036564632145207">پیریفیرلزکی ترتیب کیلئے آپ کے ڈیٹا تک رسائی کے تحفظ کی تبدیلی کارکردگی کو بہتر بنا سکتی ہے</translation>
 <translation id="736045644501761622">وال پیپر اور اسٹائل سیٹ کریں</translation>
@@ -1833,7 +1839,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">آلہ کو بطور مہمان استعمال کرنے کے لیے، آپ کو سائن آؤٹ کرنے اور پھر اسکرین کے نیچے مہمان کے طور پر براؤز کریں کو منتخب کرنے کی ضرورت ہے۔</translation>
 <translation id="7866482334467279021">آن</translation>
-<translation id="7866727328666668290">آخری ٹیب کھولا گیا</translation>
 <translation id="7872786842639831132">آف</translation>
 <translation id="7875575368831396199">ایسا لگتا ہے کہ آپ کے <ph name="DEVICE_TYPE" /> پر بلوٹوتھ آف ہے۔ فون ہب کا استعمال کرنے کیلئے براہ کرم بلوٹوتھ آن کریں۔</translation>
 <translation id="7884446017008693258">ہاٹ اسپاٹ کی ترتیبات</translation>
@@ -2140,7 +2145,6 @@
 <translation id="9002204506712855687">تازہ ترین خصوصیات دریافت کریں</translation>
 <translation id="9005984960510803406">‏Crosh ونڈو کھولیں</translation>
 <translation id="9017320285115481645">‏Family Link کا والدین کا رسائی کا کوڈ درج کریں۔</translation>
-<translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9024331582947483881">پوری اسکرین</translation>
 <translation id="9029736946581028033">آلہ جلد ہی بند ہو جائے گا</translation>
 <translation id="9030319654231318877">غروب آفتاب تک آف کریں</translation>

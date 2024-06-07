@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
 <translation id="1753905327828125965">સૌથી વધુ જોવાયેલ</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} નબળો પાસવર્ડ}one{{count} નબળો પાસવર્ડ}other{{count} નબળા પાસવર્ડ}}</translation>
+<translation id="1764070164487214210">દિશાનિર્દેશો</translation>
 <translation id="1766411844240160513">ફોર્મને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">મનગમતું બનાવેલું કન્ટેન્ટ</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
 <translation id="3775743491439407556">સિંક કાર્ય કરી રહ્યું નથી</translation>
 <translation id="3779810277399252432">કોઈ ઇન્ટરનેટ કનેક્શન નથી.</translation>
+<translation id="3785672280731998727">ડિસ્પ્લે નામ</translation>
 <translation id="3789294999358192700">નીચેના પગલાં અનુસરો:</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803696231112616155">આ સાઇટનો અનુવાદ કરવાનું કહો</translation>
 <translation id="3808311849069021992">શોધ એન્જિનની વિગતો બતાવો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
+<translation id="3812308602011798782">રિવ્યૂ</translation>
 <translation id="3818045793209708987">આ પૅકેજને ટ્રૅક કરવાનું બંધ કર્યું</translation>
 <translation id="3818293389945649617">આગલી શોધો</translation>
 <translation id="3819183753496523827">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">કોઈપણ ઍપમાં તમારા સાચવેલા પાસવર્ડ માત્ર એક ટૅપમાં મેળવો</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4054572406751135230">સમાચાર, રમતગમત, અને તેના જેવા અન્ય કન્ટેન્ટ સાથે જોડાયેલા રહો.</translation>
+<translation id="4068959193278821990">વધારેલું સંરક્ષણ ચાલુ કરો...</translation>
 <translation id="4092655288299341041">સહાય બતાવો</translation>
 <translation id="4105841739161771091">{count,plural, =1{સરનામું ડિલીટ કરો}one{સરનામું ડિલીટ કરો}other{સરનામા ડિલીટ કરો}}</translation>
 <translation id="4108998448622696017">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તે શોધીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">ચોખ્ખો-નિકાસ ડેટા મોકલવા માટે, કૃપા કરીને સેટિંગ એપ્લિકેશનમાં તમારા ઇમેઇલ એકાઉન્ટને ગોઠવો.</translation>
 <translation id="4124987746317609294">સમય શ્રેણી</translation>
 <translation id="4133265950310064865">વધારેલું સંરક્ષણ</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">આ વેબસાઇટ ફાઇલ ડાઉનલોડ કરવા અને તેને તમારા કૅલેન્ડરમાં ઉમેરવા માગે છે.</translation>
 <translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">સૌથી વધુ મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="8358401059263985056">નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી રહ્યાં છીએ...</translation>
+<translation id="8369246252708539904">પાસકી ડિલીટ કરો</translation>
 <translation id="8370406443343902172">સેટિંગ પર જાઓ...</translation>
 <translation id="8374977641764177587">નોટિફિકેશન ચાલુ કરીએ?</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>

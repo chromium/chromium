@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
 <translation id="2195732836444333448">We zitten op dit moment op de maximale capaciteit. Probeer het later nog eens.</translation>
 <translation id="2201758491318984023">fiets</translation>
-<translation id="2203222757805818543">Huidige planning is ingesteld op <ph name="SUNRISE" /> - <ph name="SUNSET" />. Als je het schema voor de donkere modus automatisch wilt updaten, <ph name="BEGIN_LINK" />zet je locatietoegang aan<ph name="END_LINK" />.</translation>
 <translation id="2203272733515928691">warmwaterbron</translation>
 <translation id="2203642483788377106">klif</translation>
 <translation id="2208388655216963643">impressionistisch</translation>
@@ -362,6 +361,7 @@
 <translation id="3017079585324758401">Achtergrond</translation>
 <translation id="3027578600144895987">Camera sluiten</translation>
 <translation id="3031560714565892478">Apparaat is een videocamera.</translation>
+<translation id="3051968340259309715">Hiermee kunnen systeemservices Locatienauwkeurigheid gebruiken om je locatie te bepalen. Locatienauwkeurigheid gebruikt informatie over draadloze signalen, zoals wifi-toegangspunten, mobiele-netwerktorens en gps, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, om de apparaatlocatie te schatten. Je kunt de locatie uitzetten via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3060579846059757016">Details</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="4194328954146351878">ਸਾਈਟਾਂ ਨੂੰ NFC ਡੀਵਾਈਸਾਂ 'ਤੇ ਜਾਣਕਾਰੀ ਦੇਖਣ ਅਤੇ ਬਦਲਣ ਦੀ ਆਗਿਆ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="4200726100658658164">ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
-<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> ਤੋਂ <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4226663524361240545">ਸੂਚਨਾਵਾਂ ਡੀਵਾਈਸ ਨੂੰ ਥਰਥਰਾਹਟ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4259722352634471385">ਨੈਵੀਗੇਸ਼ਨ ਬਲੌਕ ਕੀਤੀ ਹੈ: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="4336566011000459927">Chrome ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ਤੁਹਾਡਾ ਪਿਛਲਾ ਟੈਬ</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> ਅਧੀਨ ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="4402755511846832236">ਸਾਈਟਾਂ ਨੂੰ ਇਹ ਜਾਣਨ ਤੋਂ ਰੋਕਣ ਲਈ ਬਲਾਕ ਕਰੋ ਕਿ ਤੁਸੀਂ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਦੋਂ ਕਰਦੇ ਹੋ</translation>
 <translation id="4412992751769744546">ਤੀਜੀ-ਪਾਰਟੀ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">ਆਪਣੇ ਡੀਵਾਈਸ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ਤੁਹਾਡਾ ਪਿਛਲਾ ਟੈਬ</translation>
 <translation id="6064125863973209585">ਮੁਕੰਮਲ ਹੋਏ ਡਾਊਨਲੋਡ</translation>
 <translation id="6071501408666570960">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6120483543004435978">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਨਹੀਂ ਜਾਣ ਸਕਦੀਆਂ ਹਨ।</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6818926723028410516">ਆਈਟਮਾਂ ਚੁਣੋ</translation>
 <translation id="6864395892908308021">ਇਹ ਡੀਵਾਈਸ NFC ਨੂੰ ਨਹੀਂ ਪੜ੍ਹ ਸਕਦਾ</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> ਤੋਂ</translation>
 <translation id="6912998170423641340">ਸਾਈਟਾਂ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਲਿਖਤ ਪੜ੍ਹਨ ਅਤੇ ਚਿੱਤਰ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6950072572526089586">ਤੁਸੀਂ ਜਿਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਉਹ ਤੁਹਾਡੀਆਂ ਕਾਰਵਾਈਆਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਤਾਂ ਜੋ ਇਹ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰੇ — ਉਦਾਹਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਕਿਸੇ ਸਾਈਟ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰੱਖਣ ਜਾਂ ਤੁਹਾਡੇ ਖਰੀਦਦਾਰੀ ਕਾਰਟ ਵਿੱਚ ਆਈਟਮਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਾਸਤੇ। ਅਕਸਰ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਰੱਖਿਅਤ ਕਰਦੀਆਂ ਹਨ।</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="7990211076305263060">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> ਤੋਂ</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8042586301629853791">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ:</translation>
 <translation id="8067883171444229417">ਵੀਡੀਓ ਚਲਾਓ</translation>

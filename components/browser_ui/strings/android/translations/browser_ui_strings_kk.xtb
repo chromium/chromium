@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB құрылғысына жалғанды.</translation>
 <translation id="4194328954146351878">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне рұқсат бермес бұрын сізден сұрау (ұсынылады)</translation>
 <translation id="4200726100658658164">Орналасу параметрлерін ашу</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> құрылғысынан</translation>
 <translation id="4226663524361240545">Хабарландыру келіп түскенде, құрылғы дірілдейді</translation>
 <translation id="4259722352634471385">Навигация тыйылған: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Рұқсат етілген</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Жаю</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Мерзімі ертең аяқталады}other{Мерзімі # күннен кейін аяқталады}}</translation>
 <translation id="4336566011000459927">Chrome бүгін cookie файлдарына қайта шектеу қояды.</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Соңғы қойындыңыз</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> доменіндегі барлық сайт</translation>
 <translation id="4402755511846832236">Сайттарды бөгеу арқылы олардың құрылғыны қашан белсенді пайдаланғаныңыз туралы ақпаратты алуына жол берілмейді.</translation>
 <translation id="4412992751769744546">Үшінші тарап cookie файлдарына рұқсат беру</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Осы сайттың құрылғыңызға кіруін басқарыңыз.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6042308850641462728">Жаю</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Соңғы қойындыңыз</translation>
 <translation id="6064125863973209585">Жүктеп алынғандар</translation>
 <translation id="6071501408666570960">Сіз бұл сайтта аккаунттан шығарылуыңыз мүмкін.</translation>
 <translation id="6120483543004435978">Қосылса, сайттар құрылғыны белсенді пайдаланатын уақытыңызды білуге рұқсат сұрай алады. Өшірілсе, біле алмайды.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6818926723028410516">Элементтерді таңдаңыз</translation>
 <translation id="6864395892908308021">Бұл құрылғы NFC сигналын оқи алмайды</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> құрылғысынан</translation>
 <translation id="6912998170423641340">Сайттардың буфердегі мәтіндер мен кескіндерді оқуына тыйым салу</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6950072572526089586">Сіз кірген сайт не істеп жатқаныңыз туралы ақпаратты сақтай алады, осылайша ол ойдағыдай жұмыс істейді (мысалы, сайтқа кірген күйде қалуыңыз немесе тауарларды сатып алу себетіне сақтау үшін). Сайттар бұл ақпаратты құрылғыға көбінесе уақытша сақтайды.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Контактіні таңдау</translation>
 <translation id="7990211076305263060">Қосылса, сайттар микрофонды пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="8007176423574883786">Осы құрылғы үшін өшірілді</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> құрылғысынан</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
 <translation id="8042586301629853791">Сұрыптау шарты:</translation>
 <translation id="8067883171444229417">Бейнені ойнату</translation>

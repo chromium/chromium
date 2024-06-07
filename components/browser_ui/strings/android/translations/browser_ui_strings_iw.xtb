@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">‏מחובר להתקן USB</translation>
 <translation id="4194328954146351878">‏הצגת שאלה לפני מתן הרשאה לאתרים לראות ולשנות מידע במכשירי NFC (מומלץ).</translation>
 <translation id="4200726100658658164">פתיחת הגדרות המיקום</translation>
-<translation id="4206661981211220935">‫<ph name="RECENCY" /> ‏<ph name="SEPARATOR" /> המקור: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
 <translation id="4278390842282768270">מותר</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="4336566011000459927">‏קובצי Cookie יוגבלו היום שוב ב-Chrome</translation>
-<translation id="4336836404251800362">‫<ph name="RECENCY" /> <ph name="SEPARATOR" /> הכרטיסייה האחרונה שלך</translation>
 <translation id="4338831206024587507">כל האתרים בדומיין <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4412992751769744546">‏אישור לקובצי Cookie של צד שלישי
@@ -305,7 +303,6 @@
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
-<translation id="6060464773477604108">‫<ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> הכרטיסייה האחרונה שלך</translation>
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
 <translation id="6071501408666570960">יכול להיות שתבוצע יציאה מהחשבון באתר הזה</translation>
 <translation id="6120483543004435978">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לדעת מתי משתמשים במכשיר הזה בפועל. כשהאפשרות מושבתת, אתרים לא יכולים לדעת מתי משתמשים במכשיר הזה בפועל.</translation>
@@ -361,7 +358,6 @@
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
-<translation id="6867014948848323204">המקור: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6950072572526089586">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
@@ -427,7 +423,6 @@
 <translation id="7986741934819883144">בחירת איש קשר</translation>
 <translation id="7990211076305263060">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במיקרופון. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במיקרופון.</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
-<translation id="8009579582995973057">‫<ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ממכשיר <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8042586301629853791">מיון לפי:</translation>
 <translation id="8067883171444229417">הפעלת הסרטון</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Ansluten till en USB-enhet</translation>
 <translation id="4194328954146351878">Fråga innan webbplatser tillåts att visa och ändra information på NFC-enheter (rekommenderas)</translation>
 <translation id="4200726100658658164">Öppna platsinställningarna</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Från <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Aviseringar kan göra att enheten vibrerar</translation>
 <translation id="4259722352634471385">Webbadressen har blockerats: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tillåts</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Expandera</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Löper ut i morgon}other{Löper ut om # dagar}}</translation>
 <translation id="4336566011000459927">Chrome begränsar cookies igen i dag</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Din senaste flik</translation>
 <translation id="4338831206024587507">Alla webbplatser under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blockera webbplatser från att veta när du använder enheten aktivt</translation>
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Styr webbplatsens åtkomst till enheten</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6042308850641462728">Mer</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Din senaste flik</translation>
 <translation id="6064125863973209585">Slutförda nedladdningar</translation>
 <translation id="6071501408666570960">Du kan loggas ut från den här webbplatsen</translation>
 <translation id="6120483543004435978">När detta är aktiverat kan webbplatser be om att få veta om du använder enheten aktivt. När detta är inaktiverat får webbplatser inte veta om du använder enheten aktivt.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6818926723028410516">Välj objekt</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
-<translation id="6867014948848323204">Från <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Webbplatser ges inte tillgång till text och bilder i Urklipp</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6950072572526089586">En webbplats som du besöker kan spara information om vad du gör så att den fungerar som förväntat. Det kan till exempel vara att hålla dig inloggad på en webbplats eller spara varor i kundvagnen. Webbplatser sparar ofta den här informationen tillfälligt på enheten.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7990211076305263060">När detta är aktiverat kan webbplatser be om att få använda mikrofonen. När detta är inaktiverat får webbplatser inte använda mikrofonen.</translation>
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Från <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8042586301629853791">Sortera efter:</translation>
 <translation id="8067883171444229417">Spela upp video</translation>

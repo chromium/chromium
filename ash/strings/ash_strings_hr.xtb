@@ -302,6 +302,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="216955976692983107">Prozor za promjenu veličine pločica udesno</translation>
 <translation id="2185166372312820725">Prelazak na prethodnu karticu</translation>
 <translation id="2185444992308415167">Otvaranje kartica od jedan do osam</translation>
+<translation id="2195732836444333448">Radimo punim kapacitetom. Vratite se uskoro.</translation>
 <translation id="2198625180564913276">Dodaje se profil. To može potrajati nekoliko minuta.</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4086921558679520050">Uključite fizički prekidač za mikrofone na uređaju</translation>
 <translation id="4101772068965291327">Otvori početnu stranicu</translation>
 <translation id="4112140312785995938">Traži unatrag</translation>
+<translation id="4113030288477039509">Upravlja vaš administrator</translation>
 <translation id="4114315158543974537">Uključivanje Phone Huba</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktiviranje radne površine slijeva</translation>
@@ -848,6 +850,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4201033867194214117">Značajka <ph name="FEATURE_NAME" /> nije dostupna.</translation>
 <translation id="4201051445878709314">Prikaži prethodni mjesec</translation>
 <translation id="4209973997261364186">Wi-Fi je uključen</translation>
+<translation id="4212246570487010370">Nastavite pregledavati</translation>
 <translation id="4212472694152630271">Prelazak na PIN</translation>
 <translation id="4215497585250573029">VPN postavke</translation>
 <translation id="4217571870635786043">Diktat</translation>
@@ -1130,6 +1133,7 @@ Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim priti
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Odjava</translation>
+<translation id="5228195526683428788">Razdjelnik podijeljenog zaslona</translation>
 <translation id="5229343007215035173">Uključivanje/isključivanje zaslona privatnosti</translation>
 <translation id="5230516054153933099">Prozor</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1240,7 +1244,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5599242528220103262">Isključen je tipkovni prečac</translation>
 <translation id="5600415762228455511">Način rada za koncentraciju je uključen, preostalo je <ph name="REMAINING_TIME" />, koncentrirate se na: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da biste onemogućili govorne povratne informacije.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{prije manje od 1 sata}=1{Prije sat vremena}one{Prije # h}few{Prije # h}other{Prije # h}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućuju snimku zaslona</translation>
@@ -1517,6 +1520,7 @@ Novo instaliranje</translation>
 <translation id="6613765291890844037">Pohrana <ph name="STORAGE_IN_USE_SIZE" /> u upotrebi | <ph name="STORAGE_TOTAL_SIZE" /> ukupno</translation>
 <translation id="6614169507485700968">Uključen je zaslon privatnosti</translation>
 <translation id="6622679827379792051">Postavljanje prikaza aplikacija telefona</translation>
+<translation id="662279009180869175">Pomoću strelica lijevo i desno možete promijeniti veličinu podijeljenog zaslona</translation>
 <translation id="6624493541160101248">Trenutačna radna površina: <ph name="DESK_NAME" />. Radna površina <ph name="DESK_INDEX" />. od <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Obavijesti aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> i drugih aplikacija skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="6627638273713273709">Pretraži + Shift + K</translation>
@@ -1535,6 +1539,7 @@ Novo instaliranje</translation>
 <translation id="6670153871843998651">Radna površina 3</translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6671661918848783005">Otključavanje Chromebooka nije uspjelo</translation>
+<translation id="6676552993057022464">Pomoću strelica prema gore i dolje možete promijeniti veličinu podijeljenog zaslona</translation>
 <translation id="6682029141988159141">Lijepljenje sadržaja iz međuspremnika</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6686023075541098243">Postavljanje prikaza obavijesti telefona</translation>
@@ -1693,6 +1698,7 @@ Novo instaliranje</translation>
 <translation id="7340731148882810149">Izbornik automatskih klikova</translation>
 <translation id="7346909386216857016">Dobro, shvaćam</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
+<translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati rad</translation>
 <translation id="736045644501761622">Postavite pozadinu i stil</translation>
@@ -1835,7 +1841,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Da biste upotrebljavali uređaj kao gost, morate se odjaviti, a zatim pri dnu zaslona odabrati Pregledavaj kao gost.</translation>
 <translation id="7866482334467279021">uključeno</translation>
-<translation id="7866727328666668290">Posljednja otvorena kartica</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Čini se da je na vašem uređaju <ph name="DEVICE_TYPE" /> isključen Bluetooth. Da biste mogli upotrebljavati Phone hub, uključite Bluetooth.</translation>
 <translation id="7884446017008693258">Postavke žarišne točke</translation>
@@ -2142,7 +2147,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="9002204506712855687">Istražite najnovije značajke</translation>
 <translation id="9005984960510803406">Otvaranje prozora Crosh</translation>
 <translation id="9017320285115481645">Unesite kôd za roditeljski pristup Family Linka.</translation>
-<translation id="9022774213089566801">Često posjećeno</translation>
 <translation id="9024331582947483881">cijeli zaslon</translation>
 <translation id="9029736946581028033">Uređaj će se uskoro isključiti</translation>
 <translation id="9030319654231318877">Isključeno do zalaska sunca</translation>

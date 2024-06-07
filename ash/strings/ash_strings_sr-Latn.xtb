@@ -302,6 +302,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="216955976692983107">Pomerite prozor promenljive veličine u obliku pločice nadesno</translation>
 <translation id="2185166372312820725">Idite na prethodnu karticu</translation>
 <translation id="2185444992308415167">Idi na kartice od 1 do 8</translation>
+<translation id="2195732836444333448">Kapacitet je trenutno popunjen. Vratite se brzo.</translation>
 <translation id="2198625180564913276">Dodaje se profil. To može da potraje nekoliko minuta.</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna slika od <ph name="TOTAL_COUNT" />.</translation>
@@ -309,6 +310,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2208323208084708176">Režim spojenih radnih površina</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
+<translation id="2223384056430485343">Na podeljenom ekranu</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je vidljiv zaštićeni sadržaj</translation>
 <translation id="2227179592712503583">Ukloni predlog</translation>
 <translation id="2248634276911611268">Otvori link na novoj kartici i prebaci se na nju</translation>
@@ -815,6 +817,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4086921558679520050">Uključite fizički prekidač za mikrofon na uređaju</translation>
 <translation id="4101772068965291327">Otvori početnu stranicu</translation>
 <translation id="4112140312785995938">Premotaj unazad</translation>
+<translation id="4113030288477039509">Ovim upravlja administrator</translation>
 <translation id="4114315158543974537">Uključite Phone Hub</translation>
 <translation id="4115378294792113321">Ciklama</translation>
 <translation id="411881149140864134">Aktiviraj radnu površinu na levoj strani</translation>
@@ -849,6 +852,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4201033867194214117">Funkcija <ph name="FEATURE_NAME" /> nije dostupna</translation>
 <translation id="4201051445878709314">Prikaži prethodni mesec</translation>
 <translation id="4209973997261364186">WiFi je uključen</translation>
+<translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
 <translation id="4212472694152630271">Pređi na PIN</translation>
 <translation id="4215497585250573029">Podešavanja VPN-a</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
@@ -1242,7 +1246,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5599242528220103262">Tasterska prečica je isključena</translation>
 <translation id="5600415762228455511">Fokus je uključen, preostalo je <ph name="REMAINING_TIME" />, fokus je na: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da biste onemogućili govorne povratne informacije.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Pre manje od 1 sat}=1{Pre 1 sat}one{Pre # sat}few{Pre # sata}other{Pre # sati}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Smernice administratora onemogućavaju snimanje ekrana</translation>
@@ -1698,6 +1701,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7340731148882810149">Meni za automatske klikove</translation>
 <translation id="7346909386216857016">Važi</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
+<translation id="7352651011704765696">Došlo je do greške</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>
 <translation id="7360036564632145207">Ako promenite podešavanje zaštite pristupa podacima za periferne uređaje, možete da optimizujete učinak</translation>
 <translation id="736045644501761622">Podesi pozadinu i stil</translation>
@@ -1840,7 +1844,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Da biste koristili uređaj kao gost, treba da se odjavite, pa da izaberete Pregledaj kao gost u dnu ekrana.</translation>
 <translation id="7866482334467279021">uključeno</translation>
-<translation id="7866727328666668290">Poslednja otvorena kartica</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Izgleda da je isključen Bluetooth na uređaju <ph name="DEVICE_TYPE" />. Uključite Bluetooth da biste koristili Phone Hub.</translation>
 <translation id="7884446017008693258">Podešavanja hotspota</translation>
@@ -2147,7 +2150,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9002204506712855687">Istražite najnovije funkcije</translation>
 <translation id="9005984960510803406">Otvorite Crosh prozor</translation>
 <translation id="9017320285115481645">Unesite pristupni kôd roditelja za Family Link.</translation>
-<translation id="9022774213089566801">Često posećivano</translation>
 <translation id="9024331582947483881">ceo ekran</translation>
 <translation id="9029736946581028033">Uređaj će se uskoro isključiti</translation>
 <translation id="9030319654231318877">Isključeno do sumraka</translation>

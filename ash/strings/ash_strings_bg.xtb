@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Известни мрежи</translation>
 <translation id="1239161794459865856">Функцията „<ph name="FEATURE_NAME" />“ е свързана.</translation>
 <translation id="1240638468526743569">приложение</translation>
+<translation id="1242198791279543032">Известията са спрени</translation>
 <translation id="1242883863226959074">устройството</translation>
 <translation id="1245644940275736236">Към Асистент</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">Преоразмеряване на фиксиран прозорец надясно</translation>
 <translation id="2185166372312820725">Към предишния раздел</translation>
 <translation id="2185444992308415167">Преминаване през раздели от 1 до 8</translation>
+<translation id="2195732836444333448">В момента няма наличен капацитет. Заповядайте отново скоро.</translation>
 <translation id="2198625180564913276">Профилът за мобилна мрежа се добавя. Това може да отнеме няколко минути.</translation>
 <translation id="219905428774326614">Стартов панел, всички приложения</translation>
 <translation id="2201071101391734388">Скорошна снимка <ph name="INDEX" /> от <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@
 <translation id="4086921558679520050">Включете физическия превключвател за микрофона на устройството си</translation>
 <translation id="4101772068965291327">Отваряне на началната страница</translation>
 <translation id="4112140312785995938">Придвижване назад</translation>
+<translation id="4113030288477039509">Управлява се от администратора ви</translation>
 <translation id="4114315158543974537">Включване на функцията „Център за телефоните“</translation>
 <translation id="4115378294792113321">пурпурно</translation>
 <translation id="411881149140864134">Активиране на работния кът отляво</translation>
@@ -847,6 +850,7 @@
 <translation id="4201033867194214117">„<ph name="FEATURE_NAME" />“ не е налице.</translation>
 <translation id="4201051445878709314">Показване на предишния месец</translation>
 <translation id="4209973997261364186">Функцията за Wi-Fi е включена</translation>
+<translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="4212472694152630271">Превключване към ПИН</translation>
 <translation id="4215497585250573029">Настройки за VPN</translation>
 <translation id="4217571870635786043">Диктуване</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5599242528220103262">Клавишната комбинация е изключена</translation>
 <translation id="5600415762228455511">Режимът за концентрация е включен, оставащо време: <ph name="REMAINING_TIME" />, задача: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Натиснете Ctrl + Alt + Z, за да деактивирате обратната връзка с говор.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Преди по-малко от 1 час}=1{Преди 1 час}other{Преди # часа}}</translation>
 <translation id="5601503069213153581">ПИН код</translation>
 <translation id="5618148318840095371">Превключихме ви към по-добра мрежа</translation>
 <translation id="5619862035903135339">Заснемането на екрана е деактивирано чрез администраторско правило</translation>
@@ -1692,6 +1695,7 @@
 <translation id="7340731148882810149">Меню за автоматични кликвания</translation>
 <translation id="7346909386216857016">Добре, разбрах</translation>
 <translation id="7348093485538360975">Екранна клавиатура</translation>
+<translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="735745346212279324">Връзката с виртуалната частна мрежа (VPN) е прекъсната</translation>
 <translation id="7360036564632145207">Промяната на настройката за защита на достъпа до данните от периферни устройства може да доведе до оптимизиране на ефективността</translation>
 <translation id="736045644501761622">Задаване на тапет и стил</translation>
@@ -1834,7 +1838,6 @@
 <translation id="7851768487828137624">Ранна версия</translation>
 <translation id="7862292329216937261">За да използвате устройството като гост, трябва да излезете от профила си и след това да изберете „Сърфиране като гост“ в долната част на екрана.</translation>
 <translation id="7866482334467279021">включено</translation>
-<translation id="7866727328666668290">Последно отвореният раздел</translation>
 <translation id="7872786842639831132">Изкл.</translation>
 <translation id="7875575368831396199">Изглежда, че функцията за Bluetooth на <ph name="DEVICE_TYPE" /> е изключена. Включете я, за да използвате Phone Hub.</translation>
 <translation id="7884446017008693258">Настройки за точката за достъп</translation>
@@ -2141,7 +2144,6 @@
 <translation id="9002204506712855687">Разгледайте най-новите функции</translation>
 <translation id="9005984960510803406">Отваряне на прозорец на Crosh</translation>
 <translation id="9017320285115481645">Въведете кода за достъп на родител от Family Link.</translation>
-<translation id="9022774213089566801">Често посещавани</translation>
 <translation id="9024331582947483881">цял екран</translation>
 <translation id="9029736946581028033">Устройството ще се изключи скоро</translation>
 <translation id="9030319654231318877">Изключено до залез</translation>

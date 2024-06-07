@@ -2681,6 +2681,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6167577165590485365">Ceisiwyd nôl ddiwethaf:</translation>
 <translation id="617256461084925519">Mae Google Chrome yn ceisio cadarnhau mai chi sydd yno fel y gall lenwi'ch gwybodaeth talu.</translation>
+<translation id="6173208311907792313">Cwblhewch eich pryniant gan ddefnyddio Windows Hello</translation>
 <translation id="6176387967264100435">Mae'r pris hwn yn uchel</translation>
 <translation id="6177128806592000436">Nid yw eich cysylltiad â'r wefan hon yn ddiogel</translation>
 <translation id="6177531123306197852">Amlen C2</translation>
@@ -2986,7 +2987,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6753269504797312559">Gwerth polisi</translation>
 <translation id="6753434778807740853">Dileu'r cofnod <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Cyfrifon Cynilo</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Aeth eich dyfais i gysgu.</translation>
 <translation id="6760548828952594090">Nid oedd modd cadw'r cerdyn hwn yn eich Cyfrif Google. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny.</translation>
 <translation id="6766558780547452153">Coginio a Ryseitiau</translation>
@@ -3839,6 +3839,7 @@ Manylion ychwanegol:
 <translation id="8332188693563227489">Rhwystrwyd mynediad at <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Amlygu</translation>
 <translation id="8339163506404995330">Ni fydd tudalennau yn <ph name="LANGUAGE" /> yn cael eu cyfieithu</translation>
+<translation id="8339275256517065202">Cwblhewch eich pryniant gan ddefnyddio Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Agorwyd cofrestriad cerdyn rhithwir ar uchder llawn</translation>
 <translation id="8349305172487531364">Bar nodau tudalen</translation>
@@ -4032,6 +4033,7 @@ Manylion ychwanegol:
 <translation id="8726549941689275341">Maint y dudalen:</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8731268612289859741">Cod diogelwch</translation>
+<translation id="8731917264694569036">Cwblhewch eich pryniant gan ddefnyddio'ch dyfais</translation>
 <translation id="8733345475331865475">Yswiriant Modurol</translation>
 <translation id="8733764070897080460">Gallwch rwystro pynciau nad ydych eisiau eu rhannu â gwefannau. Mae Chrome hefyd yn awtoddileu eich pynciau sy'n hŷn na 4 wythnos. Dysgu rhagor</translation>
 <translation id="8734529307927223492">Mae <ph name="MANAGER" /> yn rheoli'ch <ph name="DEVICE_TYPE" /></translation>
@@ -4225,6 +4227,7 @@ Manylion ychwanegol:
 <translation id="9116548361133462832">Rhagor am hysbysebion yn Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab, yna Enter i barhau â'ch taith ac i weld gweithgarwch perthnasol yn eich hanes Chrome</translation>
 <translation id="9119042192571987207">Uwchlwythwyd</translation>
+<translation id="9119308212838450857">Mae <ph name="PROVIDER_ORIGIN" /> eisiau cadarnhau mai chi sydd yno</translation>
 <translation id="912327514020027767">Sgertiau</translation>
 <translation id="912414390325846156">Rydych wedi dewis peidio â chaniatáu ar gyfer y wefan hon yn flaenorol</translation>
 <translation id="9128870381267983090">Cysylltwch â rhwydwaith</translation>
@@ -4248,7 +4251,6 @@ Manylion ychwanegol:
 <translation id="9155646082713385498">Cylchgronau</translation>
 <translation id="9157595877708044936">Wrthi'n gosod...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Mae'n bosib bod <ph name="FILE_NAME" /> yn cynnwys deunydd sensitif}zero{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}two{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}few{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}many{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}other{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Gall gwefannau rydych yn ymweld â nhw hefyd benderfynu beth rydych yn ei hoffi yn seiliedig ar eich gweithgarwch ar y wefan. Er enghraifft, os ydych yn ymweld â gwefan sy'n gwerthu esgidiau rhedeg pellter hir, mae'n bosib y bydd y wefan yn penderfynu bod gennych ddiddordeb mewn rhedeg marathonau.</translation>
 <translation id="9166851138617700776">Rhagor am hysbysebion a awgrymir gan y wefan a mesur hysbysebion</translation>
 <translation id="9167054383925257837">Gwybodaeth porwr a dyfais OS (megis fersiynau porwr ac OS)</translation>

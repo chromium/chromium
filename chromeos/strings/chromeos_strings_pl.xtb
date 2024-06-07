@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Edytuj szczegóły punktu APN</translation>
 <translation id="2195732836444333448">Usługa zajęta. Spróbuj ponownie wkrótce.</translation>
 <translation id="2201758491318984023">roweru</translation>
-<translation id="2203222757805818543">Bieżący harmonogram jest ustawiony na <ph name="SUNRISE" />–<ph name="SUNSET" />. Aby automatycznie aktualizować harmonogram trybu ciemnego, <ph name="BEGIN_LINK" />włącz dostęp do lokalizacji<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">gorące źródło</translation>
 <translation id="2203642483788377106">klif</translation>
 <translation id="2208388655216963643">impresjonistycznym</translation>
@@ -362,6 +361,7 @@
 <translation id="3017079585324758401">Tło</translation>
 <translation id="3027578600144895987">Zamknij kamerę</translation>
 <translation id="3031560714565892478">Urządzenie to kamera wideo.</translation>
+<translation id="3051968340259309715">Pozwoli to usługom systemowym na określanie Twojej lokalizacji przy użyciu Dokładności lokalizacji. Dokładność lokalizacji używa danych o sygnałach bezprzewodowych pochodzących np. z punktów dostępu do Wi-Fi, masztów sieci komórkowych i GPS-a, a także danych z czujników urządzenia takich jak akcelerometr i żyroskop. Pozwala to określać w przybliżeniu lokalizację urządzenia Możesz wyłączyć lokalizację, klikając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punkt końcowy</translation>
 <translation id="3060579846059757016">Kontury</translation>

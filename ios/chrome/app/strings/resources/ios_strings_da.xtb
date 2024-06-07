@@ -1034,6 +1034,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
 <translation id="6236952928980352967">Gendan advarsel</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
+<translation id="6251835855431997163">Autofyld <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Åbn links i appen i stedet for i browseren.</translation>
 <translation id="6255097610484507482">Rediger kreditkort</translation>
 <translation id="6266039999629596120">Kræver handling</translation>
@@ -1212,6 +1213,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7022197654033719543">Websiteoplysninger</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="704692552158601232">Standardapp til browsing</translation>
+<translation id="7055240621761583113">Udfyld adgangskoden automatisk</translation>
 <translation id="7063811929043357292">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Fjern fra denne enhed</translation>

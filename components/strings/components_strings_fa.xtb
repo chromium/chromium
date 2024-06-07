@@ -2681,6 +2681,7 @@
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6167577165590485365">آخرین تلاش برای واکشی:</translation>
 <translation id="617256461084925519">‏Google Chrome سعی دارد هویت شما را تأیید کند تا بتواند اطلاعات پرداخت شما را تکمیل کند.</translation>
+<translation id="6173208311907792313">‏خریدتان را بااستفاده از Windows Hello تکمیل کنید</translation>
 <translation id="6176387967264100435">این قیمت بالا است</translation>
 <translation id="6177128806592000436">اتصال شما به این سایت امن نیست</translation>
 <translation id="6177531123306197852">پاکت سی۲</translation>
@@ -2986,7 +2987,6 @@
 <translation id="6753269504797312559">مقدار خط‌‌مشی</translation>
 <translation id="6753434778807740853">حذف ورودی <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">حساب‌های پس‌انداز</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">دستگاهتان به خواب رفته است.</translation>
 <translation id="6760548828952594090">‏این کارت در «حساب Google» شما ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد.</translation>
 <translation id="6766558780547452153">آشپزی و دستور پخت</translation>
@@ -3839,6 +3839,7 @@
 <translation id="8332188693563227489">دسترسی به <ph name="HOST_NAME" /> رد شد</translation>
 <translation id="833262891116910667">برجسته‌سازی</translation>
 <translation id="8339163506404995330">صفحه‌های <ph name="LANGUAGE" /> ترجمه نخواند شد</translation>
+<translation id="8339275256517065202">خریدتان را بااستفاده از «شناسه لمسی» تکمیل کنید</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ثبت‌نام کارت مجازی به‌صورت کامل باز شده است</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
@@ -4032,6 +4033,7 @@
 <translation id="8726549941689275341">اندازه صفحه:</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8731268612289859741">کد امنیتی</translation>
+<translation id="8731917264694569036">خریدتان را بااستفاده از دستگاهتان تکمیل کنید</translation>
 <translation id="8733345475331865475">بیمه خودرو</translation>
 <translation id="8733764070897080460">‏می‌توانید موضوعاتی را که نمی‌خواهید با سایت‌ها هم‌رسانی شود مسدود کنید. Chrome نیز موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. بیشتر بدانید</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> شما توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
@@ -4225,6 +4227,7 @@
 <translation id="9116548361133462832">‏اطلاعات بیشتر درباره آگهی‌ها در Chrome</translation>
 <translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا سفر جستجو را ازسر بگیرید و فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="9119042192571987207">بارگذاری‌شده</translation>
+<translation id="9119308212838450857">‫<ph name="PROVIDER_ORIGIN" /> می‌خواهد هویتتان را درستی‌سنجی کند</translation>
 <translation id="912327514020027767">دامن</translation>
 <translation id="912414390325846156">قبلاً انتخاب کرده بودید برای این سایت مجاز نباشد</translation>
 <translation id="9128870381267983090">اتصال به شبکه</translation>
@@ -4248,7 +4251,6 @@
 <translation id="9155646082713385498">مجلات</translation>
 <translation id="9157595877708044936">در حال راه‌اندازی...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ممکن است حاوی محتوای حساس باشد}one{<ph name="FILE_COUNT" /> فایل ممکن است حاوی محتوای حساس باشد}other{<ph name="FILE_COUNT" /> فایل ممکن است حاوی محتوای حساس باشد}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">سایت‌هایی که از آن‌ها بازدید می‌کنید نیز می‌توانند براساس فعالیتتان در آن سایت تشخیص دهند چه چیزهایی را دوست دارید. برای مثال، اگر از سایتی بازدید کنید که کفش‌های مخصوص دو استقامت می‌فروشد، ممکن است آن سایت نتیجه‌گیری کند که به دو ماراتون علاقه دارید.</translation>
 <translation id="9166851138617700776">اطلاعات بیشتر درباره آگهی‌های پیشنهادی سایت و سنجش آگهی</translation>
 <translation id="9167054383925257837">اطلاعات مرورگر و سیستم‌عامل دستگاه (مانند نسخه مرورگر و سیستم‌عامل)</translation>

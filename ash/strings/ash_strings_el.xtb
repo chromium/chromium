@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Γνωστά δίκτυα</translation>
 <translation id="1239161794459865856">Η λειτουργία <ph name="FEATURE_NAME" /> συνδέθηκε.</translation>
 <translation id="1240638468526743569">Μια εφαρμογή</translation>
+<translation id="1242198791279543032">Οι ειδοποιήσεις είναι σε σίγαση</translation>
 <translation id="1242883863226959074">συσκευή</translation>
 <translation id="1245644940275736236">Μετάβαση στον Βοηθό</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">Αλλαγή μεγέθους παραθύρου σε παράθεση προς τα δεξιά</translation>
 <translation id="2185166372312820725">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="2185444992308415167">Μετάβαση στις καρτέλες 1 έως 8</translation>
+<translation id="2195732836444333448">Δεν μπορούμε να σας εξυπηρετήσουμε αυτή τη στιγμή. Επιστρέψτε ξανά σύντομα.</translation>
 <translation id="2198625180564913276">Προσθήκη προφίλ. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="219905428774326614">Εφαρμογή εκκίνησης, όλες οι εφαρμογές</translation>
 <translation id="2201071101391734388">Πρόσφατη φωτογραφία <ph name="INDEX" /> από <ph name="TOTAL_COUNT" />.</translation>
@@ -308,6 +310,7 @@
 <translation id="2208323208084708176">Ενιαία λειτουργία επιφάνειας εργασίας.</translation>
 <translation id="2220572644011485463">PIN ή κωδικός πρόσβασης</translation>
 <translation id="2222841058024245321">Γραφείο 7</translation>
+<translation id="2223384056430485343">Σε παράθυρο διαχωρισμού οθόνης</translation>
 <translation id="2224075387478458881">Η εγγραφή οθόνης δεν επιτρέπεται όταν είναι ορατό προστατευμένο περιεχόμενο.</translation>
 <translation id="2227179592712503583">Κατάργηση πρότασης</translation>
 <translation id="2248634276911611268">Άνοιγμα συνδέσμου σε νέα καρτέλα και εναλλαγή σε αυτήν τη νέα καρτέλα</translation>
@@ -814,6 +817,7 @@
 <translation id="4086921558679520050">Ενεργοποιήστε τον φυσικό διακόπτη μικροφώνου στη συσκευή σας</translation>
 <translation id="4101772068965291327">Άνοιγμα αρχικής σελίδας</translation>
 <translation id="4112140312785995938">Αναζήτηση προς τα πίσω</translation>
+<translation id="4113030288477039509">Διαχειρίζεται από το διαχειριστή σας</translation>
 <translation id="4114315158543974537">Ενεργοποίηση του Phone Hub</translation>
 <translation id="4115378294792113321">Ματζέντα</translation>
 <translation id="411881149140864134">Ενεργοποίηση γραφείου στα αριστερά</translation>
@@ -847,6 +851,7 @@
 <translation id="4201033867194214117">Η λειτουργία <ph name="FEATURE_NAME" /> δεν είναι διαθέσιμη.</translation>
 <translation id="4201051445878709314">Εμφάνιση προηγούμενου μήνα</translation>
 <translation id="4209973997261364186">Το Wi-Fi είναι ενεργοποιημένο</translation>
+<translation id="4212246570487010370">Συνέχεια περιήγησης</translation>
 <translation id="4212472694152630271">Αλλαγή σε PIN</translation>
 <translation id="4215497585250573029">Ρυθμίσεις VPN</translation>
 <translation id="4217571870635786043">Υπαγόρευση</translation>
@@ -1239,7 +1244,6 @@
 <translation id="5599242528220103262">Η συντόμευση πληκτρολογίου είναι απενεργοποιημένη</translation>
 <translation id="5600415762228455511">Η λειτουργία συγκέντρωσης είναι ενεργή, <ph name="REMAINING_TIME" /> ακόμη, συγκεντρώνεστε για την εργασία: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Πιέστε Ctrl + Alt + Z, για να απενεργοποιήσετε τα εκφωνημένα σχόλια.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Πριν από λιγότερο από 1 ώρα}=1{Πριν από 1 ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Έγινε εναλλαγή της σύνδεσής σας σε ένα καλύτερο δίκτυο</translation>
 <translation id="5619862035903135339">Η πολιτική διαχειριστή απενεργοποιεί τη λήψη οθόνης.</translation>
@@ -1692,6 +1696,7 @@
 <translation id="7340731148882810149">Μενού αυτόματων κλικ</translation>
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
 <translation id="7348093485538360975">Πληκτρολόγιο οθόνης</translation>
+<translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="735745346212279324">Το VPN αποσυνδέθηκε</translation>
 <translation id="7360036564632145207">Η αλλαγή της ρύθμισης προστασίας πρόσβασης δεδομένων για περιφερειακά μπορεί να βελτιστοποιήσει την απόδοση</translation>
 <translation id="736045644501761622">Ρύθμιση ταπετσαρίας και στιλ</translation>
@@ -1834,7 +1839,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Για να χρησιμοποιήσετε τη συσκευή ως επισκέπτης, θα πρέπει να αποσυνδεθείτε και, στη συνέχεια, να επιλέξετε Περιήγηση ως επισκέπτης, στο κάτω μέρος της οθόνης.</translation>
 <translation id="7866482334467279021">ενεργή</translation>
-<translation id="7866727328666668290">Η τελευταία καρτέλα που άνοιξε</translation>
 <translation id="7872786842639831132">Ανενεργό</translation>
 <translation id="7875575368831396199">Φαίνεται ότι το Bluetooth είναι απενεργοποιημένο στη συσκευή <ph name="DEVICE_TYPE" />. Ενεργοποιήστε το Bluetooth για να χρησιμοποιήσετε το Phone Hub.</translation>
 <translation id="7884446017008693258">Ρυθμίσεις σημείου πρόσβασης Wi-Fi</translation>
@@ -2141,7 +2145,6 @@
 <translation id="9002204506712855687">Εξερευνήστε τις τελευταίες λειτουργίες</translation>
 <translation id="9005984960510803406">Άνοιγμα παραθύρου Crosh</translation>
 <translation id="9017320285115481645">Εισαγάγετε τον κωδικό πρόσβασης γονέα του Family Link.</translation>
-<translation id="9022774213089566801">Συχνά επισκεπτόμενοι ιστότοποι</translation>
 <translation id="9024331582947483881">πλήρης οθόνη</translation>
 <translation id="9029736946581028033">Η συσκευή θα απενεργοποιηθεί σύντομα</translation>
 <translation id="9030319654231318877">Ανενεργό μέχρι το ηλιοβασίλεμα</translation>

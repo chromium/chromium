@@ -2681,6 +2681,7 @@
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6167577165590485365">Ultima încercare de preluare:</translation>
 <translation id="617256461084925519">Google Chrome încearcă să-ți confirme identitatea pentru a-ți completa informațiile de plată.</translation>
+<translation id="6173208311907792313">Finalizează achiziția folosind Windows Hello</translation>
 <translation id="6176387967264100435">Acest preț este ridicat</translation>
 <translation id="6177128806592000436">Conexiunea la acest site nu este sigură</translation>
 <translation id="6177531123306197852">Plic C2</translation>
@@ -2986,7 +2987,6 @@
 <translation id="6753269504797312559">Valoarea politicii</translation>
 <translation id="6753434778807740853">Șterge intrarea <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Conturi de economii</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Dispozitivul este inactiv.</translation>
 <translation id="6760548828952594090">Cardul nu a putut fi salvat în Contul Google. A fost salvat în Chrome pe acest dispozitiv.</translation>
 <translation id="6766558780547452153">Gătit și rețete</translation>
@@ -3839,6 +3839,7 @@ Detalii suplimentare:
 <translation id="8332188693563227489">Accesul la <ph name="HOST_NAME" /> nu este permis</translation>
 <translation id="833262891116910667">Evidențiază</translation>
 <translation id="8339163506404995330">Paginile în <ph name="LANGUAGE" /> nu vor fi traduse</translation>
+<translation id="8339275256517065202">Finalizează achiziția folosind Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Înregistrarea cardului virtual s-a deschis la înălțimea completă</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
@@ -4033,6 +4034,7 @@ Detalii suplimentare:
 <translation id="8726549941689275341">Dimensiunea paginii:</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8731268612289859741">Cod de securitate</translation>
+<translation id="8731917264694569036">Finalizează achiziția folosind dispozitivul</translation>
 <translation id="8733345475331865475">Asigurări auto</translation>
 <translation id="8733764070897080460">Poți bloca subiectele la care nu vrei să permiți accesul site-urilor. Chrome șterge automat subiectele mai vechi de patru săptămâni. Află mai multe</translation>
 <translation id="8734529307927223492">Dispozitivul <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" /></translation>
@@ -4226,6 +4228,7 @@ Detalii suplimentare:
 <translation id="9116548361133462832">Mai multe despre anunțurile din Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a-ți continua parcursul și a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="9119042192571987207">Încărcat</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> solicită să-ți confirmi identitatea</translation>
 <translation id="912327514020027767">Fuste</translation>
 <translation id="912414390325846156">Anterior, ai ales să nu permiți pentru acest site</translation>
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
@@ -4249,7 +4252,6 @@ Detalii suplimentare:
 <translation id="9155646082713385498">Reviste</translation>
 <translation id="9157595877708044936">Se configurează...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> poate să includă conținut sensibil}few{<ph name="FILE_COUNT" /> fișiere pot include conținut sensibil}other{<ph name="FILE_COUNT" /> de fișiere pot include conținut sensibil}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Site-urile pe care le accesezi pot stabili și lucrurile care te interesează, pe baza activității tale pe site. De exemplu, dacă accesezi un site care vinde pantofi de alergare pe distanțe mari, site-ul poate deduce că te interesează maratoanele.</translation>
 <translation id="9166851138617700776">Mai multe despre anunțurile sugerate de site-uri și cuantificarea anunțurilor</translation>
 <translation id="9167054383925257837">Informații despre browser și sistemul de operare al dispozitivului (cum ar fi versiunea de browser și SO)</translation>

@@ -72,6 +72,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1235458158152011030">Teadaolevad võrgud</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on ühendatud.</translation>
 <translation id="1240638468526743569">Rakendus</translation>
+<translation id="1242198791279543032">Märguanded on vaigistatud</translation>
 <translation id="1242883863226959074">seadmes</translation>
 <translation id="1245644940275736236">Ava Assistent</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
@@ -301,6 +302,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="216955976692983107">Paanidega muudetava suurusega aken paremale</translation>
 <translation id="2185166372312820725">Eelmisele vahelehele liikumine</translation>
 <translation id="2185444992308415167">Vahelehtede 1 kuni 8 läbivaatamine</translation>
+<translation id="2195732836444333448">Maht on praegu täis. Tulge varsti tagasi.</translation>
 <translation id="2198625180564913276">Profiili lisamine. See võib võtta mõne minuti.</translation>
 <translation id="219905428774326614">Käivitaja, kõik rakendused</translation>
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +817,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4086921558679520050">Lülitage oma seadme füüsiline mikrofonilüliti sisse</translation>
 <translation id="4101772068965291327">Ava avaleht</translation>
 <translation id="4112140312785995938">Keri tagasi</translation>
+<translation id="4113030288477039509">Seda haldab teie administraator</translation>
 <translation id="4114315158543974537">Lülita Phone Hub sisse</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktiveerige vasakpoolne töölaud</translation>
@@ -848,6 +851,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> pole saadaval.</translation>
 <translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
 <translation id="4209973997261364186">WiFi on sisse lülitatud.</translation>
+<translation id="4212246570487010370">Jätka sirvimist</translation>
 <translation id="4212472694152630271">Kasuta PIN-koodi</translation>
 <translation id="4215497585250573029">VPN-i seaded</translation>
 <translation id="4217571870635786043">Dikteerimine</translation>
@@ -1240,7 +1244,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5599242528220103262">Klaviatuuri otsetee on praegu välja lülitatud</translation>
 <translation id="5600415762228455511">Keskendumise režiim on sisse lülitatud, jäänud on <ph name="REMAINING_TIME" />, keskendumine ülesandele: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Vajutage suulise tagasiside keelamiseks klahvikombinatsiooni Ctrl + Alt + Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt;1 tund tagasi}=1{1 tund tagasi}other{# tundi tagasi}}</translation>
 <translation id="5601503069213153581">PIN-kood</translation>
 <translation id="5618148318840095371">Ühendasime teid parema võrguga</translation>
 <translation id="5619862035903135339">Ekraanikuva jäädvustamine on administraatori eeskirjadega keelatud</translation>
@@ -1693,6 +1696,7 @@ Uus installimine</translation>
 <translation id="7340731148882810149">Automaatsete klikkide menüü</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
+<translation id="7352651011704765696">Midagi läks valesti</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
 <translation id="7360036564632145207">Välisseadmete jaoks andmetele juurdepääsu kaitse seade muutmine võib jõudlust optimeerida</translation>
 <translation id="736045644501761622">Taustapildi ja stiili seadistamine</translation>
@@ -1835,7 +1839,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7851768487828137624">Kanaarilind</translation>
 <translation id="7862292329216937261">Seadme külalisena kasutamiseks peate välja logima ja seejärel ekraani allservas tegema valiku Sirvi külalisena.</translation>
 <translation id="7866482334467279021">sisse</translation>
-<translation id="7866727328666668290">Viimane vaheleht on avatud</translation>
 <translation id="7872786842639831132">Väljas</translation>
 <translation id="7875575368831396199">Näib, et Bluetooth on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Lülitage Bluetooth Phone Hubi kasutamiseks sisse.</translation>
 <translation id="7884446017008693258">Kuumkoha seaded</translation>
@@ -2142,7 +2145,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="9002204506712855687">Avastage uusimaid funktsioone</translation>
 <translation id="9005984960510803406">Avab Croshi akna</translation>
 <translation id="9017320285115481645">Sisestage Family Linki vanema pääsukood.</translation>
-<translation id="9022774213089566801">Sageli külastatud</translation>
 <translation id="9024331582947483881">täisekraan</translation>
 <translation id="9029736946581028033">Seade lülitub peagi välja</translation>
 <translation id="9030319654231318877">Päikeseloojanguni väljas</translation>

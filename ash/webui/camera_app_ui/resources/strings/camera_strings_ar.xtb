@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">إيقاف التسجيل مؤقتًا</translation>
 <translation id="4121305183798804752">تم رصد مستند.</translation>
 <translation id="414641094616694804">لا يمكن تغيير درجة الدقة في هذه الكاميرا.</translation>
-<translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="428234092390943511">صورة مصغّرة للصفحة</translation>
-<translation id="4349714250734879769">‏تعديل حجم الإطارات باستخدام Chrome</translation>
 <translation id="4383571725254449280">طباعة سجلّات الأداء</translation>
 <translation id="4445542136948522167">إيقاف التقاط الصورة</translation>
 <translation id="4570032796877367747">الكاميرا الأمامية</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">قائمة الصفحات الممسوحة ضوئيًا</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="4892746741161549733">نسخ عنوان الرابط <ph name="URL" /></translation>
-<translation id="491895758387112773">البث المتعدّد لتسجيل الفيديو</translation>
 <translation id="495170559598752135">إجراءات</translation>
 <translation id="4984613436295737187">‏دقة Quad HD ‏(1440p)</translation>
 <translation id="5034763830503483128">نسبة العرض إلى الارتفاع في الصورة</translation>
@@ -158,7 +155,6 @@
 <translation id="8145038249676204903">التبديل لالتقاط صورة</translation>
 <translation id="8167081290930651932">حفظ بتنسيق صورة</translation>
 <translation id="8239780215768881278">تسجيل لقطة فيديو</translation>
-<translation id="8346544573713510785">‏تعديل حجم الإطارات باستخدام طبقة تجريد الأجهزة (HAL) للكاميرا</translation>
 <translation id="8425673304802773841">إمالة إلى أسفل</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8609951387004618906">فتح <ph name="URL" /></translation>

@@ -2993,7 +2993,6 @@
 <translation id="6753269504797312559">Вредност смерница</translation>
 <translation id="6753434778807740853">Избришите унос <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Штедни рачуни</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Уређај је прешао у режим спавања.</translation>
 <translation id="6760548828952594090">Чување ове картице на Google налогу није успело. Уместо тога, сачувана је у Chrome-у на овом уређају.</translation>
 <translation id="6766558780547452153">Кување и рецепти</translation>
@@ -4261,7 +4260,6 @@
 <translation id="9155646082713385498">Часописи</translation>
 <translation id="9157595877708044936">Подешавање...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можда има осетљив садржај}one{<ph name="FILE_COUNT" /> фајл можда има осетљив садржај}few{<ph name="FILE_COUNT" /> фајла можда имају осетљив садржај}other{<ph name="FILE_COUNT" /> фајлова можда има осетљив садржај}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Сајтови које посећујете такође могу да одреде шта вам се допада на основу ваших активности на сајту. На пример, ако посетите сајт који продаје патике за трчање на дуге стазе, тај сајт може да да закључи да сте заинтересовани за трчање маратона.</translation>
 <translation id="9166851138617700776">Више о огласима које предлажу сајтови и мерењу огласа</translation>
 <translation id="9167054383925257837">Информације о прегледачу и ОС-у уређаја (попут верзија прегледача и ОС-а)</translation>

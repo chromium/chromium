@@ -2680,6 +2680,7 @@
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6167577165590485365">Саясатты алуға жасалған соңғы әрекет:</translation>
 <translation id="617256461084925519">Google Chrome төлем туралы ақпаратыңызды толтыру үшін сіз екеніңізді растағысы келеді.</translation>
+<translation id="6173208311907792313">Сатып алуды Windows Hello көмегімен аяқтаңыз.</translation>
 <translation id="6176387967264100435">Бұл баға жоғары.</translation>
 <translation id="6177128806592000436">Бұл сайтпен байланысыңыз қауіпсіз емес</translation>
 <translation id="6177531123306197852">C2 хатқалтасы</translation>
@@ -2985,7 +2986,6 @@
 <translation id="6753269504797312559">Саясат мәні</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> жазбасын жою</translation>
 <translation id="6754547388777247439">Жинақ шоттары</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Құрылғы ұйқы күйіне өтті.</translation>
 <translation id="6760548828952594090">Бұл картаны Google аккаунтыңызға сақтау мүмкін болмады. Ол осы құрылғыдағы Chrome-ға сақталды.</translation>
 <translation id="6766558780547452153">Тамақ пісіру және рецептілер</translation>
@@ -3838,6 +3838,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кіруге тыйым салынған</translation>
 <translation id="833262891116910667">Ерекшелеу</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды</translation>
+<translation id="8339275256517065202">Сатып алуды Touch ID көмегімен аяқтаңыз.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуалдық картаны тіркеудің диалогтік терезесі толық ашылды</translation>
 <translation id="8349305172487531364">Бетбелгілер жолағы</translation>
@@ -4031,6 +4032,7 @@
 <translation id="8726549941689275341">Бет өлшемі:</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8731268612289859741">Қауіпсіздік коды</translation>
+<translation id="8731917264694569036">Сатып алуды құрылғы көмегімен аяқтаңыз.</translation>
 <translation id="8733345475331865475">Көлік сақтандыру</translation>
 <translation id="8733764070897080460">Сайттарға көрсетілмесін деген тақырыптарды блоктай аласыз. Сонымен қатар Chrome браузері 4 аптадан асқан тақырыптарды автоматты түрде жояды. Толық ақпарат</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="MANAGER" /> басқарады</translation>
@@ -4224,6 +4226,7 @@
 <translation id="9116548361133462832">Chrome браузеріндегі жарнамалар туралы қосымша ақпарат</translation>
 <translation id="9118692854637641831">"<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />". Іздеуді жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="9119042192571987207">Жүктеп салынды</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> бұл сіз екеніңізді растағысы келеді</translation>
 <translation id="912327514020027767">Юбкалар</translation>
 <translation id="912414390325846156">Бұған дейін осы сайтқа рұқсат бермеуді таңдадыңыз</translation>
 <translation id="9128870381267983090">Желіге қосылу</translation>
@@ -4246,7 +4249,6 @@
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнатылуда…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында шетін контент болуы мүмкін.}other{<ph name="FILE_COUNT" /> файлда шетін контент болуы мүмкін.}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Сонымен қатар кірген сайттарыңыз ондағы әрекетіңізге қарай сізге не ұнайтынын анықтай алады. Мысалы, алыс қашықтыққа жүгіруге арналған аяқ киім сататын сайтқа кірсеңіз, сайт сіз марафондарға қызығады деп ұйғаруы мүмкін.</translation>
 <translation id="9166851138617700776">Сайт ұсынған жарнамалар және жарнама көрсеткіштерін өлшеу туралы қосымша ақпарат</translation>
 <translation id="9167054383925257837">браузер мен құрылғының операциялық жүйесі туралы ақпарат (браузер мен операциялық жүйе нұсқалары сияқты);</translation>

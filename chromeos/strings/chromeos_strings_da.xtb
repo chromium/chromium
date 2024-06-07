@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Rediger APN-oplysninger</translation>
 <translation id="2195732836444333448">Der er ingen kapacitet i øjeblikket. Vend tilbage senere.</translation>
 <translation id="2201758491318984023">en cykel</translation>
-<translation id="2203222757805818543">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Hvis du automatisk vil opdatere tidsplanen for mørk tilstand, skal du <ph name="BEGIN_LINK" />aktivere lokationsadgang<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">varm kilde</translation>
 <translation id="2203642483788377106">en klippe</translation>
 <translation id="2208388655216963643">impressionisme</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">en sandklit</translation>
 <translation id="2619761439309613843">Nyt hver dag</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2637303424821734920">FRA – Hvis du vil se den lokale vejrudsigt, skal du <ph name="BEGIN_LINK" />aktivere systemets lokationsadgang<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Loginbillede</translation>
 <translation id="2640549051766135490">Albummet <ph name="TITLE" /> <ph name="DESC" /> er valgt</translation>
 <translation id="2645380101799517405">Styring</translation>

@@ -881,7 +881,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1634224622052500893">Se encontró una red Wi-Fi</translation>
 <translation id="1634783886312010422">¿Ya cambiaste esta contraseña en <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">Aceptar</translation>
-<translation id="1636542522761359943">Te damos la bienvenida, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Los datos de las apps abarcan cualquier información guardada por una app (según la configuración del desarrollador), incluidos contactos, mensajes y fotos. La copia de seguridad de los datos no incide en la cuota de almacenamiento de Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar este servicio en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Obtener este favorito en tu iPhone</translation>
@@ -1616,7 +1615,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="217576141146192373">No se puede agregar la impresora. Revisa la configuración de la impresora y vuelve a intentarlo.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="217631816678106981">No pegar</translation>
-<translation id="2177306523871626993">Descargando archivos de reconocimiento de texto… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Pestaña de incógnito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Estás habilitando las funciones de depuración de ChromeOS Flex que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
@@ -1821,6 +1819,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2314774579020744484">El idioma que se usa cuando se traducen páginas</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2316433409811863464">Transmisión de app</translation>
+<translation id="2316709634732130529">Usar la contraseña sugerida</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% listo</translation>
 <translation id="2318143611928805047">Tamaño del papel</translation>
 <translation id="2318817390901984578">Para usar las apps de Android, carga y actualiza tu <ph name="DEVICE_TYPE" />.</translation>
@@ -1867,7 +1866,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2350182423316644347">Iniciando aplicación...</translation>
 <translation id="235028206512346451">Si te alejas de tu dispositivo, la pantalla se bloqueará automáticamente. Cuando estés frente a tu dispositivo, la pantalla quedará activada por más tiempo. Si no tienes una pantalla de bloqueo, tu dispositivo se suspenderá en lugar de bloquearse.</translation>
 <translation id="2351923523007389195">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Activa el <ph name="LINK_BEGIN" />acceso a la ubicación del sistema<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Cuando accedes en este dispositivo, obtienes tus contraseñas y más de tu Cuenta de Google</translation>
 <translation id="2352662711729498748">Menos de 1 MB</translation>
 <translation id="2352810082280059586">Las notas de la pantalla bloqueada se guardan automáticamente en <ph name="LOCK_SCREEN_APP_NAME" />. La nota más reciente permanecerá en la pantalla bloqueada.</translation>
 <translation id="2353297238722298836">Cámara y micrófono permitidos</translation>
@@ -3660,7 +3658,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3694590407685276748">Destacar el cursor de texto</translation>
 <translation id="369489984217678710">Contraseñas y otros datos de acceso</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Se completaron los controles de seguridad. Se subirán tus datos.}=1{Se completaron los controles de seguridad. Se subirá tu archivo.}other{Se completaron los controles de seguridad. Se subirán tus archivos.}}</translation>
-<translation id="3696817060563289264">Se descargaron los archivos de reconocimiento de texto</translation>
 <translation id="369736917241079046">Selector + flecha hacia la izquierda</translation>
 <translation id="3697716475445175867">últimos abiertos</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Puedes impedir que este sitio te envíe notificaciones en el futuro.}other{Puedes impedir que estos sitios te envíen notificaciones en el futuro.}}</translation>
@@ -3972,7 +3969,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3898768766145818464">Reproducir o pausar el video</translation>
 <translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3900966090527141178">Exportar contraseñas</translation>
-<translation id="3902789559055749153">Elige cómo quieres crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3903696968689283281">Información de los propietarios de Wi-Fi directo:</translation>
 <translation id="3904326018476041253">Servicios de ubicación</translation>
@@ -4145,7 +4141,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
 <translation id="4029024445166427442">Selector + Mayúsculas + retroceso</translation>
 <translation id="4029556917477724407">Regresar de la página <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Descargando archivos de reconocimiento de texto</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
@@ -4383,7 +4378,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4220648711404560261">Se produjo un error durante la activación.</translation>
 <translation id="4222917615373664617">El seguimiento de precios está habilitado. Precio: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">No se permite el micrófono</translation>
-<translation id="4223845867739585293">Crea una llave de acceso</translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4228071595943929139">Usa la dirección de correo electrónico de tu organización</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{No se permite esta extensión}other{No se permiten algunas extensiones}}</translation>
@@ -4694,7 +4688,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta empresarial de tu organización. Si deseas inscribir dispositivos en la cuenta, primero debes revisar la propiedad del dominio en la Consola del administrador. Deberás tener privilegios administrativos de la cuenta que deseas verificar.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detectó un TPM activo que puede almacenar tus datos de manera más segura.</translation>
-<translation id="4451203458188403050">Extrae texto de PDF</translation>
 <translation id="4452898361839215358">o selecciona un PPD. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Toca el sensor de huellas dactilares en la esquina superior derecha del teclado. Los datos de las huellas dactilares se almacenan de forma segura y no salen nunca de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Buscar en <ph name="SEARCH_ENGINE_NAME" /> o escribir una URL</translation>
@@ -5494,6 +5487,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5079010647467150187">Agregar VPN integrada…</translation>
 <translation id="5079460277417557557">Ahora puedes usar grupos de pestañas guardados en los dispositivos de escritorio en los que accediste a tu cuenta</translation>
 <translation id="5079699784114005398">Después de que accedas con tu Cuenta de Google, tus apps estarán disponibles en cualquier dispositivo ChromeOS si están activadas. Las apps web instaladas desde el navegador Chrome se sincronizarán incluso si la sincronización del navegador está desactivada.</translation>
+<translation id="5079950360618752063">Usar la contraseña sugerida</translation>
 <translation id="508059534790499809">Actualizar un ticket de Kerberos</translation>
 <translation id="5081124414979006563">&amp;Abrir el perfil de invitado</translation>
 <translation id="5083035541015925118">Ctrl + Alt + flecha hacia arriba</translation>
@@ -7265,7 +7259,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6429384232893414837">Error en la actualización</translation>
 <translation id="6430814529589430811">Certificado único ASCII con codificación Base64</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizaciones automáticas para todos los usuarios de esta computadora.</translation>
-<translation id="6432072919019816301">Escanea el PDF para extraer texto para tecnología de accesibilidad</translation>
 <translation id="6434104957329207050">Velocidad de la búsqueda puntual</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">Para usar <ph name="APP_NAME" />, actualiza el dispositivo.</translation>
@@ -8874,7 +8867,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7660146600670077843">Haz clic con el botón derecho en una pestaña y selecciona "Agregar pestaña a un grupo nuevo"</translation>
 <translation id="7661259717474717992">Permitir que los sitios guarden y lean datos de cookies</translation>
 <translation id="7661451191293163002">No se pudo obtener un certificado de registro.</translation>
-<translation id="7662164944369232556">No se pueden descargar los archivos de reconocimiento de texto. Vuelve a intentarlo más tarde.</translation>
 <translation id="7662283695561029522">Presiona para configurar</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Combinación de teclas disponible</translation>

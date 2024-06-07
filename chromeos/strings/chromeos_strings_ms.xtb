@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Edit butiran APN</translation>
 <translation id="2195732836444333448">Kapasiti terhad pada masa ini. Sila kembali sebentar lagi.</translation>
 <translation id="2201758491318984023">basikal</translation>
-<translation id="2203222757805818543">Jadual semasa ditetapkan kepada <ph name="SUNRISE" /> - <ph name="SUNSET" />. Untuk mengemaskinikan jadual mod gelap secara automatik, <ph name="BEGIN_LINK" />hidupkan akses lokasi<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">mata air panas</translation>
 <translation id="2203642483788377106">cenuram</translation>
 <translation id="2208388655216963643">impresionisme</translation>
@@ -362,6 +361,7 @@
 <translation id="3017079585324758401">Latar belakang</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Peranti ialah kamera video.</translation>
+<translation id="3051968340259309715">Tindakan ini membolehkan perkhidmatan sistem menggunakan Ketepatan Lokasi untuk menentukan lokasi anda. Ketepatan Lokasi menggunakan maklumat tentang isyarat wayarles, seperti titik akses Wi-Fi, menara rangkaian selular dan GPS, bersama dengan data penderia peranti, seperti akselerometer dan giroskop untuk menganggarkan lokasi peranti. Anda boleh mematikan lokasi dalam Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Titik akhir</translation>
 <translation id="3060579846059757016">Rangka</translation>

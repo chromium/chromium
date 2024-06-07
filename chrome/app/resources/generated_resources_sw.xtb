@@ -295,6 +295,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1203942045716040624">Mfanyakazi Anayeshirikiwa: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Kiungo cha Kukagua Kwanza</translation>
 <translation id="1206832039833782423">Msimbo wako wa usalama unapatikana nyuma ya kadi yako</translation>
+<translation id="1208392090861059168">Ratiba ya sasa imewekwa kuwa <ph name="SUNRISE" /> hadi <ph name="SUNSET" />. Ili usasishe kiotomatiki ratiba ya machweo na macheo, <ph name="BEGIN_LINK" />ruhusu ufikiaji wa data ya mahali kwenye kifaa<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Angalia au uweke printa ili uone kazi zinazohitaji kuchapishwa</translation>
 <translation id="1211769675100312947">Ni wewe unayeratibu njia za mikato</translation>
 <translation id="1213254615020057352">Tuma data ya matumizi na uchunguzi. Tusaidie kuboresha jinsi mtoto wako anavyotumia Android kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Hatutatumia data hii kumtambulisha mtoto wako na itatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu na washirika wa Google kama vile wasanidi programu za Android. Mipangilio hii hutekelezwa na mmiliki. Mmiliki anaweza kuamua kutuma data ya uchunguzi na matumizi ya kifaa hiki kwa Google. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu ya mtoto wako, data hii inaweza kuhifadhiwa kwenye Akaunti yake ya Google.</translation>
@@ -809,6 +810,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1594703455918849716">Nenda kwenye Ukurasa wa kukagua</translation>
 <translation id="1594781465361405478">Washa au uzime kiwango cha sauti</translation>
 <translation id="1594963087419619323">Muhtasari wa skrini iliyogawanywa</translation>
+<translation id="1595018168143352126">Dhibiti ruhusa za tovuti za kutumia kamera kwenye Chrome</translation>
 <translation id="1595492813686795610">Inaweka toleo jipya la Linux</translation>
 <translation id="1596286373007273895">Inapatikana</translation>
 <translation id="1596709061955594992">Bluetooth imezimwa. Ili uone vifaa vinavyopatikana, washa Bluetooth.</translation>
@@ -882,7 +884,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1634224622052500893">Mtandao wa WiFi Umepatikana</translation>
 <translation id="1634783886312010422">Je, tayari umebadilisha nenosiri hili kwenye <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">Sawa</translation>
-<translation id="1636542522761359943">Karibu, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Data ya programu inaweza kuwa data yoyote ambayo imehifadhiwa na programu (kulingana na mipangilio ya msanidi programu), ikiwa ni pamoja na data kama vile anwani, ujumbe na picha. Nakala ya data iliyohifadhiwa haitatumia nafasi ya Hifadhi uliyopewa.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima huduma hii katika Mipangilio.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Pata alamisho hii kwenye iPhone yako</translation>
@@ -1254,6 +1255,7 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1900305421498694955">Huenda programu kwenye Google Play zikahitaji ufikiaji kamili wa mfumo wa faili ili kusoma na kuandika faili kwenye vifaa vya hifadhi ya nje. Faili na folda mpya zinazoongezwa kwenye kifaa huonekana kwa mtu yeyote anayetumia hifadhi ya nje. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Mwombe msimamizi wako asasishe programu hii</translation>
 <translation id="1901303067676059328">Chagua &amp;yote</translation>
+<translation id="1901760057081700494">Saa za eneo kwa sasa zimewekwa kuwa <ph name="TIME_ZONE_ENTRY" />. Ili usasishe saa za eneo kiotomatiki, <ph name="BEGIN_LINK" />ruhusu ufikiaji wa data ya mahali kwenye kifaa<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL unazotembelea huhifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="1906181697255754968">Tovuti hufikia faili na folda kwenye kifaa chako kwa ajili ya vipengele kama vile kuhifadhi kazi yako kiotomatiki</translation>
 <translation id="1906488504371069394">Gundua viendelezi na mandhari zaidi kwenye <ph name="BEGIN_LINK" />Duka la Chrome kwenye Wavuti<ph name="END_LINK" /></translation>
@@ -1625,7 +1627,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="217576141146192373">Imeshindwa kuweka printa. Tafadhali kagua mipangilio ya printa yako kisha ujaribu tena.</translation>
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="217631816678106981">Usibandike</translation>
-<translation id="2177306523871626993">Inapakua faili za utambuzi wa maandishi… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Kichupo Fiche: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Unawasha vipengele vya utatuzi vya ChromeOS Flex ambavyo vitaweka mipangilio ya sshd daemon na kuruhusu uwashe kutoka kwenye Hifadhi za USB.</translation>
@@ -1834,6 +1835,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2314774579020744484">Lugha inayotumiwa wakati wa kutafsiri kurasa</translation>
 <translation id="2316129865977710310">Hapana</translation>
 <translation id="2316433409811863464">Kutiririsha Programu</translation>
+<translation id="2316709634732130529">Tumia Nenosiri Linalopendekezwa</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% imekamilika</translation>
 <translation id="2318143611928805047">Ukubwa wa karatasi</translation>
 <translation id="2318817390901984578">Ili utumie programu za Android, chaji na usasishe kifaa chako cha <ph name="DEVICE_TYPE" />.</translation>
@@ -1880,7 +1882,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2350182423316644347">Inaanzisha programu...</translation>
 <translation id="235028206512346451">Unaposogea mbali na kifaa chako, skrini yako itajifunga kiotomatiki. Unapokuwa mbele ya kifaa chako, skrini yako haitajifunga kwa muda mrefu zaidi. Iwapo hutumii skrini iliyofungwa, kifaa chako kitakuwa katika hali tuli badala ya kujifunga.</translation>
 <translation id="2351923523007389195">Umeruhusu – <ph name="PERMISSION_DETAILS" />. Washa <ph name="LINK_BEGIN" />ufikiaji wa data ya mahali kifaa kilipo<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Unapoingia katika akaunti yako kwenye kifaa hiki, utapata manenosiri yako na zaidi kutoka katika Akaunti yako ya Google</translation>
 <translation id="2352662711729498748">&lt;MB 1</translation>
 <translation id="2352810082280059586">Vidokezo vya kufunga skrini huhifadhiwa kiotomatiki kwenye <ph name="LOCK_SCREEN_APP_NAME" />. Kidokezo chako cha hivi majuzi zaidi kitasalia kwenye skrini iliyofungwa.</translation>
 <translation id="2353297238722298836">Kamera na maikrofoni zimeruhusiwa</translation>
@@ -2210,6 +2211,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2581992808349413349">Tumia muunganisho salama kutafuta anwani ya IP ya tovuti katika DNS (Mfumo wa Majina ya Vikoa). Hali hii hutumia mtoa huduma anayedhibitiwa kupitia <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Jukwaa <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Imeshindwa kupata tiketi za Kerberos. Jaribu tena au wasiliana na msimamizi wa kifaa katika shirika lako. (Msimbo wa hitilafu <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Dhibiti ruhusa za tovuti za kutumia maikrofoni kwenye Chrome</translation>
 <translation id="2586561813241011046">Imeshindwa kusakinisha <ph name="APP_NAME" />. Tafadhali jaribu tena au uwasiliane na msimamizi wako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Ubao wa kunakili</translation>
 <translation id="2586672484245266891">Tafadhali weka URL fupi</translation>
@@ -2399,6 +2401,9 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2727744317940422214">Samahani, hitilafu imetokea. Tafadhali tuma maoni ukitumia #bruschetta katika maelezo. Msimbo wa hitilafu ni <ph name="ERROR" />. Imeshindwa kusafisha, huenda ukahitaji kufanya hivyo mwenyewe.</translation>
 <translation id="2729327310379176711">Chrome inaweka njia mpya za kupunguza ufuatiliaji kwenye tovuti na kukufanya uwe salama zaidi unapovinjari. Pia Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> na kukuruhusu uyadhibiti. Kisha, tovuti unazotembelea zinaweza kuiuliza Chrome mambo yanayokuvutia ili zikuonyeshe matangazo kulingana na mapendeleo yako.</translation>
 <translation id="2729577602370119849">Fikia na udhibiti printa kwa urahisi</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile milango ya mitandao ya Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo programu na huduma za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu na kifaa hiki ili kuchangia katika ukusanyaji wa data kuhusu mahali ambapo mawimbi ya simu za mkononi yako.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya yaliyokusanywa kutoka kifaa hiki ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. Maelezo haya hayatumiwi kumtambulisha mtu yeyote binafsi.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Unaweza kuzima mipangilio ya Usahihi wa Mahali wakati wowote katika mipangilio ya mahali ya kifaa hiki kwenye sehemu ya Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali &gt; Mipangilio ya kina ya mahali. Ukizima mipangilio ya Usahihi wa Mahali, hakuna data ya Usahihi wa Mahali itakayokusanywa. Kwenye programu na huduma za Android, anwani ya IP, inapopatikana, ndiyo tu hutumika kubaini mahali kifaa hiki kilipo, hali inayoweza kuathiri upatikanaji na usahihi wa data ya mahali kwenye programu na huduma za Android kama vile Ramani za Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Inahifadhi nakala ya programu na faili za Linux</translation>
 <translation id="2730596696987224099">Chagua Lako Mwenyewe</translation>
 <translation id="2730647855013151888">Jumuisha taarifa binafsi zote</translation>
@@ -3252,6 +3257,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="338323348408199233">Zuia trafiki kama VPN haijaunganishwa</translation>
 <translation id="3384362484379805487">Faili za lugha hushirikiwa baina ya watumiaji ili kuokoa nafasi ya hifadhi ya diski.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu na huduma. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa chako ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kukutambulisha ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kwa jumla kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.</translation>
 <translation id="338583716107319301">Kitenganishi</translation>
 <translation id="3385916046075724800">Vikundi vya vichupo vyako sasa huhifadhiwa kiotomatiki.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3673,7 +3679,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3694590407685276748">Angazia kiteuzi cha maandishi</translation>
 <translation id="369489984217678710">Manenosiri na data nyingine ya kuingia katika akaunti</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Ukaguzi wa usalama umekamilika. Data yako itapakiwa.}=1{Ukaguzi wa usalama umekamilika. Faili yako itapakiwa.}other{Ukaguzi wa usalama umekamilika. Faili zako zitapakiwa.}}</translation>
-<translation id="3696817060563289264">Faili za utambuzi wa maandishi zimepakuliwa</translation>
 <translation id="369736917241079046">kifungua programu pamoja na kishale cha kushoto</translation>
 <translation id="3697716475445175867">zilizofunguliwa mara ya mwisho</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Unaweza kuzuia tovuti hii isitume arifa wakati ujao.}other{Unaweza kuzuia tovuti hizi zisitume arifa wakati ujao.}}</translation>
@@ -3985,7 +3990,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3898768766145818464">Cheza au usitishe video</translation>
 <translation id="389901847090970821">Chagua kibodi</translation>
 <translation id="3900966090527141178">Hamisha manenosiri</translation>
-<translation id="3902789559055749153">Chagua jinsi unavyotaka kuunda ufunguo wa siri wa <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Kibodi iliyojumuishwa</translation>
 <translation id="3903696968689283281">Maelezo ya Seva Zinazounganisha Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Huduma za Mahali</translation>
@@ -4059,6 +4063,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3950841222883198950">Andika kwa kutamka</translation>
 <translation id="3953834000574892725">Akaunti zangu</translation>
 <translation id="3954354850384043518">Unaendelea</translation>
+<translation id="3954468641195530330">Programu haziruhusiwi kutumia maikrofoni yako</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Hezi <ph name="REFRESH_RATE" />)</translation>
 <translation id="3954953195017194676">Huna kumbukumbu za matukio za WebRTC uliyorekodi hivi majuzi.</translation>
 <translation id="3955321697524543127">Usiruhusu tovuti ziunganishe kwenye vifaa vya USB</translation>
@@ -4117,6 +4122,10 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3988124842897276887">Kichupo hiki kimeunganishwa kwenye kifaa cha USB</translation>
 <translation id="3988996860813292272">Chagua saa za eneo</translation>
 <translation id="3991055816270226534">Dhibiti vidakuzi vya washirika wengine na mipangilio ya ulinzi dhidi ya ufuatiliaji</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile milango ya mitandao ya Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo programu na huduma za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu na kifaa hiki ili kuchangia katika ukusanyaji wa data kuhusu mahali ambapo mawimbi ya simu za mkononi yako.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya yaliyokusanywa kutoka kifaa hiki ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. Maelezo haya hayatumiwi kumtambulisha mtu yeyote binafsi.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Unaweza kuzima mipangilio ya Usahihi wa Mahali wakati wowote katika mipangilio ya mahali ya kifaa hiki kwenye sehemu ya Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali &gt; Mipangilio ya kina ya mahali. Ukizima mipangilio ya Usahihi wa Mahali, hakuna data ya Usahihi wa Mahali itakayokusanywa. Kwenye programu na huduma za Android, anwani ya IP, inapopatikana, ndiyo tu hutumika kubaini mahali kifaa hiki kilipo, hali inayoweza kuathiri upatikanaji na usahihi wa data ya mahali kwenye programu na huduma za Android kama vile Ramani za Google.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Pata maelezo zaidi kuhusu mipangilio ya Usahihi wa Mahali<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Zilizoingizwa</translation>
 <translation id="3992008114154328194">Inapakua <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Hifadhi nakala ya data</translation>
@@ -4158,7 +4167,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4028467762035011525">Ongeza mbinu ya kuingiza data</translation>
 <translation id="4029024445166427442">kifungua programu pamoja na "shift" na "backspace"</translation>
 <translation id="4029556917477724407">Rudi nyuma kutoka kwenye ukurasa unaoitwa <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Inapakua faili za utambuzi wa maandishi</translation>
 <translation id="4031179711345676612">Maikrofoni imeruhusiwa</translation>
 <translation id="4031527940632463547">Imezuia vitambuzi</translation>
 <translation id="4033471457476425443">Ongeza folda mpya</translation>
@@ -4270,6 +4278,10 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4110485659976215879">Rejesha onyo</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (haipo mtandaoni)</translation>
 <translation id="4113743276555482284">Nenosiri la faili</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile milango ya mitandao ya Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo programu na huduma za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu nawe ili kuchangia katika ukusanyaji wa data kuhusu mahali ambapo mawimbi ya simu za mkononi yako.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya bila kukutambulisha ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Unaweza kuzima mipangilio ya Usahihi wa Mahali wakati wowote katika mipangilio ya mahali ya kifaa chako kwenye sehemu ya Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali &gt; Mipangilio ya kina ya mahali. Ukizima mipangilio ya Usahihi wa Mahali, hakuna data ya Usahihi wa Mahali itakayokusanywa. Kwenye programu na huduma za Android, anwani ya IP, inapopatikana, ndiyo tu hutumika kubaini mahali kifaa chako kilipo, hali inayoweza kuathiri upatikanaji na usahihi wa data ya mahali kwenye programu na huduma za Android kama vile Ramani za Google.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Pata maelezo zaidi kuhusu mipangilio ya Usahihi wa Mahali<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Unapata faili zilizopendekezwa ili kukusaidia urejee kwa urahisi kwenye shughuli za hivi majuzi katika Hifadhi ya Google.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4394,7 +4406,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4220648711404560261">Hitilafu imetokea wakati wa kuwasha mipangilio.</translation>
 <translation id="4222917615373664617">Umewasha kipengele cha ufuatiliaji bei Bei ni <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Ufikiaji wa maikrofoni hauruhusiwi</translation>
-<translation id="4223845867739585293">Unda ufunguo wa siri</translation>
 <translation id="4225397296022057997">Kwenye tovuti zote</translation>
 <translation id="4228071595943929139">Tumia anwani ya barua pepe ya shirika lako</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Kiendelezi hiki hakiruhusiwi}other{Baadhi ya viendelezi haviruhusiwi}}</translation>
@@ -4705,7 +4716,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4449948729197510913">Jina lako la mtumiaji linamilikiwa na akaunti ya kazini ya shirika lako. Ili uandikishe vifaa kwenye akaunti, thibitisha kwanza umiliki wa kikoa katika Dashibodi ya Msimamizi. Utahitaji ruhusa za msimamizi kwenye akaunti ili uthibitishe.</translation>
 <translation id="4450974146388585462">Tambua hitilafu</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> imetambua TPM inayotumika ambayo inaweza kuhifadhi data yako kwa usalama zaidi.</translation>
-<translation id="4451203458188403050">Dondoa maandishi kwenye PDF</translation>
 <translation id="4452898361839215358">au chagua PPD. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Gusa kitambuzi cha alama ya kidole kwenye kona ya juu kulia mwa kibodi yako. Data yako ya alama ya kidole itahifadhiwa kwa usalama na itasalia kwenye <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="4453946976636652378">Tafuta kwenye <ph name="SEARCH_ENGINE_NAME" /> au uandike URL</translation>
@@ -5047,6 +5057,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4716483597559580346">Tumia Powerwash kuimarisha usalama</translation>
 <translation id="4716715661140829720">Nafasi ya kuhifadhi haitoshi</translation>
 <translation id="471759229191973607">Badilisha mandhari</translation>
+<translation id="4719276504493791870">Programu haziruhusiwi kutumia data ya mahali ulipo</translation>
 <translation id="4722735765955348426">Nenosiri la <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> inashiriki skrini yako.</translation>
 <translation id="4722989931633062466">Zisizoruhusiwa kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa watoa huduma wengine</translation>
@@ -5260,6 +5271,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4879491255372875719">Kiotomatiki (chaguomsingi)</translation>
 <translation id="4880315242806573837">Muda wa masasisho ya usalama utaisha hivi karibuni. Pata toleo jipya la Chromebook.</translation>
 <translation id="4880827082731008257">Tafuta katika historia</translation>
+<translation id="4881632956374597321">Programu na tovuti zilizo na ruhusa ya mahali, pamoja na huduma za mfumo, zinaweza kutumia data ya mahali ulipo. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Usinikumbushe wakati mwingine</translation>
 <translation id="4881695831933465202">Fungua</translation>
 <translation id="4882312758060467256">Inaweza kufikia tovuti hii</translation>
@@ -5505,6 +5517,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5079010647467150187">Ongeza VPN iliyojumuishwa ndani...</translation>
 <translation id="5079460277417557557">Sasa unaweza kutumia vikundi vya vichupo vilivyohifadhiwa kwenye kompyuta aina zozote ulizotumia kuingia katika akaunti</translation>
 <translation id="5079699784114005398">Ukiwasha mipangilio hii, programu zako zitapatikana kwenye vifaa vyovyote vinavyotumia mfumo wa uendeshaji wa ChromeOS baada ya kuingia ukitumia Akaunti yako ya Google. Programu za wavuti zilizosanikishwa kutoka kivinjari cha Chrome zitasawasishwa hata ikiwa kipengele cha kusawazisha kivinjari kimezimwa.</translation>
+<translation id="5079950360618752063">Tumia nenosiri linalopendekezwa</translation>
 <translation id="508059534790499809">Onyesha upya tiketi ya Kerberos</translation>
 <translation id="5081124414979006563">Fungua Wasifu wa Mgeni</translation>
 <translation id="5083035541015925118">ctrl + alt + kishale cha juu</translation>
@@ -5655,6 +5668,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5186788525428341874">Unaweza kutumia ufunguo huu wa siri ili uingie katika akaunti kwa haraka kwenye vifaa vyako vyote. Utahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Weka Ukurasa wa wavuti kama Programu...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Tumia data ya mahali. Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa chako kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa chako ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kukutambulisha ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu jinsi ya kutumia data ya mahali<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Inatumia <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Washa mlango</translation>
 <translation id="5190959794678983197">Hakuna maikrofoni</translation>
@@ -5700,6 +5714,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5225324770654022472">Onyesha mkato wa programu</translation>
 <translation id="52254442782792731">Bado hujaweka mipangilio ya sasa ya uonekanaji</translation>
 <translation id="5225463052809312700">Washa kamera</translation>
+<translation id="5226731562812684363">Tovuti haziruhusiwi kutumia data ya mahali ulipo</translation>
 <translation id="5227679487546032910">Ishara chaguomsingi ya kijani kiwiti</translation>
 <translation id="5228245824943774148">Vifaa <ph name="NUM_DEVICES_CONNECTED" /> vimeunganishwa</translation>
 <translation id="5228579091201413441">Washa usawazishaji</translation>
@@ -6574,6 +6589,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5885314688092915589">Shirika lako litadhibiti wasifu huu</translation>
 <translation id="5885470467814103868">Kuanza kuchanganua</translation>
 <translation id="5885631909150054232">Nakili tokeni</translation>
+<translation id="5886000783338788034">Kipengele cha mahali kimezimwa katika Mipangilio ya ChromeOS</translation>
 <translation id="5886009770935151472">Kidole cha 1</translation>
 <translation id="5886112770923972514">Unganisha kwa haraka na uweke mipangilio ya Kuoanisha Haraka vifaa vilivyo karibu</translation>
 <translation id="5886384907280980632">Zima sasa</translation>
@@ -7106,6 +7122,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="628352644014831790">Sekunde 4</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> haipakuliwi kwa kawaida na huenda ikawa hatari.</translation>
 <translation id="6285770818046456882">Kifaa kinachoshiriki nawe kimeghairi uhamishaji</translation>
+<translation id="628699625505156622">Tumia data ya mahali. Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa hiki kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa hiki ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kumtambulisha mtu yeyote binafsi ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu jinsi ya kutumia data ya mahali<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Dhibiti printa zako kwenye mipangilio ya printa</translation>
 <translation id="6287828400772161253">Simu ya Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Hakuna vifaa vinavyoshiriki karibu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -7276,7 +7293,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6429384232893414837">Hitilafu ya kusasisha</translation>
 <translation id="6430814529589430811">ASCII iliyosimbwa kwa Base64, cheti kimoja</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> itasanidi masasisho ya kiotomatiki kwa wale wote wanaotumia kompyuta hii.</translation>
-<translation id="6432072919019816301">Changanua PDF ili udondoe maandishi mahususi kwa teknolojia saidizi</translation>
 <translation id="6434104957329207050">Kasi ya uchanganuzi wa pointi</translation>
 <translation id="6434309073475700221">Tupa</translation>
 <translation id="6434325376267409267">Unahitaji kusasisha kifaa chako kabla ya kutumia <ph name="APP_NAME" />.</translation>
@@ -7630,6 +7646,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6703613667804166784">Faili hii inaweza kudhuru akaunti zako binafsi na za mitandao ya kijamii, ikiwemo <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Kutekeleza majaribio ya uchunguzi wa Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="6707389671160270963">Cheti cha Teja ya SSL</translation>
+<translation id="6707671917294473995">Tovuti haziruhusiwi kutumia kamera yako</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> na Kichupo Kingine Kimoja}other{<ph name="PAGE_TITLE" /> na Vichupo Vingine #}}</translation>
 <translation id="6709133671862442373">Habari</translation>
 <translation id="6709357832553498500">Unganisha ukitumia <ph name="EXTENSIONNAME" /></translation>
@@ -7639,6 +7656,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6713233729292711163">Ongeza Wasifu wa Kazini</translation>
 <translation id="6713441551032149301">Shikilia kitufe cha kifungua programu ili ubadilishe kati ya vitufe vya utendaji na vitufe vya safu mlalo ya juu ya mfumo</translation>
 <translation id="6713668088933662563">Orodha ya lugha ambazo kamwe zisiwe chaguo za kutafsiri</translation>
+<translation id="6715735940363172819">Tovuti haziruhusiwi kutumia maikrofoni yako</translation>
 <translation id="6715803357256707211">Hitilafu imetokea wakati wa kusakinisha programu yako ya Linux. Bofya kwenye arifa ili upate maelezo.</translation>
 <translation id="6716798148881908873">Muunganisho wa mtandao umekatika. Kagua muunganisho wa mtandao wako au ujaribu kutumia mtandao mwingine wa Wi-Fi.</translation>
 <translation id="6718849325281682232">Rangi za mandhari zimeboreshwa kwenye Chrome ili zifanye kazi vyema kwa kila mtu, iwe unatumia hali nyeusi au ya mwangaza</translation>
@@ -8664,6 +8682,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7489761397368794366">Piga simu kwa kutumia kifaa chako</translation>
 <translation id="749028671485790643">Mtu <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Kagua Manenosiri Yaliyosalia</translation>
+<translation id="7490938136316476492">Kipengele cha mahali kimezimwa. Kifaa chako kinachotumia mfumo wa uendeshaji wa ChromeOS hakifikii data ya mahali ulipo. Hata hivyo, programu na tovuti bado zinaweza kuona eneo uliko kwa jumla kupitia vitu kama vile anwani yako ya IP. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">kichupo</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{Kidakuzi kimoja}other{Vidakuzi {NUM_COOKIES}}}</translation>
 <translation id="7493386493263658176">Huenda kiendelezi cha <ph name="EXTENSION_NAME" /> kikahifadhi maandishi yote unayocharaza, ikiwemo data ya kibinafsi kama vile manenosiri na namba za kadi za mikopo. Je, ungependa kutumia kiendelezi hiki?</translation>
@@ -8885,7 +8904,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7660146600670077843">Bofya kulia kwenye kichupo kisha chagua "Weka Kichupo Kwenye Kikundi Kipya"</translation>
 <translation id="7661259717474717992">Ruhusu tovuti zihifadhi na kusoma data ya vidakuzi</translation>
 <translation id="7661451191293163002">Haikupata cheti cha usajili.</translation>
-<translation id="7662164944369232556">Imeshindwa kupakua faili za utambuzi wa maandishi. Jaribu tena baadaye.</translation>
 <translation id="7662283695561029522">Gusa ili uweke mipangilio</translation>
 <translation id="7663719505383602579">Kipokezi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Mikato ya kibodi inapatikana</translation>
@@ -9026,6 +9044,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7758450972308449809">Rekebisha mipaka ya skrini yako</translation>
 <translation id="7758884017823246335">Weka utafutaji wa tovuti</translation>
 <translation id="7759809451544302770">Ya hiari</translation>
+<translation id="7760176388948986635">Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa hiki kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa hiki ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kumtambulisha mtu yeyote binafsi ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.</translation>
 <translation id="7762024824096060040">Imeshindwa kutumia akaunti hii</translation>
 <translation id="7764225426217299476">Ongeza anwani</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> kutoka <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9146,6 +9165,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7839051173341654115">Angalia/Hifadhi nakala rudufu ya maudhui</translation>
 <translation id="7839192898639727867">Utambulisho wa Ufunguo wa Kichwa cha Cheti</translation>
 <translation id="7839696104613959439">Onyesha Chaguo la Mtandao</translation>
+<translation id="7840222916565569061">Programu haziruhusiwi kutumia kamera yako</translation>
 <translation id="7842062217214609161">Hakuna mkato</translation>
 <translation id="7842692330619197998">Tembelea g.co/ChromeEnterpriseAccount ikiwa unahitaji kufungua akaunti mpya.</translation>
 <translation id="784273751836026224">Ondoa Linux</translation>
@@ -10158,6 +10178,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8584843865238667486">Vifaa vya HID vilivyo na matumizi <ph name="USAGE" /> kutoka kwenye ukurasa wa matumizi <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Ondoa Crostini</translation>
 <translation id="8585841788766257444">Tovuti zilizoorodheshwa hapo chini hufuata mipangilio maalum badala ya chaguomsingi</translation>
+<translation id="8586421813321819377">Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa chako kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa chako ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kukutambulisha ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.</translation>
 <translation id="8587660243683137365">Weka ukurasa huu kwenye kifaa kikiwa programu</translation>
 <translation id="8588866096426746242">Onyesha takwimu za wasifu</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - Inawasilisha VR kwenye vifaa vya kutazama uhalisia pepe</translation>
@@ -10379,6 +10400,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8736288397686080465">Tovuti hii imesasishwa chini chini.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Chagua lugha unayotaka kutafsiri ukurasa</translation>
+<translation id="8737966899544698733">Usahihi wa Mahali (Android pekee)</translation>
 <translation id="8738418093147087440">Tafuta kulingana na nchi, lugha au majina ya data</translation>
 <translation id="8740086188450289493">Tumia nenosiri la Akaunti ya Google</translation>
 <translation id="8740247629089392745">Unaweza kumpa <ph name="SUPERVISED_USER_NAME" /> Chromebook hii. Unakaribia kumaliza kuweka mipangilio, kisha ataweza kuitumia.</translation>
@@ -10450,12 +10472,16 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8793390639824829328">Tovuti hutumia kipengele hiki kusogeza na kukuza vichupo unavyotumia na wengine</translation>
 <translation id="879413103056696865">Mtandaopepe wako ukiwa umewashwa, kifaa chako cha <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Dirisha Jipya</translation>
+<translation id="8796907593900732741">Huduma za mfumo ndizo pekee zinaweza kutumia data ya mahali ulipo. Hata hivyo, programu na tovuti bado zinaweza kuona eneo uliko kwa jumla kupitia vitu kama vile anwani yako ya IP. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Badilisha Chrome yako iwe upendavyo</translation>
 <translation id="8797459392481275117">Usitafsiri Tovuti Hii Kamwe</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8800034312320686233">Je, tovuti haifanyi kazi?</translation>
 <translation id="8803526663383843427">Ukiwa umekiwasha</translation>
 <translation id="8803953437405899238">Fungua kichupo kipya kwa mbofyo mmoja</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile milango ya mitandao ya Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo programu na huduma za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu nawe ili kuchangia katika ukusanyaji wa data kuhusu mahali ambapo mawimbi ya simu za mkononi yako.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya bila kukutambulisha ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Unaweza kuzima mipangilio ya Usahihi wa Mahali wakati wowote katika mipangilio ya mahali ya kifaa chako kwenye sehemu ya Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali &gt; Mipangilio ya kina ya mahali. Ukizima mipangilio ya Usahihi wa Mahali, hakuna data ya Usahihi wa Mahali itakayokusanywa. Kwenye programu na huduma za Android, anwani ya IP, inapopatikana, ndiyo tu hutumika kubaini mahali kifaa chako kilipo, hali inayoweza kuathiri upatikanaji na usahihi wa data ya mahali kwenye programu na huduma za Android kama vile Ramani za Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Hufunguka katika</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Hamishia Kichupo kwenye Dirisha Jingine}other{Hamishia Vichupo kwenye Dirisha Jingine}}</translation>
 <translation id="8805140816472474147">Thibitisha mipangilio ya kuanza usawazishaji.</translation>

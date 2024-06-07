@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">ଏକ USB ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4194328954146351878">NFC ଡିଭାଇସଗୁଡ଼ିକରେ ସୂଚନା ଦେଖିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="4200726100658658164">ଲୋକେସନ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ରୁ</translation>
 <translation id="4226663524361240545">ବିଜ୍ଞପ୍ତି ଡିଭାଇସ୍‍କୁ ଭାଇବ୍ରେଟ୍ କରିପାରେ</translation>
 <translation id="4259722352634471385">ନାଭିଗେସନ୍ ଅବରୋଧ କରାଯାଇଛି: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ଅନୁମୋଦିତ</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">ପ୍ରସାରଣ କରନ୍ତୁ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ଆସନ୍ତାକାଲି ମିଆଦ ଶେଷ ହେବ}other{# ଦିନରେ ମିଆଦ ଶେଷ ହେବ}}</translation>
 <translation id="4336566011000459927">Chrome ଆଜି ପୁଣି କୁକୀଗୁଡ଼ିକୁ ସୀମିତ କରିବ</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ଆପଣଙ୍କ ଗତ ଟାବ</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> ଅଧୀନରେ ଥିବା ସମସ୍ତ ସାଇଟ</translation>
 <translation id="4402755511846832236">ଆପଣ କେତେବେଳେ ସକ୍ରିୟ ଭାବେ ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4412992751769744546">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">ଆପଣଙ୍କ ଡିଭାଇସକୁ ଏହି ସାଇଟର ଆକ୍ସେସ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6042308850641462728">ଅଧିକ</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ଆପଣଙ୍କ ଗତ ଟାବ</translation>
 <translation id="6064125863973209585">ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇଥିବା ଡାଉନ୍‌ଲୋଡ୍</translation>
 <translation id="6071501408666570960">ଆପଣଙ୍କୁ ଏହି ସାଇଟରୁ ସାଇନ ଆଉଟ କରାଯାଇପାରେ</translation>
 <translation id="6120483543004435978">ଚାଲୁ ଥିବା ସମୟରେ, ଆପଣ କେତେବେଳେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ପଚାରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ଆପଣ କେତେବେଳେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ସାଇଟଗୁଡ଼ିକ ଜାଣିପାରିବ ନାହିଁ।</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6818926723028410516">ଆଇଟମ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6864395892908308021">ଏହି ଡିଭାଇସ୍ NFC ପଢ଼ିପାରିବ ନାହିଁ</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" />ରୁ</translation>
 <translation id="6912998170423641340">ସାଇଟ୍‍ ଏବଂ କ୍ଲିପ୍‌ବୋର୍ଡରୁ ଲେଖା ପଢ଼ିବା ଏବଂ ଛବି ଅବରୋଧ କରନ୍ତୁ</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6950072572526089586">ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ଆପଣ ଯାହା କରୁଛନ୍ତି ସେ ବିଷୟରେ ସୂଚନା ସେଭ କରିପାରିବ ଯାହା ଫଳରେ ଏହା ଆପଣ ଆଶା କରୁଥିବା ପରି କାର୍ଯ୍ୟ କରେ — ଉଦାହରଣ ସ୍ୱରୂପ, ଏକ ସାଇଟରେ ଆପଣଙ୍କୁ ସାଇନ ଇନ କରି ରଖିବା କିମ୍ବା ଆପଣଙ୍କ ସପିଂ କାର୍ଟରେ ଆଇଟମଗୁଡ଼ିକ ସେଭ କରିବା। ପ୍ରାୟତଃ ସାଇଟଗୁଡ଼ିକ ଏହି ସୂଚନାକୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଅସ୍ଥାୟୀ ଭାବେ ସେଭ କରିଥାଏ।</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">ଗୋଟିଏ ଯୋଗାଯୋଗ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7990211076305263060">ଚାଲୁ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପଚାରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
 <translation id="8007176423574883786">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="8009579582995973057"><ph name="FROM_DEVICE" />ରୁ <ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /></translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8042586301629853791">ଏହି ଅନୁସାରେ ସର୍ଟ କରନ୍ତୁ:</translation>
 <translation id="8067883171444229417">ଭିଡିଓ ଚଲାନ୍ତୁ</translation>

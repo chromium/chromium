@@ -2987,7 +2987,6 @@
 <translation id="6753269504797312559">ポリシーの値</translation>
 <translation id="6753434778807740853">エントリ <ph name="ENTRY_VOICEOVER" /> を削除します</translation>
 <translation id="6754547388777247439">普通預金口座</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">デバイスがスリープ状態です。</translation>
 <translation id="6760548828952594090">このカードを Google アカウントに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。</translation>
 <translation id="6766558780547452153">料理とレシピ</translation>
@@ -4253,7 +4252,6 @@
 <translation id="9155646082713385498">雑誌</translation>
 <translation id="9157595877708044936">セットアップ中...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> にはデリケートなコンテンツが含まれている可能性があります}other{<ph name="FILE_COUNT" /> 個のファイルにデリケートなコンテンツが含まれている可能性があります}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">アクセスするウェブサイトによっては、そのウェブサイト上でのアクティビティに基づいてユーザーの好みが判断される場合もあります。たとえば、長距離ランニング シューズを販売するウェブサイトにアクセスすると、そのユーザーはマラソンに興味があるとされるかもしれません。</translation>
 <translation id="9166851138617700776">ウェブサイトによる広告提案と広告測定の詳細</translation>
 <translation id="9167054383925257837">ブラウザとデバイスの OS 情報（ブラウザと OS のバージョンなど）</translation>

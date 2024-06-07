@@ -2986,7 +2986,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6753269504797312559">Valor de la política</translation>
 <translation id="6753434778807740853">Suprimeix l'entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Comptes d'estalvi</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">El dispositiu ha entrat en mode de repòs.</translation>
 <translation id="6760548828952594090">Aquesta targeta no s'ha pogut desar al teu Compte de Google. S'ha desat a Chrome en aquest dispositiu.</translation>
 <translation id="6766558780547452153">Cuina i receptes</translation>
@@ -4247,7 +4246,6 @@ Detalls addicionals:
 <translation id="9155646082713385498">Revistes</translation>
 <translation id="9157595877708044936">S'està configurant...</translation>
 <translation id="9161794544616754735">{0,plural, =1{És possible que <ph name="FILE_NAME" /> inclogui contingut sensible}other{És possible que <ph name="FILE_COUNT" /> fitxers incloguin contingut sensible}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Els llocs web que visites també poden determinar què t'agrada a partir de l'activitat que hi duus a terme. Per exemple, si visites un lloc web que ven sabatilles per córrer llargues distàncies, el lloc web pot decidir que t'interessa córrer maratons.</translation>
 <translation id="9166851138617700776">Més informació sobre els anuncis suggerits per llocs web i el mesurament d'anuncis</translation>
 <translation id="9167054383925257837">Informació del navegador i del sistema operatiu del dispositiu (com ara les versions del navegador i del sistema operatiu)</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB bidezko gailu batera konektatuta</translation>
 <translation id="4194328954146351878">Webguneei NFC darabilten gailuetako informazioa ikusi eta aldatzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="4200726100658658164">Ireki kokapen-ezarpenak</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Iturburua: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Gailua dardararaz dezakete jakinarazpenek</translation>
 <translation id="4259722352634471385"><ph name="URL" /> orrira joateko aukera blokeatuta dago</translation>
 <translation id="4278390842282768270">Baimenduta</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Zabaldu</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
 <translation id="4336566011000459927">Gaur mugatuko ditu cookieak berriro Chrome-k</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Azken fitxa</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Kontrolatu webgune honek gailurako duen sarbidea</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6042308850641462728">Gehiago</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Azken fitxa</translation>
 <translation id="6064125863973209585">Osatutako deskargak</translation>
 <translation id="6071501408666570960">Baliteke webguneko saioa amaitzea.</translation>
 <translation id="6120483543004435978">Aktibatuta dagoenean, webguneek gailua noiz erabiltzen ari zaren jakiteko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute jakin noiz erabiltzen ari zaren gailua.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6818926723028410516">Hautatu elementuak</translation>
 <translation id="6864395892908308021">Gailu honek ezin du irakurri NFC</translation>
-<translation id="6867014948848323204">Iturburua: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Ez utzi webguneei arbeleko testua eta irudiak ikusten</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6950072572526089586">Bisitatzen dituzun webguneek egiten ari zarenari buruzko informazioa gordetzen dute batzuetan, espero duzun moduan funtzionatu ahal izateko; adibidez, zure saioa hasita mantentzeko edo erosketa-saskian produktuak gordetzeko. Askotan, webguneek gailuan gordetzen dute informazio hori aldi baterako.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
 <translation id="7990211076305263060">Aktibatuta dagoenean, webguneek mikrofonoa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mikrofonoa.</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> gailutik</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8042586301629853791">Ordenatzeko irizpidea:</translation>
 <translation id="8067883171444229417">Erreproduzitu bideoa</translation>

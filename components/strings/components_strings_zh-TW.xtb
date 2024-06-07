@@ -2679,6 +2679,7 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6167577165590485365">上次擷取時間：</translation>
 <translation id="617256461084925519">Google Chrome 正在嘗試驗證你的身分，以便填入付款資訊。</translation>
+<translation id="6173208311907792313">使用 Windows Hello 完成購買交易</translation>
 <translation id="6176387967264100435">這個價格屬於高價位</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
@@ -2984,7 +2985,6 @@
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6753434778807740853">刪除項目，<ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">儲蓄帳戶</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">您的裝置已進入睡眠模式。</translation>
 <translation id="6760548828952594090">系統無法將這張卡片儲存到 Google 帳戶，因此已改存到這部裝置的 Chrome。</translation>
 <translation id="6766558780547452153">烹飪與食譜</translation>
@@ -3837,6 +3837,7 @@
 <translation id="8332188693563227489">存取 <ph name="HOST_NAME" /> 的要求遭到拒絕</translation>
 <translation id="833262891116910667">醒目顯示</translation>
 <translation id="8339163506404995330">系統將不會翻譯<ph name="LANGUAGE" />網頁</translation>
+<translation id="8339275256517065202">使用 Touch ID 完成購買交易</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虛擬卡片註冊對話方塊已開啟，並顯示在整個畫面上</translation>
 <translation id="8349305172487531364">書籤列</translation>
@@ -4030,6 +4031,7 @@
 <translation id="8726549941689275341">頁面大小：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全碼</translation>
+<translation id="8731917264694569036">使用裝置完成購買交易</translation>
 <translation id="8733345475331865475">汽車保險</translation>
 <translation id="8733764070897080460">你可以封鎖不想與網站分享的主題，Chrome 也會自動刪除 4 週以前的主題。瞭解詳情</translation>
 <translation id="8734529307927223492">你的 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理</translation>
@@ -4223,6 +4225,7 @@
 <translation id="9116548361133462832">進一步瞭解 Chrome 中的廣告</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可繼續歷程，查看 Chrome 歷史記錄中的相關活動</translation>
 <translation id="9119042192571987207">已上傳</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證身分</translation>
 <translation id="912327514020027767">裙子</translation>
 <translation id="912414390325846156">你先前已拒絕將權限授予這個網站</translation>
 <translation id="9128870381267983090">連線至網路</translation>
@@ -4245,7 +4248,6 @@
 <translation id="9155646082713385498">雜誌</translation>
 <translation id="9157595877708044936">設定中...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> 可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">造訪的網站也會根據你的網站活動判斷你喜歡的內容。舉例來說，如果你造訪的網站販售長跑慢跑鞋，該網站可能會判定你的興趣是跑馬拉松。</translation>
 <translation id="9166851138617700776">進一步瞭解網站建議廣告和廣告評估</translation>
 <translation id="9167054383925257837">瀏覽器和裝置 OS 資訊 (例如瀏覽器和 OS 版本)</translation>

@@ -72,6 +72,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1235458158152011030">Rețele cunoscute</translation>
 <translation id="1239161794459865856">Opțiunea <ph name="FEATURE_NAME" /> s-a conectat.</translation>
 <translation id="1240638468526743569">O aplicație</translation>
+<translation id="1242198791279543032">Sunetul notificărilor este dezactivat</translation>
 <translation id="1242883863226959074">dispozitiv</translation>
 <translation id="1245644940275736236">Accesează Asistentul</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
@@ -301,6 +302,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="216955976692983107">Redimensionează ferestrele sub formă de dale spre dreapta</translation>
 <translation id="2185166372312820725">Accesează fila anterioară</translation>
 <translation id="2185444992308415167">Parcurge filele de la 1 la 8</translation>
+<translation id="2195732836444333448">La capacitate maximă. Revino în curând.</translation>
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
 <translation id="219905428774326614">Lansator, toate aplicațiile</translation>
 <translation id="2201071101391734388">Fotografia recentă <ph name="INDEX" /> din <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4086921558679520050">Activează comutatorul pentru microfonul fizic al dispozitivului</translation>
 <translation id="4101772068965291327">Deschideți pagina de pornire</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
+<translation id="4113030288477039509">Gestionat de administratorul tău</translation>
 <translation id="4114315158543974537">Activează Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activează desktopul din stânga</translation>
@@ -847,6 +850,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4201033867194214117">Opțiunea <ph name="FEATURE_NAME" /> nu este disponibilă.</translation>
 <translation id="4201051445878709314">Afișează luna anterioară</translation>
 <translation id="4209973997261364186">Conexiunea Wi-Fi este activată</translation>
+<translation id="4212246570487010370">Continuă navigarea</translation>
 <translation id="4212472694152630271">Comută la PIN</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
 <translation id="4217571870635786043">Dictare</translation>
@@ -1239,7 +1243,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5599242528220103262">Comanda rapidă de la tastatură este dezactivată</translation>
 <translation id="5600415762228455511">Modul Focus este activat, timp rămas: <ph name="REMAINING_TIME" />, te concentrezi pe: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Apasă Ctrl + Alt + Z ca să dezactivezi feedbackul rostit.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Cu mai puțin de o oră în urmă}=1{Acum o oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="5601503069213153581">Cod PIN</translation>
 <translation id="5618148318840095371">Te-am transferat într-o rețea mai bună</translation>
 <translation id="5619862035903135339">Politica implementată de administrator dezactivează capturarea ecranului</translation>
@@ -1692,6 +1695,7 @@ Instalare nouă</translation>
 <translation id="7340731148882810149">Meniul de clicuri automate</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7348093485538360975">Tastatură pe ecran</translation>
+<translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>
 <translation id="7360036564632145207">Modificarea setării pentru protecția accesului la date pentru dispozitive periferice poate optimiza performanța</translation>
 <translation id="736045644501761622">Setează imaginea de fundal și stilul</translation>
@@ -1834,7 +1838,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Pentru a folosi dispozitivul ca invitat, trebuie să te deconectezi și să selectezi Navighează ca invitat în partea de jos a ecranului.</translation>
 <translation id="7866482334467279021">activată</translation>
-<translation id="7866727328666668290">Ultima filă deschisă</translation>
 <translation id="7872786842639831132">Dezactivat</translation>
 <translation id="7875575368831396199">Se pare că funcția Bluetooth este dezactivată pe <ph name="DEVICE_TYPE" />. Activează Bluetooth pentru a folosi Phone Hub.</translation>
 <translation id="7884446017008693258">Setări pentru hotspot</translation>
@@ -2141,7 +2144,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9002204506712855687">Explorează cele mai recente funcții</translation>
 <translation id="9005984960510803406">Deschide fereastra Crosh</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
-<translation id="9022774213089566801">Accesate frecvent</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9029736946581028033">Dispozitivul se va închide în curând</translation>
 <translation id="9030319654231318877">Dezactivată până la apus</translation>

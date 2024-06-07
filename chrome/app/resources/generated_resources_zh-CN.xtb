@@ -879,7 +879,6 @@
 <translation id="1634224622052500893">找到 Wi-Fi 网络了</translation>
 <translation id="1634783886312010422">您是否已在 <ph name="WEBSITE" /> 上更改了此密码？</translation>
 <translation id="1636212173818785548">确定</translation>
-<translation id="1636542522761359943">欢迎您，<ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用已保存的任何数据（具体取决于开发者的设置），包括联系人、消息和照片等数据。备份数据不会计入您的云端硬盘存储空间配额。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">在您的 iPhone 上获取此书签</translation>
@@ -1612,7 +1611,6 @@
 <translation id="217576141146192373">无法添加打印机。请检查您打印机的配置，然后重试。</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="217631816678106981">请勿粘贴</translation>
-<translation id="2177306523871626993">正在下载文字识别文件…<ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">无痕模式标签页：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">您正在启用 ChromeOS Flex 调试功能，这些功能将设置 sshd 守护程序并允许从 U 盘启动设备。</translation>
@@ -1817,6 +1815,7 @@
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2316433409811863464">应用串流</translation>
+<translation id="2316709634732130529">使用建议的密码</translation>
 <translation id="2317842250900878657">已迁移 <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">纸张尺寸</translation>
 <translation id="2318817390901984578">要使用 Android 应用，请为您的 <ph name="DEVICE_TYPE" /> 充电并对其进行更新。</translation>
@@ -1863,7 +1862,6 @@
 <translation id="2350182423316644347">正在初始化应用…</translation>
 <translation id="235028206512346451">如果您离开设备，设备屏幕就会自动锁定。当您位于设备前时，设备屏幕将会维持解锁状态更长时间。如果您没有设置屏幕锁定方式，您的设备将进入休眠状态，而不是锁定状态。</translation>
 <translation id="2351923523007389195">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统位置信息使用权<ph name="LINK_END" />。</translation>
-<translation id="2352305801620974284">在该设备上登录后，您可以从您的 Google 账号中获取密码等信息</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
@@ -3653,7 +3651,6 @@
 <translation id="3694590407685276748">突出显示文本光标</translation>
 <translation id="369489984217678710">密码和其他登录数据</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全检查。系统将会上传您的数据。}=1{已完成安全检查。系统将会上传您的文件。}other{已完成安全检查。系统将会上传您的文件。}}</translation>
-<translation id="3696817060563289264">已下载文字识别文件</translation>
 <translation id="369736917241079046">启动器键 + 向左键</translation>
 <translation id="3697716475445175867">上次打开时间</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{您可以阻止这个网站继续发送通知。}other{您可以阻止这些网站继续发送通知。}}</translation>
@@ -3965,7 +3962,6 @@
 <translation id="3898768766145818464">播放或暂停视频</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3900966090527141178">导出密码</translation>
-<translation id="3902789559055749153">选择您希望以何种方式为<ph name="APP_NAME" />创建通行密钥</translation>
 <translation id="3903187154317825986">内置键盘</translation>
 <translation id="3903696968689283281">Wi-Fi 直连所有者信息：</translation>
 <translation id="3904326018476041253">位置信息服务</translation>
@@ -4137,7 +4133,6 @@
 <translation id="4028467762035011525">添加输入法</translation>
 <translation id="4029024445166427442">启动器键 + shift + 退格键</translation>
 <translation id="4029556917477724407">从“<ph name="PAGE_TITLE" />”页面返回</translation>
-<translation id="403088439874411464">正在下载文字识别文件</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4031527940632463547">已禁止使用传感器</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
@@ -4375,7 +4370,6 @@
 <translation id="4220648711404560261">激活时出错。</translation>
 <translation id="4222917615373664617">价格跟踪功能已启用。现价为 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
-<translation id="4223845867739585293">创建通行密钥</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4228071595943929139">使用贵组织的电子邮件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
@@ -4686,7 +4680,6 @@
 <translation id="4449948729197510913">您的用户名属于贵单位的企业账号。如需将设备注册到该账号，请先在管理控制台中验证域名所有权。您需要拥有该账号的管理员权限才能进行验证。</translation>
 <translation id="4450974146388585462">诊断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 检测到一个处于活动状态的 TPM，它可以更安全地存储您的数据。</translation>
-<translation id="4451203458188403050">提取 PDF 文件中的文本</translation>
 <translation id="4452898361839215358">或选择 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">轻触键盘右上角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="4453946976636652378">在<ph name="SEARCH_ENGINE_NAME" />中搜索，或者输入一个网址</translation>
@@ -5486,6 +5479,7 @@
 <translation id="5079010647467150187">添加内置 VPN…</translation>
 <translation id="5079460277417557557">您现在可以在已登录账号的桌面设备上使用保存的标签页分组</translation>
 <translation id="5079699784114005398">一旦开启了此设置，您便可在已使用 Google 账号登录的任何 ChromeOS 设备上使用已同步的应用。即使关闭了浏览器同步功能，系统也会同步通过 Chrome 浏览器安装的 Web 应用。</translation>
+<translation id="5079950360618752063">使用建议的密码</translation>
 <translation id="508059534790499809">刷新 Kerberos 票据</translation>
 <translation id="5081124414979006563">打开访客资料(&amp;O)</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上键</translation>
@@ -7253,7 +7247,6 @@
 <translation id="6429384232893414837">更新错误</translation>
 <translation id="6430814529589430811">Base64 编码 ASCII，单一证书</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />将为此计算机上的所有用户设置自动更新。</translation>
-<translation id="6432072919019816301">扫描 PDF 文件以提取文本供辅助技术处理</translation>
 <translation id="6434104957329207050">点扫描速度</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6434325376267409267">您需要更新设备，才能使用 <ph name="APP_NAME" />。</translation>
@@ -8862,7 +8855,6 @@
 <translation id="7660146600670077843">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
 <translation id="7661259717474717992">允许网站保存和读取 Cookie 数据</translation>
 <translation id="7661451191293163002">无法获取注册证书。</translation>
-<translation id="7662164944369232556">无法下载文字识别文件。请稍后重试。</translation>
 <translation id="7662283695561029522">点按即可配置</translation>
 <translation id="7663719505383602579">接收器：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用键盘快捷键</translation>

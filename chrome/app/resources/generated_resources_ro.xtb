@@ -296,6 +296,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1203942045716040624">Worker folosit în comun: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Link de previzualizare</translation>
 <translation id="1206832039833782423">Codul de securitate se află pe spatele cardului</translation>
+<translation id="1208392090861059168">Programul actual este setat la <ph name="SUNRISE" /> – <ph name="SUNSET" />. Ca să actualizezi automat programul pentru apus și răsărit, <ph name="BEGIN_LINK" />activează accesul la locație al sistemului<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Afișează sau adaugă imprimante și vezi sarcinile de printare active</translation>
 <translation id="1211769675100312947">Comenzile rapide sunt organizate de tine</translation>
 <translation id="1213254615020057352">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
@@ -812,6 +813,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1594703455918849716">Accesează pagina Verificare</translation>
 <translation id="1594781465361405478">Volum activat / dezactivat</translation>
 <translation id="1594963087419619323">Prezentare generală a ecranului împărțit</translation>
+<translation id="1595018168143352126">Gestionează permisiunile pentru camera foto ale site-urilor în Chrome</translation>
 <translation id="1595492813686795610">Linux trece la versiunea superioară</translation>
 <translation id="1596286373007273895">Disponibil</translation>
 <translation id="1596709061955594992">Bluetooth este dezactivat. Ca să vezi dispozitivele disponibile, activează Bluetooth.</translation>
@@ -885,7 +887,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1634224622052500893">S-a găsit rețeaua Wi-Fi</translation>
 <translation id="1634783886312010422">Ai schimbat deja parola pe <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
-<translation id="1636542522761359943">Bun venit, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Datele unei aplicații reprezintă toate datele pe care le-a salvat aplicația (în funcție de setările dezvoltatorului), inclusiv date cum ar fi agenda, mesajele și fotografiile. Datele cărora li s-a făcut backup nu sunt luate în considerare la calcularea cotei de stocare Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți dezactiva acest serviciu din Setări.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Obține marcajul pe iPhone</translation>
@@ -1249,6 +1250,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1900305421498694955">Aplicațiile din Google Play pot necesita acces deplin la sistemul de fișiere pentru a citi și a scrie fișiere pe dispozitive de stocare externe. Fișierele și dosarele create pe dispozitiv sunt vizibile oricărei persoane care folosește unitatea externă. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Solicită-i administratorului să actualizeze aplicația</translation>
 <translation id="1901303067676059328">Select&amp;ează tot</translation>
+<translation id="1901760057081700494">Fusul orar este setat momentan la <ph name="TIME_ZONE_ENTRY" />. Pentru a actualiza automat fusul orar, <ph name="BEGIN_LINK" />activează accesul la locație al sistemului<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="1906181697255754968">Site-urile accesează de obicei fișiere și dosare de pe dispozitiv pentru funcții cum ar fi salvarea automată a ceea ce ai lucrat</translation>
 <translation id="1906488504371069394">Descoperă mai multe extensii și teme în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /></translation>
@@ -1620,7 +1622,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="217576141146192373">Nu se poate adăuga imprimanta. Verifică ce configurație are imprimanta și încearcă din nou.</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="217631816678106981">Nu insera</translation>
-<translation id="2177306523871626993">Se descarcă fișierele de recunoaștere a textului… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Fila Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Activezi funcțiile de remediere a erorilor în sistemul de operare Chrome Flex, care vor configura SSH daemon și vor activa pornirea de pe unități USB.</translation>
@@ -1825,6 +1826,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2314774579020744484">Limbi folosite la traducerea paginilor</translation>
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
 <translation id="2316433409811863464">Streaming de aplicație</translation>
+<translation id="2316709634732130529">Folosește parola sugerată</translation>
 <translation id="2317842250900878657">Finalizat: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">Dimensiunea hârtiei</translation>
 <translation id="2318817390901984578">Ca să folosești aplicații Android, încarcă și actualizează dispozitivul <ph name="DEVICE_TYPE" />.</translation>
@@ -1871,7 +1873,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2350182423316644347">Se inițializează aplicația...</translation>
 <translation id="235028206512346451">Dacă te îndepărtezi de dispozitiv, ecranul se va bloca automat. Când ești în fața dispozitivului, acesta va rămâne activat mai mult. Dacă nu folosești un ecran de blocare, dispozitivul va intra în starea de inactivitate în loc să se blocheze.</translation>
 <translation id="2351923523007389195">Se permite – <ph name="PERMISSION_DETAILS" />. Activează <ph name="LINK_BEGIN" />accesul la locația sistemului<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Când te conectezi pe acest dispozitiv, obții parolele și multe altele din Contul Google</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Notele de pe ecranul de blocare sunt salvate automat în <ph name="LOCK_SCREEN_APP_NAME" />. Cea mai recentă notă va rămâne pe ecranul de blocare.</translation>
 <translation id="2353297238722298836">Camera foto și microfonul sunt permise</translation>
@@ -2201,6 +2202,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2581992808349413349">Folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii). Acest lucru folosește un furnizor de servicii gestionat la <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Nu s-a putut afișa tichetul Kerberos. Încearcă din nou sau contactează administratorul dispozitivului organizației. (Cod de eroare <ph name="ERROR_CODE" />)</translation>
+<translation id="2584974473573720127">Gestionează permisiunile pentru microfon ale site-urilor în Chrome</translation>
 <translation id="2586561813241011046">Nu s-a putut instala <ph name="APP_NAME" />. Încearcă din nou sau contactează administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2586672484245266891">Introdu o adresă URL mai scurtă</translation>
@@ -2390,6 +2392,9 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2727744317940422214">A apărut o eroare. Trimite feedback cu #bruschetta în descriere. Codul de eroare este <ph name="ERROR" />. Nu s-a putut șterge. Poate fi necesar să ștergi manual.</translation>
 <translation id="2729327310379176711">Chrome caută noi modalități de a reduce urmărirea și de a te proteja mai bine în timp ce navighezi. În plus, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> și îți dă posibilitatea să le gestionezi. Apoi, site-urile pe care le accesezi pot solicita informații despre interesele tale de la Chrome pentru a-ți afișa anunțuri.</translation>
 <translation id="2729577602370119849">Accesează și gestionează ușor imprimantele</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Când Precizia locației este activată, informațiile despre semnalele wireless, cum ar fi punctele de acces Wi-Fi și turnurile rețelelor de date mobile, împreună cu datele de la senzorii dispozitivului, precum accelerometrul și giroscopul, sunt folosite pentru a estima locația mai precisă a dispozitivului, pe care aplicațiile și serviciile Android o utilizează pentru a oferi funcții bazate pe locație. În acest scop, Google colectează periodic informații despre senzorii dispozitivului și semnalele wireless din apropierea acestuia pentru a contribui la externalizarea spre public a locațiilor semnalelor wireless.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google folosește informațiile colectate de pe dispozitiv pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general. Prelucrăm aceste informații pe baza intereselor legitime ale companiei Google și ale terților pentru a deservi nevoile utilizatorilor. Informațiile nu sunt folosite pentru a identifica persoane.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Poți dezactiva oricând Precizia locației din setările privind locația ale dispozitivului, în Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație &gt; Setări avansate privind locația. Dacă Precizia locației este dezactivată, nu se vor colecta date despre Precizia locației. Pentru aplicațiile și serviciile Android, adresa IP, dacă este disponibilă, este folosită numai pentru a stabili locația acestui dispozitiv. Acest lucru poate afecta disponibilitatea și precizia locațiilor pentru aplicațiile și serviciile Android, cum ar fi Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Se face backup pentru aplicațiile și fișierele Linux</translation>
 <translation id="2730596696987224099">Alege parola dorită</translation>
 <translation id="2730647855013151888">Include toate informațiile cu caracter personal</translation>
@@ -3242,6 +3247,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="338323348408199233">Blochează traficul fără VPN</translation>
 <translation id="3384362484379805487">Fișierele de limbă sunt trimise utilizatorilor pentru a economisi spațiu pe disc.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Precizia locației afișează locația mai precisă pentru aplicații și servicii. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor.</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Grupurile de file se salvează acum automat.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3663,7 +3669,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3694590407685276748">Evidențiază cursorul de text</translation>
 <translation id="369489984217678710">Parole și alte date de conectare</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{S-au finalizat verificările de securitate. Datele vor fi încărcate.}=1{S-au finalizat verificările de securitate. Fișierul va fi încărcat.}few{S-au finalizat verificările de securitate. Fișierele vor fi încărcate.}other{S-au finalizat verificările de securitate. Fișierele vor fi încărcate.}}</translation>
-<translation id="3696817060563289264">S-au descărcat fișierele de recunoaștere a textului</translation>
 <translation id="369736917241079046">Lansator + săgeată spre stânga</translation>
 <translation id="3697716475445175867">data ultimei deschideri</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Poți împiedica acest site să trimită notificări pe viitor.}few{Poți împiedica aceste site-uri să trimită notificări pe viitor.}other{Poți împiedica aceste site-uri să trimită notificări pe viitor.}}</translation>
@@ -3975,7 +3980,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3898768766145818464">Redă sau întrerupe videoclipul</translation>
 <translation id="389901847090970821">Selectează tastatura</translation>
 <translation id="3900966090527141178">Exportă parolele</translation>
-<translation id="3902789559055749153">Alege modul în care vrei să creezi o cheie de acces pentru <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Tastatură integrată</translation>
 <translation id="3903696968689283281">Informații despre proprietarii Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Servicii de localizare</translation>
@@ -4049,6 +4053,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3950841222883198950">Tastare vocală</translation>
 <translation id="3953834000574892725">Conturile mele</translation>
 <translation id="3954354850384043518">În desfășurare</translation>
+<translation id="3954468641195530330">Aplicațiile nu au permisiunea de a folosi microfonul</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz)</translation>
 <translation id="3954953195017194676">Nu ai jurnale de evenimente WebRTC înregistrate recent.</translation>
 <translation id="3955321697524543127">Nu permite site-urilor să se conecteze la dispozitive USB</translation>
@@ -4107,6 +4112,10 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3988124842897276887">Această filă este conectată la un dispozitiv USB</translation>
 <translation id="3988996860813292272">Selectează fusul orar</translation>
 <translation id="3991055816270226534">Gestionează cookie-urile terță parte și protecțiile împotriva urmăririi</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Când Precizia locației este activată, informațiile despre semnalele wireless, cum ar fi punctele de acces Wi-Fi și turnurile rețelelor de date mobile, împreună cu datele de la senzorii dispozitivului, precum accelerometrul și giroscopul, sunt folosite pentru a estima locația mai precisă a dispozitivului, pe care aplicațiile și serviciile Android o utilizează pentru a oferi funcții bazate pe locație. În acest scop, Google colectează periodic informații despre senzorii dispozitivului și semnalele wireless din apropierea acestuia pentru a contribui la externalizarea spre public a locațiilor semnalelor wireless.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google folosește informațiile colectate de pe dispozitiv pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general. Prelucrăm aceste informații pe baza intereselor legitime ale companiei Google și ale terților pentru a deservi nevoile utilizatorilor. Informațiile nu sunt folosite pentru a identifica persoane.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Poți dezactiva oricând Precizia locației din setările privind locația ale dispozitivului, în Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație &gt; Setări avansate privind locația. Dacă Precizia locației este dezactivată, nu se vor colecta date despre Precizia locației. Pentru aplicațiile și serviciile Android, adresa IP, dacă este disponibilă, este folosită numai pentru a stabili locația acestui dispozitiv. Acest lucru poate afecta disponibilitatea și precizia locațiilor pentru aplicațiile și serviciile Android, cum ar fi Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Află mai multe despre Precizia locației<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importate</translation>
 <translation id="3992008114154328194">Se descarcă <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Fă backup datelor</translation>
@@ -4148,7 +4157,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4028467762035011525">Adaugă metode de introducere a textului</translation>
 <translation id="4029024445166427442">Lansator + Shift + backspace</translation>
 <translation id="4029556917477724407">Înapoi de la pagina <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Se descarcă fișierele de recunoaștere a textului</translation>
 <translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4031527940632463547">Senzorii sunt blocați</translation>
 <translation id="4033471457476425443">Adaugă un dosar nou</translation>
@@ -4262,6 +4270,10 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Când Precizia locației este activată, informațiile despre semnalele wireless, cum ar fi punctele de acces Wi-Fi și turnurile rețelelor de date mobile, împreună cu datele de la senzorii dispozitivului, precum accelerometrul și giroscopul, sunt folosite pentru a estima locația mai precisă a dispozitivului, pe care aplicațiile și serviciile Android o utilizează pentru a oferi funcții bazate pe locație. În acest scop, Google colectează periodic informații despre senzorii dispozitivului și semnalele wireless din apropierea ta pentru a contribui la externalizarea spre public a locațiilor semnalelor wireless.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google folosește aceste informații fără a te identifica în următoarele scopuri: pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general. Prelucrăm aceste informații pe baza intereselor legitime ale companiei Google și ale terților pentru a deservi nevoile utilizatorilor.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Poți dezactiva oricând Precizia locației din setările privind locația ale dispozitivului, în Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație &gt; Setări avansate privind locația. Dacă Precizia locației este dezactivată, nu se vor colecta date despre Precizia locației. Pentru aplicațiile și serviciile Android, adresa IP, dacă este disponibilă, este folosită numai pentru a stabili locația dispozitivului. Acest lucru poate afecta disponibilitatea și precizia locațiilor pentru aplicațiile și serviciile Android, cum ar fi Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Află mai multe despre Precizia locației<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Vezi fișierele sugerate ca să poți reveni ușor la cea mai recentă activitate din Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4386,7 +4398,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4220648711404560261">A apărut o eroare în timpul activării.</translation>
 <translation id="4222917615373664617">Urmărirea prețului este activată. Prețul este de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Folosirea microfonului nu este permisă</translation>
-<translation id="4223845867739585293">Creează o cheie de acces</translation>
 <translation id="4225397296022057997">Pe toate site-urile</translation>
 <translation id="4228071595943929139">Folosește adresa de e-mail a organizației</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Extensia nu este permisă}few{Unele extensii nu sunt permise}other{Unele extensii nu sunt permise}}</translation>
@@ -4697,7 +4708,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4449948729197510913">Numele tău de utilizator aparține contului de companie al organizației. Pentru a înregistra dispozitive în cont, mai întâi confirmă calitatea de proprietar al domeniului din Consola de administrare. Pentru confirmare, vei avea nevoie de privilegii administrative în cont.</translation>
 <translation id="4450974146388585462">Diagnosticați</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> a detectat un TPM activ care îți poate stoca datele cu un grad sporit de siguranță.</translation>
-<translation id="4451203458188403050">Extrage text din PDF</translation>
 <translation id="4452898361839215358">sau selectează PPD. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Atinge senzorul de amprentă în colțul din dreapta sus al tastaturii. Datele privind amprentele sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Caută <ph name="SEARCH_ENGINE_NAME" /> sau introdu o adresă URL</translation>
@@ -5039,6 +5049,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4716483597559580346">Powerwash pentru securitate suplimentară</translation>
 <translation id="4716715661140829720">Nu există suficient spațiu de stocare</translation>
 <translation id="471759229191973607">Schimbă tema</translation>
+<translation id="4719276504493791870">Aplicațiile nu au permisiunea de a-ți folosi locația</translation>
 <translation id="4722735765955348426">Parola pentru <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Aplicația <ph name="APP_NAME" /> are acces la ecran.</translation>
 <translation id="4722989931633062466">Nu au permisiunea de a afișa solicitări de conectare prin terți</translation>
@@ -5252,6 +5263,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4879491255372875719">Automat (prestabilit)</translation>
 <translation id="4880315242806573837">Actualizările de securitate se vor încheia în curând. Fă upgrade la un Chromebook nou.</translation>
 <translation id="4880827082731008257">Caută în istoric</translation>
+<translation id="4881632956374597321">Aplicațiile și site-urile care au permisiunea pentru locație, precum și serviciile de sistem, îți pot folosi locația. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Nu-mi reaminti data viitoare</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4882312758060467256">Are acces la acest site</translation>
@@ -5497,6 +5509,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5079010647467150187">Adaugă un VPN încorporat…</translation>
 <translation id="5079460277417557557">Acum poți folosi grupurile de file salvate pe toate computerele conectate</translation>
 <translation id="5079699784114005398">După activare, aplicațiile tale vor fi disponibile pe toate dispozitivele ChromeOS după ce te conectezi folosind Contul Google. Aplicațiile web instalate din browserul Chrome se vor sincroniza chiar dacă sincronizarea browserului este dezactivată.</translation>
+<translation id="5079950360618752063">Folosește parola sugerată</translation>
 <translation id="508059534790499809">Actualizează un tichet Kerberos</translation>
 <translation id="5081124414979006563">&amp;Deschide profilul de invitat</translation>
 <translation id="5083035541015925118">ctrl + alt + săgeată în sus</translation>
@@ -5647,6 +5660,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5186788525428341874">Poți folosi această cheie de acces ca să te conectezi mai rapid pe toate dispozitivele tale. Ea se va salva în Managerul de parole Google pentru <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalează pagina ca aplicație...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Folosești <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Activează portul</translation>
 <translation id="5190959794678983197">Niciun microfon</translation>
@@ -5692,6 +5706,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5225324770654022472">Afișați comanda rapidă pentru aplicații</translation>
 <translation id="52254442782792731">Setarea actuală de vizibilitate nu este setată încă</translation>
 <translation id="5225463052809312700">Activează camera foto</translation>
+<translation id="5226731562812684363">Site-urile nu au permisiunea de a-ți folosi locația</translation>
 <translation id="5227679487546032910">Avatar turcoaz prestabilit</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> dispozitive conectate</translation>
 <translation id="5228579091201413441">Activează sincronizarea</translation>
@@ -6565,6 +6580,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5885314688092915589">Organizația ta va gestiona acest profil</translation>
 <translation id="5885470467814103868">Pornește scanarea</translation>
 <translation id="5885631909150054232">Copiază indicativul</translation>
+<translation id="5886000783338788034">Locația este dezactivată din Setările ChromeOS</translation>
 <translation id="5886009770935151472">Deget 1</translation>
 <translation id="5886112770923972514">Conectează și configurează rapid dispozitivele Fast Pair din apropiere</translation>
 <translation id="5886384907280980632">Dezactivează acum</translation>
@@ -7097,6 +7113,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="628352644014831790">4 secunde</translation>
 <translation id="6285120108426285413">Fișierul <ph name="FILE_NAME" /> nu este descărcat de obicei și ar putea fi periculos.</translation>
 <translation id="6285770818046456882">Dispozitivul care îți trimitea fișiere a anulat transferul</translation>
+<translation id="628699625505156622">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a identifica persoane, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Gestionează imprimantele din setările pentru imprimantă</translation>
 <translation id="6287828400772161253">Telefonul Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nu sunt disponibile dispozitive care trimit fișiere în apropiere. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -7267,7 +7284,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6429384232893414837">Eroare de actualizare</translation>
 <translation id="6430814529589430811">ASCII codificat Base64, certificat unic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configura actualizările automate pentru toți utilizatorii acestui computer.</translation>
-<translation id="6432072919019816301">Scanează fișierul PDF ca să extragi text pentru tehnologia de asistare</translation>
 <translation id="6434104957329207050">Viteza de scanare punctuală</translation>
 <translation id="6434309073475700221">Renunță</translation>
 <translation id="6434325376267409267">Ca să poți folosi <ph name="APP_NAME" />, trebuie să actualizezi dispozitivul.</translation>
@@ -7623,6 +7639,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6703613667804166784">Acest fișier poate dăuna conturilor tale personale și din rețelele sociale, între care <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Rulează teste de diagnosticare pentru ChromeOS</translation>
 <translation id="6707389671160270963">Certificat de client SSL</translation>
+<translation id="6707671917294473995">Site-urile nu au permisiunea de a folosi camera foto</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> și încă o filă}few{<ph name="PAGE_TITLE" /> și încă # file}other{<ph name="PAGE_TITLE" /> și încă # de file}}</translation>
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6709357832553498500">Conectează-te folosind <ph name="EXTENSIONNAME" /></translation>
@@ -7632,6 +7649,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6713233729292711163">Adaugă un profil de serviciu</translation>
 <translation id="6713441551032149301">Ține apăsată tasta lansator pentru a comuta între tastele de funcții și tastele de sistem de pe rândul de sus</translation>
 <translation id="6713668088933662563">Nu oferi niciodată traducerea acestor limbi</translation>
+<translation id="6715735940363172819">Site-urile nu au permisiunea de a folosi microfonul</translation>
 <translation id="6715803357256707211">A apărut o eroare în timpul instalării aplicației Linux. Dă clic pe notificare pentru detalii.</translation>
 <translation id="6716798148881908873">S-a pierdut conexiunea la rețea. Verifică starea conexiunii la rețea sau încearcă o altă rețea Wi-Fi.</translation>
 <translation id="6718849325281682232">Culorile temei Chrome au fost actualizate pentru a fi văzute de toată lumea, indiferent dacă se folosește modul întunecat sau cel luminos</translation>
@@ -8657,6 +8675,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7489761397368794366">Apelează de pe dispozitivul tău</translation>
 <translation id="749028671485790643">Persoana <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Verifică parolele rămase</translation>
+<translation id="7490938136316476492">Locația este dezactivată. Dispozitivul ChromeOS nu îți accesează locația. Însă zona aproximativă poate fi în continuare vizibilă pentru aplicații și site-uri prin adresa IP. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">filă</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{Un cookie}few{{NUM_COOKIES} cookie-uri}other{{NUM_COOKIES} de cookie-uri}}</translation>
 <translation id="7493386493263658176">Extensia <ph name="EXTENSION_NAME" /> poate să culeagă integral textul introdus, inclusiv datele cu caracter personal, cum ar fi parolele și numerele cardurilor de credit. Dorești să folosești această extensie?</translation>
@@ -8878,7 +8897,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7660146600670077843">Dă clic dreapta pe o filă și selectează Adaugă fila într-un grup nou</translation>
 <translation id="7661259717474717992">Permite site-urilor să salveze și să citească datele asociate cookie-urilor</translation>
 <translation id="7661451191293163002">Nu s-a putut obține un certificat de înregistrare.</translation>
-<translation id="7662164944369232556">Nu se pot descărca fișierele de recunoaștere a textului. Încearcă din nou mai târziu.</translation>
 <translation id="7662283695561029522">Atinge pentru a configura</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Este disponibilă o comandă rapidă de la tastatură</translation>
@@ -9019,6 +9037,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7758450972308449809">Ajustează delimitările afișajului</translation>
 <translation id="7758884017823246335">Adaugă o căutare pe site</translation>
 <translation id="7759809451544302770">Opțional</translation>
+<translation id="7760176388948986635">Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a identifica persoane, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor.</translation>
 <translation id="7762024824096060040">Contul nu poate fi folosit</translation>
 <translation id="7764225426217299476">Adaugă o adresă</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de la <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9138,6 +9157,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7839051173341654115">Vezi/fă backup conținutului media</translation>
 <translation id="7839192898639727867">ID cheie pentru subiectul certificatului</translation>
 <translation id="7839696104613959439">Selectarea rețelei de redare</translation>
+<translation id="7840222916565569061">Aplicațiile nu au permisiunea de a folosi camera foto</translation>
 <translation id="7842062217214609161">Nicio comandă rapidă</translation>
 <translation id="7842692330619197998">Accesează g.co/ChromeEnterpriseAccount dacă este necesar să creezi un cont nou.</translation>
 <translation id="784273751836026224">Dezinstalează Linux</translation>
@@ -10150,6 +10170,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8584843865238667486">Dispozitivele HID cu o valoare a utilizării de <ph name="USAGE" /> din pagina Utilizare <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Elimină Crostini</translation>
 <translation id="8585841788766257444">Site-urile de mai jos aplică o setare personalizată în locul celei prestabilite</translation>
+<translation id="8586421813321819377">Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor.</translation>
 <translation id="8587660243683137365">Instalează această pagină ca aplicație</translation>
 <translation id="8588866096426746242">Afișează statisticile profilului</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - se prezintă RV pe vizualizator</translation>
@@ -10371,6 +10392,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8736288397686080465">Acest site a fost actualizat în fundal.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Alege limba în care vrei să traduci pagina</translation>
+<translation id="8737966899544698733">Precizia locației (numai pentru Android)</translation>
 <translation id="8738418093147087440">Caută după țară, limbă sau numele metodei de introducere a textului</translation>
 <translation id="8740086188450289493">Folosește parola Contului Google</translation>
 <translation id="8740247629089392745">Poți să îi dai Chromebookul utilizatorului <ph name="SUPERVISED_USER_NAME" />. Configurarea este aproape gata, apoi conținutul va putea fi explorat.</translation>
@@ -10443,12 +10465,16 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8793390639824829328">Site-urile folosesc această funcție pentru a derula și a face zoom în filele la care s-a permis accesul</translation>
 <translation id="879413103056696865">Cât timp hotspotul este activat, <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Fereastră nouă</translation>
+<translation id="8796907593900732741">Numai serviciile de sistem îți pot folosi locația. Însă zona aproximativă poate fi în continuare vizibilă pentru aplicații și site-uri prin adresa IP. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">P&amp;ersonalizează Chrome</translation>
 <translation id="8797459392481275117">Nu traduce niciodată acest site</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8800034312320686233">Site-ul nu funcționează?</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8803953437405899238">Deschide o filă nouă cu un singur clic</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Când Precizia locației este activată, informațiile despre semnalele wireless, cum ar fi punctele de acces Wi-Fi și turnurile rețelelor de date mobile, împreună cu datele de la senzorii dispozitivului, precum accelerometrul și giroscopul, sunt folosite pentru a estima locația mai precisă a dispozitivului, pe care aplicațiile și serviciile Android o utilizează pentru a oferi funcții bazate pe locație. În acest scop, Google colectează periodic informații despre senzorii dispozitivului și semnalele wireless din apropierea ta pentru a contribui la externalizarea spre public a locațiilor semnalelor wireless.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google folosește aceste informații fără a te identifica în următoarele scopuri: pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general. Prelucrăm aceste informații pe baza intereselor legitime ale companiei Google și ale terților pentru a deservi nevoile utilizatorilor.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Poți dezactiva oricând Precizia locației din setările privind locația ale dispozitivului, în Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație &gt; Setări avansate privind locația. Dacă Precizia locației este dezactivată, nu se vor colecta date despre Precizia locației. Pentru aplicațiile și serviciile Android, adresa IP, dacă este disponibilă, este folosită numai pentru a stabili locația dispozitivului. Acest lucru poate afecta disponibilitatea și precizia locațiilor pentru aplicațiile și serviciile Android, cum ar fi Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Se deschide în</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mută fila în altă fereastră}few{Mută filele în altă fereastră}other{Mută filele în altă fereastră}}</translation>
 <translation id="8805140816472474147">Pentru a începe sincronizarea, confirmă setările de sincronizare.</translation>

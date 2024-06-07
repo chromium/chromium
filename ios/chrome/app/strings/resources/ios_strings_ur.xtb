@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">پاس ورڈز محفوظ کریں</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} کمزور پاس ورڈ}other{{count} کمزور پاس ورڈز}}</translation>
+<translation id="1764070164487214210">ڈائریکشنز</translation>
 <translation id="1766411844240160513">آٹو فل فارم</translation>
 <translation id="1767766085187034454">‏Google ترجمہ</translation>
 <translation id="1769106850515800431">ذاتی نوعیت کا مواد</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">پوشیدگی ٹیبز</translation>
 <translation id="3775743491439407556">مطابقت پذیری کام نہیں کر رہی ہے</translation>
 <translation id="3779810277399252432">کوئی انٹرنیٹ کنکشن نہیں ہے۔</translation>
+<translation id="3785672280731998727">ڈسپلے نام</translation>
 <translation id="3789294999358192700">نیچے دیے گئے مراحل کی پیروی کریں:</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803696231112616155">اس سائٹ کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3808311849069021992">سرچ انجن کی تفصیلات دکھائیں</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
+<translation id="3812308602011798782">جائزے</translation>
 <translation id="3818045793209708987">اس پیکیج کو ٹریک کرنا بند کر دیا گیا ہے</translation>
 <translation id="3818293389945649617">اگلا تلاش کریں</translation>
 <translation id="3819183753496523827">آپ آف لائن ہیں۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">ایک بار تھپتھپا کر کسی بھی ایپ میں اپنے محفوظ کردہ پاس ورڈز پائیں</translation>
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
 <translation id="4054572406751135230">خبروں، کھیلوں وغیرہ سے باخبر رہیں۔</translation>
+<translation id="4068959193278821990">بہتر کردہ حفاظت آن کریں...</translation>
 <translation id="4092655288299341041">مدد دکھائیں</translation>
 <translation id="4105841739161771091">{count,plural, =1{پتہ حذف کریں}other{پتوں کو حذف کریں}}</translation>
 <translation id="4108998448622696017">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">نیٹ برآمد کرنے کا ڈیٹا بھیجنے کیلئے، براہ کرم ترتیبات ایپ میں اپنے ای میل اکاؤنٹ کو کنفیگر کریں۔</translation>
 <translation id="4124987746317609294">وقت کی حد</translation>
 <translation id="4133265950310064865">بہتر کردہ حفاظت</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />، <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">‏Google تصاویر</translation>
 <translation id="4148023517926189160">یہ ویب سائٹ ایک فائل ڈاؤن لوڈ کرنا چاہتی ہے اور اسے آپ کے کیلنڈر میں شامل کرنا چاہتی ہے۔</translation>
 <translation id="4152011295694446843">آپ اپنے بُک مارکس یہاں پائیں گے</translation>
@@ -1470,6 +1475,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="834783239627985533">سب سے زیادہ ملاحظہ کردہ سائٹس</translation>
 <translation id="8358401059263985056">اطلاعات آن کریں</translation>
 <translation id="8364841868226993049">‏<ph name="USER_EMAIL" /> کے لیے Google تصاویر میں تصویر محفوظ ہو رہی ہے...</translation>
+<translation id="8369246252708539904">پاس کی حذف کریں</translation>
 <translation id="8370406443343902172">ترتیبات پر جائیں...</translation>
 <translation id="8374977641764177587">اطلاعات آن کریں؟</translation>
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>

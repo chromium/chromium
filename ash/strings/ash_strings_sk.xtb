@@ -302,6 +302,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="216955976692983107">Okno veľkosti dlaždice napravo</translation>
 <translation id="2185166372312820725">Prechod na predchádzajúcu kartu</translation>
 <translation id="2185444992308415167">Prechádzanie od 1. po 8. kartu</translation>
+<translation id="2195732836444333448">Služba je momentálne vyťažená. Vráťte sa o chvíľu.</translation>
 <translation id="2198625180564913276">Pridáva sa profil. Môže to trvať niekoľko minút.</translation>
 <translation id="219905428774326614">Spúšťač, všetky aplikácie</translation>
 <translation id="2201071101391734388"><ph name="INDEX" /> nedávna fotka z <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4086921558679520050">Zapnite fyzický vypínač mikrofónu na zariadení</translation>
 <translation id="4101772068965291327">Otvoriť domovskú stránku</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
+<translation id="4113030288477039509">Spravované vaším správcom</translation>
 <translation id="4114315158543974537">Zapnutie telefonického centra</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="411881149140864134">Aktivácia plochy vľavo</translation>
@@ -848,6 +850,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> nie je k dispozícii.</translation>
 <translation id="4201051445878709314">Zobraziť predchádzajúci mesiac</translation>
 <translation id="4209973997261364186">Pripojenie Wi‑Fi je zapnuté</translation>
+<translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="4212472694152630271">Prepnúť na PIN</translation>
 <translation id="4215497585250573029">Nastavenia VPN</translation>
 <translation id="4217571870635786043">Diktovanie</translation>
@@ -1240,7 +1243,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5599242528220103262">Klávesová skratka je vypnutá</translation>
 <translation id="5600415762228455511">Zameranie je zapnuté, zostávajúci čas je <ph name="REMAINING_TIME" />, zaostrené na <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Hovorenú spätnú väzbu zakážete kombináciou klávesov Ctrl+Alt+Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Pred menej ako hodinou}=1{Pred 1 hodinou}few{Pred # hodinami}many{Pred # hodiny}other{Pred # hodinami}}</translation>
 <translation id="5601503069213153581">Kód PIN</translation>
 <translation id="5618148318840095371">Pripojili sme vás k lepšej sieti</translation>
 <translation id="5619862035903135339">Snímanie obrazovky je zakázané pravidlom správcu</translation>
@@ -1693,6 +1695,7 @@ Nová inštalácia</translation>
 <translation id="7340731148882810149">Ponuka automatických kliknutí</translation>
 <translation id="7346909386216857016">Dobre</translation>
 <translation id="7348093485538360975">Klávesnica na obrazovke</translation>
+<translation id="7352651011704765696">Vyskytla sa chyba</translation>
 <translation id="735745346212279324">Sieť VPN je odpojená</translation>
 <translation id="7360036564632145207">Zmenou ochrany prístupu k údajom pre nastavenie periférií môžete optimalizovať výkonnosť</translation>
 <translation id="736045644501761622">Nastaviť tapety a štýl</translation>
@@ -1835,7 +1838,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Ak chcete zariadenie používať ako hosť, musíte sa odhlásiť a potom dole na obrazovke vybrať Prehliadať ako hosť.</translation>
 <translation id="7866482334467279021">zapnuté</translation>
-<translation id="7866727328666668290">Posledná karta bola otvorená</translation>
 <translation id="7872786842639831132">Vypnuté</translation>
 <translation id="7875575368831396199">Rozhranie Bluetooth je v zariadení <ph name="DEVICE_TYPE" /> zrejme vypnuté. Ak chcete použiť Telefónne centrum, zapnite ho.</translation>
 <translation id="7884446017008693258">Nastavenia hotspotu</translation>
@@ -2141,7 +2143,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9002204506712855687">Preskúmajte najnovšie funkcie</translation>
 <translation id="9005984960510803406">Otvorenie okna Crosh</translation>
 <translation id="9017320285115481645">Zadajte prístupový kód rodiča Family Link.</translation>
-<translation id="9022774213089566801">Často navštevované</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9029736946581028033">Zariadenie sa čoskoro vypne</translation>
 <translation id="9030319654231318877">Vypnutý do západu slnka</translation>

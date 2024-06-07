@@ -178,6 +178,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1610778689852195798">"Zhbëj"</translation>
 <translation id="1611993646327628135">Aktive</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Palos "Klasën e Google"</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
@@ -300,9 +301,11 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="216955976692983107">Ndrysho përmasat e dritares me pllakëza në drejtimin djathtas</translation>
 <translation id="2185166372312820725">Shko te skeda e mëparshme</translation>
 <translation id="2185444992308415167">Kalo nëpër skedat 1 deri në 8</translation>
+<translation id="2195732836444333448">Në maksimumin e kapacitetin për momentin. Kthehu përsëri së shpejti.</translation>
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="219905428774326614">Launcher, të gjitha aplikacionet</translation>
 <translation id="2201071101391734388">Fotografia e fundit <ph name="INDEX" /> nga <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Palos Google Tasks</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222841058024245321">Tavolina e punës 7</translation>
@@ -364,6 +367,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2427507373259914951">Klikimi me butonin majtas</translation>
 <translation id="2429753432712299108">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Përpara se të pranosh, konfirmo që ky çelës kalimi shfaqet në atë pajisje: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
+<translation id="2437771564543046790">Bateria në nivel të ulët. "Kursyesi i baterisë" është aktiv</translation>
 <translation id="243878895369688216">Hapur dje</translation>
 <translation id="2440978926514840421">Regjistrimi i imazhit GIF u krye</translation>
 <translation id="2441427462554639370">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës ruajtëse</translation>
@@ -811,6 +815,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4086921558679520050">Aktivizo çelësin fizik të mikrofonit në pajisjen tënde</translation>
 <translation id="4101772068965291327">Hap faqen kryesore</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
+<translation id="4113030288477039509">Menaxhuar nga administratori yt</translation>
 <translation id="4114315158543974537">Aktivizo Phone Hub</translation>
 <translation id="4115378294792113321">E purpurt e errët</translation>
 <translation id="411881149140864134">Aktivizo tavolinën e punës në të majtë</translation>
@@ -844,6 +849,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> nuk ofrohet.</translation>
 <translation id="4201051445878709314">Trego muajin e kaluar</translation>
 <translation id="4209973997261364186">Wi-Fi është i aktivizuar</translation>
+<translation id="4212246570487010370">Vazhdo shfletimin</translation>
 <translation id="4212472694152630271">Kalo te kodi PIN</translation>
 <translation id="4215497585250573029">Cilësimet e VPN-së</translation>
 <translation id="4217571870635786043">Diktimi</translation>
@@ -1200,6 +1206,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="550391772491508736">Vazhdo transmetimin</translation>
 <translation id="5506975627792768506">Aktivizo ose çaktivizo zmadhuesin</translation>
 <translation id="5512042095225963688">Fshi fjalën e mëparshme</translation>
+<translation id="5519005148254860683">Zgjero Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratori yt ka hequr të gjitha profilet e kartës eSIM. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5520909879404821039">"Përshëndetje" në frëngjisht</translation>
@@ -1235,7 +1242,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5599242528220103262">Shkurtorja e tastierës është joaktive</translation>
 <translation id="5600415762228455511">"Fokusi është aktiv". Koha e mbetur: <ph name="REMAINING_TIME" /> · Fokusuar në: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Shtyp Ctrl + Alt + Z për të çaktivizuar komentet me zë.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 orë më parë}=1{1 orë më parë}other{# orë më parë}}</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
 <translation id="5618148318840095371">Të kemi kaluar në një rrjet më të mirë</translation>
 <translation id="5619862035903135339">Politika e administratorit çaktivizon regjistrimin e ekranit</translation>
@@ -1408,6 +1414,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6200515304866777730">Nuk mbështetet nga aplikacioni</translation>
 <translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Nxirr regjistrimin e ekranit ose pamjen e pjesshme të ekranit</translation>
+<translation id="621606890568890214">Zgjero "Klasën e Google"</translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6228457605945141550">Ul ndriçimin</translation>
@@ -1687,6 +1694,7 @@ Instalim i ri</translation>
 <translation id="7340731148882810149">Menyja e klikimeve automatike</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
+<translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
 <translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
 <translation id="736045644501761622">Cakto imazhin e sfondit dhe stilin</translation>
@@ -1829,7 +1837,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Për ta përdorur pajisjen si vizitor, duhet të dalësh dhe më pas të zgjedhësh "Shfleto si vizitor" në fund të ekranit.</translation>
 <translation id="7866482334467279021">aktivizuar</translation>
-<translation id="7866727328666668290">Skeda e hapur e fundit</translation>
 <translation id="7872786842639831132">Joaktive</translation>
 <translation id="7875575368831396199">Me sa duket Bluetooth-i është çaktivizuar në <ph name="DEVICE_TYPE" />. Aktivizo Bluetooth-in për të përdorur Phone Hub.</translation>
 <translation id="7884446017008693258">Cilësimet e zonës së qasjes për internet</translation>
@@ -2136,7 +2143,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9002204506712855687">Eksploro veçoritë më të fundit</translation>
 <translation id="9005984960510803406">Hap dritaren e Crosh</translation>
 <translation id="9017320285115481645">Fut kodin e qasjes së prindit për Family Link</translation>
-<translation id="9022774213089566801">Të vizituara shpesh</translation>
 <translation id="9024331582947483881">ekrani i plotë</translation>
 <translation id="9029736946581028033">Pajisja do të fiket së shpejti</translation>
 <translation id="9030319654231318877">Joaktive deri në perëndim</translation>

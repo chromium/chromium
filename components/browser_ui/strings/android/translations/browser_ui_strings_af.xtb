@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Aan ’n USB-toestel gekoppel</translation>
 <translation id="4194328954146351878">Vra voor werwe toegelaat word om inligting op NFC-toestelle te sien en te verander (aanbeveel)</translation>
 <translation id="4200726100658658164">Maak ligginginstellings oop</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Kennisgewings kan die toestel laat vibreer</translation>
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegelaat</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Vou uit</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="4336566011000459927">Chrome sal vandag weer webkoekies beperk</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Jou jongste oortjie</translation>
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Keer dat werwe weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="4412992751769744546">Laat derdeparty-webkoekies toe</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Beheer hierdie werf se toegang tot jou toestel</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Jou jongste oortjie</translation>
 <translation id="6064125863973209585">Voltooide aflaaie</translation>
 <translation id="6071501408666570960">Jy kan dalk by hierdie werf afgemeld word</translation>
 <translation id="6120483543004435978">Wanneer dit aan is, kan werwe vra om te weet wanneer jy jou toestel aktief gebruik. Wanneer dit af is, kan werwe nie weet wanneer jy jou toestel aktief gebruik nie.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6818926723028410516">Kies items</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
-<translation id="6867014948848323204">Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokkeer werwe om teks en prente van die knipbord af te lees</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6950072572526089586">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Kies 'n kontak</translation>
 <translation id="7990211076305263060">Wanneer dit aan is, kan werwe vra om jou mikrofoon te gebruik. Wanneer dit af is, kan werwe nie jou mikrofoon gebruik nie.</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8042586301629853791">Rangskik volgens:</translation>
 <translation id="8067883171444229417">Speel video</translation>

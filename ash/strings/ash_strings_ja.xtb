@@ -302,6 +302,7 @@
 <translation id="216955976692983107">タイル表示のウィンドウを右方向にサイズ変更</translation>
 <translation id="2185166372312820725">前のタブに移動する</translation>
 <translation id="2185444992308415167">タブ 1～8 に移動する</translation>
+<translation id="2195732836444333448">キャパシティに達しています。しばらくしてからもう一度お試しください。</translation>
 <translation id="2198625180564913276">プロファイルを追加しています。この処理には数分かかることがあります。</translation>
 <translation id="219905428774326614">ランチャー、すべてのアプリ</translation>
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
@@ -815,6 +816,7 @@
 <translation id="4086921558679520050">デバイスの物理的なマイクスイッチをオンにする</translation>
 <translation id="4101772068965291327">ホームページを開く</translation>
 <translation id="4112140312785995938">後方に移動</translation>
+<translation id="4113030288477039509">管理者により管理されています</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="411881149140864134">左側のデスクを有効にする</translation>
@@ -848,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> は使用できません。</translation>
 <translation id="4201051445878709314">前の月を表示</translation>
 <translation id="4209973997261364186">Wi-Fi はオンです</translation>
+<translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="4212472694152630271">PIN に切り替え</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">音声入力</translation>
@@ -1240,7 +1243,6 @@
 <translation id="5599242528220103262">キーボード ショートカットは無効になっています</translation>
 <translation id="5600415762228455511">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です。<ph name="TASK_NAME" /> に集中しています</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{1 時間以内}=1{1 時間前}other{# 時間前}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">より安全なネットワークに切り替えました</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
@@ -1693,6 +1695,7 @@
 <translation id="7340731148882810149">自動クリックのメニュー</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">画面キーボード</translation>
+<translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
 <translation id="736045644501761622">壁紙とスタイルを設定</translation>
@@ -1836,7 +1839,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">このデバイスをゲストとして使用するには、ログアウトして、画面の下部にある [ゲストとしてブラウジング] を選択する必要があります。</translation>
 <translation id="7866482334467279021">オン</translation>
-<translation id="7866727328666668290">最後に開いたタブ</translation>
 <translation id="7872786842639831132">オフ</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
 <translation id="7884446017008693258">アクセス ポイント設定</translation>
@@ -2142,7 +2144,6 @@
 <translation id="9002204506712855687">最新機能をご確認ください</translation>
 <translation id="9005984960510803406">Crosh ウィンドウを開く</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
-<translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9029736946581028033">デバイスの電源がまもなく切れます</translation>
 <translation id="9030319654231318877">日の入りまでオフ</translation>

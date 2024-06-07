@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Vous demander avant d'autoriser les sites à consulter et modifier des informations sur des appareils NFC (recommandé)</translation>
 <translation id="4200726100658658164">Accéder aux paramètres de localisation</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> depuis <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Développer</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="4336566011000459927">Chrome limitera de nouveau les cookies aujourd'hui</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Votre dernier onglet</translation>
 <translation id="4338831206024587507">Tous les sites du domaine <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Contrôler l'accès de ce site à votre appareil</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Votre dernier onglet</translation>
 <translation id="6064125863973209585">Téléchargements terminés</translation>
 <translation id="6071501408666570960">Il se peut que vous soyez déconnecté de ce site</translation>
 <translation id="6120483543004435978">Lorsque cette option est activée, les sites peuvent demander à savoir quand vous utilisez activement votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas savoir quand vous utilisez activement votre appareil.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
-<translation id="6867014948848323204">Depuis <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Interdire aux sites d'accéder en lecture au texte et aux images du presse-papiers</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6950072572526089586">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> À partir de <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>

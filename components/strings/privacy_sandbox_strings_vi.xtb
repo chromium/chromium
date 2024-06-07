@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="33479675708419823">Khi bạn đăng nhập vào Chrome, chế độ cài đặt này sẽ giúp bạn bảo mật địa chỉ IP của mình. Nếu Chrome nghi ngờ rằng có thể một trang web nào đó đang theo dõi bạn, thì một số lưu lượng truy cập của bạn có thể sẽ được gửi qua máy chủ bảo mật. Tìm hiểu thêm về <ph name="LINK_BEGIN" />cách hoạt động của tính năng Bảo vệ địa chỉ IP<ph name="LINK_END" /></translation>
+<translation id="3529311220178827364">Tìm hiểu thêm về cách ẩn địa chỉ IP của bạn</translation>
 <translation id="4301151630239508244">Chủ đề quảng cáo chỉ là một trong nhiều yếu tố mà một trang web có thể dùng để cá nhân hoá quảng cáo. Ngay cả khi không có chủ đề quảng cáo, các trang web vẫn có thể cho bạn thấy quảng cáo. Tuy nhiên, những quảng cáo này có thể ít phù hợp với bạn hơn. Tìm hiểu thêm về việc <ph name="BEGIN_LINK_1" />quản lý quyền riêng tư trong quảng cáo<ph name="END_LINK_1" />.</translation>
+<translation id="4598427486995631491">Ẩn địa chỉ IP của bạn</translation>
+<translation id="6371812158043974664">Khi bạn đăng nhập vào Chromium, chế độ cài đặt này sẽ giúp bạn bảo mật địa chỉ IP của mình. Nếu Chromium nghi ngờ rằng có thể một trang web nào đó đang theo dõi bạn, thì một số lưu lượng truy cập của bạn có thể sẽ được gửi qua máy chủ bảo mật. Tìm hiểu thêm về <ph name="LINK_BEGIN" />cách hoạt động của tính năng Bảo vệ địa chỉ IP<ph name="LINK_END" /></translation>
 </translationbundle>

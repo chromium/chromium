@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">I-pause ang pag-record</translation>
 <translation id="4121305183798804752">Na-detect ang dokumento</translation>
 <translation id="414641094616694804">Hindi puwedeng baguhin ng camera na ito ang resolution</translation>
-<translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
-<translation id="4349714250734879769">I-scale ang mga frame gamit ang Chrome</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
 <translation id="4445542136948522167">Ihinto ang pagkuha ng larawan</translation>
 <translation id="4570032796877367747">Camera sa harap</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">Listahan ng naka-scan na page</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Kopyahin ang address ng link na <ph name="URL" /></translation>
-<translation id="491895758387112773">Pag-record ng multistream video</translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Aspect ratio ng larawan</translation>
@@ -157,7 +154,6 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
 <translation id="8167081290930651932">I-save bilang Larawan</translation>
 <translation id="8239780215768881278">Kumuha ng video snapshot</translation>
-<translation id="8346544573713510785">I-scale ang mga frame gamit ang Camera HAL</translation>
 <translation id="8425673304802773841">I-tilt pababa</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8609951387004618906">Buksan ang <ph name="URL" /></translation>

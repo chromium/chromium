@@ -72,6 +72,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1235458158152011030">Kjente nettverk:</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tilkoblet.</translation>
 <translation id="1240638468526743569">En app</translation>
+<translation id="1242198791279543032">Varsler ignoreres</translation>
 <translation id="1242883863226959074">enhet</translation>
 <translation id="1245644940275736236">Gå til assistenten</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
@@ -301,6 +302,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="216955976692983107">Endre vindusstørrelse feltvis mot høyre</translation>
 <translation id="2185166372312820725">Gå til forrige fane</translation>
 <translation id="2185444992308415167">Gå gjennom fane 1–8</translation>
+<translation id="2195732836444333448">Full kapasitet akkurat nå. Kom tilbake senere.</translation>
 <translation id="2198625180564913276">Legger til profil. Dette kan ta noen minutter.</translation>
 <translation id="219905428774326614">Appoversikt, alle apper</translation>
 <translation id="2201071101391734388">Nylig bilde <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Koble enheten til strøm.</translation>
 <translation id="4086921558679520050">Slå på den fysiske mikrofonbryteren på enheten</translation>
 <translation id="4101772068965291327">Åpne startsiden</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
+<translation id="4113030288477039509">Styres av administratoren din</translation>
 <translation id="4114315158543974537">Slå på Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktiver skrivebordet til venstre</translation>
@@ -847,6 +850,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgjengelig.</translation>
 <translation id="4201051445878709314">Se forrige måned</translation>
 <translation id="4209973997261364186">Wifi er slått på</translation>
+<translation id="4212246570487010370">Fortsett å surfe</translation>
 <translation id="4212472694152630271">Bytt til PIN-kode</translation>
 <translation id="4215497585250573029">VPN-innstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -1239,7 +1243,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5599242528220103262">Hurtigtasten er avslått</translation>
 <translation id="5600415762228455511">Fokus er på. <ph name="REMAINING_TIME" /> gjenstår. Fokuserer på <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{For &lt; 1 time siden}=1{For 1 time siden}other{For # timer siden}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Vi har flyttet deg til et bedre nettverk</translation>
 <translation id="5619862035903135339">Skjermdumper er deaktivert på grunn av en administratorregel</translation>
@@ -1692,6 +1695,7 @@ Nylig installert</translation>
 <translation id="7340731148882810149">Automatisk klikk-meny</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
+<translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
 <translation id="7360036564632145207">Hvis du endrer innstillingen for datatilgangsbeskyttelse for eksterne enheter, kan det optimalisere ytelsen</translation>
 <translation id="736045644501761622">Angi bakgrunn og stil</translation>
@@ -1834,7 +1838,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">For å bruke enheten som gjest må du logge av og velge Surf som gjest nederst på skjermen.</translation>
 <translation id="7866482334467279021">på</translation>
-<translation id="7866727328666668290">Den siste fanen ble åpnet</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det ser ut til at Bluetooth er slått av på <ph name="DEVICE_TYPE" />. Slå på Bluetooth for å bruke Telefonstyring.</translation>
 <translation id="7884446017008693258">Innstillinger for wifi-sone</translation>
@@ -2141,7 +2144,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9002204506712855687">Utforsk de nyeste funksjonene</translation>
 <translation id="9005984960510803406">Åpne Crosh-vindu</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
-<translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9024331582947483881">full skjerm</translation>
 <translation id="9029736946581028033">Enheten slår seg av snart</translation>
 <translation id="9030319654231318877">Avslått til solnedgang</translation>

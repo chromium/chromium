@@ -2681,6 +2681,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6167577165590485365">Last fetch attempted:</translation>
 <translation id="617256461084925519">Google Chrome is trying to verify it's you so it can fill in your payment info.</translation>
+<translation id="6173208311907792313">Complete your purchase using Windows Hello</translation>
 <translation id="6176387967264100435">This price is high</translation>
 <translation id="6177128806592000436">Your connection to this site is not secure</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
@@ -2986,7 +2987,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6753269504797312559">Policy Value</translation>
 <translation id="6753434778807740853">Delete entry <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Savings Accounts</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Your device went to sleep.</translation>
 <translation id="6760548828952594090">This card could not be saved in your Google Account. It's been saved to Chrome on this device instead.</translation>
 <translation id="6766558780547452153">Cooking and recipes</translation>
@@ -3839,6 +3839,7 @@ Additional details:
 <translation id="8332188693563227489">Access to <ph name="HOST_NAME" /> was denied</translation>
 <translation id="833262891116910667">Highlight</translation>
 <translation id="8339163506404995330">Pages in <ph name="LANGUAGE" /> will not be translated</translation>
+<translation id="8339275256517065202">Complete your purchase using touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtual card enrollment opened at full height</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -4032,6 +4033,7 @@ Additional details:
 <translation id="8726549941689275341">Page size:</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731268612289859741">Security code</translation>
+<translation id="8731917264694569036">Complete your purchase using your device</translation>
 <translation id="8733345475331865475">Car insurance</translation>
 <translation id="8733764070897080460">You can block topics that you don’t want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks. Learn more</translation>
 <translation id="8734529307927223492">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" /></translation>
@@ -4225,6 +4227,7 @@ Additional details:
 <translation id="9116548361133462832">More about ads in Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="9119042192571987207">Uploaded</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> wants to verify that it's you</translation>
 <translation id="912327514020027767">Skirts</translation>
 <translation id="912414390325846156">You previously chose 'Don't allow' for this site</translation>
 <translation id="9128870381267983090">Connect to network</translation>
@@ -4248,7 +4251,6 @@ Additional details:
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Setting up...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> may contain sensitive content}other{<ph name="FILE_COUNT" /> files may contain sensitive content}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Sites that you visit can also determine what you like based on your activity on the site. For example, if you visit a site that sells long-distance running shoes, the site might decide that you’re interested in running marathons.</translation>
 <translation id="9166851138617700776">More about site-suggested ads and ad measurement</translation>
 <translation id="9167054383925257837">Browser and device OS information (such as the browser and OS versions)</translation>

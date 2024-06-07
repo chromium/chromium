@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Spremi zaporke</translation>
 <translation id="1753905327828125965">Najposjećenije</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} slaba zaporka}one{{count} slaba zaporka}few{{count} slabe zaporke}other{{count} slabih zaporki}}</translation>
+<translation id="1764070164487214210">Upute</translation>
 <translation id="1766411844240160513">Automatski popuni obrazac</translation>
 <translation id="1767766085187034454">Google prevoditelj</translation>
 <translation id="1769106850515800431">Personalizirani sadržaj</translation>
@@ -541,12 +542,14 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3771033907050503522">Anonimne kartice</translation>
 <translation id="3775743491439407556">Sinkronizacija ne funkcionira</translation>
 <translation id="3779810277399252432">Nema internetske veze.</translation>
+<translation id="3785672280731998727">Ime za prikaz</translation>
 <translation id="3789294999358192700">Slijedite upute u nastavku:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevođenje ove web-lokacije</translation>
 <translation id="3808311849069021992">Prikaži pojedinosti o tražilici</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
+<translation id="3812308602011798782">Recenzije</translation>
 <translation id="3818045793209708987">Praćenje paketa je zaustavljeno</translation>
 <translation id="3818293389945649617">Traži sljedeće</translation>
 <translation id="3819183753496523827">Niste povezani s internetom. Provjerite internetsku vezu i pokušajte ponovo.</translation>
@@ -594,6 +597,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4045648459118332842">Dohvatite svoje spremljene zaporke u bilo kojoj aplikaciju jednim dodirom</translation>
 <translation id="4049507953662678203">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="4054572406751135230">Pratite vijesti, sport i druge teme.</translation>
+<translation id="4068959193278821990">Uključi poboljšanu zaštitu…</translation>
 <translation id="4092655288299341041">Prikaži pomoć</translation>
 <translation id="4105841739161771091">{count,plural, =1{Brisanje adrese}one{Brisanje adresa}few{Brisanje adresa}other{Brisanje adresa}}</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje i upozorava vas na njih kada se dogode.</translation>
@@ -605,6 +609,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4121993058175073134">Za slanje neto izvezenih datoteka konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
 <translation id="4133265950310064865">Poboljšana zaštita</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4148023517926189160">Web-lokacija želi preuzeti datoteku i dodati je na kalendar.</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
@@ -1472,6 +1477,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="834783239627985533">Najposjećenije web-lokacije</translation>
 <translation id="8358401059263985056">Uključi obavijesti</translation>
 <translation id="8364841868226993049">Spremanje slike na Google fotografije za <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">Izbriši pristupni ključ</translation>
 <translation id="8370406443343902172">Otvori postavke...</translation>
 <translation id="8374977641764177587">Želite li uključiti obavijesti?</translation>
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>

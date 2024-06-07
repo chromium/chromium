@@ -2981,7 +2981,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6753269504797312559">Gidalerroaren balioa</translation>
 <translation id="6753434778807740853">Ezabatu <ph name="ENTRY_VOICEOVER" /> sarrera</translation>
 <translation id="6754547388777247439">Aurrezki-kontuak</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Inaktibo geratu da gailua.</translation>
 <translation id="6760548828952594090">Txartela ezin izan da gorde zure Google-ko kontuan. Horren ordez, gailu honetako Chrome-n gorde da.</translation>
 <translation id="6766558780547452153">Sukaldaritza eta errezetak</translation>
@@ -4242,7 +4241,6 @@ Xehetasun gehiago:
 <translation id="9155646082713385498">Aldizkariak</translation>
 <translation id="9157595877708044936">Konfiguratzen…</translation>
 <translation id="9161794544616754735">{0,plural, =1{Baliteke <ph name="FILE_NAME" /> fitxategiak kontuzko edukia izatea}other{Baliteke <ph name="FILE_COUNT" /> fitxategik kontuzko edukia izatea}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Halaber, bisitatzen dituzun webguneek gustuko dituzun gaiak zehatz ditzakete, haietan egiten dituzun jardueretan oinarrituta. Esaterako, distantzia luzeetan korrika egiteko oinetakoak saltzen dituen webgune batera joaten bazara, baliteke webgune horrek maratoiak interesatzen zaizkizula ondorioztatzea.</translation>
 <translation id="9166851138617700776">Webguneek iradokitako iragarkiei eta iragarkien neurketari buruzko informazio gehiago</translation>
 <translation id="9167054383925257837">arakatzailearen eta gailuaren sistema eragilearen informazioa (adibidez, arakatzailearen eta sistema eragilearen bertsioak)</translation>

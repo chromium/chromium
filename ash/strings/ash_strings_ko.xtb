@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">알려진 네트워크</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1240638468526743569">앱</translation>
+<translation id="1242198791279543032">알림을 껐습니다.</translation>
 <translation id="1242883863226959074">기기</translation>
 <translation id="1245644940275736236">어시스턴트로 이동</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">오른쪽으로 창 크기 조절</translation>
 <translation id="2185166372312820725">이전 탭으로 이동</translation>
 <translation id="2185444992308415167">탭 1~8 살펴보기</translation>
+<translation id="2195732836444333448">현재 요청이 너무 많습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="219905428774326614">런처, 모든 앱</translation>
 <translation id="2201071101391734388">최근 사진 총 <ph name="TOTAL_COUNT" />개 중 <ph name="INDEX" />번째입니다.</translation>
@@ -814,6 +816,7 @@
 <translation id="4086921558679520050">기기의 마이크 스위치를 켜세요</translation>
 <translation id="4101772068965291327">홈페이지</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
+<translation id="4113030288477039509">관리자가 관리합니다.</translation>
 <translation id="4114315158543974537">휴대전화 허브 사용 설정</translation>
 <translation id="4115378294792113321">자홍색</translation>
 <translation id="411881149140864134">왼쪽 데스크를 활성화합니다.</translation>
@@ -847,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" />를 사용할 수 없습니다.</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
 <translation id="4209973997261364186">Wi-Fi가 사용 설정됨</translation>
+<translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4215497585250573029">VPN 설정</translation>
 <translation id="4217571870635786043">음성기록</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5599242528220103262">단축키 사용 중지됨</translation>
 <translation id="5600415762228455511">집중 모드가 켜져 있으며 <ph name="REMAINING_TIME" /> 남았습니다. 집중 대상: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">음성 피드백을 사용 중지하려면 Ctrl + Alt + Z를 누르세요.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{1시간 미만}=1{1시간 전}other{#시간 전}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">더 원활한 네트워크로 전환되었습니다.</translation>
 <translation id="5619862035903135339">관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
@@ -1692,6 +1695,7 @@
 <translation id="7340731148882810149">자동 클릭 메뉴</translation>
 <translation id="7346909386216857016">확인</translation>
 <translation id="7348093485538360975">터치 키보드</translation>
+<translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
 <translation id="7360036564632145207">주변기기 데이터 액세스 보호 설정을 변경하면 성능을 최적화할 수 있습니다.</translation>
 <translation id="736045644501761622">배경화면 및 스타일 설정</translation>
@@ -1834,7 +1838,6 @@
 <translation id="7851768487828137624">카나리아 </translation>
 <translation id="7862292329216937261">게스트로 기기를 사용하려면 로그아웃한 다음 화면 하단에서 게스트로 로그인을 선택해야 합니다.</translation>
 <translation id="7866482334467279021">사용</translation>
-<translation id="7866727328666668290">마지막으로 연 탭</translation>
 <translation id="7872786842639831132">꺼짐</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" />의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 블루투스를 사용 설정하세요.</translation>
 <translation id="7884446017008693258">핫스팟 설정</translation>
@@ -2141,7 +2144,6 @@
 <translation id="9002204506712855687">최신 기능을 살펴보세요</translation>
 <translation id="9005984960510803406">Crosh 창 열기</translation>
 <translation id="9017320285115481645">Family Link 부모 액세스 코드를 입력하세요.</translation>
-<translation id="9022774213089566801">자주 방문한 웹사이트</translation>
 <translation id="9024331582947483881">전체화면</translation>
 <translation id="9029736946581028033">기기가 곧 꺼짐</translation>
 <translation id="9030319654231318877">일몰까지 끄기</translation>

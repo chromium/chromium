@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"আগের অবস্থায় ফিরুন"</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
+<translation id="1623768535032616219">Google Classroom আড়াল করুন</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
@@ -300,9 +301,11 @@
 <translation id="216955976692983107">ডানদিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="2185166372312820725">আগের ট্যাবে যান</translation>
 <translation id="2185444992308415167">ট্যাব ১ থেকে ৮ যান</translation>
+<translation id="2195732836444333448">সর্বোচ্চ সীমায় পৌঁছে গেছে। কিছুক্ষণ পরে চেষ্টা করুন।</translation>
 <translation id="2198625180564913276">প্রোফাইল যোগ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="219905428774326614">লঞ্চার, সমস্ত অ্যাপ</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" />-এর মধ্যে <ph name="INDEX" /> নম্বরের সাম্প্রতিক ফটো</translation>
+<translation id="2201687081523799384">Google Tasks আড়াল করুন</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">বাঁদিকের বোতামে ক্লিক করুন</translation>
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। স্বীকার করার আগে, এই পাস কীটি ডিভাইসে প্রদর্শিত হয়েছে কিনা নিশ্চিত করুন: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
+<translation id="2437771564543046790">ব্যাটারির চার্জ কম আছে। 'ব্যাটারি সেভার' চালু করা হয়েছে</translation>
 <translation id="243878895369688216">গতকাল খোলা হয়েছে</translation>
 <translation id="2440978926514840421">GIF রেকর্ডিং নেওয়া হয়েছে</translation>
 <translation id="2441427462554639370">ডিস্কে স্টোরেজের জায়গা খুবই কম থাকায় রেকর্ডিং বন্ধ হয়ে গেছে</translation>
@@ -811,6 +815,7 @@
 <translation id="4086921558679520050">আপনার ডিভাইসে ফিজিক্যাল মাইকের সুইচ চালু করুন</translation>
 <translation id="4101772068965291327">হোম পৃষ্ঠাটি খুলুন</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
+<translation id="4113030288477039509">আপনার প্রশাসকের দ্বারা পরিচালিত</translation>
 <translation id="4114315158543974537">'ফোন হাব' ফিচার চালু করুন</translation>
 <translation id="4115378294792113321">ম্যাজেন্টা</translation>
 <translation id="411881149140864134">বাঁদিকের ডেস্ক চালু করুন</translation>
@@ -844,6 +849,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> উপলভ্য নেই।</translation>
 <translation id="4201051445878709314">পূর্ববর্তী মাস দেখান</translation>
 <translation id="4209973997261364186">ওয়াই-ফাই চালু করা আছে</translation>
+<translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4212472694152630271">যাচাইকরণের জন্য পিন ব্যবহার করুন</translation>
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
@@ -1200,6 +1206,7 @@
 <translation id="550391772491508736">কাস্ট করা আবার চালু করুন</translation>
 <translation id="5506975627792768506">ম্যাগনিফায়ার চালু বা বন্ধ করুন</translation>
 <translation id="5512042095225963688">আগের শব্দ মুছে দিন</translation>
+<translation id="5519005148254860683">Google Tasks বড় করুন</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">আপনার অ্যাডমিনিস্ট্রেটর সকল ই-সিম প্রোফাইল সরিয়ে দিয়েছেন। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="5520909879404821039">ফরাসি ভাষায় 'Hi'</translation>
@@ -1235,7 +1242,6 @@
 <translation id="5599242528220103262">কীবোর্ড শর্টকাট বন্ধ করা আছে</translation>
 <translation id="5600415762228455511">ফোকাস মোড চালু আছে, <ph name="REMAINING_TIME" /> বাকি রয়েছে, ফোকাসিং চালু আছে: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; ১ ঘন্টা আগে}=1{১ ঘণ্টা আগে}one{# ঘণ্টা আগে}other{# ঘণ্টা আগে}}</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5618148318840095371">আপনাকে আরও ভাল নেটওয়ার্কের সাথে কানেক্ট করা হয়েছে</translation>
 <translation id="5619862035903135339">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়েছে</translation>
@@ -1408,6 +1414,7 @@
 <translation id="6200515304866777730">অ্যাপে কাজ করে না</translation>
 <translation id="6210042900243040400">আগে থেকে <ph name="EMAIL" />-এ সেভ করা <ph name="NAME" /> কানেক্ট করুন</translation>
 <translation id="6213808132343683860">আংশিক স্ক্রিনশট বা স্ক্রিন রেকর্ডিং নিন</translation>
+<translation id="621606890568890214">Google Classroom বড় করুন</translation>
 <translation id="6220928844947387476">আপনি এখন একই সময়ে নিজে এবং আপনার স্ক্রিন রেকর্ড করতে পারবেন</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6228457605945141550">উজ্জ্বলতা কমান</translation>
@@ -1688,6 +1695,7 @@
 <translation id="7340731148882810149">অটোমেটিক ক্লিক মেনু</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
+<translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>
 <translation id="7360036564632145207">পেরিফেরাল সেটিংসের জন্য আপনার 'ডেটা অ্যাক্সেস সুরক্ষা' ব্যবস্থায় পরিবর্তন করলে পারফর্ম্যান্স অপ্টিমাইজ হতে পারে</translation>
 <translation id="736045644501761622">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
@@ -1830,7 +1838,6 @@
 <translation id="7851768487828137624">ক্যানারি</translation>
 <translation id="7862292329216937261">গেস্ট হিসেবে ডিভাইসটি ব্যবহার করতে, সাইন-আউট করার পরে আপনাকে স্ক্রিনের নিচ থেকে 'গেস্ট হিসেবে ব্রাউজ করুন' বিকল্প বেছে নিতে হবে।</translation>
 <translation id="7866482334467279021">চালু</translation>
-<translation id="7866727328666668290">শেষ ট্যাব খোলা হয়েছে</translation>
 <translation id="7872786842639831132">বন্ধ আছে</translation>
 <translation id="7875575368831396199">মনে হচ্ছে যে আপনার <ph name="DEVICE_TYPE" /> ডিভাইসে ব্লুটুথ বন্ধ রয়েছে। 'ফোন হাব' ফিচারটি ব্যবহার করতে, ব্লুটুথ চালু করুন।</translation>
 <translation id="7884446017008693258">হটস্পট সেটিংস</translation>
@@ -2137,7 +2144,6 @@
 <translation id="9002204506712855687">লেটেস্ট ফিচার সম্পর্কে এক্সপ্লোর করুন</translation>
 <translation id="9005984960510803406">ক্রস উইন্ডো খুলুন</translation>
 <translation id="9017320285115481645">Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন।</translation>
-<translation id="9022774213089566801">আপনি প্রায়ই দেখেন</translation>
 <translation id="9024331582947483881">পূর্ণ স্ক্রিন</translation>
 <translation id="9029736946581028033">শীঘ্রই ডিভাইসের চার্জ শেষ হয়ে যাবে</translation>
 <translation id="9030319654231318877">সূর্যাস্ত পর্যন্ত বন্ধ আছে</translation>

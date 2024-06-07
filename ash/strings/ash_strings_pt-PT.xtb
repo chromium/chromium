@@ -301,6 +301,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="216955976692983107">Janela de redimensionamento em mosaico para a direita</translation>
 <translation id="2185166372312820725">Aceder ao separador anterior</translation>
 <translation id="2185444992308415167">Passar pelos separadores de 1 a 8</translation>
+<translation id="2195732836444333448">Está no limite da sua capacidade neste momento. Volte em breve.</translation>
 <translation id="2198625180564913276">A adicionar o perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="219905428774326614">Launcher, todas as aplicações</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +815,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4086921558679520050">Ative o botão físico do microfone no dispositivo</translation>
 <translation id="4101772068965291327">Abrir página inicial</translation>
 <translation id="4112140312785995938">Procurar para trás</translation>
+<translation id="4113030288477039509">Gerido pelo gestor</translation>
 <translation id="4114315158543974537">Ative o Centro do telemóvel</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Ativar espaço de trabalho à esquerda</translation>
@@ -847,6 +849,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4201033867194214117">A funcionalidade <ph name="FEATURE_NAME" /> não está disponível.</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
+<translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4212472694152630271">Mudar para PIN</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
@@ -1129,6 +1132,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5216991270656129561">Desativada até à(s) <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
+<translation id="5228195526683428788">Divisor do ecrã dividido</translation>
 <translation id="5229343007215035173">Ativar/desativar o ecrã de privacidade</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5234764350956374838">Ignorar</translation>
@@ -1239,7 +1243,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5599242528220103262">O atalho de teclado está desativado</translation>
 <translation id="5600415762228455511">O Modo sem distrações está ativado, falta(m) <ph name="REMAINING_TIME" />, com foco em: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Prima Ctrl + Alt + Z para desativar os feedback de voz.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Há menos de 1 hora}=1{Há 1 hora}other{Há # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Mudámos a sua ligação para uma rede melhor</translation>
 <translation id="5619862035903135339">A política do administrador desativa a captura de ecrã.</translation>
@@ -1516,6 +1519,7 @@ Nova instalação</translation>
 <translation id="6613765291890844037">Armazenamento de <ph name="STORAGE_IN_USE_SIZE" /> em utilização | Total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
 <translation id="6622679827379792051">Configurar visualização das apps do telemóvel</translation>
+<translation id="662279009180869175">Use as setas para a esquerda e para a direita para redimensionar o ecrã dividido</translation>
 <translation id="6624493541160101248">Espaço de trabalho atual: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
@@ -1534,6 +1538,7 @@ Nova instalação</translation>
 <translation id="6670153871843998651">Secretária 3</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6671661918848783005">Não é possível desbloquear o Chromebook</translation>
+<translation id="6676552993057022464">Use as setas para cima e para baixo para redimensionar o ecrã dividido</translation>
 <translation id="6682029141988159141">Colar o conteúdo da área de transferência</translation>
 <translation id="6683022854667115063">Auscultadores</translation>
 <translation id="6686023075541098243">Configurar visualização das notificações do telemóvel</translation>
@@ -1692,6 +1697,7 @@ Nova instalação</translation>
 <translation id="7340731148882810149">Menu de cliques automáticos</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
+<translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
 <translation id="736045644501761622">Definir imagem de fundo e estilo</translation>
@@ -1834,7 +1840,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como convidado, tem de terminar sessão e, de seguida, selecionar Navegar como convidado na parte inferior do ecrã.</translation>
 <translation id="7866482334467279021">ativado</translation>
-<translation id="7866727328666668290">Último separador aberto</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">O Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative o Bluetooth para utilizar o Phone Hub.</translation>
 <translation id="7884446017008693258">Definições da zona Wi-Fi</translation>
@@ -2141,7 +2146,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9002204506712855687">Explore as funcionalidades mais recentes</translation>
 <translation id="9005984960510803406">Abrir a janela do Crosh</translation>
 <translation id="9017320285115481645">Introduza o código de acesso parental do Family Link.</translation>
-<translation id="9022774213089566801">Visitados frequentemente</translation>
 <translation id="9024331582947483881">ecrã inteiro</translation>
 <translation id="9029736946581028033">O dispositivo vai desligar-se em breve</translation>
 <translation id="9030319654231318877">Desativado até ao nascer do sol</translation>

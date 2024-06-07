@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB cihazına qoşulub</translation>
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
 <translation id="4200726100658658164">Məkan Ayarlarını açın</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" />, mənbə: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Bildirişlər cihazı titrədə bilər</translation>
 <translation id="4259722352634471385">Naviqasiya bloklandı: <ph name="URL" /></translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Genişləndirin</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
 <translation id="4336566011000459927">Chrome bu gün kukiləri yenidən məhdudlaşdıracaq</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Son tab</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domenindəki bütün saytlar</translation>
 <translation id="4402755511846832236">Saytların bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməsini bloklayın</translation>
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Bu saytın cihazınıza girişini idarə edin</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6042308850641462728">Daha çox</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Son tab</translation>
 <translation id="6064125863973209585">Tamamlanmış endirmələr</translation>
 <translation id="6071501408666570960">Bu saytdan çıxarıla bilərsiniz</translation>
 <translation id="6120483543004435978">Aktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənə bilməz.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6818926723028410516">Element seçin</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
-<translation id="6867014948848323204">Mənbə: <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6950072572526089586">Daxil olduğunuz sayt düzgün işləmək üçün gördüyünüz iş haqqında məlumatı yadda saxlaya bilər. Bu məlumat sizi sayta daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki məhsulları yadda saxlamaq üçündür. Adətən, saytlar bu məlumatı cihazda müvəqqəti yadda saxlayır.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7990211076305263060">Aktiv ediləndə saytlar mikrofondan istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar mikrofondan istifadə edə bilməz.</translation>
 <translation id="8007176423574883786">Bu cihaz üçün söndürüldükdə</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Buradan: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8042586301629853791">Sıralama metodu:</translation>
 <translation id="8067883171444229417">Videonu oxudun</translation>

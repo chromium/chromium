@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN мәліметтерін өзгерту</translation>
 <translation id="2195732836444333448">Толық жүктемемен жұмыс істеп тұр. Біраз уақыттан кейін қайтып оралыңыз.</translation>
 <translation id="2201758491318984023">велосипед</translation>
-<translation id="2203222757805818543">Қазіргі кесте <ph name="SUNRISE" /> – <ph name="SUNSET" /> аралығына орнатылды. Қараңғы режим кестесін автоматты түрде жаңарту үшін <ph name="BEGIN_LINK" />локацияны пайдалану рұқсатын<ph name="END_LINK" /> қосыңыз.</translation>
 <translation id="2203272733515928691">ыстық бұлақ</translation>
 <translation id="2203642483788377106">жартас</translation>
 <translation id="2208388655216963643">импрессионизм</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">дөң</translation>
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
 <translation id="2620436844016719705">Жүйе</translation>
+<translation id="2637303424821734920">ӨШІРУЛІ: жергілікті ауа райын көрсету үшін <ph name="BEGIN_LINK" />жүйенің локация пайдалану рұқсатын қосыңыз<ph name="END_LINK" />.</translation>
 <translation id="2638662041295312666">Кіру суреті</translation>
 <translation id="2640549051766135490">"<ph name="TITLE" />" (<ph name="DESC" />) альбомы таңдалды.</translation>
 <translation id="2645380101799517405">Басқару элементтері</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Повезано са USB уређајем</translation>
 <translation id="4194328954146351878">Пре него што дозволите сајтовима да виде и мењају информације на NFC уређајима приказује се упит (препоручено)</translation>
 <translation id="4200726100658658164">Отворите подешавања локације</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Са уређаја <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Уређај ће вибрирати када примате обавештења</translation>
 <translation id="4259722352634471385">Навигација је блокирана: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Дозвољено</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Проширите</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
 <translation id="4336566011000459927">Chrome ће данас поново ограничити колачиће</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Последња картица</translation>
 <translation id="4338831206024587507">Сви сајтови у оквиру домена <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Не дозволите сајтовима да знају када активно користите овај уређај</translation>
 <translation id="4412992751769744546">Дозволи колачиће треће стране</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Контролишите приступ овог сајта уређају</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Још</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Последња картица</translation>
 <translation id="6064125863973209585">Довршена преузимања</translation>
 <translation id="6071501408666570960">Можда ћете бити одјављени са овог сајта</translation>
 <translation id="6120483543004435978">Када је укључено, сајтови могу да затраже да знају када активно користите уређај. Када је искључено, сајтови не могу да знају када активно користите уређај.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6818926723028410516">Изаберите ставке</translation>
 <translation id="6864395892908308021">Овај уређај не може да чита NFC</translation>
-<translation id="6867014948848323204">Са уређаја <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Блокирај сајтове тако да не читају текст и слике из привремене меморије</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6950072572526089586">Сајт који посећујете може да чува информације о томе шта радите како би радио на очекивани начин – на пример, да бисте остали пријављени на сајт или да бисте сачували ставке у корпи за куповину. Сајтови често привремено чувају те информације на уређају.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Изаберите контакт</translation>
 <translation id="7990211076305263060">Када је укључено, сајтови могу да траже да користе микрофон. Кад је искључено, сајтови не могу да користе микрофон.</translation>
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Са уређаја <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8042586301629853791">Сортирај према:</translation>
 <translation id="8067883171444229417">Пусти видео</translation>

@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">‏APN کی تفصیلات میں ترمیم کریں</translation>
 <translation id="2195732836444333448">فی الحال گنجائش نہیں ہے۔ بعد میں واپس آئیں۔</translation>
 <translation id="2201758491318984023">سائیکل</translation>
-<translation id="2203222757805818543">موجودہ شیڈول <ph name="SUNRISE" /> - <ph name="SUNSET" /> پر سیٹ ہے- تاریک وضع شیڈول کو خودکار طور پر اپ ڈیٹ کرنے کے لیے، <ph name="BEGIN_LINK" />مقام تک رسائی کو آن کریں<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">گرم چشمہ</translation>
 <translation id="2203642483788377106">چٹان</translation>
 <translation id="2208388655216963643">تاثُر پسند</translation>
@@ -361,6 +360,7 @@
 <translation id="3017079585324758401">پس منظر</translation>
 <translation id="3027578600144895987">کیمرا بند کریں</translation>
 <translation id="3031560714565892478">آلہ ایک ویڈیو کیمرا ہے۔</translation>
+<translation id="3051968340259309715">‏آپ کے مقام کا تعین کرنے کیلئے، یہ آپ کی سسٹم سروسز مقام کی درستگی کا استعمال کرنے کی اجازت دیتا ہے۔ آلے کے مقام کا تعین کرنے کیلئے، مقام کی درستگی وائرلیس سگنلز سے متعلق معلومات، جیسے کہ Wi-Fi رسائی پوائنٹس، سیلولر نیٹ ورک ٹاورز اور GPS کے ساتھ ساتھ آلے کے سینسر ڈیٹا، جیسے کہ ایکسلیرومیٹر اور جائرو سکوپ کا استعمال کرتی ہے۔ آپ ترتیبات &gt; رازداری اور سیکیورٹی &gt; رازداری سے متعلق کنٹرولز &gt; مقام تک رسائی میں مقام کو آف کر سکتے ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">اینڈ پوائنٹ</translation>
 <translation id="3060579846059757016">آؤٹ لائنز</translation>

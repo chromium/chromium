@@ -2679,6 +2679,7 @@
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6167577165590485365">पछिल्लो पटक नीति प्राप्त गर्ने प्रयास गरिएको मिति:</translation>
 <translation id="617256461084925519">Google Chrome ले तपाईंको भुक्तानीसम्बन्धी जानकारी भर्न सकोस् भन्नाका लागि यसले तपाईंको पहिचान पुष्टि गर्न खोज्दै छ।</translation>
+<translation id="6173208311907792313">Windows Hello प्रयोग गरी खरिद गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="6176387967264100435">यो प्रचलित मूल्यभन्दा बढी हो</translation>
 <translation id="6177128806592000436">यस साइटमा तपाईँको जडान सुरक्षित छैन</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
@@ -2984,7 +2985,6 @@
 <translation id="6753269504797312559">नीति मूल्य</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ले हाल्नुभएको जानकारी मेटाउनुहोस्</translation>
 <translation id="6754547388777247439">बचत खाताहरू</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
 <translation id="6760548828952594090">यो कार्ड तपाईंको Google खातामा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ।</translation>
 <translation id="6766558780547452153">पकवान तथा पाकविधिहरू</translation>
@@ -3837,6 +3837,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> मा पहुँच गर्न अस्वीकृत भयो</translation>
 <translation id="833262891116910667">हाइलाइट गर्नुहोस्</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> मा रहेका पृष्ठहरूलाई अनुवाद गरिने छैन</translation>
+<translation id="8339275256517065202">Touch ID प्रयोग गरी खरिद गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">भर्चुअल कार्ड दर्ता गर्ने डायलग पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="8349305172487531364">बुकमार्क पट्टी</translation>
@@ -4030,6 +4031,7 @@
 <translation id="8726549941689275341">पेजको आकार:</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
+<translation id="8731917264694569036">आफ्नो डिभाइस प्रयोग गरी खरिद गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="8733345475331865475">कारको बीमा</translation>
 <translation id="8733764070897080460">तपाईं आफूले साइटहरूसँग सेयर गर्न नचाहेका विषयहरू ब्लक गर्न सक्नुहुन्छ। Chrome ले पनि तपाईंका ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। थप जान्नुहोस्</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> ले तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
@@ -4223,6 +4225,7 @@
 <translation id="9116548361133462832">Chrome मा देखाइने विज्ञापनहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्न Tab थिच्नुहोस् त्यसपछि Enter थिच्नुहोस्</translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="912327514020027767">स्कर्टहरू</translation>
 <translation id="912414390325846156">तपाईंले यसअघि यो साइटमा क्यामेरा प्रयोग गर्ने अनुमति दिनुभएको थिएन</translation>
 <translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
@@ -4246,7 +4249,6 @@
 <translation id="9155646082713385498">पत्रिकाहरू</translation>
 <translation id="9157595877708044936">सेटिङ गर्दै...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> मा संवेदनशील सामग्री समावेश हुन सक्छ}other{<ph name="FILE_COUNT" /> वटा फाइलमा संवेदनशील सामग्री समावेश हुन सक्छ}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">तपाईंले खोल्ने साइटहरूले तपाईंले साइटमा गरेका गतिविधिका आधारमा तपाईंलाई मन पर्ने कुराहरू निर्धारण गर्न पनि सक्छन्। उदाहरणका लागि, तपाईं लामो दूरीको दौडमा लगाइने जुत्ता बेच्ने कुनै साइटमा जानुभयो भने उक्त साइटले तपाईं म्याराथन दौडमा रुचि राख्नुहुन्छ भन्ने कुरा बुझ्न सक्छ।</translation>
 <translation id="9166851138617700776">"साइटले सिफारिस गरेका विज्ञापनहरू" र "विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा" का बारेमा थप जानकारी</translation>
 <translation id="9167054383925257837">ब्राउजर तथा डिभाइसको OS सम्बन्धी जानकारी (ब्राउजर तथा OS का संस्करण जस्ता)</translation>

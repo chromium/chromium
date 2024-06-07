@@ -2681,6 +2681,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6167577165590485365">Forrige forsøk på henting:</translation>
 <translation id="617256461084925519">Google Chrome prøver å bekrefte at det er deg, så den kan fylle ut betalingsopplysningene dine.</translation>
+<translation id="6173208311907792313">Fullfør kjøpet med Windows Hello</translation>
 <translation id="6176387967264100435">Denne prisen er høy</translation>
 <translation id="6177128806592000436">Tilkoblingen til dette nettstedet er ikke sikker</translation>
 <translation id="6177531123306197852">C2-konvolutt</translation>
@@ -2986,7 +2987,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6753269504797312559">Retningslinjeverdi</translation>
 <translation id="6753434778807740853">Slett oppføringen <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Sparekontoer</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Enheten din gikk inn i hvilemodus.</translation>
 <translation id="6760548828952594090">Kunne ikke lagre dette kortet i Google-kontoen din. Det ble lagret i Chrome på denne enheten i stedet.</translation>
 <translation id="6766558780547452153">Mat og oppskrifter</translation>
@@ -3838,6 +3838,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8332188693563227489">Forsøket på å koble til <ph name="HOST_NAME" /> ble avvist</translation>
 <translation id="833262891116910667">Fremhev</translation>
 <translation id="8339163506404995330">Sider på <ph name="LANGUAGE" /> oversettes ikke</translation>
+<translation id="8339275256517065202">Fullfør kjøpet med Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registrering med virtuelt kort er åpnet i full høyde</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
@@ -4031,6 +4032,7 @@ Mer informasjon:
 <translation id="8726549941689275341">Sidestørrelse:</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731268612289859741">Sikkerhetskode</translation>
+<translation id="8731917264694569036">Fullfør kjøpet med enheten din</translation>
 <translation id="8733345475331865475">Kjøretøyforsikring</translation>
 <translation id="8733764070897080460">Du kan blokkere emner du ikke vil dele med nettsteder. Chrome utfører automatisk sletting av emner som er eldre enn fire uker. Finn ut mer</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
@@ -4224,6 +4226,7 @@ Mer informasjon:
 <translation id="9116548361133462832">Mer om annonser i Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å fortsette ferden og se relevant aktivitet i Chrome-loggen</translation>
 <translation id="9119042192571987207">Opplastet</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vil bekrefte at det er deg</translation>
 <translation id="912327514020027767">Skjørt</translation>
 <translation id="912414390325846156">Du har tidligere valgt å ikke gi dette nettstedet tillatelse</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>
@@ -4247,7 +4250,6 @@ Mer informasjon:
 <translation id="9155646082713385498">Tidsskrifter</translation>
 <translation id="9157595877708044936">Konfigurerer ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> kan ha sensitivt innhold}other{<ph name="FILE_COUNT" /> filer kan ha sensitivt innhold}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Nettsteder du besøker, kan også fastslå hva du liker, basert på aktiviteten din på nettstedet. Hvis du for eksempel besøker et nettsted som selger joggesko for langdistanseturer, kan det hende at nettstedet bestemmer seg for at du er interessert i å løpe maraton.</translation>
 <translation id="9166851138617700776">Mer om annonser som er foreslått av nettsteder og annonsemåling</translation>
 <translation id="9167054383925257837">informasjon om enhetens nettleser og OS (for eksempel nettleser- og OS-versjonen)</translation>

@@ -886,7 +886,6 @@
 <translation id="1634224622052500893">Wi-Fi ネットワークを検出</translation>
 <translation id="1634783886312010422"><ph name="WEBSITE" /> でこのパスワードを変更しましたか？</translation>
 <translation id="1636212173818785548">OK</translation>
-<translation id="1636542522761359943">ようこそ、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">このブックマークは iPhone でも使用できます</translation>
 <translation id="1637765355341780467">プロフィールを開こうとして問題が発生しました。一部の機能を使用できない可能性があります。</translation>
@@ -1619,7 +1618,6 @@
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="217631816678106981">貼り付けない</translation>
-<translation id="2177306523871626993">テキスト認識ファイルをダウンロードしています… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">シークレット タブ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">ChromeOS Flex デバッグ機能を有効にしています。この機能を有効にすると、sshd デーモンが設定され USB デバイスからの起動が可能になります。</translation>
@@ -1822,6 +1820,7 @@
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
 <translation id="2316129865977710310">いいえ</translation>
 <translation id="2316433409811863464">アプリ ストリーミング</translation>
+<translation id="2316709634732130529">推奨されたパスワードを使用</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 完了</translation>
 <translation id="2318143611928805047">用紙サイズ</translation>
 <translation id="2318817390901984578">Android アプリを使用するには、<ph name="DEVICE_TYPE" /> を充電し、アップデートを行ってください。</translation>
@@ -1868,7 +1867,6 @@
 <translation id="2350182423316644347">アプリケーションを初期化しています...</translation>
 <translation id="235028206512346451">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を使用しない場合、デバイスはロックされずにスリープ状態になります。</translation>
 <translation id="2351923523007389195">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムの位置情報へのアクセス<ph name="LINK_END" />をオンにする。</translation>
-<translation id="2352305801620974284">このデバイスでログインすると、Google アカウントに保存したパスワードなどの情報を利用できます</translation>
 <translation id="2352662711729498748">1 MB 未満</translation>
 <translation id="2352810082280059586">ロック画面のメモは<ph name="LOCK_SCREEN_APP_NAME" />に自動的に保存されます。最新のメモはロック画面に表示されます。</translation>
 <translation id="2353297238722298836">カメラとマイクを使用できます</translation>
@@ -3662,7 +3660,6 @@
 <translation id="3694590407685276748">テキスト カーソルをハイライト表示する</translation>
 <translation id="369489984217678710">パスワードとその他のログインデータ</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{セキュリティ チェックが完了しました。データをアップロードします。}=1{セキュリティ チェックが完了しました。ファイルをアップロードします。}other{セキュリティ チェックが完了しました。ファイルをアップロードします。}}</translation>
-<translation id="3696817060563289264">テキスト認識ファイルをダウンロードしました</translation>
 <translation id="369736917241079046">ランチャー+左矢印</translation>
 <translation id="3697716475445175867">最終使用日</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{今後、このサイトからの通知の送信を停止できます。}other{今後、これらのサイトからの通知の送信を停止できます。}}</translation>
@@ -3974,7 +3971,6 @@
 <translation id="3898768766145818464">動画を再生、一時停止</translation>
 <translation id="389901847090970821">キーボードを選択</translation>
 <translation id="3900966090527141178">パスワードのエクスポート</translation>
-<translation id="3902789559055749153"><ph name="APP_NAME" /> のパスキーの作成方法を選択してください</translation>
 <translation id="3903187154317825986">デバイス内蔵キーボード</translation>
 <translation id="3903696968689283281">Wi-Fi Direct 所有者情報:</translation>
 <translation id="3904326018476041253">位置情報サービス</translation>
@@ -4152,7 +4148,6 @@
 <translation id="4028467762035011525">入力方法を追加</translation>
 <translation id="4029024445166427442">ランチャー+Shift+Backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ページから戻る</translation>
-<translation id="403088439874411464">テキスト認識ファイルをダウンロードしています</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
@@ -4393,7 +4388,6 @@
 <translation id="4220648711404560261">有効化中にエラーが発生しました。</translation>
 <translation id="4222917615373664617">価格のトラッキングが有効になっています。価格は <ph name="CURRENT_PRICE" /> です。</translation>
 <translation id="4223404254440398437">マイクは許可されていません</translation>
-<translation id="4223845867739585293">パスキーを作成する</translation>
 <translation id="4225397296022057997">すべてのサイト</translation>
 <translation id="4228071595943929139">組織のメールアドレスを使用します</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{この拡張機能は許可されていません}other{一部の拡張機能は許可されていません}}</translation>
@@ -4703,7 +4697,6 @@
 <translation id="4449948729197510913">お客様のユーザー名は組織の企業アカウントに属しています。アカウントにデバイスを登録するには、まず管理コンソールでドメインの所有権を確認してください。なお、確認にはアカウントの管理者権限が必要です。</translation>
 <translation id="4450974146388585462">診断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> が、データをより安全に保存できる有効な TPM を検出しました。</translation>
-<translation id="4451203458188403050">PDF からテキストを抽出します</translation>
 <translation id="4452898361839215358">または、PPD を選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">キーボードの右上にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> で検索するか、URL を入力してください</translation>
@@ -5505,6 +5498,7 @@
 <translation id="5079010647467150187">組み込みの VPN を追加...</translation>
 <translation id="5079460277417557557">ログインしているデスクトップ デバイスで、保存したタブグループを使用できるようになりました</translation>
 <translation id="5079699784114005398">オンにすると、Google アカウントでログインした後、すべての ChromeOS デバイスでアプリを利用できるようになります。Chrome ブラウザからインストールしたウェブアプリは、ブラウザの同期がオフになっていても同期されます。</translation>
+<translation id="5079950360618752063">提案されたパスワードを使用</translation>
 <translation id="508059534790499809">Kerberos チケットの更新</translation>
 <translation id="5081124414979006563">ゲスト プロフィールを開く(&amp;O)</translation>
 <translation id="5083035541015925118">Ctrl+Alt+上矢印</translation>
@@ -7277,7 +7271,6 @@
 <translation id="6429384232893414837">更新エラー</translation>
 <translation id="6430814529589430811">Base64 エンコード ASCII 形式の単一の証明書</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> は、このコンピュータのすべてのユーザーに対して自動更新を設定します。</translation>
-<translation id="6432072919019816301">PDF をスキャンして支援技術向けにテキストを抽出します</translation>
 <translation id="6434104957329207050">ポイントのスキャン速度</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
@@ -8886,7 +8879,6 @@
 <translation id="7660146600670077843">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
 <translation id="7661259717474717992">サイトに Cookie データの保存と読み取りを許可する</translation>
 <translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>
-<translation id="7662164944369232556">テキスト認識ファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="7662283695561029522">設定するにはタップします</translation>
 <translation id="7663719505383602579">レシーバー: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">利用可能なキーボード ショートカット</translation>

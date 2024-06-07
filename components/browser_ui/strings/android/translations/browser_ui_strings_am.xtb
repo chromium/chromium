@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">ከዩኤስቢ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="4194328954146351878">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃ እንዲያዩ እና እንዲቀይሩ ከመፈቀዱ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="4200726100658658164">የአካባቢ ቅንብሮችን ክፈት</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ከ<ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">ማሳወቂያዎች መሣሪያውን እንዲነዝር ሊያደርጉት ይችላሉ</translation>
 <translation id="4259722352634471385">ዳሰሳ ታግዷል፦ <ph name="URL" /></translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">ዘርጋ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ነገ ጊዜው ያበቃል}one{በ# ቀን ውስጥ ጊዜው ያበቃል}other{በ# ቀናት ውስጥ ጊዜው ያበቃል}}</translation>
 <translation id="4336566011000459927">Chrome ዛሬ እንደገና ኩኪዎችን ያግዳል</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> የእርስዎ የመጨረሻ ትር</translation>
 <translation id="4338831206024587507">በ<ph name="DOMAIN" /> ስር ያሉ ሁሉም ጣቢያዎች</translation>
 <translation id="4402755511846832236">እርስዎ ይህን መሣሪያ በንቃት ሲጠቀሙ ጣቢያዎች እንዳያውቁ ያግዱ</translation>
 <translation id="4412992751769744546">የሶስተኛ ወገን ኩኪዎችን ፍቀድ</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">ይህ ጣቢያ የሚኖረው የመሣሪያዎን መዳረሻ ይቆጣጠሩ</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6042308850641462728">ተጨማሪ</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> የእርስዎ የመጨረሻ ትር</translation>
 <translation id="6064125863973209585">የተጠናቀቁ ማውረዶች</translation>
 <translation id="6071501408666570960">ከዚህ ጣቢያ ዘግተው እንዲወጡ ሊደረጉ ይችላሉ</translation>
 <translation id="6120483543004435978">ሲበራ፣ ጣቢያዎች መሳሪያዎን በንቃት ሲጠቀሙ ለማወቅ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች መሳሪያዎን በንቃት ሲጠቀሙ ማወቅ አይችሉም።</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
 <translation id="6864395892908308021">ይህ መሣሪያ NFCን ማንበብ አይችልም</translation>
-<translation id="6867014948848323204">ከ<ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">ጣቢያዎች ከቅንጥብ ሰሌዳ ጽሑፍን እና ምስሎችን እንዳያነብቡ አግድ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6950072572526089586">እርስዎ የሚጎበኙት ጣቢያ እንደሚጠበቀው ለመስራት እርስዎ ስለሚያደርጉት ነገር መረጃ ሊያስቀምጥ ይችላል — ለምሳሌ፣ ወደ አንድ ጣቢያ ገብተው እንዲቆዩ ለማድረግ ወይም በእርስዎ የሸመታ ተሳቢ ውስጥ ንጥሎችን ለማስቀመጥ። ብዙ ጊዜ ጣቢያዎች ይህን መረጃ በመሣሪያዎ ላይ በጊዜያዊነት ያስቀመጣሉ።</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
 <translation id="7990211076305263060">ሲበራ፣ ጣቢያዎች ማይክሮፎንዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማይክሮፎንዎን መጠቀም አይችሉም።</translation>
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ከ<ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
 <translation id="8042586301629853791">ደርድር በ፦</translation>
 <translation id="8067883171444229417">ቪዲዮ አጫውት</translation>

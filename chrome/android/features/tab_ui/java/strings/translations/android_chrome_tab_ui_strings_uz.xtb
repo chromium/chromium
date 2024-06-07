@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni bukmarklash}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni bukmarklash}}</translation>
 <translation id="2118649612461486615">Doʻkon haqida</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi. Inkognito varaqlar tiklanmaydi.}other{Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi. # ta inkognito varaq tiklanmaydi.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> saytidagi joriy narxi: <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Varaqni yechish}other{Varaqlar guruhini yechish}}</translation>
 <translation id="2271452184061378400">Varaqlar guruhi shu yerda saqlanadi</translation>

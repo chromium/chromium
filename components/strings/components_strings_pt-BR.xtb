@@ -2986,7 +2986,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6753269504797312559">Valor da política</translation>
 <translation id="6753434778807740853">Excluir a entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Contas de poupança</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">O dispositivo entrou em modo de suspensão.</translation>
 <translation id="6760548828952594090">Não foi possível salvar o cartão na sua Conta do Google. Ele foi salvo no Chrome neste dispositivo.</translation>
 <translation id="6766558780547452153">Gastronomia e receitas</translation>
@@ -4250,7 +4249,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}one{<ph name="FILE_COUNT" /> arquivo pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> arquivos podem incluir conteúdo sensível}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Os sites que você acessa também podem determinar o que você gosta com base na sua atividade no site. Por exemplo, se você acessar um site que vende tênis de corrida de longa distância, ele pode concluir que você tem interesse em correr maratonas.</translation>
 <translation id="9166851138617700776">Mais informações sobre anúncios sugeridos pelo site e medição de anúncios</translation>
 <translation id="9167054383925257837">Informações do SO e do navegador do dispositivo, como as versões</translation>

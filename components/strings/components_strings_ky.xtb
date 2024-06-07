@@ -2680,6 +2680,7 @@
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6167577165590485365">Акыркы алуу аракеттери:</translation>
 <translation id="617256461084925519">Google Chrome төлөм маалыматын толтуруу үчүн өзүңүздү ырастоого аракет кылып жатат.</translation>
+<translation id="6173208311907792313">Бул нерсени Windows Hello аркылуу сатып алыңыз</translation>
 <translation id="6176387967264100435">Бул кымбат баа</translation>
 <translation id="6177128806592000436">Бул сайтка туташуу коопсуз эмес</translation>
 <translation id="6177531123306197852">Конверт C2</translation>
@@ -2985,7 +2986,6 @@
 <translation id="6753269504797312559">Саясат мааниси</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> өчүрүү</translation>
 <translation id="6754547388777247439">Эсептерди сактоо</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Түзмөгүңүз уктап калды.</translation>
 <translation id="6760548828952594090">Бул карта Google аккаунтуңузда сакталган жок. Анын ордуна ал ушул түзмөктөгү Chrome'до сакталды.</translation>
 <translation id="6766558780547452153">Ашпозчулук жана рецепттер</translation>
@@ -3838,6 +3838,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кирүү мүмкүнчүлүгү четке кагылды</translation>
 <translation id="833262891116910667">Бөлүп көрсөтүү</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тилиндеги барактар которулбайт</translation>
+<translation id="8339275256517065202">Бул нерсени Touch ID аркылуу сатып алыңыз</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуалдык картаны каттоо диалогу толук экранда ачылды</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
@@ -4031,6 +4032,7 @@
 <translation id="8726549941689275341">Барактын өлчөмү:</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8731268612289859741">Коопсуздук коду</translation>
+<translation id="8731917264694569036">Бул нерсени түзмөктөн сатып алыңыз</translation>
 <translation id="8733345475331865475">Авто камсыздандыруу</translation>
 <translation id="8733764070897080460">Сайттар менен бөлүшкүңүз келбеген темаларды бөгөттөй аласыз. Ошондой эле, Chrome тизмеде 4 аптадан ашуун убакыт мурун пайда болгон темаларды автоматтык түрдө жок кылып турат. Кеңири маалымат</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> түзмөгүңүз <ph name="MANAGER" /> тарабынан башкарылууда</translation>
@@ -4224,6 +4226,7 @@
 <translation id="9116548361133462832">Chrome'догу жарнамалар тууралуу кеңири маалымат</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, саякатыңызды улантып, Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="9119042192571987207">Жүктөлүп берилди</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> сиз экениңизди ырасташы керек</translation>
 <translation id="912327514020027767">Юбкалар</translation>
 <translation id="912414390325846156">Буга чейин ушул сайтта колдонууга тыюу салгансыз</translation>
 <translation id="9128870381267983090">Тармакка туташуу</translation>
@@ -4247,7 +4250,6 @@
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнотууда…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында купуя контент болушу мүмкүн}other{<ph name="FILE_COUNT" /> файлда купуя контент болушу мүмкүн}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Ошондой эле, сиз кирген сайттар аларда жасаган аракеттериңиздин негизинде сизге эмне жагарын аныктай алат. Мисалы, узак аралыкка чуркоо үчүн бут кийим карасаңыз, сайт "марафондо чуркоону" кызыккан нерсеңиз катары аныктайт.</translation>
 <translation id="9166851138617700776">Сайт сунуштаган жарнамалар жана алардын майнаптуулугун баалоо тууралуу кеңири маалымат</translation>
 <translation id="9167054383925257837">Серепчи жана түзмөктөгү OS тууралуу маалымат (мисалы, серепчи жана OS версиялары)</translation>

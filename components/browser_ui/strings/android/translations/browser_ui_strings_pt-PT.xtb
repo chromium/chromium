@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Ligado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que os sites vejam e alterem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir definições de localização</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">As notificações podem fazer com que o dispositivo vibre</translation>
 <translation id="4259722352634471385">A navegação está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
 <translation id="4336566011000459927">O Chrome vai limitar os cookies novamente hoje</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> O seu último separador</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impeça os sites de saberem quando está ativamente a utilizar este dispositivo.</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> O seu último separador</translation>
 <translation id="6064125863973209585">Transferências concluídas</translation>
 <translation id="6071501408666570960">A sua sessão neste site pode ser terminada</translation>
 <translation id="6120483543004435978">Quando a opção está ativada, os sites podem pedir para saber quando está a usar ativamente o dispositivo. Quando esta opção está desativada, os sites não sabem quando está a usar ativamente o dispositivo.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
 <translation id="6864395892908308021">Este dispositivo não suporta a tecnologia NFC.</translation>
-<translation id="6867014948848323204">De <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Impedir sites de lerem texto e imagens da área de transferência</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6950072572526089586">Um site que visita pode guardar informações sobre o que está a fazer para que funcione conforme esperado, por exemplo, para manter a sua sessão iniciada num site ou guardar itens no seu carrinho de compras. Muitas vezes, os sites guardam estas informações temporariamente no seu dispositivo.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Selecionar um contacto</translation>
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Ver vídeo</translation>

@@ -2985,7 +2985,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6753269504797312559">Vlera e politikës</translation>
 <translation id="6753434778807740853">Fshi hyrjen: <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Llogari kursimi</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Pajisja jote kaloi në gjumë.</translation>
 <translation id="6760548828952594090">Kjo kartë nuk mund të ruhej në "Llogarinë tënde të Google". Në vend të kësaj, ajo është ruajtur në Chrome në këtë pajisje.</translation>
 <translation id="6766558780547452153">Gatim dhe receta</translation>
@@ -4247,7 +4246,6 @@ Detaje shtesë:
 <translation id="9155646082713385498">Revista</translation>
 <translation id="9157595877708044936">Po konfiguron...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mund të përfshijë përmbajtje delikate}other{<ph name="FILE_COUNT" /> skedarë mund të përfshijnë përmbajtje delikate}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Sajtet që viziton mund të përcaktojnë po ashtu se çfarë të pëlqen bazuar në aktivitetin tënd në sajt. Për shembull, nëse viziton një sajt që shet atlete vrapimi për distanca të gjata, sajti mund të vendosë që je i interesuar të vraposh në maratona.</translation>
 <translation id="9166851138617700776">Më shumë rreth reklamave të sugjeruara nga sajtet dhe matjes së reklamave</translation>
 <translation id="9167054383925257837">Informacionet e shfletuesit dhe sistemit operativ të pajisjes (si p.sh. versionet e shfletuesit dhe sistemit operativ)</translation>

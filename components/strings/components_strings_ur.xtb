@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">اپنے مشترکہ ٹیب کے مواد کو اسکرول اور زوم کریں</translation>
 <translation id="1089439967362294234">پاس ورڈ تبدیل کریں</translation>
 <translation id="1090629319939036170">‏VR مینو</translation>
+<translation id="1091779689406092804">اسکرین شاٹس</translation>
 <translation id="1094777233105318927">‏آپ کے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر اور فائلز سے متعلق معلومات پڑھیں</translation>
 <translation id="1096545575934602868">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔ سبھی مزید اندراجات مسترد کر دیے جائیں گے۔</translation>
 <translation id="1097803577928227769">علاقائی پارکس اور باغیچے</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">ہوم تھیٹر سسٹمز</translation>
 <translation id="1842969606798536927">ادائیگی کریں</translation>
 <translation id="1846432862466000825">پلاسٹک (آرکائیول)</translation>
+<translation id="1848640291751752317">ڈاؤن لوڈز</translation>
 <translation id="1848982255014129637">تصویر (ہائی گلوس)</translation>
 <translation id="1853392626017747777">ورچوئل کارڈ کا اندراج بند ہو گیا</translation>
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">گوشت اور سمندری غذا</translation>
 <translation id="2367567093518048410">سطح</translation>
 <translation id="23703388716193220">گولف کے ساز و سامان</translation>
+<translation id="2370368710215137370">فائلز اپ لوڈ</translation>
 <translation id="2374629208601905275">‏آپ کے علاقے کے قانون کی بنیاد پر، Chrome آپ سے آپ کا ڈیفالٹ سرچ انجن منتخب کرنے کو کہتا ہے۔ یہ سرچ انجنز آپ کے علاقے میں مقبول ہیں اور بے ترتیب آرڈر میں دکھائے جاتے ہیں۔</translation>
 <translation id="2377241607395428273">گرافکس اور اینیمیشن سافٹ ویئر</translation>
 <translation id="2378084239755710604">'کارڈ محفوظ کریں' بند ہو گیا۔</translation>
@@ -1424,6 +1427,7 @@
 <translation id="3682094733650754138">مکمل پتہ پُر کریں کا اختیار منتخب کیا گیا</translation>
 <translation id="3687920599421452763">وینز اور منی وینز</translation>
 <translation id="3693327506115126094">اپنی توثیق کئے جانے کا طریقہ منتخب کریں</translation>
+<translation id="3698353241727597930">آپ کے منتظم نے <ph name="FILES" /> کو آپ کے انٹرپرائز کے زیر انتظام <ph name="CLOUD_STORAGE" /> اسٹوریج میں محفوظ کرنے کیلئے کنفیگر کیا ہے۔ آپ کی جانب سے ان فائلز کو حذف کرنے پر، ان کی نگرانی کی جا سکتی ہے، انہیں آڈٹ کیا جا سکتا اور برقرار رکھا جا سکتا ہے۔</translation>
 <translation id="3698629142018988477">‏سائٹ تخلیق کریں بٹن، Google Sites میں تیزی سے نئی سائٹ تخلیق کرنے کے لیے فعال کریں</translation>
 <translation id="3701325639446035885">ایونٹس کے ٹکٹوں کی فروخت</translation>
 <translation id="3701427423622901115">ری سیٹ کی کاروائی تسلیم کر لی گئی۔</translation>
@@ -1499,6 +1503,7 @@
 <translation id="3826050100957962900">فریق ثالث سائن ان</translation>
 <translation id="3827112369919217609">یقینی</translation>
 <translation id="3828924085048779000">خالی پاس فریز کی اجازت نہیں ہے۔</translation>
+<translation id="3830139096297532361">‏یہ PDF ناقابل رسائی ہے۔ ٹیکسٹ ایکسٹریکشن فائلز کو ڈاؤن لوڈ نہیں کیا جا سکا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3830470485672984938">مختلف پاس کی استعمال کریں</translation>
 <translation id="3831065134033923230">اپنے محفوظ کردہ پاس ورڈز چیک کریں</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> نے اضافی فنکشنز کیلئے ایکسٹینشنز انسٹال کی ہیں۔ ایکسٹینشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
@@ -1673,6 +1678,7 @@
 <translation id="4202554117186904723">پانچواں رول</translation>
 <translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />فائروال اور اینٹی وائرس کنفیگریشنز کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">بڑا</translation>
 <translation id="4210602799576081649">توثیقی کوڈ کی میعاد ختم ہوگئی، ایک نئے کوڈ کی درخواست کریں</translation>
 <translation id="421066178035138955">ورچوئل رئیلٹی آلات اور ڈیٹا کا استعمال کریں</translation>
@@ -2735,6 +2741,7 @@
 <translation id="6270066318535733958">بوٹنگ</translation>
 <translation id="6272088941196661550">‏اپنی Chrome کی سرگزشت میں متعلقہ سرگرمی دیکھنے کے لیے دوبارہ اپنا صارف کا تجربہ شروع کریں</translation>
 <translation id="6272383483618007430">‏Google اپ ڈیٹ</translation>
+<translation id="6278015583149890680">‏‫Google Drive اور OneDrive</translation>
 <translation id="6280223929691119688">اس پتے پر ڈیلیوری نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="6284292079994426700">‏‎26 x 38 انچ</translation>
 <translation id="6284449872909111707">ٹیکسٹ اور فوری پیغام رسانی</translation>
@@ -2988,7 +2995,6 @@
 <translation id="6753269504797312559">پالیسی کی قدر</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> کا اندراج حذف کریں</translation>
 <translation id="6754547388777247439">سیونگز اکاؤنٹس</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">آپ کا آلہ سیلپ وضع میں چلا گیا۔</translation>
 <translation id="6760548828952594090">‏یہ کارڈ آپ کے Google اکاؤنٹ میں محفوظ نہیں ہو سکا۔ اس کی بجائے اسے اس آلہ پر Chrome میں محفوظ کر دیا گیا ہے۔</translation>
 <translation id="6766558780547452153">پکانا اور ترکیبیں</translation>
@@ -3174,6 +3180,7 @@
 <translation id="7119063404975271297">‏TV ڈرامے</translation>
 <translation id="7119371694555167493">کاپی کرنے کا وقت ختم ہو گیا</translation>
 <translation id="7119414471315195487">دیگر ٹیبز یا پروگرامز کو کھولیں</translation>
+<translation id="7120588595737538743">ڈاؤن لوڈز اور اسکرین شاٹس</translation>
 <translation id="7124354851782353862">‏اپنا CVC درج کریں</translation>
 <translation id="7129409597930077180">اس پتے پر ترسیل نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3373,6 +3380,7 @@
 <translation id="7483863401933039889">‏<ph name="CHROME_TIP" />، Chrome کی تجویز کو برخاست کرنے کے لیے ٹیب پھر اینٹر دبائیں،</translation>
 <translation id="7485085230273446323">کاروباری اور انڈسٹریل</translation>
 <translation id="7485870689360869515">کوئی ڈیٹا نہیں ملا۔</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">شیمپوز اور کنڈیشنرز</translation>
 <translation id="7495528107193238112">یہ مواد مسدود ہے۔ مسئلے کو حل کرنے کے لیے سائٹ کے مالک سے رابطہ کریں۔</translation>
 <translation id="749865518782565832">پلمبنگ</translation>
@@ -4250,7 +4258,6 @@
 <translation id="9155646082713385498">میگزینز</translation>
 <translation id="9157595877708044936">تشکیل دیا جا رہا ہے…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> میں حساس مواد ہو سکتا ہے}other{<ph name="FILE_COUNT" /> فائلز میں حساس مواد ہو سکتا ہے}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">سائٹ پر آپ کی سرگرمی کی بنیاد پر آپ کی ملاحظہ کی جانے والی سائٹس اس بات کا بھی تعین کر سکتی ہیں کہ آپ کو کیا پسند ہے۔ مثال کے طور پر، اگر آپ کوئی ایسی سائٹ ملاحظہ کرتے ہیں جو لمبے فاصلے والے دوڑنے کے جوتوں کو فروخت کرتی ہے تو سائٹ یہ فیصلہ کر سکتی ہے کہ آپ کو دوڑ کے میراتھنز میں دلچسپی ہے۔</translation>
 <translation id="9166851138617700776">سائٹ کے تجویز کردہ اشتہارات اور اشتہار کی پیمائش کے بارے میں مزید</translation>
 <translation id="9167054383925257837">‏براؤزر اور آلہ OS کی معلومات (جیسے براؤزر اور OS ورژنز)</translation>

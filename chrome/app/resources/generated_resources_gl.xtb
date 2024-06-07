@@ -883,7 +883,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1634224622052500893">Atopouse unha rede wifi</translation>
 <translation id="1634783886312010422">Xa cambiaches este contrasinal en <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">Aceptar</translation>
-<translation id="1636542522761359943">Dámosche a benvida, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Os datos das aplicacións poden incluír calquera tipo de información que gardase unha aplicación (baseándose na configuración do programador), como os contactos, as mensaxes e as fotos. Os datos das copias de seguranza non contarán na cota de almacenamento de Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Podes desactivar este servizo en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Accede a este marcador no iPhone</translation>
@@ -1618,7 +1617,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="217576141146192373">Non se puido engadir a impresora. Comproba a súa configuración e téntao de novo.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="217631816678106981">Non pegar</translation>
-<translation id="2177306523871626993">Descargando ficheiros de recoñecemento de texto… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Pestana de incógnito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Vas activar as funcións de depuración de Chrome OS Flex, as cales configurarán o daemon sshd e activarán o inicio desde unidades USB.</translation>
@@ -1823,6 +1821,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2314774579020744484">Idioma que se usa ao traducir páxinas</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="2316433409811863464">Emisión da aplicación</translation>
+<translation id="2316709634732130529">Utilizar contrasinal suxerido</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % listo</translation>
 <translation id="2318143611928805047">Tamaño de papel</translation>
 <translation id="2318817390901984578">Para usar as aplicacións para Android, carga e actualiza o dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -1869,7 +1868,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2350182423316644347">Iniciando aplicación...</translation>
 <translation id="235028206512346451">Se te apartas do dispositivo, a pantalla bloquearase de maneira automática. Mentres esteas diante do dispositivo, a pantalla manterase activa máis tempo. Se non usas pantalla de bloqueo, o teu dispositivo poñerase en suspensión en vez de bloquearse.</translation>
 <translation id="2351923523007389195">Permiso concedido: <ph name="PERMISSION_DETAILS" />. Activa o <ph name="LINK_BEGIN" />acceso á localización do sistema<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Cando inicias sesión neste dispositivo, obtés o teu contrasinal, entre outras cousas, da túa Conta de Google.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">As notas da pantalla de bloqueo gárdanse automaticamente na aplicación <ph name="LOCK_SCREEN_APP_NAME" />. A túa nota máis recente permanecerá na pantalla de bloqueo.</translation>
 <translation id="2353297238722298836">Permítense a cámara e o micrófono</translation>
@@ -3665,7 +3663,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3694590407685276748">Destacar cursor de texto</translation>
 <translation id="369489984217678710">Contrasinais e outros datos de inicio de sesión</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Xa se realizaron as comprobacións de seguranza. Agora cargaranse os teus datos.}=1{Xa se realizaron as comprobacións de seguranza. Agora cargarase o teu ficheiro.}other{Xa se realizaron as comprobacións de seguranza. Agora cargaranse os teus ficheiros.}}</translation>
-<translation id="3696817060563289264">Descargáronse os ficheiros de recoñecemento de texto</translation>
 <translation id="369736917241079046">menú de aplicacións + frecha esquerda</translation>
 <translation id="3697716475445175867">última apertura</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Podes evitar que este sitio envíe notificacións no futuro.}other{Podes evitar que estes sitios envíen notificacións no futuro.}}</translation>
@@ -3977,7 +3974,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3898768766145818464">Reproducir ou pór vídeo en pausa</translation>
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3900966090527141178">Exportar contrasinais</translation>
-<translation id="3902789559055749153">Indica como queres crear unha clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3903696968689283281">Información das persoas propietarias de Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Servizos de localización</translation>
@@ -4150,7 +4146,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4028467762035011525">Engadir métodos de introdución de texto</translation>
 <translation id="4029024445166427442">menú de aplicacións + maiúsculas + retroceso</translation>
 <translation id="4029556917477724407">Ir atrás desde a páxina <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Descargando ficheiros de recoñecemento de texto</translation>
 <translation id="4031179711345676612">Permítese o micrófono</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Engadir un cartafol novo</translation>
@@ -4388,7 +4383,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4220648711404560261">Produciuse un erro durante a activación.</translation>
 <translation id="4222917615373664617">O seguimento de prezos está activado. Prezo: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">O acceso ao micrófono non está permitido</translation>
-<translation id="4223845867739585293">Crea unha clave de acceso</translation>
 <translation id="4225397296022057997">En todos os sitios</translation>
 <translation id="4228071595943929139">Usar o enderezo de correo electrónico da túa organización</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión non está permitida}other{Algunhas extensións non están permitidas}}</translation>
@@ -4699,7 +4693,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4449948729197510913">O teu nome de usuario pertence á conta de empresa da túa organización. Para rexistrar dispositivos na conta, verifica a propiedade do dominio na consola de administración. Se queres realizar esta verificación, deberás ter privilexios administrativos sobre a conta.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detectou un TPM activo que pode almacenar os teus datos dun xeito máis seguro.</translation>
-<translation id="4451203458188403050">Extraer o texto do PDF</translation>
 <translation id="4452898361839215358">ou selecciona o PPD. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Toca o sensor de impresión dixital situado na esquina superior dereita do teclado. Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="4453946976636652378">Fai unha busca en <ph name="SEARCH_ENGINE_NAME" /> ou escribe un URL</translation>
@@ -5499,6 +5492,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5079010647467150187">Engadir VPN integrada…</translation>
 <translation id="5079460277417557557">Agora podes usar os grupos de pestanas gardados nos ordenadores nos que teñas a sesión iniciada</translation>
 <translation id="5079699784114005398">Unha vez activada esta opción, as túas aplicacións estarán dispoñibles en calquera dispositivo ChromeOS despois de iniciares sesión coa túa Conta de Google. As aplicacións web instaladas no navegador Chrome sincronizaranse mesmo se a sincronización do navegador está desactivada.</translation>
+<translation id="5079950360618752063">Utilizar contrasinal suxerido</translation>
 <translation id="508059534790499809">Actualizar un tícket de Kerberos</translation>
 <translation id="5081124414979006563">&amp;Abrir perfil de convidado</translation>
 <translation id="5083035541015925118">control + alt + frecha arriba</translation>
@@ -7267,7 +7261,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6429384232893414837">Produciuse un erro na actualización</translation>
 <translation id="6430814529589430811">ASCII con codificación Base64, certificado único</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizacións automáticas para todos os usuarios deste ordenador.</translation>
-<translation id="6432072919019816301">Analiza o PDF co fin de extraer o texto para a tecnoloxía asistencial</translation>
 <translation id="6434104957329207050">Velocidade da exploración por punto</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">É necesario actualizar o teu dispositivo para que poidas utilizar <ph name="APP_NAME" />.</translation>
@@ -8875,7 +8868,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7660146600670077843">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao grupo novo</translation>
 <translation id="7661259717474717992">Permitir que os sitios garden e lean datos de cookies</translation>
 <translation id="7661451191293163002">Non se puido obter un certificado de rexistro.</translation>
-<translation id="7662164944369232556">Non se puideron descargar os ficheiros de recoñecemento de texto. Téntao de novo máis tarde.</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Hai atallos de teclado dispoñibles</translation>

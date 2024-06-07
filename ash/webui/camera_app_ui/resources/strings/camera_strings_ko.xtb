@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">녹화 일시중지</translation>
 <translation id="4121305183798804752">문서 감지됨</translation>
 <translation id="414641094616694804">이 카메라는 해상도를 변경할 수 없습니다.</translation>
-<translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="428234092390943511">페이지 썸네일</translation>
-<translation id="4349714250734879769">Chrome으로 프레임 조정</translation>
 <translation id="4383571725254449280">성능 로그 인쇄</translation>
 <translation id="4445542136948522167">사진 촬영 중지</translation>
 <translation id="4570032796877367747">전면 카메라</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">스캔 페이지 목록</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="4892746741161549733">링크 주소 복사 <ph name="URL" /></translation>
-<translation id="491895758387112773">멀티스트림 동영상 녹화</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4984613436295737187">QHD(1440p)</translation>
 <translation id="5034763830503483128">사진 가로세로 비율</translation>
@@ -157,7 +154,6 @@
 <translation id="8145038249676204903">사진 촬영 모드로 전환</translation>
 <translation id="8167081290930651932">사진으로 저장</translation>
 <translation id="8239780215768881278">동영상 스냅샷 촬영</translation>
-<translation id="8346544573713510785">카메라 HAL에 따라 프레임 조정</translation>
 <translation id="8425673304802773841">아래로 기울이기</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8609951387004618906"><ph name="URL" /> 열기</translation>

@@ -296,6 +296,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Se forhåndsvisning af link</translation>
 <translation id="1206832039833782423">Din sikkerhedskode står på bagsiden af dit kort</translation>
+<translation id="1208392090861059168">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Hvis du vil opdatere tidsplanen for solnedgang og solopgang automatisk, skal du <ph name="BEGIN_LINK" />aktivere systemets lokationsadgang<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Se eller tilføj printere, og se aktive udskriftsjobs</translation>
 <translation id="1211769675100312947">Genveje udvælges af dig</translation>
 <translation id="1213254615020057352">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto.</translation>
@@ -813,6 +814,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1594703455918849716">Gå til siden Adgangskodetjek</translation>
 <translation id="1594781465361405478">Lyd til/fra</translation>
 <translation id="1594963087419619323">Oversigt over opdelt skærm</translation>
+<translation id="1595018168143352126">Administrer kameratilladelser for websites i Chrome</translation>
 <translation id="1595492813686795610">Linux opgraderes</translation>
 <translation id="1596286373007273895">Tilgængelig</translation>
 <translation id="1596709061955594992">Bluetooth er deaktiveret. Du kan se tilgængelige enheder ved at aktivere Bluetooth.</translation>
@@ -886,7 +888,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1634224622052500893">Wi-Fi-netværket blev fundet</translation>
 <translation id="1634783886312010422">Har du allerede ændret denne adgangskode på <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
-<translation id="1636542522761359943">Velkommen, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Appdata kan være alle former for data, som en app har gemt (afhængigt af udviklerens indstillinger). Det kan f.eks. være data for kontakter, beskeder og billeder. Sikkerhedskopierede data tæller ikke med i din kvote for Drev-lagerplads.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan deaktivere denne tjeneste i Indstillinger.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Få dette bogmærke på din iPhone</translation>
@@ -1259,6 +1260,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1900305421498694955">Apps fra Google Play skal muligvis have fuld adgang til filsystemet for at læse og skrive filer på eksterne lagerenheder. De filer og mapper, som oprettes på enheden, er synlige for alle, der bruger det eksterne drev. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Bed din administrator om at opdatere denne app</translation>
 <translation id="1901303067676059328">Vælg &amp;alle</translation>
+<translation id="1901760057081700494">Tidszonen er i øjeblikket indstillet til <ph name="TIME_ZONE_ENTRY" />. Hvis tidszonen skal opdateres automatisk, skal du <ph name="BEGIN_LINK" />aktivere systemets lokationsadgang<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="1906181697255754968">Websites får normalt adgang til filer og mapper på din enhed for at kunne gemme dit arbejde automatisk</translation>
 <translation id="1906488504371069394">Find flere udvidelser og temaer i <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
@@ -1630,7 +1632,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="217576141146192373">Printeren kunne ikke tilføjes. Tjek din printers konfiguration, og prøv igen.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="217631816678106981">Undlad at indsætte</translation>
-<translation id="2177306523871626993">Downloader filer til tekstgenkendelse… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Du er ved at aktivere ChromeOS Flex-fejlretningsfunktioner, som konfigurerer sshd daemon og aktiverer systemgenstart via USB-drev.</translation>
@@ -1838,6 +1839,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2314774579020744484">Anvendt sprog ved oversættelse af sider</translation>
 <translation id="2316129865977710310">Nej tak</translation>
 <translation id="2316433409811863464">Appstreaming</translation>
+<translation id="2316709634732130529">Brug foreslået adgangskode</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % udført</translation>
 <translation id="2318143611928805047">Papirstørrelse</translation>
 <translation id="2318817390901984578">Hvis du vil bruge Android-apps, skal du oplade og opdatere din <ph name="DEVICE_TYPE" />.</translation>
@@ -1884,7 +1886,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2350182423316644347">Starter applikation...</translation>
 <translation id="235028206512346451">Hvis du bevæger dig væk fra din enhed, låser din skærm automatisk. Når du befinder dig foran din enhed, forbliver din skærm ulåst i længere tid. Hvis du ikke bruger en låseskærm, går din enhed i dvale i stedet for at låse.</translation>
 <translation id="2351923523007389195">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér <ph name="LINK_BEGIN" />systemets lokationsadgang<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Når du logger ind på denne enhed, får du dine adgangskoder m.m. på din Google-konto</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Noter på låseskærmen gemmes automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Din seneste note forbliver på låseskærmen.</translation>
 <translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
@@ -2214,6 +2215,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2581992808349413349">Brug en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System). Dette anvender en administreret tjenesteudbyder på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /><ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" /> ) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Din Kerberos-billet kunne ikke hentes. Prøv igen, eller kontakt din organisations enhedsadministrator. (fejlkode <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Administrer mikrofontilladelser for websites i Chrome</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> kunne ikke installeres. Prøv igen, eller kontakt din administrator Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2586672484245266891">Angiv en kortere webadresse</translation>
@@ -2403,6 +2405,9 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2727744317940422214">Noget gik galt. Send os feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />. Oprydningen mislykkedes. Du skal muligvis gøre det manuelt.</translation>
 <translation id="2729327310379176711">Chrome finder nye metoder til at reducere sporing og beskytte dig endnu bedre, når du browser. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> og giver dig mulighed for at administrere dem. Derefter kan de websites, du besøger, anmode Chrome om dine interesser for at vise dig annoncer.</translation>
 <translation id="2729577602370119849">Få nem adgang til, og administrer, printere</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Når Lokationsnøjagtighed er aktiveret, bruges oplysninger om trådløse signaler såsom Wi-Fi-adgangspunkter og mobilnetværksmaster samt enhedssensordata såsom accelerometer og gyroskop til at anslå enhedslokationen på en mere nøjagtig måde, hvilket hjælper Android-apps og -tjenester med at levere lokationsbaserede funktioner. Google muliggør dette ved jævnligt at indsamle oplysninger om enhedssensorer og trådløse signaler i nærheden af denne enhed for at bidrage til lokationer med trådløse signaler, der er crowdsourcet.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google anvender oplysningerne, der er indsamlet fra denne enhed, med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester generelt. Vi behandler disse oplysninger baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. Disse oplysninger anvendes ikke til at identificere brugere.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kan til enhver tid deaktivere Lokationsnøjagtighed i lokationsindstillingerne på denne enhed under Indstillinger &gt; Privatliv og sikkerhed &gt; Privatlivsindstillinger &gt; Lokationsadgang &gt; Avancerede lokationsindstillinger. Hvis Lokationsnøjagtighed deaktiveres, indsamles der ikke data for Lokationsnøjagtighed. I Android-apps og -tjenester er det kun IP-adressen, der bruges, hvis den er tilgængelig, til at fastslå denne enheds lokation. Dette kan påvirke tilgængeligheden og nøjagtigheden af lokationer for Android-apps og -tjenester såsom Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Sikkerhedskopierer Linux-apps og -filer</translation>
 <translation id="2730596696987224099">Vælg din egen</translation>
 <translation id="2730647855013151888">Medtag alle personlige oplysninger</translation>
@@ -2536,7 +2541,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2815693974042551705">Bogmærkemappe</translation>
 <translation id="2816319641769218778">Du skal aktivere synkronisering for at gemme adgangskoder på din Google-konto.</translation>
 <translation id="2816628817680324566">Vil du tillade, at dette website identificerer din sikkerhedsnøgle?</translation>
-<translation id="2817435998497102771">Konfigurer Baggrund og stil</translation>
+<translation id="2817435998497102771">Konfigurer baggrund og stil</translation>
 <translation id="2817861546829549432">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Virkningen af dette afhænger af, om et website reagerer på din anmodning, og hvordan din anmodning tolkes. Visse websites reagerer f.eks. på din anmodning ved at vise annoncer, som ikke er at finde på andre websites, du har besøgt. Mange websites vil stadig indsamle og bruge dine browserdata til f.eks. at øge sikkerheden, levere indhold, tjenester, annoncer og anbefalinger på deres websites og til at generere rapporteringsstatistik.</translation>
 <translation id="2818476747334107629">Printeroplysninger</translation>
 <translation id="2819167288942847344">Brug forindstillinger for justerbare vinduer og vinduer på telefoner og tablets for at undgå, at appen ikke fungerer korrekt</translation>
@@ -3256,6 +3261,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="338323348408199233">Bloker trafik uden VPN</translation>
 <translation id="3384362484379805487">Sprogfiler deles mellem brugere for at spare på diskpladsen.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
+<translation id="3385172418915595177">Lokationsnøjagtighed giver apps og tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Dine fanegrupper gemmes nu automatisk.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3677,7 +3683,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3694590407685276748">Markør til fremhævning af tekst</translation>
 <translation id="369489984217678710">Adgangskoder og andre logindata</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Sikkerhedstjekket blev gennemført. Dine data uploades.}=1{Sikkerhedstjekket blev gennemført. Din fil uploades.}one{Sikkerhedstjekket blev gennemført. Din fil uploades.}other{Sikkerhedstjekket blev gennemført. Dine filer uploades.}}</translation>
-<translation id="3696817060563289264">Filerne til tekstgenkendelse blev downloadet</translation>
 <translation id="369736917241079046">appliste + venstrepil</translation>
 <translation id="3697716475445175867">senest åbnet</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Du kan forhindre dette website i at sende notifikationer i fremtiden.}one{Du kan forhindre dette website i at sende notifikationer i fremtiden.}other{Du kan forhindre disse websites i at sende notifikationer i fremtiden.}}</translation>
@@ -3989,7 +3994,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3898768766145818464">Afspil videoen, eller sæt den på pause</translation>
 <translation id="389901847090970821">Vælg tastatur</translation>
 <translation id="3900966090527141178">Eksportér adgangskoder</translation>
-<translation id="3902789559055749153">Vælg, hvordan du vil oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Indbygget tastatur</translation>
 <translation id="3903696968689283281">Oplysninger om Wi-Fi Direct-ejere:</translation>
 <translation id="3904326018476041253">Lokationstjenester</translation>
@@ -4063,6 +4067,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3950841222883198950">Indtaling</translation>
 <translation id="3953834000574892725">Mine konti</translation>
 <translation id="3954354850384043518">I gang</translation>
+<translation id="3954468641195530330">Apps har ikke tilladelse til at bruge din mikrofon</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz)</translation>
 <translation id="3954953195017194676">Du har ingen nyligt registrerede WebRTC-hændelseslogfiler.</translation>
 <translation id="3955321697524543127">Tillad ikke, at websites opretter forbindelse til USB-enheder</translation>
@@ -4121,6 +4126,10 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3988124842897276887">Denne fane er tilsluttet en USB-enhed</translation>
 <translation id="3988996860813292272">Vælg tidszone</translation>
 <translation id="3991055816270226534">Administrer tredjepartscookies og sporingsbeskyttelse</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Når Lokationsnøjagtighed er aktiveret, bruges oplysninger om trådløse signaler såsom Wi-Fi-adgangspunkter og mobilnetværksmaster samt enhedssensordata såsom accelerometer og gyroskop til at anslå enhedslokationen på en mere nøjagtig måde, hvilket hjælper Android-apps og -tjenester med at levere lokationsbaserede funktioner. Google muliggør dette ved jævnligt at indsamle oplysninger om enhedssensorer og trådløse signaler i nærheden af denne enhed for at bidrage til lokationer med trådløse signaler, der er crowdsourcet.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google anvender oplysningerne, der er indsamlet fra denne enhed, med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester generelt. Vi behandler disse oplysninger baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. Disse oplysninger anvendes ikke til at identificere brugere.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kan til enhver tid deaktivere Lokationsnøjagtighed i lokationsindstillingerne på denne enhed under Indstillinger &gt; Privatliv og sikkerhed &gt; Privatlivsindstillinger &gt; Lokationsadgang &gt; Avancerede lokationsindstillinger. Hvis Lokationsnøjagtighed deaktiveres, indsamles der ikke data for Lokationsnøjagtighed. I Android-apps og -tjenester er det kun IP-adressen, der bruges, hvis den er tilgængelig, til at fastslå denne enheds lokation. Dette kan påvirke tilgængeligheden og nøjagtigheden af lokationer for Android-apps og -tjenester såsom Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Få flere oplysninger om Lokationsnøjagtighed<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importeret</translation>
 <translation id="3992008114154328194">Downloader <ph name="FILE_NAME" /> – <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Sikkerhedskopiér data</translation>
@@ -4162,7 +4171,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4028467762035011525">Tilføj indtastningsmetoder</translation>
 <translation id="4029024445166427442">appliste + Shift + Backspace</translation>
 <translation id="4029556917477724407">Tilbage fra siden <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Downloader filer til tekstgenkendelse</translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4031527940632463547">Der er blokeret for sensorer</translation>
 <translation id="4033471457476425443">Tilføj ny mappe</translation>
@@ -4276,6 +4284,10 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4110485659976215879">Gendan advarsel</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Adgangskode til fil</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Når Lokationsnøjagtighed er aktiveret, bruges oplysninger om trådløse signaler såsom Wi-Fi-adgangspunkter og mobilnetværksmaster samt enhedssensordata såsom accelerometer og gyroskop til at anslå enhedslokationen på en mere nøjagtig måde, hvilket hjælper Android-apps og -tjenester med at levere lokationsbaserede funktioner. Google muliggør dette ved jævnligt at indsamle oplysninger om enhedssensorer og trådløse signaler i nærheden af dig for at bidrage til lokationer med trådløse signaler, der er crowdsourcet.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google anvender disse oplysninger uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester generelt. Vi behandler disse oplysninger baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kan til enhver tid deaktivere Lokationsnøjagtighed i lokationsindstillingerne på din enhed under Indstillinger &gt; Privatliv og sikkerhed &gt; Privatlivsindstillinger &gt; Lokationsadgang &gt; Avancerede lokationsindstillinger. Hvis Lokationsnøjagtighed deaktiveres, indsamles der ikke data for Lokationsnøjagtighed. I Android-apps og -tjenester er det kun IP-adressen, der bruges, hvis den er tilgængelig, til at fastslå din enheds lokation. Dette kan påvirke tilgængeligheden og nøjagtigheden af lokationer for Android-apps og -tjenester såsom Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Få flere oplysninger om Lokationsnøjagtighed<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Du får vist forslag til filer, som hjælper dig med nemt at vende tilbage til din seneste aktivitet i Google Drev.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4400,7 +4412,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4220648711404560261">Der opstod en fejl under aktiveringen.</translation>
 <translation id="4222917615373664617">Prisovervågning er aktiveret. Prisen er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Adgang til mikrofon er ikke tilladt</translation>
-<translation id="4223845867739585293">Opret en adgangsnøgle</translation>
 <translation id="4225397296022057997">På alle websites</translation>
 <translation id="4228071595943929139">Brug din organisations mailadresse</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er ikke tilladt}one{Denne udvidelse er ikke tilladt}other{Nogle udvidelser er ikke tilladt}}</translation>
@@ -4711,7 +4722,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4449948729197510913">Dit brugernavn tilhører din organisations virksomhedskonto. Hvis du vil tilmelde enheder på kontoen, skal du først verificere ejerskab af domænet i Administrationskonsol. Du skal have administratorrettigheder på kontoen for at verificere.</translation>
 <translation id="4450974146388585462">Diagnosticer</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> har registreret en aktiv TMP-enhed, som kan gemme dine data på en mere sikker måde.</translation>
-<translation id="4451203458188403050">Udtræk tekst fra PDF</translation>
 <translation id="4452898361839215358">eller vælg PPD-fil. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Sæt fingeren på fingeraftrykssensoren øverst til højre på dit tastatur. Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Søg på <ph name="SEARCH_ENGINE_NAME" />, eller angiv en webadresse</translation>
@@ -5053,6 +5063,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4716483597559580346">Udfør powerwash som et ekstra sikkerhedsniveau</translation>
 <translation id="4716715661140829720">Der er ikke nok lagerplads</translation>
 <translation id="471759229191973607">Skift tema</translation>
+<translation id="4719276504493791870">Apps har ikke tilladelse til at bruge din lokation</translation>
 <translation id="4722735765955348426">Adgangskode til <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler din skærm.</translation>
 <translation id="4722989931633062466">Har ikke tilladelse til vise loginmeddelelser fra tredjeparter</translation>
@@ -5266,6 +5277,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
 <translation id="4880315242806573837">Du vil snart ikke længere modtage sikkerhedsopdateringer. Opgrader til en ny Chromebook.</translation>
 <translation id="4880827082731008257">Søg i historikken</translation>
+<translation id="4881632956374597321">Apps og websites, der har lokationstilladelse, samt systemtjenester kan bruge din lokation. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Påmind mig ikke næste gang</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="4882312758060467256">Udvidelsen har adgang til dette website.</translation>
@@ -5511,6 +5523,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5079010647467150187">Tilføj indbygget VPN…</translation>
 <translation id="5079460277417557557">Du kan nu bruge gemte fanegrupper på alle de computere, hvor du er logget ind</translation>
 <translation id="5079699784114005398">Når dine apps er aktiveret, er de tilgængelige på alle ChromeOS-enheder, når du er logget ind med din Google-konto. Webapps, der er installeret via Chrome-browseren, synkroniseres, også selvom browsersynkronisering er deaktiveret.</translation>
+<translation id="5079950360618752063">Brug den foreslåede adgangskode</translation>
 <translation id="508059534790499809">Opdater en Kerberos-billet</translation>
 <translation id="5081124414979006563">&amp;Åbn gæsteprofil</translation>
 <translation id="5083035541015925118">Ctrl + Alt + pil op</translation>
@@ -5661,6 +5674,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5186788525428341874">Du kan bruge denne adgangsnøgle til at logge hurtigere ind på dine enheder. Den gemmes i Googles Adgangskodeadministrator for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer siden som en app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Brug lokation. Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge din enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. <ph name="BEGIN_LINK1" />Få flere oplysninger om lokationstilladelse<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Bruger <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktivér port</translation>
 <translation id="5190959794678983197">Der er ingen mikrofon</translation>
@@ -5706,6 +5720,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5225324770654022472">Vis genvejen for apps</translation>
 <translation id="52254442782792731">Den aktuelle indstilling for synligheden er ikke indstillet endnu</translation>
 <translation id="5225463052809312700">Slå kamera til</translation>
+<translation id="5226731562812684363">Websites har ikke tilladelse til at bruge din lokation</translation>
 <translation id="5227679487546032910">Grønblå standardavatar</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> enheder er forbundet</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
@@ -6580,6 +6595,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5885314688092915589">Din organisation administrerer denne profil</translation>
 <translation id="5885470467814103868">Start scanning</translation>
 <translation id="5885631909150054232">Kopiér token</translation>
+<translation id="5886000783338788034">Lokation er deaktiveret i ChromeOS-indstillingerne</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Du kan hurtigt oprette forbindelse til og konfigurere enheder i nærheden med Hurtig parring</translation>
 <translation id="5886384907280980632">Deaktiver nu</translation>
@@ -7112,6 +7128,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> downloades normalt ikke og kan være skadelig.</translation>
 <translation id="6285770818046456882">Den enhed, der deler med dig, annullerede overførslen</translation>
+<translation id="628699625505156622">Brug lokation. Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge denne enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra denne enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere brugere med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov. <ph name="BEGIN_LINK1" />Få flere oplysninger om lokationstilladelse<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Der er ingen enheder, som deler i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -7282,7 +7299,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6429384232893414837">Opdateringsfejl</translation>
 <translation id="6430814529589430811">Base64-kodet ASCII, enkeltcertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> konfigurerer automatiske opdateringer for alle brugere af denne computer.</translation>
-<translation id="6432072919019816301">Scan PDF-filer for at udtrække tekst til hjælpeteknologi</translation>
 <translation id="6434104957329207050">Hastighed for punktscanning</translation>
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6434325376267409267">Din enhed skal opdateres, før du kan bruge <ph name="APP_NAME" />.</translation>
@@ -7638,6 +7654,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6703613667804166784">Denne fil kan skade dine personlige konti og dine konti på sociale netværk, bl.a. <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Kør diagnostiktest for ChromeOS.</translation>
 <translation id="6707389671160270963">SSL-klientcertifikat</translation>
+<translation id="6707671917294473995">Websites har ikke tilladelse til at bruge dit kamera</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 anden fane}one{<ph name="PAGE_TITLE" /> og # anden fane}other{<ph name="PAGE_TITLE" /> og # andre faner}}</translation>
 <translation id="6709133671862442373">Nyheder</translation>
 <translation id="6709357832553498500">Opret forbindelse ved hjælp af <ph name="EXTENSIONNAME" /></translation>
@@ -7647,6 +7664,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6713233729292711163">Tilføj arbejdsprofil</translation>
 <translation id="6713441551032149301">Hold applistetasten nede for at skifte mellem funktionstaster og systemtasterne på den øverste række</translation>
 <translation id="6713668088933662563">Tilbyd aldrig at oversætte disse sprog</translation>
+<translation id="6715735940363172819">Websites har ikke tilladelse til at bruge din mikrofon</translation>
 <translation id="6715803357256707211">Der opstod en fejl ved installationen af Linux-programmmet. Klik på notifikationen for at få flere oplysninger.</translation>
 <translation id="6716798148881908873">Netværksforbindelsen blev afbrudt. Tjek din netværksforbindelse, eller prøv et andet Wi-Fi-netværk.</translation>
 <translation id="6718849325281682232">Chrome-temafarverne er blevet opdateret, så de fungerer bedre for alle, uanset om du bruger mørk eller lys tilstand</translation>
@@ -8672,6 +8690,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7489761397368794366">Ring fra din enhed</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Tjek resterende adgangskoder</translation>
+<translation id="7490938136316476492">Lokation er deaktiveret. Din ChromeOS-enhed har ikke adgang til din lokation. Dit omtrentlige område kan dog stadig være synligt for apps og websites via bl.a. din IP-adresse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">fane</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">Udvidelsen <ph name="EXTENSION_NAME" /> indsamler muligvis al den tekst, du indtaster, herunder personlige oplysninger såsom adgangskoder og kreditkortnumre. Vil du bruge denne udvidelse?</translation>
@@ -8893,7 +8912,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7660146600670077843">Højreklik på en fane, og vælg "Føj fane til ny gruppe"</translation>
 <translation id="7661259717474717992">Tillad, at websites gemmer og læser cookiedata</translation>
 <translation id="7661451191293163002">Det var ikke muligt at hente et registreringscertifikat.</translation>
-<translation id="7662164944369232556">Filerne til tekstgenkendelse kan ikke downloades. Prøv igen senere.</translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7663719505383602579">Modtager: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Du kan bruge en tastaturgenvej</translation>
@@ -9034,6 +9052,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7758450972308449809">Tilpas grænserne for din skærm</translation>
 <translation id="7758884017823246335">Tilføj websitesøgning</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
+<translation id="7760176388948986635">Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge denne enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra denne enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere brugere med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.</translation>
 <translation id="7762024824096060040">Denne konto kan ikke bruges</translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9152,6 +9171,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7839051173341654115">Se/sikkerhedskopiér medier</translation>
 <translation id="7839192898639727867">Nøgle-id for certifikatemne</translation>
 <translation id="7839696104613959439">Gengiv netværksvalg</translation>
+<translation id="7840222916565569061">Apps har ikke tilladelse til at bruge dit kamera</translation>
 <translation id="7842062217214609161">Ingen genvej</translation>
 <translation id="7842692330619197998">Gå til g.co/ChromeEnterpriseAccount, hvis du har brug for at oprette en ny konto.</translation>
 <translation id="784273751836026224">Afinstaller Linux</translation>
@@ -10164,6 +10184,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8584843865238667486">HID-enheder med anvendelsen <ph name="USAGE" /> fra brugssiden <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Fjern Crostini</translation>
 <translation id="8585841788766257444">De websites, der er angivet nedenfor, anvender en tilpasset indstilling i stedet for standardindstillingen</translation>
+<translation id="8586421813321819377">Tillad, at ChromeOS- og Android-apps, -websites og -tjenester med lokationstilladelse kan bruge din enheds lokation. Lokationsnøjagtighed giver Android-apps og -tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.</translation>
 <translation id="8587660243683137365">Installer denne side som en app</translation>
 <translation id="8588866096426746242">Vis profilstatistik</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR viser til headset</translation>
@@ -10385,6 +10406,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8736288397686080465">Dette website er blevet opdateret i baggrunden.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Vælg det sprog, du vil oversætte siden til</translation>
+<translation id="8737966899544698733">Lokationsnøjagtighed (kun Android)</translation>
 <translation id="8738418093147087440">Søg efter lande, sprog eller navne på indtastningsmetode</translation>
 <translation id="8740086188450289493">Brug adgangskoden til din Google-konto</translation>
 <translation id="8740247629089392745">Nu er denne Chromebook klar til <ph name="SUPERVISED_USER_NAME" />. Konfigurationen er næsten gennemført, og det er snart tid til at gå på opdagelse.</translation>
@@ -10458,12 +10480,16 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8793390639824829328">Websites anvender denne funktion til at rulle og zoome ind og ud på delte faner</translation>
 <translation id="879413103056696865">Mens hotspottet er aktivt, vil din <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nyt vindue</translation>
+<translation id="8796907593900732741">Det er kun systemtjenester, der kan bruge din lokation. Dit omtrentlige område kan dog stadig være synligt for apps og websites via bl.a. din IP-adresse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">T&amp;ilpas Chrome</translation>
 <translation id="8797459392481275117">Oversæt aldrig dette website</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8803953437405899238">Åbn en ny fane med et enkelt klik</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Når Lokationsnøjagtighed er aktiveret, bruges oplysninger om trådløse signaler såsom Wi-Fi-adgangspunkter og mobilnetværksmaster samt enhedssensordata såsom accelerometer og gyroskop til at anslå enhedslokationen på en mere nøjagtig måde, hvilket hjælper Android-apps og -tjenester med at levere lokationsbaserede funktioner. Google muliggør dette ved jævnligt at indsamle oplysninger om enhedssensorer og trådløse signaler i nærheden af dig for at bidrage til lokationer med trådløse signaler, der er crowdsourcet.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google anvender disse oplysninger uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester generelt. Vi behandler disse oplysninger baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kan til enhver tid deaktivere Lokationsnøjagtighed i lokationsindstillingerne på din enhed under Indstillinger &gt; Privatliv og sikkerhed &gt; Privatlivsindstillinger &gt; Lokationsadgang &gt; Avancerede lokationsindstillinger. Hvis Lokationsnøjagtighed deaktiveres, indsamles der ikke data for Lokationsnøjagtighed. I Android-apps og -tjenester er det kun IP-adressen, der bruges, hvis den er tilgængelig, til at fastslå din enheds lokation. Dette kan påvirke tilgængeligheden og nøjagtigheden af lokationer for Android-apps og -tjenester såsom Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Åbnes i</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Flyt fanen til et andet vindue}one{Flyt fanen til et andet vindue}other{Flyt fanerne til et andet vindue}}</translation>
 <translation id="8805140816472474147">Bekræft synkroniseringsindstillingerne for at starte synkronisering.</translation>

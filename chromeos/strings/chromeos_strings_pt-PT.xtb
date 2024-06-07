@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Edite detalhes do APN (Nome do Ponto de Acesso)</translation>
 <translation id="2195732836444333448">Está no limite da sua capacidade neste momento. Volte em breve.</translation>
 <translation id="2201758491318984023">bicicleta</translation>
-<translation id="2203222757805818543">O horário atual está definido para <ph name="SUNRISE" /> - <ph name="SUNSET" />. Para atualizar automaticamente o horário do modo escuro, <ph name="BEGIN_LINK" />ative o acesso à localização<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">termas</translation>
 <translation id="2203642483788377106">penhasco</translation>
 <translation id="2208388655216963643">impressionista</translation>
@@ -361,6 +360,7 @@
 <translation id="3017079585324758401">Fundo</translation>
 <translation id="3027578600144895987">Fechar câmara</translation>
 <translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
+<translation id="3051968340259309715">Isto permite que os serviços do sistema usem a Precisão da localização para determinar a sua localização. A Precisão da localização usa informações sobre sinais sem fios, como pontos de acesso Wi-Fi, torres de redes móveis e GPS, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para estimar a localização do dispositivo. Pode desativar a localização em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3060579846059757016">Destaques</translation>

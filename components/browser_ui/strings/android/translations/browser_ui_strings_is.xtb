@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Tengt við USB-tæki</translation>
 <translation id="4194328954146351878">Spyrja áður en vefsvæði fá að sjá og breyta upplýsingum í NFC-tækjum (ráðlagt)</translation>
 <translation id="4200726100658658164">Opna staðsetningarstillingar</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> úr <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Tilkynningar gætu látið tækið titra</translation>
 <translation id="4259722352634471385">Lokað er fyrir skoðun: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Leyft</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Stækka</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
 <translation id="4336566011000459927">Chrome mun aftur takmarka fótspor í dag</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Síðasti flipi</translation>
 <translation id="4338831206024587507">Öll vefsvæði undir <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Lokaðu á að vefsvæði geti séð hvenær þú notar þetta tæki</translation>
 <translation id="4412992751769744546">Leyfa fótspor þriðja aðilla</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Stjórnaðu aðgangi þessa vefsvæðis að tækinu þínu</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6042308850641462728">Meira</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Síðasti flipi</translation>
 <translation id="6064125863973209585">Niðurhali lokið</translation>
 <translation id="6071501408666570960">Þú skráist hugsanlega út af þessu vefsvæði</translation>
 <translation id="6120483543004435978">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að vita hvenær þú ert að nota tækið með virkum hætti. Þegar slökkt er á þessu geta vefsvæði ekki vitað hvenær þú ert að nota tækið með virkum hætti.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
-<translation id="6867014948848323204">Úr <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6950072572526089586">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Velja tengilið</translation>
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Úr <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8042586301629853791">Raða eftir:</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>

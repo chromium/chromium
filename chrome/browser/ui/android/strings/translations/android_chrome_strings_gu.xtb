@@ -285,6 +285,7 @@
 <translation id="2515921719039583189">આ ડિવાઇસમાંનો Chrome ડેટા ડિલીટ કરીએ?</translation>
 <translation id="2517113738956581680">પૂર્ણ કદની શીટ</translation>
 <translation id="2523184218357549926">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે</translation>
+<translation id="2524132927880411790">Google ઍપની વૉઇસ શોધ સુવિધા પર જાઓ</translation>
 <translation id="2527209463677295330">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, તમે કદાચ બહેતર પરિણામો જોઈ શકશો</translation>
 <translation id="2527497042232966453">છૂપી ટૅબ પર સ્વિચ કર્યું</translation>
 <translation id="2527779675047087889">ક્લિપબોર્ડ પરના કન્ટેન્ટ છુપાવો</translation>
@@ -520,6 +521,7 @@
 <translation id="363596933471559332">સંગ્રહિત ઓળખપત્રોનો ઉપયોગ કરીને વેબસાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરો. જ્યારે સુવિધા બંધ હોય છે, ત્યારે વેબસાઇટમાં સાઇન ઇન કરતાં પહેલાં દર વખતે તમને ચકાસણી માટે કહેવામાં આવશે.</translation>
 <translation id="3636940436873918441">પસંદગીની ભાષાઓ</translation>
 <translation id="3637744895182738742">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Google ઍપના હોમ ટૅબ પર જાઓ</translation>
 <translation id="368329460027487650">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટેના વિકલ્પો ખોલે છે.</translation>
 <translation id="3687645719033307815">તમે આ પેજનો પ્રીવ્યૂ જોઈ રહ્યાં છો</translation>
 <translation id="3690369331356918524">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
 <translation id="8135406045838672858">ડાઉનલોડ કરેલી PDFs <ph name="APP_NAME" /> વડે ઑટોમૅટિક રીતે ખુલે છે</translation>
 <translation id="8137562778192957619">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને Google Password Managerમાં સાચવવામાં આવશે.</translation>
+<translation id="8152331954420209374">Lens પર જાઓ</translation>
 <translation id="8163820386638255770">તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="8171286197772512427">સારાંશ વિશે પ્રતિસાદની શીટ ખુલ્લી રાખીને શેર કરો</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો</translation>
 <translation id="8354977102499939946">તમારા અવાજ વડે ઝડપથી શોધો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ડાઉનલોડ રિસ્ટોર કર્યા</translation>
+<translation id="8367705492654390392">કંઈપણ પૂછો</translation>
 <translation id="8368001212524806591">કિંમત ટ્રૅક કરો</translation>
 <translation id="8378850197701296741">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, અને અન્ય સેટિંગ છે.</translation>
 <translation id="8387617938027387193">આ તમે જ છો તેનો પુરાવો આપો</translation>

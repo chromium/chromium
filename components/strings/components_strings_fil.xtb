@@ -2681,6 +2681,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6167577165590485365">Huling sinubukan ang pag-fetch:</translation>
 <translation id="617256461084925519">Sinusubukan ng Google Chrome na i-verify na ikaw ito para mapunan nito ang impormasyon mo sa pagbabayad.</translation>
+<translation id="6173208311907792313">Kumpletuhin ang iyong pagbili gamit ang Windows Hello</translation>
 <translation id="6176387967264100435">Mataas ang presyong ito</translation>
 <translation id="6177128806592000436">Hindi ligtas ang iyong koneksyon sa site na ito</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
@@ -2986,7 +2987,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6753269504797312559">Halaga ng patakaran</translation>
 <translation id="6753434778807740853">I-delete ang entry na <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Mga Savings Account</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Nag-sleep ang iyong device.</translation>
 <translation id="6760548828952594090">Hindi ma-save ang card na ito sa iyong Google Account. Na-save na lang ito sa Chrome sa device na ito.</translation>
 <translation id="6766558780547452153">Pagluluto at Mga Recipe</translation>
@@ -3839,6 +3839,7 @@ Mga karagdagang detalye:
 <translation id="8332188693563227489">Tinanggihan ang access sa <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">I-highlight</translation>
 <translation id="8339163506404995330">Hindi isasalin ang mga page na nasa <ph name="LANGUAGE" /></translation>
+<translation id="8339275256517065202">Kumpletuhin ang iyong pagbili gamit ang Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Binuksan nang buo ang pag-enroll sa virtual card</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -4032,6 +4033,7 @@ Mga karagdagang detalye:
 <translation id="8726549941689275341">Laki ng page:</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8731268612289859741">Panseguridad na code</translation>
+<translation id="8731917264694569036">Kumpletuhin ang iyong pagbili gamit ang device mo</translation>
 <translation id="8733345475331865475">Insurance sa Sasakyan</translation>
 <translation id="8733764070897080460">Puwede kang mag-block ng mga paksang ayaw mong i-share sa mga site. Awtomatiko ring dine-delete ng Chrome ang iyong mga paksang mas matagal sa 4 na linggo. Matuto pa</translation>
 <translation id="8734529307927223492">Pinapamahalaan ng <ph name="MANAGER" /> ang iyong <ph name="DEVICE_TYPE" /></translation>
@@ -4225,6 +4227,7 @@ Mga karagdagang detalye:
 <translation id="9116548361133462832">Higit pa tungkol sa mga ad sa Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para ipagpatuloy ang iyong paglalakbay para makakita ng nauugnay na aktibidad sa history mo sa Chrome</translation>
 <translation id="9119042192571987207">Na-upload</translation>
+<translation id="9119308212838450857">Gustong i-verify ng <ph name="PROVIDER_ORIGIN" /> na ikaw ito</translation>
 <translation id="912327514020027767">Mga Palda</translation>
 <translation id="912414390325846156">Pinili mo dati ang huwag payagan para sa site na ito</translation>
 <translation id="9128870381267983090">Kumonekta sa network</translation>
@@ -4248,7 +4251,6 @@ Mga karagdagang detalye:
 <translation id="9155646082713385498">Mga Magazine</translation>
 <translation id="9157595877708044936">Nagse-set up...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_NAME" />}one{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> file}other{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> na file}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Puwede ring matukoy ng mga site na binibisita mo ang mga gusto mo batay sa iyong aktibidad sa site. Halimbawa, kung bibisita ka sa isang site na nagbebenta ng long-distance running shoes, posibleng tukuyin ng site na interesado kang tumakbo sa mga marathon.</translation>
 <translation id="9166851138617700776">Higit pa tungkol sa mga ad na iminumungkahi ng site at pagsukat ng ad</translation>
 <translation id="9167054383925257837">Impormasyon ng browser at OS ng device (tulad ng mga bersyon ng browser at OS)</translation>

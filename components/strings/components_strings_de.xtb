@@ -2984,7 +2984,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
 <translation id="6753434778807740853">Eintrag „<ph name="ENTRY_VOICEOVER" />“ löschen</translation>
 <translation id="6754547388777247439">Sparkonten</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Dein Gerät ist im Ruhemodus.</translation>
 <translation id="6760548828952594090">Diese Karte konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert.</translation>
 <translation id="6766558780547452153">Kochen und Rezepte</translation>
@@ -4248,7 +4247,6 @@ Weitere Details:
 <translation id="9155646082713385498">Zeitschriften</translation>
 <translation id="9157595877708044936">Einrichtung läuft...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> enthält möglicherweise sensible Inhalte}other{<ph name="FILE_COUNT" /> Dateien enthalten möglicherweise sensible Inhalte}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Bei besuchten Websites kann auch anhand deiner Aktivitäten auf der Website ermittelt werden, was dir gefällt. Wenn du zum Beispiel eine Website besuchst, auf der Schuhe für den Langstreckenlauf verkauft werden, könnte daraus geschlossen werden, dass du an Marathonläufen interessiert bist.</translation>
 <translation id="9166851138617700776">Weitere Informationen zu von Websites vorgeschlagener Werbung und zur Erfolgsmessung von Anzeigen</translation>
 <translation id="9167054383925257837">Informationen zum Browser und Betriebssystem des Geräts, z. B. die Browser- und Betriebssystemversion</translation>

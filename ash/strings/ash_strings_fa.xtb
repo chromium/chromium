@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">شبکه‌های شناخته‌شده</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> متصل است.</translation>
 <translation id="1240638468526743569">برنامه‌ای</translation>
+<translation id="1242198791279543032">اعلان‌ها بی‌صدا هستند</translation>
 <translation id="1242883863226959074">دستگاه</translation>
 <translation id="1245644940275736236">رفتن به «دستیار»</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">تغییر اندازه کاشی پنجره به‌سمت راست</translation>
 <translation id="2185166372312820725">رفتن به برگه قبلی</translation>
 <translation id="2185444992308415167">مرور برگه‌های ۱ تا ۸</translation>
+<translation id="2195732836444333448">به حداکثر ظرفیت رسیده‌ایم. به‌زودی دوباره برمی‌گردیم.</translation>
 <translation id="2198625180564913276">درحال افزودن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="219905428774326614">راه‌انداز، همه برنامه‌ها</translation>
 <translation id="2201071101391734388">عکس اخیر <ph name="INDEX" /> از <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@
 <translation id="4086921558679520050">کلید فیزیکی میکروفون را روی دستگاهتان روشن کنید</translation>
 <translation id="4101772068965291327">باز کردن صفحهٔ اصلی</translation>
 <translation id="4112140312785995938">رفتن به عقب</translation>
+<translation id="4113030288477039509">مدیریت شده توسط سرپرست‌تان</translation>
 <translation id="4114315158543974537">روشن کردن «مرکز تلفن»</translation>
 <translation id="4115378294792113321">سرخابی</translation>
 <translation id="411881149140864134">فعال کردن میزکار در سمت چپ</translation>
@@ -847,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دردسترس نیست.</translation>
 <translation id="4201051445878709314">نمایش ماه قبلی</translation>
 <translation id="4209973997261364186">‏Wi-Fi روشن است</translation>
+<translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4212472694152630271">رفتن به پین</translation>
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
 <translation id="4217571870635786043">املا</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5599242528220103262">میان‌بر صفحه‌کلید خاموش است</translation>
 <translation id="5600415762228455511">«تمرکز» روشن است، <ph name="REMAINING_TIME" /> باقی مانده است، درحال تمرکز روی: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">‏برای غیرفعال کردن بازخورد گفتاری، Ctrl + Alt + Z را فشار دهید.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{کمتراز ۱ ساعت پیش}=1{‫۱ ساعت پیش}one{‫# ساعت پیش}other{‫# ساعت پیش}}</translation>
 <translation id="5601503069213153581">پین</translation>
 <translation id="5618148318840095371">شما را به شبکه‌ای بهتر منتقل کردیم</translation>
 <translation id="5619862035903135339">خط‌مشی سرپرست ضبط صفحه‌نمایش را غیرفعال می‌کند</translation>
@@ -1692,6 +1695,7 @@
 <translation id="7340731148882810149">منوی کلیک‌های خودکار</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
+<translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="735745346212279324">‏VPN قطع است</translation>
 <translation id="7360036564632145207">تغییر تنظیم محافظت از دسترسی به داده‌ها برای لوازم جانبی ممکن است عملکرد را بهینه‌سازی کند</translation>
 <translation id="736045644501761622">تنظیم کاغذدیواری و سبک</translation>
@@ -1834,7 +1838,6 @@
 <translation id="7851768487828137624">قناری</translation>
 <translation id="7862292329216937261">برای استفاده از دستگاه به‌عنوان مهمان، باید از سیستم خارج شوید و سپس گزینه «مرور به‌عنوان مهمان» را در پایین صفحه‌نمایش انتخاب کنید.</translation>
 <translation id="7866482334467279021">روشن</translation>
-<translation id="7866727328666668290">آخرین برگه باز</translation>
 <translation id="7872786842639831132">خاموش</translation>
 <translation id="7875575368831396199">ظاهراً بلوتوث در <ph name="DEVICE_TYPE" /> شما خاموش است. لطفاً برای استفاده از «مرکز کنترل تلفن»، بلوتوث را روشن کنید.</translation>
 <translation id="7884446017008693258">تنظیمات نقطه اتصال</translation>
@@ -2140,7 +2143,6 @@
 <translation id="9002204506712855687">کاوش جدیدترین ویژگی‌ها</translation>
 <translation id="9005984960510803406">‏باز کردن پنجره Crosh</translation>
 <translation id="9017320285115481645">‏کد دسترسی ولی Family Link را وارد کنید</translation>
-<translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
 <translation id="9024331582947483881">تمام‌صفحه</translation>
 <translation id="9029736946581028033">دستگاه به‌زودی خاموش خواهد شد</translation>
 <translation id="9030319654231318877">خاموش تا غروب آفتاب</translation>

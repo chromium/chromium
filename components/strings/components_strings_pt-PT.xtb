@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Desloque a página e aumente o zoom do conteúdo do seu separador partilhado</translation>
 <translation id="1089439967362294234">Alterar palavra-passe</translation>
 <translation id="1090629319939036170">Menu de RV</translation>
+<translation id="1091779689406092804">capturas de ecrã</translation>
 <translation id="1094777233105318927">Informações sobre o seu navegador, SO, dispositivo, software instalado e ficheiros</translation>
 <translation id="1096545575934602868">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão rejeitadas.</translation>
 <translation id="1097803577928227769">Parques e jardins regionais</translation>
@@ -472,6 +473,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1840009953725035797">Sistemas de cinema em casa</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (de arquivo)</translation>
+<translation id="1848640291751752317">transferências</translation>
 <translation id="1848982255014129637">Foto (alto brilho)</translation>
 <translation id="1853392626017747777">Inscrição de cartão virtual fechada</translation>
 <translation id="1854180393107901205">Parar de transmitir</translation>
@@ -754,6 +756,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2366689192918515749">Carne e marisco</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="23703388716193220">Equipamento de golfe</translation>
+<translation id="2370368710215137370">Carregamento de ficheiros</translation>
 <translation id="2374629208601905275">Com base na legislação da sua região, o Chrome pede-lhe para escolher o seu motor de pesquisa predefinido. Estes motores de pesquisa são populares na sua região e são apresentados em ordem aleatória.</translation>
 <translation id="2377241607395428273">Gráficos e software de animação</translation>
 <translation id="2378084239755710604">Cartão para guardar fechado.</translation>
@@ -1423,6 +1426,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3682094733650754138">A opção de preenchimento da morada foi selecionada</translation>
 <translation id="3687920599421452763">Carrinhas e monovolumes</translation>
 <translation id="3693327506115126094">Escolha como irá validar a sua identidade</translation>
+<translation id="3698353241727597930">O seu administrador definiu a configuração para guardar <ph name="FILES" /> no seu armazenamento do <ph name="CLOUD_STORAGE" /> gerido pela empresa. Estes ficheiros podem ser monitorizados, auditados e retidos quando os eliminar.</translation>
 <translation id="3698629142018988477">Botão Criar site; ative para criar rapidamente um Site novo no Google Sites</translation>
 <translation id="3701325639446035885">Vendas de bilhetes para eventos</translation>
 <translation id="3701427423622901115">Reposição confirmada.</translation>
@@ -1498,6 +1502,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3826050100957962900">Início de sessão de terceiros</translation>
 <translation id="3827112369919217609">Absoluto</translation>
 <translation id="3828924085048779000">Não é permitida uma frase de acesso vazia.</translation>
+<translation id="3830139096297532361">Este PDF está inacessível. Não foi possível transferir os ficheiros de extração de texto. Tente mais tarde.</translation>
 <translation id="3830470485672984938">Usar uma chave de acesso diferente</translation>
 <translation id="3831065134033923230">Verifique as palavras-passe guardadas</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
@@ -1672,6 +1677,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203769790323223880">Acesso à câmara não permitido</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Rever as configurações da firewall e de antivírus<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">Código de validação expirado, solicite um novo código</translation>
 <translation id="421066178035138955">Usar dados e dispositivos de realidade virtual</translation>
@@ -2733,6 +2739,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6270066318535733958">Passeios de barco</translation>
 <translation id="6272088941196661550">Retome o percurso para ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive e OneDrive</translation>
 <translation id="6280223929691119688">Não é possível entregar neste endereço. Selecione um diferente.</translation>
 <translation id="6284292079994426700">26 x 38 pol.</translation>
 <translation id="6284449872909111707">Mensagens de texto e instantâneas</translation>
@@ -2986,7 +2993,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6753269504797312559">Valor da política</translation>
 <translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Contas-poupança</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">O dispositivo entrou em suspensão.</translation>
 <translation id="6760548828952594090">Não foi possível guardar este cartão na sua Conta Google. Em alternativa, foi guardado no Chrome neste dispositivo.</translation>
 <translation id="6766558780547452153">Culinária e receitas</translation>
@@ -3172,6 +3178,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7119063404975271297">Dramas televisivos</translation>
 <translation id="7119371694555167493">A cópia excedeu o tempo limite</translation>
 <translation id="7119414471315195487">Fechar outros separadores ou programas</translation>
+<translation id="7120588595737538743">transferências e capturas de ecrã</translation>
 <translation id="7124354851782353862">Introduza o Código de Segurança/CVC</translation>
 <translation id="7129409597930077180">Não é possível enviar para este endereço. Selecione um diferente.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3370,6 +3377,7 @@ Detalhes adicionais:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, prima Tab e, de seguida, Enter para Ignorar sugestão do Chrome.</translation>
 <translation id="7485085230273446323">Empresas e indústrias</translation>
 <translation id="7485870689360869515">Não foram encontrados dados.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Champôs e amaciadores</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="749865518782565832">Canalização</translation>
@@ -4248,7 +4256,6 @@ Detalhes adicionais:
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">A configurar...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> ficheiros podem incluir conteúdo sensível}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Os sites que visitar também podem determinar os seus gostos com base na sua atividade no site. Por exemplo, se visitar um site que vende calçado de corrida de longa distância, o site pode decidir que tem interesse em correr maratonas.</translation>
 <translation id="9166851138617700776">Mais sobre os anúncios sugeridos por sites e a medição de anúncios</translation>
 <translation id="9167054383925257837">Informações do SO do dispositivo e do navegador (como as versões do SO e do navegador)</translation>

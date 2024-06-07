@@ -2981,7 +2981,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6753269504797312559">Hodnota zásady</translation>
 <translation id="6753434778807740853">Smazat záznam <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Spořicí účty</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Zařízení přešlo do režimu spánku.</translation>
 <translation id="6760548828952594090">Tuto kartu se do vašeho účtu Google nepodařilo uložit. Místo toho byla uložena do Chromu na tomto zařízení.</translation>
 <translation id="6766558780547452153">Vaření a recepty</translation>
@@ -4242,7 +4241,6 @@ Další podrobnosti:
 <translation id="9155646082713385498">Časopisy</translation>
 <translation id="9157595877708044936">Nastavování...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Soubor <ph name="FILE_NAME" /> může zahrnovat citlivý obsah}few{<ph name="FILE_COUNT" /> soubory mohou zahrnovat citlivý obsah}many{<ph name="FILE_COUNT" /> souboru může zahrnovat citlivý obsah}other{<ph name="FILE_COUNT" /> souborů může zahrnovat citlivý obsah}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Navštívené weby mohou na základě vaší aktivity také určit, co se vám líbí. Pokud například navštívíte web, který prodává běžecké boty, může odhadnout, že máte zájem o běhání maratonů.</translation>
 <translation id="9166851138617700776">Další informace o reklamách navrhovaných weby a o měření reklam</translation>
 <translation id="9167054383925257837">Informace o operačním systému prohlížeče a zařízení (jako je prohlížeč a verze OS)</translation>

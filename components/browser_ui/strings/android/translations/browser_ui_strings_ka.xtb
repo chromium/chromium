@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">დაკავშირებულია USB მოწყობილობასთან</translation>
 <translation id="4194328954146351878">შეკითხვა საიტებისთვის NFC მოწყობილობებზე ინფორმაციაზე წვდომისა და მისი შეცვლის დაშვებამდე (რეკომენდებული)</translation>
 <translation id="4200726100658658164">მდებარეობის პარამეტრების გახსნა</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-დან</translation>
 <translation id="4226663524361240545">შეტყობინებებმა შეიძლება მოწყობილობის ვიბრაცია გამოიწვიოს</translation>
 <translation id="4259722352634471385">ნავიგაცია დაბლოკილია: <ph name="URL" /></translation>
 <translation id="4278390842282768270">დაშვებულია</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">გაშლა</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="4336566011000459927">Chrome დღეს კლავ შეზღუდავს ქუქი-ჩანაწერებს</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> თქვენი ბოლო ჩანართი</translation>
 <translation id="4338831206024587507">ყველა საიტი <ph name="DOMAIN" />-ის ფარგლებში</translation>
 <translation id="4402755511846832236">საიტებისთვის ამ მოწყობილობის აქტიურად გამოყენების შესახებ ინფორმაციის მიღების დაბლოკვა</translation>
 <translation id="4412992751769744546">მეს. მხარის ქ. ფაილების დაშვება</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">გაანკონტროლეთ ამ საიტის თქვენს მოწყობილობაზე წვდომა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6042308850641462728">სხვა</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> თქვენი ბოლო ჩანართი</translation>
 <translation id="6064125863973209585">დასრულებული ჩამოტვირთვები</translation>
 <translation id="6071501408666570960">ამ საიტზე, შესაძლოა, სისტემიდან გამოხვიდეთ</translation>
 <translation id="6120483543004435978">ჩართვის შემთხვევაში საიტებს შეეძლება ნებართვის მოთხოვნა იმის შესატყობად, თუ როდის იყენებთ აქტიურად თქვენს მოწყობილობას. გამორთვის შემთხვევაში საიტებს არ ეცოდინება, თუ როდის იყენებთ აქტიურად თქვენს მოწყობილობას.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6818926723028410516">აირჩიეთ ერთეულები</translation>
 <translation id="6864395892908308021">NFC მხარდაუჭერელია ამ მოწყობილობის მიერ</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" />-დან</translation>
 <translation id="6912998170423641340">საიტებისთვის გაცვლის ბუფერში არსებულ ტექსტსა და სურათებზე წვდომის დაბლოკვა</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6950072572526089586">თქვენ მიერ მონახულებულ საიტს შეუძლია ინფორმაციის შენახვა იმის შესახებ, თუ რას აკეთებდით. ამგვარად, ის თქვენი მოლოდინისამებრ იმუშავებს. მაგალითად, ის დაგტოვებთ სისტემაში შესულ მდგომარეობაში ან შეინახავს თქვენს საყიდლების კალათაში არსებულ ერთეულებს. ხშირ შემთხვევაში, საიტები ამ ინფორმაციას დროებით ინახავს.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">აირჩიეთ კონტაქტი</translation>
 <translation id="7990211076305263060">ჩართვის შემთხვევაში საიტებს შეეძლება თქვენი მიკროფონის გამოყენების თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება თქვენი მიკროფონის გამოყენება.</translation>
 <translation id="8007176423574883786">გამორთულია ამ მოწყობილობისთვის</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" />-დან</translation>
 <translation id="802154636333426148">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="8042586301629853791">დალაგება კრიტერიუმით:</translation>
 <translation id="8067883171444229417">ვიდეოს დაკვრა</translation>

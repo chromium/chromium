@@ -301,6 +301,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="216955976692983107">Ajustar el tamaño de la ventana del mosaico hacia la derecha</translation>
 <translation id="2185166372312820725">Ir a la pestaña anterior</translation>
 <translation id="2185444992308415167">Ir de la pestaña 1 a la 8, una por una</translation>
+<translation id="2195732836444333448">Se alcanzó el límite de capacidad. Vuelve pronto.</translation>
 <translation id="2198625180564913276">Se está agregando un perfil. Es posible que este proceso demore unos minutos.</translation>
 <translation id="219905428774326614">Launcher, todas las apps</translation>
 <translation id="2201071101391734388">Foto reciente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4086921558679520050">Activa el interruptor del micrófono físico del dispositivo</translation>
 <translation id="4101772068965291327">Abrir página principal</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
+<translation id="4113030288477039509">Administrado por tu administrador</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activar el escritorio de la izquierda</translation>
@@ -848,6 +850,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
 <translation id="4201051445878709314">Mostrar el mes anterior</translation>
 <translation id="4209973997261364186">La conexión Wi-Fi está activada.</translation>
+<translation id="4212246570487010370">Seguir explorando</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Configuración de la VPN</translation>
 <translation id="4217571870635786043">Dictado</translation>
@@ -1240,7 +1243,6 @@ No hay dispositivos conectados.</translation>
 <translation id="5599242528220103262">La combinación de teclas está desactivada</translation>
 <translation id="5600415762228455511">El Modo sin distracciones está activado. Tiempo restante: <ph name="REMAINING_TIME" />. Concentrándote en: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Hace menos de 1 hora}=1{Hace 1 hora}other{Hace # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Te cambiamos a una red mejor</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita el modo de captura de pantalla.</translation>
@@ -1693,6 +1695,7 @@ Nueva instalación</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
+<translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360036564632145207">Puedes optimizar el rendimiento si cambias la configuración de la protección de acceso a los datos para los dispositivos periféricos.</translation>
 <translation id="736045644501761622">Establecer estilo y fondo de pantalla</translation>
@@ -1835,7 +1838,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para usar el dispositivo como invitado, tienes que salir y seleccionar Navegar como invitado en la parte inferior de la pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
-<translation id="7866727328666668290">Última pestaña abierta</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7875575368831396199">Al parecer, tu <ph name="DEVICE_TYPE" /> tiene la conexión Bluetooth desactivada. Actívala para poder usar Phone Hub.</translation>
 <translation id="7884446017008693258">Configuración del hotspot</translation>
@@ -2142,7 +2144,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9002204506712855687">Explora las funciones más recientes</translation>
 <translation id="9005984960510803406">Abrir Crosh Window</translation>
 <translation id="9017320285115481645">Ingresa el código de acceso parental de Family Link.</translation>
-<translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9029736946581028033">El dispositivo se apagará pronto</translation>
 <translation id="9030319654231318877">Desactivado hasta el atardecer</translation>

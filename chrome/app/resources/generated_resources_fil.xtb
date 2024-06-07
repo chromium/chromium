@@ -296,6 +296,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1203942045716040624">Nakabahaging Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Link ng Preview</translation>
 <translation id="1206832039833782423">Nasa likod ng iyong card ang panseguridad na code mo</translation>
+<translation id="1208392090861059168">Nakatakda ang kasalukuyang iskedyul sa <ph name="SUNRISE" /> - <ph name="SUNSET" />. Para awtomatikong i-update ang iskedyul ng paglubog at pagsikat ng araw, <ph name="BEGIN_LINK" />i-on ang access sa lokasyon ng system<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Tumingin o magdagdag ng mga printer at tingnan ang mga aktibong pag-print</translation>
 <translation id="1211769675100312947">Ikaw ang nagku-curate ng mga shortcut</translation>
 <translation id="1213254615020057352">Magpadala ng data ng paggamit at diagnostic. Tumulong sa pagpapaganda ng karanasan sa Android ng iyong anak sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang setting na ito. Puwedeng piliin ng may-ari na magpadala ng data ng diagnostic at paggamit para sa device na ito sa Google. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
@@ -813,6 +814,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1594703455918849716">Pumunta sa page na Checkup</translation>
 <translation id="1594781465361405478">I-on/i-off ang volume</translation>
 <translation id="1594963087419619323">Pangkalahatang-ideya ng split screen</translation>
+<translation id="1595018168143352126">Pamahalaan ang mga pahintulot sa camera ng website sa Chrome</translation>
 <translation id="1595492813686795610">Ina-upgrade ang Linux</translation>
 <translation id="1596286373007273895">Available</translation>
 <translation id="1596709061955594992">Naka-off ang Bluetooth. Para makita ang mga available na device, i-on ang Bluetooth.</translation>
@@ -886,7 +888,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1634224622052500893">May Nakitang WiFi Network</translation>
 <translation id="1634783886312010422">Pinalitan mo na ba ang password na ito sa <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
-<translation id="1636542522761359943">Welcome, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Ang data ng app ay puwedeng anumang data na na-save ng isang app (batay sa mga setting ng developer), kabilang ang data tulad ng mga contact, mensahe, at larawan. Hindi bibilangin ang data ng backup sa quota ng iyong storage ng Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong i-off ang serbisyong ito sa Mga Setting.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Kunin ang bookmark na ito sa iyong iPhone</translation>
@@ -1259,6 +1260,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1900305421498694955">Puwedeng mangailangan ang mga app mula sa Google Play ng kumpletong access sa system ng file para mag-read at mag-write ng mga file sa mga external na storage device. Nakikita ng sinumang gumagamit ng external na drive ang mga file at folder na ginawa sa device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Hilingin sa iyong admin na i-update ang app na ito</translation>
 <translation id="1901303067676059328">Piliin ang &amp;lahat</translation>
+<translation id="1901760057081700494">Kasalukuyang nakatakda ang time zone sa <ph name="TIME_ZONE_ENTRY" />. Para awtomatikong i-update ang time zone, <ph name="BEGIN_LINK" />i-on ang access sa lokasyon ng system<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Naka-save sa iyong Google Account ang mga URL na iyong binibisita</translation>
 <translation id="1906181697255754968">Karaniwang ina-access ng mga site ang mga file at folder sa iyong device para sa mga feature gaya ng awtomatikong pag-save sa trabaho mo</translation>
 <translation id="1906488504371069394">Tumuklas ng higit pang extension at tema sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
@@ -1630,7 +1632,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="217576141146192373">Hindi naidagdag ang printer. Pakitingnan ang configuration ng iyong printer at subukan ulit.</translation>
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="217631816678106981">Huwag i-paste</translation>
-<translation id="2177306523871626993">Dina-download ang mga file ng pagkilala sa text… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Tab na Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Ie-enable mo ang mga feature para sa pag-debug ng ChromeOS Flex na magse-set up ng sshd daemon at mag-e-enable ng pagbo-boot mula sa mga USB drive.</translation>
@@ -1838,6 +1839,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2314774579020744484">Ginagamit na wika kapag nagsasalin ng mga page</translation>
 <translation id="2316129865977710310">Hindi, salamat</translation>
 <translation id="2316433409811863464">Streaming ng App</translation>
+<translation id="2316709634732130529">Gamitin ang Iminumungkahing Password</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% ang natapos</translation>
 <translation id="2318143611928805047">Sukat ng papel</translation>
 <translation id="2318817390901984578">Upang gamitin ang mga Android app, i-charge at i-update ang iyong <ph name="DEVICE_TYPE" />.</translation>
@@ -1884,7 +1886,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2350182423316644347">Sinisimulan ang application...</translation>
 <translation id="235028206512346451">Kung lalayo ka sa device mo, awtomatikong mala-lock ang iyong screen. Kapag nasa harap ka ng device mo, iilaw ang iyong screen nang mas matagal. Kung hindi ka gumagamit ng lock screen, magsi-sleep ang iyong device sa halip na mag-lock.</translation>
 <translation id="2351923523007389195">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang <ph name="LINK_BEGIN" />access sa lokasyon ng system<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Kapag nag-sign in ka sa device na ito, makukuha mo ang iyong mga password at iba pa mula sa Google Account mo</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Awtomatikong nase-save sa <ph name="LOCK_SCREEN_APP_NAME" /> ang mga tala sa lock screen. Mananatili ang iyong pinakabagong tala sa lock screen.</translation>
 <translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
@@ -2214,6 +2215,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2581992808349413349">Gumamit ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System). Gumagamit ito ng pinapamahalaang service provider sa <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Hindi makuha ang ticket ng Kerberos. Subukan ulit, o makipag-ugnayan sa admin ng device ng iyong organisasyon. (Code ng error <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Pamahalaan ang mga pahintulot sa mikropono ng website sa Chrome</translation>
 <translation id="2586561813241011046">Hindi ma-install ang <ph name="APP_NAME" />. Pakisubukan ulit, o makipag-ugnayan sa iyong administrator. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2586672484245266891">Maglagay ng mas maikling URL</translation>
@@ -2403,6 +2405,9 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2727744317940422214">Pasensya na, nagkaproblema. Mag-file ng feedback nang may #bruschetta sa paglalarawan. Ang code ng error ay <ph name="ERROR" />. Hindi nilinis, posibleng kailanganin mong gawin ito nang manual.</translation>
 <translation id="2729327310379176711">Naghahanap ang Chrome ng mga bagong paraan para mabawasan ang pagsubaybay at mapanatili kang mas ligtas habang nagba-browse ka. <ph name="ESTIMATE_INTERESTS_LINK" /> ng Chrome at hinahayaan ka nitong pamahalaan ang mga ito. Pagkatapos, puwedeng tanungin ng mga site na binibisita mo ang Chrome para sa iyong mga interes para magpakita sa iyo ng mga ad.</translation>
 <translation id="2729577602370119849">Madaling ma-access at mapamahalaan ang mga printer</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Kapag naka-on ang Katumpakan ng Lokasyon, gagamitin ang impormasyon tungkol sa mga wireless na signal, gaya ng mga access point ng Wi-Fi at tower ng cellular network, pati ang data ng sensor ng device, gaya ng accelerometer at gyroscope, para matantya ang mas tumpak na lokasyon ng device, na ginagamit ng mga app at serbisyo ng Android para magbigay ng mga feature na batay sa lokasyon. Para magawa ito, pana-panahong kinokolekta ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal malapit sa device na ito para mag-ambag sa mga na-crowdsource na lokasyon ng wireless na signal.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito na kinolekta mula sa device na ito para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user. Hindi ginagamit ang impormasyong ito para tumukoy ng sinumang indibidwal.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Puwede mong i-off ang Katumpakan ng Lokasyon sa anumang oras sa mga setting ng lokasyon ng device na ito sa ilalim ng Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon &gt; Mga advanced na setting ng lokasyon. Kung naka-off ang Katumpakan ng Lokasyon, hindi mangongolekta ng data ng Katumpakan ng Lokasyon. Para sa mga app at serbisyo ng Android, ang IP address lang ang ginagamit, kung available, para tukuyin ang lokasyon ng device na ito, na puwedeng makaapekto sa availability at katumpakan ng mga lokasyon para sa mga app at serbisyo ng Android gaya ng Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Bina-back-up ang mga app at file ng Linux</translation>
 <translation id="2730596696987224099">Pumili ng Sarili Mo</translation>
 <translation id="2730647855013151888">Isama ang lahat ng personal na impormasyon</translation>
@@ -3256,6 +3261,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="338323348408199233">I-block ang trapiko nang walang VPN</translation>
 <translation id="3384362484379805487">Ibinabahagi ang mga file ng wika sa mga user para makatipid ng disk space.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user.</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Awtomatiko na ngayong nase-save ang iyong mga grupo ng tab.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3677,7 +3683,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3694590407685276748">I-highlight ang cursor ng text</translation>
 <translation id="369489984217678710">Mga password at iba pang data sa pag-sign in</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Tapos na ang mga pagsusuri sa seguridad. Ia-upload ang iyong data.}=1{Tapos na ang mga pagsusuri sa seguridad. Ia-upload ang iyong file.}one{Tapos na ang mga pagsusuri sa seguridad. Ia-upload ang iyong mga file.}other{Tapos na ang mga pagsusuri sa seguridad. Ia-upload ang iyong mga file.}}</translation>
-<translation id="3696817060563289264">Na-download ang mga file ng pagkilala sa text</translation>
 <translation id="369736917241079046">launcher + pakaliwang arrow</translation>
 <translation id="3697716475445175867">huling binuksan noong</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Puwede mong ihinto ang pagpapadala ng site na ito ng mga notification sa hinaharap.}one{Puwede mong ihinto ang pagpapadala ng mga site na ito ng mga notification sa hinaharap.}other{Puwede mong ihinto ang pagpapadala ng mga site na ito ng mga notification sa hinaharap.}}</translation>
@@ -3989,7 +3994,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3898768766145818464">I-play o i-pause ang video</translation>
 <translation id="389901847090970821">Pumili ng keyboard</translation>
 <translation id="3900966090527141178">I-export ang mga password</translation>
-<translation id="3902789559055749153">Piliin kung paano mo gustong gumawa ng passkey para sa <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Built-in na Keyboard</translation>
 <translation id="3903696968689283281">Impormasyon ng Mga Direktang May-ari ng WiFi:</translation>
 <translation id="3904326018476041253">Mga Serbisyo ng Lokasyon</translation>
@@ -4063,6 +4067,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">Aking mga account</translation>
 <translation id="3954354850384043518">Kasalukuyang isinasagawa</translation>
+<translation id="3954468641195530330">Hindi pinapayagan ang mga app na gamitin ang iyong mikropono</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Wala kang kamakailang nakuhang log ng event ng WebRTC.</translation>
 <translation id="3955321697524543127">Huwag payagan ang mga site na kumonekta sa mga USB device</translation>
@@ -4121,6 +4126,10 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3988124842897276887">Nakakonekta ang tab na ito sa isang USB device</translation>
 <translation id="3988996860813292272">Pumili ng timezone</translation>
 <translation id="3991055816270226534">Pamahalaan ang third-party na cookies at mga proteksyon sa pag-track</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Kapag naka-on ang Katumpakan ng Lokasyon, gagamitin ang impormasyon tungkol sa mga wireless na signal, gaya ng mga access point ng Wi-Fi at tower ng cellular network, pati ang data ng sensor ng device, gaya ng accelerometer at gyroscope, para matantya ang mas tumpak na lokasyon ng device, na ginagamit ng mga app at serbisyo ng Android para magbigay ng mga feature na batay sa lokasyon. Para magawa ito, pana-panahong kinokolekta ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal malapit sa device na ito para mag-ambag sa mga na-crowdsource na lokasyon ng wireless na signal.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito na kinolekta mula sa device na ito para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user. Hindi ginagamit ang impormasyong ito para tumukoy ng sinumang indibidwal.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Puwede mong i-off ang Katumpakan ng Lokasyon sa anumang oras sa mga setting ng lokasyon ng device na ito sa ilalim ng Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon &gt; Mga advanced na setting ng lokasyon. Kung naka-off ang Katumpakan ng Lokasyon, hindi mangongolekta ng data ng Katumpakan ng Lokasyon. Para sa mga app at serbisyo ng Android, ang IP address lang ang ginagamit, kung available, para tukuyin ang lokasyon ng device na ito, na puwedeng makaapekto sa availability at katumpakan ng mga lokasyon para sa mga app at serbisyo ng Android gaya ng Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Matuto pa tungkol sa Katumpakan ng Lokasyon<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Na-import</translation>
 <translation id="3992008114154328194">Dina-download ang <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">I-back up ang data</translation>
@@ -4162,7 +4171,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4028467762035011525">Magdagdag ng mga pamamaraan ng pag-input</translation>
 <translation id="4029024445166427442">launcher + shift + backspace</translation>
 <translation id="4029556917477724407">Bumalik mula sa page na <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Dina-download ang mga file ng pagkilala sa text</translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4031527940632463547">Na-block ang mga sensor</translation>
 <translation id="4033471457476425443">Magdagdag ng bagong folder</translation>
@@ -4276,6 +4284,10 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4110485659976215879">I-restore ang babala</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Password ng file</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Kapag naka-on ang Katumpakan ng Lokasyon, gagamitin ang impormasyon tungkol sa mga wireless na signal, gaya ng mga access point ng Wi-Fi at tower ng cellular network, pati ang data ng sensor ng device, gaya ng accelerometer at gyroscope, para matantya ang mas tumpak na lokasyon ng device, na ginagamit ng mga app at serbisyo ng Android para magbigay ng mga feature na batay sa lokasyon. Para magawa ito, pana-panahong kinokolekta ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal na malapit sa iyo para mag-ambag sa mga na-crowdsource na lokasyon ng wireless na signal.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito nang hindi ibinibigay ang iyong pagkakakilanlan para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Puwede mong i-off ang Katumpakan ng Lokasyon sa anumang oras sa mga setting ng lokasyon ng iyong device sa ilalim ng Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon &gt; Mga advanced na setting ng lokasyon. Kung naka-off ang Katumpakan ng Lokasyon, hindi mangongolekta ng data ng Katumpakan ng Lokasyon. Para sa mga app at serbisyo ng Android, ang IP address lang ang ginagamit, kung available, para tukuyin ang lokasyon ng iyong device, na puwedeng makaapekto sa availability at katumpakan ng mga lokasyon para sa mga app at serbisyo ng Android gaya ng Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Matuto pa tungkol sa Katumpakan ng Lokasyon<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Nakikita mo ang mga iminumungkahing file na makakatulong para madali mong mabalikan ang iyong pinakakamakailang aktibidad sa Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4400,7 +4412,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4220648711404560261">Nagkaroon ng error habang ina-activate.</translation>
 <translation id="4222917615373664617">Naka-enable ang pagsubaybay sa presyo. <ph name="CURRENT_PRICE" /> ang presyo.</translation>
 <translation id="4223404254440398437">Hindi pinapayagan ang mikropono</translation>
-<translation id="4223845867739585293">Gumawa ng passkey</translation>
 <translation id="4225397296022057997">Sa lahat ng site</translation>
 <translation id="4228071595943929139">Gamitin ang email address ng iyong organisasyon</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hindi pinapayagan ang extension na ito}one{Hindi pinapayagan ang ilang extension}other{Hindi pinapayagan ang ilang extension}}</translation>
@@ -4711,7 +4722,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4449948729197510913">Pagmamay-ari ng enterprise account ng iyong organisasyon ang username mo. Para makapag-enroll ng mga device sa account, i-verify muna ang pagmamay-ari sa domain sa Admin console. Mangangailangan ka ng mga pribilehiyong pang-administrator sa account para mag-verify.</translation>
 <translation id="4450974146388585462">I-diagnose</translation>
 <translation id="445099924538929605">May na-detect ang <ph name="DEVICE_OS" /> na aktibong TPM na mas secure na makakapag-store ng iyong data.</translation>
-<translation id="4451203458188403050">I-extract ang text mula sa PDF</translation>
 <translation id="4452898361839215358">o pumili ng PPD. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Pindutin ang sensor para sa fingerprint sa kanang sulok sa itaas ng iyong keyboard. Secure na sino-store ang data ng iyong fingerprint at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> mo.</translation>
 <translation id="4453946976636652378">Maghanap sa <ph name="SEARCH_ENGINE_NAME" /> o mag-type ng URL</translation>
@@ -5053,6 +5063,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4716483597559580346">Powerwash para sa pinaigting na seguridad</translation>
 <translation id="4716715661140829720">Hindi sapat ang storage space</translation>
 <translation id="471759229191973607">Baguhin ang tema</translation>
+<translation id="4719276504493791870">Hindi pinapayagan ang mga app na gamitin ang iyong lokasyon</translation>
 <translation id="4722735765955348426">Password ni <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Ibinabahagi ng <ph name="APP_NAME" /> ang iyong screen.</translation>
 <translation id="4722989931633062466">Hindi pinapayagang magpakita ng mga third-party na prompt sa pag-sign in</translation>
@@ -5266,6 +5277,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4879491255372875719">Awtomatiko (default)</translation>
 <translation id="4880315242806573837">Malapit nang matapos ang mga update sa seguridad. Mag-upgrade sa bagong Chromebook.</translation>
 <translation id="4880827082731008257">History ng paghahanap</translation>
+<translation id="4881632956374597321">Magagamit ng mga app at website na may pahintulot sa lokasyon, at ng mga serbisyo ng system, ang iyong lokasyon. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Huwag nang ipaalala sa akin sa susunod</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4882312758060467256">May access sa site na ito</translation>
@@ -5511,6 +5523,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5079010647467150187">Magdagdag ng built-in na VPN...</translation>
 <translation id="5079460277417557557">Magagamit mo na ngayon ang mga naka-save na grupo ng tab sa iyong mga naka-sign in na desktop device</translation>
 <translation id="5079699784114005398">Kapag naka-on na, magiging available sa anumang ChromeOS device ang iyong mga app pagkatapos mong mag-sign in gamit ang iyong Google Account. Isi-sync ang mga web app na na-install mula sa Chrome browser kahit na naka-off ang pag-sync sa browser.</translation>
+<translation id="5079950360618752063">Gamitin ang iminumungkahing password</translation>
 <translation id="508059534790499809">I-refresh ang ticket ng Kerberos</translation>
 <translation id="5081124414979006563">&amp;Buksan ang Profile ng Bisita</translation>
 <translation id="5083035541015925118">ctrl + alt + pataas na arrow</translation>
@@ -5661,6 +5674,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5186788525428341874">Puwede mong gamitin ang passkey na ito para mas mabilis na makapag-sign sa lahat ng iyong device. Mase-save ito sa Google Password Manager para sa <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;I-install ang Page bilang App...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Gumamit ng lokasyon. Payagan ang mga app, website, at serbisyo ng ChromeOS at Android na may pahintulot sa lokasyon na gamitin ang lokasyon ng iyong device. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa paggamit ng lokasyon<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Gumagamit ng <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">I-activate ang port</translation>
 <translation id="5190959794678983197">Walang mikropono</translation>
@@ -5706,6 +5720,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5225324770654022472">Ipakita ang shortcut ng mga app</translation>
 <translation id="52254442782792731">Hindi pa nakatakda ang kasalukuyang setting ng visibility</translation>
 <translation id="5225463052809312700">I-on ang camera</translation>
+<translation id="5226731562812684363">Hindi pinapayagan ang mga website na gamitin ang iyong lokasyon</translation>
 <translation id="5227679487546032910">Default na teal na avatar</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> (na) device ang nakakonekta</translation>
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
@@ -6580,6 +6595,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5885314688092915589">Papamahalaan ng iyong organisasyon ang profile na ito</translation>
 <translation id="5885470467814103868">Simulan ang pag-scan</translation>
 <translation id="5885631909150054232">Kopyahin ang token</translation>
+<translation id="5886000783338788034">Naka-off ang lokasyon sa Mga Setting ng ChromeOS</translation>
 <translation id="5886009770935151472">Daliri 1</translation>
 <translation id="5886112770923972514">Ikonekta at i-set up kaagad ang mga device para sa Mabilis na Pagpares na nasa malapit</translation>
 <translation id="5886384907280980632">I-off ngayon</translation>
@@ -7112,6 +7128,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="628352644014831790">4 na segundo</translation>
 <translation id="6285120108426285413">Hindi karaniwang dina-download ang <ph name="FILE_NAME" /> at maaaring mapanganib ito.</translation>
 <translation id="6285770818046456882">Kinansela ng device na nagbabahagi sa iyo ang paglilipat</translation>
+<translation id="628699625505156622">Gumamit ng lokasyon. Payagan ang mga app, website, at serbisyo ng Android at ChromeOS na may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa device na ito para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan ng sinumang indibidwal para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa paggamit ng lokasyon<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Pamahalaan ang iyong mga printer sa mga setting ng printer</translation>
 <translation id="6287828400772161253">Android phone (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Walang available na kalapit na nagbabahaging device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -7282,7 +7299,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6429384232893414837">Error sa pag-update</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, single certificate</translation>
 <translation id="6431347207794742960">Ang <ph name="PRODUCT_NAME" /> ay magse-set up ng mga awtomatikong update para sa lahat ng mga user ng computer na ito.</translation>
-<translation id="6432072919019816301">Mag-scan ng PDF para mag-extract ng text para sa pantulong na teknolohiya</translation>
 <translation id="6434104957329207050">Bilis ng pag-point scan</translation>
 <translation id="6434309073475700221">I-discard</translation>
 <translation id="6434325376267409267">Kailangang i-update ang iyong device bago mo magamit ang <ph name="APP_NAME" />.</translation>
@@ -7638,6 +7654,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6703613667804166784">Puwedeng mapinsala ng file na ito ang iyong mga personal na account at account sa social network, pati na ang <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Magpatakbo ng mga diagnostic test ng ChromeOS</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
+<translation id="6707671917294473995">Hindi pinapayagan ang mga website na gamitin ang iyong camera</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> at 1 Pang Tab}one{<ph name="PAGE_TITLE" /> at # Pang Tab}other{<ph name="PAGE_TITLE" /> at # Pang Tab}}</translation>
 <translation id="6709133671862442373">Balita</translation>
 <translation id="6709357832553498500">Kumonekta sa pamamagitan ng <ph name="EXTENSIONNAME" /></translation>
@@ -7647,6 +7664,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6713233729292711163">Magdagdag ng Profile sa Trabaho</translation>
 <translation id="6713441551032149301">Pindutin nang matagal ang launcher key para magpalipat-lipat sa mga function key at mga top-row key ng system</translation>
 <translation id="6713668088933662563">Huwag kailanmang mag-alok na isalin ang mga wikang ito.</translation>
+<translation id="6715735940363172819">Hindi pinapayagan ang mga website na gamitin ang iyong mikropono</translation>
 <translation id="6715803357256707211">Nagkaroon ng error habang ini-install ang iyong Linux application. Mag-click sa notification para sa mga detalye.</translation>
 <translation id="6716798148881908873">Nawala ang koneksyon sa network. Suriin ang iyong koneksyon sa network o sumubok ng ibang Wi-Fi network.</translation>
 <translation id="6718849325281682232">Ginawang bago ang mga kulay ng tema ng Chrome para mas gumana ang mga ito para sa lahat, naka-dark o naka-light mode ka man</translation>
@@ -8672,6 +8690,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7489761397368794366">Tumawag mula sa iyong device</translation>
 <translation id="749028671485790643">Tao <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Suriin ang Mga Natitirang Password</translation>
+<translation id="7490938136316476492">Naka-off ang lokasyon. Hindi ina-access ng iyong ChromeOS device ang lokasyon mo. Gayunpaman, posibleng makita pa rin ang iyong general area sa mga app at website sa pamamagitan ng mga bagay na tulad ng IP address mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookies}other{{NUM_COOKIES} na cookies}}</translation>
 <translation id="7493386493263658176">Maaaring kolektahin ng extension ng <ph name="EXTENSION_NAME" /> ang lahat ng text na ita-type mo, kabilang ang personal na data tulad ng mga password at numero ng credit card. Gusto mo bang gamitin ang extension na ito?</translation>
@@ -8893,7 +8912,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7660146600670077843">Mag-right click sa isang tab at piliin ang "Idagdag ang Tab sa Bagong Grupo"</translation>
 <translation id="7661259717474717992">Payagan ang mga site na mag-save at magbasa ng data ng cookie</translation>
 <translation id="7661451191293163002">Walang makuhang certificate ng pagpaparehistro.</translation>
-<translation id="7662164944369232556">Hindi ma-download ang mga file ng pagkilala sa text. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7662283695561029522">I-tap upang i-configure</translation>
 <translation id="7663719505383602579">Tatanggap: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">May available na keyboard shortcut</translation>
@@ -9034,6 +9052,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7758450972308449809">Isaayos ang mga hangganan ng iyong display</translation>
 <translation id="7758884017823246335">Magdagdag ng paghahanap sa site</translation>
 <translation id="7759809451544302770">Opsyonal</translation>
+<translation id="7760176388948986635">Payagan ang mga app, website, at serbisyo ng Android at ChromeOS na may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa device na ito para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan ng sinumang indibidwal para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user.</translation>
 <translation id="7762024824096060040">Hindi magagamit ang account na ito</translation>
 <translation id="7764225426217299476">Magdagdag ng address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> mula sa <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9153,6 +9172,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7839051173341654115">Tingnan/I-backup ang media</translation>
 <translation id="7839192898639727867">Subject Key ID ng Certificate </translation>
 <translation id="7839696104613959439">I-render ang Pagpili ng Network</translation>
+<translation id="7840222916565569061">Hindi pinapayagan ang mga app na gamitin ang iyong camera</translation>
 <translation id="7842062217214609161">Walang shortcut</translation>
 <translation id="7842692330619197998">Bisitahin ang g.co/ChromeEnterpriseAccount kung kailangan mong gumawa ng bagong account.</translation>
 <translation id="784273751836026224">I-uninstall ang Linux</translation>
@@ -10166,6 +10186,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8584843865238667486">Mga HID device na may paggamit na <ph name="USAGE" /> mula sa page ng paggamit na <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Alisin ang Crostini</translation>
 <translation id="8585841788766257444">Sinusunod ng mga site na nakalista sa ibaba ang custom na setting sa halip na ang default</translation>
+<translation id="8586421813321819377">Payagan ang mga app, website, at serbisyo ng ChromeOS at Android na may pahintulot sa lokasyon na gamitin ang lokasyon ng iyong device. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user.</translation>
 <translation id="8587660243683137365">I-install ang page na ito bilang app</translation>
 <translation id="8588866096426746242">Ipakita ang mga istatistika ng profile</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - ipinapakita ang VR sa headset</translation>
@@ -10387,6 +10408,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8736288397686080465">Na-update ang site na ito sa background.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Piliin ang wika kung saan ita-translate ang page</translation>
+<translation id="8737966899544698733">Katumpakan ng Lokasyon (Android lang)</translation>
 <translation id="8738418093147087440">Maghanap ayon sa mga bansa, wika, o mga pangalan ng input</translation>
 <translation id="8740086188450289493">Gamitin ang password ng Google Account</translation>
 <translation id="8740247629089392745">Puwede mong ibigay ang Chromebook na ito kay <ph name="SUPERVISED_USER_NAME" />. Malapit nang matapos ang pag-set up, puwede nang mag-explore pagkatapos nito.</translation>
@@ -10459,12 +10481,16 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8793390639824829328">Ginagamit ng mga site ang feature na ito para mag-scroll at mag-zoom sa mga naka-share na tab</translation>
 <translation id="879413103056696865">Habang naka-on ang hotspot, gagawin ng iyong <ph name="PHONE_NAME" /> ang mga sumusunod:</translation>
 <translation id="8795916974678578410">New Window</translation>
+<translation id="8796907593900732741">Ang mga serbisyo ng system lang ang puwedeng gumamit ng iyong lokasyon. Gayunpaman, posibleng makita pa rin ang iyong general area sa mga app at website sa pamamagitan ng mga bagay na tulad ng IP address mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">I-c&amp;ustomize ang iyong Chrome</translation>
 <translation id="8797459392481275117">Huwag Kailanman Isalin Ang Site na Ito</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Hindi gumagana ang site?</translation>
 <translation id="8803526663383843427">Kapag naka-on</translation>
 <translation id="8803953437405899238">Magbukas ng bagong tab sa isang pag-click</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Kapag naka-on ang Katumpakan ng Lokasyon, gagamitin ang impormasyon tungkol sa mga wireless na signal, gaya ng mga access point ng Wi-Fi at tower ng cellular network, pati ang data ng sensor ng device, gaya ng accelerometer at gyroscope, para matantya ang mas tumpak na lokasyon ng device, na ginagamit ng mga app at serbisyo ng Android para magbigay ng mga feature na batay sa lokasyon. Para magawa ito, pana-panahong kinokolekta ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal na malapit sa iyo para mag-ambag sa mga na-crowdsource na lokasyon ng wireless na signal.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito nang hindi ibinibigay ang iyong pagkakakilanlan para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Puwede mong i-off ang Katumpakan ng Lokasyon sa anumang oras sa mga setting ng lokasyon ng iyong device sa ilalim ng Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon &gt; Mga advanced na setting ng lokasyon. Kung naka-off ang Katumpakan ng Lokasyon, hindi mangongolekta ng data ng Katumpakan ng Lokasyon. Para sa mga app at serbisyo ng Android, ang IP address lang ang ginagamit, kung available, para tukuyin ang lokasyon ng iyong device, na puwedeng makaapekto sa availability at katumpakan ng mga lokasyon para sa mga app at serbisyo ng Android gaya ng Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Bubukas sa</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Ilipat ang Tab sa Isa Pang Window}one{Ilipat ang Mga Tab sa Isa Pang Window}other{Ilipat ang Mga Tab sa Isa Pang Window}}</translation>
 <translation id="8805140816472474147">Kumpirmahin ang mga setting ng pag-sync upang simulan ang pag-sync.</translation>

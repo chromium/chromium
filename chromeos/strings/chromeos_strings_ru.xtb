@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Изменение данных точки доступа</translation>
 <translation id="2195732836444333448">На сервере недостаточно ресурсов. Попробуйте ещё раз немного позже.</translation>
 <translation id="2201758491318984023">велосипед</translation>
-<translation id="2203222757805818543">Текущее расписание: <ph name="SUNRISE" />–<ph name="SUNSET" />. Чтобы автоматически изменять график включения тёмной темы, <ph name="BEGIN_LINK" />предоставьте доступ к геоданным<ph name="END_LINK" />.</translation>
 <translation id="2203272733515928691">горячий источник</translation>
 <translation id="2203642483788377106">утес</translation>
 <translation id="2208388655216963643">импрессионизм</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">дюна</translation>
 <translation id="2619761439309613843">Обновлять ежедневно</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2637303424821734920">Отключено. Чтобы узнать погоду в своем регионе, <ph name="BEGIN_LINK" />предоставьте доступ к геоданным<ph name="END_LINK" />.</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="2645380101799517405">Элементы управления</translation>

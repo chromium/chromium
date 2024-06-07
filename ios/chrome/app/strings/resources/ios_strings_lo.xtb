@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="1753905327828125965">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
 <translation id="1757699834933698436">{count,plural, =1{ມີລະຫັດຜ່ານງ່າຍ {count} ລາຍການ}other{ມີລະຫັດຜ່ານງ່າຍ {count} ລາຍການ}}</translation>
+<translation id="1764070164487214210">ເສັ້ນທາງ</translation>
 <translation id="1766411844240160513">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດໃນແບບຟອມ</translation>
 <translation id="1767766085187034454">Google ແປພາສາ</translation>
 <translation id="1769106850515800431">ເນື້ອຫາແບບປັບແຕ່ງສ່ວນຕົວ</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
 <translation id="3775743491439407556">ການຊິ້ງຂໍ້ມູນໃຊ້ບໍ່ໄດ້</translation>
 <translation id="3779810277399252432">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
+<translation id="3785672280731998727">ຊື່ສະແດງ</translation>
 <translation id="3789294999358192700">ປະຕິບັດຕາມຂັ້ນຕອນລຸ່ມນີ້:</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803696231112616155">ສະເໜີແປເວັບໄຊນີ້</translation>
 <translation id="3808311849069021992">ສະແດງລາຍລະອຽດໂປຣແກຣມຊອກຫາ</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
+<translation id="3812308602011798782">ຄຳຕິຊົມ</translation>
 <translation id="3818045793209708987">ຢຸດການຕິດຕາມພັດສະດຸນີ້ແລ້ວ</translation>
 <translation id="3818293389945649617">ຊອກຫາຕໍ່ໄປ</translation>
 <translation id="3819183753496523827">ທ່ານອອບລາຍຢູ່. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">ເພື່ອເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານໃນແອັບຕ່າງໆດ້ວຍການແຕະພຽງເທື່ອດຽວ</translation>
 <translation id="4049507953662678203">ກະລຸນາກວດສອບວ່າທ່ານມີການເຊື່ອມຕໍ່ເຄືອຂ່າຍ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="4054572406751135230">ຕິດຕາມຂ່າວ, ກິລາ ແລະ ອື່ນໆ.</translation>
+<translation id="4068959193278821990">ເປີດການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ...</translation>
 <translation id="4092655288299341041">ສະແດງຂໍ້ມູນຊ່ວຍເຫຼືອ</translation>
 <translation id="4105841739161771091">{count,plural, =1{ລຶບທີ່ຢູ່}other{ລຶບທີ່ຢູ່}}</translation>
 <translation id="4108998448622696017">ກວດຫາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍເມື່ອພວກມັນເກີດຂຶ້ນ.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">ເພື່ອສົ່ງຂໍ້ມູນສົ່ງອອກເຄືອຂ່າຍ, ກະລຸນາປັບຕັ້ງຄ່າບັນຊີອີເມວຂອງທ່ານຢູ່ໃນແອັບການຕັ້ງຄ່າ.</translation>
 <translation id="4124987746317609294">ຂອບເຂດເວລາ</translation>
 <translation id="4133265950310064865">ການປົກປ້ອງຂັ້ນສູງ</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
 <translation id="4148023517926189160">ເວັບໄຊນີ້ຕ້ອງການດາວໂຫຼດໄຟລ໌ ແລະ ເພີ່ມມັນໃສ່ປະຕິທິນຂອງທ່ານ.</translation>
 <translation id="4152011295694446843">ທ່ານຈະເຫັນບຸກມາກຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
@@ -1472,6 +1477,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="834783239627985533">ເວັບໄຊທີ່ເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດ</translation>
 <translation id="8358401059263985056">ເປີດການແຈ້ງເຕືອນ</translation>
 <translation id="8364841868226993049">ກຳລັງບັນທຶກຮູບໃນ Google ຮູບພາບສຳລັບ <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">ລຶບກະແຈຜ່ານ</translation>
 <translation id="8370406443343902172">ເຂົ້າໄປການຕັ້ງຄ່າ...</translation>
 <translation id="8374977641764177587">ເປີດການແຈ້ງເຕືອນບໍ?</translation>
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>

@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN-i üksikasjade muutmine</translation>
 <translation id="2195732836444333448">Maht on praegu täis. Tulge varsti tagasi.</translation>
 <translation id="2201758491318984023">jalgratas</translation>
-<translation id="2203222757805818543">Praegune määratud ajakava: <ph name="SUNRISE" /> – <ph name="SUNSET" />. Tumeda režiimi automaatseks värskendamiseks <ph name="BEGIN_LINK" />lülitage sisse juurdepääs asukohale<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">kuumaveeallikas</translation>
 <translation id="2203642483788377106">kalju</translation>
 <translation id="2208388655216963643">impressionism</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">liivaluide</translation>
 <translation id="2619761439309613843">Igapäevane värskendamine</translation>
 <translation id="2620436844016719705">Süsteem</translation>
+<translation id="2637303424821734920">VÄLJAS – kohaliku ilma kuvamiseks <ph name="BEGIN_LINK" />lülitage sisse süsteemi asukohajuurdepääs<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Sisselogimispilt</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> on valitud</translation>
 <translation id="2645380101799517405">Nupud</translation>

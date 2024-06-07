@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">এটা ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="4226663524361240545">জাননীয়ে ডিভাইচটো কম্পন কৰিব পাৰে</translation>
 <translation id="4259722352634471385">নেভিগে’শ্বন অৱৰোধ কৰা আছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
 <translation id="4336566011000459927">Chromeএ আজি পুনৰ কুকি সীমিত কৰিব</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> আপোনাৰ অন্তিম টেব</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />ৰ অধীনত থকা আটাইবোৰ ছাইট</translation>
 <translation id="4402755511846832236">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে ছাইটসমূহে জনাটো অৱৰোধ কৰক</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়ক</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">আপোনাৰ ডিভাইচটোলৈ এই ছাইটটোৰ থকা এক্সেছ নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6042308850641462728">অধিক</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> আপোনাৰ অন্তিম টেব</translation>
 <translation id="6064125863973209585">সম্পূৰ্ণ হোৱা ডাউনল’ডসমূহ</translation>
 <translation id="6071501408666570960">আপোনাক এই ছাইটটোৰ পৰা ছাইন আউট কৰোৱা হ’ব পাৰে</translation>
 <translation id="6120483543004435978">অন কৰা থাকিলে, ছাইটে আপুনি কোন সময়ত নিজৰ ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰে সেই বিষয়ে জানিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপুনি কোন সময়ত নিজৰ ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰে সেই বিষয়ে জানিব নোৱাৰে।</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>
 <translation id="6864395892908308021">এই ডিভাইচটোৱে NFC পঢ়িব নোৱাৰে</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="6912998170423641340">ছাইটসমূহৰ ক্লিপব’ৰ্ডৰ পাঠ আৰু ছবি পঢ়াৰ সুবিধা অৱৰোধ কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6950072572526089586">আপুনি চোৱা কোনো ছাইটে আপুনি কি কৰি আছে সেই সম্পৰ্কীয় তথ্য ছেভ কৰিব পাৰে, যাতে এইটোৱে আপুনি আশা কৰা ধৰণে কাম কৰিব পাৰে — উদাহৰণস্বৰূপে, আপোনাক কোনো ছাইটত ছাইন ইন কৰাই ৰখা অথবা আপোনাৰ শ্বপিং কাৰ্টত বস্তু ছেভ কৰা। ছাইটসমূহে প্ৰায়েই আপোনাৰ ডিভাইচত সাময়িকভাৱে এই তথ্য ছেভ কৰে।</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">সম্পৰ্ক এটা বাছনি কৰক</translation>
 <translation id="7990211076305263060">অন কৰা থাকিলে, ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="8007176423574883786">এই ডিভাইচটোৰ বাবে অফ কৰা হৈছে</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8042586301629853791">এই অনুসৰি সজাওক:</translation>
 <translation id="8067883171444229417">ভিডিঅ’ প্লে কৰক</translation>

@@ -178,6 +178,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1610778689852195798">"Desfazer"</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1620510694547887537">Câmera</translation>
+<translation id="1623768535032616219">Fechar o Google Sala de Aula</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Carregando</translation>
@@ -300,9 +301,11 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="216955976692983107">Redimensionar janela em mosaico para a direita</translation>
 <translation id="2185166372312820725">Ir para a guia anterior</translation>
 <translation id="2185444992308415167">Percorrer as guias 1 a 8</translation>
+<translation id="2195732836444333448">No momento, o limite foi atingido. Tente de novo mais tarde.</translation>
 <translation id="2198625180564913276">Adicionando perfil. Pode levar alguns minutos..</translation>
 <translation id="219905428774326614">Tela de início, todos os apps</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Fechar o Google Tarefas</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
@@ -364,6 +367,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento. Antes de aceitar, verifique se esta senha aparece no dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
+<translation id="2437771564543046790">Pouca bateria. A Economia de bateria está ativada</translation>
 <translation id="243878895369688216">Aberto ontem</translation>
 <translation id="2440978926514840421">Gravação de GIF concluída</translation>
 <translation id="2441427462554639370">A gravação foi encerrada porque há pouco espaço de armazenamento</translation>
@@ -811,6 +815,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4086921558679520050">Ativar a chave do microfone do dispositivo</translation>
 <translation id="4101772068965291327">Abrir página inicial</translation>
 <translation id="4112140312785995938">Voltar</translation>
+<translation id="4113030288477039509">Gerenciado pelo seu administrador</translation>
 <translation id="4114315158543974537">Ativar o Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Ativar o espaço de trabalho à esquerda</translation>
@@ -844,6 +849,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4201033867194214117">O recurso <ph name="FEATURE_NAME" /> não está disponível.</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
+<translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4212472694152630271">Usar PIN</translation>
 <translation id="4215497585250573029">Configurações de VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
@@ -1200,6 +1206,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="550391772491508736">Retomar transmissão</translation>
 <translation id="5506975627792768506">Ativar ou desativar a lupa</translation>
 <translation id="5512042095225963688">Excluir palavra anterior</translation>
+<translation id="5519005148254860683">Abrir o Google Tarefas</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Seu administrador removeu todos os perfis de eSIM. Entre em contato com ele para saber mais.</translation>
 <translation id="5520909879404821039">"Oi" em francês</translation>
@@ -1235,7 +1242,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5599242528220103262">O atalho do teclado está desativado</translation>
 <translation id="5600415762228455511">Foco ativado. Tempo restante: <ph name="REMAINING_TIME" />. Focando em: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pressione Ctrl + Alt + Z para desativar a resposta falada.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Há menos de 1 hora}=1{Há 1 hora}one{Há # hora}other{Há # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Trocamos sua rede por uma melhor</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
@@ -1408,6 +1414,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6200515304866777730">O app não oferece suporte</translation>
 <translation id="6210042900243040400">Conectar o dispositivo <ph name="NAME" /> salvo anteriormente em <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Fazer uma captura ou gravação de tela parcial</translation>
+<translation id="621606890568890214">Abrir o Google Sala de Aula</translation>
 <translation id="6220928844947387476">Agora é possível gravar você e a tela ao mesmo tempo</translation>
 <translation id="622484624075952240">Seta para baixo</translation>
 <translation id="6228457605945141550">Diminuir o brilho</translation>
@@ -1687,6 +1694,7 @@ Nova instalação</translation>
 <translation id="7340731148882810149">Menu de cliques automáticos</translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
 <translation id="7348093485538360975">Teclado virtual</translation>
+<translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360036564632145207">Mudar sua configuração de proteção de acesso a dados para periféricos pode otimizar o desempenho</translation>
 <translation id="736045644501761622">Definir Estilo e fundo de tela</translation>
@@ -1829,7 +1837,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como visitante, é necessário sair da conta e selecionar a opção "Navegar como visitante" na parte de baixo da tela.</translation>
 <translation id="7866482334467279021">ativada</translation>
-<translation id="7866727328666668290">Última guia aberta</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">Parece que o Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative-o para usar o recurso Seu smartphone.</translation>
 <translation id="7884446017008693258">Configurações de ponto de acesso</translation>
@@ -2136,7 +2143,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9002204506712855687">Conheça os recursos mais recentes</translation>
 <translation id="9005984960510803406">Abrir janela Crosh</translation>
 <translation id="9017320285115481645">Insira o código de acesso do familiar responsável do Family Link.</translation>
-<translation id="9022774213089566801">Visitados com frequência</translation>
 <translation id="9024331582947483881">tela cheia</translation>
 <translation id="9029736946581028033">O dispositivo vai desligar em breve</translation>
 <translation id="9030319654231318877">Desativado até o pôr do sol</translation>

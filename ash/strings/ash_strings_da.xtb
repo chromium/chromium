@@ -72,6 +72,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1235458158152011030">Kendte netværk</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">En app</translation>
+<translation id="1242198791279543032">Lyden er slået fra for notifikationer</translation>
 <translation id="1242883863226959074">enhed</translation>
 <translation id="1245644940275736236">Gå til Assistent</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
@@ -301,6 +302,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="216955976692983107">Tilpas vinduesfelt til højre</translation>
 <translation id="2185166372312820725">Gå til forrige fane</translation>
 <translation id="2185444992308415167">Gå gennem fane 1 til 8</translation>
+<translation id="2195732836444333448">Der er ingen kapacitet i øjeblikket. Vend tilbage senere.</translation>
 <translation id="2198625180564913276">Profilen tilføjes. Dette kan tage et par minutter.</translation>
 <translation id="219905428774326614">Starter. Alle apps</translation>
 <translation id="2201071101391734388">Seneste billede <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4086921558679520050">Aktivér den fysiske mikrofonkontakt på din enhed</translation>
 <translation id="4101772068965291327">Åbn startsiden</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
+<translation id="4113030288477039509">Administreres af din administrator</translation>
 <translation id="4114315158543974537">Aktivér Telefonstyring</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktivér skrivebordet til venstre</translation>
@@ -847,6 +850,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgængelig.</translation>
 <translation id="4201051445878709314">Vis den foregående måned</translation>
 <translation id="4209973997261364186">Wi-Fi er slået til</translation>
+<translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="4212472694152630271">Skift til pinkode</translation>
 <translation id="4215497585250573029">VPN-indstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -1239,7 +1243,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="5599242528220103262">Tastaturgenvej er deaktiveret</translation>
 <translation id="5600415762228455511">Fokus er aktiveret, <ph name="REMAINING_TIME" /> tilbage, fokuserer på: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{For mindre end 1 time siden}=1{For 1 time siden}one{For # time siden}other{For # timer siden}}</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5618148318840095371">Vi har ændret dit netværk til et bedre et</translation>
 <translation id="5619862035903135339">Administratorpolitikken tillader ikke screenshots</translation>
@@ -1692,6 +1695,7 @@ Installeret for nylig</translation>
 <translation id="7340731148882810149">Menu for automatiske klik</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Skærmtastatur</translation>
+<translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="735745346212279324">VPN afbrudt</translation>
 <translation id="7360036564632145207">Du kan forbedre ydeevnen ved at ændre indstillingen Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="736045644501761622">Konfigurer Baggrund og stil</translation>
@@ -1834,7 +1838,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Hvis du vil bruge enheden som gæst, skal du logge ud og derefter vælge Anvend som gæst nederst på skærmen.</translation>
 <translation id="7866482334467279021">til</translation>
-<translation id="7866727328666668290">Senest åbnede fane</translation>
 <translation id="7872786842639831132">Fra</translation>
 <translation id="7875575368831396199">Det ser ud til, at Bluetooth er deaktiveret på din <ph name="DEVICE_TYPE" />. Aktivér Bluetooth for at bruge Telefonstyring.</translation>
 <translation id="7884446017008693258">Indstillinger for hotspot</translation>
@@ -2141,7 +2144,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9002204506712855687">Se de nyeste funktioner</translation>
 <translation id="9005984960510803406">Åbn Crosh Window</translation>
 <translation id="9017320285115481645">Angiv forældreadgangskoden til Family Link.</translation>
-<translation id="9022774213089566801">Ofte besøgte</translation>
 <translation id="9024331582947483881">fuld skærm</translation>
 <translation id="9029736946581028033">Enheden slukker snart</translation>
 <translation id="9030319654231318877">Deaktiveret indtil solnedgang</translation>

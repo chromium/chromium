@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN 세부정보 수정</translation>
 <translation id="2195732836444333448">현재 요청이 너무 많습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2201758491318984023">자전거</translation>
-<translation id="2203222757805818543">현재 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />(으)로 설정되어 있습니다. 어두운 모드 일정을 자동으로 업데이트하려면 <ph name="BEGIN_LINK" />위치 액세스를 사용 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="2203272733515928691">온천</translation>
 <translation id="2203642483788377106">절벽</translation>
 <translation id="2208388655216963643">인상파</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">모래 언덕</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
+<translation id="2637303424821734920">사용 안함 - 현지 날씨를 표시하려면 <ph name="BEGIN_LINK" />시스템 위치 액세스를 사용 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
 <translation id="2645380101799517405">컨트롤</translation>

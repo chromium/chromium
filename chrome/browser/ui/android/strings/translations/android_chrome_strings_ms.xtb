@@ -285,6 +285,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2515921719039583189">Padamkan data Chrome daripada peranti ini?</translation>
 <translation id="2517113738956581680">Helaian saiz penuh</translation>
 <translation id="2523184218357549926">Menghantar URL halaman yang anda lawati kepada Google</translation>
+<translation id="2524132927880411790">Akses Carian Suara Apl Google</translation>
 <translation id="2527209463677295330">Dengan menyertakan lebih banyak teks halaman, anda mungkin melihat hasil yang lebih baik</translation>
 <translation id="2527497042232966453">Beralih kepada tab Inkognito</translation>
 <translation id="2527779675047087889">Sembunyikan kandungan papan keratan</translation>
@@ -520,6 +521,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="363596933471559332">Log masuk secara automatik ke laman web menggunakan bukti kelayakan yang disimpan. Apabila ciri ini dimatikan, anda akan diminta memberikan pengesahan setiap kali sebelum log masuk ke laman web.</translation>
 <translation id="3636940436873918441">Bahasa pilihan</translation>
 <translation id="3637744895182738742">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Akses Laman Utama Apl Google</translation>
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratonton halaman ini</translation>
 <translation id="3690369331356918524">Memberikan amaran kepada anda jika kata laluan terdedah dalam pelanggaran data</translation>
@@ -1475,6 +1477,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
 <translation id="8135406045838672858">PDF yang dimuat turun akan dibuka secara automatik dengan <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Google Password Manager.</translation>
+<translation id="8152331954420209374">Akses Lens</translation>
 <translation id="8163820386638255770">Untuk menggunakan dan menyimpan kata laluan dalam Google Account anda, sahkan identiti anda</translation>
 <translation id="8171286197772512427">Berkongsi dengan helaian maklum balas ringkasan dibuka</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8348430946834215779">Jika boleh, gunakan HTTPS dan dapatkan amaran sebelum memuatkan laman yang tidak menyokong tetapan ini</translation>
 <translation id="8354977102499939946">Cari menggunakan suara anda dengan pantas. Untuk mengedit pintasan ini, pergi ke Tetapan.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> muat turun dipulihkan</translation>
+<translation id="8367705492654390392">Tanya apa-apa sahaja</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
 <translation id="8378850197701296741">Anda mempunyai penanda halaman, sejarah dan tetapan lain daripada <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Sahkan itu anda</translation>

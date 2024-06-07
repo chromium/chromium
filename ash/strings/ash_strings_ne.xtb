@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छ।</translation>
 <translation id="1240638468526743569">कुनै एप</translation>
+<translation id="1242198791279543032">नोटिफिकेसनहरू म्युट गरिएका छन्</translation>
 <translation id="1242883863226959074">डिभाइस</translation>
 <translation id="1245644940275736236">सहायकमा जानुहोस्</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
@@ -178,6 +179,7 @@
 <translation id="1610778689852195798">"अन्डू गर"</translation>
 <translation id="1611993646327628135">अन छ</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
+<translation id="1623768535032616219">Google Classroom कोल्याप्स गर्नुहोस्</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> वटा डिभाइस</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
@@ -300,9 +302,11 @@
 <translation id="216955976692983107">विन्डोको टाइलको आकार दायाँतिरबाट बदल्नुहोस्</translation>
 <translation id="2185166372312820725">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="2185444992308415167">ट्याब १ बाट ट्याब ८ मा जानुहोस्</translation>
+<translation id="2195732836444333448">अहिले तपाईंलाई मद्दत गर्न सक्दैनौँ। चाँडै फर्केर आउनुहोस्।</translation>
 <translation id="2198625180564913276">प्रोफाइल थपिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="219905428774326614">लन्चर, सबै एपहरू</translation>
 <translation id="2201071101391734388">हालसालैका <ph name="TOTAL_COUNT" /> वटा फोटोमध्ये <ph name="INDEX" /> औँ फोटो।</translation>
+<translation id="2201687081523799384">Google Tasks कोल्याप्स गर्नुहोस्</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटप मोड</translation>
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्क ७</translation>
@@ -364,6 +368,7 @@
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नुअघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
+<translation id="2437771564543046790">ब्याट्री कम छ। ब्याट्री सेभर अन छ</translation>
 <translation id="243878895369688216">हिजो खोलिएको</translation>
 <translation id="2440978926514840421">GIF रेकर्ड गरिएको छ</translation>
 <translation id="2441427462554639370">भण्डारणमा अत्यन्तै कम खाली ठाउँ भएकाले रेकर्डिङ बन्द भयो</translation>
@@ -811,6 +816,7 @@
 <translation id="4086921558679520050">आफ्नो डिभाइसमा माइकको स्विच अन गर्नुहोस्</translation>
 <translation id="4101772068965291327">गृहपृष्ठ खोल्नुहोस्</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
+<translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
 <translation id="4114315158543974537">फोन हब अन गर्नुहोस्</translation>
 <translation id="4115378294792113321">म्याग्नेटा</translation>
 <translation id="411881149140864134">डेस्क बायाँतिर एक्टिभेट गर्नुहोस्</translation>
@@ -844,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> उपलब्ध छैन।</translation>
 <translation id="4201051445878709314">अघिल्लो महिना देखाउनुहोस्</translation>
 <translation id="4209973997261364186">Wi-Fi अन गरियो</translation>
+<translation id="4212246570487010370">ब्राउजिङ जारी राख्नुहोस्</translation>
 <translation id="4212472694152630271">पिन प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="4215497585250573029">VPN सेटिङहरू</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
@@ -1200,6 +1207,7 @@
 <translation id="550391772491508736">कास्ट गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="5506975627792768506">म्याग्निफायर अन वा अफ गर्नुहोस्</translation>
 <translation id="5512042095225963688">अघिल्लो शब्द मेटाउनुहोस्</translation>
+<translation id="5519005148254860683">Google Tasks एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">तपाईंका एड्मिनले सबै eSIM प्रोफाइलहरू हटाएका छन्। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5520909879404821039">फ्रान्सेली भाषामा नमस्ते कसरी भनिन्छ</translation>
@@ -1235,7 +1243,6 @@
 <translation id="5599242528220103262">किबोर्डका सर्टकट अफ छन्</translation>
 <translation id="5600415762228455511">फोकस मोड अन छ, <ph name="REMAINING_TIME" /> बाँकी छ, यो कार्यमा फोकस गरिँदै छ: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">बोली प्रतिक्रिया असक्षम पार्न Ctrl + Alt + Z थिच्नुहोस्।</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt;१ घण्टाअघि}=1{१ घण्टाअघि}other{# घण्टाअघि}}</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5618148318840095371">तपाईंको डिभाइस अझ राम्रो नेटवर्कमा कनेक्ट गरिएको छ</translation>
 <translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
@@ -1408,6 +1415,7 @@
 <translation id="6200515304866777730">यो एपमा काम गर्दैन</translation>
 <translation id="6210042900243040400">यसअघि <ph name="EMAIL" /> मा सेभ गरिएको <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="6213808132343683860">आंशिक स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
+<translation id="621606890568890214">Google Classroom एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
 <translation id="622484624075952240">तल</translation>
 <translation id="6228457605945141550">उज्यालो कम गर्नुहोस्‌</translation>
@@ -1687,6 +1695,7 @@
 <translation id="7340731148882810149">स्वतः क्लिक गर्ने सुविधाको मेनु</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
+<translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
 <translation id="7360036564632145207">तपाईंले 'सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा' का सेटिङ बदल्नुभयो भने ती यन्त्रहरूले अझ राम्रोसँग काम गर्न सक्छन्</translation>
 <translation id="736045644501761622">वालपेपर र शैली तय गर्नुहोस्</translation>
@@ -1829,7 +1838,6 @@
 <translation id="7851768487828137624">क्यानरी</translation>
 <translation id="7862292329216937261">अतिथिका रूपमा यो डिभाइस प्रयोग गर्न तपाईंले साइन आउट गरी स्क्रिनको पुछारमा रहेको "अतिथिका रूपमा ब्राउज गर्नुहोस्" चयन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7866482334467279021">अन छ</translation>
-<translation id="7866727328666668290">अन्तिम पटक खोलिएको ट्याब</translation>
 <translation id="7872786842639831132">अफ छ</translation>
 <translation id="7875575368831396199">तपाईंको <ph name="DEVICE_TYPE" /> मा ब्लुटुथ अफ गरिएको छ जस्तो देखिन्छ। फोन हब नामक सुविधा प्रयोग गर्न कृपया ब्लुटुथ अन गर्नुहोस्।</translation>
 <translation id="7884446017008693258">हटस्पटसम्बन्धी सेटिङ</translation>
@@ -2136,7 +2144,6 @@
 <translation id="9002204506712855687">नवीनतम सुविधाहरू अन्वेषण गर्नुहोस्</translation>
 <translation id="9005984960510803406">Crosh विन्डो खोल्नुहोस्‌</translation>
 <translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्।</translation>
-<translation id="9022774213089566801">बारम्बार हेरिएका</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9029736946581028033">डिभाइस चाँडै नै पावर डाउन हुने छ</translation>
 <translation id="9030319654231318877">सूर्यास्त नहुँदासम्म अफ</translation>

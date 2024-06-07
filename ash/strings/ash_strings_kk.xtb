@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Сақталған желілер</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> қосылды.</translation>
 <translation id="1240638468526743569">Қолданба</translation>
+<translation id="1242198791279543032">Хабарландырулар дыбысы өшірілді.</translation>
 <translation id="1242883863226959074">құрылғы</translation>
 <translation id="1245644940275736236">Assistant-ке өту</translation>
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">Терезе өлшемін оңға қарай қабаттастырмай өзгерту</translation>
 <translation id="2185166372312820725">Алдыңғы қойындыға өту</translation>
 <translation id="2185444992308415167">1-ден 8-ге дейінгі қойындылар арқылы өту</translation>
+<translation id="2195732836444333448">Толық жүктемемен жұмыс істеп тұр. Біраз уақыттан кейін қайтып оралыңыз.</translation>
 <translation id="2198625180564913276">Профиль қосылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="219905428774326614">Launcher, барлық қолданбалар</translation>
 <translation id="2201071101391734388">Соңғы фото: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@
 <translation id="4086921558679520050">Құрылғыңыздағы физикалық микрофон қосқышын қосу</translation>
 <translation id="4101772068965291327">Негізгі бетті ашу</translation>
 <translation id="4112140312785995938">Артқа</translation>
+<translation id="4113030288477039509">Әкімші басқарады</translation>
 <translation id="4114315158543974537">Телефон хабын қосу</translation>
 <translation id="4115378294792113321">Күлгін</translation>
 <translation id="411881149140864134">Сол жақтағы жұмыс үстелін іске қосу</translation>
@@ -847,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> қолжетімді емес.</translation>
 <translation id="4201051445878709314">Алдыңғы айды көрсету</translation>
 <translation id="4209973997261364186">Wi-Fi қосылды.</translation>
+<translation id="4212246570487010370">Үздіксіз көру</translation>
 <translation id="4212472694152630271">PIN кодына ауысу</translation>
 <translation id="4215497585250573029">VPN параметрлері</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
@@ -1239,7 +1243,6 @@
 <translation id="5599242528220103262">Перне тіркесімі өшірулі</translation>
 <translation id="5600415762228455511">Зейін қою режимі қосылды. <ph name="REMAINING_TIME" /> қалды. <ph name="TASK_NAME" /> тапсырмасы назарға алынды.</translation>
 <translation id="5600837773213129531">Айтылған пікірді өшіру үшін Ctrl + Alt + Z пернелерін басыңыз.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 сағат бұрын}=1{1 сағат бұрын}other{# сағат бұрын}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Сізді жақсырақ желіге ауыстырдық</translation>
 <translation id="5619862035903135339">Әкімші саясаты экранды түсіру режимін өшіреді.</translation>
@@ -1692,6 +1695,7 @@
 <translation id="7340731148882810149">Автоматты басулар мәзірі</translation>
 <translation id="7346909386216857016">Жарайды, түсінікті</translation>
 <translation id="7348093485538360975">Экрандық пернетақта</translation>
+<translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
 <translation id="735745346212279324">VPN ажыратылды</translation>
 <translation id="7360036564632145207">Перифериялық құрылғылар үшін деректердің пайдаланылуын қорғау параметрін өзгертіп, өнімділікті арттыра аласыз.</translation>
 <translation id="736045644501761622">Тұсқағаз бен стильді реттеу</translation>
@@ -1834,7 +1838,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Құрылғыны қонақ ретінде пайдалану үшін аккаунттан шығып, экранның төменгі жағындағы "Қонақ ретінде шолу" параметрін таңдаңыз.</translation>
 <translation id="7866482334467279021">Қосу</translation>
-<translation id="7866727328666668290">Соңғы ашылған қойынды</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> құрылғыңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін Bluetooth қосыңыз.</translation>
 <translation id="7884446017008693258">Хотспот параметрлері</translation>
@@ -2141,7 +2144,6 @@
 <translation id="9002204506712855687">Соңғы функциялармен танысыңыз.</translation>
 <translation id="9005984960510803406">Crosh терезесін ашу</translation>
 <translation id="9017320285115481645">Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
-<translation id="9022774213089566801">Жиі пайдаланатындар</translation>
 <translation id="9024331582947483881">толық экран</translation>
 <translation id="9029736946581028033">Құрылғы сәлден соң өшеді</translation>
 <translation id="9030319654231318877">Күн батқанға дейін өшірулі</translation>

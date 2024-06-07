@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">編輯 APN 詳細資料</translation>
 <translation id="2195732836444333448">工作負載已達上限，請稍後再回來查看。</translation>
 <translation id="2201758491318984023">腳踏車</translation>
-<translation id="2203222757805818543">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。如要自動更新深色模式時間表，請<ph name="BEGIN_LINK" />開啟位置資訊存取權<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">溫泉</translation>
 <translation id="2203642483788377106">懸崖</translation>
 <translation id="2208388655216963643">印象派</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">沙丘</translation>
 <translation id="2619761439309613843">每日變換新桌布</translation>
 <translation id="2620436844016719705">系統</translation>
+<translation id="2637303424821734920">關閉 - 如要顯示當地天氣資訊，請<ph name="BEGIN_LINK" />開啟系統位置存取權<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">登入圖片</translation>
 <translation id="2640549051766135490">已選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="2645380101799517405">控制項</translation>

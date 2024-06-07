@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
 <translation id="4194328954146351878">Pýtať sa, či chcete povoliť webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC (odprúčané)</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> zo zariadenia <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povolené</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Rozbaliť</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="4336566011000459927">Chrome dnes znova obmedzí súbory cookie</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vaša posledná karta</translation>
 <translation id="4338831206024587507">Všetky weby v doméne <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Neumožniť webom zistiť, či aktívne používate toto zariadenie</translation>
 <translation id="4412992751769744546">Povoliť súbory cookie tretích strán</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Ovládajte prístup tohto webu do vášho zariadenia</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6042308850641462728">Viac</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Vaša posledná karta</translation>
 <translation id="6064125863973209585">Sťahovanie bolo dokončené</translation>
 <translation id="6071501408666570960">Môžeme dôjsť k vášmu odhláseniu z tohto webu</translation>
 <translation id="6120483543004435978">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie zistiť, kedy aktívne používate zariadenie. Keď je táto možnosť vypnutá, weby nemôžu zistiť, kedy aktívne používate zariadenie.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6818926723028410516">Vyberte položky</translation>
 <translation id="6864395892908308021">Toto zariadenie nedokáže čítať NFC</translation>
-<translation id="6867014948848323204">Zo zariadenia <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Brániť webom v prístupe k textom a obrázkom v schránke</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6950072572526089586">Web, ktorý navštívite, môže ukladať informácie o tom, čo robíte, aby fungoval podľa očakávaní. Vďaka tomu si napríklad môžete na ňom uchovať aktívne prihlásenie alebo ukladať položky do nákupného košíka. Weby často ukladajú tieto informácie vo vašom zariadení dočasne.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7990211076305263060">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať váš mikrofón. Keď je táto možnosť vypnutá, weby nemôžu používať váš mikrofón.</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> zo zariadenia <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8042586301629853791">Zoradiť podľa:</translation>
 <translation id="8067883171444229417">Prehrať video</translation>

@@ -301,6 +301,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="216955976692983107">Colocar ventá de cambio de tamaño de mosaico cara á dereita</translation>
 <translation id="2185166372312820725">Vai á pestana anterior</translation>
 <translation id="2185444992308415167">Ir da pestana 1 á 8</translation>
+<translation id="2195732836444333448">Está ao límite da súa capacidade. Volve probar dentro dun anaco.</translation>
 <translation id="2198625180564913276">Engadindo perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="219905428774326614">Menú de aplicacións, todas as aplicacións</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4086921558679520050">Activa o interruptor físico do micrófono no dispositivo</translation>
 <translation id="4101772068965291327">Abre a páxina de inicio</translation>
 <translation id="4112140312785995938">Retroceder</translation>
+<translation id="4113030288477039509">Xestionado polo teu administrador</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4115378294792113321">Maxenta</translation>
 <translation id="411881149140864134">Activar escritorio da esquerda</translation>
@@ -848,6 +850,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4201033867194214117">A función <ph name="FEATURE_NAME" /> non está dispoñible.</translation>
 <translation id="4201051445878709314">Mostrar mes anterior</translation>
 <translation id="4209973997261364186">A wifi está activada</translation>
+<translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4212472694152630271">Cambiar ao PIN</translation>
 <translation id="4215497585250573029">Configuración de VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
@@ -1240,7 +1243,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5599242528220103262">O atallo de teclado está desactivado</translation>
 <translation id="5600415762228455511">Modo Sen distraccións activado. Tempo restante: <ph name="REMAINING_TIME" />. Tarefa actual: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Preme Ctrl + Alt + Z para desactivar os comentarios de voz.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Hai menos de 1 hora}=1{Hai 1 hora}other{Hai # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Cambiámoste a unha rede mellor</translation>
 <translation id="5619862035903135339">A política do administrador desactivou o modo de captura de pantalla</translation>
@@ -1693,6 +1695,7 @@ Nova instalación</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
+<translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360036564632145207">Para optimizar o rendemento, podes cambiar a opción de configuración da protección para periféricos contra o acceso aos datos</translation>
 <translation id="736045644501761622">Definir estilo e fondo de pantalla</translation>
@@ -1835,7 +1838,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como invitado, tes que pechar sesión e, a continuación, seleccionar Navegar como invitado na parte de abaixo da pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
-<translation id="7866727328666668290">Última pestana aberta</translation>
 <translation id="7872786842639831132">Desactivado</translation>
 <translation id="7875575368831396199">Parece que tes o Bluetooth desactivado no dispositivo (<ph name="DEVICE_TYPE" />). Para utilizar a función O meu teléfono, activa o Bluetooth.</translation>
 <translation id="7884446017008693258">Configuración da zona wifi</translation>
@@ -2142,7 +2144,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9002204506712855687">Explora as últimas funcións</translation>
 <translation id="9005984960510803406">Abre unha ventá de Crosh</translation>
 <translation id="9017320285115481645">Introduce o código de acceso parental de Family Link.</translation>
-<translation id="9022774213089566801">Visitas frecuentes</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9029736946581028033">O dispositivo apagarase axiña</translation>
 <translation id="9030319654231318877">Desactivado ata o solpor</translation>

@@ -72,6 +72,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1235458158152011030">Known networks</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
 <translation id="1240638468526743569">An app</translation>
+<translation id="1242198791279543032">Notifications are muted</translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="1245644940275736236">Go to Assistant</translation>
 <translation id="124678866338384709">Close current tab</translation>
@@ -301,6 +302,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="216955976692983107">Tiled resize window towards the right</translation>
 <translation id="2185166372312820725">Go to previous tab</translation>
 <translation id="2185444992308415167">Go through tabs 1 to 8</translation>
+<translation id="2195732836444333448">At capacity right now. Come back soon.</translation>
 <translation id="2198625180564913276">Adding profile. This may take a few minutes.</translation>
 <translation id="219905428774326614">Launcher, all apps</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Connect your device to power.</translation>
 <translation id="4086921558679520050">Turn on physical mic switch on your device</translation>
 <translation id="4101772068965291327">Open home page</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
+<translation id="4113030288477039509">Managed by your administrator</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activate desk on left</translation>
@@ -847,6 +850,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is not available.</translation>
 <translation id="4201051445878709314">Show previous month</translation>
 <translation id="4209973997261364186">Wi-Fi is turned on</translation>
+<translation id="4212246570487010370">Continue browsing</translation>
 <translation id="4212472694152630271">Switch to PIN</translation>
 <translation id="4215497585250573029">VPN settings</translation>
 <translation id="4217571870635786043">Dictation</translation>
@@ -1239,7 +1243,6 @@ No devices connected.</translation>
 <translation id="5599242528220103262">Keyboard shortcut is off</translation>
 <translation id="5600415762228455511">Focus is on, <ph name="REMAINING_TIME" /> left, focusing on: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Press Ctrl + Alt + Z to disable spoken feedback.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 hour ago}=1{1 hour ago}other{# hours ago}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">We've switched you to a better network</translation>
 <translation id="5619862035903135339">Administrator policy disables screen capture</translation>
@@ -1692,6 +1695,7 @@ New install</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
+<translation id="7352651011704765696">Something went wrong</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
 <translation id="736045644501761622">Set wallpaper and style</translation>
@@ -1834,7 +1838,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">To use the device as a guest, you'll need to sign out and then select Browse as guest at the bottom of the screen.</translation>
 <translation id="7866482334467279021">on</translation>
-<translation id="7866727328666668290">Last tab opened</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
 <translation id="7884446017008693258">Hotspot settings</translation>
@@ -2141,7 +2144,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9002204506712855687">Explore the latest features</translation>
 <translation id="9005984960510803406">Open Crosh window</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
-<translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9024331582947483881">full screen</translation>
 <translation id="9029736946581028033">Device will power down soon</translation>
 <translation id="9030319654231318877">Off until sunset</translation>

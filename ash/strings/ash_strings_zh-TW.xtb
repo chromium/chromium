@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">已知網路</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">某個應用程式</translation>
+<translation id="1242198791279543032">已忽略通知</translation>
 <translation id="1242883863226959074">裝置</translation>
 <translation id="1245644940275736236">啟動 Google 助理</translation>
 <translation id="124678866338384709">關閉目前的分頁</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">向右調整並排視窗的大小</translation>
 <translation id="2185166372312820725">前往上一個分頁</translation>
 <translation id="2185444992308415167">瀏覽分頁 1 至 8</translation>
+<translation id="2195732836444333448">工作負載已達上限，請稍後再回來查看。</translation>
 <translation id="2198625180564913276">正在新增設定檔。請稍候片刻。</translation>
 <translation id="219905428774326614">啟動器，所有應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
@@ -812,6 +814,7 @@
 <translation id="4086921558679520050">開啟裝置上的實體麥克風開關</translation>
 <translation id="4101772068965291327">開啟首頁</translation>
 <translation id="4112140312785995938">倒轉</translation>
+<translation id="4113030288477039509">您的管理員已停用這項功能</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="411881149140864134">啟動左側桌面</translation>
@@ -844,6 +847,7 @@
 <translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
 <translation id="4201051445878709314">顯示上一個月</translation>
 <translation id="4209973997261364186">Wi-Fi 已開啟</translation>
+<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4212472694152630271">切換為 PIN 碼</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">語音輸入</translation>
@@ -1236,7 +1240,6 @@
 <translation id="5599242528220103262">鍵盤快速鍵已關閉</translation>
 <translation id="5600415762228455511">專注模式已開啟，還剩 <ph name="REMAINING_TIME" />，目前正在專心處理「<ph name="TASK_NAME" />」</translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用互動朗讀功能。</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{1 小時內}=1{1 小時前}other{# 小時前}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">已切換至連線品質更好的網路</translation>
 <translation id="5619862035903135339">系統管理員政策已停用螢幕畫面擷取功能</translation>
@@ -1688,6 +1691,7 @@
 <translation id="7340731148882810149">自動點擊選單</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
+<translation id="7352651011704765696">發生錯誤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360036564632145207">變更周邊裝置的資料存取權防護設定可以改善效能</translation>
 <translation id="736045644501761622">設定桌布和樣式</translation>
@@ -1830,7 +1834,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">如要以訪客身分使用這部裝置，請務必登出並選取畫面底部的「以訪客身分瀏覽」。</translation>
 <translation id="7866482334467279021">開啟</translation>
-<translation id="7866727328666668290">上次開啟的分頁</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
 <translation id="7884446017008693258">無線基地台設定</translation>
@@ -2136,7 +2139,6 @@
 <translation id="9002204506712855687">瞭解最新功能</translation>
 <translation id="9005984960510803406">開啟 Crosh 視窗</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
-<translation id="9022774213089566801">經常造訪</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9029736946581028033">裝置即將關機</translation>
 <translation id="9030319654231318877">關閉，直到日落</translation>

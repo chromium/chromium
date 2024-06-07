@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Hlela imininingwane ye-APN</translation>
 <translation id="2195732836444333448">Kugcwele njengamanje. Buya maduze.</translation>
 <translation id="2201758491318984023">ibhayisikili</translation>
-<translation id="2203222757805818543">Ishejuli yamanje isethwe kokuthi <ph name="SUNRISE" /> - <ph name="SUNSET" />. Ukuze ubuyekeze ngokuzenzakalelayo ishejuli yemodi emnyama, <ph name="BEGIN_LINK" />vula ukufinyelela indawo<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">intwasahlobo eshisayo</translation>
 <translation id="2203642483788377106">iwa</translation>
 <translation id="2208388655216963643">i-impressionist</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">indunduma yesihlabathi</translation>
 <translation id="2619761439309613843">Ukuvuselela kwansuku zonke</translation>
 <translation id="2620436844016719705">Isistimu</translation>
+<translation id="2637303424821734920">IVALIWE - Ukuze ibonise isimo sezulu sendawo <ph name="BEGIN_LINK" />vula ukufinyelela indawo kwesistimu<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Isithombe sokungena ngemvume</translation>
 <translation id="2640549051766135490">I-Albhamu <ph name="TITLE" /> <ph name="DESC" /> ikhethiwe</translation>
 <translation id="2645380101799517405">Izilawuli</translation>

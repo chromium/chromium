@@ -300,6 +300,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="216955976692983107">Mengubah ukuran jendela bersusun ke kanan</translation>
 <translation id="2185166372312820725">Membuka tab sebelumnya</translation>
 <translation id="2185444992308415167">Buka tab 1 hingga 8</translation>
+<translation id="2195732836444333448">Saat ini sudah mencapai batas kapasitas. Coba lagi nanti.</translation>
 <translation id="2198625180564913276">Menambahkan profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="219905428774326614">Peluncur, semua aplikasi</translation>
 <translation id="2201071101391734388">Foto terbaru <ph name="INDEX" /> dari <ph name="TOTAL_COUNT" />.</translation>
@@ -811,6 +812,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4086921558679520050">Aktifkan tombol mikrofon fisik di perangkat</translation>
 <translation id="4101772068965291327">Buka beranda</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
+<translation id="4113030288477039509">Dikelola oleh administrator</translation>
 <translation id="4114315158543974537">Aktifkan Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktifkan desktop di sisi kiri</translation>
@@ -844,6 +846,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> tidak tersedia.</translation>
 <translation id="4201051445878709314">Tampilkan bulan sebelumnya</translation>
 <translation id="4209973997261364186">Wi-Fi diaktifkan</translation>
+<translation id="4212246570487010370">Lanjutkan menjelajah</translation>
 <translation id="4212472694152630271">Ganti ke PIN</translation>
 <translation id="4215497585250573029">Setelan VPN</translation>
 <translation id="4217571870635786043">Dikte</translation>
@@ -1687,6 +1690,7 @@ Baru diinstal</translation>
 <translation id="7340731148882810149">Menu klik otomatis</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
+<translation id="7352651011704765696">Terjadi error</translation>
 <translation id="735745346212279324">VPN terputus</translation>
 <translation id="7360036564632145207">Mengubah setelan perlindungan akses data untuk periferal dapat mengoptimalkan performa</translation>
 <translation id="736045644501761622">Setel wallpaper &amp; gaya</translation>
@@ -1828,7 +1832,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Untuk menggunakan perangkat sebagai tamu, Anda harus logout lalu memilih Jelajahi sebagai Tamu di bagian bawah layar.</translation>
 <translation id="7866482334467279021">aktif</translation>
-<translation id="7866727328666668290">Tab yang terakhir dibuka</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
 <translation id="7875575368831396199">Sepertinya Bluetooth dinonaktifkan di <ph name="DEVICE_TYPE" /> Anda. Aktifkan Bluetooth untuk menggunakan Phone Hub.</translation>
 <translation id="7884446017008693258">Setelan Hotspot</translation>
@@ -2134,7 +2137,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9000771174482730261">KELOLA PENYIMPANAN</translation>
 <translation id="9005984960510803406">Membuka jendela Crosh</translation>
 <translation id="9017320285115481645">Masukkan kode akses orang tua Family Link.</translation>
-<translation id="9022774213089566801">Sering dikunjungi</translation>
 <translation id="9024331582947483881">layar penuh</translation>
 <translation id="9029736946581028033">Perangkat akan segera dimatikan</translation>
 <translation id="9030319654231318877">Nonaktif sampai matahari terbenam</translation>

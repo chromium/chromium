@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">«ቀልብስ»</translation>
 <translation id="1611993646327628135">አብራ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
+<translation id="1623768535032616219">Google የትምህርት ክፍልን ሰብስብ</translation>
 <translation id="1632985212731562677">የመዳረሻ መቀየሪያ በቅንብሮች &gt; ተደራሽነት ውስጥ ሊሰናከል ይችላል።</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> መሣሪያዎች</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
@@ -300,9 +301,11 @@
 <translation id="216955976692983107">የባለጡብ መስኮት መጠንን ወደ ቀኝ ቀይር</translation>
 <translation id="2185166372312820725">ወደ ቀዳሚው ትር ሂድ</translation>
 <translation id="2185444992308415167">ከ1 እስከ 8 ድረስ ያሉ ትሮችን ይመልከቱ</translation>
+<translation id="2195732836444333448">ሙሉ አቅም ላይ ነው። በቅርቡ ተመልሰው ይምጡ።</translation>
 <translation id="2198625180564913276">መገለጫን በማከል ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="219905428774326614">ማስጀመሪያ፣ ሁሉም መተግበሪያዎች</translation>
 <translation id="2201071101391734388">የቅርብ ጊዜ ፎቶ <ph name="INDEX" /> ከ<ph name="TOTAL_COUNT" />።</translation>
+<translation id="2201687081523799384">Google ተግባሮችን ሰብስብ</translation>
 <translation id="2208323208084708176">የተዋሃደ የዴስክቶፕ ሁነታ</translation>
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="2222841058024245321">ዴስክ 7</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">የግራ ጠቅታ</translation>
 <translation id="2429753432712299108">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። ከመቀበልዎ በፊት እባክዎ ይህ የይለፍ ቃል በዚያ መሣሪያ ላይ የሚታይ መሆኑን ያረጋግጡ፦ <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
+<translation id="2437771564543046790">ዝቅተኛ ባትሪ። ባትሪ ቆጣቢ በርቷል</translation>
 <translation id="243878895369688216">ትናንት የተከፈተ</translation>
 <translation id="2440978926514840421">የGIF ቅጂ ተወስዷል</translation>
 <translation id="2441427462554639370">እጅግ አነስተኛ በሆነ የማከማቻ ቦታ ምክንያት ቀረጻ ጨርሷል</translation>
@@ -811,6 +815,7 @@
 <translation id="4086921558679520050">በመሣሪያዎ ላይ አካላዊ ማይክሮፎን መቀየርን ያብሩ</translation>
 <translation id="4101772068965291327">መነሻ ገጽን ይክፈቱ</translation>
 <translation id="4112140312785995938">ወደኋላ ፈልግ</translation>
+<translation id="4113030288477039509">በእርስዎ አስተዳዳሪ የሚቀናበር</translation>
 <translation id="4114315158543974537">የስልክ መገናኛን ያብሩ</translation>
 <translation id="4115378294792113321">ሮዝ</translation>
 <translation id="411881149140864134">በግራ በኩል ዴስክን አንቃ</translation>
@@ -844,6 +849,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> አይገኝም።</translation>
 <translation id="4201051445878709314">ቀዳሚውን ወር አሳይ</translation>
 <translation id="4209973997261364186">Wi-Fi በርቷል</translation>
+<translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="4212472694152630271">ወደ ፒን ቀይር</translation>
 <translation id="4215497585250573029">የቪፒኤን ቅንብሮች</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
@@ -1200,6 +1206,7 @@
 <translation id="550391772491508736">cast ማድረግን ከቆመበት ቀጥል</translation>
 <translation id="5506975627792768506">ማጉያን አብራ ወይም አጥፋ</translation>
 <translation id="5512042095225963688">ቀዳሚውን ቃል ይሰርዙ</translation>
+<translation id="5519005148254860683">Google ተግባሮችን ዘርጋ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">አስተዳዳሪዎ ሁሉንም የኢሲም መገለጫዎች አስወግዷል። ለተጨማሪ መረጃ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="5520909879404821039">ሰላም በፈረንሳይኛ</translation>
@@ -1235,7 +1242,6 @@
 <translation id="5599242528220103262">የቁልፍ ሰሌዳ አቋራጭ ጠፍቷል</translation>
 <translation id="5600415762228455511">ትኩረት በርቷል፣ <ph name="REMAINING_TIME" /> ቀርቷል፣ ትኩረት በማድረግ ላይ፦ <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">የሚነገር ግብረመልስን ለማሰናከል Ctrl + Alt + Z ይጫኑ።</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{ከ&lt;1 ሰዓት በፊት}=1{ከ1 ሰዓት በፊት}one{ከ# ሰዓት በፊት}other{ከ# ሰዓታት በፊት}}</translation>
 <translation id="5601503069213153581">ፒን</translation>
 <translation id="5618148318840095371">ወደተሻለ አውታረ መረብ ቀይረንዎታል</translation>
 <translation id="5619862035903135339">የአስተዳዳሪ መመሪያ የማያ ገፅ ቀረጻን ያሰናክላል</translation>
@@ -1408,6 +1414,7 @@
 <translation id="6200515304866777730">በመተግበሪያ አይደገፍም</translation>
 <translation id="6210042900243040400">ከዚህ ቀደም በ<ph name="EMAIL" /> ላይ ከተቀመጠ <ph name="NAME" /> ጋር ይገናኙ</translation>
 <translation id="6213808132343683860">ከፊል ቅጽበታዊ ገፅ ዕይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
+<translation id="621606890568890214">Google የትምህርት ክፍልን ዘርጋ</translation>
 <translation id="6220928844947387476">አሁን እራስዎን እና ማያ ገጽዎን በተመሳሳይ ጊዜ መቅረጽ ይችላሉ</translation>
 <translation id="622484624075952240">ታች</translation>
 <translation id="6228457605945141550">ብሩህነትን ቀንስ</translation>
@@ -1688,6 +1695,7 @@
 <translation id="7340731148882810149">የራስ-ሰር ጠቅታዎች ምናሌ</translation>
 <translation id="7346909386216857016">እሺ፣ ገባኝ</translation>
 <translation id="7348093485538360975">የታይታ የቁልፍ ሰሌዳ</translation>
+<translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>
 <translation id="7360036564632145207">ለተቀጥላ ክፍሎች ቅንብሮች የውሂብ መዳረሻ ጥበቃን መለወጥ አፈጻጸሙን ሊያተባ ይችላል</translation>
 <translation id="736045644501761622">ልጣፍ እና ቅጥ አቀናብር</translation>
@@ -1830,7 +1838,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">መሣሪያውን እንደ እንግዳ ለመጠቀም ዘግተው መውጣት እና ከዚያም በማያ ገጹ ታች ላይ እንደ እንግዳ አስስ የሚለውን መምረጥ ያስፈልግዎታል።</translation>
 <translation id="7866482334467279021">በርቷል</translation>
-<translation id="7866727328666668290">የመጨረሻው ትር ተከፍቷል</translation>
 <translation id="7872786842639831132">አጥፋ</translation>
 <translation id="7875575368831396199">ብሉቱዝ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የጠፋ ይመስላል። የስልክ ሃብን ለመጠቀም እባክዎ ብሉቱዝን ያብሩ።</translation>
 <translation id="7884446017008693258">የመገናኛ ነጥብ ቅንብሮች</translation>
@@ -2138,7 +2145,6 @@
 <translation id="9002204506712855687">የቅርብ ጊዜዎቹን ባህሪያት ያስሱ</translation>
 <translation id="9005984960510803406">የCrosh መስኮትን አሳይ</translation>
 <translation id="9017320285115481645">የ Family Link ወላጅ መዳረሻ ኮድ ያስገቡ።</translation>
-<translation id="9022774213089566801">በተደጋጋሚነት የተጎበኙ</translation>
 <translation id="9024331582947483881">ሙሉ ገፅ ማያ</translation>
 <translation id="9029736946581028033">መሣሪያው በቅርቡ ይጠፋል</translation>
 <translation id="9030319654231318877">ፀሐይ እስክትጠልቅ ድረስ ጠፍቷል</translation>

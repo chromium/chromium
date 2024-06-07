@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Επεξεργασία λεπτομερειών APN</translation>
 <translation id="2195732836444333448">Δεν μπορούμε να σας εξυπηρετήσουμε αυτή τη στιγμή. Επιστρέψτε ξανά σύντομα.</translation>
 <translation id="2201758491318984023">ποδήλατο</translation>
-<translation id="2203222757805818543">Το τρέχον πρόγραμμα έχει οριστεί σε <ph name="SUNRISE" /> – <ph name="SUNSET" />. Για να ενημερώνεται αυτόματα το πρόγραμμα της λειτουργίας χαμηλού φωτισμού, <ph name="BEGIN_LINK" />ενεργοποιήστε την πρόσβαση στην τοποθεσία<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">θερμοπηγή</translation>
 <translation id="2203642483788377106">γκρεμό</translation>
 <translation id="2208388655216963643">ιμπρεσιονισμού</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">αμμόλοφο</translation>
 <translation id="2619761439309613843">Ημερήσια ανανέωση</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
+<translation id="2637303424821734920">ΑΝΕΝΕΡΓΟ - Για να δείτε τον τοπικό καιρό, <ph name="BEGIN_LINK" />ενεργοποιήστε την πρόσβαση τοποθεσίας του συστήματος<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Εικόνα σύνδεσης</translation>
 <translation id="2640549051766135490">Επιλέχθηκε το λεύκωμα <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Στοιχεία ελέγχου</translation>

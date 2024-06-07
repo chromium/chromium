@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="33479675708419823">登入 Chrome 後，就能使用這項設定確保 IP 位址不外洩。如果 Chrome 認為某個網站可能會追蹤使用者，就會透過隱私權伺服器送出部分流量。進一步瞭解 <ph name="LINK_BEGIN" />IP 保護機制的運作方式<ph name="LINK_END" /></translation>
+<translation id="3529311220178827364">進一步瞭解如何隱藏 IP 位址</translation>
 <translation id="4301151630239508244">廣告主題只是網站在放送個人化廣告時的其中一項依據。即使你未開啟此設定，網站仍可放送廣告，但可能會放送較不相關的廣告。進一步瞭解如何<ph name="BEGIN_LINK_1" />管理廣告私隱權<ph name="END_LINK_1" />。</translation>
+<translation id="4598427486995631491">隱藏 IP 位址</translation>
+<translation id="6371812158043974664">登入 Chromium 後，就能使用這項設定確保 IP 位址不外洩。如果 Chromium 認為某個網站可能會追蹤使用者，就會透過隱私權伺服器送出部分流量。進一步瞭解 <ph name="LINK_BEGIN" />IP 保護機制的運作方式<ph name="LINK_END" /></translation>
 </translationbundle>

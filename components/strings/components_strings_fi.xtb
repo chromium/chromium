@@ -2987,7 +2987,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6753269504797312559">Käytännön arvo</translation>
 <translation id="6753434778807740853">Poista merkintä <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Säästötilit</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Laitteesi siirtyi virransäästötilaan.</translation>
 <translation id="6760548828952594090">Tätä korttia ei voitu tallentaa Google-tilillesi. Se on sen sijaan tallennettu Chromeen tällä laitteella.</translation>
 <translation id="6766558780547452153">Ruoanlaitto ja reseptit</translation>
@@ -4250,7 +4249,6 @@ Lisätietoja:
 <translation id="9155646082713385498">Lehdet</translation>
 <translation id="9157595877708044936">Valmistellaan...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> saattaa sisältää arkaluontoista sisältöä}other{<ph name="FILE_COUNT" /> tiedostossa voi olla arkaluontoista sisältöä}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Avaamasi sivustot voivat päätellä kiinnostuksen kohteitasi myös sen perusteella, mitä teet sivustolla. Jos esimerkiksi käyt sivustolla, joka myy kestävyysjuoksuun tarkoitettuja kenkiä, sivusto voi päätellä, että olet kiinnostunut maratoneista.</translation>
 <translation id="9166851138617700776">Lue lisää sivustojen ehdottamista mainoksista ja mainosten mittauksesta</translation>
 <translation id="9167054383925257837">Selaimen ja laitteen käyttöjärjestelmän tiedot (esimerkiksi selain ja käyttöjärjestelmäversiot)</translation>

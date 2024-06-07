@@ -2982,7 +2982,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6753269504797312559">Valore criterio</translation>
 <translation id="6753434778807740853">Elimina voce <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Depositi di risparmio</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Il dispositivo è entrato in modalità sospensione.</translation>
 <translation id="6760548828952594090">Impossibile salvare questa carta nel tuo Account Google. È stata invece salvata su Chrome su questo dispositivo.</translation>
 <translation id="6766558780547452153">Cucina e ricette</translation>
@@ -4244,7 +4243,6 @@ Ulteriori dettagli:
 <translation id="9155646082713385498">Riviste</translation>
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Il file <ph name="FILE_NAME" /> potrebbe includere contenuti sensibili}other{<ph name="FILE_COUNT" /> file potrebbero includere contenuti sensibili}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
 <translation id="9166851138617700776">Scopri di più sugli annunci suggeriti dai siti e sulla misurazione degli annunci</translation>
 <translation id="9167054383925257837">Informazioni sul browser e sul sistema operativo del dispositivo (ad esempio, versioni del browser e del sistema operativo)</translation>

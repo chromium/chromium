@@ -302,6 +302,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="216955976692983107">Tetingkap ubah saiz berjubin ke kanan</translation>
 <translation id="2185166372312820725">Pergi ke tab sebelumnya</translation>
 <translation id="2185444992308415167">Lihat tab 1 hingga 8</translation>
+<translation id="2195732836444333448">Kapasiti terhad pada masa ini. Sila kembali sebentar lagi.</translation>
 <translation id="2198625180564913276">Menambah profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="219905428774326614">Pelancar, semua apl</translation>
 <translation id="2201071101391734388">Foto baru-baru ini <ph name="INDEX" /> daripada <ph name="TOTAL_COUNT" />.</translation>
@@ -816,6 +817,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4086921558679520050">Hidupkan suis mikrofon fizikal pada peranti anda</translation>
 <translation id="4101772068965291327">Buka halaman utama</translation>
 <translation id="4112140312785995938">Cari Ke Belakang</translation>
+<translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4114315158543974537">Hidupkan Hab Telefon</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Aktifkan meja di sebelah kiri</translation>
@@ -848,6 +850,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> tidak tersedia.</translation>
 <translation id="4201051445878709314">Tunjukkan bulan sebelumnya</translation>
 <translation id="4209973997261364186">Wi-Fi dihidupkan</translation>
+<translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
 <translation id="4212472694152630271">Tukar kepada PIN</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
@@ -1130,6 +1133,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5208059991603368177">Hidup</translation>
 <translation id="5216991270656129561">Dimatikan hingga <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Log keluar</translation>
+<translation id="5228195526683428788">Pembahagi skrin pisah</translation>
 <translation id="5229343007215035173">Hidupkan/matikan skrin privasi</translation>
 <translation id="5230516054153933099">Tingkap</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
@@ -1240,7 +1244,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="5599242528220103262">Pintasan papan kekunci dimatikan</translation>
 <translation id="5600415762228455511">Fokus dihidupkan, masa berbaki <ph name="REMAINING_TIME" /> lagi, memfokuskan pada: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk melumpuhkan maklum balas yang dituturkan.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 jam yang lalu}=1{1 jam yang lalu}other{# jam yang lalu}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Kami telah menukar anda kepada rangkaian yang lebih baik</translation>
 <translation id="5619862035903135339">Dasar pentadbir melumpuhkan tangkapan skrin</translation>
@@ -1517,6 +1520,7 @@ Pemasangan baharu</translation>
 <translation id="6613765291890844037">Storan sebanyak <ph name="STORAGE_IN_USE_SIZE" /> sedang digunakan | <ph name="STORAGE_TOTAL_SIZE" /> jumlah storan</translation>
 <translation id="6614169507485700968">Skrin privasi dihidupkan</translation>
 <translation id="6622679827379792051">Menyediakan pemaparan apl telefon anda</translation>
+<translation id="662279009180869175">Gunakan anak panah ke kiri dan ke kanan untuk mengubah saiz skrin pisah</translation>
 <translation id="6624493541160101248">Meja semasa: <ph name="DESK_NAME" />. Meja <ph name="DESK_INDEX" /> daripada <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> dan pemberitahuan lain disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1535,6 +1539,7 @@ Pemasangan baharu</translation>
 <translation id="6670153871843998651">Meja 3</translation>
 <translation id="6671495933530132209">Salin imej</translation>
 <translation id="6671661918848783005">Tidak dapat membuka kunci Chromebook anda</translation>
+<translation id="6676552993057022464">Gunakan anak panah ke atas dan ke bawah untuk mengubah saiz skrin pisah</translation>
 <translation id="6682029141988159141">Tampalkan kandungan daripada papan keratan</translation>
 <translation id="6683022854667115063">Fon kepala</translation>
 <translation id="6686023075541098243">Menyediakan pemaparan pemberitahuan telefon anda</translation>
@@ -1693,6 +1698,7 @@ Pemasangan baharu</translation>
 <translation id="7340731148882810149">Menu klik automatik</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
+<translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>
 <translation id="7360036564632145207">Tindakan menukar perlindungan akses data anda untuk tetapan peranti persisian dapat mengoptimumkan prestasi</translation>
 <translation id="736045644501761622">Tetapkan hiasan latar &amp; gaya</translation>
@@ -1835,7 +1841,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Untuk menggunakan peranti sebagai tetamu, anda perlu log keluar dan pilih Semak imbas sebagai Tetamu pada bahagian bawah skrin.</translation>
 <translation id="7866482334467279021">dihidupkan</translation>
-<translation id="7866727328666668290">Tab terakhir yang dibuka</translation>
 <translation id="7872786842639831132">Mati</translation>
 <translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
 <translation id="7884446017008693258">Tetapan Tempat Liputan</translation>
@@ -2142,7 +2147,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9002204506712855687">Terokai ciri terbaharu</translation>
 <translation id="9005984960510803406">Buka tetingkap Crosh</translation>
 <translation id="9017320285115481645">Masukkan kod akses ibu bapa Family Link.</translation>
-<translation id="9022774213089566801">Kerap dilawat</translation>
 <translation id="9024331582947483881">skrin penuh</translation>
 <translation id="9029736946581028033">Peranti akan dimatikan tidak lama lagi</translation>
 <translation id="9030319654231318877">Dimatikan sehingga matahari terbenam</translation>

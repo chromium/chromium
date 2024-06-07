@@ -178,6 +178,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1610778689852195798">„Vrátit zpět“</translation>
 <translation id="1611993646327628135">Zap</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Sbalit Učebnu Google</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> zařízení</translation>
 <translation id="1639239467298939599">Načítání</translation>
@@ -300,9 +301,11 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="216955976692983107">Roztáhnout dlaždicové okno doprava</translation>
 <translation id="2185166372312820725">Přejít na předchozí kartu</translation>
 <translation id="2185444992308415167">Projít karty 1 až 8</translation>
+<translation id="2195732836444333448">Momentálně je kapacita plně obsazena. Zkuste to později.</translation>
 <translation id="2198625180564913276">Přidávání profilu. Může to trvat několik minut.</translation>
 <translation id="219905428774326614">Spouštěč, všechny aplikace</translation>
 <translation id="2201071101391734388">Nedávná fotka <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Sbalit Úkoly Google</translation>
 <translation id="2208323208084708176">Jednotný režim klasické plochy</translation>
 <translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="2222841058024245321">Plocha 7</translation>
@@ -364,6 +367,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2427507373259914951">Kliknutí levým tlačítkem</translation>
 <translation id="2429753432712299108">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Než toto povolení schválíte, zkontrolujte si, zda je na zařízení zobrazen následující přístupový klíč: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
+<translation id="2437771564543046790">Baterie je téměř vybitá. Spořič baterie je zapnutý</translation>
 <translation id="243878895369688216">Otevřeno včera</translation>
 <translation id="2440978926514840421">GIF byl zaznamenán</translation>
 <translation id="2441427462554639370">Nahrávání bylo ukončeno z důvodu kriticky nízkého místa v úložišti</translation>
@@ -811,6 +815,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4086921558679520050">Zapnutí fyzického mikrofonu na zařízení</translation>
 <translation id="4101772068965291327">Otevřít domovskou stránku</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
+<translation id="4113030288477039509">Spravováno vaším administrátorem</translation>
 <translation id="4114315158543974537">Zapnutí funkce Phone Hub</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="411881149140864134">Aktivovat plochu vlevo</translation>
@@ -844,6 +849,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4201033867194214117">Funkce <ph name="FEATURE_NAME" /> není dostupná.</translation>
 <translation id="4201051445878709314">Zobrazit předchozí měsíc</translation>
 <translation id="4209973997261364186">Wi-Fi je zapnuta</translation>
+<translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4212472694152630271">Přepnout na PIN</translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
 <translation id="4217571870635786043">Diktování</translation>
@@ -1200,6 +1206,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="550391772491508736">Pokračovat v odesílání</translation>
 <translation id="5506975627792768506">Zapnout nebo vypnout lupu</translation>
 <translation id="5512042095225963688">Vymazat předchozí slovo</translation>
+<translation id="5519005148254860683">Rozbalit Úkoly Google</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Váš administrátor odstranil všechny profily eSIM. O další informace požádejte administrátora.</translation>
 <translation id="5520909879404821039">Ahoj francouzsky</translation>
@@ -1235,7 +1242,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5599242528220103262">Klávesová zkratka je vypnutá</translation>
 <translation id="5600415762228455511">Soustředění je zapnuté, zbývající čas: <ph name="REMAINING_TIME" />, úkol: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Hlasovou odezvu vypnete stisknutím kláves Ctrl + Alt + Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Před méně než hodinou}=1{Před hodinou}few{Před # hodinami}many{Před # hodiny}other{Před # hodinami}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Připojili jsme vás k lepší síti</translation>
 <translation id="5619862035903135339">Zásady administrátora záznam obrazovky zakazují</translation>
@@ -1408,6 +1414,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6200515304866777730">Aplikace tuto funkci nepodporuje</translation>
 <translation id="6210042900243040400">Připojit zařízení <ph name="NAME" />, které bylo dříve uloženo do účtu <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Pořídit snímek nebo záznam části obrazovky</translation>
+<translation id="621606890568890214">Rozbalit Učebnu Google</translation>
 <translation id="6220928844947387476">Nyní můžete nahrávat sebe a obrazovku současně</translation>
 <translation id="622484624075952240">Dolů</translation>
 <translation id="6228457605945141550">Snížit jas</translation>
@@ -1686,6 +1693,7 @@ Nová instalace</translation>
 <translation id="7340731148882810149">Nabídka automatických kliknutí</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
+<translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="735745346212279324">Síť VPN je odpojena</translation>
 <translation id="7360036564632145207">Změnou nastavení ochrany přístupu k datům pro periferní zařízení můžete optimalizovat výkon</translation>
 <translation id="736045644501761622">Nastavit tapetu a styl</translation>
@@ -1828,7 +1836,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7851768487828137624">Kanárek</translation>
 <translation id="7862292329216937261">Pokud chcete zařízení používat jako host, musíte se odhlásit a poté v dolní části obrazovky vybrat možnost Procházet jako host.</translation>
 <translation id="7866482334467279021">zapnuto</translation>
-<translation id="7866727328666668290">Otevřena poslední karta</translation>
 <translation id="7872786842639831132">Vyp</translation>
 <translation id="7875575368831396199">Na zařízení <ph name="DEVICE_TYPE" /> je pravděpodobně vypnuté rozhraní Bluetooth. Pokud chcete používat Telefonní centrum, zapněte Bluetooth.</translation>
 <translation id="7884446017008693258">Nastavení hotspotu</translation>
@@ -2134,7 +2141,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9002204506712855687">Objevte nejnovější funkce</translation>
 <translation id="9005984960510803406">Otevřít okno Crosh</translation>
 <translation id="9017320285115481645">Zadejte svůj rodičovský přístupový kód služby Family Link.</translation>
-<translation id="9022774213089566801">Často navštěvované</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9029736946581028033">Zařízení se brzy vypne</translation>
 <translation id="9030319654231318877">Do západu slunce vypnuto</translation>

@@ -881,7 +881,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1634224622052500893">WLAN gefunden</translation>
 <translation id="1634783886312010422">Hast du dieses Passwort schon auf <ph name="WEBSITE" /> geändert?</translation>
 <translation id="1636212173818785548">Ok</translation>
-<translation id="1636542522761359943">Willkommen, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />App-Daten können alle Daten sein, die eine App aufgrund der Einstellungen des Entwicklers gespeichert hat, z. B. Kontakte, Nachrichten und Fotos. Sicherungsdaten werden nicht auf dein Google Drive-Speicherkontingent angerechnet.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kannst diesen Dienst in den Einstellungen deaktivieren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Dieses Lesezeichen auf dem iPhone abrufen</translation>
@@ -1616,7 +1615,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="217576141146192373">Drucker kann nicht hinzugefügt werden. Prüfe bitte die Konfiguration des Druckers und versuche es noch einmal.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="217631816678106981">Nicht einfügen</translation>
-<translation id="2177306523871626993">Texterkennungsdateien werden heruntergeladen… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Inkognitotab: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Du aktivierst Chrome OS Flex-Funktionen zur Fehlerbehebung. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB-Speicher aktiviert.</translation>
@@ -1821,6 +1819,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2314774579020744484">Sprache, in die Seiten übersetzt werden sollen</translation>
 <translation id="2316129865977710310">Nein danke</translation>
 <translation id="2316433409811863464">App-Streaming</translation>
+<translation id="2316709634732130529">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % abgeschlossen</translation>
 <translation id="2318143611928805047">Papierformat</translation>
 <translation id="2318817390901984578">Um Android-Apps zu nutzen, musst du dein <ph name="DEVICE_TYPE" /> aufladen und aktualisieren.</translation>
@@ -1867,7 +1866,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2350182423316644347">App wird gestartet...</translation>
 <translation id="235028206512346451">Wenn du dich von deinem Gerät entfernst, wird der Bildschirm automatisch gesperrt. Solange du dich vor deinem Gerät befindest, bleibt er länger aktiv. Wenn du keinen Sperrbildschirm verwendest, wird dein Gerät stattdessen in den Ruhemodus versetzt.</translation>
 <translation id="2351923523007389195">Zugelassen – <ph name="PERMISSION_DETAILS" />. Aktiviere den <ph name="LINK_BEGIN" />Standortzugriff für Systemdienste<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Wenn du dich auf diesem Gerät anmeldest, werden deine Passwörter und weitere Daten aus deinem Google-Konto abgerufen</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Notizen auf dem Sperrbildschirm werden automatisch in <ph name="LOCK_SCREEN_APP_NAME" /> gespeichert. Deine letzte Notiz wird weiterhin auf dem Sperrbildschirm angezeigt.</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
@@ -3658,7 +3656,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3694590407685276748">Textcursor hervorheben</translation>
 <translation id="369489984217678710">Passwörter und andere Anmeldedaten</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Die Sicherheitsprüfungen wurden abgeschlossen. Deine Daten werden hochgeladen.}=1{Die Sicherheitsprüfungen wurden abgeschlossen. Deine Datei wird hochgeladen.}other{Die Sicherheitsprüfungen wurden abgeschlossen. Deine Dateien werden hochgeladen.}}</translation>
-<translation id="3696817060563289264">Texterkennungsdateien heruntergeladen</translation>
 <translation id="369736917241079046">Launcher-Taste + Linkspfeil</translation>
 <translation id="3697716475445175867">zuletzt geöffnet</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Du kannst festlegen, dass von dieser Website keine Benachrichtigungen mehr gesendet werden.}other{Du kannst festlegen, dass von diesen Websites keine Benachrichtigungen mehr gesendet werden.}}</translation>
@@ -3970,7 +3967,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3898768766145818464">Video abspielen oder pausieren</translation>
 <translation id="389901847090970821">Tastatur auswählen</translation>
 <translation id="3900966090527141178">Passwörter exportieren</translation>
-<translation id="3902789559055749153">Wähle aus, wie der Passkey für <ph name="APP_NAME" /> erstellt werden soll</translation>
 <translation id="3903187154317825986">Integrierte Tastatur</translation>
 <translation id="3903696968689283281">Informationen für Wi-Fi Direct-Inhaber:</translation>
 <translation id="3904326018476041253">Standortdienste</translation>
@@ -4143,7 +4139,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4028467762035011525">Eingabemethoden hinzufügen</translation>
 <translation id="4029024445166427442">Launcher-Taste + Umschalttaste + Rücktaste</translation>
 <translation id="4029556917477724407">Von der Seite „<ph name="PAGE_TITLE" />“ zurückgehen</translation>
-<translation id="403088439874411464">Texterkennungsdateien werden heruntergeladen</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
@@ -4381,7 +4376,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4220648711404560261">Bei der Aktivierung ist ein Fehler aufgetreten.</translation>
 <translation id="4222917615373664617">Preis-Tracking ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofonnutzung nicht zulässig</translation>
-<translation id="4223845867739585293">Passkey erstellen</translation>
 <translation id="4225397296022057997">Auf allen Websites</translation>
 <translation id="4228071595943929139">E-Mail-Adresse der Organisation verwenden</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist nicht zulässig}other{Einige Erweiterungen sind nicht zulässig}}</translation>
@@ -4692,7 +4686,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4449948729197510913">Dein Nutzername gehört zum Unternehmenskonto deiner Organisation. Wenn du Geräte für das Konto registrieren möchtest, musst du zuerst in der Admin-Konsole die Domaininhaberschaft verifizieren. Du benötigst Administratorberechtigungen für das zu verifizierende Konto.</translation>
 <translation id="4450974146388585462">Diagnose</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> hat ein aktives TPM erkannt, das deine Daten sicherer speichern kann.</translation>
-<translation id="4451203458188403050">Text aus PDF extrahieren</translation>
 <translation id="4452898361839215358">oder PPD-Datei auswählen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Lege einen Finger auf den Fingerabdrucksensor rechts oben an der Tastatur. Dein Fingerabdruck wird sicher gespeichert und verlässt dein <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="4453946976636652378">Mit <ph name="SEARCH_ENGINE_NAME" /> suchen oder eine URL eingeben</translation>
@@ -5492,6 +5485,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5079010647467150187">Integriertes VPN hinzufügen…</translation>
 <translation id="5079460277417557557">Jetzt kannst du gespeicherte Tabgruppen auf allen Computern verwenden, auf denen du angemeldet bist</translation>
 <translation id="5079699784114005398">Wenn du diese Einstellung aktivierst, sind deine Apps auf allen ChromeOS-Geräten verfügbar, nachdem du dich mit deinem Google-Konto angemeldet hast. Über den Chrome-Browser installierte Web-Apps werden synchronisiert, auch wenn die Browsersynchronisierung deaktiviert ist.</translation>
+<translation id="5079950360618752063">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="508059534790499809">Kerberos-Ticket aktualisieren</translation>
 <translation id="5081124414979006563">Gastpr&amp;ofil öffnen</translation>
 <translation id="5083035541015925118">Strg + Alt + Aufwärtspfeil</translation>
@@ -7259,7 +7253,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6429384232893414837">Fehler beim Aktualisieren</translation>
 <translation id="6430814529589430811">Base64-codierter ASCII-Code, Einzelzertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> richtet automatische Updates für alle Nutzer dieses Computers ein.</translation>
-<translation id="6432072919019816301">Du kannst PDFs scannen, um Text für Hilfstechnologien zu extrahieren</translation>
 <translation id="6434104957329207050">Punktscan-Geschwindigkeit</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6434325376267409267">Dein Gerät muss aktualisiert werden, bevor du <ph name="APP_NAME" /> verwenden kannst.</translation>
@@ -8868,7 +8861,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7660146600670077843">Klicke mit der rechten Maustaste auf einen Tab und wähle „Tab neuer Gruppe hinzufügen“ aus</translation>
 <translation id="7661259717474717992">Speichern und Lesen von Cookiedaten zulassen</translation>
 <translation id="7661451191293163002">Es kann kein Anmeldezertifikat abgerufen werden.</translation>
-<translation id="7662164944369232556">Texterkennungsdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="7662283695561029522">Zum Konfigurieren tippen</translation>
 <translation id="7663719505383602579">Empfänger: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Tastenkombination verfügbar</translation>

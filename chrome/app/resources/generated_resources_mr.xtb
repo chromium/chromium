@@ -884,7 +884,6 @@
 <translation id="1634224622052500893">वायफाय नेटवर्क सापडले</translation>
 <translation id="1634783886312010422">तुम्ही <ph name="WEBSITE" /> वर हा पासवर्ड आधीच बदलला आहे का?</translation>
 <translation id="1636212173818785548">ठीक आहे</translation>
-<translation id="1636542522761359943">स्वागत आहे, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />अ‍ॅप डेटा म्हणजे अ‍ॅपने सेव्ह केलेला (डेव्हलपर सेटिंंग्जवर आधारित) कोणताही डेटा असू शकतो, ज्यामध्ये संपर्क, मेसेज आणि फोटो यांसारखा डेटा असतो. बॅकअप डेटा तुमच्या Drive स्टोरेजच्या कोटामध्ये मोजला जाणार नाही.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही सेटिंग्ज मध्ये ही सेवा बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">आपल्या iPhone वर हा बुकमार्क मिळवा</translation>
@@ -1628,7 +1627,6 @@
 <translation id="217576141146192373">प्रिंटर जोडता आला नाही. कृपया तुमच्या प्रिंटरचे कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="217631816678106981">पेस्ट करू नका</translation>
-<translation id="2177306523871626993">मजकूर रेकग्निशन फाइल डाउनलोड करत आहे… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">गुप्त टॅब: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">तुम्ही ChromeOS Flex ची डीबगिंग वैशिष्‍ट्ये सुरू करत आहात, ज्यामुळे SSH daemon सेट केले जाईल आणि USB ड्राइव्‍हमधून बूट करणे सुरू केले जाईल.</translation>
@@ -1836,6 +1834,7 @@
 <translation id="2314774579020744484">पेजचे भाषांतर करताना वापरलेली भाषा</translation>
 <translation id="2316129865977710310">नाही, नको</translation>
 <translation id="2316433409811863464">ॲप स्ट्रीम करणे</translation>
+<translation id="2316709634732130529">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% पूर्ण झाले</translation>
 <translation id="2318143611928805047">कागदाचा आकार</translation>
 <translation id="2318817390901984578">Android अ‍ॅप्स वापरण्यासाठी, तुमचे <ph name="DEVICE_TYPE" /> चार्ज करा आणि अपडेट करा.</translation>
@@ -1882,7 +1881,6 @@
 <translation id="2350182423316644347">ॲप्लिकेशन सुरू करत आहे...</translation>
 <translation id="235028206512346451">तुम्ही तुमच्या डिव्हाइसपासून दूर गेल्यास, तुमची स्क्रीन आपोआप लॉक होईल. तुम्ही तुमच्या डिव्हाइससमोर असता, तेव्हा तुमची स्क्रीन जास्त वेळ सुरू राहील. तुम्ही लॉक स्‍क्रीन वापरत नसल्यास, तुमचे डिव्हाइस लॉक होण्याऐवजी स्लीप मोडवर जाईल.</translation>
 <translation id="2351923523007389195">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टीम स्थान अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
-<translation id="2352305801620974284">तुम्ही या डिव्हाइसवर साइन इन करता, तेव्हा तुम्हाला तुमच्या Google खाते वरून तुमचे पासवर्ड आणि इतर बऱ्याच गोष्टी मिळतात</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">लॉक स्‍क्रीन नोट <ph name="LOCK_SCREEN_APP_NAME" /> वर आपोआप सेव्ह केल्या जातात. तुमची सर्वात अलीकडील नोट लॉक स्‍क्रीनवर राहील.</translation>
 <translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
@@ -3675,7 +3673,6 @@
 <translation id="3694590407685276748">मजकूर कर्सर हायलाइट करा</translation>
 <translation id="369489984217678710">पासवर्ड आणि इतर साइन इन डेटा</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{सुरक्षा तपासण्या पूर्ण झाल्या. तुमचा डेटा अपलोड केला जाईल.}=1{सुरक्षा तपासण्या पूर्ण झाल्या. तुमची फाइल अपलोड केली जाईल.}other{सुरक्षा तपासण्या पूर्ण झाल्या. तुमच्या फाइल अपलोड केल्या जातील.}}</translation>
-<translation id="3696817060563289264">मजकूर रेकग्निशनच्‍या फाइल डाउनलोड केल्‍या</translation>
 <translation id="369736917241079046">launcher + लेफ्ट अ‍ॅरो</translation>
 <translation id="3697716475445175867">शेवटी उघडलेले</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{तुम्ही या साइटला भविष्यातील सूचना पाठवण्यापासून थांबवू शकता.}other{तुम्ही या साइटना भविष्यातील सूचना पाठवण्यापासून थांबवू शकता.}}</translation>
@@ -3987,7 +3984,6 @@
 <translation id="3898768766145818464">व्हिडिओ प्ले करा किंवा थांबवा</translation>
 <translation id="389901847090970821">कीबोर्ड निवडा</translation>
 <translation id="3900966090527141178">पासवर्ड एक्सपोर्ट करा</translation>
-<translation id="3902789559055749153">तुम्हाला <ph name="APP_NAME" /> साठी कशाप्रकारे पासकी तयार करायची आहे ते निवडा</translation>
 <translation id="3903187154317825986">बिल्ट-इन कीबोर्ड</translation>
 <translation id="3903696968689283281">वायफाय डिरेक्ट च्या मालकांसंबंधित माहिती:</translation>
 <translation id="3904326018476041253">स्‍थान सेवा</translation>
@@ -4160,7 +4156,6 @@
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
 <translation id="4029024445166427442">launcher + shift + backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेजवरून मागे जा</translation>
-<translation id="403088439874411464">मजकूर रेकग्निशन फाइल डाउनलोड करत आहे</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4031527940632463547">सेन्सर ब्लॉक केले गेले आहेत</translation>
 <translation id="4033471457476425443">नवीन फोल्डर जोडा</translation>
@@ -4396,7 +4391,6 @@
 <translation id="4220648711404560261">ॲक्टिव्हेट करताना एरर आली.</translation>
 <translation id="4222917615373664617">किमतीचा माग ठेवणे सुरू केले. किंमत <ph name="CURRENT_PRICE" /> आहे.</translation>
 <translation id="4223404254440398437">मायक्रोफोनला अनुमती नाही</translation>
-<translation id="4223845867739585293">पासकी तयार करा</translation>
 <translation id="4225397296022057997">सर्व साइटवर</translation>
 <translation id="4228071595943929139">तुमच्या संस्थेचा ईमेल अ‍ॅड्रेस वापरा</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला अनुमती नाही}other{काही एक्स्टेंशनला अनुमती नाही}}</translation>
@@ -4707,7 +4701,6 @@
 <translation id="4449948729197510913">तुमचे वापरकर्ता नाव तुमच्या संस्थेच्या एंटरप्राइझ खात्याच्या मालकीचे आहे. खात्यावर डिव्हाइसची नोंदणी करण्यासाठी, अ‍ॅडमिन कन्सोलमध्ये प्रथम डोमेनच्या मालकीची पडताळणी करा. पडताळणी करण्यासाठी, खात्यावर तुमच्याकडे अ‍ॅडमिनिस्ट्रेटिव्ह विशेषाधिकार असावे लागतील.</translation>
 <translation id="4450974146388585462">निदान करा</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ने अ‍ॅक्टिव्ह TPM डिटेक्ट केले आहे जे तुमचा डेटा आणखी सुरक्षितरीत्या स्टोअर करू शकते.</translation>
-<translation id="4451203458188403050">PDF मधून मजकूर काढा</translation>
 <translation id="4452898361839215358">किंवा PPD निवडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">तुमच्या कीबोर्डच्या सर्वात वरच्या उजव्या कोपऱ्यातील फिंगरप्रिंट सेन्सरला स्पर्श करा. तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> वर शोधा किंवा URL टाइप करा</translation>
@@ -5507,6 +5500,7 @@
 <translation id="5079010647467150187">बिल्ट-इन VPN जोडा...</translation>
 <translation id="5079460277417557557">तुम्ही आता तुमच्या साइन इन केलेल्या सर्व डेस्कटॉप डिव्हाइसवर सेव्ह केलेले टॅब गट वापरू शकता</translation>
 <translation id="5079699784114005398">सुरू केल्यावर, तुम्ही तुमचे Google खाते वापरून साइन इन केल्यानंतर तुमची अ‍ॅप्स कोणत्याही ChromeOS डिव्हाइसवर उपलब्ध असतील. ब्राउझर सिंक बंद केलेले असले, तरीही Chrome ब्राउझरवरून इंस्टॉल केलेली वेब ॲप्स सिंक केली जातील.</translation>
+<translation id="5079950360618752063">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="508059534790499809">Kerberos तिकीट रिफ्रेश करा</translation>
 <translation id="5081124414979006563">&amp;अतिथी प्रोफाइल उघडा</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
@@ -7279,7 +7273,6 @@
 <translation id="6429384232893414837">अपडेट एरर</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, एकल सर्टिफिकेट</translation>
 <translation id="6431347207794742960">या कॉंप्युटरच्या सर्व वापरकर्त्यांसाठी <ph name="PRODUCT_NAME" /> स्वयंचलित अपडेट सेट करतील.</translation>
-<translation id="6432072919019816301">साहाय्यकारी तंत्रज्ञानासाठी मजकूर काढून टाकण्याकरीता PDF स्कॅन करा</translation>
 <translation id="6434104957329207050">पॉइंट स्कॅन करण्याची गती</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6434325376267409267">तुम्ही <ph name="APP_NAME" /> वापरण्यापूर्वी तुमचे डिव्हाइस अपडेट केले जाणे आवश्यक आहे.</translation>
@@ -8888,7 +8881,6 @@
 <translation id="7660146600670077843">टॅबवर राइट-क्लिक करा आणि "नवीन गट यामध्ये टॅब जोडा" निवडा</translation>
 <translation id="7661259717474717992">कुकी डेटा सेव्ह करण्यास आणि वाचण्यास साइटना अनुमती द्या</translation>
 <translation id="7661451191293163002">नोंदणी सर्टिफिकेट प्राप्त करणे शक्य झाले नाही.</translation>
-<translation id="7662164944369232556">मजकूर फाइल डाउनलोड करता आल्या नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7662283695561029522">कॉन्फिगर करण्यासाठी टॅप करा</translation>
 <translation id="7663719505383602579">प्राप्तकर्ता: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">कीबोर्ड शॉर्टकट उपलब्ध आहे</translation>

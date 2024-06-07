@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN-adatok szerkesztése</translation>
 <translation id="2195732836444333448">Jelenleg nincs szabad kapacitás. Nézzen vissza kicsit később.</translation>
 <translation id="2201758491318984023">kerékpár</translation>
-<translation id="2203222757805818543">Jelenlegi ütemezés a következőre állítva: <ph name="SUNRISE" />–<ph name="SUNSET" />. A sötét mód ütemezésének automatikus frissítéséhez <ph name="BEGIN_LINK" />kapcsolja be a helyhozzáférést<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">melegvizes forrás</translation>
 <translation id="2203642483788377106">szirt</translation>
 <translation id="2208388655216963643">impresszionista</translation>
@@ -361,6 +360,7 @@
 <translation id="3017079585324758401">Háttér</translation>
 <translation id="3027578600144895987">Kamera bezárása</translation>
 <translation id="3031560714565892478">Az eszköz egy videokamera.</translation>
+<translation id="3051968340259309715">Ez lehetővé teszi a rendszerszolgáltatások számára, hogy a Helymeghatározás pontossága beállítást használják az Ön tartózkodási helyének meghatározásához. A Helymeghatározás pontossága a vezeték nélküli jelekkel (például a Wi-Fi hozzáférési pontokkal, a mobiltornyokkal és a GPS-szel) kapcsolatos információkat és az eszköz érzékelőinek (például a gyorsulásmérőnek és a giroszkópnak) az adatait használja arra, hogy megbecsülje az eszköz helyét. A helyadatokat a Beállítások &gt; Adatvédelem és biztonság &gt; Adatvédelmi beállítások &gt; Helyhozzáférés menüpontban kapcsolhatja ki. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Befejező pont</translation>
 <translation id="3060579846059757016">Főbb pontok</translation>

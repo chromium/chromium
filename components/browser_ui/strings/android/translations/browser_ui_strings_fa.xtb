@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">‏به دستگاه USB متصل است</translation>
 <translation id="4194328954146351878">‏قبل‌از اینکه به سایت‌ها اجازه داده شود اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4200726100658658164">باز کردن «تنظیمات مکان»</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> از <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">اعلان‌ها ممکن است دستگاه را بلرزانند</translation>
 <translation id="4259722352634471385">پیمایش مسدود شده است: <ph name="URL" /></translation>
 <translation id="4278390842282768270">مجاز است</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">بزرگ کردن</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="4336566011000459927">‏‫Chrome کوکی‌ها را امروز دوباره محدود خواهد کرد</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> آخرین برگه شما</translation>
 <translation id="4338831206024587507">همه سایت‌های تحت <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">از اینکه سایت‌ها بدانند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید جلوگیری می‌شود</translation>
 <translation id="4412992751769744546">اجازه به کوکی‌های شخص ثالث</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">کنترل کردن دسترسی این سایت به دستگاه</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6042308850641462728">بیشتر</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> آخرین برگه شما</translation>
 <translation id="6064125863973209585">بارگیری‌های کامل‌شده</translation>
 <translation id="6071501408666570960">ممکن است از سیستم این سایت خارج شده باشید</translation>
 <translation id="6120483543004435978">هرگاه روشن باشد، سایت‌ها می‌توانند مطلع شدن از مواقعی را که فعالانه از دستگاهتان استفاده می‌کنید درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند بدانند چه مواقعی فعالانه از دستگاهتان استفاده می‌کنید.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
 <translation id="6864395892908308021">‏این دستگاه نمی‌تواند NFC را بخواند</translation>
-<translation id="6867014948848323204">از <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">سایت‌ها از خواندن نوشتار و تصاویر بریده‌دان منع شوند</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6950072572526089586">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاهتان ذخیره می‌کنند.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> از <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>

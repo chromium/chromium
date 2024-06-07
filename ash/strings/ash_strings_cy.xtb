@@ -72,6 +72,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1235458158152011030">Rhwydweithiau hysbys</translation>
 <translation id="1239161794459865856">Mae <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
 <translation id="1240638468526743569">Ap</translation>
+<translation id="1242198791279543032">Mae hysbysiadau wedi'u distewi</translation>
 <translation id="1242883863226959074">dyfais</translation>
 <translation id="1245644940275736236">Mynd i Assistant</translation>
 <translation id="124678866338384709">Cau'r tab presennol</translation>
@@ -178,6 +179,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1610778689852195798">"Dadwneud"</translation>
 <translation id="1611993646327628135">Ymlaen</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1623768535032616219">Crebachu Google Classroom</translation>
 <translation id="1632985212731562677">Gellir analluogi Switsh Mynediad yn y Gosodiadau &gt; Hygyrchedd.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> o ddyfeisiau</translation>
 <translation id="1639239467298939599">Wrthi'n llwytho</translation>
@@ -300,9 +302,11 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="216955976692983107">Ffenestr teilsen newid maint i'r dde</translation>
 <translation id="2185166372312820725">Mynd i'r tab blaenorol</translation>
 <translation id="2185444992308415167">Mynd trwy dabiau 1 i 8</translation>
+<translation id="2195732836444333448">Capasiti yn llawn ar hyn o bryd. Dewch yn ôl yn fuan.</translation>
 <translation id="2198625180564913276">Wrthi'n ychwanegu proffil. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="219905428774326614">Lansiwr, pob ap</translation>
 <translation id="2201071101391734388">Llun diweddar <ph name="INDEX" /> o <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Crebachu Google Tasks</translation>
 <translation id="2208323208084708176">Modd bwrdd gwaith unedig</translation>
 <translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="2222841058024245321">Desg 7</translation>
@@ -364,6 +368,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2427507373259914951">Clic chwith</translation>
 <translation id="2429753432712299108">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Cyn derbyn, cadarnhewch fod y cod pass hwn yn cael ei ddangos ar y ddyfais honno: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="2437771564543046790">Lefel batri isel. Mae'r modd Arbed Batri wedi'i droi ymlaen</translation>
 <translation id="243878895369688216">Agorwyd ddoe</translation>
 <translation id="2440978926514840421">Wedi recordio GIF</translation>
 <translation id="2441427462554639370">Daeth y recordiad i ben oherwydd lle storio hynod o isel</translation>
@@ -811,6 +816,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4086921558679520050">Trowch switsh meic ffisegol ymlaen ar eich dyfais</translation>
 <translation id="4101772068965291327">Agor y dudalen hafan</translation>
 <translation id="4112140312785995938">Mynd yn ôl</translation>
+<translation id="4113030288477039509">Rheolir gan eich gweinyddwr</translation>
 <translation id="4114315158543974537">Troi Phone Hub ymlaen</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Gweithredu'r ddesg ar y chwith</translation>
@@ -844,6 +850,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4201033867194214117">Nid yw <ph name="FEATURE_NAME" /> ar gael.</translation>
 <translation id="4201051445878709314">Dangos y mis blaenorol</translation>
 <translation id="4209973997261364186">Mae Wi-Fi wedi'i droi ymlaen</translation>
+<translation id="4212246570487010370">Parhau i bori</translation>
 <translation id="4212472694152630271">Newid i PIN</translation>
 <translation id="4215497585250573029">Gosodiadau VPN</translation>
 <translation id="4217571870635786043">Arddweud</translation>
@@ -1200,6 +1207,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="550391772491508736">Parhau â chastio</translation>
 <translation id="5506975627792768506">Troi'r chwyddwydr ymlaen neu ei ddiffodd</translation>
 <translation id="5512042095225963688">Dileu'r gair blaenorol</translation>
+<translation id="5519005148254860683">Ehangu Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Mae eich gweinyddwr wedi tynnu eich proffiliau eSIM. Cysylltwch â'ch gweinyddwr am ragor o wybodaeth.</translation>
 <translation id="5520909879404821039">Helo yn Ffrangeg</translation>
@@ -1235,7 +1243,6 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5599242528220103262">Mae llwybr byr bysellfwrdd wedi'i ddiffodd</translation>
 <translation id="5600415762228455511">Mae ffocysu ymlaen, <ph name="REMAINING_TIME" /> ar ôl, wrthi'n ffocysu ar: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pwyswch Ctrl + Alt + Z i analluogi adborth ar lafar.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 awr yn ôl}=1{1 awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Rydym wedi eich newid i rwydwaith well</translation>
 <translation id="5619862035903135339">Mae polisi gweinyddwr yn analluogi tynnu sgrinlun</translation>
@@ -1408,6 +1415,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6200515304866777730">Ni chefnogir hyn gan yr ap</translation>
 <translation id="6210042900243040400">Cysylltu <ph name="NAME" /> a gadwyd yn flaenorol i <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Tynnu sgrinlun neu gwneud recordiad sgrîn rhannol</translation>
+<translation id="621606890568890214">Ehangu Google Classroom</translation>
 <translation id="6220928844947387476">Gallwch bellach recordio eich hun a'ch sgrîn ar yr un pryd</translation>
 <translation id="622484624075952240">I lawr</translation>
 <translation id="6228457605945141550">Gwneud yn llai llachar</translation>
@@ -1687,6 +1695,7 @@ Gosodiad newydd</translation>
 <translation id="7340731148882810149">Dewislen cliciau awtomatig</translation>
 <translation id="7346909386216857016">Iawn, rwy'n deall</translation>
 <translation id="7348093485538360975">Bysellfwrdd ar y sgrîn</translation>
+<translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
 <translation id="735745346212279324">Mae'r VPN wedi'i ddatgysylltu</translation>
 <translation id="7360036564632145207">Mae'n bosib y bydd newid eich diogelwch mynediad data ar gyfer gosodiadau perifferolion un optimeiddio perfformiad</translation>
 <translation id="736045644501761622">Gosod papur wal ac arddull</translation>
@@ -1829,7 +1838,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">I ddefnyddio'r ddyfais fel gwestai, mae angen i chi allgofnodi ac yna dewis Pori fel Gwestai ar waelod y sgrîn.</translation>
 <translation id="7866482334467279021">ymlaen</translation>
-<translation id="7866727328666668290">Tab diwethaf a agorwyd</translation>
 <translation id="7872786842639831132">Diffodd</translation>
 <translation id="7875575368831396199">Mae'n ymddangos bod Bluetooth wedi'i ddiffodd ar eich <ph name="DEVICE_TYPE" />. Trowch Bluetooth ymlaen i ddefnyddio Phone Hub.</translation>
 <translation id="7884446017008693258">Gosodiadau Poethfan</translation>
@@ -2136,7 +2144,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9002204506712855687">Archwilio'r nodweddion diweddaraf</translation>
 <translation id="9005984960510803406">Agor ffenestr Crosh</translation>
 <translation id="9017320285115481645">Rhowch god mynediad rhiant Family Link.</translation>
-<translation id="9022774213089566801">Ymwelir yn aml</translation>
 <translation id="9024331582947483881">sgrîn lawn</translation>
 <translation id="9029736946581028033">Bydd y ddyfais yn diffodd cyn bo hir</translation>
 <translation id="9030319654231318877">Diffodd tan fachlud haul</translation>

@@ -2681,6 +2681,7 @@
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative de récupération :</translation>
 <translation id="617256461084925519">Google Chrome essaie de vérifier qu'il s'agit bien de vous afin de pouvoir remplir vos informations de paiement.</translation>
+<translation id="6173208311907792313">Terminez votre achat en utilisant Windows Hello</translation>
 <translation id="6176387967264100435">Ce prix est élevé</translation>
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6177531123306197852">Enveloppe C2</translation>
@@ -2986,7 +2987,6 @@
 <translation id="6753269504797312559">Valeur de la règle</translation>
 <translation id="6753434778807740853">Supprimer l'entrée <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Comptes d'épargne</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Votre appareil s'est mis en veille.</translation>
 <translation id="6760548828952594090">Cette carte n'a pas pu être enregistrée dans votre compte Google. Elle a plutôt été enregistrée dans Chrome sur cet appareil.</translation>
 <translation id="6766558780547452153">Cuisine et recettes</translation>
@@ -3839,6 +3839,7 @@ Détails supplémentaires :
 <translation id="8332188693563227489">Accès à l'adresse <ph name="HOST_NAME" /> refusé</translation>
 <translation id="833262891116910667">Surligner</translation>
 <translation id="8339163506404995330">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites</translation>
+<translation id="8339275256517065202">Terminez votre achat en utilisant Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">L'inscription à la carte virtuelle est ouverte à pleine hauteur</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
@@ -4032,6 +4033,7 @@ Détails supplémentaires :
 <translation id="8726549941689275341">Taille de la page :</translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
+<translation id="8731917264694569036">Terminez votre achat en utilisant votre appareil</translation>
 <translation id="8733345475331865475">Assurance automobile</translation>
 <translation id="8733764070897080460">Vous pouvez bloquer les sujets que vous ne souhaitez pas partager avec les sites. En outre, Chrome supprime automatiquement vos sujets datant de plus de quatre semaines. En savoir plus</translation>
 <translation id="8734529307927223492">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
@@ -4225,6 +4227,7 @@ Détails supplémentaires :
 <translation id="9116548361133462832">En savoir plus sur les annonces dans Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour reprendre votre recherche et voir l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="9119042192571987207">Téléversé</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> veut confirmer qu'il s'agit bien de vous</translation>
 <translation id="912327514020027767">Jupes</translation>
 <translation id="912414390325846156">Vous avez précédemment choisi de ne pas accorder l'autorisation à ce site</translation>
 <translation id="9128870381267983090">Connexion au réseau</translation>
@@ -4247,7 +4250,6 @@ Détails supplémentaires :
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut comporter du contenu de nature délicate}one{<ph name="FILE_COUNT" /> fichier peut comporter du contenu de nature délicate}other{<ph name="FILE_COUNT" /> fichiers peuvent comporter du contenu de nature délicate}}</translation>
-<translation id="9164742147345933553">os://indicateurs</translation>
 <translation id="9165305804774426672">Les sites que vous visitez peuvent également déterminer ce qui vous intéresse en fonction de votre activité sur ceux-ci. Par exemple, si vous visitez un site qui vend des chaussures de course de fond, le site peut déterminer que vous vous intéressez aux marathons.</translation>
 <translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et sur la mesure des annonces</translation>
 <translation id="9167054383925257837">Renseignements sur le navigateur et le système d'exploitation de l'appareil (tels que les versions du navigateur et du système d'exploitation)</translation>

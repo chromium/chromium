@@ -2985,7 +2985,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6753269504797312559">Politikas vērtība</translation>
 <translation id="6753434778807740853">Dzēst ierakstu “<ph name="ENTRY_VOICEOVER" />”</translation>
 <translation id="6754547388777247439">Krājkonti</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Ierīce tika pārslēgta miega režīmā.</translation>
 <translation id="6760548828952594090">Šo karti nevarēja saglabāt jūsu Google kontā. Taču tā ir saglabāta pārlūkā Chrome šajā ierīcē.</translation>
 <translation id="6766558780547452153">Kulinārija un receptes</translation>
@@ -4247,7 +4246,6 @@ Papildu informācija:
 <translation id="9155646082713385498">Žurnāli</translation>
 <translation id="9157595877708044936">Notiek uzstādīšana...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Failā <ph name="FILE_NAME" /> var būt ietverts sensitīvs saturs}zero{<ph name="FILE_COUNT" /> failos var būt ietverts sensitīvs saturs}one{<ph name="FILE_COUNT" /> failā var būt ietverts sensitīvs saturs}other{<ph name="FILE_COUNT" /> failos var būt ietverts sensitīvs saturs}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Apmeklētās vietnes var arī noteikt to, kas jums patīk, ņemot vērā jūsu darbības vietnē. Piemēram, ja apmeklējat vietni, kurā tiek tirgoti garo distanču skriešanas apavi, vietne var izsecināt, ka interesējaties par maratonu skriešanu.</translation>
 <translation id="9166851138617700776">Plašāka informācija par vietnēs ieteiktajām reklāmām un reklāmu izvērtēšanu</translation>
 <translation id="9167054383925257837">pārlūka un ierīces OS informāciju (piemēram, pārlūka un operētājsistēmas versijas);</translation>

@@ -301,6 +301,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="216955976692983107">Finestra redimensionada en mosaic cap a la dreta</translation>
 <translation id="2185166372312820725">Ves a la pestanya anterior</translation>
 <translation id="2185444992308415167">Navega per les pestanyes de l'1 a la 8</translation>
+<translation id="2195732836444333448">Estic al límit de la meva capacitat. Torna aviat.</translation>
 <translation id="2198625180564913276">S'està afegint el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="219905428774326614">Menú d'aplicacions, totes les aplicacions</translation>
 <translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +815,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4086921558679520050">Activa l'interruptor del micròfon físic al dispositiu</translation>
 <translation id="4101772068965291327">Obre la pàgina d'inici</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
+<translation id="4113030288477039509">Gestionat per l'administrador</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activa l'escriptori a l'esquerra</translation>
@@ -847,6 +849,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no està disponible.</translation>
 <translation id="4201051445878709314">Mostra el mes anterior</translation>
 <translation id="4209973997261364186">La Wi‑Fi està activada</translation>
+<translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4212472694152630271">Canvia a PIN</translation>
 <translation id="4215497585250573029">Configuració de VPN</translation>
 <translation id="4217571870635786043">Dictat</translation>
@@ -1239,7 +1242,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5599242528220103262">La tecla de drecera està desactivada</translation>
 <translation id="5600415762228455511">El mode Sense distraccions està activat, amb <ph name="REMAINING_TIME" /> de temps restant. T'estàs concentrant en <ph name="TASK_NAME" />.</translation>
 <translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Fa menys d'una hora}=1{Fa 1 hora}other{Fa # hores}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">T'hem canviat a una xarxa millor</translation>
 <translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
@@ -1692,6 +1694,7 @@ Instal·lació nova</translation>
 <translation id="7340731148882810149">Menú de clics automàtics</translation>
 <translation id="7346909386216857016">D'acord</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
+<translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7360036564632145207">Canviar l'opció de configuració de la protecció d'accés a les dades per a perifèrics pot optimitzar el rendiment</translation>
 <translation id="736045644501761622">Estableix l'estil i el fons de pantalla</translation>
@@ -1834,7 +1837,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Per utilitzar el dispositiu com a convidat, tanca la sessió i, a la part inferior de la pantalla, selecciona Navega com a convidat.</translation>
 <translation id="7866482334467279021">activat</translation>
-<translation id="7866727328666668290">S'ha obert la darrera pestanya</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
 <translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
@@ -2141,7 +2143,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9002204506712855687">Explora les funcions més recents</translation>
 <translation id="9005984960510803406">Obre la finestra de Crosh</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
-<translation id="9022774213089566801">Visitats amb freqüència</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9029736946581028033">El dispositiu s'apagarà aviat</translation>
 <translation id="9030319654231318877">Desactivat fins al vespre</translation>

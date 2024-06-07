@@ -285,6 +285,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2515921719039583189">Törli Chrome-adatait erről az eszközről?</translation>
 <translation id="2517113738956581680">Teljes méretű munkalap</translation>
 <translation id="2523184218357549926">A felkeresett oldalak URL-címének elküldése a Google-nak</translation>
+<translation id="2524132927880411790">Ugrás a Google alkalmazás Hangalapú keresés oldalára</translation>
 <translation id="2527209463677295330">Hasznosabb találatokat kaphat, ha nagyobb részt jelöl ki az oldal szövegéből</translation>
 <translation id="2527497042232966453">Átváltva az inkognitó módban használt lapokra</translation>
 <translation id="2527779675047087889">Vágólap tartalmának elrejtése</translation>
@@ -520,6 +521,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="363596933471559332">Automatikus bejelentkezés webhelyekre a tárolt hitelesítő adatokkal. Ha ez a funkció ki van kapcsolva, mindig meg kell adnia hitelesítő adatait, amikor egy webhelyre szeretne bejelentkezni.</translation>
 <translation id="3636940436873918441">Előnyben részesített nyelvek</translation>
 <translation id="3637744895182738742">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Ugrás a Google alkalmazás főoldalára</translation>
 <translation id="368329460027487650">Kijelentkezve. Megnyitja a bejelentkezési lehetőségeket.</translation>
 <translation id="3687645719033307815">Ön az oldal előnézetét nézi</translation>
 <translation id="3690369331356918524">Figyelmeztetést küld, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek.</translation>
@@ -1475,6 +1477,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="813082847718468539">Az oldalinformációk megtekintése</translation>
 <translation id="8135406045838672858">A letöltött PDF-fájlok automatikusan a következő alkalmazással nyílnak meg: <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nem kell megjegyeznie a jelszót. A rendszer a Google Jelszókezelőbe menti.</translation>
+<translation id="8152331954420209374">Ugrás a Lenshez</translation>
 <translation id="8163820386638255770">Jelszavai Google-fiókjában való használatához és tárolásához igazolja személyazonosságát</translation>
 <translation id="8171286197772512427">„Megosztás összefoglalással” visszajelzési munkalap megnyitva</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8348430946834215779">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt.</translation>
 <translation id="8354977102499939946">Gyorsan végezhet hangalapú keresést. A gyorsparancs szerkesztéséhez lépjen a Beállításokhoz.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> letöltés visszaállítva</translation>
+<translation id="8367705492654390392">Kérdezzen bármit</translation>
 <translation id="8368001212524806591">Ár nyomon követése</translation>
 <translation id="8378850197701296741">Vannak könyvjelzői, előzményei és más beállításai a(z) <ph name="FROM_ACCOUNT" /> fiókból.</translation>
 <translation id="8387617938027387193">Igazolja, hogy Ön az</translation>

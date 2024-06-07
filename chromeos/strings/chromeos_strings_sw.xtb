@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Badilisha maelezo ya APN</translation>
 <translation id="2195732836444333448">Nyenzo imefikia kikomo kwa sasa. Rudi tena baada ya muda mfupi.</translation>
 <translation id="2201758491318984023">baiskeli</translation>
-<translation id="2203222757805818543">Ratiba ya sasa imewekwa kuwa <ph name="SUNRISE" /> hadi <ph name="SUNSET" />. Ili usasishe kiotomatiki ratiba ya hali nyeusi, <ph name="BEGIN_LINK" />washa ufikiaji wa mahali<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">chemichemi ya maji moto</translation>
 <translation id="2203642483788377106">jabali</translation>
 <translation id="2208388655216963643">sanaa ya uhalisi</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">mlima wa mchanga</translation>
 <translation id="2619761439309613843">Onyesha Upya Kila Siku</translation>
 <translation id="2620436844016719705">Mfumo</translation>
+<translation id="2637303424821734920">IMEZIMWA - Ili uonyeshe taarifa za hali ya hewa ya mahali ulipo <ph name="BEGIN_LINK" />ruhusu ufikiaji wa data ya mahali kwenye kifaa<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Picha ya akaunti kwenye kifaa</translation>
 <translation id="2640549051766135490">Albamu ya <ph name="TITLE" /> <ph name="DESC" /> imechaguliwa</translation>
 <translation id="2645380101799517405">Vidhibiti</translation>

@@ -285,6 +285,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2515921719039583189">Usunąć dane Chrome z tego urządzenia?</translation>
 <translation id="2517113738956581680">Plansza w pełnym rozmiarze</translation>
 <translation id="2523184218357549926">Adresy URL odwiedzanych stron będą wysyłane do Google</translation>
+<translation id="2524132927880411790">Przejdź do wyszukiwania głosowego w aplikacji Google</translation>
 <translation id="2527209463677295330">Jeśli dołączysz więcej tekstu ze strony, możesz zobaczyć lepsze wyniki</translation>
 <translation id="2527497042232966453">Przełączono na karty incognito</translation>
 <translation id="2527779675047087889">Ukryj zawartość schowka</translation>
@@ -520,6 +521,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="363596933471559332">Automatycznie loguj się na stronach, używając zapisanych danych logowania. Gdy ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o weryfikację.</translation>
 <translation id="3636940436873918441">Preferowane języki</translation>
 <translation id="3637744895182738742">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Otwórz stronę główną aplikacji Google</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
 <translation id="3687645719033307815">Widzisz podgląd strony</translation>
 <translation id="3690369331356918524">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
@@ -1475,6 +1477,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8135406045838672858">Pobrane pliki PDF otwierają się automatycznie w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nie musisz zapamiętywać tego hasła. Zapisze je Menedżer haseł Google.</translation>
+<translation id="8152331954420209374">Przejdź do Obiektywu</translation>
 <translation id="8163820386638255770">Potwierdź swoją tożsamość, aby móc zapisywać hasła na koncie Google i ich używać</translation>
 <translation id="8171286197772512427">Udostępnianie za pomocą arkusza opinii na temat podsumowania zostało otwarte</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8348430946834215779">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują</translation>
 <translation id="8354977102499939946">Szybko wyszukaj głosowo. Aby edytować ten skrót, otwórz Ustawienia.</translation>
 <translation id="835847953965672673">Przywrócone pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Zapytaj, o co chcesz</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
 <translation id="8378850197701296741">Masz zakładki, historię i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>

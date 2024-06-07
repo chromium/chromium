@@ -301,6 +301,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="216955976692983107">Đổi kích thước cửa sổ trong bố cục ô xếp hướng sang phải</translation>
 <translation id="2185166372312820725">Quay về thẻ trước</translation>
 <translation id="2185444992308415167">Xem qua các thẻ từ 1 đến 8</translation>
+<translation id="2195732836444333448">Hệ thống hiện đang hoạt động hết công suất. Vui lòng quay lại sau giây lát.</translation>
 <translation id="2198625180564913276">Đang thêm hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="219905428774326614">Trình khởi chạy, tất cả ứng dụng</translation>
 <translation id="2201071101391734388">Ảnh gần đây <ph name="INDEX" /> trong tổng số <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +815,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4086921558679520050">Bật công tắc micrô thực trên thiết bị</translation>
 <translation id="4101772068965291327">Mở trang chủ</translation>
 <translation id="4112140312785995938">Tua lùi</translation>
+<translation id="4113030288477039509">Do quản trị viên của bạn quản lý</translation>
 <translation id="4114315158543974537">Bật Phone Hub</translation>
 <translation id="4115378294792113321">Đỏ thẫm</translation>
 <translation id="411881149140864134">Kích hoạt không gian làm việc ở bên trái</translation>
@@ -847,6 +849,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> không dùng được.</translation>
 <translation id="4201051445878709314">Hiển thị tháng trước</translation>
 <translation id="4209973997261364186">Wi-Fi đang bật</translation>
+<translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="4212472694152630271">Chuyển sang mã PIN</translation>
 <translation id="4215497585250573029">Cài đặt mạng riêng ảo (VPN)</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
@@ -1239,7 +1242,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5599242528220103262">Phím tắt hiện đang tắt</translation>
 <translation id="5600415762228455511">Chế độ Tập trung đang bật, còn <ph name="REMAINING_TIME" />, đang tập trung vào: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Nhấn Ctrl + Alt + Z để tắt phản hồi bằng giọng nói.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 giờ trước}=1{1 giờ trước}other{# giờ trước}}</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5618148318840095371">Chúng tôi đã chuyển bạn sang một mạng tốt hơn</translation>
 <translation id="5619862035903135339">Tính năng chụp ảnh màn hình bị tắt theo chính sách của quản trị viên</translation>
@@ -1692,6 +1694,7 @@ Mới cài đặt</translation>
 <translation id="7340731148882810149">Trình đơn nhấp tự động</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
+<translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
 <translation id="7360036564632145207">Để tối ưu hóa hiệu suất, hãy tắt chế độ ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
 <translation id="736045644501761622">Cài đặt hình nền và phong cách</translation>
@@ -1834,7 +1837,6 @@ Mới cài đặt</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Để dùng thiết bị với tư cách khách, bạn cần đăng xuất, rồi chọn Duyệt với tư cách khách ở cuối màn hình.</translation>
 <translation id="7866482334467279021">đang bật</translation>
-<translation id="7866727328666668290">Thẻ đã mở gần đây nhất</translation>
 <translation id="7872786842639831132">Tắt</translation>
 <translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
 <translation id="7884446017008693258">Cài đặt điểm phát sóng</translation>
@@ -2141,7 +2143,6 @@ Mới cài đặt</translation>
 <translation id="9002204506712855687">Khám phá các tính năng mới nhất</translation>
 <translation id="9005984960510803406">Mở cửa sổ Crosh</translation>
 <translation id="9017320285115481645">Nhập mã truy cập dành cho cha mẹ của Family Link.</translation>
-<translation id="9022774213089566801">Truy cập thường xuyên</translation>
 <translation id="9024331582947483881">toàn màn hình</translation>
 <translation id="9029736946581028033">Thiết bị sẽ sớm tắt nguồn</translation>
 <translation id="9030319654231318877">Tắt cho đến hoàng hôn</translation>

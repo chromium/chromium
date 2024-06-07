@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB cihaza bağlandı</translation>
 <translation id="4194328954146351878">NFC cihazlarda sitelere bilgileri görme ve değiştirme izni vermeden önce sor (önerilir)</translation>
 <translation id="4200726100658658164">Konum Ayarlarını açın</translation>
-<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> cihazından <ph name="RECENCY" /> <ph name="SEPARATOR" /></translation>
 <translation id="4226663524361240545">Bildirimler cihazı titretebilir</translation>
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Genişlet</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
 <translation id="4336566011000459927">Chrome bugün çerezleri tekrar sınırlandıracak</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Son sekmeniz</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> altındaki tüm siteler</translation>
 <translation id="4402755511846832236">Bu cihazı etkin olarak kullandığınızda sitelerin bunu bilmesi engellenir</translation>
 <translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Bu sitenin cihazınıza erişimini kontrol edin</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6042308850641462728">Daha fazla</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Son sekmeniz</translation>
 <translation id="6064125863973209585">Tamamlanan indirme işlemleri</translation>
 <translation id="6071501408666570960">Bu sitede oturumunuz kapatılabilir</translation>
 <translation id="6120483543004435978">Bu düğme açıkken siteler cihazınızı etkin olarak kullandığınız zamanı bilmek isteyebilir. Düğme kapalıyken siteler cihazınızı etkin olarak kullandığınız zamanı bilemez.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6818926723028410516">Öğe seçin</translation>
 <translation id="6864395892908308021">Bu cihaz NFC'yi okuyamıyor</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> cihazından</translation>
 <translation id="6912998170423641340">Sitelerin panodaki metni ve resimleri okumasını engelle</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6950072572526089586">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklendiği gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri geçici olarak cihazınıza kaydeder.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Kişi seçin</translation>
 <translation id="7990211076305263060">Bu düğme açıkken siteler mikrofonunuzu kullanmak isteyebilir. Düğme kapalıyken siteler mikrofonunuzu kullanamaz.</translation>
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Cihaz: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8042586301629853791">Sıralama ölçütü:</translation>
 <translation id="8067883171444229417">Videoyu oynat</translation>

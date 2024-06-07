@@ -302,6 +302,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="216955976692983107">Venster met tegels voor formaat aanpassen naar rechts verplaatsen</translation>
 <translation id="2185166372312820725">Naar het vorige tabblad gaan</translation>
 <translation id="2185444992308415167">Tabbladen 1 tot en met 8 doorlopen</translation>
+<translation id="2195732836444333448">We zitten op dit moment op de maximale capaciteit. Probeer het later nog eens.</translation>
 <translation id="2198625180564913276">Profiel toevoegen. Dit kan een paar minuten duren.</translation>
 <translation id="219905428774326614">Launcher, alle apps</translation>
 <translation id="2201071101391734388">Recente foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4086921558679520050">Zet de fysieke microfoonschakelaar aan op je apparaat</translation>
 <translation id="4101772068965291327">Homepage openen</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
+<translation id="4113030288477039509">Beheerd door je beheerder</translation>
 <translation id="4114315158543974537">Phone Hub aanzetten</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Bureau aan de linkerkant activeren</translation>
@@ -848,6 +850,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is niet beschikbaar.</translation>
 <translation id="4201051445878709314">Vorige maand bekijken</translation>
 <translation id="4209973997261364186">Wifi staat aan</translation>
+<translation id="4212246570487010370">Verder browsen</translation>
 <translation id="4212472694152630271">Overschakelen naar pincode</translation>
 <translation id="4215497585250573029">VPN-instellingen</translation>
 <translation id="4217571870635786043">Dicteren</translation>
@@ -1130,6 +1133,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Uit tot <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Uitloggen</translation>
+<translation id="5228195526683428788">Scheiding voor gesplitst scherm</translation>
 <translation id="5229343007215035173">Privacyscherm aan-/uitzetten</translation>
 <translation id="5230516054153933099">Venster</translation>
 <translation id="5234764350956374838">Sluiten</translation>
@@ -1240,7 +1244,6 @@ Geen apparaten verbonden.</translation>
 <translation id="5599242528220103262">Sneltoets staat uit</translation>
 <translation id="5600415762228455511">Focus staat aan, nog <ph name="REMAINING_TIME" />, focussen op: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Druk op Ctrl+Alt+Z om gesproken feedback uit te zetten.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 uur geleden}=1{1 uur geleden}other{# uur geleden}}</translation>
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5618148318840095371">Je bent overgeschakeld naar een beter netwerk</translation>
 <translation id="5619862035903135339">Op basis van het beheerdersbeleid wordt schermopname uitgezet</translation>
@@ -1517,6 +1520,7 @@ Nieuwe installatie</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> opslag in gebruik | totaal <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
 <translation id="6622679827379792051">De weergave van apps van je telefoon instellen</translation>
+<translation id="662279009180869175">Gebruik de pijl-links en pijl-rechts om het formaat van het gesplitste scherm aan te passen</translation>
 <translation id="6624493541160101248">Huidig bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Meldingen van <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> en andere apps zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6627638273713273709">Zoeken+Shift+K</translation>
@@ -1535,6 +1539,7 @@ Nieuwe installatie</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6671661918848783005">Kan je Chromebook niet ontgrendelen</translation>
+<translation id="6676552993057022464">Gebruik de pijl-omhoog en pijl-omlaag om het formaat van het gesplitste scherm aan te passen</translation>
 <translation id="6682029141988159141">Content plakken vanaf klembord</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6686023075541098243">De weergave van meldingen van je telefoon instellen</translation>
@@ -1693,6 +1698,7 @@ Nieuwe installatie</translation>
 <translation id="7340731148882810149">Menu Automatische klikken</translation>
 <translation id="7346909386216857016">OK, begrepen</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
+<translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
@@ -1835,7 +1841,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Als je het apparaat wilt gebruiken als gast, log je uit en selecteer je onderaan het scherm Gebruiken als gast.</translation>
 <translation id="7866482334467279021">aan</translation>
-<translation id="7866727328666668290">Laatst geopend tabblad</translation>
 <translation id="7872786842639831132">Uit</translation>
 <translation id="7875575368831396199">Zo te zien staat bluetooth uit op je <ph name="DEVICE_TYPE" />. Zet bluetooth aan om Telefoonhub te gebruiken.</translation>
 <translation id="7884446017008693258">Hotspot-instellingen</translation>
@@ -2142,7 +2147,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9002204506712855687">Ontdek de nieuwste functies</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
-<translation id="9022774213089566801">Veelbezocht</translation>
 <translation id="9024331582947483881">volledig scherm</translation>
 <translation id="9029736946581028033">Apparaat gaat straks uit</translation>
 <translation id="9030319654231318877">Uit tot zonsondergang</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Klizanje i zumiranje sadržaja dijeljene kartice</translation>
 <translation id="1089439967362294234">Promijeni lozinku</translation>
 <translation id="1090629319939036170">VR meni</translation>
+<translation id="1091779689406092804">snimki zaslona</translation>
 <translation id="1094777233105318927">Informacije o pregledniku, OS-u, uređaju, instaliranom softveru i fajlovima</translation>
 <translation id="1096545575934602868">Ovo polje ne smije sadržavati više od sljedećeg broja unosa: <ph name="MAX_ITEMS_LIMIT" />. Svi daljnji unosi će biti odbačeni.</translation>
 <translation id="1097803577928227769">Regionalni parkovi i vrtovi</translation>
@@ -472,6 +473,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1840009953725035797">Sistemi kućnih kina</translation>
 <translation id="1842969606798536927">Plati</translation>
 <translation id="1846432862466000825">Plastika (arhivska)</translation>
+<translation id="1848640291751752317">preuzimanja</translation>
 <translation id="1848982255014129637">Foto papir (visoki sjaj)</translation>
 <translation id="1853392626017747777">Registracija virtuelne kartice je zatvorena</translation>
 <translation id="1854180393107901205">Zaustavi emitiranje</translation>
@@ -754,6 +756,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2366689192918515749">Meso i morski plodovi</translation>
 <translation id="2367567093518048410">Nivo</translation>
 <translation id="23703388716193220">Oprema za golf</translation>
+<translation id="2370368710215137370">Prijenos datoteka</translation>
 <translation id="2374629208601905275">Na osnovu zakona u vašoj regiji Chrome traži da odaberete zadani pretraživač. Ovi pretraživači su popularni u vašoj regiji i prikazuju se nasumičnim redoslijedom.</translation>
 <translation id="2377241607395428273">Softver za grafiku i animaciju</translation>
 <translation id="2378084239755710604">Upit za pohranjivanje kartice je zatvoren.</translation>
@@ -1423,6 +1426,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3682094733650754138">Odabrana je opcija popunjavanja polja za adresu</translation>
 <translation id="3687920599421452763">Kombiji i monovolumeni</translation>
 <translation id="3693327506115126094">Odaberite kako ćete potvrditi svoj identitet</translation>
+<translation id="3698353241727597930">Vaš je administrator konfigurirao spremanje <ph name="FILES" /> u pohranu na <ph name="CLOUD_STORAGE" /> kojom upravlja tvrtka. Te se datoteke mogu nadzirati, revidirati i zadržati kad ih izbrišete.</translation>
 <translation id="3698629142018988477">Dugme Kreiraj web lokaciju, aktivirajte da brzo kreirate novu web lokaciju na usluzi Google Web lokacije</translation>
 <translation id="3701325639446035885">Prodaja karata za događaje</translation>
 <translation id="3701427423622901115">Vraćanje na zadano je potvrđeno.</translation>
@@ -1498,6 +1502,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3826050100957962900">Prijava treće strane</translation>
 <translation id="3827112369919217609">Apsolutno</translation>
 <translation id="3828924085048779000">Polje za pristupni izraz ne može biti prazno.</translation>
+<translation id="3830139096297532361">Taj PDF nije dostupan. Preuzimanje datoteka za izdvajanje teksta nije uspjelo. Pokušajte ponovo kasnije.</translation>
 <translation id="3830470485672984938">Koristite drugi pristupni ključ</translation>
 <translation id="3831065134033923230">Provjerite sačuvane lozinke</translation>
 <translation id="3831915413245941253">Domena <ph name="ENROLLMENT_DOMAIN" /> je instalirala ekstenzije zbog dodatnih funkcija. Ekstenzije imaju pristup samo nekim vašim podacima.</translation>
@@ -1672,6 +1677,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4202554117186904723">Peta rolna</translation>
 <translation id="4203769790323223880">Kamera nije dozvoljena</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Provjeriti konfiguracije zaštitnog zida i antivirusa<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google disku</translation>
 <translation id="4209092469652827314">Veliki</translation>
 <translation id="4210602799576081649">Kôd za potvrdu je istekao. Zatražite novi</translation>
 <translation id="421066178035138955">Koristi uređaje za virtuelnu realnost i podatke</translation>
@@ -2681,7 +2687,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6167577165590485365">Vrijeme pokušaja posljednjeg dohvatanja:</translation>
 <translation id="617256461084925519">Google Chrome pokušava potvrditi vaš identitet radi popunjavanja vaših podataka o plaćanju.</translation>
-<translation id="6173208311907792313">Dovršite kupnju pomoću značajke Windows Hello</translation>
+<translation id="6173208311907792313">Izvršite kupovinu pomoću Windows Helloa</translation>
 <translation id="6176387967264100435">Ova cijena je visoka</translation>
 <translation id="6177128806592000436">Vaša veza s ovom web lokacijom nije sigurna</translation>
 <translation id="6177531123306197852">Koverta C2</translation>
@@ -2734,6 +2740,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6270066318535733958">Vožnja čamcem</translation>
 <translation id="6272088941196661550">Nastavite iskustvo pregledanja da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="6272383483618007430">Google Ažuriranje</translation>
+<translation id="6278015583149890680">Google disku i OneDriveu</translation>
 <translation id="6280223929691119688">Isporuka na ovu adresu nije moguća. Odaberite drugu adresu.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284449872909111707">Razmjena tekstualnih i instant poruka</translation>
@@ -2987,7 +2994,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6753269504797312559">Vrijednost pravila</translation>
 <translation id="6753434778807740853">Brisanje unosa <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Štedni računi</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Vaš uređaj je u stanju mirovanja.</translation>
 <translation id="6760548828952594090">Pohranjivanje kartice na Google račun nije uspjelo. Umjesto toga je sačuvana u Chrome na ovom uređaju.</translation>
 <translation id="6766558780547452153">Kuhanje i recepti</translation>
@@ -3173,6 +3179,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7119063404975271297">TV drame</translation>
 <translation id="7119371694555167493">Kopiranje je isteklo</translation>
 <translation id="7119414471315195487">Zatvorite druge kartice ili programe</translation>
+<translation id="7120588595737538743">preuzimanja i snimki zaslona</translation>
 <translation id="7124354851782353862">Unesite CVC</translation>
 <translation id="7129409597930077180">Dostava na ovu adresu nije moguća. Odaberite drugu adresu.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3372,6 +3379,7 @@ Dodatni detalji:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />; odbacivanje savjeta Chromea pritiskanjem Taba, a zatim Entera.</translation>
 <translation id="7485085230273446323">Poslovanje i industrija</translation>
 <translation id="7485870689360869515">Nije pronađen nijedan rezultat.</translation>
+<translation id="7486880426035242089">OneDriveu</translation>
 <translation id="7489392576326061356">Šamponi i regeneratori</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Kontaktirajte vlasnika web lokacije da riješite problem.</translation>
 <translation id="749865518782565832">Vodoinstalacije</translation>
@@ -3840,7 +3848,7 @@ Dodatni detalji:
 <translation id="8332188693563227489">Pristup host računaru <ph name="HOST_NAME" /> je zabranjen</translation>
 <translation id="833262891116910667">Istaknuto</translation>
 <translation id="8339163506404995330">Stranice čiji je jezik <ph name="LANGUAGE" /> neće se prevoditi</translation>
-<translation id="8339275256517065202">Dovršite kupnju pomoću Touch ID-ja</translation>
+<translation id="8339275256517065202">Izvršite kupovinu pomoću Touch ID-a</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registracija virtuelne kartice je otvorena u punoj visini</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
@@ -4034,7 +4042,7 @@ Dodatni detalji:
 <translation id="8726549941689275341">Veličina stranice:</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
-<translation id="8731917264694569036">Dovršite kupnju pomoću uređaja</translation>
+<translation id="8731917264694569036">Izvršite kupovinu pomoću uređaja</translation>
 <translation id="8733345475331865475">Osiguranje automobila</translation>
 <translation id="8733764070897080460">Možete blokirati teme koje ne želite dijeliti s web lokacijama. Chrome također automatski briše teme koje su starije od 4 sedmice. Saznajte više</translation>
 <translation id="8734529307927223492">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
@@ -4228,7 +4236,7 @@ Dodatni detalji:
 <translation id="9116548361133462832">Više o oglasima u Chromeu</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da nastavite pregledati te da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="9119042192571987207">Otpremljeno</translation>
-<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> želi potvrditi da ste to vi</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> želi potvrditi vaš identitet</translation>
 <translation id="912327514020027767">Suknje</translation>
 <translation id="912414390325846156">Ranije niste dozvolili za tu web lokaciju</translation>
 <translation id="9128870381267983090">Spoji se na mrežu</translation>
@@ -4252,7 +4260,6 @@ Dodatni detalji:
 <translation id="9155646082713385498">Časopisi</translation>
 <translation id="9157595877708044936">Postavljanje...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> može sadržavati osjetljiv sadržaj}one{<ph name="FILE_COUNT" /> fajl može sadržavati osjetljiv sadržaj}few{<ph name="FILE_COUNT" /> fajla mogu sadržavati osjetljiv sadržaj}other{<ph name="FILE_COUNT" /> fajlova može sadržavati osjetljiv sadržaj}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Web lokacije koje posjetite također mogu utvrditi šta vam se sviđa na osnovu vaše aktivnosti na web lokaciji. Naprimjer, ako posjetite web lokaciju koja prodaje patike za trčanje na duge staze, web lokacija može zaključiti da vas zanima trčanje maratona.</translation>
 <translation id="9166851138617700776">Više o oglasima koje predlažu web lokacije i mjerenju oglasa</translation>
 <translation id="9167054383925257837">Informacije o pregledniku i OS-u uređaja (kao što su verzije preglednika i OS-a)</translation>

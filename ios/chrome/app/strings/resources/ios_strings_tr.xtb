@@ -1034,6 +1034,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6232329973559504466">Gizli Arama</translation>
 <translation id="6236952928980352967">Uyarıyı Geri Yükle</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
+<translation id="6251835855431997163">Otomatik doldur <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Bağlantıları tarayıcı yerine uygulamada açın.</translation>
 <translation id="6255097610484507482">Kredi Kartını Düzenle</translation>
 <translation id="6266039999629596120">İlgilenilmesi gerekiyor</translation>
@@ -1212,6 +1213,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7022197654033719543">Site Bilgileri</translation>
 <translation id="7029809446516969842">Şifreler</translation>
 <translation id="704692552158601232">Saptanmış Tarayıcı Uygulaması</translation>
+<translation id="7055240621761583113">Şifreyi otomatik doldur</translation>
 <translation id="7063811929043357292">Hesabınız ebeveyniniz tarafından yönetiliyor.
 <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Bu Cihazdan Kaldır</translation>

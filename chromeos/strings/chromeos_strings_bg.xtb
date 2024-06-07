@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Редактиране на подробностите за името на точката за достъп (APN)</translation>
 <translation id="2195732836444333448">В момента няма наличен капацитет. Заповядайте отново скоро.</translation>
 <translation id="2201758491318984023">велосипед</translation>
-<translation id="2203222757805818543">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. За да се актуализира автоматично графикът за тъмния режим, <ph name="BEGIN_LINK" />предоставете достъп до местоположението<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">Горещ извор</translation>
 <translation id="2203642483788377106">скала</translation>
 <translation id="2208388655216963643">импресионизъм</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">пясъчна дюна</translation>
 <translation id="2619761439309613843">Ежедневно опресняване</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2637303424821734920">ИЗКЛ. – За да се показва времето в района, <ph name="BEGIN_LINK" />включете достъпа до местоположението на ниво система<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Изображение при вход</translation>
 <translation id="2640549051766135490">Избран албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Контроли</translation>

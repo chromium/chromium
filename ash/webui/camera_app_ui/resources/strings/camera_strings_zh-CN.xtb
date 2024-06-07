@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">暂停录制</translation>
 <translation id="4121305183798804752">检测到文件</translation>
 <translation id="414641094616694804">此相机无法更改分辨率</translation>
-<translation id="4176463684765177261">已停用</translation>
 <translation id="428234092390943511">页面缩略图</translation>
-<translation id="4349714250734879769">由 Chrome 缩放帧</translation>
 <translation id="4383571725254449280">打印性能日志</translation>
 <translation id="4445542136948522167">停止拍照</translation>
 <translation id="4570032796877367747">前置摄像头</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">已扫描的页面的列表</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">复制链接地址“<ph name="URL" />”</translation>
-<translation id="491895758387112773">录制多个视频流</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4984613436295737187">2K (1440p)</translation>
 <translation id="5034763830503483128">照片宽高比</translation>
@@ -157,7 +154,6 @@
 <translation id="8145038249676204903">切换到拍照模式</translation>
 <translation id="8167081290930651932">另存为照片</translation>
 <translation id="8239780215768881278">拍摄视频快照</translation>
-<translation id="8346544573713510785">由相机 HAL 缩放帧</translation>
 <translation id="8425673304802773841">向下倾斜</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8609951387004618906">打开“<ph name="URL" />”</translation>

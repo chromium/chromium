@@ -302,6 +302,7 @@
 <translation id="216955976692983107">ფანჯრის ზომის შეცვლა მოზაიკურად მარჯვენა მიმართულებით</translation>
 <translation id="2185166372312820725">წინა ჩანართზე გადასვლა</translation>
 <translation id="2185444992308415167">1-ელიდან მე-8 ჩანართებს შორის გადასვლა</translation>
+<translation id="2195732836444333448">რესურსები არასაკმარისია. დაბრუნდით მოგვიანებით.</translation>
 <translation id="2198625180564913276">მიმდინარეობს პროფილის დამატება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="219905428774326614">გამშვები, ყველა აპი</translation>
 <translation id="2201071101391734388">ბოლოდროინდელი ფოტო <ph name="INDEX" /> / <ph name="TOTAL_COUNT" />-დან.</translation>
@@ -815,6 +816,7 @@
 <translation id="4086921558679520050">ჩართეთ მიკროფონის ფიზიკური ჩამრთველი თქვენს მოწყობილობაზე</translation>
 <translation id="4101772068965291327">მთავარი გვერდის გახსნა</translation>
 <translation id="4112140312785995938">უკან გადახვევა</translation>
+<translation id="4113030288477039509">თქვენი ადმინისტრატორის მიერ მართული</translation>
 <translation id="4114315158543974537">Phone Hub-ის ჩართვა</translation>
 <translation id="4115378294792113321">მაგენტა</translation>
 <translation id="411881149140864134">სამუშაო მაგიდის გააქტიურება მარცხნივ</translation>
@@ -848,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> მიუწვდომელია.</translation>
 <translation id="4201051445878709314">წინა თვის ჩვენება</translation>
 <translation id="4209973997261364186">Wi-Fi ჩართულია</translation>
+<translation id="4212246570487010370">დათვალიერების გაგრძელება</translation>
 <translation id="4212472694152630271">PIN-კოდზე გადართვა</translation>
 <translation id="4215497585250573029">VPN-ის პარამეტრები</translation>
 <translation id="4217571870635786043">კარნახი</translation>
@@ -1130,6 +1133,7 @@
 <translation id="5208059991603368177">ჩართვა</translation>
 <translation id="5216991270656129561">გამორთულია <ph name="TIME" />-მდე</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
+<translation id="5228195526683428788">გაყოფილი ეკრანის გამყოფი</translation>
 <translation id="5229343007215035173">კონფიდენციალური ეკრანის ჩართვა/გამორთვა</translation>
 <translation id="5230516054153933099">ფანჯარა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
@@ -1240,7 +1244,6 @@
 <translation id="5599242528220103262">კლავიატურის მალსახმობი გამორთულია</translation>
 <translation id="5600415762228455511">ფოკუსირების რეჟიმი ჩართულია, დარჩენილია <ph name="REMAINING_TIME" />, ფოკუსირების ობიექტი: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + Alt + Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 საათის წინ}=1{1 საათის წინ}other{# საათის წინ}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">უკეთეს ქსელზე გადაგრთეთ</translation>
 <translation id="5619862035903135339">ეკრანის აღბეჭდვა გათიშულია ადმინისტრატორის წესების მიხედვით</translation>
@@ -1517,6 +1520,7 @@
 <translation id="6613765291890844037">გამოიყენება მეხსიერების <ph name="STORAGE_IN_USE_SIZE" /> | სულ ხელმისაწვდომია <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">კონფიდენციალურობის ეკრანი ჩართულია</translation>
 <translation id="6622679827379792051">თქვენი ტელეფონის აპების ნახვის დაყენება</translation>
+<translation id="662279009180869175">გაყოფილი ეკრანის ზომის შესაცვლელად გამოიყენეთ კლავიშები მარცხნივ და მარჯვნივ მიმართული ისრით</translation>
 <translation id="6624493541160101248">ამჟამინდელი სამუშაო მაგიდა: <ph name="DESK_NAME" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-ის, <ph name="APP_2_TITLE" />-ის და სხვა შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1535,6 +1539,7 @@
 <translation id="6670153871843998651">დესკტოპი 3</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6671661918848783005">თქვენი Chromebook-ის განბლოკვა ვერ მოხერხდა</translation>
+<translation id="6676552993057022464">გაყოფილი ეკრანის ზომის შესაცვლელად გამოიყენეთ კლავიშები ზემოთ და ქვემოთ მიმართული ისრით</translation>
 <translation id="6682029141988159141">გაცვლის ბუფერში არსებული კონტენტის ჩასმა</translation>
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6686023075541098243">თქვენი ტელეფონის შეტყობინებების ნახვის დაყენება</translation>
@@ -1693,6 +1698,7 @@
 <translation id="7340731148882810149">ავტომატური დაწკაპუნებების მენიუ</translation>
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
+<translation id="7352651011704765696">რაღაც არასწორად წარიმართა</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>
 <translation id="7360036564632145207">პერიფერიული მოწყობილობებისთვის მონაცემებზე წვდომის დაცვის პარამეტრების შეცვლით შესაძლებელია წარმადობის ოპტიმიზაცია</translation>
 <translation id="736045644501761622">ფონის და სტილის დაყენება</translation>
@@ -1835,7 +1841,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">მოწყობილობის სტუმრის რეჟიმში გამოსაყენებლად უნდა გახვიდეთ სისტემიდან, შემდეგ კი ეკრანის ქვედა ნაწილში აირჩიოთ „დათვალიერება სტუმრის სტატუსით“.</translation>
 <translation id="7866482334467279021">ჩართული</translation>
-<translation id="7866727328666668290">ბოლო ჩანართი გაიხსნა</translation>
 <translation id="7872786842639831132">გამორთვა</translation>
 <translation id="7875575368831396199">როგორც ჩანს, თქვენს <ph name="DEVICE_TYPE" />-ზე გამორთულია Bluetooth. ტელეფონის ცენტრის გამოსაყენებლად ჩართეთ Bluetooth.</translation>
 <translation id="7884446017008693258">უსადენო ქსელის პარამეტრები</translation>
@@ -2142,7 +2147,6 @@
 <translation id="9002204506712855687">გაეცანით უახლეს ფუნქციებს</translation>
 <translation id="9005984960510803406">Crosh ფანჯრის გახსნა</translation>
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
-<translation id="9022774213089566801">ხშირად მონახულებული</translation>
 <translation id="9024331582947483881">მთელ ეკრანზე</translation>
 <translation id="9029736946581028033">მოწყობილობა მალე გამოირთვება</translation>
 <translation id="9030319654231318877">გამორთული მზის ჩასვლამდე</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> から</translation>
 <translation id="4226663524361240545">通知を受け取るとデバイスが振動します</translation>
 <translation id="4259722352634471385"><ph name="URL" /> へのアクセスがブロックされました</translation>
 <translation id="4278390842282768270">許可</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">展開</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="4336566011000459927">今日、Chrome で Cookie を再び制限します</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 最後のタブ</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可する</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">このサイトによるデバイスへのアクセスを管理します</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> 最後のタブ</translation>
 <translation id="6064125863973209585">完了したダウンロード</translation>
 <translation id="6071501408666570960">このサイトからログアウトされる可能性があります</translation>
 <translation id="6120483543004435978">オンにすると、サイトはデバイスのアクティブ状態の検出を要求できます。オフにすると、サイトはデバイスのアクティブ状態を検出できません。</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> から</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> から</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8067883171444229417">動画を再生します</translation>

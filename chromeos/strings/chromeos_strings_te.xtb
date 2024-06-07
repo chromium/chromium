@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN వివరాలను ఎడిట్ చేయండి</translation>
 <translation id="2195732836444333448">ప్రస్తుతం కెపాసిటీని మించిపోయింది. త్వరగా తిరిగి రండి.</translation>
 <translation id="2201758491318984023">సైకిల్</translation>
-<translation id="2203222757805818543">ప్రస్తుత షెడ్యూల్ <ph name="SUNRISE" /> - <ph name="SUNSET" />‌కు సెట్ చేయబడింది. డార్క్ మోడ్ షెడ్యూల్‌ను ఆటోమేటిక్‌గా అప్‌డేట్ చేయడానికి, <ph name="BEGIN_LINK" />లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">హాట్ స్ప్రింగ్</translation>
 <translation id="2203642483788377106">శిఖరం</translation>
 <translation id="2208388655216963643">ఇంప్రెషనిస్ట్</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">ఇసుక మేట</translation>
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
+<translation id="2637303424821734920">ఆఫ్‌లో ఉంది - స్థానిక వాతావరణాన్ని డిస్‌ప్లే చేయడానికి <ph name="BEGIN_LINK" />సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్ ఎంచుకోబడింది</translation>
 <translation id="2645380101799517405">కంట్రోల్స్</translation>
@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">నేపథ్యం</translation>
 <translation id="3027578600144895987">కెమెరాను మూసివేయండి</translation>
 <translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
+<translation id="3051968340259309715">ఇది మీ లొకేషన్‌ను గుర్తించడానికి లొకేషన్ ఖచ్చితత్వాన్ని ఉపయోగించడానికి సిస్టమ్ సర్వీస్‌లను అనుమతిస్తుంది. పరికర లొకేషన్‌ను అంచనా వేయడానికి లొకేషన్ ఖచ్చితత్వం, యాక్సిలెరోమీటర్, గైరోస్కోప్ వంటి పరికర సెన్సార్ డేటాతో పాటు Wi-Fi యాక్సెస్ పాయింట్‌లు, సెల్యులార్ నెట్‌వర్క్ టవర్‌లు, GPS వంటి వైర్‌లెస్ సిగ్నల్స్‌కు సంబంధించిన సమాచారాన్ని ఉపయోగిస్తుంది. లొకేషన్‌ను మీరు సెట్టింగ్‌లు &gt; గోప్యత, సెక్యూరిటీ &gt; గోప్యతా కంట్రోల్స్ &gt; లొకేషన్ యాక్సెస్‌లో ఆఫ్ చేయవచ్చు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3060579846059757016">అవుట్‌లైన్‌లు</translation>

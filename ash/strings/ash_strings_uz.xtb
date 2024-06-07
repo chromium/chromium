@@ -179,6 +179,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1610778689852195798">“Qaytarish”</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Google Classroom maʼlumotlarini yopish</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Qulayliklar orqali faolsizlantirish mumkin.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ta qurilma</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
@@ -301,12 +302,15 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="216955976692983107">Oyna oʻlchamini oʻngga oʻzgartiradigan katakcha</translation>
 <translation id="2185166372312820725">Avvalgi varaqqa o‘tish</translation>
 <translation id="2185444992308415167">1—8 varaqlarini ochish</translation>
+<translation id="2195732836444333448">Imkoniyat doirasidan tashqaridamiz. Keyinroq qayta tekshiring.</translation>
 <translation id="2198625180564913276">Profil kiritilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="219905428774326614">Launcher, barcha ilovalar</translation>
 <translation id="2201071101391734388">Oxirgi <ph name="INDEX" />/<ph name="TOTAL_COUNT" /> ta rasm.</translation>
+<translation id="2201687081523799384">Google Tasks maʼlumotlarini yopish</translation>
 <translation id="2208323208084708176">Birlashgan ish stoli rejimi</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2222841058024245321">Desk 7</translation>
+<translation id="2223384056430485343">Ajratilgan ekranda</translation>
 <translation id="2224075387478458881">Himoyalangan kontent chiqqan vaqtda ekranni yozib olishga ruxsat berilmaydi</translation>
 <translation id="2227179592712503583">Taklifni olib tashlash</translation>
 <translation id="2248634276911611268">Havolani yangi varaqda ochish va unga oʻtish</translation>
@@ -365,6 +369,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2427507373259914951">Chap klik</translation>
 <translation id="2429753432712299108">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali ulanishga ruxsat so‘ramoqda. Uning ekranida quyidagi kod ko‘rinaytganligini tekshiring: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
+<translation id="2437771564543046790">Batareya quvvati kam. Quvvat tejash rejimi yoniq</translation>
 <translation id="243878895369688216">Kecha ochilgan</translation>
 <translation id="2440978926514840421">GIF yozib olindi</translation>
 <translation id="2441427462554639370">Xotirada juda kam joy qolgani uchun yozib olish tugatildi</translation>
@@ -812,6 +817,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4086921558679520050">Qurilmadagi mikrofon tashqi tugmasini bosing</translation>
 <translation id="4101772068965291327">Bosh sahifani ochish</translation>
 <translation id="4112140312785995938">Orqaga qaytarish</translation>
+<translation id="4113030288477039509">Administratoringiz tomonidan boshqariladi</translation>
 <translation id="4114315158543974537">Phone Hub funksiyasini yoqish</translation>
 <translation id="4115378294792113321">Siyohrang</translation>
 <translation id="411881149140864134">Chapdagi ish stolini faollashtirish</translation>
@@ -845,6 +851,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> mavjud emas.</translation>
 <translation id="4201051445878709314">Avvalgi oyni ko‘rsatish</translation>
 <translation id="4209973997261364186">Wi-Fi yoqildi</translation>
+<translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
 <translation id="4212472694152630271">PIN kod kiritish</translation>
 <translation id="4215497585250573029">VPN sozlamalari</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
@@ -1202,6 +1209,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="550391772491508736">Translatsiyaga qaytish</translation>
 <translation id="5506975627792768506">Lupani yoqish yoki oʻchirish</translation>
 <translation id="5512042095225963688">Avvalgi soʻzni oʻchirish</translation>
+<translation id="5519005148254860683">Google Tasks maʼlumotlarini koʻrsatish</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator barcha eSIM profillarni olib tashladi. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5520909879404821039">Fransuz tilida Salom</translation>
@@ -1237,7 +1245,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5599242528220103262">Tezkor tugma oʻchiq</translation>
 <translation id="5600415762228455511">Fokus yoniq, <ph name="REMAINING_TIME" /> qoldi, fokus maqsadi: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Ovozli fikr-mulohaza bildirishni o‘chirish uchun Ctrl + Alt + Z tugmalarini birga bosing.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 soat oldin}=1{1 soat oldin}other{# soat oldin}}</translation>
 <translation id="5601503069213153581">PIN kod</translation>
 <translation id="5618148318840095371">Yaxshiroq tarmoqqa almashtirildingiz</translation>
 <translation id="5619862035903135339">Administrator ekranni tasvirga olishni taqiqlagan</translation>
@@ -1410,6 +1417,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6200515304866777730">Ilovada ishlamaydi</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> qurilmasini oldin saqlangan <ph name="EMAIL" /> hisobiga ulang</translation>
 <translation id="6213808132343683860">Qisman skrinshot olish yoki ekranni yozib olish</translation>
+<translation id="621606890568890214">Google Classrom maʼlumotlarini koʻrsatish</translation>
 <translation id="6220928844947387476">Endi siz bir vaqtda ekran va veb kamera tasvirlarini yozib olishingiz mumkin.</translation>
 <translation id="622484624075952240">Pastga</translation>
 <translation id="6228457605945141550">Yorqinlikni pasaytirish</translation>
@@ -1691,6 +1699,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7340731148882810149">Avtomatik kliklar menyusi</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Ekran klaviaturasi</translation>
+<translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
 <translation id="7360036564632145207">Samaradorlikni oshirish uchun tashqi qurilmalarga maʼlumotlaringizga kirish huquqlarini oʻzgartiring</translation>
 <translation id="736045644501761622">Fon rasmi va uslubini sozlash</translation>
@@ -1833,7 +1842,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Qurilmadan mehmon rejimida foydalanish uchun joriy hisobdan chiqing va ekran quyidagi “Mehmon sifatida kezish” bandini tanlang.</translation>
 <translation id="7866482334467279021">yoniq</translation>
-<translation id="7866727328666668290">Oxirgi ochilgan varaq</translation>
 <translation id="7872786842639831132">Oʻchiq</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> qurilmangizda Bluetooth yoniqligini tekshiring. Phone Hub xizmatidan foydalanish uchun Bluetooth aloqasini yoqing</translation>
 <translation id="7884446017008693258">Hotspot sozlamalari</translation>
@@ -2140,7 +2148,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="9002204506712855687">Eng yangi funksiyalar bilan tanishing</translation>
 <translation id="9005984960510803406">Crosh oynasini ochish</translation>
 <translation id="9017320285115481645">Family Link ota-ona kodini kiriting.</translation>
-<translation id="9022774213089566801">Eng koʻp ochilgan</translation>
 <translation id="9024331582947483881">butun ekran</translation>
 <translation id="9029736946581028033">Qurilma quvvati tez orada tugaydi</translation>
 <translation id="9030319654231318877">Quyosh botishigacha oʻchiq</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB डिभाइसमा कनेक्ट गर्नुहोस्</translation>
 <translation id="4194328954146351878">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्ने र ती जानकारी परिवर्तन गर्ने अनुमति दिनुअघि मलाई सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="4200726100658658164">लोकेसन सेटिङ खोल्नुहोस्</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> बाट</translation>
 <translation id="4226663524361240545">सूचनाहरूले गर्दा यन्त्र कम्पन गर्न सक्छ</translation>
 <translation id="4259722352634471385">नेभिगेशन रोकियो: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमति प्राप्त</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
 <translation id="4336566011000459927">Chrome ले आज फेरि कुकीहरू सीमित पार्ने छ</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> तपाईंको अन्तिम ट्याब</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अन्तर्गतका सबै साइटहरू</translation>
 <translation id="4402755511846832236">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा साइटहरूलाई थाहा पाउन नदिनुहोस्</translation>
 <translation id="4412992751769744546">तेस्रो पक्षीय कुकीहरूलाई अनुमति दिनुहोस्</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">यो साइटले तपाईंको यन्त्र प्रयोग गर्न पाउने कि नपाउने भन्ने कुरा नियन्त्रण गर्नुहोस्</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6042308850641462728">थप</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> तपाईंको अन्तिम ट्याब</translation>
 <translation id="6064125863973209585">पूरा भएका डाउनलोडहरू</translation>
 <translation id="6071501408666570960">तपाईंलाई यो साइटबाट साइन आउट गरिन सक्छ</translation>
 <translation id="6120483543004435978">यो सेटिङ अन भएका बेला साइटहरूले तपाईं आफ्नो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुराको जानकारी माग्न सक्छन्। यो सेटिङ अफ भएका बेला साइटहरूले तपाईं आफ्नो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा थाहा पाउन सक्दैनन्।</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6818926723028410516">वस्तुहरू छनाैट गर्नुहोस्</translation>
 <translation id="6864395892908308021">यस यन्त्रले NFC पढ्न सक्दैन</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> बाट</translation>
 <translation id="6912998170423641340">साइटहरूलाई क्लिपबोर्डका पाठ तथा फोटो पढ्नबाट रोक लगाउनुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6950072572526089586">तपाईंले खोल्ने साइटले अपेक्षा गरेअनुसार काम गर्न (उदाहरणका लागि, तपाईंलाई कुनै साइटमा साइन इन अवस्थामै राखिराख्न वा तपाईंको सपिङ कार्टमा भएका सामग्रीहरू सेभ गर्न) सकोस् भन्नाका लागि तपाईंको हालको गतिविधिका बारेमा जानकारी सेभ गर्न सक्छ। साइटहरूले प्रायः जसो तपाईंको डिभाइसमा यो जानकारी केही समयका लागि सेभ गर्छन्।</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">कुनै सम्पर्क ठेगाना चयन गर्नुहोस्</translation>
 <translation id="7990211076305263060">यो सेटिङ अन भएका बेला साइटहरूले तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति माग्न सक्छन्। यो सेटिङ अफ भएका बेला साइटहरूले तपाईंको माइक्रोफोन प्रयोग गर्न सक्दैनन्।</translation>
 <translation id="8007176423574883786">यस डिभाइसका लागि बन्द गरियो।</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> बाट प्राप्त</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
 <translation id="8042586301629853791">यसअनुसार क्रमबद्ध गर्नुहोस्:</translation>
 <translation id="8067883171444229417">भिडियो प्ले गर्नुहोस्</translation>

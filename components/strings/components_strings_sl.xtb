@@ -2681,6 +2681,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6167577165590485365">Zadnji poskus pridobivanja:</translation>
 <translation id="617256461084925519">Google Chrome poskuša preveriti, ali ste to res vi, da bo lahko vnesel podatke za plačilo.</translation>
+<translation id="6173208311907792313">Dokončanje nakupa s funkcijo Windows Hello</translation>
 <translation id="6176387967264100435">Ta cena je visoka</translation>
 <translation id="6177128806592000436">Povezava s tem spletnim mestom ni varna</translation>
 <translation id="6177531123306197852">Kuverta C2</translation>
@@ -2986,7 +2987,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6753269504797312559">Vrednost pravilnika</translation>
 <translation id="6753434778807740853">Izbriši vnos <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Varčevalni računi</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Naprava je preklopila v stanje pripravljenosti.</translation>
 <translation id="6760548828952594090">Te kartice ni bilo mogoče shraniti v račun Google. Namesto tega je shranjena v Chromu v tej napravi.</translation>
 <translation id="6766558780547452153">Kuhanje in recepti</translation>
@@ -3839,6 +3839,7 @@ Dodatne podrobnosti:
 <translation id="8332188693563227489">Dostop do spletnega mesta <ph name="HOST_NAME" /> je bil zavrnjen</translation>
 <translation id="833262891116910667">Označevanje</translation>
 <translation id="8339163506404995330">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene</translation>
+<translation id="8339275256517065202">Dokončanje nakupa s funkcijo Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Včlanitev navidezne kartice je odprta pri polni višini</translation>
 <translation id="8349305172487531364">Vrstica z zaznamki</translation>
@@ -4032,6 +4033,7 @@ Dodatne podrobnosti:
 <translation id="8726549941689275341">Velikost strani:</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8731268612289859741">Varnostna koda</translation>
+<translation id="8731917264694569036">Dokončanje nakupa z napravo</translation>
 <translation id="8733345475331865475">Avtomobilsko zavarovanje</translation>
 <translation id="8733764070897080460">Teme, ki jih ne želite deliti s spletnimi mesti, lahko blokirate. Chrome tudi samodejno izbriše vaše teme, starejše od štirih tednov. Več o tem</translation>
 <translation id="8734529307927223492">Vašo napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" /></translation>
@@ -4225,6 +4227,7 @@ Dodatne podrobnosti:
 <translation id="9116548361133462832">Preberite več o oglasih v Chromu</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite nadaljevati pot in si ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
 <translation id="9119042192571987207">Naloženo</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> želi preveriti, ali ste to vi</translation>
 <translation id="912327514020027767">Krila</translation>
 <translation id="912414390325846156">Prej ste izbrali, da ne želite dovoliti za to spletno mesto</translation>
 <translation id="9128870381267983090">Vzpostavi povezavo z omrežjem</translation>
@@ -4248,7 +4251,6 @@ Dodatne podrobnosti:
 <translation id="9155646082713385498">Revije</translation>
 <translation id="9157595877708044936">Nastavljanje ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Datoteka <ph name="FILE_NAME" /> morda vsebuje občutljivo vsebino}one{<ph name="FILE_COUNT" /> datoteka morda vsebuje občutljivo vsebino}two{<ph name="FILE_COUNT" /> datoteki morda vsebujeta občutljivo vsebino}few{<ph name="FILE_COUNT" /> datoteke morda vsebujejo občutljivo vsebino}other{<ph name="FILE_COUNT" /> datotek morda vsebuje občutljivo vsebino}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Spletna mesta, ki jih obiščete, lahko tudi določijo, kaj vam je všeč, na podlagi vaše dejavnosti na spletnem mestu. Če na primer obiščete spletno mesto, ki prodaja tekaško obutev za dolge razdalje, se lahko spletno mesto odloči, da vas zanimajo maratoni.</translation>
 <translation id="9166851138617700776">Več o oglasih, ki jih predlaga spletno mesto, in merjenju oglasov</translation>
 <translation id="9167054383925257837">Podatki o brskalniku in napravi (na primer različici brskalnika in operacijskega sistema)</translation>

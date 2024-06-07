@@ -285,6 +285,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2515921719039583189">Izbrisati vaše podatke iz Chromea s uređaja?</translation>
 <translation id="2517113738956581680">List pune veličine</translation>
 <translation id="2523184218357549926">Šalje Googleu URL-ove stranica koje posjećujete</translation>
+<translation id="2524132927880411790">Otvorite glasovno pretraživanje u aplikaciji Google</translation>
 <translation id="2527209463677295330">Ako uključite više teksta sa stranice, možda ćete dobiti bolje rezultate</translation>
 <translation id="2527497042232966453">Prešli ste na anonimne kartice</translation>
 <translation id="2527779675047087889">Sakrij sadržaj međuspremnika</translation>
@@ -520,6 +521,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="363596933471559332">Automatski se prijavite na web-lokacije pomoću spremljenih vjerodajnica. Kada je ta značajka isključena, tražit će se potvrda prije svakog prijavljivanja na web-lokaciju.</translation>
 <translation id="3636940436873918441">Preferirani jezici</translation>
 <translation id="3637744895182738742">Ako ste zaboravili šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Otvorite početnu stranicu aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljeno. Otvara opcije za prijavu.</translation>
 <translation id="3687645719033307815">Gledate pregled ove stranice</translation>
 <translation id="3690369331356918524">Upozorava ako su zaporke ugrožene zbog povrede podataka</translation>
@@ -1475,6 +1477,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
 <translation id="8135406045838672858">Preuzeti PDF-ovi automatski se otvaraju u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki.</translation>
+<translation id="8152331954420209374">Otvori Objektiv</translation>
 <translation id="8163820386638255770">Da biste upotrebljavali i spremali zaporke spremljene na vašem Google računu, potvrdite svoj identitet</translation>
 <translation id="8171286197772512427">Otvoreno je dijeljenje pomoću tablice s povratnim informacijama o sažetku</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8348430946834215779">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju</translation>
 <translation id="8354977102499939946">Brzo pretražujte glasovno. Da biste uredili prečac, otvorite Postavke.</translation>
 <translation id="835847953965672673">Vraćen je sljedeći broj preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Postavite neko pitanje</translation>
 <translation id="8368001212524806591">Prati cijenu</translation>
 <translation id="8378850197701296741">Imate oznake, povijest i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potvrdite da ste to vi</translation>

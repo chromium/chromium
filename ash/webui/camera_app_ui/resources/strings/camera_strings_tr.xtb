@@ -68,9 +68,7 @@
 <translation id="4118525110028899586">Kaydı duraklat</translation>
 <translation id="4121305183798804752">Doküman algılandı</translation>
 <translation id="414641094616694804">Bu kamera, çözünürlüğü değiştiremez</translation>
-<translation id="4176463684765177261">Devre dışı</translation>
 <translation id="428234092390943511">Sayfa küçük resmi</translation>
-<translation id="4349714250734879769">Çerçeveleri Chrome'a göre ölçeklendir</translation>
 <translation id="4383571725254449280">Performans günlüklerini yazdır</translation>
 <translation id="4445542136948522167">Fotoğraf çekmeyi durdur</translation>
 <translation id="4570032796877367747">Ön kamera</translation>
@@ -83,7 +81,6 @@
 <translation id="4864143361253542638">Taranmış sayfa listesi</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Bağlantı adresini (<ph name="URL" />) kopyala</translation>
-<translation id="491895758387112773">Çoklu akış video kaydı</translation>
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotoğraf en boy oranı</translation>
@@ -157,7 +154,6 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="8145038249676204903">Fotoğraf çekme moduna geç</translation>
 <translation id="8167081290930651932">Fotoğraf olarak kaydet</translation>
 <translation id="8239780215768881278">Video anlık görüntüsü yakala</translation>
-<translation id="8346544573713510785">Çerçeveleri Kamera donanım soyutlama katmanına (HAL) göre ölçeklendir</translation>
 <translation id="8425673304802773841">Yatır</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8609951387004618906"><ph name="URL" /> bağlantısını aç</translation>

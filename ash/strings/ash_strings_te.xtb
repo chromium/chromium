@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">తెలిసిన నెట్‌వర్క్‌లు</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> కనెక్ట్ చేయబడింది.</translation>
 <translation id="1240638468526743569">ఒక యాప్</translation>
+<translation id="1242198791279543032">నోటిఫికేషన్‌లు మ్యూట్ చేయబడ్డాయి</translation>
 <translation id="1242883863226959074">పరికరం</translation>
 <translation id="1245644940275736236">అసిస్టెంట్ పేజీకి వెళ్ళండి</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
@@ -301,6 +302,7 @@
 <translation id="216955976692983107">కుడి వైపు నుండి విండో టైల్ సైజ్ మార్చండి</translation>
 <translation id="2185166372312820725">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="2185444992308415167">1 నుండి 8 ట్యాబ్‌ల వరకు చూడండి</translation>
+<translation id="2195732836444333448">ప్రస్తుతం కెపాసిటీని మించిపోయింది. త్వరగా తిరిగి రండి.</translation>
 <translation id="2198625180564913276">ప్రొఫైల్‌ను జోడిస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="219905428774326614">లాంచర్, అన్ని యాప్‌లు</translation>
 <translation id="2201071101391734388">తాజా ఫోటోలలో <ph name="TOTAL_COUNT" />లో <ph name="INDEX" />వది.</translation>
@@ -815,6 +817,7 @@
 <translation id="4086921558679520050">మీ పరికరంలో ఫిజికల్ మైక్ స్విచ్‌ని ఆన్ చేయండి</translation>
 <translation id="4101772068965291327">హోమ్ పేజీని తెరువు</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
+<translation id="4113030288477039509">మీ నిర్వాహకుడు ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="4114315158543974537">ఫోన్ హబ్‌ను ఆన్ చేయండి</translation>
 <translation id="4115378294792113321">మెజెంటా</translation>
 <translation id="411881149140864134">ఎడమ వైపున ఉన్న డెస్క్‌ను యాక్టివేట్ చేయండి</translation>
@@ -848,6 +851,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> అందుబాటులో లేదు.</translation>
 <translation id="4201051445878709314">మునుపటి నెలను చూపుతుంది</translation>
 <translation id="4209973997261364186">Wi-Fi ఆన్ చేయబడింది</translation>
+<translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
 <translation id="4212472694152630271">పిన్‌కి స్విచ్ చేయి</translation>
 <translation id="4215497585250573029">VPN సెట్టింగ్‌లు</translation>
 <translation id="4217571870635786043">డిక్టేషన్</translation>
@@ -1130,6 +1134,7 @@
 <translation id="5208059991603368177">ఆన్ చేయి</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> వరకు ఆఫ్‌లో ఉంటుంది</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
+<translation id="5228195526683428788">స్ప్లిట్ స్క్రీన్ డివైడర్</translation>
 <translation id="5229343007215035173">గోప్యతా స్క్రీన్‌ను ఆన్/ఆఫ్ చేయండి</translation>
 <translation id="5230516054153933099">విండో</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
@@ -1240,7 +1245,6 @@
 <translation id="5599242528220103262">కీబోర్డ్ షార్ట్‌కట్ ఆఫ్ చేయబడింది</translation>
 <translation id="5600415762228455511">ఫోకస్ ఆన్‌లో ఉంది, <ph name="REMAINING_TIME" /> సమయం మిగిలి ఉంది, దీనిపై ఫోకస్ చేస్తోంది: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">ప్రసంగ రూప అభిప్రాయాన్ని నిలిపివేయడానికి Ctrl + Alt + Z నొక్కండి.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 గంట క్రితం}=1{1 గంట క్రితం}other{# గంటల క్రితం}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">మేము మిమ్మల్ని మెరుగైన నెట్‌వర్క్‌కు మార్చాము</translation>
 <translation id="5619862035903135339">అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తోంది</translation>
@@ -1517,6 +1521,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> స్టోరేజ్ వినియోగంలో ఉంది | మొత్తం <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">గోప్యతా స్క్రీన్ ఆన్‌లో ఉంది</translation>
 <translation id="6622679827379792051">మీ ఫోన్‌లోని యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయండి</translation>
+<translation id="662279009180869175">స్ప్లిట్ స్క్రీన్ సైజ్‌ను మార్చడానికి ఎడమ, కుడి బాణాలను ఉపయోగించండి</translation>
 <translation id="6624493541160101248">ప్రస్తుత డెస్క్: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> డెస్క్‌లలో <ph name="DESK_INDEX" />‌వది.</translation>
 <translation id="6625718907317144388">వీక్షణ ప్రొటెక్షన్ ఆన్‌లో ఉంది కాబట్టి <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, ఇతర నోటిఫికేషన్‌లు దాచబడ్డాయి</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1535,6 +1540,7 @@
 <translation id="6670153871843998651">డెస్క్ 3</translation>
 <translation id="6671495933530132209">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="6671661918848783005">మీ Chromebookను అన్‌లాక్ చేయడం సాధ్యపడలేదు</translation>
+<translation id="6676552993057022464">స్ప్లిట్ స్క్రీన్ సైజ్‌ను మార్చడానికి పై వైపు, కింది వైపు బాణం గుర్తులను ఉపయోగించండి</translation>
 <translation id="6682029141988159141">క్లిప్‌బోర్డ్‌లోని కంటెంట్‌ను పేస్ట్ చేయండి</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
 <translation id="6686023075541098243">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను చూసే సదుపాయాన్ని సెటప్ చేయండి</translation>
@@ -1693,6 +1699,7 @@
 <translation id="7340731148882810149">ఆటోమేటిక్ క్లిక్‌ల మెనూ</translation>
 <translation id="7346909386216857016">సరే, అర్థమైంది</translation>
 <translation id="7348093485538360975">ఆన్-స్క్రీన్ కీబోర్డ్</translation>
+<translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="735745346212279324">VPN డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="7360036564632145207">పెరిఫెరల్‌ల సెట్టింగ్ కోసం మీ డేటా యాక్సెస్ రక్షణను మార్చడం పనితీరును ఆప్టిమైజ్ చేస్తుంది</translation>
 <translation id="736045644501761622">వాల్‌పేపర్ &amp; స్టయిల్‌ను సెటప్ చేయండి</translation>
@@ -1835,7 +1842,6 @@
 <translation id="7851768487828137624">కెనరీ</translation>
 <translation id="7862292329216937261">పరికరాన్ని గెస్ట్ లాగా ఉపయోగించడానికి, మీరు సైన్ అవుట్ చేసి, ఆపై స్క్రీన్ దిగువున ఉన్న "గెస్ట్ లాగా బ్రౌజ్ చేయండి" ఆప్షన్‌ను ఎంచుకోవాలి.</translation>
 <translation id="7866482334467279021">ఆన్‌లో ఉంది</translation>
-<translation id="7866727328666668290">చివరిగా తెరిచిన ట్యాబ్</translation>
 <translation id="7872786842639831132">ఆఫ్</translation>
 <translation id="7875575368831396199">మీ <ph name="DEVICE_TYPE" />లో మీ బ్లూటూత్ ఆఫ్ చేయబడి ఉన్నట్లుగా అనిపిస్తోంది. ఫోన్ హబ్‌ను ఉపయోగించడానికి దయచేసి బ్లూటూత్‌ను ఆన్ చేయండి.</translation>
 <translation id="7884446017008693258">హాట్‌స్పాట్ సెట్టింగ్‌లు</translation>
@@ -2142,7 +2148,6 @@
 <translation id="9002204506712855687">తాజా ఫీచర్‌లను అన్వేషించండి</translation>
 <translation id="9005984960510803406">Crosh విండోను తెరవండి</translation>
 <translation id="9017320285115481645">Family Link తల్లిదండ్రుల యాక్సెస్ కోడ్‌ను నమోదు చేయండి.</translation>
-<translation id="9022774213089566801">తరచుగా సందర్శించినవి</translation>
 <translation id="9024331582947483881">ఫుల్-స్క్రీన్‌</translation>
 <translation id="9029736946581028033">పరికరం త్వరలో ఆఫ్ చేయబడుతుంది</translation>
 <translation id="9030319654231318877">సూర్యాస్తమయం వరకు ఆఫ్‌లో ఉంటుంది</translation>

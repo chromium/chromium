@@ -302,6 +302,7 @@
 <translation id="216955976692983107">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਸੱਜੇ ਵੱਲ</translation>
 <translation id="2185166372312820725">ਪਿੱਛਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="2185444992308415167">1 ਤੋਂ 8 ਤੱਕ ਟੈਬਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="2195732836444333448">ਸਾਡੇ ਕੋਲ ਹਾਲੇ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਵਾਪਸ ਆਓ।</translation>
 <translation id="2198625180564913276">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="219905428774326614">ਲਾਂਚਰ, ਸਭ ਐਪਾਂ</translation>
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
@@ -815,6 +816,7 @@
 <translation id="4086921558679520050">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੌਤਿਕ ਮਾਈਕ ਸਵਿੱਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4101772068965291327">ਮੁੱਖ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4112140312785995938">ਪਿੱਛੇ ਕਰੋ</translation>
+<translation id="4113030288477039509">ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="4114315158543974537">ਫ਼ੋਨ ਹੱਬ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4115378294792113321">ਮਜੈਂਟਾ</translation>
 <translation id="411881149140864134">ਡੈਸਕ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -848,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4201051445878709314">ਪਿਛਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="4209973997261364186">ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ</translation>
+<translation id="4212246570487010370">ਬ੍ਰਾਊਜ਼ਿੰਗ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4212472694152630271">ਪਿੰਨ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
 <translation id="4215497585250573029">VPN ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4217571870635786043">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ</translation>
@@ -1241,7 +1244,6 @@
 <translation id="5599242528220103262">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ</translation>
 <translation id="5600415762228455511">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /> ਬਾਕੀ, ਇਸ ਕਾਰਜ 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਬੰਦ ਕਰਨ ਲਈ Ctrl + Alt + Z ਦਬਾਓ।</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 ਘੰਟਾ ਪਹਿਲਾਂ}=1{1 ਘੰਟਾ ਪਹਿਲਾਂ}other{# ਘੰਟੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ਅਸੀਂ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਨੂੰ ਬਿਹਤਰ ਨੈੱਟਵਰਕ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5619862035903135339">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਨੂੰ ਬੰਦ ਕਰਦੀ ਹੈ</translation>
@@ -1694,6 +1696,7 @@
 <translation id="7340731148882810149">ਸਵੈਚਲਿਤ ਕਲਿੱਕਾਂ ਦਾ ਮੀਨੂ</translation>
 <translation id="7346909386216857016">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
 <translation id="7348093485538360975">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ</translation>
+<translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="735745346212279324">VPN ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ</translation>
 <translation id="7360036564632145207">ਪੈਰੀਫੈਰਲ ਸੈਟਿੰਗਾਂ ਲਈ ਆਪਣੀ ਡਾਟਾ ਪਹੁੰਚ ਸੁਰੱਖਿਆ ਨੂੰ ਬਦਲਣ ਨਾਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਸੁਯੋਗ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="736045644501761622">ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਸੈੱਟ ਕਰੋ</translation>
@@ -1836,7 +1839,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">ਡੀਵਾਈਸ ਮਹਿਮਾਨ ਵਜੋਂ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ ਅਤੇ ਫਿਰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ 'ਮਹਿਮਾਨ ਵਜੋਂ ਬ੍ਰਾਊਜ਼ ਕਰੋ' ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="7866482334467279021">ਚਾਲੂ</translation>
-<translation id="7866727328666668290">ਪਿਛਲੀ ਟੈਬ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="7872786842639831132">ਬੰਦ ਹੈ</translation>
 <translation id="7875575368831396199">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਫ਼ੋਨ ਹੱਬ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="7884446017008693258">ਹੌਟਸਪੌਟ ਸੈਟਿੰਗਾਂ</translation>
@@ -2143,7 +2145,6 @@
 <translation id="9002204506712855687">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="9005984960510803406">Crosh ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="9017320285115481645">Family Link ਦਾ ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ।</translation>
-<translation id="9022774213089566801">ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ</translation>
 <translation id="9024331582947483881">ਫੁਲ ਸਕ੍ਰੀਨ</translation>
 <translation id="9029736946581028033">ਡੀਵਾਈਸ ਜਲਦ ਹੀ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="9030319654231318877">ਸੂਰਜ ਡੁੱਬਣ ਤੱਕ ਬੰਦ ਰਹੇਗਾ</translation>

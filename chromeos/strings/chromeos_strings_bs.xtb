@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Uredite detalje APN-a</translation>
 <translation id="2195732836444333448">Dostignut je maksimalni kapacitet. Vratite se uskoro.</translation>
 <translation id="2201758491318984023">bicikl</translation>
-<translation id="2203222757805818543">Trenutni raspored je postavljen na <ph name="SUNRISE" />–<ph name="SUNSET" />. Da automatski ažurirate raspored tamnog načina rada, <ph name="BEGIN_LINK" />uključite pristup lokaciji<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">Termalni izvor</translation>
 <translation id="2203642483788377106">litica</translation>
 <translation id="2208388655216963643">impresionizam</translation>
@@ -313,7 +312,7 @@
 <translation id="2618015542787108131">pješčana dina</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
-<translation id="2637303424821734920">ISKLJUČENO – za prikaz lokalnih vremenskih prilika <ph name="BEGIN_LINK" />uključite pristup lokaciji sustava<ph name="END_LINK" /></translation>
+<translation id="2637303424821734920">ISKLJUČENO – za prikaz lokalne vremenske prognoze <ph name="BEGIN_LINK" />uključite pristup lokaciji sistema<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Slika prilikom prijave</translation>
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Kontrole</translation>
@@ -362,6 +361,7 @@
 <translation id="3017079585324758401">Pozadina</translation>
 <translation id="3027578600144895987">Zatvorite kameru</translation>
 <translation id="3031560714565892478">Uređaj je video kamera.</translation>
+<translation id="3051968340259309715">To uslugama sustava omogućuje da upotrebljavaju preciznost lokacije za određivanje vaše lokacije. Za procjenu lokacije uređaja postavka Preciznost lokacije upotrebljava podatke o bežičnim signalima, kao što su Wi-Fi pristupne točke, bazne stanice mobilnih mreža i GPS, uz podatke senzora uređaja, kao što su mjerač ubrzanja i žiroskop. Lokaciju možete isključiti u odjeljku Postavke &gt; Privatnost i sigurnost &gt; Kontrole privatnosti &gt; Pristup lokaciji. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Krajnja tačka</translation>
 <translation id="3060579846059757016">Konture</translation>

@@ -2985,7 +2985,6 @@
 <translation id="6753269504797312559">የመምሪያ እሴት</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ግቤትን ሰርዝ</translation>
 <translation id="6754547388777247439">የቁጠባ ሒሳቦች</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">የእርስዎ መሣሪያ ተኝቷል።</translation>
 <translation id="6760548828952594090">ይህ ካርድ በGoogle መለያዎ ውስጥ ሊቀመጥ አልቻለም። በምትኩ በዚህ መሣሪያ ውስጥ በChrome ተቀምጧል።</translation>
 <translation id="6766558780547452153">ምግብ ማብሰል እና አሰራሮች</translation>
@@ -4248,7 +4247,6 @@
 <translation id="9155646082713385498">መጽሔቶች</translation>
 <translation id="9157595877708044936">በማዋቀር ላይ…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዝ ይችላል}one{<ph name="FILE_COUNT" /> ፋይል ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዝ ይችላል}other{<ph name="FILE_COUNT" /> ፋይሎች ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዙ ይችላሉ}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">እንዲሁም እርስዎ የሚጎበኟቸው ጣቢያዎች በጣቢያው ላይ ባለዎት እንቅስቃሴ መሠረት ምን እንደሚወዱ መወሰን ይችላሉ። ለምሳሌ፣ የረጅም ርቀት ሩጫ ጫማዎችን የሚሸጥ ጣቢያ ከጎበኙ ጣቢያው ማራቶኖችን ለመሮጥ ፍላጎት እንዳለዎት ሊወስን ይችላል።</translation>
 <translation id="9166851138617700776">ስለ በጣቢያ የተጠቆሙ ማስታወቂያዎች እና የማስታወቂያ ልኬት ተጨማሪ</translation>
 <translation id="9167054383925257837">የአሳሽ እና የመሣሪያ ስርዓተ ክወና መረጃ (እንደ አሳሹ እና የስርዓተ ክወና ስሪቶች ያለ)</translation>

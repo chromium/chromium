@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Zapisuj hasła</translation>
 <translation id="1753905327828125965">Najczęstsze</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} słabe hasło}few{{count} słabe hasła}many{{count} słabych haseł}other{{count} słabego hasła}}</translation>
+<translation id="1764070164487214210">Trasa</translation>
 <translation id="1766411844240160513">Automatycznie uzupełnij formularz</translation>
 <translation id="1767766085187034454">Tłumacz Google</translation>
 <translation id="1769106850515800431">Spersonalizowana treść</translation>
@@ -541,12 +542,14 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3771033907050503522">Karty incognito</translation>
 <translation id="3775743491439407556">Synchronizacja nie działa</translation>
 <translation id="3779810277399252432">Brak połączenia z internetem.</translation>
+<translation id="3785672280731998727">Wyświetlana nazwa</translation>
 <translation id="3789294999358192700">Wykonaj te czynności:</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803696231112616155">Proponuj tłumaczenie tej strony</translation>
 <translation id="3808311849069021992">Pokaż szczegóły wyszukiwarki</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
+<translation id="3812308602011798782">Opinie</translation>
 <translation id="3818045793209708987">Przestaliśmy śledzić tę przesyłkę</translation>
 <translation id="3818293389945649617">Znajdź następny</translation>
 <translation id="3819183753496523827">Jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
@@ -594,6 +597,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4045648459118332842">Uzyskaj dostęp do zapisanych haseł w dowolnej aplikacji jednym kliknięciem</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4054572406751135230">Śledź na bieżąco wiadomości, sport i inne treści.</translation>
+<translation id="4068959193278821990">Włącz silniejszą ochronę…</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4105841739161771091">{count,plural, =1{Usuń adres}few{Usuń adresy}many{Usuń adresy}other{Usuń adresy}}</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
@@ -605,6 +609,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4121993058175073134">Aby wysłać dane net-export, skonfiguruj konto e-mail w aplikacji Ustawienia.</translation>
 <translation id="4124987746317609294">Zakres czasowy</translation>
 <translation id="4133265950310064865">Silniejsza ochrona</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Zdjęcia Google</translation>
 <translation id="4148023517926189160">Ta witryna chce pobrać plik i dodać go do Twojego kalendarza.</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
@@ -1472,6 +1477,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="834783239627985533">Najczęściej odwiedzane witryny</translation>
 <translation id="8358401059263985056">Włącz powiadomienia</translation>
 <translation id="8364841868226993049">Zapisuję obraz w Zdjęciach Google użytkownika <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">Usuń klucz dostępu</translation>
 <translation id="8370406443343902172">Otwórz Ustawienia…</translation>
 <translation id="8374977641764177587">Włączyć powiadomienia?</translation>
 <translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Ühendatud USB-seadmega</translation>
 <translation id="4194328954146351878">Teilt küsitakse luba, kui saidid üritavad NFC-seadmetes teavet vaadata ja muuta (soovitatav)</translation>
 <translation id="4200726100658658164">Ava asukohaseaded</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Seadmest <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Seade võib märguannete korral vibreerida</translation>
 <translation id="4259722352634471385">Navigeerimine on blokeeritud: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Lubatud</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Laienda</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Aegub homme}other{Aegub # päeva pärast}}</translation>
 <translation id="4336566011000459927">Chrome piirab täna küpsisefaile uuesti</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Viimane vaheleht</translation>
 <translation id="4338831206024587507">Kõik saidid domeenil <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Keelake saitidel selle tuvastamine, millal seda seadet aktiivselt kasutate</translation>
 <translation id="4412992751769744546">Luba kolmanda osapoole küpsisefailid</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Selle saidi juurdepääsu muutmine teie seadmele</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6042308850641462728">Rohkem</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Viimane vaheleht</translation>
 <translation id="6064125863973209585">Lõpetatud allalaadimised</translation>
 <translation id="6071501408666570960">Teid võidakse sellel saidil välja logida</translation>
 <translation id="6120483543004435978">Kui see on sisse lülitatud, võivad saidid küsida luba selle teadmiseks, millal seadet aktiivselt kasutate. Kui see on välja lülitatud, ei saa saidid teada, millal seadet aktiivselt kasutate.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6818926723028410516">Valige üksused</translation>
 <translation id="6864395892908308021">See seade ei saa NFC andmeid lugeda</translation>
-<translation id="6867014948848323204">Seadmest <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Keela saitidel lugeda lõikelaual olevat teksti ja pilte</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6950072572526089586">Külastatav sait saab salvestada teavet teie tegevuste kohta, et sait toimiks ootuspäraselt – näiteks selleks, et hoida teid saidile sisselogituna või salvestada teie ostukorvis olevad üksused. Saidid salvestavad selle teabe teie seadmesse sageli ajutiselt.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Kontakti valimine</translation>
 <translation id="7990211076305263060">Kui see on sisse lülitatud, võivad saidid küsida luba teie mikrofoni kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie mikrofoni kasutada.</translation>
 <translation id="8007176423574883786">Selle seadme puhul on välja lülitatud</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Seadmest <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
 <translation id="8042586301629853791">Sortimisalus:</translation>
 <translation id="8067883171444229417">Esita video</translation>

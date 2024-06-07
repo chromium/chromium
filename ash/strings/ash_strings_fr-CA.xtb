@@ -72,6 +72,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une application</translation>
+<translation id="1242198791279543032">Le son des notifications est désactivé</translation>
 <translation id="1242883863226959074">appareil</translation>
 <translation id="1245644940275736236">Accéder à l'Assistant</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
@@ -301,6 +302,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="216955976692983107">Fenêtre de redimensionnement en tuile vers la droite</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
 <translation id="2185444992308415167">Consulter les onglets 1 à 8</translation>
+<translation id="2195732836444333448">Le serveur est au maximum de sa capacité pour le moment. Revenez plus tard.</translation>
 <translation id="2198625180564913276">Ajout du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="219905428774326614">Lanceur d'applications, toutes les applications</translation>
 <translation id="2201071101391734388">Photo récente : <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4086921558679520050">Activer le commutateur du micro physique sur votre appareil</translation>
 <translation id="4101772068965291327">Ouvrir la page d'accueil</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
+<translation id="4113030288477039509">Géré par votre administrateur</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">Activer le bureau à gauche</translation>
@@ -846,6 +849,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4201033867194214117">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas accessible.</translation>
 <translation id="4201051445878709314">Afficher le mois précédent</translation>
 <translation id="4209973997261364186">Le Wi-Fi est activé</translation>
+<translation id="4212246570487010370">Continuer la navigation</translation>
 <translation id="4212472694152630271">Passer au NIP</translation>
 <translation id="4215497585250573029">Paramètres de RPV</translation>
 <translation id="4217571870635786043">Dictée</translation>
@@ -1238,7 +1242,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5599242528220103262">Le raccourci-clavier est désactivé</translation>
 <translation id="5600415762228455511">Le mode Sans distractions est activé; il reste <ph name="REMAINING_TIME" />. Vous vous concentrer sur : <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl + Alt + Z pour désactiver la rétroaction vocale.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Il y a moins d'une heure}=1{Il y a 1 heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5601503069213153581">NIP</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">La politique définie par l'administrateur désactive les captures d'écran</translation>
@@ -1691,6 +1694,7 @@ Nouvelle installation</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="7348093485538360975">Clavier à l'écran</translation>
+<translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
 <translation id="7360036564632145207">Modifier les paramètres de protection d'accès aux données des périphériques peut optimiser les performances</translation>
 <translation id="736045644501761622">Définir le fond d'écran et le style</translation>
@@ -1833,7 +1837,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Pour utiliser l'appareil en tant qu'invité, vous devez vous déconnecter, puis sélectionner Naviguer en tant qu'invité en bas de l'écran.</translation>
 <translation id="7866482334467279021">activé</translation>
-<translation id="7866727328666668290">Dernier onglet ouvert</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Il semble que le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Veuillez activer le Bluetooth pour utiliser Phone Hub.</translation>
 <translation id="7884446017008693258">Paramètres du point d’accès</translation>
@@ -2139,7 +2142,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9002204506712855687">Découvrez les dernières fonctionnalités</translation>
 <translation id="9005984960510803406">Ouvrir une fenêtre Crosh</translation>
 <translation id="9017320285115481645">Entrez le code d'accès parental pour Family Link.</translation>
-<translation id="9022774213089566801">Fréquemment consultés</translation>
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9029736946581028033">L'appareil va s'éteindre sous peu</translation>
 <translation id="9030319654231318877">Désactivé jusqu'au couchant</translation>

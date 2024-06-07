@@ -2988,7 +2988,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6753269504797312559">Siyosatdagi qiymat</translation>
 <translation id="6753434778807740853">Qyadni (<ph name="ENTRY_VOICEOVER" />) oʻchirish</translation>
 <translation id="6754547388777247439">Omonat hisoblari</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Qurilma uyqu rejimiga o‘tib qoldi.</translation>
 <translation id="6760548828952594090">Bu karta Google hisobingizga saqlanmadi. Ammo u bu qurilmadagi Chrome xotirasiga saqlandi.</translation>
 <translation id="6766558780547452153">Oshpazlik va retseptlar</translation>
@@ -4255,7 +4254,6 @@ Batafsil axborot:
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Sozlanmoqda...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}other{<ph name="FILE_COUNT" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Shuningdek, saytlar ham ularga qilingan tashriflar asosida qiziqishlarni aniqlashi mumkin. Masalan, uzoq masofalarga yugurish oyoq kiyimlarini sotadigan saytga kirsangiz, ushbu sayt sizni marafonlarda yugurishga qiziqadi, deb hisoblashi mumkin.</translation>
 <translation id="9166851138617700776">Saytlar taklif qiladigan reklamalar va reklamalarni baholash haqida batafsil</translation>
 <translation id="9167054383925257837">Brauzer va qurilma OT maʼlumotlari (brauzer va OT versiyalari kabi)</translation>

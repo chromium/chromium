@@ -2991,7 +2991,6 @@ Del</translation>
 <translation id="6753269504797312559">ערך מדיניות</translation>
 <translation id="6753434778807740853">מחיקת הרשומה <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">חשבונות חיסכון</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">המכשיר עבר למצב שינה.</translation>
 <translation id="6760548828952594090">‏לא ניתן היה לשמור את הכרטיס הזה בחשבון Google שלך. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה.</translation>
 <translation id="6766558780547452153">בישול ומתכונים</translation>
@@ -4253,7 +4252,6 @@ Del</translation>
 <translation id="9155646082713385498">כתבי עת</translation>
 <translation id="9157595877708044936">ההגדרה מתבצעת...</translation>
 <translation id="9161794544616754735">{0,plural, =1{יכול להיות שהקובץ <ph name="FILE_NAME" /> מכיל תוכן רגיש}one{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}two{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}other{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">אתרים שבחרת לבקר בהם יכולים לזהות אילו דברים מעניינים אותך גם לפי הפעילות שלך באתר. לדוגמה, אם בחרת לבקר באתר למכירת נעלי ריצה למרחקים ארוכים, האתר עשוי להעריך שאחד מנושאי העניין שלך הוא ריצת מרתונים.</translation>
 <translation id="9166851138617700776">מידע נוסף על מודעות שאתרים מציעים ועל מדידת הנתונים של המודעות</translation>
 <translation id="9167054383925257837">מידע על מערכת ההפעלה של הדפדפן והמכשיר (למשל, הגרסאות של הדפדפן ומערכת ההפעלה)</translation>

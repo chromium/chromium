@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Golygu manylion APN</translation>
 <translation id="2195732836444333448">Capasiti yn llawn ar hyn o bryd. Dewch yn ôl yn fuan.</translation>
 <translation id="2201758491318984023">beic</translation>
-<translation id="2203222757805818543">Mae'r amserlen bresennol wedi'i gosod i <ph name="SUNRISE" /> - <ph name="SUNSET" />. I ddiweddaru'r amserlen modd tywyll yn awtomatig, <ph name="BEGIN_LINK" />trowch fynediad lleoliad ymlaen<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">ffynnon boeth</translation>
 <translation id="2203642483788377106">clogwyn</translation>
 <translation id="2208388655216963643">argraffiadol</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">twyn tywod</translation>
 <translation id="2619761439309613843">Ail-lwytho'n Ddyddiol</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2637303424821734920">WEDI'I DDIFFODD - I arddangos tywydd lleol, <ph name="BEGIN_LINK" />trowch fynediad at leoliad system ymlaen<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Llun mewngofnodi</translation>
 <translation id="2640549051766135490">Wedi dewis albwm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Rheolyddion</translation>

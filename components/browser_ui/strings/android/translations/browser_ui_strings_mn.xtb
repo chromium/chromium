@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-с</translation>
 <translation id="4226663524361240545">Мэдэгдэл ирэхэд төхөөрөмж чичрэнэ</translation>
 <translation id="4259722352634471385">Навигацыг хориглосон байна: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Өргөтгөх</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Маргааш хугацаа нь дуусна}other{# хоногийн дараа хугацаа нь дуусна}}</translation>
 <translation id="4336566011000459927">Chrome күүкинүүдийг өнөөдөр дахин хязгаарлана</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Таны сүүлийн таб</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-н доорх бүх сайт</translation>
 <translation id="4402755511846832236">Сайтуудыг таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг нь блоклоно</translation>
 <translation id="4412992751769744546">Гуравдагч этгээдийн cookies-г зөвшөөрөх</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Таны төхөөрөмж рүү хандах энэ сайтын хандалтыг удирдах</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6042308850641462728">Илүү их</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Таны сүүлийн таб</translation>
 <translation id="6064125863973209585">Татаж дууссан файл</translation>
 <translation id="6071501408666570960">Таныг энэ сайтаас гаргаж магадгүй</translation>
 <translation id="6120483543004435978">Асаалттай үед сайтууд таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой. Унтраалттай үед сайтууд таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэх боломжгүй.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6818926723028410516">Зүйл сонгох</translation>
 <translation id="6864395892908308021">Энэ төхөөрөмж NFC-г унших боломжгүй байна</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" />-с</translation>
 <translation id="6912998170423641340">Сайтыг түр санах ойн текст болон зургийг уншихыг хориглох</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6950072572526089586">Таны зочилсон сайт таны юу хийж байгаа талаарх мэдээллийг хадгалах боломжтой бөгөөд ингэснээр энэ нь таны бодож байсны дагуу ажиллана. Үүнд таныг сайтад нэвтэрсэн хэвээр байлгах эсвэл таны худалдан авалтын сагсан дахь зүйлсийг хадгалах зэрэг багтана. Сайтууд ихэвчлэн энэ мэдээллийг таны төхөөрөмжид түр зуур хадгалдаг.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Харилцагч сонгох</translation>
 <translation id="7990211076305263060">Асаалттай үед сайтууд таны микрофоныг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны микрофоныг ашиглах боломжгүй.</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" />-с</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8042586301629853791">Дараахаар эрэмбэлэх:</translation>
 <translation id="8067883171444229417">Видео тоглуулах</translation>

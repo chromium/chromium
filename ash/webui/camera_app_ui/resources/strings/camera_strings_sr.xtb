@@ -72,9 +72,7 @@
 <translation id="4118525110028899586">Паузирај снимање</translation>
 <translation id="4121305183798804752">Документ је откривен</translation>
 <translation id="414641094616694804">Ова камера не може да промени резолуцију</translation>
-<translation id="4176463684765177261">Онемогућено</translation>
 <translation id="428234092390943511">Сличица странице</translation>
-<translation id="4349714250734879769">Chrome прилагођава оквире</translation>
 <translation id="4383571725254449280">Евиденције о учинку штампања</translation>
 <translation id="4445542136948522167">Заустави снимање слике</translation>
 <translation id="4570032796877367747">Предња камера</translation>
@@ -87,7 +85,6 @@
 <translation id="4864143361253542638">Листа скенираних страница</translation>
 <translation id="4890010094662541459">3×3</translation>
 <translation id="4892746741161549733">Копирај адресу линка <ph name="URL" /></translation>
-<translation id="491895758387112773">Снимање видеа са више стримова</translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4984613436295737187">Quad HD (1440 пиксела)</translation>
 <translation id="5034763830503483128">Размера слика</translation>
@@ -164,7 +161,6 @@
 <translation id="8145038249676204903">Пређи на режим за снимање слика</translation>
 <translation id="8167081290930651932">Сачувај као слику</translation>
 <translation id="8239780215768881278">Направите видео-снимак</translation>
-<translation id="8346544573713510785">Камера HAL прилагођава оквире</translation>
 <translation id="8425673304802773841">Нагињање надоле</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8609951387004618906">Отвори <ph name="URL" /></translation>

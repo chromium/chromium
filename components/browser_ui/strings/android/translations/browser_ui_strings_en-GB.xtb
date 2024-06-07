@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Connected to a USB device</translation>
 <translation id="4194328954146351878">Ask before allowing sites to see and change information on NFC devices (recommended)</translation>
 <translation id="4200726100658658164">Open location settings</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> from <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Notifications may vibrate the device</translation>
 <translation id="4259722352634471385">Navigation is blocked: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Allowed</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Expand</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expires tomorrow}other{Expires in # days}}</translation>
 <translation id="4336566011000459927">Chrome will limit cookies again today</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Your last tab</translation>
 <translation id="4338831206024587507">All sites under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Control this site's access to your device</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6042308850641462728">More</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Your last tab</translation>
 <translation id="6064125863973209585">Completed downloads</translation>
 <translation id="6071501408666570960">You may be signed out of this site</translation>
 <translation id="6120483543004435978">When on, sites can ask to know when you're actively using your device. When off, sites can't know when you're actively using your device.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
-<translation id="6867014948848323204">From <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Block sites from reading text and images from the clipboard</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> From <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8067883171444229417">Play video</translation>

@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Modifică detaliile APN</translation>
 <translation id="2195732836444333448">La capacitate maximă. Revino în curând.</translation>
 <translation id="2201758491318984023">bicicletă</translation>
-<translation id="2203222757805818543">Programul actual este setat la <ph name="SUNRISE" /> – <ph name="SUNSET" />. Pentru a actualiza automat programul modului întunecat, <ph name="BEGIN_LINK" />activează accesul la locație<ph name="END_LINK" />.</translation>
 <translation id="2203272733515928691">izvor termal</translation>
 <translation id="2203642483788377106">stâncă</translation>
 <translation id="2208388655216963643">impresionist</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">dună de nisip</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2637303424821734920">DEZACTIVAT – Pentru a afișa condițiile meteo locale, <ph name="BEGIN_LINK" />activează accesul la locație al sistemului<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Imagine de autentificare</translation>
 <translation id="2640549051766135490">S-a selectat albumul <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Comenzi</translation>

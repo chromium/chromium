@@ -302,6 +302,7 @@
 <translation id="216955976692983107">windowના કદમાં વધઘટ કરીને જમણી તરફ ટાઇલ કરી</translation>
 <translation id="2185166372312820725">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="2185444992308415167">ટૅબ 1થી 8 પર જાઓ</translation>
+<translation id="2195732836444333448">હાલમાં મહત્તમ ક્ષમતાએ કામ કરી રહ્યાં છીએ. જલ્દી પાછા આવીશું.</translation>
 <translation id="2198625180564913276">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="219905428774326614">લૉન્ચર, બધી ઍપ</translation>
 <translation id="2201071101391734388">તાજેતરના <ph name="TOTAL_COUNT" /> ફોટામાંથી <ph name="INDEX" /> નંબરનો ફોટો.</translation>
@@ -815,6 +816,7 @@
 <translation id="4086921558679520050">તમારા ડિવાઇસ પર વાસ્તવિક માઇકની સ્વિચ ચાલુ કરો</translation>
 <translation id="4101772068965291327">હોમ પેજ ખોલો</translation>
 <translation id="4112140312785995938">પાછળ કરો</translation>
+<translation id="4113030288477039509">તમારા વ્યવસ્થાપક દ્વારા મેનેજ થયેલ</translation>
 <translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
 <translation id="4115378294792113321">કિરમજી</translation>
 <translation id="411881149140864134">ડેસ્કને ડાબી બાજુએ સક્રિય કરો</translation>
@@ -848,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ઉપલબ્ધ નથી.</translation>
 <translation id="4201051445878709314">પાછળનો મહિનો બતાવો</translation>
 <translation id="4209973997261364186">વાઇ-ફાઇ ચાલુ છે</translation>
+<translation id="4212246570487010370">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
 <translation id="4212472694152630271">પિન પર સ્વિચ કરો</translation>
 <translation id="4215497585250573029">VPN સેટિંગ</translation>
 <translation id="4217571870635786043">ડિક્ટેશન</translation>
@@ -1130,6 +1133,7 @@
 <translation id="5208059991603368177">ચાલુ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> સુધી બંધ રાખો</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
+<translation id="5228195526683428788">સ્ક્રીનને વિભાજિત કરતું વિભાજક</translation>
 <translation id="5229343007215035173">પ્રાઇવસી સ્ક્રીન ચાલુ/બંધ કરો</translation>
 <translation id="5230516054153933099">વિંડો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
@@ -1240,7 +1244,6 @@
 <translation id="5599242528220103262">કીબોર્ડ શૉર્ટકટ બંધ છે</translation>
 <translation id="5600415762228455511">ફોકસ ચાલુ છે, <ph name="REMAINING_TIME" /> બાકી, ફોકસ કરવાનું ચાલુ છે: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">બોલાયેલા પ્રતિસાદને બંધ કરવા માટે Ctrl + Alt + Z દબાવો.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 કલાક પહેલાં}=1{1 કલાક પહેલાં}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">અમે તમને વધુ સારા નેટવર્ક પર સ્વિચ કર્યા છે</translation>
 <translation id="5619862035903135339">વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
@@ -1517,6 +1520,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> સંગ્રહ ઉપયોગમાં છે | કુલ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
 <translation id="6622679827379792051">તમારા ફોનની ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="662279009180869175">વિભાજિત સ્ક્રીનનું કદ બદલવા માટે ડાબી અને જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="6624493541160101248">વર્તમાન ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="6625718907317144388">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> અને અન્ય નોટિફિકેશન છુપાવેલા છે</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1535,6 +1539,7 @@
 <translation id="6670153871843998651">ડેસ્ક 3</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6671661918848783005">તમારી Chromebook અનલૉક કરી શકતા નથી</translation>
+<translation id="6676552993057022464">વિભાજિત સ્ક્રીનનું કદ બદલવા માટે ઉપરની અને નીચેની ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="6682029141988159141">ક્લિપબોર્ડમાંના કન્ટેન્ટને પેસ્ટ કરો</translation>
 <translation id="6683022854667115063">હૅડફોન</translation>
 <translation id="6686023075541098243">તમારા ફોનના નોટિફિકેશન જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
@@ -1693,6 +1698,7 @@
 <translation id="7340731148882810149">ઑટોમૅટિક રીતે ક્લિક કરતું મેનૂ</translation>
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
 <translation id="7348093485538360975">ઑન-સ્ક્રીન કીબોર્ડ</translation>
+<translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="735745346212279324">VPN ડિસ્કનેક્ટ કર્યું છે</translation>
 <translation id="7360036564632145207">પેરિફેરલ સેટિંગ માટે તમારી ડેટા ઍક્સેસની સુરક્ષામાં ફેરફાર કરવાથી કાર્યપ્રદર્શન ઑપ્ટિમાઇઝ થઈ શકે છે</translation>
 <translation id="736045644501761622">વૉલપેપર અને સ્ટાઇલ સેટ કરો</translation>
@@ -1835,7 +1841,6 @@
 <translation id="7851768487828137624">કૅનેરી</translation>
 <translation id="7862292329216937261">અતિથિ તરીકે ડિવાઇસનો ઉપયોગ કરવા માટે, પહેલા તમારે સાઇન આઉટ કરવું જરૂરી છે અને ત્યાર પછી સ્ક્રીનની સૌથી નીચે દેખાતા 'અતિથિ તરીકે બ્રાઉઝ કરો' પસંદ કરો.</translation>
 <translation id="7866482334467279021">ચાલુ</translation>
-<translation id="7866727328666668290">છેલ્લું ટૅબ ખોલ્યું</translation>
 <translation id="7872786842639831132">બંધ છે</translation>
 <translation id="7875575368831396199">એવું લાગે છે કે તમારા <ph name="DEVICE_TYPE" /> પર બ્લૂટૂથ બંધ કરેલું છે. કૃપા કરીને ફોન હબનો ઉપયોગ કરવા માટે બ્લૂટૂથ ચાલુ કરો.</translation>
 <translation id="7884446017008693258">હૉટસ્પૉટના સેટિંગ</translation>
@@ -2142,7 +2147,6 @@
 <translation id="9002204506712855687">નવીનતમ સુવિધાઓ વિશે જાણો</translation>
 <translation id="9005984960510803406">Crosh વિંડો ખોલો</translation>
 <translation id="9017320285115481645">Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો.</translation>
-<translation id="9022774213089566801">વારંવાર મુલાકાત લેવાયેલ</translation>
 <translation id="9024331582947483881">પૂર્ણ સ્ક્રીન</translation>
 <translation id="9029736946581028033">ડિવાઇસનો પાવર ટૂંક સમયમાં સમાપ્ત થઈ જશે</translation>
 <translation id="9030319654231318877">સૂર્યાસ્ત સુધી બંધ રાખો</translation>

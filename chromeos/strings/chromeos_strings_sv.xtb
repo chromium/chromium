@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">Redigera APN-information</translation>
 <translation id="2195732836444333448">Jag kan inte göra det just nu. Testa igen om ett tag.</translation>
 <translation id="2201758491318984023">cykel</translation>
-<translation id="2203222757805818543">Nuvarande schema är inställt på <ph name="SUNRISE" />–<ph name="SUNSET" />. <ph name="BEGIN_LINK" />Aktivera platsåtkomst<ph name="END_LINK" /> om du vill uppdatera schemat för mörkt läge automatiskt</translation>
 <translation id="2203272733515928691">varm källa</translation>
 <translation id="2203642483788377106">en klippa</translation>
 <translation id="2208388655216963643">impressionism</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">en sanddyn</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2637303424821734920">AV – <ph name="BEGIN_LINK" />aktivera systemets platsåtkomst<ph name="END_LINK" /> om du vill visa lokalt väder</translation>
 <translation id="2638662041295312666">Inloggningsbild</translation>
 <translation id="2640549051766135490">Detta album har markerats: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Kontroller</translation>

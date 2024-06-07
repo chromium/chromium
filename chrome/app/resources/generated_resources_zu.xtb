@@ -296,6 +296,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1203942045716040624">Isisebenzi Esabiwe: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Ilinki Yokuhlola Kuqala</translation>
 <translation id="1206832039833782423">Ikhodi yakho yokuphepha ingemuva ekhadini lakho</translation>
+<translation id="1208392090861059168">Ishejuli yamanje isethwe kokuthi <ph name="SUNRISE" /> - <ph name="SUNSET" />. Ukuze ubuyekeze ngokuzenzakalelayo ishejuli yokushona nokuphakama kwelanga, <ph name="BEGIN_LINK" />vula ukufinyelela indawo kwesistimu<ph name="END_LINK" /></translation>
 <translation id="1210678701920254279">Buka noma unezele amaphrinta futhi ubone imisebenzi yokuphrinta eqhubekayo</translation>
 <translation id="1211769675100312947">Izinqamuleli zikhethwa nguwe</translation>
 <translation id="1213254615020057352">Thumela idatha yokusetshenziswa neyokuxilonga. Siza ukuthuthukisa umuzwa we-Android wengane yakho ngokuthumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa kohlelo lokusebenza ku-Google. Lokhu ngeke kusetshenziselwe ukukhomba ingane yakho futhi kuzosiza ukuzinza kwesistimu nokohlelo lokusebenza nokunye ukuthuthukiswa. Enye idatha izophinda isize izinhlelo zokusebenza ze-Google nozakwethu, abafana nonjiniyela be-Android. Lesi silungiselelo siphoqelelwa umnikazi. Umnikazi angakhetha ukuthumela idatha yokuxilonga neyokusetshenziswa yale divayisi ku-Google. Uma isethingi esingeziwe sewebhu nesohlelo lokusebenza sivulelwe ingane yakho, le datha ingalondolozwa ku-akhawunti yakhe ye-Google.</translation>
@@ -811,6 +812,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1594703455918849716">Iya ekhasini elithi Hlola</translation>
 <translation id="1594781465361405478">Ivolumu ivuliwe/ivaliwe</translation>
 <translation id="1594963087419619323">Amazwibela okuhlukanisa isikrini</translation>
+<translation id="1595018168143352126">Lawula izimvume zekhamera zewebhusayithi kuChrome</translation>
 <translation id="1595492813686795610">I-Linux iyathuthukiswa</translation>
 <translation id="1596286373007273895">Iyatholakala</translation>
 <translation id="1596709061955594992">I-Bluetooth ivaliwe. Ukuze ubone amadivayisi atholakalayo, vula i-Bluetooth.</translation>
@@ -884,7 +886,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1634224622052500893">Inethiwekhi ye-Wi-Fi Itholakele</translation>
 <translation id="1634783886312010422">Ingabe usuyishintshile kakade le phasiwedi ku-<ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">KULUNGILE</translation>
-<translation id="1636542522761359943">Siyakwamukela, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Idatha ye-app kungaba inoma iyiphi idatha elondolozwe yi-app (kusukela kumasethingi wonjiniyela), okufaka phakathi idatha efana noxhumana nabo, imilayezo, nezithombe. Idatha yokwenza isipele ngeke ibalwe esilinganisweni sakho sesitoreji se-Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ungavala le sevisi kuzilungiselelo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Thola le bhukhimakhi ku-iPhone yakho</translation>
@@ -1257,6 +1258,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1900305421498694955">Izinhlelo zokusebenza kusuka ku-Google Play zingadinga ukufinyelela kwesistimu yefayela ephelele ukufunda nokubhala amafayela kumadivayisi esitoreji sangaphandle. Amafayela namafolda adalwe kudivayisi ayabonakala kunoma ubani osebenzisa idrayivu yangaphandle. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Cela umphathi wakho ukuthi abuyekeze le app</translation>
 <translation id="1901303067676059328">Khetha &amp;konke</translation>
+<translation id="1901760057081700494">Izoni yesikhathi manje isethelwe ku-<ph name="TIME_ZONE_ENTRY" />. Ukuze izoni yesikhathi ibuyekezwe kokuzenzekelayo, <ph name="BEGIN_LINK" />vula ukufinyelela indawo kwesistimu<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Ama-URL owavakashelayo alondolozwe ku-akhawunti yakho ye-Google</translation>
 <translation id="1906181697255754968">Amasayithi avamise ukufinyelela kumafayela namafolda kudivayisi yakho kuzici ezifana nokulondoloza ngokuzenzakalela umsebenzi wakho</translation>
 <translation id="1906488504371069394">Vumbulula izandiso ezengeziwe namatimu <ph name="BEGIN_LINK" />Esitolo Sewebhu Se-Chrome<ph name="END_LINK" /></translation>
@@ -1629,7 +1631,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="217576141146192373">Ayikwazi ukungeza iphrinta. Sicela uhlole ukulungiswa kwephrinta yakho bese uyazama futhi.</translation>
 <translation id="2175927920773552910">Ikhodi ye-QR</translation>
 <translation id="217631816678106981">Unganamathiseli</translation>
-<translation id="2177306523871626993">Idawuniloda amafayela okubona umbhalo… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Ithebhu ye-Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">I-Microsoft 365</translation>
 <translation id="2178585470774851578">Unika amandla izakhi zokulungisa amaphutha ze-ChromeOS Flex ezizosetha i-sshd daemon futhi zinike amandla ukuqalisa kusuka kumadrayivu we-USB.</translation>
@@ -1838,6 +1839,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2314774579020744484">Ulimi olusetshenziswe uma kuhunyushwa amakhasi</translation>
 <translation id="2316129865977710310">Cha, ngiyabonga</translation>
 <translation id="2316433409811863464">Ukusakaza I-app</translation>
+<translation id="2316709634732130529">Sebenzisa iphasiwedi ephakanyisiwe</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% owenziwe</translation>
 <translation id="2318143611928805047">Usayizi wephepha</translation>
 <translation id="2318817390901984578">Ukuze usebenzise izinhlelo zokusebenza ze-Android, shaja uphinde ubuyekeze i-<ph name="DEVICE_TYPE" /> yakho.</translation>
@@ -1884,7 +1886,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2350182423316644347">Iqalisa uhlelo lokusebenza...</translation>
 <translation id="235028206512346451">Uma usuka kudivayisi yakho, isikrini sakho sizokhiya ngokuzenzakalelayo. Uma uphambi kwedivayisi yakho, isikrini sakho sizohlala sivuliwe isikhathi eside. Uma ungasebenzisi ukukhiya isikrini, idivayisi yakho izolala esikhundleni sokukhiya.</translation>
 <translation id="2351923523007389195">Kuvunyelwe – <ph name="PERMISSION_DETAILS" />. Vula <ph name="LINK_BEGIN" />ukufinyelela indawo yesistimu<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">Uma ungena ngemvume kule divayisi, uthola amaphasiwedi akho nokunye okwengeziwe ku-Google Account yakho</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Amanothi okukhiya isikrini alondolozwa ngokuzenzakalela ku-<ph name="LOCK_SCREEN_APP_NAME" />. Inothi lakho lakamuva kakhulu lizohlala ekukhiyeni isikrini.</translation>
 <translation id="2353297238722298836">Ikhamera nemakrofoni ivunyelwe</translation>
@@ -2214,6 +2215,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2581992808349413349">Sebenzisa uxhumano oluvikelekile ukuze ubheke ikheli le-IP lesayithi ku-DNS (Isistimu Yegama Lesizinda). Lokhu kusebenzisa umhlinzeki wesevisi olawulwayo ku-<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Ipulatifomu engu-<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Ayikwazanga ukuthola ithikithi le-Kerberos. Zama futhi, noma xhumana nomphathi wedivayisi yenhlangano yakho. (Ikhodi yephutha engu-<ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Lawula izimvume zemakhrofoni zewebhusayithi kuChrome</translation>
 <translation id="2586561813241011046">Ayikwazanga ukufaka i-<ph name="APP_NAME" />. Sicela uzame futhi, noma xhumana nomlawuli wakho. Ikhodi yephutha: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Ibhodi lokumanathisela</translation>
 <translation id="2586672484245266891">Sicela ufake i-URL emfushane</translation>
@@ -2403,6 +2405,9 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2727744317940422214">Uxolo, kukhona okungahambanga kahle. Sicela uthumele impendulo nge-#bruschetta encazelweni. Ikhodi yephutha ithi <ph name="ERROR" />. Ukuhlanza kuhlulekile, kungenzeka kumele ukwenze ngesandla.</translation>
 <translation id="2729327310379176711">I-Chrome ithola izindlela ezintsha zokunciphisa ukulandelela futhi ikugcine uphephe nakakhulu njengoba ubhrawuza. I-Chrome iphinda <ph name="ESTIMATE_INTERESTS_LINK" /> futhi ikunike amandla okupha okuziphatha. Bese, amasayithi owavakashelayo angacela i-Chrome ngezintshisekelo zakho ukuze akubonise izikhangiso.</translation>
 <translation id="2729577602370119849">Finyelela kalula futhi ulawule amaphrinta</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Uma kuvulwe Ukuhlonzwa Kwendawo Ngqo, kusetshenziswa ulwazi olumayelana namasiginali angenantambo, njengamaphoyinti okufinyelela kwe-Wi-Fi, imibhoshongo yenethiwekhi yeselula, okuhambisana nedatha yenzwa yedivayisi, njenge-accelerometer negyroscope, ukuze kwenziwe isilinganiso sendawo yedivayisi esinembe kakhudlwana, esisetshenziswa ama-app namasevisi e-Android ukuze ahlinzeke ngezakhi ezivumelana nendawo. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi mayelana nezinzwa zedivayisi namasiginali angenantambo aseduzane nale divayisi ukuze ibe negalelo ezindaweni ezinesiginali engenantambo ezitholwe ngeningi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />IGoogle isebenzisa lolu lwazi oluthathwe kule divayisi ukuze: ithuthukise ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo, futhi yenze intuthuko evamile, ihlinzeke, futhi ilondoloze amasevisi eGoogle. Sicubungula lolu lwazi ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi. Lolu lwazi alusetshenziselwa ukudalula umuntu.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ungakuvala ukuhlonzwa kwendawo ngqo noma nini kumasethingi endawo ale divayisi ngaphansi kokuthi Amasethingi &gt; Ubumfihlo nokuvikeleka &gt; Izilawuli zobumfihlo &gt; Ukufinyelela indawo &gt; Amasethingi endawo athuthukisiwe. Uma Ukuhlonzwa Kwendawo Ngqo kuvaliwe, ayikho idatha Yokuhlonzwa Kwendawo Ngqo ezoqoqwa. Kuma-app namasevisi e-Android, kusetshenziswa ikheli lasesizindeni se-intanethi kuphela, uma litholakala, ukuze kutholwe indawo yale divayisi, okungase kuthinte ukutholakala nokunemba kwezindawo kuma-app namasevisi e-Android afana neGoogle Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Yenza isipele izinhlelo zokusebenza ze-Linux namafayela</translation>
 <translation id="2730596696987224099">Khetha okwakho</translation>
 <translation id="2730647855013151888">Faka lonke ulwazi lomuntu siqu</translation>
@@ -3256,6 +3261,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="338323348408199233">Vimbela ithrafikhi ngaphandle kwe-VPN</translation>
 <translation id="3384362484379805487">Amafayela olimi abiwa phakathi kwabasebenzisi ukulondoloza isikhala sediski.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Ukuhlonzwa Kwendawo Ngqo kunikeza indawo enembe kakhulu kuma-app namasevisi. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi olusedivayisini yakho olumayelana nezinzwa zedivayisi namasiginali angenantambo ukuze kutholwe izindawo ezinesiginali engenantambo ngeningi. Lokhu kusetshenziswa ngaphandle kokukudalula ukuze kuthuthukiswe ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo ukuze kuthuthukiswe, kuhlinzekwe, futhi kulondolozwe amasevisi eGoogle ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi.</translation>
 <translation id="338583716107319301">Isihlukanisi</translation>
 <translation id="3385916046075724800">Amaqembu wakho ethebhu manje alondoloza ngokuzenzekela.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3677,7 +3683,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3694590407685276748">Gqamisa i-cursor yombhalo</translation>
 <translation id="369489984217678710">Amaphasiwedi nenye idatha yokungena ngemvume</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Ukuhlola ezokuphepha kwenziwe. Idatha yakho izolayishwa}=1{Ukuhlola ezokuphepha kwenziwe. Ifayela lakho lizolayishwa.}one{Ukuhlola ezokuphepha kwenziwe. Amafayela akho azolayishwa}other{Ukuhlola ezokuphepha kwenziwe. Amafayela akho azolayishwa}}</translation>
-<translation id="3696817060563289264">Amafayela okubona umbhalo adawunilodiwe</translation>
 <translation id="369736917241079046">isiqalisi + umcibisholo okwesokunxele</translation>
 <translation id="3697716475445175867">kugcine ukuvulwa</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Ungamisa leli webhusayithi ekuthumeleni izaziso zesikhathi esizayo.}one{Ungamisa lama webhusayithi ekuthumeleni izaziso zesikhathi esizayo.}other{Ungamisa lama webhusayithi ekuthumeleni izaziso zesikhathi esizayo.}}</translation>
@@ -3989,7 +3994,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="3898768766145818464">Dlala noma misa kancane ividiyo</translation>
 <translation id="389901847090970821">Khetha ikhibhodi</translation>
 <translation id="3900966090527141178">Thumela amaphasiwedi</translation>
-<translation id="3902789559055749153">Khetha indlela ofuna ukuyisebenzisela ukusungula ukhiye wokudlula we-<ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Ikhibhodi eyakhelwe ngaphakathi</translation>
 <translation id="3903696968689283281">Ulwazi Lomnikazi Oqondile lwe-WiFi:</translation>
 <translation id="3904326018476041253">Amasevisi Endawo</translation>
@@ -4062,6 +4066,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="3950841222883198950">Ukuthayipha ngezwi</translation>
 <translation id="3953834000574892725">Ama-akhawunti ami</translation>
 <translation id="3954354850384043518">Kuyaqhubeka</translation>
+<translation id="3954468641195530330">Ama-app awavumelekile ukusebenzisa imakhrofoni yakho</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Awunawo amalogi omcimbi athathwe kamuva e-WebRTC.</translation>
 <translation id="3955321697524543127">Ungavumeli amasayithi ukuba axhume kumadivayisi we-USB</translation>
@@ -4120,6 +4125,10 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="3988124842897276887">Le thebhu ixhunywe kudivayisi ye-USB</translation>
 <translation id="3988996860813292272">Khetha indawo yesikhathi</translation>
 <translation id="3991055816270226534">Phatha amakhukhi ezinkampani zangaphandle kanye nokuvikela ukulandelela</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Uma kuvulwe Ukuhlonzwa Kwendawo Ngqo, kusetshenziswa ulwazi olumayelana namasiginali angenantambo, njengamaphoyinti okufinyelela kwe-Wi-Fi, imibhoshongo yenethiwekhi yeselula, okuhambisana nedatha yenzwa yedivayisi, njenge-accelerometer negyroscope, ukuze kwenziwe isilinganiso sendawo yedivayisi esinembe kakhudlwana, esisetshenziswa ama-app namasevisi e-Android ukuze ahlinzeke ngezakhi ezivumelana nendawo. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi mayelana nezinzwa zedivayisi namasiginali angenantambo aseduzane nale divayisi ukuze ibe negalelo ezindaweni ezinesiginali engenantambo ezitholwe ngeningi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />IGoogle isebenzisa lolu lwazi oluthathwe kule divayisi ukuze: ithuthukise ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo, futhi yenze intuthuko evamile, ihlinzeke, futhi ilondoloze amasevisi eGoogle. Sicubungula lolu lwazi ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi. Lolu lwazi alusetshenziselwa ukudalula umuntu.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ungakuvala ukuhlonzwa kwendawo ngqo noma nini kumasethingi endawo ale divayisi ngaphansi kokuthi Amasethingi &gt; Ubumfihlo nokuvikeleka &gt; Izilawuli zobumfihlo &gt; Ukufinyelela indawo &gt; Amasethingi endawo athuthukisiwe. Uma Ukuhlonzwa Kwendawo Ngqo kuvaliwe, ayikho idatha Yokuhlonzwa Kwendawo Ngqo ezoqoqwa. Kuma-app namasevisi e-Android, kusetshenziswa ikheli lasesizindeni se-intanethi kuphela, uma litholakala, ukuze kutholwe indawo yale divayisi, okungase kuthinte ukutholakala nokunemba kwezindawo kuma-app namasevisi e-Android afana neGoogle Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Funda kabanzi mayelana Nokuhlonzwa Kwendawo Ngqo<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Kungenisiwe</translation>
 <translation id="3992008114154328194">Idawuniloda i-<ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Yenza ikhophi yasenqolobaneni idatha</translation>
@@ -4161,7 +4170,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4028467762035011525">Engeza izindlela zokufaka</translation>
 <translation id="4029024445166427442">Isiqalisi + shift + backspace</translation>
 <translation id="4029556917477724407">Emuva kusuka ekhasini <ph name="PAGE_TITLE" /></translation>
-<translation id="403088439874411464">Idawuniloda amafayela okubona umbhalo</translation>
 <translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
 <translation id="4031527940632463547">Izinzwa zivinjiwe</translation>
 <translation id="4033471457476425443">Engeza ifolda entsha</translation>
@@ -4275,6 +4283,10 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4110485659976215879">Buyisela isexwayiso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (akuxhunyiwe ku-inthanethi)</translation>
 <translation id="4113743276555482284">Iphasiwedi yefayela</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Uma kuvulwe Ukuhlonzwa Kwendawo Ngqo, kusetshenziswa ulwazi olumayelana namasiginali angenantambo, njengamaphoyinti okufinyelela kwe-Wi-Fi, imibhoshongo yenethiwekhi yeselula, okuhambisana nedatha yenzwa yedivayisi, njenge-accelerometer negyroscope, ukuze kwenziwe isilinganiso sendawo yedivayisi esinembe kakhudlwana, esisetshenziswa ama-app namasevisi e-Android ukuze ahlinzeke ngezakhi ezivumelana nendawo. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile iqoqa ulwazi olumayelana nezinzwa zedivayisi namasiginali angenantambo aseduzane nawe ukuze ibe negalelo ezindaweni ezinamasiginali angenantambo ezitholwe ngeningi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />IGoogle isebenzisa lolu lwazi ngaphandle kokukudalula ukuze: ithuthukise ukuhlonzwa kwendawo ngqo namasevisi afaneleka ngokwendawo; futhi yenze intuthuko evamile, ihlinzeke, futhi ilondoloze amasevisi eGoogle. Sicubungula lolu lwazi ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ungakuvala ukuhlonzwa kwendawo ngqo noma nini kumasethingi endawo edivayisi yakho ngaphansi kokuthi Amasethingi &gt; Ubumfihlo nokuvikeleka &gt; Izilawuli zobumfihlo &gt; Ukufinyelela indawo &gt; Amasethingi endawo athuthukisiwe. Uma Ukuhlonzwa Kwendawo Ngqo kuvaliwe, ayikho idatha Yokuhlonzwa Kwendawo Ngqo ezoqoqwa. Kuma-app namasevisi e-Android, kusetshenziswa ikheli lasesizindeni se-intanethi kuphela, uma litholakala, ukuze kutholwe indawo yedivayisi yakho, okungase kuthinte ukutholakala nokunemba kwezindawo kuma-app namasevisi e-Android afana neGoogle Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Funda kabanzi mayelana Nokuhlonzwa Kwendawo Ngqo<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Ubona amafayela aphakanyisiwe ukuze akusize ubuyele kalula kumsebenzi wakho wakamuva kakhulu ku-Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4399,7 +4411,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4220648711404560261">Kuvele iphutha phakathi nokusebenzisa.</translation>
 <translation id="4222917615373664617">Ukulandelela intengo kunikwe amandla. Intengo ngu-<ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Imakrofoni ayivunyelwe</translation>
-<translation id="4223845867739585293">Sungula iphasiwedi</translation>
 <translation id="4225397296022057997">Kuwo onke amasayithi</translation>
 <translation id="4228071595943929139">Sebenzisa ikheli le-imeyili lenhlangano yakho</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Lesi sandiso asivunyelwe}one{Ezinye izandiso azivunyelwe}other{Ezinye izandiso azivunyelwe}}</translation>
@@ -4710,7 +4721,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4449948729197510913">Igama lakho lomsebenzisi lingelenhlangano ye-akhawunti yebhizinisi lakho. Ukuze ubhalise amadivayisi ku-akhawunti, qala ngokuqinisekisa ubunikazi besizinda ku-console Yomphathi. Uzodinga amalungelo okulawula kwi-akhawunti ukuze uqinisekise.</translation>
 <translation id="4450974146388585462">Hlonza</translation>
 <translation id="445099924538929605">I-<ph name="DEVICE_OS" /> ithole i-TPM esebenzayo engagcina idatha yakho ngokuphepha.</translation>
-<translation id="4451203458188403050">Khipha umbhalo ku-PDF</translation>
 <translation id="4452898361839215358">noma khetha i-PPD. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Thinta inzwa yesigxivizo somunwe phezulu kwesokudla kwekhibhodi yakho. Idatha yakho yesigxivizo somunwe igcinwe ngokuphephile futhi ayilokothi ishiye i-<ph name="DEVICE_TYPE" /> yakho.</translation>
 <translation id="4453946976636652378">Sesha i-<ph name="SEARCH_ENGINE_NAME" /> noma thayipha i-URL</translation>
@@ -5052,6 +5062,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4716483597559580346">I-powerwash yokungeza ukuvikelwa</translation>
 <translation id="4716715661140829720">Ayikho indawo eyanele yokulondoloza</translation>
 <translation id="471759229191973607">Shintsha itimu</translation>
+<translation id="4719276504493791870">Ama-app awavumelekile ukusebenzisa indawo yakho</translation>
 <translation id="4722735765955348426">Iphasiwedi ye-<ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">I-<ph name="APP_NAME" /> yabelana ngesikrini sakho.</translation>
 <translation id="4722989931633062466">Ayivunyelwe ukubonisa imiyalo yokungena ngemvume kongahlangene ngqo</translation>
@@ -5265,6 +5276,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4879491255372875719">Okuzenzakalelayo (okuzenzakalelayo)</translation>
 <translation id="4880315242806573837">Izibuyekezo zokuvikeleka ziyaphela maduze. Thuthukela ku-Chromebook entsha.</translation>
 <translation id="4880827082731008257">Umlando wosesho</translation>
+<translation id="4881632956374597321">Ama-app namawebhusayithi anemvume yendawo, kanye namasevisi esistimu, angayisebenzisa indawo yakho. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Ungangikhumbuzi esikhathini esizayo</translation>
 <translation id="4881695831933465202">Vula</translation>
 <translation id="4882312758060467256">Unokufinyelela kuleli sayithi</translation>
@@ -5510,6 +5522,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5079010647467150187">Faka i-VPN eyakhelwe ngaphakathi...</translation>
 <translation id="5079460277417557557">Manje usungasebenzisa amaqembu amathebhu alondoloziwe kumadivayisi akho edeskithophu ongene ngemvume kuwo</translation>
 <translation id="5079699784114005398">Uma sekuvuliwe, ama-app akho azotholakala kunoma yimaphi amadivayisi e-ChromeOS ngemva kokungena ngemvume nge-Google Account yakho. Ama-app ewebhu afakwe kubhrawuza ye-Chrome izovunyelaniswa noma ukuvumelanisa kwebhrawuza kuvaliwe.</translation>
+<translation id="5079950360618752063">Sebenzisa iphasiwedi ephakanyisiwe</translation>
 <translation id="508059534790499809">Vuselela ithikithi le-Kerberos</translation>
 <translation id="5081124414979006563">&amp;Vula Iphrofayela Yesivakashi</translation>
 <translation id="5083035541015925118">ctrl + alt + umcibisholo waphezulu</translation>
@@ -5660,6 +5673,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5186788525428341874">Ungasebenzisa lo khiye wokungena ukuze ungene ngemvume ngokushesha kuwo wonke amadivayisi wakho. Izolondolozwa Kumphathi Wephasiwedi Ye-Google ye-<ph name="ACCOUNT_NAME" /></translation>
 <translation id="5187641678926990264">&amp;Faka Ikhasi njenge-App...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Sebenzisa indawo. Vumela iChromeOS nama-app e-Android, amawebhusayithi, namasevisi anemvume yendawo ukuba asebenzise indawo yedivayisi yakho. Ukuhlonzwa Kwendawo Ngqo kunikeza indawo enembe kakhulu kuma-app namasevisi e-Android. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi olusedivayisini yakho olumayelana nezinzwa zedivayisi namasiginali angenantambo ukuze kutholwe izindawo ezinesiginali engenantambo ngeningi. Lokhu kusetshenziswa ngaphandle kokukudalula ukuze kuthuthukiswe ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo ukuze kuthuthukiswe, kuhlinzekwe, futhi kulondolozwe amasevisi eGoogle ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi. <ph name="BEGIN_LINK1" />Funda kabanzi ngokusebenzisa indawo<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Isebenzisa u-<ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Yenza imbobo isebenze</translation>
 <translation id="5190959794678983197">Ayikho imakrofoni</translation>
@@ -5705,6 +5719,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5225324770654022472">Bonisa isinqamuleli sohlelo lokusebenza</translation>
 <translation id="52254442782792731">Isethingi lamanje lokubonakala lisengakasethwa</translation>
 <translation id="5225463052809312700">Vula ikhamera</translation>
+<translation id="5226731562812684363">Amawebhusayithi awavumelekile ukusebenzisa indawo yakho</translation>
 <translation id="5227679487546032910">Isithombe esizenzakalelayo esisaluhlaza</translation>
 <translation id="5228245824943774148">Amadivayisi angu-<ph name="NUM_DEVICES_CONNECTED" /> axhunyiwe</translation>
 <translation id="5228579091201413441">Nika amandla ukuvumelanisa</translation>
@@ -6580,6 +6595,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5885314688092915589">Inhlangano yakho izolawula le phrofayela</translation>
 <translation id="5885470467814103868">Qala ukuskena</translation>
 <translation id="5885631909150054232">Kopisha ithokheni</translation>
+<translation id="5886000783338788034">Indawo ivaliwe kumaSethingi eChromeOS</translation>
 <translation id="5886009770935151472">Umunwe 1</translation>
 <translation id="5886112770923972514">Xhuma futhi usethe ngokushesha amadivayisi Okuhlanganisa Ngokusheshayo eduze</translation>
 <translation id="5886384907280980632">Vala manje</translation>
@@ -7112,6 +7128,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="628352644014831790">4 amasekhondi</translation>
 <translation id="6285120108426285413">I-<ph name="FILE_NAME" /> ayivamisile ukulandwa futhi ingaba yingozi.</translation>
 <translation id="6285770818046456882">Ukwabelana kwedivayisi kanye nawe kukhansele ukudlulisa</translation>
+<translation id="628699625505156622">Sebenzisa indawo. Vumela iChromeOS nama-app e-Android, amawebhusayithi, namasevisi anemvume yendawo ukuba asebenzise indawo yale divayisi. Ukuhlonzwa Kwendawo Ngqo kunikeza indawo enembe kakhulu kuma-app namasevisi e-Android. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi olutholakala kule divayisi mayelana nezinzwa zedivayisi namasiginali angenantambo ukuze ithole izindawo ezinesiginali engenantambo ngeningi. Lokhu kusetshenziswa ngaphandle kokudalula umuntu ukuze kuthuthukiswe ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo ukuze kuthuthukiswe, kuhlinzekwe, futhi kulondolozwe amasevisi eGoogle ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi. <ph name="BEGIN_LINK1" />Funda kabanzi ngokusebenzisa indawo<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Phatha amaphrinta akho kumasethingi ephrinta</translation>
 <translation id="6287828400772161253">Ifoni ye-Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Awekho amadivayisi atholakalayo abelana eduze. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
@@ -7282,7 +7299,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6429384232893414837">Iphutha lokubuyekeza</translation>
 <translation id="6430814529589430811">I-Base64-encoded ASCII, isitifiketi esisodwa</translation>
 <translation id="6431347207794742960">I-<ph name="PRODUCT_NAME" /> izosetha izibuyekezo ezizenzakalelayo zabo bonke abasebenzisi bale khompyutha.</translation>
-<translation id="6432072919019816301">Skena i-PDF ukuze ukhiphe umbhalo wobuchwepheshe bokusizayo</translation>
 <translation id="6434104957329207050">Khomba isivinini sokuskena</translation>
 <translation id="6434309073475700221">Lahla</translation>
 <translation id="6434325376267409267">Kudingeka ukuthi idivayisi yakho ibuyekezwe ngaphambi kokuthi ukwazi ukusebenzisa i-<ph name="APP_NAME" />.</translation>
@@ -7638,6 +7654,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6703613667804166784">Leli fayela lingalimaza ama-akhawunti akho omuntu siqu nawenethiwekhi yokuxhumana nomphakathi, okuhlanganisa ne-<ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Qalisa ukuhlola kokuxilongwa kwe-ChromeOS</translation>
 <translation id="6707389671160270963">Isitifiketi seklayenti le-SSL</translation>
+<translation id="6707671917294473995">Amawebhusayithi awavumelekile ukusebenzisa ikhamera yakho</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> nenye ithebhu engu-1}one{<ph name="PAGE_TITLE" /> namanye amathebhu angu-#}other{<ph name="PAGE_TITLE" /> namanye amathebhu angu-#}}</translation>
 <translation id="6709133671862442373">Izindaba</translation>
 <translation id="6709357832553498500">Xhumeka usebenzisa i-<ph name="EXTENSIONNAME" /></translation>
@@ -7647,6 +7664,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6713233729292711163">Engeza Iphrofayela Yomsebenzi</translation>
 <translation id="6713441551032149301">Bamba ukhiye wesiqalisi ukuze ushintshe phakathi kokhiye bokusebenza nokhiye bomugqa ophezulu wesistimu</translation>
 <translation id="6713668088933662563">Ungalokothi unikeze ukuhumusha lezi zilimi</translation>
+<translation id="6715735940363172819">Amawebhusayithi awavumelekile ukusebenzisa imakhrofoni yakho</translation>
 <translation id="6715803357256707211">Kuvele iphutha phakathi nokufakwa kohlelo lwakho lokusebenza le-Linux. Chofoza kusaziso ngemininingwane.</translation>
 <translation id="6716798148881908873">Uxhumo lenethiwekhi lulahlekile. Hlola uxhumo lwakho lenethiwekhi noma uzame enye inethiwekhi ye-Wi-Fi.</translation>
 <translation id="6718849325281682232">Imibala yetimu ye-Chrome iye yavuselelwa ukuze isebenze kangcono kuwo wonke umuntu, kungakhathaliseki ukuthi ukumodi emnyama noma ekhanyayo</translation>
@@ -8671,6 +8689,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7489761397368794366">Ikholi esuka kudivayisi yakho</translation>
 <translation id="749028671485790643">Umuntu wokungu-<ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Hlola Amaphasiwedi Asele</translation>
+<translation id="7490938136316476492">Indawo ivaliwe. Idivayisi yakho yeChromeOS ayiyifinyeleli indawo yakho. Kodwa, indawo yakho ejwayelekile ingase iqhubeke ibonakala kuma-app nakumawebhusayithi ngezinto ezinjengekheli lakho lasesizindeni se-intanethi. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">ithebhu</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 ikhukhi}one{{NUM_COOKIES} amakhukhi}other{{NUM_COOKIES} amakhukhi}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> iselula singaqoqa konke okuthayiphayo, kufaka phakathi idatha yomuntu siqu njengamaphasiwedi nezinombolo zekhadi lesikweletu. Ingabe ufuna ukusebenzisa lesi selulo?</translation>
@@ -8892,7 +8911,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7660146600670077843">Chofoza ngakwesokudla kuthebhu bese ukhetha okuthi "Engeza Ithebhu Eqenjini Elisha"</translation>
 <translation id="7661259717474717992">Vumela amasayithi ukuthi alondoloze aphinde afunde idatha yekhukhi</translation>
 <translation id="7661451191293163002">Isitifiketi sokubhalisa asikwazanga ukutholakala.</translation>
-<translation id="7662164944369232556">Ayikwazi ukudawuniloda amafayela aqaphela umbhalo. Zama futhi ngemuva kwesikhathi.</translation>
 <translation id="7662283695561029522">Thepha ukuze ulungiselele</translation>
 <translation id="7663719505383602579">Isamukeli: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Isinqamuleli sekhibhodi siyatholakala</translation>
@@ -9033,6 +9051,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7758450972308449809">Lungisa imikhawulo yesibonisi sakho</translation>
 <translation id="7758884017823246335">Faka usesho lwesayithi</translation>
 <translation id="7759809451544302770">Ongakukhetha</translation>
+<translation id="7760176388948986635">Vumela iChromeOS nama-app e-Android, amawebhusayithi, namasevisi anemvume yendawo ukuba asebenzise indawo yale divayisi. Ukuhlonzwa Kwendawo Ngqo kunikeza indawo enembe kakhulu kuma-app namasevisi e-Android. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi olutholakala kule divayisi mayelana nezinzwa zedivayisi namasiginali angenantambo ukuze ithole izindawo ezinesiginali engenantambo ngeningi. Lokhu kusetshenziswa ngaphandle kokudalula umuntu ukuze kuthuthukiswe ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo ukuze kuthuthukiswe, kuhlinzekwe, futhi kulondolozwe amasevisi eGoogle ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi.</translation>
 <translation id="7762024824096060040">Ayikwazi ukusebenzisa le akhawunti</translation>
 <translation id="7764225426217299476">Engeza ikheli</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> kusukela ku-<ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9151,6 +9170,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7839051173341654115">Buka/Yenza isipele semidiya</translation>
 <translation id="7839192898639727867">I-ID engukhiye yesihloko sesitifiketi</translation>
 <translation id="7839696104613959439">Nikezela Ukukhetha Inethiwekhi</translation>
+<translation id="7840222916565569061">Ama-app awavumelekile ukusebenzisa ikhamera yakho</translation>
 <translation id="7842062217214609161">Asikho isinqamuleli</translation>
 <translation id="7842692330619197998">Vakashela kokuthi g.co/ChromeEnterpriseAccount uma udinga ukudala i-akhawunti entsha.</translation>
 <translation id="784273751836026224">Khipha i-Linux</translation>
@@ -10162,6 +10182,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8584843865238667486">Amadivayisi we-HID anokusebenzisa i-<ph name="USAGE" /> evela ekhasini lokusebenzisa i-<ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Susa i-Crostini</translation>
 <translation id="8585841788766257444">Amasayithi aboniswe ngezansi alandela isethingi elingokwezifiso esikhundleni selizenzakalelayo</translation>
+<translation id="8586421813321819377">Vumela iChromeOS nama-app e-Android, amawebhusayithi, namasevisi anemvume yendawo ukuba asebenzise indawo yedivayisi yakho. Ukuhlonzwa Kwendawo Ngqo kunikeza indawo enembe kakhulu kuma-app namasevisi e-Android. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile icubungula ulwazi olusedivayisini yakho olumayelana nezinzwa zedivayisi namasiginali angenantambo ukuze kutholwe izindawo ezinesiginali engenantambo ngeningi. Lokhu kusetshenziswa ngaphandle kokukudalula ukuze kuthuthukiswe ukuhlonzwa kwendawo ngqo kanye namasevisi afaneleka ngokwendawo ukuze kuthuthukiswe, kuhlinzekwe, futhi kulondolozwe amasevisi eGoogle ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi.</translation>
 <translation id="8587660243683137365">Faka leli khasi njenge-app</translation>
 <translation id="8588866096426746242">Bonisa izibalo zephrofayela</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR yethula kuhedisethi</translation>
@@ -10383,6 +10404,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8736288397686080465">Leli sayithi libuyekeziwe ngemuva.</translation>
 <translation id="8737709691285775803">I-Shill</translation>
 <translation id="8737914367566358838">Khetha ulimi ukuze uhumushele ikhasi kulo</translation>
+<translation id="8737966899544698733">Ukuhlonzwa Kwendawo Ngqo (i-Android kuphela)</translation>
 <translation id="8738418093147087440">Sesha ngokwamazwe, ulimi, noma amagama okufakwayo</translation>
 <translation id="8740086188450289493">Sebenzisa iphasiwedi ye-Google Account</translation>
 <translation id="8740247629089392745">Unganikeza u-<ph name="SUPERVISED_USER_NAME" /> le-Chromebook. Ukusetha cishe sekuqedile, ngakho sekuyisikhathi sokuhlola.</translation>
@@ -10455,12 +10477,16 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="8793390639824829328">Amasayithi asebenzisa lesi sakhi ukuskrola nokusondeza amathebhu abiwe</translation>
 <translation id="879413103056696865">Ngenkathi i-hotspot ivulekile, i-<ph name="PHONE_NAME" /> yakho izokwazi:</translation>
 <translation id="8795916974678578410">Iwindi elisha</translation>
+<translation id="8796907593900732741">Amasevisi esistimu kuphela angasebenzisa indawo yakho. Kodwa, indawo yakho ejwayelekile ingase iqhubeke ibonakala kuma-app nakumawebhusayithi ngezinto ezinjengekheli lakho lasesizindeni se-intanethi. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Enza ngendlela oyifisayo i-Chrome yakho</translation>
 <translation id="8797459392481275117">Ungalokothi uhumushe leli sayithi</translation>
 <translation id="8798099450830957504">Okuzenzakalelayo</translation>
 <translation id="8800034312320686233">Isayithi alisebenzi?</translation>
 <translation id="8803526663383843427">Lapho kuvuliwe</translation>
 <translation id="8803953437405899238">Vula ithebhu entsha ngokuchofoza okukodwa</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Uma kuvulwe Ukuhlonzwa Kwendawo Ngqo, kusetshenziswa ulwazi olumayelana namasiginali angenantambo, njengamaphoyinti okufinyelela kwe-Wi-Fi, imibhoshongo yenethiwekhi yeselula, okuhambisana nedatha yenzwa yedivayisi, njenge-accelerometer negyroscope, ukuze kwenziwe isilinganiso sendawo yedivayisi esinembe kakhudlwana, esisetshenziswa ama-app namasevisi e-Android ukuze ahlinzeke ngezakhi ezivumelana nendawo. Ukuze yenze lokhu, iGoogle ngezikhathi ezithile iqoqa ulwazi olumayelana nezinzwa zedivayisi namasiginali angenantambo aseduzane nawe ukuze ibe negalelo ezindaweni ezinamasiginali angenantambo ezitholwe ngeningi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />IGoogle isebenzisa lolu lwazi ngaphandle kokukudalula ukuze: ithuthukise ukuhlonzwa kwendawo ngqo namasevisi afaneleka ngokwendawo; futhi yenze intuthuko evamile, ihlinzeke, futhi ilondoloze amasevisi eGoogle. Sicubungula lolu lwazi ngokuvumelana nezintshisekelo eziyimfuneko zeGoogle nezinkampani ezingahlangene ngqo zokuhlinzeka ngezidingo zabasebenzisi.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Ungakuvala ukuhlonzwa kwendawo ngqo noma nini kumasethingi endawo edivayisi yakho ngaphansi kokuthi Amasethingi &gt; Ubumfihlo nokuvikeleka &gt; Izilawuli zobumfihlo &gt; Ukufinyelela indawo &gt; Amasethingi endawo athuthukisiwe. Uma Ukuhlonzwa Kwendawo Ngqo kuvaliwe, ayikho idatha Yokuhlonzwa Kwendawo Ngqo ezoqoqwa. Kuma-app namasevisi e-Android, kusetshenziswa ikheli lasesizindeni se-intanethi kuphela, uma litholakala, ukuze kutholwe indawo yedivayisi yakho, okungase kuthinte ukutholakala nokunemba kwezindawo kuma-app namasevisi e-Android afana neGoogle Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Ivula ngomhla ku-</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Hambisa Ithebhu Kwelinye Iwindi}one{Hambisa Amathebhu Kwelinye Iwindi}other{Hambisa Amathebhu Kwelinye Iwindi}}</translation>
 <translation id="8805140816472474147">Qinisekisa izilungiselelo zokuvumelanisa ukuze uqale ukuvumelanisa.</translation>

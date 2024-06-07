@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">APN सम्बन्धी विवरणहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="2195732836444333448">अहिले तपाईंलाई मद्दत गर्न सक्दैनौँ। चाँडै फर्केर आउनुहोस्।</translation>
 <translation id="2201758491318984023">साइकल</translation>
-<translation id="2203222757805818543">हालको समयतालिका <ph name="SUNRISE" /> - <ph name="SUNSET" /> सम्म सेट गरिएको छ। अँध्यारो मोडको समयतालिका स्वतः अपडेट गर्न <ph name="BEGIN_LINK" />लोकेसनको एक्सेस अन गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">हट स्प्रिङ</translation>
 <translation id="2203642483788377106">भीर</translation>
 <translation id="2208388655216963643">इम्प्रेसियनिस्ट</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">बालुवाको स्तूप</translation>
 <translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2637303424821734920">अफ छ - स्थानीय मौसम देखाउन <ph name="BEGIN_LINK" />सिस्टमको लोकेसन प्रयोग गर्ने अनुमति गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गरियो</translation>
 <translation id="2645380101799517405">कन्ट्रोलहरू</translation>

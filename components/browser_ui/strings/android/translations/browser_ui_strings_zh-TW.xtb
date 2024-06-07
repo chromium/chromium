@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">允許</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">展開</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="4336566011000459927">Chrome 將於今天再次限制 Cookie</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 最後一個分頁</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 底下的所有網站</translation>
 <translation id="4402755511846832236">禁止網站取得這部裝置的使用狀態</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">控管這個網站對裝置的存取權</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> 最後一個分頁</translation>
 <translation id="6064125863973209585">下載完成</translation>
 <translation id="6071501408666570960">系統可能會將你登出這個網站</translation>
 <translation id="6120483543004435978">如果啟用，網站就可以要求偵測你是否正在使用裝置。如果停用，網站將無法得知你是否正在使用裝置。</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>
 <translation id="6864395892908308021">這部裝置無法讀取 NFC</translation>
-<translation id="6867014948848323204">來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="6912998170423641340">禁止網站讀取剪貼簿中的文字和圖片</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950072572526089586">你造訪的網站可儲存使用者的活動資訊，協助正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">如果啟用，網站就可以要求使用麥克風。如果停用，網站將無法使用麥克風。</translation>
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> 來自 <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序依據：</translation>
 <translation id="8067883171444229417">播放影片</translation>

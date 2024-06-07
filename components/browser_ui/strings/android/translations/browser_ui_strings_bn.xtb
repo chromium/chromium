@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">একটি ইউএসবি ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="4194328954146351878">সাইটগুলিকে NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করার অনুমতি দেওয়ার আগে জিজ্ঞাসা করে নিন (প্রস্তাবিত)</translation>
 <translation id="4200726100658658164">লোকেশন সেটিংস খুলুন</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="FROM_DEVICE" /> থেকে <ph name="SEPARATOR" /></translation>
 <translation id="4226663524361240545">বিজ্ঞপ্তি আসলে ডিভাইস ভাইব্রেট হতে পারে</translation>
 <translation id="4259722352634471385">নেভিগেশন অবরুদ্ধ করা হয়েছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">প্রসারিত করুন</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{আগামীকাল মেয়াদ শেষ হবে}one{# দিনে মেয়াদ শেষ হবে}other{# দিনে মেয়াদ শেষ হবে}}</translation>
 <translation id="4336566011000459927">Chrome আজ আবার কুকির ব্যবহার সীমিত করে দেবে</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> আপনার শেষ ট্যাব</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-এর সবকটি সাইট</translation>
 <translation id="4402755511846832236">আপনি ডিভাইস কখন সক্রিয়ভাবে ব্যবহার করছেন, সাইট যাতে জানতে না পারে তার জন্য সাইট ব্লক করুন</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষের কুকিজ মঞ্জুর করুন</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">আপনার ডিভাইসে এই সাইটের অ্যাক্সেস নিয়ন্ত্রণ করুন</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6042308850641462728">আরও</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> আপনার শেষ ট্যাব</translation>
 <translation id="6064125863973209585">সম্পূর্ণ হয়ে যাওয়া ডাউনলোড</translation>
 <translation id="6071501408666570960">আপনি হয়ত এই সাইট থেকে সাইন-আউট হয়ে যাবেন</translation>
 <translation id="6120483543004435978">চালু থাকলে, সাইট আপনি সক্রিয়ভাবে নিজের ডিভাইস কখন ব্যবহার করেন তা জানতে চাইতে পারে। চালু থাকলে, সাইট আপনি সক্রিয়ভাবে নিজের ডিভাইস কখন ব্যবহার করেন তা জানতে পারে না।</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6818926723028410516">আইটেম বেছে নিন</translation>
 <translation id="6864395892908308021">এই ডিভাইস NFC পড়তে পারছে না</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> থেকে</translation>
 <translation id="6912998170423641340">ক্লিপবোর্ডের টেক্সট এবং ছবি পড়ার থেকে সাইটগুলিকে ব্লক করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6950072572526089586">আপনি যে সাইটটি ভিজিট করেন সেটিতে আপনি কী করছেন সেই সম্পর্কিত তথ্য সেভ করা হতে পারে যাতে এটি আপনার প্রত্যাশা অনুযায়ী কাজ করে — যেমন, আপনাকে একটি সাইটে সাইন-ইন রাখতে বা আপনার শপিং কার্টে আইটেমগুলি সেভ করতে। প্রায়শই সাইটগুলি আপনার ডিভাইসে সাময়িকভাবে এই তথ্য সেভ করে।</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
 <translation id="7990211076305263060">চালু থাকলে, সাইট আপনার মাইক্রোফোন ব্যবহার করার জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট আপনার মাইক্রোফোন ব্যবহার করার করতে পারে না।</translation>
 <translation id="8007176423574883786">এই ডিভাইসের জন্য বন্ধ করা আছে</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> থেকে</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8042586301629853791">এটি অনুযায়ী সাজান:</translation>
 <translation id="8067883171444229417">ভিডিও চালানোর বোতাম</translation>

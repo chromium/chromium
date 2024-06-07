@@ -2985,7 +2985,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6753269504797312559">Nilai kebijakan</translation>
 <translation id="6753434778807740853">Hapus entri <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Rekening Tabungan</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Perangkat Anda sedang dalam mode tidur.</translation>
 <translation id="6760548828952594090">Kartu ini tidak dapat disimpan di Akun Google Anda. Namun, kartu telah disimpan ke Chrome di perangkat ini.</translation>
 <translation id="6766558780547452153">Masakan &amp; Resep</translation>
@@ -4243,7 +4242,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9155646082713385498">Majalah</translation>
 <translation id="9157595877708044936">Menyiapkan...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mungkin berisi konten sensitif}other{<ph name="FILE_COUNT" /> file mungkin berisi konten sensitif}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Situs yang Anda buka juga dapat menentukan hal-hal yang Anda sukai berdasarkan aktivitas Anda di situs tersebut. Misalnya, jika Anda membuka situs yang menjual sepatu lari jarak jauh, situs tersebut mungkin menyimpulkan bahwa Anda tertarik berlari maraton.</translation>
 <translation id="9166851138617700776">Selengkapnya tentang iklan yang disarankan situs dan pengukuran iklan</translation>
 <translation id="9167054383925257837">Informasi OS perangkat dan browser (seperti browser &amp; versi OS)</translation>

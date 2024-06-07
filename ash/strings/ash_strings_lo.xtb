@@ -302,6 +302,7 @@
 <translation id="216955976692983107">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນໄປທາງຂວາ</translation>
 <translation id="2185166372312820725">ໄປຫາແຖບກ່ອນນີ້</translation>
 <translation id="2185444992308415167">ເຂົ້າໄປແຖບ 1 ຫາ 8</translation>
+<translation id="2195732836444333448">ຕອນນີ້ຮອດຂີດຈຳກັດແລ້ວ. ກະລຸນາກັບມາໃໝ່ໃນໄວໆນີ້.</translation>
 <translation id="2198625180564913276">ກຳລັງເພີ່ມໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="219905428774326614">ຕົວເປີດນຳໃຊ້, ແອັບທັງໝົດ</translation>
 <translation id="2201071101391734388">ຮູບຫຼ້າສຸດທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL_COUNT" />.</translation>
@@ -815,6 +816,7 @@
 <translation id="4086921558679520050">ເປີດປຸ່ມໄມຢູ່ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4101772068965291327">ເປີດໜ້າຫຼັກ</translation>
 <translation id="4112140312785995938">ເລື່ອນກັບຫຼັງ</translation>
+<translation id="4113030288477039509">ຈັດການໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ</translation>
 <translation id="4114315158543974537">ເປີດ Phone Hub</translation>
 <translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
 <translation id="411881149140864134">ເປີດນຳໃຊ້ໂຕະຢູ່ເບື້ອງຊ້າຍ</translation>
@@ -848,6 +850,7 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ບໍ່ສາມາດໃຊ້ໄດ້.</translation>
 <translation id="4201051445878709314">ສະແດງເດືອນກ່ອນນີ້</translation>
 <translation id="4209973997261364186">ເປີດໃຊ້ Wi-Fi ແລ້ວ</translation>
+<translation id="4212246570487010370">ສືບຕໍ່ທ່ອງເວັບ</translation>
 <translation id="4212472694152630271">ປ່ຽນໄປໃຊ້ PIN</translation>
 <translation id="4215497585250573029">ການຕັ້ງຄ່າ VPN</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
@@ -1130,6 +1133,7 @@
 <translation id="5208059991603368177">ເປີດ</translation>
 <translation id="5216991270656129561">ປິດຈົນຮອດ <ph name="TIME" /></translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
+<translation id="5228195526683428788">ເສັ້ນແບ່ງໜ້າຈໍ</translation>
 <translation id="5229343007215035173">ເປີດ/ປິດໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="5230516054153933099">ໜ້າຈໍ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
@@ -1240,7 +1244,6 @@
 <translation id="5599242528220103262">ຄີລັດປິດຢູ່</translation>
 <translation id="5600415762228455511">ໂໝດໂຟກັສເປີດຢູ່, ເຫຼືອອີກ <ph name="REMAINING_TIME" />, ກຳລັງໂຟກັສໃສ່: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">ກົດ Ctrl + Alt + Z ເພື່ອປິດນຳໃຊ້ການຕອບສະໜອງແບບສຽງເວົ້າ.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 ຊົ່ວໂມງກ່ອນ}=1{1 ຊົ່ວໂມງກ່ອນ}other{# ຊົ່ວໂມງກ່ອນ}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ພວກເຮົາໄດ້ສະຫຼັບທ່ານໄປໃຊ້ເຄືອຂ່າຍທີ່ດີກວ່າແລ້ວ</translation>
 <translation id="5619862035903135339">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍ</translation>
@@ -1517,6 +1520,7 @@
 <translation id="6613765291890844037">ໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນໄປແລ້ວ <ph name="STORAGE_IN_USE_SIZE" /> | ທັງໝົດມີ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>
 <translation id="6622679827379792051">ຕັ້ງຄ່າການເບິ່ງແອັບຂອງໂທລະສັບທ່ານ</translation>
+<translation id="662279009180869175">ໃຊ້ລູກສອນຊ້າຍ ແລະ ຂວາເພື່ອປັບຂະໜາດການແບ່ງໜ້າຈໍ</translation>
 <translation id="6624493541160101248">ໂຕະປັດຈຸບັນ: <ph name="DESK_NAME" />. ໂຕະທີ <ph name="DESK_INDEX" /> ຈາກທັງໝົດ <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ແລະ ການແຈ້ງເຕືອນອື່ນໆຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1535,6 +1539,7 @@
 <translation id="6670153871843998651">ໂຕະ 3</translation>
 <translation id="6671495933530132209">ກັອບປີ້ຮູບ</translation>
 <translation id="6671661918848783005">ບໍ່ສາມາດປົດລັອກ Chromebook ຂອງທ່ານໄດ້</translation>
+<translation id="6676552993057022464">ໃຊ້ລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອປັບຂະໜາດການແບ່ງໜ້າຈໍ</translation>
 <translation id="6682029141988159141">ວາງເນື້ອຫາຈາກຄລິບບອດ</translation>
 <translation id="6683022854667115063">ຫູຟັງ</translation>
 <translation id="6686023075541098243">ຕັ້ງຄ່າການເບິ່ງການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
@@ -1693,6 +1698,7 @@
 <translation id="7340731148882810149">ເມນູການຄລິກອັດຕະໂນມັດ</translation>
 <translation id="7346909386216857016">ຕົກລົງ, ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="7348093485538360975">ຄີບອດເທິງຫນ້າ​ຈໍ​</translation>
+<translation id="7352651011704765696">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ</translation>
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="7360036564632145207">ການປ່ຽນການປົກປ້ອງການເຂົ້າເຖິງຂໍ້ມູນຂອງທ່ານສຳລັບການຕັ້ງຄ່າອຸປະກອນຕໍ່ພ່ວງສາມາດປັບປຸງປະສິດທິພາບໃຫ້ເໝາະສົມໄດ້</translation>
 <translation id="736045644501761622">ຕັ້ງຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
@@ -1835,7 +1841,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">ເພື່ອໃຊ້ອຸປະກອນໃນຖານະແຂກ, ທ່ານຕ້ອງອອກຈາກລະບົບ ແລະ ຈາກນັ້ນເລືອກ ເລືອກເບິ່ງໃນຖານະແຂກ ຢູ່ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="7866482334467279021">ເປີດ</translation>
-<translation id="7866727328666668290">ແຖບທີ່ເປີດຫຼ້າສຸດ</translation>
 <translation id="7872786842639831132">ປິດ</translation>
 <translation id="7875575368831396199">ປາກົດວ່າ Bluetooth ປິດຢູ່ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ກະລຸນາເປີດ Bluetooth ເພື່ອໃຊ້ Phone Hub.</translation>
 <translation id="7884446017008693258">ການຕັ້ງຄ່າຮັອດສະປອດ</translation>
@@ -2142,7 +2147,6 @@
 <translation id="9002204506712855687">ສຳຫຼວດຄຸນສົມບັດຫຼ້າສຸດ</translation>
 <translation id="9005984960510803406">ເປີດໜ້າຈໍ Crosh</translation>
 <translation id="9017320285115481645">ປ້ອນລະຫັດເຂົ້າເຖິງ Family Link ຂອງພໍ່ແມ່.</translation>
-<translation id="9022774213089566801">ເຂົ້າເບິ່ງເລື້ອຍໆ</translation>
 <translation id="9024331582947483881">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="9029736946581028033">ອຸປະກອນຈະປິດໃນອີກບໍ່ດົນ</translation>
 <translation id="9030319654231318877">ປິດຈົນກວ່າຕາເວັນຕົກ</translation>

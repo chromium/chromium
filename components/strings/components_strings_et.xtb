@@ -2681,6 +2681,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6167577165590485365">Viimane toomiskatse:</translation>
 <translation id="617256461084925519">Google Chrome üritab teie isikut kinnitada, et teie makseteave sisestada.</translation>
+<translation id="6173208311907792313">Viige ost lõpule Windows Hello abil</translation>
 <translation id="6176387967264100435">See hind on kõrge</translation>
 <translation id="6177128806592000436">Teie ühendus selle saidiga pole turvaline</translation>
 <translation id="6177531123306197852">Ümbrik C2</translation>
@@ -2986,7 +2987,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6753269504797312559">Reegli väärtus</translation>
 <translation id="6753434778807740853">Kustuta sisestus <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Hoiukontod</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Teie seade lülitus unerežiimile.</translation>
 <translation id="6760548828952594090">Seda kaarti ei saanud teie Google'i kontole salvestada. See salvestati hoopis selles seadmes Chrome'i.</translation>
 <translation id="6766558780547452153">Toiduvalmistamine ja retseptid</translation>
@@ -3839,6 +3839,7 @@ Lisateave:
 <translation id="8332188693563227489">Juurdepääs hostile <ph name="HOST_NAME" /> blokeeriti</translation>
 <translation id="833262891116910667">Tõsta esile</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> keeles olevaid lehti ei tõlgita</translation>
+<translation id="8339275256517065202">Viige ost lõpule Touch ID abil</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuaalkaardi registreerimise dialoog on avatud poolel kõrgusel</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>
@@ -4032,6 +4033,7 @@ Lisateave:
 <translation id="8726549941689275341">Lehe suurus:</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731268612289859741">Turvakood</translation>
+<translation id="8731917264694569036">Viige ost lõpule oma seadme abil</translation>
 <translation id="8733345475331865475">Autokindlustus</translation>
 <translation id="8733764070897080460">Saate blokeerida teemad, mida ei soovi saitidega jagada. Samuti kustutab Chrome automaatselt teemad, mis on vanemad kui 4 nädalat. Lisateave</translation>
 <translation id="8734529307927223492">Teie seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
@@ -4225,6 +4227,7 @@ Lisateave:
 <translation id="9116548361133462832">Lisateave reklaamide kohta Chrome'is</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja siis sisestusklahvi, et teekonda jätkata ning oma Chrome'i ajaloos asjakohaseid tegevusi näha</translation>
 <translation id="9119042192571987207">Üles laaditud</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> soovib teie isiku kinnitada</translation>
 <translation id="912327514020027767">Seelikud</translation>
 <translation id="912414390325846156">Eelnevalt keeldusite sellel saidil luba andmast</translation>
 <translation id="9128870381267983090">Ühendumine Internetiga</translation>
@@ -4248,7 +4251,6 @@ Lisateave:
 <translation id="9155646082713385498">Ajakirjad</translation>
 <translation id="9157595877708044936">Seadistamine...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> võib sisaldada tundlikku sisu}other{<ph name="FILE_COUNT" /> faili võivad sisaldada tundlikku sisu}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Külastatavad saidid saavad samuti määrata teie huvid selle põhjal, mida te nendel saitidel teete. Näiteks kui külastate saiti, millel müüakse pikamaajooksu jalatseid, võib sait otsustada, et teile pakuvad huvi jooksumaratonid.</translation>
 <translation id="9166851138617700776">Lisateave saidi soovitatud reklaamide ja reklaamide mõõtmise kohta</translation>
 <translation id="9167054383925257837">brauseri ja seadme operatsioonisüsteemi teave (näiteks brauseri ja operatsioonisüsteemi versioonid);</translation>

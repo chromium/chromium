@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Sačuvaj lozinke</translation>
 <translation id="1753905327828125965">Najposjećenije</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} slaba lozinka}one{{count} slaba lozinka}few{{count} slabe lozinke}other{{count} slabih lozinki}}</translation>
+<translation id="1764070164487214210">Upute</translation>
 <translation id="1766411844240160513">Automatski popuni obrazac</translation>
 <translation id="1767766085187034454">Google Prevodilac</translation>
 <translation id="1769106850515800431">Personaliziran sadržaj</translation>
@@ -541,12 +542,14 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3771033907050503522">Anonimne kartice</translation>
 <translation id="3775743491439407556">Sinhronizacija ne funkcionira</translation>
 <translation id="3779810277399252432">Nema internetske veze.</translation>
+<translation id="3785672280731998727">Ime za prikaz</translation>
 <translation id="3789294999358192700">Slijedite korake ispod:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prijevod ove web lokacije</translation>
 <translation id="3808311849069021992">Prikazivanje detalja o pretraživaču</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="3812308602011798782">Recenzije</translation>
 <translation id="3818045793209708987">Zaustavljeno je praćenje ovog paketa</translation>
 <translation id="3818293389945649617">Pronalaženje sljedećeg</translation>
 <translation id="3819183753496523827">Offline ste. Provjerite internetsku vezu i pokušajte ponovo.</translation>
@@ -594,6 +597,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4045648459118332842">Dobijte sačuvane lozinke u bilo kojoj aplikaciji jednim dodirom</translation>
 <translation id="4049507953662678203">Provjerite imate li mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="4054572406751135230">Pratite vijesti, sportove i drugo.</translation>
+<translation id="4068959193278821990">Uključi poboljšanu zaštitu…</translation>
 <translation id="4092655288299341041">Prikaz pomoći</translation>
 <translation id="4105841739161771091">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje i upozorava vas na njih kada nastupe.</translation>
@@ -605,6 +609,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4121993058175073134">Za slanje podataka o neto izvozu, prvo konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
 <translation id="4133265950310064865">Poboljšana zaštita</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4148023517926189160">Ova web lokacija želi preuzeti fajl i dodati ga u vaš kalendar.</translation>
 <translation id="4152011295694446843">Oznake ćete pronaći ovdje</translation>
@@ -1034,7 +1039,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6232329973559504466">Pretraživanje u anonimnom načinu rada</translation>
 <translation id="6236952928980352967">Vrati upozorenje</translation>
 <translation id="6247557882553405851">Google upravitelju lozinki</translation>
-<translation id="6251835855431997163">Automatski unesite <ph name="VALUE" /></translation>
+<translation id="6251835855431997163">Automatsko popunjavanje <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Otvori linkove u aplikaciji umjesto u pregledniku.</translation>
 <translation id="6255097610484507482">Uredite kreditnu kart</translation>
 <translation id="6266039999629596120">Potrebna je radnja</translation>
@@ -1213,7 +1218,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7022197654033719543">Informacije o web lokaciji</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="704692552158601232">Zadana aplikacija preglednika</translation>
-<translation id="7055240621761583113">Automatski unesite zaporku</translation>
+<translation id="7055240621761583113">Automatsko popunjavanje lozinke</translation>
 <translation id="7063811929043357292">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Ukloni s ovog uređaja</translation>
@@ -1472,6 +1477,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="834783239627985533">Najposjećenije web lokacije</translation>
 <translation id="8358401059263985056">Uključi obavještenja</translation>
 <translation id="8364841868226993049">Pohranjivanje slike u Google Fotografijama za <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">Izbriši pristupni ključ</translation>
 <translation id="8370406443343902172">Odlazak u Postavke…</translation>
 <translation id="8374977641764177587">Uključiti obavještenja?</translation>
 <translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>

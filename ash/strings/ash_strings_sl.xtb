@@ -72,6 +72,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1235458158152011030">Znana omrežja</translation>
 <translation id="1239161794459865856">Povezava s funkcijo <ph name="FEATURE_NAME" /> je vzpostavljena.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
+<translation id="1242198791279543032">Obvestila so prezrta</translation>
 <translation id="1242883863226959074">napravi</translation>
 <translation id="1245644940275736236">Odpiranje Pomočnika</translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
@@ -301,6 +302,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="216955976692983107">Razpostavljeno okno za spreminjanje velikosti okna desno</translation>
 <translation id="2185166372312820725">Premik na prejšnji zavihek</translation>
 <translation id="2185444992308415167">Pomikanje od 1. do 8. zavihka</translation>
+<translation id="2195732836444333448">Trenutno ni prostih zmogljivosti. Vrnite se pozneje.</translation>
 <translation id="2198625180564913276">Dodajanje profila. To lahko traja nekaj minut.</translation>
 <translation id="219905428774326614">Zaganjalnik, vse aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4086921558679520050">Vklopite fizično stikalo za mikrofon v napravi</translation>
 <translation id="4101772068965291327">Odpri domačo stran</translation>
 <translation id="4112140312785995938">Išči nazaj</translation>
+<translation id="4113030288477039509">Upravlja skrbnik</translation>
 <translation id="4114315158543974537">Vklop središča za telefone</translation>
 <translation id="4115378294792113321">Škrlatna</translation>
 <translation id="411881149140864134">Aktiviranje namizja na levi</translation>
@@ -847,6 +850,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ni na voljo.</translation>
 <translation id="4201051445878709314">Prikaz prejšnjega meseca</translation>
 <translation id="4209973997261364186">Povezava Wi-Fi je vklopljena.</translation>
+<translation id="4212246570487010370">Nadaljevanje brskanja</translation>
 <translation id="4212472694152630271">Preklopi na kodo PIN</translation>
 <translation id="4215497585250573029">Nastavitve VPN-ja</translation>
 <translation id="4217571870635786043">Narek</translation>
@@ -1239,7 +1243,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="5599242528220103262">Bližnjična tipka je izklopljena</translation>
 <translation id="5600415762228455511">Osredotočenost je vklopljena, še <ph name="REMAINING_TIME" />, osredotočeni ste na to: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Če želite onemogočiti glasovni odziv, pritisnite Ctrl + Alt + Z.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Pred manj kot 1 uro}=1{Pred 1 uro}one{Pred # uro}two{Pred # urama}few{Pred # urami}other{Pred # urami}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Preklopili smo na boljše omrežje.</translation>
 <translation id="5619862035903135339">Pravilnik skrbnika onemogoča zajem zaslonske slike.</translation>
@@ -1692,6 +1695,7 @@ Nova namestitev</translation>
 <translation id="7340731148882810149">Meni za samodejne klike</translation>
 <translation id="7346909386216857016">V redu, razumem</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
+<translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
 <translation id="7360036564632145207">S spremembo nastavitve zaščite dostopa do podatkov za zunanje dodatne opreme lahko optimizirate delovanje.</translation>
 <translation id="736045644501761622">Nastavitev zaslonskega ozadja in sloga</translation>
@@ -1834,7 +1838,6 @@ Nova namestitev</translation>
 <translation id="7851768487828137624">Delovna različica</translation>
 <translation id="7862292329216937261">Če želite napravo uporabljati kot gost, se odjavite in na dnu zaslona izberite »Brskajte kot gost«.</translation>
 <translation id="7866482334467279021">vklopljeno</translation>
-<translation id="7866727328666668290">Nazadnje odprt zavihek</translation>
 <translation id="7872786842639831132">Izklopljeno</translation>
 <translation id="7875575368831396199">Videti je, da je v napravi <ph name="DEVICE_TYPE" /> izklopljen Bluetooth. Vklopite Bluetooth, če želite uporabljati telefonsko središče.</translation>
 <translation id="7884446017008693258">Nastavitve dostopne točke</translation>
@@ -2141,7 +2144,6 @@ Nova namestitev</translation>
 <translation id="9002204506712855687">Raziščite najnovejše funkcije.</translation>
 <translation id="9005984960510803406">Odpiranje okna Crosh</translation>
 <translation id="9017320285115481645">Vnesite kodo za dostop starša za Family Link.</translation>
-<translation id="9022774213089566801">Pogosto obiskano</translation>
 <translation id="9024331582947483881">celozaslonski način</translation>
 <translation id="9029736946581028033">Naprava se bo kmalu izklopila</translation>
 <translation id="9030319654231318877">Izklopljeno do sončnega zahoda</translation>

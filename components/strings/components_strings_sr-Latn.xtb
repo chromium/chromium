@@ -2993,7 +2993,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6753269504797312559">Vrednost smernica</translation>
 <translation id="6753434778807740853">Izbrišite unos <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Štedni računi</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Uređaj je prešao u režim spavanja.</translation>
 <translation id="6760548828952594090">Čuvanje ove kartice na Google nalogu nije uspelo. Umesto toga, sačuvana je u Chrome-u na ovom uređaju.</translation>
 <translation id="6766558780547452153">Kuvanje i recepti</translation>
@@ -4261,7 +4260,6 @@ Dodatni detalji:
 <translation id="9155646082713385498">Časopisi</translation>
 <translation id="9157595877708044936">Podešavanje...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> možda ima osetljiv sadržaj}one{<ph name="FILE_COUNT" /> fajl možda ima osetljiv sadržaj}few{<ph name="FILE_COUNT" /> fajla možda imaju osetljiv sadržaj}other{<ph name="FILE_COUNT" /> fajlova možda ima osetljiv sadržaj}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Sajtovi koje posećujete takođe mogu da odrede šta vam se dopada na osnovu vaših aktivnosti na sajtu. Na primer, ako posetite sajt koji prodaje patike za trčanje na duge staze, taj sajt može da da zaključi da ste zainteresovani za trčanje maratona.</translation>
 <translation id="9166851138617700776">Više o oglasima koje predlažu sajtovi i merenju oglasa</translation>
 <translation id="9167054383925257837">Informacije o pregledaču i OS-u uređaja (poput verzija pregledača i OS-a)</translation>

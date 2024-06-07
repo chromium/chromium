@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Wachtwoorden opslaan</translation>
 <translation id="1753905327828125965">Meest bezocht</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} zwak wachtwoord}other{{count} zwakke wachtwoorden}}</translation>
+<translation id="1764070164487214210">Route</translation>
 <translation id="1766411844240160513">Formulier automatisch invullen</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Gepersonaliseerde content</translation>
@@ -541,12 +542,14 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3771033907050503522">Incognitotabbladen</translation>
 <translation id="3775743491439407556">Synchronisatie werkt niet</translation>
 <translation id="3779810277399252432">Geen internetverbinding.</translation>
+<translation id="3785672280731998727">Weergavenaam</translation>
 <translation id="3789294999358192700">Voer de onderstaande stappen uit:</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803696231112616155">Aanbieden om deze site te vertalen</translation>
 <translation id="3808311849069021992">Zoekmachinegegevens tonen</translation>
 <translation id="3810973564298564668">Beheren</translation>
+<translation id="3812308602011798782">Reviews</translation>
 <translation id="3818045793209708987">Dit pakket wordt niet meer gevolgd</translation>
 <translation id="3818293389945649617">Volgende zoeken</translation>
 <translation id="3819183753496523827">Je bent offline. Check de internetverbinding en probeer het opnieuw.</translation>
@@ -594,6 +597,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4045648459118332842">Gebruik met één tik je opgeslagen wachtwoorden in elke app</translation>
 <translation id="4049507953662678203">Zorg ervoor dat je beschikt over een netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="4054572406751135230">Blijf op de hoogte van onder meer nieuws en sport.</translation>
+<translation id="4068959193278821990">Geoptimaliseerde beveiliging aanzetten...</translation>
 <translation id="4092655288299341041">Hulp tonen</translation>
 <translation id="4105841739161771091">{count,plural, =1{Adres verwijderen}other{Adressen verwijderen}}</translation>
 <translation id="4108998448622696017">Detecteert en waarschuwt je over gevaarlijke gebeurtenissen als deze plaatsvinden.</translation>
@@ -605,6 +609,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4121993058175073134">Als je netto-exportgegevens wilt verzenden, configureer je je e-mailaccount in de app Instellingen.</translation>
 <translation id="4124987746317609294">Periode</translation>
 <translation id="4133265950310064865">Geoptimaliseerde beveiliging</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_DOMAIN" /> <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4148023517926189160">Deze website wil een bestand downloaden en toevoegen aan je agenda.</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
@@ -1472,6 +1477,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="834783239627985533">Meest bezochte sites</translation>
 <translation id="8358401059263985056">Meldingen aanzetten</translation>
 <translation id="8364841868226993049">Afbeelding in Google Foto's opslaan voor <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">Toegangssleutel verwijderen</translation>
 <translation id="8370406443343902172">Naar Instellingen…</translation>
 <translation id="8374977641764177587">Meldingen aanzetten?</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>

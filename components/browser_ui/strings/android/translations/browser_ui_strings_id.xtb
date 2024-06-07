@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Terhubung ke perangkat USB</translation>
 <translation id="4194328954146351878">Tanyakan sebelum mengizinkan situs melihat dan mengubah informasi di perangkat NFC (direkomendasikan)</translation>
 <translation id="4200726100658658164">Buka Setelan Lokasi</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Dari <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Notifikasi dapat membuat perangkat bergetar</translation>
 <translation id="4259722352634471385">Navigasi diblokir: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Diizinkan</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Berakhir besok}other{Berakhir dalam # hari}}</translation>
 <translation id="4336566011000459927">Chrome akan membatasi cookie lagi hari ini</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Tab terakhir Anda</translation>
 <translation id="4338831206024587507">Semua situs di bawah <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blokir situs agar tidak mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="4412992751769744546">Izinkan cookie pihak ketiga</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Mengontrol akses situs ini ke perangkat Anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lainnya</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Tab terakhir Anda</translation>
 <translation id="6064125863973209585">Download yang selesai</translation>
 <translation id="6071501408666570960">Anda mungkin akan logout dari situs ini</translation>
 <translation id="6120483543004435978">Jika diaktifkan, situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat. Jika dinonaktifkan, situs tidak dapat mengetahui saat Anda aktif menggunakan perangkat.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6818926723028410516">Pilih item</translation>
 <translation id="6864395892908308021">Perangkat ini tidak dapat membaca NFC</translation>
-<translation id="6867014948848323204">Dari <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokir situs agar tidak membaca teks dan gambar dari papan klip</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Situs yang Anda buka dapat menyimpan info tentang hal-hal yang Anda lakukan agar situs tersebut berfungsi seperti yang diharapkan — misalnya, untuk membuat Anda tetap login ke situs atau menyimpan item di keranjang belanja. Situs sering kali menyimpan info ini untuk sementara di perangkat Anda.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="7990211076305263060">Jika diaktifkan, situs dapat meminta untuk menggunakan mikrofon Anda. Jika dinonaktifkan, situs tidak dapat menggunakan mikrofon Anda.</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Dari <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8042586301629853791">Urutkan menurut:</translation>
 <translation id="8067883171444229417">Putar video</translation>

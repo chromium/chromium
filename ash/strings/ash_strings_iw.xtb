@@ -301,6 +301,7 @@
 <translation id="216955976692983107">חלון לשינוי גודל של משבצת ימינה</translation>
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2185444992308415167">מקשי קיצור למעבר בין כרטיסיות 1 עד 8</translation>
+<translation id="2195732836444333448">יש עומס גדול מהרגיל. אפשר לנסות שוב בעוד כמה דקות.</translation>
 <translation id="2198625180564913276">הוספת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="219905428774326614">מפעיל האפליקציות, כל האפליקציות</translation>
 <translation id="2201071101391734388">תמונה אחרונה: <ph name="INDEX" /> מתוך <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +815,7 @@
 <translation id="4086921558679520050">הפעלת מתג המיקרופון הפיזי במכשיר</translation>
 <translation id="4101772068965291327">פתיחה של דף הבית</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
+<translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
 <translation id="4114315158543974537">‏הפעלת Phone Hub</translation>
 <translation id="4115378294792113321">מג'נטה</translation>
 <translation id="411881149140864134">הפעלת שולחן העבודה הווירטואלי בצד שמאל</translation>
@@ -847,6 +849,7 @@
 <translation id="4201033867194214117">התכונה <ph name="FEATURE_NAME" /> לא זמינה.</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
 <translation id="4209973997261364186">‏Wi-Fi פועל</translation>
+<translation id="4212246570487010370">המשך הגלישה</translation>
 <translation id="4212472694152630271">מעבר לקוד אימות</translation>
 <translation id="4215497585250573029">‏הגדרות VPN</translation>
 <translation id="4217571870635786043">הכתבה</translation>
@@ -1239,7 +1242,6 @@
 <translation id="5599242528220103262">מקשי הקיצור מושבתים</translation>
 <translation id="5600415762228455511">מצב ריכוז מופעל. הזמן שנותר: <ph name="REMAINING_TIME" />. התרכזות בנושא: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">‏יש להקיש על Ctrl ‏+ Alt ‏+ Z כדי להשבית את המשוב הקולי.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{לפני פחות משעה}=1{לפני שעה}one{לפני # שעות}two{לפני שעתיים (#)}other{לפני # שעות}}</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5618148318840095371">העברנו אותך לרשת טובה יותר</translation>
 <translation id="5619862035903135339">לפי המדיניות של מנהל המערכת, צילום המסך מושבת</translation>
@@ -1692,6 +1694,7 @@
 <translation id="7340731148882810149">תפריט קליקים אוטומטיים</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7348093485538360975">מקלדת על המסך</translation>
+<translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
 <translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
 <translation id="736045644501761622">הגדרה של טפט וסגנון</translation>
@@ -1836,7 +1839,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">כדי להשתמש במכשיר כאורח, צריך לצאת מהחשבון ואז לבחור באפשרות 'גלישה כאורח' בתחתית המסך.</translation>
 <translation id="7866482334467279021">פועלת</translation>
-<translation id="7866727328666668290">הכרטיסייה האחרונה שנפתחה</translation>
 <translation id="7872786842639831132">כבוי</translation>
 <translation id="7875575368831396199">‏נראה שה-Bluetooth כבוי ב-<ph name="DEVICE_TYPE" /> שלך. יש להפעיל את Bluetooth כדי להשתמש ב-Phone Hub.</translation>
 <translation id="7884446017008693258">הגדרות הנקודה לשיתוף אינטרנט</translation>
@@ -2143,7 +2145,6 @@
 <translation id="9002204506712855687">רוצה לנסות את התכונות הכי חדשות?</translation>
 <translation id="9005984960510803406">‏פתיחת חלון Crosh</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים עבור Family Link.</translation>
-<translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
 <translation id="9024331582947483881">מסך מלא</translation>
 <translation id="9029736946581028033">המכשיר ייכבה בקרוב</translation>
 <translation id="9030319654231318877">התכונה כבויה עד השקיעה</translation>

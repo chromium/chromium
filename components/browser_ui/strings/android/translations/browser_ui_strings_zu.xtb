@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Ixhumeke kudivayisi ye-USB</translation>
 <translation id="4194328954146351878">Buza ngaphambi kokuvumela amasayithi ukuthi abone futhi aguqule ulwazi kumadivayisi e-NFC (kuyanconywa)</translation>
 <translation id="4200726100658658164">Vula Izilungiselelo zendawo</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ukusuka ku-<ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Izaziso zingadlidliza idivayisi</translation>
 <translation id="4259722352634471385">Ukuzulazula kuvinjiwe: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Kuvunyelwe</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Nweba</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Kuphelelwa yisikhathi kusasa}one{Kuphelelwa isikhathi ezinsukwini ezingu-#}other{Kuphelelwa isikhathi ezinsukwini ezingu-#}}</translation>
 <translation id="4336566011000459927">I-Chrome izokhawulela amakhukhi futhi namuhla</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ithebhu yakho yokugcina</translation>
 <translation id="4338831206024587507">Wonke amasayithi angaphansi kwe-<ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Vimbela amasayithi ukuthi azi lapho usebenzisa le divayisi</translation>
 <translation id="4412992751769744546">Vumela amakhukhi wezinkampani zangaphandle</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Lawula ukufinyelela leli sayithi kudivayisi yakho</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6042308850641462728">Okuningi</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ithebhu yakho yokugcina</translation>
 <translation id="6064125863973209585">Ukulandwa okuqediwe</translation>
 <translation id="6071501408666570960">Ungase ukhishwe kule sayithi</translation>
 <translation id="6120483543004435978">Lapho ivuliwe, amasayithi angacela ukwazi lapho usebenzisa ngokuqhubekayo idivayisi yakho. Lapho ivaliwe, amasayithi awakwazi ukwazi lapho usebenzisa ngokuqhubekayo idivayisi yakho.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Dlala</translation>
 <translation id="6818926723028410516">Khetha izinto</translation>
 <translation id="6864395892908308021">Le divayisi ayikwazi ukufunda i-NFC</translation>
-<translation id="6867014948848323204">Ukusuka ku-<ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Vimbela amasayithi kusukela ekufundeni umbhalo nezithombe kusukela kubhodi lokunamathisela</translation>
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6950072572526089586">Isayithi oyivakashelayo ikwazi ukulondoloza ulwazi olumayelana nokwenzayo ukuze isebenze ngendlela oyilindele — ngokwesibonelo, ukukugcina ungene ngemvume kusayithi noma ukulondoloza izinto kubhasikidi wakho wokuthenga. Ngokuvamile amasayithi alondoloza lolu lwazi okwesikhashana kudivayisi yakho.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Khetha oxhumana naye</translation>
 <translation id="7990211076305263060">Lapho ivuliwe, amasayithi angacela ukusebenzisa imakrofoni yakho. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa imakrofoni yakho.</translation>
 <translation id="8007176423574883786">Kuvaliwe kule divayisi</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ukusuka ku-<ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Ukulanda kwehlulekile</translation>
 <translation id="8042586301629853791">Hlunga nge:</translation>
 <translation id="8067883171444229417">Dlala ividiyo</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">已连接 USB 设备</translation>
 <translation id="4194328954146351878">需先询问，得到许可后才允许网站查看和更改 NFC 设备上的信息（推荐）</translation>
 <translation id="4200726100658658164">打开位置信息设置</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 来自“<ph name="FROM_DEVICE" />”</translation>
 <translation id="4226663524361240545">收到通知时设备会振动</translation>
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
 <translation id="4278390842282768270">允许</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">展开</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
 <translation id="4336566011000459927">Chrome 将于今天再次限制 Cookie</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 您的最后一个标签页</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有网站</translation>
 <translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6042308850641462728">展开</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> 您的最后一个标签页</translation>
 <translation id="6064125863973209585">下载已完成</translation>
 <translation id="6071501408666570960">您可能已从此网站上退出账号</translation>
 <translation id="6120483543004435978">开启此设置后，网站可以请求监测您是否正在使用设备。关闭此设置后，网站无法得知您是否正在使用设备。</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">选择内容</translation>
 <translation id="6864395892908308021">此设备无法读取 NFC 数据</translation>
-<translation id="6867014948848323204">来自“<ph name="FROM_DEVICE" />”</translation>
 <translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6950072572526089586">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7990211076305263060">开启此设置后，网站可以请求使用您的麦克风。关闭此设置后，网站无法使用您的麦克风。</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> 来自“<ph name="FROM_DEVICE" />”</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8067883171444229417">播放视频</translation>

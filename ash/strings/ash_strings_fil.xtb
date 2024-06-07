@@ -72,6 +72,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1235458158152011030">Mga kilalang network</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Isang app</translation>
+<translation id="1242198791279543032">Naka-mute ang mga notification</translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="1245644940275736236">Pumunta sa Assistant</translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
@@ -301,6 +302,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="216955976692983107">I-resize ang naka-tile na window papuntang kanan</translation>
 <translation id="2185166372312820725">Pumunta sa nakaraang tab</translation>
 <translation id="2185444992308415167">Tingnan ang tab 1 hanggang 8</translation>
+<translation id="2195732836444333448">Masyadong abala sa ngayon. Bumalik sa ibang pagkakataon.</translation>
 <translation id="2198625180564913276">Idinaragdag ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="219905428774326614">Launcher, lahat ng app</translation>
 <translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
@@ -814,6 +816,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4086921558679520050">I-on ang pisikal na switch ng mikropono sa iyong device</translation>
 <translation id="4101772068965291327">Buksan ang home page</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
+<translation id="4113030288477039509">Pinamamahalaan ng iyong administrator</translation>
 <translation id="4114315158543974537">I-on ang Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="411881149140864134">I-activate ang desk sa kaliwa</translation>
@@ -847,6 +850,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4201033867194214117">Hindi available ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
 <translation id="4209973997261364186">Naka-on ang Wi-Fi</translation>
+<translation id="4212246570487010370">Magpatuloy sa pag-browse</translation>
 <translation id="4212472694152630271">Lumipat sa PIN</translation>
 <translation id="4215497585250573029">Mga setting ng VPN</translation>
 <translation id="4217571870635786043">Pagdidikta</translation>
@@ -1239,7 +1243,6 @@ Walang nakakonektang device.</translation>
 <translation id="5599242528220103262">Naka-off ang keyboard shortcut</translation>
 <translation id="5600415762228455511">Naka-on ang Pag-focus, may <ph name="REMAINING_TIME" /> pa, nagfo-focus sa: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pindutin ang Ctrl + Alt + Z upang i-disable ang pasalitang feedback.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 oras ang nakalipas}=1{1 oras ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Inilipat ka namin sa mas mahusay na network</translation>
 <translation id="5619862035903135339">Dini-disable ng patakaran ng administrator ang screen capture</translation>
@@ -1691,6 +1694,7 @@ Kaka-install lang</translation>
 <translation id="7340731148882810149">Menu ng mga awtomatikong pag-click</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="7348093485538360975">Nasa screen na keyboard</translation>
+<translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="735745346212279324">Nakadiskonekta ang VPN</translation>
 <translation id="7360036564632145207">Kapag binago mo ang iyong setting ng proteksyon sa pag-access ng data para sa mga peripheral, mao-optimize ang performance</translation>
 <translation id="736045644501761622">Itakda ang wallpaper at style</translation>
@@ -1833,7 +1837,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para gamitin ang device bilang bisita, kailangan mong mag-sign out at pagkatapos ay piliin ang Mag-browse bilang Bisita sa ibaba ng screen.</translation>
 <translation id="7866482334467279021">naka-on</translation>
-<translation id="7866727328666668290">Huling tab na binuksan</translation>
 <translation id="7872786842639831132">Naka-off</translation>
 <translation id="7875575368831396199">Mukhang naka-off ang Bluetooth sa iyong <ph name="DEVICE_TYPE" />. Paki-on ang Bluetooth para magamit ang Phone Hub.</translation>
 <translation id="7884446017008693258">Mga Setting ng Hotspot</translation>
@@ -2139,7 +2142,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9002204506712855687">I-explore ang mga pinakabagong feature</translation>
 <translation id="9005984960510803406">Buksan ang window ng Crosh</translation>
 <translation id="9017320285115481645">Ilagay ang access code ng magulang sa Family Link.</translation>
-<translation id="9022774213089566801">Madalas na binibisita</translation>
 <translation id="9024331582947483881">buong screen</translation>
 <translation id="9029736946581028033">Malapit nang mag-off ang device</translation>
 <translation id="9030319654231318877">Naka-off hanggang paglubog ng araw</translation>

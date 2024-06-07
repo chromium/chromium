@@ -295,6 +295,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1203942045716040624">Shared worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Preview link</translation>
 <translation id="1206832039833782423">Your security code is on the back of your card</translation>
+<translation id="1208392090861059168">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK" />turn on system location access<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">View or add printers and see active print jobs</translation>
 <translation id="1211769675100312947">Shortcuts are curated by you</translation>
 <translation id="1213254615020057352">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
@@ -812,6 +813,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1594703455918849716">Go to Checkup page</translation>
 <translation id="1594781465361405478">Volume on/off</translation>
 <translation id="1594963087419619323">Split screen overview</translation>
+<translation id="1595018168143352126">Manage website camera permissions in Chrome</translation>
 <translation id="1595492813686795610">Linux is upgrading</translation>
 <translation id="1596286373007273895">Available</translation>
 <translation id="1596709061955594992">Bluetooth is turned off. To see available devices, turn Bluetooth on.</translation>
@@ -885,7 +887,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1634224622052500893">Wi-Fi network found</translation>
 <translation id="1634783886312010422">Have you already changed this password on <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
-<translation id="1636542522761359943">Welcome, <ph name="PROFILE_NAME" /></translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos. Backup data will not count towards your Drive storage quota.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can turn this service off in Settings.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">Get this bookmark on your iPhone</translation>
@@ -1258,6 +1259,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1900305421498694955">Apps from Google Play may require full file system access to read and write files on external storage devices. Files and folders created on the device are visible to anyone who uses the external drive. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Ask your admin to update this app</translation>
 <translation id="1901303067676059328">Select &amp;all</translation>
+<translation id="1901760057081700494">Time zone is currently set to <ph name="TIME_ZONE_ENTRY" />. To automatically update the time zone, <ph name="BEGIN_LINK" />turn on system location access<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1906181697255754968">Sites usually access files and folders on your device for features like automatically saving your work</translation>
 <translation id="1906488504371069394">Discover more extensions and themes on the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
@@ -1629,7 +1631,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="217576141146192373">Unable to add printer. Please check your printer's configuration and try again.</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="217631816678106981">Don't paste</translation>
-<translation id="2177306523871626993">Downloading text recognition files… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Incognito Tab: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">You are enabling Chrome OS Flex debugging features which will set up sshd daemon and enable booting from USB drives.</translation>
@@ -1837,6 +1838,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2314774579020744484">Language used when translating pages</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2316433409811863464">App streaming</translation>
+<translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% done</translation>
 <translation id="2318143611928805047">Paper size</translation>
 <translation id="2318817390901984578">To use Android apps, charge &amp; update your <ph name="DEVICE_TYPE" />.</translation>
@@ -1883,7 +1885,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2350182423316644347">Initialising application...</translation>
 <translation id="235028206512346451">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If you aren't using a lock screen, your device will sleep instead of lock.</translation>
 <translation id="2351923523007389195">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system location access<ph name="LINK_END" />.</translation>
-<translation id="2352305801620974284">When you sign in on this device, you get your passwords and more from your Google Account</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME" />. Your most recent note will remain on the lock screen.</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
@@ -2213,6 +2214,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2581992808349413349">Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Couldn't get Kerberos ticket. Try again, or contact your organisation's device admin. (Error code <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Manage website microphone permissions in Chrome</translation>
 <translation id="2586561813241011046">Couldn't install <ph name="APP_NAME" />. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2586672484245266891">Please enter a shorter URL</translation>
@@ -2402,6 +2404,9 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2727744317940422214">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" />. Cleaning up failed. You may need to do so manually.</translation>
 <translation id="2729327310379176711">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
 <translation id="2729577602370119849">Easily access and manage printers</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near this device to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google uses this information collected from this device to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs. This information is not used to identify any individual.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in this device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine this device's location, which may impact the availability and accuracy of locations for Android apps and services such as Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Backing up Linux apps and files</translation>
 <translation id="2730596696987224099">Choose your own</translation>
 <translation id="2730647855013151888">Include all personal information</translation>
@@ -3255,6 +3260,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="338323348408199233">Block traffic without VPN</translation>
 <translation id="3384362484379805487">Language files are shared among users to save disk space.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Location Accuracy provides a more accurate location for apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to generally improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Your tab groups now automatically save.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3676,7 +3682,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3694590407685276748">Highlight text cursor</translation>
 <translation id="369489984217678710">Passwords and other sign-in data</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Security checks are complete. Your data will be uploaded.}=1{Security checks are complete. Your file will be uploaded.}other{Security checks are complete. Your files will be uploaded.}}</translation>
-<translation id="3696817060563289264">Text recognition files downloaded</translation>
 <translation id="369736917241079046">launcher + left arrow</translation>
 <translation id="3697716475445175867">last opened</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{You can stop this site from sending future notifications.}other{You can stop these sites from sending future notifications.}}</translation>
@@ -3988,7 +3993,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3898768766145818464">Play or pause video</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3900966090527141178">Export passwords</translation>
-<translation id="3902789559055749153">Choose how you want to create a passkey for <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Built-in keyboard</translation>
 <translation id="3903696968689283281">Wi-Fi direct owners info:</translation>
 <translation id="3904326018476041253">Location Services</translation>
@@ -4062,6 +4066,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3950841222883198950">Voice typing</translation>
 <translation id="3953834000574892725">My accounts</translation>
 <translation id="3954354850384043518">In progress</translation>
+<translation id="3954468641195530330">Apps are not allowed to use your microphone</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">You have no recently captured WebRTC event logs.</translation>
 <translation id="3955321697524543127">Don't allow sites to connect to USB devices</translation>
@@ -4120,6 +4125,10 @@ This can include information about installed software, files, your browser and t
 <translation id="3988124842897276887">This tab is connected to a USB device</translation>
 <translation id="3988996860813292272">Select time zone</translation>
 <translation id="3991055816270226534">Manage third-party cookies and tracking protections</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near this device to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google uses this information collected from this device to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs. This information is not used to identify any individual.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in this device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine this device's location, which may impact the availability and accuracy of locations for Android apps and services such as Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Learn more about Location Accuracy<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Imported</translation>
 <translation id="3992008114154328194">Downloading <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Back up data</translation>
@@ -4161,7 +4170,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4028467762035011525">Add input methods</translation>
 <translation id="4029024445166427442">launcher + shift + backspace</translation>
 <translation id="4029556917477724407">Back from <ph name="PAGE_TITLE" /> page</translation>
-<translation id="403088439874411464">Downloading text recognition files</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4031527940632463547">Sensors blocked</translation>
 <translation id="4033471457476425443">Add new folder</translation>
@@ -4275,6 +4283,10 @@ This can include information about installed software, files, your browser and t
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">File password</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near you to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google uses this information without identifying you to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in your device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine your device's location, which may impact the availability and accuracy of locations for Android apps and services, such as Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Learn more about Location Accuracy<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4399,7 +4411,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4220648711404560261">An error occurred during activation.</translation>
 <translation id="4222917615373664617">Price tracking is enabled. Price is <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Microphone not allowed</translation>
-<translation id="4223845867739585293">Create a passkey</translation>
 <translation id="4225397296022057997">On all sites</translation>
 <translation id="4228071595943929139">Use your organisation’s email address</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{This extension is not allowed}other{Some extensions are not allowed}}</translation>
@@ -4710,7 +4721,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4449948729197510913">Your username belongs to your organisation's enterprise account. To enrol devices to the account, first verify domain ownership in the Admin console. You will need administrative privileges on the account to verify.</translation>
 <translation id="4450974146388585462">Diagnose</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detected an active TPM that can store your data more securely.</translation>
-<translation id="4451203458188403050">Extract text from PDF</translation>
 <translation id="4452898361839215358">or select PPD. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Touch the fingerprint sensor at the top right corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Search <ph name="SEARCH_ENGINE_NAME" /> or type a URL</translation>
@@ -5052,6 +5062,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4716483597559580346">Powerwash for added security</translation>
 <translation id="4716715661140829720">Not enough storage space</translation>
 <translation id="471759229191973607">Change theme</translation>
+<translation id="4719276504493791870">Apps are not allowed to use your location</translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> is sharing your screen.</translation>
 <translation id="4722989931633062466">Not allowed to show third-party sign-in prompts</translation>
@@ -5265,6 +5276,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
 <translation id="4880315242806573837">Security updates end soon. Upgrade to a new Chromebook.</translation>
 <translation id="4880827082731008257">Search history</translation>
+<translation id="4881632956374597321">Apps and websites with the location permission, as well as system services, can use your location. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Don't remind me next time</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4882312758060467256">Has access to this site</translation>
@@ -5510,6 +5522,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5079010647467150187">Add built-in VPN…</translation>
 <translation id="5079460277417557557">You can now use saved tab groups across your signed-in desktop devices</translation>
 <translation id="5079699784114005398">Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.</translation>
+<translation id="5079950360618752063">Use suggested password</translation>
 <translation id="508059534790499809">Refresh a Kerberos ticket</translation>
 <translation id="5081124414979006563">&amp;Open Guest Profile</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
@@ -5660,6 +5673,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5186788525428341874">You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Using <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Activate port</translation>
 <translation id="5190959794678983197">No microphone</translation>
@@ -5705,6 +5719,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5225324770654022472">Show apps shortcut</translation>
 <translation id="52254442782792731">Current visibility setting is not set yet</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
+<translation id="5226731562812684363">Websites are not allowed to use your location</translation>
 <translation id="5227679487546032910">Default teal avatar</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> devices connected</translation>
 <translation id="5228579091201413441">Enable sync</translation>
@@ -6579,6 +6594,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5885314688092915589">Your organisation will manage this profile</translation>
 <translation id="5885470467814103868">Start scan</translation>
 <translation id="5885631909150054232">Copy token</translation>
+<translation id="5886000783338788034">Location is turned off in ChromeOS settings</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Connect and quickly set up Fast Pair devices close by</translation>
 <translation id="5886384907280980632">Turn off now</translation>
@@ -7111,6 +7127,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="628352644014831790">4 seconds</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
 <translation id="6285770818046456882">The device sharing with you cancelled the transfer</translation>
+<translation id="628699625505156622">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use this device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from this device to crowdsource wireless signal locations. These are used without identifying any individual to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Manage your printers in printer settings</translation>
 <translation id="6287828400772161253">Android phone (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">No available devices sharing nearby. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -7281,7 +7298,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6429384232893414837">Update error</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, single certificate</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> will set up automatic updates for all users of this computer.</translation>
-<translation id="6432072919019816301">Scan PDF to extract text for assistive technology</translation>
 <translation id="6434104957329207050">Point scanning speed</translation>
 <translation id="6434309073475700221">Discard</translation>
 <translation id="6434325376267409267">Your device needs to be updated before you can use <ph name="APP_NAME" />.</translation>
@@ -7635,6 +7651,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6703613667804166784">This file can harm your personal and social network accounts, including <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Run ChromeOS diagnostic tests</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
+<translation id="6707671917294473995">Websites are not allowed to use your camera</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 Other Tab}other{<ph name="PAGE_TITLE" /> and # Other Tabs}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500">Connect using <ph name="EXTENSIONNAME" /></translation>
@@ -7644,6 +7661,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6713233729292711163">Add work profile</translation>
 <translation id="6713441551032149301">Hold the launcher key to change between function keys and system top-row keys</translation>
 <translation id="6713668088933662563">Never offer to translate these languages</translation>
+<translation id="6715735940363172819">Websites are not allowed to use your microphone</translation>
 <translation id="6715803357256707211">An error occurred during installation of your Linux application. Click on the notification for details.</translation>
 <translation id="6716798148881908873">Network connection was lost. Check your network connection or try another Wi-Fi network.</translation>
 <translation id="6718849325281682232">Chrome theme colours have been refreshed to work better for everyone, whether you’re in dark or light mode</translation>
@@ -8669,6 +8687,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7489761397368794366">Call from your device</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Check Remaining Passwords</translation>
+<translation id="7490938136316476492">Location is off. Your ChromeOS device doesn't access your location. However, your general area may still be visible to apps and websites through things like your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> extension may collect all the text you type, including personal data like passwords and credit card numbers. Do you want to use this extension?</translation>
@@ -8890,7 +8909,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7660146600670077843">Right-click on a tab and select 'Add tab to new group'</translation>
 <translation id="7661259717474717992">Allow sites to save and read cookie data</translation>
 <translation id="7661451191293163002">A registration certificate could not be obtained.</translation>
-<translation id="7662164944369232556">Can't download text recognition files. Try again later.</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7663719505383602579">Receiver: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Keyboard shortcut available</translation>
@@ -9031,6 +9049,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7758450972308449809">Adjust the boundaries of your display</translation>
 <translation id="7758884017823246335">Add Site Search</translation>
 <translation id="7759809451544302770">Optional</translation>
+<translation id="7760176388948986635">Allow ChromeOS and Android apps, websites and services with location permission to use this device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from this device to crowdsource wireless signal locations. These are used without identifying any individual to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.</translation>
 <translation id="7762024824096060040">Can't use this account</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> from <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9150,6 +9169,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7839051173341654115">View/Backup media</translation>
 <translation id="7839192898639727867">Certificate Subject Key ID</translation>
 <translation id="7839696104613959439">Render Network Select</translation>
+<translation id="7840222916565569061">Apps are not allowed to use your camera</translation>
 <translation id="7842062217214609161">No shortcut</translation>
 <translation id="7842692330619197998">Visit g.co/ChromeEnterpriseAccount if you need to create a new account.</translation>
 <translation id="784273751836026224">Uninstall Linux</translation>
@@ -10162,6 +10182,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8584843865238667486">HID devices with usage <ph name="USAGE" /> from usage page <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Remove Crostini</translation>
 <translation id="8585841788766257444">Sites listed below follow a custom setting instead of the default</translation>
+<translation id="8586421813321819377">Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.</translation>
 <translation id="8587660243683137365">Install this page as an app</translation>
 <translation id="8588866096426746242">Show profile stats</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR presenting to headset</translation>
@@ -10383,6 +10404,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8736288397686080465">This site has been updated in the background.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Choose the language into which you want to translate the page</translation>
+<translation id="8737966899544698733">Location Accuracy (Android only)</translation>
 <translation id="8738418093147087440">Search by countries, language or input names</translation>
 <translation id="8740086188450289493">Use Google Account password</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
@@ -10454,12 +10476,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8793390639824829328">Sites use this feature to scroll and zoom shared tabs</translation>
 <translation id="879413103056696865">While the hotspot is on, your <ph name="PHONE_NAME" /> will:</translation>
 <translation id="8795916974678578410">New Window</translation>
+<translation id="8796907593900732741">Only system services can use your location. However, your general area may still be visible to apps and websites through things like your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">C&amp;ustomize your Chrome</translation>
 <translation id="8797459392481275117">Never translate this site</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8803953437405899238">Open a new tab with one click</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near you to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google uses this information without identifying you to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in your device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine your device's location, which may impact the availability and accuracy of locations for Android apps and services, such as Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Opens in</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Move Tab to Another Window}other{Move Tabs to Another Window}}</translation>
 <translation id="8805140816472474147">Confirm sync settings to start sync.</translation>

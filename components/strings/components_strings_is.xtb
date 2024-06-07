@@ -2986,7 +2986,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6753269504797312559">Gildi reglu</translation>
 <translation id="6753434778807740853">Eyða færslu <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Sparireikningar</translation>
-<translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Tækið þitt fór að sofa.</translation>
 <translation id="6760548828952594090">Ekki var hægt að vista þetta kort á Google-reikningnum þínum. Í staðinn var það vistað á Chrome í þessu tæki.</translation>
 <translation id="6766558780547452153">Matreiðsla og uppskriftir</translation>
@@ -4248,7 +4247,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9155646082713385498">Tímarit</translation>
 <translation id="9157595877708044936">Setur upp...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> gæti innihaldið viðkvæmt efni}one{<ph name="FILE_COUNT" /> skrá gæti innihaldið viðkvæmt efni}other{<ph name="FILE_COUNT" /> skrár gætu innihaldið viðkvæmt efni}}</translation>
-<translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Vefsvæði sem þú heimsækir geta einnig áætlað hvað höfðar til þín út frá virkni þinni á vefsvæðinu. Ef þú heimsækir til dæmis vefsvæði sem selur hlaupaskó fyrir langhlaup, gæti vefsvæðið áætlað að þú hafir áhuga á að hlaupa maraþon.</translation>
 <translation id="9166851138617700776">Nánar um auglýsingatillögur vefsvæða og auglýsingamælingar</translation>
 <translation id="9167054383925257837">Upplýsingar um vafra og stýrikerfi tækis (s.s. útgáfa vafra og stýrikerfis)</translation>

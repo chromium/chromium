@@ -236,7 +236,6 @@
 <translation id="2189104374785738357">ویرایش جزئیات «نام نقطه دستیابی»</translation>
 <translation id="2195732836444333448">به حداکثر ظرفیت رسیده‌ایم. به‌زودی دوباره برمی‌گردیم.</translation>
 <translation id="2201758491318984023">دوچرخه</translation>
-<translation id="2203222757805818543">زمان‌بندی فعلی روی <ph name="SUNRISE" /> تا <ph name="SUNSET" /> تنظیم شده است. برای به‌روزرسانی خودکار زمان‌بندی «حالت تاریک»، <ph name="BEGIN_LINK" />دسترسی به مکان را روشن کنید<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">چشمه آب‌گرم</translation>
 <translation id="2203642483788377106">صخره</translation>
 <translation id="2208388655216963643">امپرسیونیست</translation>
@@ -313,6 +312,7 @@
 <translation id="2618015542787108131">تپه شنی</translation>
 <translation id="2619761439309613843">بازآوری روزانه</translation>
 <translation id="2620436844016719705">سیستم</translation>
+<translation id="2637303424821734920">خاموش - برای نمایش آب‌وهوای محلی، <ph name="BEGIN_LINK" />دسترسی مکان سیستم را روشن کنید<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
 <translation id="2640549051766135490">آلبوم <ph name="TITLE" /> <ph name="DESC" /> انتخاب شد</translation>
 <translation id="2645380101799517405">کنترل‌ها</translation>

@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Được cho phép</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Mở rộng</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="4336566011000459927">Hôm nay, Chrome sẽ hạn chế cookie trở lại</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4412992751769744546">Cho phép cookie của bên thứ ba</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="6064125863973209585">Đã hoàn tất quá trình tải xuống</translation>
 <translation id="6071501408666570960">Bạn có thể bị đăng xuất khỏi trang web này</translation>
 <translation id="6120483543004435978">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu được biết khi nào bạn đang sử dụng thiết bị. Khi bạn tắt tuỳ chọn này, các trang web sẽ không được biết khi nào bạn đang sử dụng thiết bị.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
-<translation id="6867014948848323204">Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Chặn trang web đọc văn bản và hình ảnh từ bảng nhớ tạm</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6950072572526089586">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để có thể vận hành như dự kiến, ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7990211076305263060">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng micrô của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng micrô của bạn.</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8042586301629853791">Sắp xếp theo:</translation>
 <translation id="8067883171444229417">Phát video</translation>

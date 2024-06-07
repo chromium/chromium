@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Simpan K/Laluan</translation>
 <translation id="1753905327828125965">Paling Kerap Dilawati</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} Kata Laluan Lemah}other{{count} Kata Laluan Lemah}}</translation>
+<translation id="1764070164487214210">Arah</translation>
 <translation id="1766411844240160513">Borang Autolengkap</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Kandungan Diperibadikan</translation>
@@ -541,12 +542,14 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3771033907050503522">Tab Inkognito</translation>
 <translation id="3775743491439407556">Penyegerakan Tidak Berfungsi</translation>
 <translation id="3779810277399252432">Tiada sambungan Internet.</translation>
+<translation id="3785672280731998727">Nama Paparan</translation>
 <translation id="3789294999358192700">Ikut langkah di bawah:</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menterjemahkan tapak ini</translation>
 <translation id="3808311849069021992">Tunjukkan butiran enjin carian</translation>
 <translation id="3810973564298564668">Urus</translation>
+<translation id="3812308602011798782">Ulasan</translation>
 <translation id="3818045793209708987">Berhenti menjejaki pakej ini</translation>
 <translation id="3818293389945649617">Cari Seterusnya</translation>
 <translation id="3819183753496523827">Anda di luar talian. Periksa sambungan Internet anda dan cuba lagi.</translation>
@@ -594,6 +597,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4045648459118332842">Dapatkan kata laluan anda yang disimpan dalam mana-mana apl dengan satu ketikan</translation>
 <translation id="4049507953662678203">Pastikan anda mempunyai sambungan rangkaian dan cuba lagi.</translation>
 <translation id="4054572406751135230">Ikuti perkembangan berita, sukan dan banyak lagi.</translation>
+<translation id="4068959193278821990">Hidupkan Perlindungan Dipertingkat...</translation>
 <translation id="4092655288299341041">Tunjukkan Bantuan</translation>
 <translation id="4105841739161771091">{count,plural, =1{Padamkan Alamat}other{Padamkan Alamat}}</translation>
 <translation id="4108998448622696017">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku.</translation>
@@ -605,6 +609,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4121993058175073134">Tetapkn akaun e-mel anda dahulu dlm apl Tetapan utk mhantar data net-eksport.</translation>
 <translation id="4124987746317609294">Julat Masa</translation>
 <translation id="4133265950310064865">Perlindungan Dipertingkat</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">Laman web ini ingin memuat turun fail dan menambahkan fail itu pada kalendar anda.</translation>
 <translation id="4152011295694446843">Anda dapat menemukan penanda halaman anda di sini</translation>
@@ -1472,6 +1477,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="834783239627985533">Laman yang Paling Kerap Dilawati</translation>
 <translation id="8358401059263985056">Hidupkan Pemberitahuan</translation>
 <translation id="8364841868226993049">Menyimpan imej dalam Google Photos untuk <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">Padamkan Kunci Laluan</translation>
 <translation id="8370406443343902172">Akses Tetapan...</translation>
 <translation id="8374977641764177587">Hidupkan Pemberitahuan?</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>

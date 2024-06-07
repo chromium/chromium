@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"Відмінити"</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1623768535032616219">Згорнути Google Клас</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Завантаження</translation>
@@ -300,9 +301,11 @@
 <translation id="216955976692983107">Зміна розміру вікна витягуванням праворуч у мозаїчному макеті</translation>
 <translation id="2185166372312820725">Перейти на попередню вкладку</translation>
 <translation id="2185444992308415167">По черзі відкривати вкладки 1–8</translation>
+<translation id="2195732836444333448">Бракує ресурсів. Спробуйте пізніше.</translation>
 <translation id="2198625180564913276">Триває додавання профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="219905428774326614">Панель запуску, усі додатки</translation>
 <translation id="2201071101391734388">Фото <ph name="INDEX" /> з <ph name="TOTAL_COUNT" /> останніх.</translation>
+<translation id="2201687081523799384">Згорнути Google Завдання</translation>
 <translation id="2208323208084708176">Режим уніфікованого комп’ютера</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222841058024245321">Робочий стіл 7</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">Натиснути лівою кнопкою</translation>
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
+<translation id="2437771564543046790">Низький заряд акумулятора. Режим енергозбереження ввімкнено.</translation>
 <translation id="243878895369688216">Відкрито вчора</translation>
 <translation id="2440978926514840421">Запис у форматі GIF зроблено</translation>
 <translation id="2441427462554639370">Запис завершився через критично малий обсяг пам’яті</translation>
@@ -811,6 +815,7 @@
 <translation id="4086921558679520050">Увімкніть фізичний перемикач мікрофона на пристрої</translation>
 <translation id="4101772068965291327">Відкривати домашню сторінку</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
+<translation id="4113030288477039509">Керується адміністратором</translation>
 <translation id="4114315158543974537">Увімкнути Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурний</translation>
 <translation id="411881149140864134">Активувати робочий стіл ліворуч</translation>
@@ -844,6 +849,7 @@
 <translation id="4201033867194214117">Функція "<ph name="FEATURE_NAME" />" недоступна.</translation>
 <translation id="4201051445878709314">Показати попередній місяць</translation>
 <translation id="4209973997261364186">Wi-Fi увімкнено</translation>
+<translation id="4212246570487010370">Продовжити перегляд</translation>
 <translation id="4212472694152630271">Ввести PIN-код</translation>
 <translation id="4215497585250573029">Налаштування VPN</translation>
 <translation id="4217571870635786043">Диктування</translation>
@@ -1200,6 +1206,7 @@
 <translation id="550391772491508736">Відновити трансляцію</translation>
 <translation id="5506975627792768506">Увімкнути або вимкнути лупу</translation>
 <translation id="5512042095225963688">Видалити попереднє слово</translation>
+<translation id="5519005148254860683">Розгорнути Google Завдання</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш адміністратор вилучив усі профілі eSIM. Щоб дізнатися більше, зверніться до нього.</translation>
 <translation id="5520909879404821039">Як сказати привіт французькою</translation>
@@ -1235,7 +1242,6 @@
 <translation id="5599242528220103262">Комбінацію клавіш вимкнено</translation>
 <translation id="5600415762228455511">Режим концентрації уваги ввімкнено, залишилося: <ph name="REMAINING_TIME" />, завдання "<ph name="TASK_NAME" />"</translation>
 <translation id="5600837773213129531">Натисніть Ctrl + Alt + Z, щоб вимкнути голосові підказки.</translation>
-<translation id="5601491729809307732">{HOURS,plural, =0{Менше ніж годину тому}=1{1 годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5618148318840095371">Установлено підключення до кращої мережі</translation>
 <translation id="5619862035903135339">Адміністратор заборонив запис екрана</translation>
@@ -1408,6 +1414,7 @@
 <translation id="6200515304866777730">Не підтримується додатком</translation>
 <translation id="6210042900243040400">Підключіть пристрій <ph name="NAME" />, який уже збережено в обліковому записі <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Зробити знімок частини екрана або почати запис відео з неї</translation>
+<translation id="621606890568890214">Розгорнути Google Клас</translation>
 <translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
 <translation id="622484624075952240">Донизу</translation>
 <translation id="6228457605945141550">Зменшити яскравість</translation>
@@ -1687,6 +1694,7 @@
 <translation id="7340731148882810149">Меню автоматичних кліків</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Екранна клавіатура</translation>
+<translation id="7352651011704765696">Виникли проблеми</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>
 <translation id="7360036564632145207">Щоб оптимізувати ефективність, змініть налаштування обмеження доступу до даних для периферійних пристроїв</translation>
 <translation id="736045644501761622">Налаштувати фоновий малюнок і стиль</translation>
@@ -1829,7 +1837,6 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Щоб використовувати пристрій як гість, вийдіть з облікового запису й унизу екрана виберіть опцію "Переглядати в режимі гостя".</translation>
 <translation id="7866482334467279021">ввімкнено</translation>
-<translation id="7866727328666668290">Остання відкрита вкладка</translation>
 <translation id="7872786842639831132">Вимкнено</translation>
 <translation id="7875575368831396199">Схоже, на пристрої <ph name="DEVICE_TYPE" /> вимкнено Bluetooth. Увімкніть його, щоб скористатися функцією "Керування телефоном".</translation>
 <translation id="7884446017008693258">Налаштування точки доступу</translation>
@@ -2136,7 +2143,6 @@
 <translation id="9002204506712855687">Ознайомтеся з новими функціями</translation>
 <translation id="9005984960510803406">Відкрити вікно Crosh</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
-<translation id="9022774213089566801">Часто відвідувані</translation>
 <translation id="9024331582947483881">усього екрана</translation>
 <translation id="9029736946581028033">Пристрій скоро розрядиться</translation>
 <translation id="9030319654231318877">Вимкнено до заходу сонця</translation>

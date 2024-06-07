@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Pitaj prije omogućavanja web-lokacijama da vide i mijenjaju podatke na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvori postavke lokacije</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> S uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dopušteno</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Proširi</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Istječe sutra}one{Istječe za # dan}few{Istječe za # dana}other{Istječe za # dana}}</translation>
 <translation id="4336566011000459927">Chrome će danas ponovo ograničiti kolačiće</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vaša posljednja kartica</translation>
 <translation id="4338831206024587507">Sve web-lokacije na domeni <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Onemogućivanje web-lokacijama da znaju kad aktivno upotrebljavate ovaj uređaj</translation>
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Kontrolirajte pristup ove web-lokacije vašem uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Vaša posljednja kartica</translation>
 <translation id="6064125863973209585">Dovršena preuzimanja</translation>
 <translation id="6071501408666570960">Možda ste odjavljeni s ove web-lokacije</translation>
 <translation id="6120483543004435978">Kad je ta postavka uključena, web-lokacije mogu tražiti informacije kada aktivno koristite uređaj. Kad je ta postavka isključena, web-lokacije ne mogu znati kad aktivno koristite uređaj.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
-<translation id="6867014948848323204">S uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokiraj web-lokacijama čitanje teksta i slika iz međuspremnika</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6950072572526089586">Web-lokacija koju posjećujete može spremiti podatke o tome što radite kako bi funkcionirala kako treba, na primjer kako biste ostali prijavljeni na web-lokaciju ili spremili artikle u košaricu. Web-lokacije često spremaju te podatke na vaš uređaj privremeno.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Izvor: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>

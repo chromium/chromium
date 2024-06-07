@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Կայքը միացած է USB սարքի</translation>
 <translation id="4194328954146351878">Կայքերի համար թույլտվություն խնդրել՝ տեսնելու և փոփոխելու տեղեկությունները NFC սարքերում (խորհուրդ է տրվում)</translation>
 <translation id="4200726100658658164">Բացել տեղադրության կարգավորումները</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-ից</translation>
 <translation id="4226663524361240545">Ծանուցումների ժամանակ սարքը կթրթռա</translation>
 <translation id="4259722352634471385">Նավիգացիան արգելափակված է՝ <ph name="URL" /></translation>
 <translation id="4278390842282768270">Թույլատրված է</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Ընդարձակել</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Գործողության ժամկետը սպառվում է վաղը}one{Գործողության ժամկետը սպառվում է # օրից}other{Գործողության ժամկետը սպառվում է # օրից}}</translation>
 <translation id="4336566011000459927">Այսօր Chrome-ը կրկին կսահմանափակի քուքիները</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ձեր վերջին ներդիրը</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> տիրույթով բոլոր կայքերը</translation>
 <translation id="4402755511846832236">Արգելել կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4412992751769744546">Թույլատրել 3-րդ կողմի քուքիները</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Կառավարեք այս կայքի՝ ձեր սարքն օգտագործելու թույլտվությունները</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6042308850641462728">Ավելին</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ձեր վերջին ներդիրը</translation>
 <translation id="6064125863973209585">Կատարված ներբեռնումներ</translation>
 <translation id="6071501408666570960">Հնարավոր է, որ այս կայքում դուրս գաք ձեր հաշվից</translation>
 <translation id="6120483543004435978">Երբ այս պարամետրը միացված է, կայքերը կարող են թույլտվություն խնդրել՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը։ Երբ այն անջատված է, կայքերը չեն կարող տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը։</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6818926723028410516">Ընտրեք տարրեր</translation>
 <translation id="6864395892908308021">Այս սարքում NFC-ն չի աջակցվում</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" />-ից</translation>
 <translation id="6912998170423641340">Արգելափակել սեղմատախտակի տեքստերի ու պատկերների հասանելիությունը կայքերին</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6950072572526089586">Կայքը, որը դուք այցելում եք, կարող է պահել տեղեկություններ ձեր գործողությունների մասին, որպեսզի կարողանա անհատականացնել իր աշխատանքը ձեզ համար։ Օրինակ՝ այն կարող է դուրս չգրել ձեզ կայքից կամ պահպանել գնումների զամբյուղում ավելացված ապրանքները։ Սովորաբար կայքերն այդ տեղեկությունները ժամանակավորապես պահում են ձեր սարքում։</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
 <translation id="7990211076305263060">Երբ այս պարամետրը միացված է, կայքերը կարող են խոսափողն օգտագործելու թույլտվություն խնդրել։ Երբ այն անջատված է, կայքերը չեն կարող օգտագործել ձեր խոսափողը։</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> սարքից</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8042586301629853791">Դասավորել ըստ՝</translation>
 <translation id="8067883171444229417">Նվագարկել տեսանյութը</translation>

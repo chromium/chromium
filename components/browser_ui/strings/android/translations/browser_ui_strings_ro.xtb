@@ -190,7 +190,6 @@
 <translation id="4169549551965910670">Conectat la un dispozitiv USB</translation>
 <translation id="4194328954146351878">Întreabă înainte de a permite site-urilor să vadă și să modifice informații de pe dispozitive NFC (recomandat)</translation>
 <translation id="4200726100658658164">Deschide setările privind locația</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> De pe <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Notificările pot face dispozitivul să vibreze</translation>
 <translation id="4259722352634471385">Navigarea este blocată: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Se permite</translation>
@@ -198,7 +197,6 @@
 <translation id="42981349822642051">Extinde</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
 <translation id="4336566011000459927">Chrome va limita din nou cookie-urile astăzi</translation>
-<translation id="4336836404251800362"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ultima filă</translation>
 <translation id="4338831206024587507">Toate site-urile din <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Împiedică site-urile să detecteze când folosești activ dispozitivul</translation>
 <translation id="4412992751769744546">Permite cookie-urile terță parte</translation>
@@ -304,7 +302,6 @@
 <translation id="6015775454662021376">Gestionează accesul acestui site la dispozitivul tău</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6042308850641462728">Mai multe</translation>
-<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ultima filă</translation>
 <translation id="6064125863973209585">Descărcări finalizate</translation>
 <translation id="6071501408666570960">Este posibil să te fi deconectat de pe acest site</translation>
 <translation id="6120483543004435978">Când opțiunea este activată, site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul. Când opțiunea este dezactivată, site-urile nu pot afla când folosești activ dispozitivul.</translation>
@@ -360,7 +357,6 @@
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6818926723028410516">Selectează elementele</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
-<translation id="6867014948848323204">De pe <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6950072572526089586">Un site pe care îl accesezi poate salva informații despre ce faci, astfel încât să funcționeze conform așteptărilor, de exemplu, pentru a te menține conectat(ă) la un site sau pentru a salva articole în coșul de cumpărături. Adesea, site-urile salvează temporar aceste informații pe dispozitiv.</translation>
@@ -426,7 +422,6 @@
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7990211076305263060">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi microfonul. Când opțiunea este dezactivată, site-urile nu pot folosi microfonul.</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
-<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Din <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8042586301629853791">Sortează după:</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
