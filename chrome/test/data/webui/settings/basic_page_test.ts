@@ -12,36 +12,17 @@ import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {PrivacyGuideBrowserProxy, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
+import type {SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestPrivacyGuideBrowserProxy} from './test_privacy_guide_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 
 // clang-format on
-class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
-    PrivacyGuideBrowserProxy {
-  constructor() {
-    super([
-      'getPromoImpressionCount',
-      'incrementPromoImpressionCount',
-    ]);
-  }
-
-  getPromoImpressionCount() {
-    this.methodCalled('getPromoImpressionCount');
-    return 0;
-  }
-
-  incrementPromoImpressionCount() {
-    this.methodCalled('incrementPromoImpressionCount');
-  }
-}
-
 suite('BasicPage', () => {
   let page: SettingsBasicPageElement;
   let settingsPrefs: SettingsPrefsElement;

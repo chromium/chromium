@@ -136,6 +136,7 @@ build_webui_tests("build") {
     "test_password_manager_proxy.ts",
     "test_performance_browser_proxy.ts",
     "test_performance_metrics_proxy.ts",
+    "test_privacy_guide_browser_proxy.ts",
     "test_privacy_page_browser_proxy.ts",
     "test_privacy_sandbox_browser_proxy.ts",
     "test_profile_info_browser_proxy.ts",
