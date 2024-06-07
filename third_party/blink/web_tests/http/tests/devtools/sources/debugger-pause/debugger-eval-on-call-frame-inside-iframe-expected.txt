@@ -15,7 +15,7 @@ x: = VM:1 Uncaught SyntaxError: Unexpected end of input
     at testFunction (debugger-eval-on-cal…ide-iframe.js:39:50)
 pauseInsideIframe @ VM:6
 testFunction @ debugger-eval-on-cal…inside-iframe.js:39
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 
@@ -29,7 +29,7 @@ x: = VM:1 Uncaught SyntaxError: Unexpected end of input
     at testFunction (debugger-eval-on-cal…ide-iframe.js:39:50)
 pauseInsideIframe @ VM:6
 testFunction @ debugger-eval-on-cal…inside-iframe.js:39
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 

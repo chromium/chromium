@@ -5,7 +5,7 @@ Script execution paused.
 functionBaz (copy-stack-trace.js:26)
 functionBar (copy-stack-trace.js:21)
 testFunction (copy-stack-trace.js:16)
-setTimeout (async)
+setTimeout
 scheduleTestFunction (VM:3)
 (anonymous) (VM:1)
 Script execution resumed.

@@ -7507,34 +7507,6 @@ b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failur
 #Loading bug triage 2024-05-16
 crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
 
-# Temporarily disabled to allowed crrev.com/c/5582339 to land. Re-enabled in crrev.com/c/5588517.
-crbug.com/343750870 http/tests/devtools/a11y-axe-core/sources/call-stack-a11y-test.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-assert.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-error-on-call-frame.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-log-eval-syntax-error.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-message-contains-async-stack.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-message-from-inline-with-url.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-repeat-count.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-trace-arguments.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-trace-in-eval.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-trace.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-uncaught-exception-in-eval.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-uncaught-exception.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/console-uncaught-promise-in-worker.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/exception-objects.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/console/function-name-in-console-message-stack.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/service-workers/lazy-addeventlisteners.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger-pause/debugger-eval-while-paused-throws.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger-ui/async-call-stack-async-function.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger-ui/async-call-stack-worker.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger-ui/call-stack-show-more.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger-ui/copy-stack-trace.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
-crbug.com/343750870 http/tests/devtools/sources/debugger/rethrow-error-from-bindings-crash.js [ Failure Pass ]
-
-crbug.com/40226500 http/tests/media/mixed-range-response.html [ Pass Timeout ]
-
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
 

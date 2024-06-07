@@ -13,7 +13,7 @@ func @ debugger-eval-while-paused-throws.js:53
 injectedFunction @ debugger-eval-while-paused-throws.js:56
 eval @ VM:1
 testFunction @ test.js:29
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 localObj.func()
@@ -24,7 +24,7 @@ test.js:26 Uncaught Error: localObj.func
 func @ test.js:26
 eval @ VM:1
 testFunction @ test.js:29
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 globalObj.func()
@@ -35,7 +35,7 @@ test.js:17 Uncaught Error: globalObj.func
 func @ test.js:17
 eval @ VM:1
 testFunction @ test.js:29
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 

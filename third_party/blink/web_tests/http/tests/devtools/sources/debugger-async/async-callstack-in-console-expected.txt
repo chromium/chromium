@@ -6,7 +6,7 @@ async-callstack-in-console.js:28 console.trace
 
 timeout1 @ async-callstack-in-console.js:28
 
-setTimeout (async)
+setTimeout
 
 testFunction @ async-callstack-in-console.js:23
 async-callstack-in-console.js:35 Uncaught Error: foo
@@ -14,26 +14,26 @@ async-callstack-in-console.js:35 Uncaught Error: foo
 
 timeout2 @ async-callstack-in-console.js:35
 
-setTimeout (async)
+setTimeout
 
 timeout1 @ async-callstack-in-console.js:29
 
-setTimeout (async)
+setTimeout
 
 testFunction @ async-callstack-in-console.js:23
 async-callstack-in-console.js:40 console.trace
 
 timeout3 @ async-callstack-in-console.js:40
 
-setTimeout (async)
+setTimeout
 
 timeout2 @ async-callstack-in-console.js:34
 
-setTimeout (async)
+setTimeout
 
 timeout1 @ async-callstack-in-console.js:29
 
-setTimeout (async)
+setTimeout
 
 testFunction @ async-callstack-in-console.js:23
 async-callstack-in-console.js:48 Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('http://www.example.com') does not match the recipient window's origin ('http://127.0.0.1:8000').
@@ -42,15 +42,15 @@ tryPostMessage @ async-callstack-in-console.js:48
 
 timeout3 @ async-callstack-in-console.js:42
 
-setTimeout (async)
+setTimeout
 
 timeout2 @ async-callstack-in-console.js:34
 
-setTimeout (async)
+setTimeout
 
 timeout1 @ async-callstack-in-console.js:29
 
-setTimeout (async)
+setTimeout
 
 testFunction @ async-callstack-in-console.js:23
 

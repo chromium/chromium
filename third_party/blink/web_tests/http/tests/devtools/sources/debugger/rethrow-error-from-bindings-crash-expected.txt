@@ -7,112 +7,112 @@ rethrow-error-from-bindings-crash.js:33 Uncaught TypeError: Failed to execute 'c
     at testFunction (rethrow-error-from-b…ings-crash.js:23:28)
 f2 @ rethrow-error-from-bindings-crash.js:33
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:28 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
     at f1 (rethrow-error-from-b…ings-crash.js:28:25)
 f1 @ rethrow-error-from-bindings-crash.js:28
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:33 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
     at f2 (rethrow-error-from-b…ings-crash.js:33:23)
 f2 @ rethrow-error-from-bindings-crash.js:33
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:28 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
     at f1 (rethrow-error-from-b…ings-crash.js:28:25)
 f1 @ rethrow-error-from-bindings-crash.js:28
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:33 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
     at f2 (rethrow-error-from-b…ings-crash.js:33:23)
 f2 @ rethrow-error-from-bindings-crash.js:33
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:28 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
     at f1 (rethrow-error-from-b…ings-crash.js:28:25)
 f1 @ rethrow-error-from-bindings-crash.js:28
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:33 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
     at f2 (rethrow-error-from-b…ings-crash.js:33:23)
 f2 @ rethrow-error-from-bindings-crash.js:33
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 rethrow-error-from-bindings-crash.js:28 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
     at f1 (rethrow-error-from-b…ings-crash.js:28:25)
 f1 @ rethrow-error-from-bindings-crash.js:28
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
-setTimeout (async)
+setTimeout
 f1 @ rethrow-error-from-bindings-crash.js:27
-setTimeout (async)
+setTimeout
 f2 @ rethrow-error-from-bindings-crash.js:32
 testFunction @ rethrow-error-from-bindings-crash.js:23
-setTimeout (async)
+setTimeout
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 

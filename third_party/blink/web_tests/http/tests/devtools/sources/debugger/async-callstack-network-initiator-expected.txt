@@ -8,11 +8,11 @@ sendXHR @ async-callstack-network-initiator.js:36
 
 timeout2 @ async-callstack-network-initiator.js:29
 
-setTimeout (async)
+setTimeout
 
 timeout1 @ async-callstack-network-initiator.js:24
 
-setTimeout (async)
+setTimeout
 
 testFunction @ async-callstack-network-initiator.js:19
 

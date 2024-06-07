@@ -19,17 +19,17 @@ dumpMessages @ console-repeat-count.js:23
 (anonymous) @ console-repeat-count.js:51
 2console-repeat-count.js:33 Uncaught Primitive value
 (anonymous) @ console-repeat-count.js:33
-setTimeout (async)
+setTimeout
 throwPrimitiveValues @ console-repeat-count.js:33
 (anonymous) @ console-repeat-count.js:52
 console-repeat-count.js:28 Uncaught {a: 1}
 (anonymous) @ console-repeat-count.js:28
-setTimeout (async)
+setTimeout
 throwObjects @ console-repeat-count.js:28
 (anonymous) @ console-repeat-count.js:53
 console-repeat-count.js:28 Uncaught {a: 1}
 (anonymous) @ console-repeat-count.js:28
-setTimeout (async)
+setTimeout
 throwObjects @ console-repeat-count.js:28
 (anonymous) @ console-repeat-count.js:53
 
