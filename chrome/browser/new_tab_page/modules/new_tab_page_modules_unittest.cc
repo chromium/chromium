@@ -21,11 +21,13 @@
 namespace ntp {
 
 const std::vector<base::test::FeatureRef>& kAllModuleFeatures = {
+    ntp_features::kNtpCalendarModule,
     ntp_features::kNtpChromeCartModule,
     ntp_features::kNtpDriveModule,
     ntp_features::kNtpFeedModule,
     ntp_features::kNtpHistoryClustersModule,
     ntp_features::kNtpRecipeTasksModule,
+    ntp_features::kNtpOutlookCalendarModule,
 };
 
 std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(
@@ -52,7 +54,8 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
                                                           {feature}));
 
     const std::vector<std::pair<const std::string, int>> module_id_names =
-        MakeModuleIdNames(false);
+        MakeModuleIdNames(/*drive_module_enabled=*/false,
+                          /*is_managed_profile=*/false);
     ASSERT_EQ(1u, module_id_names.size());
   }
 }
@@ -67,8 +70,43 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_WithDriveModule) {
                                                         enabled_features));
 
   const std::vector<std::pair<const std::string, int>> module_id_names =
-      MakeModuleIdNames(true);
+      MakeModuleIdNames(/*drive_module_enabled=*/true,
+                        /*is_managed_profile=*/false);
   ASSERT_EQ(2u, module_id_names.size());
+}
+
+TEST(NewTabPageModulesTest, MakeModuleIdNames_Managed) {
+  base::test::ScopedFeatureList features;
+  const std::vector<base::test::FeatureRef>& enabled_features = {
+      ntp_features::kNtpCalendarModule,
+      ntp_features::kNtpOutlookCalendarModule,
+  };
+  features.InitWithFeatures(
+      /*enabled_features=*/enabled_features,
+      /*disabled_features=*/ComputeDisabledFeaturesList(kAllModuleFeatures,
+                                                        enabled_features));
+
+  const std::vector<std::pair<const std::string, int>> module_id_names =
+      MakeModuleIdNames(/*drive_module_enabled=*/false,
+                        /*is_managed_profile=*/true);
+  ASSERT_EQ(2u, module_id_names.size());
+}
+
+TEST(NewTabPageModulesTest, MakeModuleIdNames_NotManaged) {
+  base::test::ScopedFeatureList features;
+  const std::vector<base::test::FeatureRef>& enabled_features = {
+      ntp_features::kNtpCalendarModule,
+      ntp_features::kNtpOutlookCalendarModule,
+  };
+  features.InitWithFeatures(
+      /*enabled_features=*/enabled_features,
+      /*disabled_features=*/ComputeDisabledFeaturesList(kAllModuleFeatures,
+                                                        enabled_features));
+
+  const std::vector<std::pair<const std::string, int>> module_id_names =
+      MakeModuleIdNames(/*drive_module_enabled=*/false,
+                        /*is_managed_profile=*/false);
+  ASSERT_EQ(0u, module_id_names.size());
 }
 
 #if !defined(OFFICIAL_BUILD)
@@ -79,7 +117,8 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_DummyModules) {
       /*disabled_features=*/kAllModuleFeatures);
 
   const std::vector<std::pair<const std::string, int>> module_id_names =
-      MakeModuleIdNames(false);
+      MakeModuleIdNames(/*drive_module_enabled=*/false,
+                        /*is_managed_profile=*/false);
   ASSERT_EQ(1u, module_id_names.size());
 }
 #endif
@@ -138,7 +177,8 @@ TEST(NewTabPageModulesTest, ShowChromeCart_WithoutChromeCartInHistoryModule) {
           ntp_features::kNtpChromeCartInHistoryClusterModule});
 
   const std::vector<std::pair<const std::string, int>> module_id_names =
-      MakeModuleIdNames(false);
+      MakeModuleIdNames(/*drive_module_enabled=*/false,
+                        /*is_managed_profile=*/false);
   std::vector<std::string> module_names;
   for (auto pair : module_id_names) {
     module_names.emplace_back(pair.first);
@@ -156,7 +196,8 @@ TEST(NewTabPageModulesTest, NoChromeCart_WithChromeCartInHistoryModule) {
       /*disabled_features=*/{});
 
   const std::vector<std::pair<const std::string, int>> module_id_names =
-      MakeModuleIdNames(false);
+      MakeModuleIdNames(/*drive_module_enabled=*/false,
+                        /*is_managed_profile=*/false);
   std::vector<std::string> module_names;
   for (auto pair : module_id_names) {
     module_names.emplace_back(pair.first);
@@ -176,7 +217,8 @@ TEST(NewTabPageModulesTest,
       /*disabled_features=*/{});
 
   const std::vector<std::pair<const std::string, int>> module_id_names =
-      MakeModuleIdNames(false);
+      MakeModuleIdNames(/*drive_module_enabled=*/false,
+                        /*is_managed_profile=*/false);
   std::vector<std::string> module_names;
   for (auto pair : module_id_names) {
     module_names.emplace_back(pair.first);

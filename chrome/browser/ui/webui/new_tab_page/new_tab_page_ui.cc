@@ -713,7 +713,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
       module_id_names_(ntp::MakeModuleIdNames(
-          NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))) {
+          NewTabPageUI::IsDriveModuleEnabledForProfile(profile_),
+          NewTabPageUI::IsManagedProfile(profile_))) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   source->AddBoolean(
       "customBackgroundDisabledByPolicy",
@@ -838,12 +839,18 @@ bool NewTabPageUI::IsDriveModuleEnabledForProfile(Profile* profile) {
           ntp_features::kNtpDriveModuleManagedUsersOnlyParam, true)) {
     return true;
   }
+
+  return NewTabPageUI::IsManagedProfile(profile);
+}
+
+// static
+bool NewTabPageUI::IsManagedProfile(Profile* profile) {
   // TODO(crbug.com/40183609): Stop calling the private method
   // FindExtendedPrimaryAccountInfo().
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return /* Can be null if Chrome signin is disabled. */ identity_manager &&
          identity_manager
-             ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSync)
+             ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSignin)
              .IsManaged();
 }
 

@@ -25,15 +25,18 @@
 namespace ntp {
 
 const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
-    bool drive_module_enabled) {
+    bool drive_module_enabled,
+    bool is_managed_profile) {
   std::vector<std::pair<const std::string, int>> details;
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
+  if (is_managed_profile &&
+      base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
     details.emplace_back("google_calendar",
                          IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpOutlookCalendarModule)) {
+  if (is_managed_profile &&
+      base::FeatureList::IsEnabled(ntp_features::kNtpOutlookCalendarModule)) {
     details.emplace_back("outlook_calendar",
                          IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE);
   }
