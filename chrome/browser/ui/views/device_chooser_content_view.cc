@@ -17,7 +17,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -273,23 +272,14 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
 
   if (chooser_controller_->ShouldShowHelpButton()) {
     std::unique_ptr<views::ImageButton> help_button;
-    if (features::IsChromeRefresh2023()) {
-      help_button = views::ImageButton::CreateIconButton(
-          base::BindRepeating(
-              &permissions::ChooserController::OpenHelpCenterUrl,
-              base::Unretained(chooser_controller_.get())),
-          vector_icons::kHelpOutlineIcon,
-          l10n_util::GetStringUTF16(IDS_LEARN_MORE),
-          views::ImageButton::MaterialIconStyle::kLarge,
-          views::LayoutProvider::Get()->GetInsetsMetric(
-              views::INSETS_VECTOR_IMAGE_BUTTON));
-    } else {
-      help_button = views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(
-              &permissions::ChooserController::OpenHelpCenterUrl,
-              base::Unretained(chooser_controller_.get())),
-          vector_icons::kHelpOutlineIcon);
-    }
+    help_button = views::ImageButton::CreateIconButton(
+        base::BindRepeating(&permissions::ChooserController::OpenHelpCenterUrl,
+                            base::Unretained(chooser_controller_.get())),
+        vector_icons::kHelpOutlineIcon,
+        l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+        views::ImageButton::MaterialIconStyle::kLarge,
+        views::LayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_VECTOR_IMAGE_BUTTON));
     help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     container->AddChildView(std::move(help_button));
   }
