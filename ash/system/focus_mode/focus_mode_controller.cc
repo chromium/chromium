@@ -226,9 +226,7 @@ void FocusModeController::OnSelectedPlaylistChanged() {
     CloseMediaWidget();
   }
 
-  if (!focus_mode_sounds_controller_->selected_playlist().empty()) {
-    CreateMediaWidget();
-  }
+  MaybeCreateMediaWidget();
 }
 
 void FocusModeController::ExtendSessionDuration() {
@@ -242,6 +240,8 @@ void FocusModeController::ExtendSessionDuration() {
 
   std::string message;
   if (was_in_ending_moment) {
+    MaybeCreateMediaWidget();
+
     focus_mode_metrics_recorder_->RecordHistogramOnEndingMoment(
         focus_mode_histogram_names::EndingMomentBubbleClosedReason::kExtended);
 
@@ -490,11 +490,7 @@ void FocusModeController::StartFocusSession(
   CloseSystemTrayBubble();
   SetFocusTrayVisibility(true);
   HideEndingMomentNudge();
-
-  if (!focus_mode_sounds_controller_->selected_playlist().empty() &&
-      !media_widget_) {
-    CreateMediaWidget();
-  }
+  MaybeCreateMediaWidget();
 
   for (auto& observer : observers_) {
     observer.OnFocusModeChanged(/*in_focus_session=*/true);
@@ -512,6 +508,10 @@ void FocusModeController::OnTimerTick() {
       return;
     case FocusModeSession::State::kEnding:
       timer_.Stop();
+
+      if (media_widget_) {
+        CloseMediaWidget();
+      }
 
       // Set a timer to terminate the ending moment. If the focus tray bubble is
       // open, the ending moment will exist until the bubble is closed.
@@ -642,7 +642,12 @@ bool FocusModeController::IsFocusTrayBubbleVisible() const {
   return false;
 }
 
-void FocusModeController::CreateMediaWidget() {
+void FocusModeController::MaybeCreateMediaWidget() {
+  if (media_widget_ ||
+      focus_mode_sounds_controller_->selected_playlist().empty()) {
+    return;
+  }
+
   CHECK(in_focus_session());
 
   views::Widget::InitParams params(

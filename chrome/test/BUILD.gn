@@ -4996,6 +4996,7 @@ if (!is_android) {
         "../browser/ui/ash/faster_split_screen_browsertest.cc",
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
         "../browser/ui/ash/float_controller_browsertest.cc",
+        "../browser/ui/ash/focus_mode/focus_mode_browsertest.cc",
         "../browser/ui/ash/glanceables/glanceables_browsertest.cc",
         "../browser/ui/ash/global_media_controls/global_media_controls_cast_start_browsertest.cc",
         "../browser/ui/ash/google_one_offer_iph_tab_helper_browsertest.cc",

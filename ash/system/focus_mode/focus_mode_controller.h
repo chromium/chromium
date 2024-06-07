@@ -181,9 +181,8 @@ class ASH_EXPORT FocusModeController
   // show if there isn't already showing and if there is no tray bubble open.
   void MaybeShowEndingMomentNudge();
 
-  // TODO(b/318897434): This is only needed for the accelerator to trigger an
-  // ending moment immediately if there is an ongoing session. Remove this after
-  // testing is complete.
+  // This is currently only used in testing to trigger an ending moment
+  // immediately if there is an ongoing session.
   void TriggerEndingMomentImmediately();
 
  private:
@@ -222,7 +221,9 @@ class ASH_EXPORT FocusModeController
   // displays.
   bool IsFocusTrayBubbleVisible() const;
 
-  void CreateMediaWidget();
+  // Creates the media widget if one doesn't already exist and if there is a
+  // selected playlist.
+  void MaybeCreateMediaWidget();
   void CloseMediaWidget();
 
   // Gives Focus Mode access to the Google Tasks API.
