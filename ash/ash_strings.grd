@@ -7950,7 +7950,7 @@ To shut down the device, press and hold the power button on the device again.
         You can personalize button actions for your <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph>
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
-        Open Settings
+        Settings
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD_TITLE" translateable="false" desc="Notification title to tell users that the keyboard is customizable.">
         Customize your keyboard
