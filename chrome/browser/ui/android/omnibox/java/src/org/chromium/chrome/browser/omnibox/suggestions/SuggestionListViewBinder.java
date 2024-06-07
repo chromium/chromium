@@ -34,8 +34,7 @@ class SuggestionListViewBinder {
     public static void bind(
             PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
         if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
-            View dropdownView = view.dropdown.getViewGroup();
-            dropdownView.setAlpha(model.get(SuggestionListProperties.ALPHA));
+            view.dropdown.setChildAlpha(model.get(SuggestionListProperties.ALPHA));
         } else if (SuggestionListProperties.CHILD_TRANSLATION_Y.equals(propertyKey)) {
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));

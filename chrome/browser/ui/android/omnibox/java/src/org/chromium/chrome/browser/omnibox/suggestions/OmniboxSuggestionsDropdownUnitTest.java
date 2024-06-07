@@ -441,6 +441,22 @@ public class OmniboxSuggestionsDropdownUnitTest {
         verify(childView).setTranslationY(0.0f);
     }
 
+    @Test
+    public void setChildAlpha() {
+        mDropdown.setAdapter(mAdapter);
+        mDropdown.setEmbedder(mEmbedder);
+        mDropdown.onOmniboxSessionStateChange(true);
+
+        View childView = Mockito.mock(View.class);
+
+        mDropdown.setChildAlpha(0.6f);
+        mDropdown.onChildAttachedToWindow(childView);
+        verify(childView).setAlpha(0.6f);
+
+        mDropdown.onChildDetachedFromWindow(childView);
+        verify(childView).setAlpha(1.0f);
+    }
+
     private void layoutDropdown(int width, int height) {
         doAnswer(
                         (invocation) -> {
