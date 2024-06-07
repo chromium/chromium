@@ -10729,9 +10729,10 @@
             ]
         }
     ],
-    "HttpsFirstModeIncognito": [
+    "HttpsFirstModeIncognitoPhase1": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
