@@ -64,6 +64,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bookmarks/home",
     "//ios/chrome/browser/ui/bring_android_tabs",
+    "//ios/chrome/browser/ui/bubble:constants",
     "//ios/chrome/browser/ui/commerce:price_card",
     "//ios/chrome/browser/ui/history",
     "//ios/chrome/browser/ui/history/public",

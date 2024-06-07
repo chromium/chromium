@@ -116,13 +116,21 @@ const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
+const char kIOSPullToRefreshIPHDismissButtonTapped[] =
+    "pull_to_refresh_feature_iph_dismiss_button_tapped";
 const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
 const char kIOSSwipeRightForIncognitoUsed[] = "swipe_right_for_incognito_used";
+const char kIOSSwipeRightForIncognitoIPHDismissButtonTapped[] =
+    "swipe_right_for_incognito_iph_dismiss_button_tapped";
 const char kIOSBackForwardButtonTapped[] = "back_forward_button_tapped";
 const char kIOSSwipeBackForwardUsed[] = "swiped_back_forward_used";
+const char kIOSSwipeBackForwardIPHDismissButtonTapped[] =
+    "swipe_back_forward_iph_dismiss_button_tapped";
 const char kIOSTabGridAdjacentTabTapped[] = "tab_grid_adjacent_tab_tapped";
 const char kIOSSwipeToolbarToChangeTabUsed[] =
     "swipe_toolbar_to_change_tab_used";
+const char kIOSSwipeToolbarToChangeTabIPHDismissButtonTapped[] =
+    "swipe_toolbar_to_change_tab_iph_dismiss_button_tapped";
 const char kIOSOverflowMenuCustomizationUsed[] =
     "overflow_menu_customization_used";
 const char kIOSOverflowMenuOffscreenItemUsed[] =

@@ -2109,7 +2109,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
             didDismissWithReason:(IPHDismissalReasonType)reason {
-  [self.delegate tabGridDidDismissSwipeToIncognitoIPH];
+  [self.delegate tabGridDidDismissSwipeToIncognitoIPHWithReason:reason];
 }
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view

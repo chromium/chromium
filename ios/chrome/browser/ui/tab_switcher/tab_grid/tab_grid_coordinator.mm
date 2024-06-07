@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/core_bookmark_model.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/search_engines/template_url_service.h"
@@ -67,6 +68,7 @@
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
@@ -1237,12 +1239,21 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           feature_engagement::kIPHiOSTabGridSwipeRightForIncognito);
 }
 
-- (void)tabGridDidDismissSwipeToIncognitoIPH {
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      self.regularBrowser->GetBrowserState())
-      ->DismissedWithSnooze(
-          feature_engagement::kIPHiOSTabGridSwipeRightForIncognito,
-          feature_engagement::Tracker::SnoozeAction::DISMISSED);
+- (void)tabGridDidDismissSwipeToIncognitoIPHWithReason:
+    (IPHDismissalReasonType)reason {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.regularBrowser->GetBrowserState());
+  if (tracker) {
+    tracker->DismissedWithSnooze(
+        feature_engagement::kIPHiOSTabGridSwipeRightForIncognito,
+        feature_engagement::Tracker::SnoozeAction::DISMISSED);
+    if (reason == IPHDismissalReasonType::kTappedClose) {
+      tracker->NotifyEvent(
+          feature_engagement::events::
+              kIOSSwipeRightForIncognitoIPHDismissButtonTapped);
+    }
+  }
 }
 
 #pragma mark - InactiveTabsCoordinatorDelegate

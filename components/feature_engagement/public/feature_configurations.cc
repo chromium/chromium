@@ -53,7 +53,8 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
     const base::Feature& feature,
     const char* action_event,
     const char* trigger_event,
-    const char* used_event) {
+    const char* used_event,
+    const char* dismiss_button_tap_event) {
   // Maximum storage days for iOS gesture IPHs in days. Note that they only
   // triggered for users who installed Chrome on iOS in the last specific number
   // of days, so this could be used as the maximum storage period of respective
@@ -88,6 +89,10 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
   config->event_configs.insert(
       EventConfig(action_event, Comparator(GREATER_THAN_OR_EQUAL, 2),
                   days_between_occurrences, days_between_occurrences));
+  // The user hasn't explicitly dismissed the same IPH before.
+  config->event_configs.insert(EventConfig(dismiss_button_tap_event,
+                                           Comparator(EQUAL, 0),
+                                           kMaxStorageDays, kMaxStorageDays));
   return config;
 }
 #endif
@@ -2024,7 +2029,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         *feature, /*action_event=*/
         feature_engagement::events::kIOSMultiGestureRefreshUsed,
         /*trigger_event=*/"iph_pull_to_refresh_trigger", /*used_event=*/
-        feature_engagement::events::kIOSPullToRefreshUsed);
+        feature_engagement::events::kIOSPullToRefreshUsed,
+        /*dismiss_button_tap_event=*/
+        feature_engagement::events::kIOSPullToRefreshIPHDismissButtonTapped);
   }
 
   if (kIPHiOSReplaceSyncPromosWithSignInPromos.name == feature->name) {
@@ -2073,6 +2080,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kIOSIncognitoPageControlTapped,
                     Comparator(GREATER_THAN_OR_EQUAL, 2), 7, 7));
+    // The user hasn't explicitly dismissed the same IPH before.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::
+                        kIOSSwipeRightForIncognitoIPHDismissButtonTapped,
+                    Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays));
     return config;
   }
 
@@ -2082,7 +2094,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         *feature, /*action_event=*/
         feature_engagement::events::kIOSBackForwardButtonTapped,
         /*trigger_event=*/"swipe_back_forward_trigger", /*used_event=*/
-        feature_engagement::events::kIOSSwipeBackForwardUsed);
+        feature_engagement::events::kIOSSwipeBackForwardUsed,
+        /*dismiss_button_tap_event=*/
+        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped);
   }
 
   if (kIPHiOSSwipeToolbarToChangeTabFeature.name == feature->name) {
@@ -2091,7 +2105,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         *feature, /*action_event=*/
         feature_engagement::events::kIOSTabGridAdjacentTabTapped,
         /*trigger_event=*/"swipe_toolbar_to_change_tab_trigger", /*used_event=*/
-        feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed);
+        feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed,
+        /*dismiss_button_tap_event=*/
+        feature_engagement::events::
+            kIOSSwipeToolbarToChangeTabIPHDismissButtonTapped);
   }
 
   if (kIPHiOSOverflowMenuCustomizationFeature.name == feature->name) {

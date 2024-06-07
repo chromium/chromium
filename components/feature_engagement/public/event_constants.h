@@ -216,11 +216,18 @@ extern const char kIOSMultiGestureRefreshUsed[];
 // The user has used the pull-to-refresh feature in iOS.
 extern const char kIOSPullToRefreshUsed[];
 
+// The user has tapped the dismiss button of the pull-to-refresh IPH.
+extern const char kIOSPullToRefreshIPHDismissButtonTapped[];
+
 // The user has tapped "incognito" on the page control in the tab grid.
 extern const char kIOSIncognitoPageControlTapped[];
 
 // The user has swiped right from regular tab grid to the incognito tab grid.
 extern const char kIOSSwipeRightForIncognitoUsed[];
+
+// The user has tapped the dismiss button of the "swipe right for incognito"
+// IPH.
+extern const char kIOSSwipeRightForIncognitoIPHDismissButtonTapped[];
 
 // The user has tapped the toolbar backward/forward button to navigate on a tab.
 extern const char kIOSBackForwardButtonTapped[];
@@ -228,11 +235,18 @@ extern const char kIOSBackForwardButtonTapped[];
 // The user has swiped from the edge to navigate backward or forward on a tab.
 extern const char kIOSSwipeBackForwardUsed[];
 
+// The user has tapped the dismiss button of the "swipe to go back/forward" IPH.
+extern const char kIOSSwipeBackForwardIPHDismissButtonTapped[];
+
 // The user has tapped on an adjacent tab in the tab grid.
 extern const char kIOSTabGridAdjacentTabTapped[];
 
 // The user has swipped the toolbar to go to an adjacent tab.
 extern const char kIOSSwipeToolbarToChangeTabUsed[];
+
+// The user has tapped the dismiss button of the "swipe the toolbar to go to
+// adjacent tab" IPH.
+extern const char kIOSSwipeToolbarToChangeTabIPHDismissButtonTapped[];
 
 // The user has opened the Overflow Menu customization screen.
 extern const char kIOSOverflowMenuCustomizationUsed[];

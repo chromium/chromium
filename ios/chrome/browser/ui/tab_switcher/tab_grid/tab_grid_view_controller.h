@@ -24,6 +24,7 @@ class GURL;
 @class IncognitoGridViewController;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
+enum class IPHDismissalReasonType;
 @class LayoutGuideCenter;
 @class PinnedTabsViewController;
 @protocol PriceCardDataSource;
@@ -87,8 +88,9 @@ enum class TabGridPageConfiguration {
 - (BOOL)tabGridShouldPresentSwipeToIncognitoIPH;
 
 // Notifies the delegate that the tab grid has dismissed the swipe-to-incognito
-// in-product help message.
-- (void)tabGridDidDismissSwipeToIncognitoIPH;
+// in-product help message with `reason`.
+- (void)tabGridDidDismissSwipeToIncognitoIPHWithReason:
+    (IPHDismissalReasonType)reason;
 
 @end
 
