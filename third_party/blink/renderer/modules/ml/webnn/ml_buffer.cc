@@ -45,7 +45,7 @@ MLBuffer* MLBuffer::Create(ScopedMLTrace scoped_trace,
   // Create `WebNNBuffer` message pipe with `WebNNContext` mojo interface.
   ml_context->CreateWebNNBuffer(
       buffer->remote_buffer_.BindNewEndpointAndPassReceiver(
-          execution_context->GetTaskRunner(TaskType::kInternalDefault)),
+          execution_context->GetTaskRunner(TaskType::kMachineLearning)),
       buffer->GetMojoBufferInfo(), buffer->handle());
 
   return buffer;

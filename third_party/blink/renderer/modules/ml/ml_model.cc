@@ -58,7 +58,7 @@ MLModel::MLModel(ExecutionContext* context,
                  ModelInfoPtr model_info)
     : remote_model_(context) {
   remote_model_.Bind(std::move(pending_remote),
-                     context->GetTaskRunner(TaskType::kInternalDefault));
+                     context->GetTaskRunner(TaskType::kMachineLearning));
 
   // Stores the model info.
   input_tensor_name_to_info_ = std::move(model_info->input_tensor_info);

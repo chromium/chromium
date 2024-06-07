@@ -16,11 +16,9 @@ namespace blink {
 // * Set the new task type's value to "Next value"
 // * Update kMaxValue to point to the new task type
 // * Increment "Next value"
-// * in tools/metrics/histograms/enums.xml update the
-//   "RendererSchedulerTaskType" enum
-// * update TaskTypes.md
+// * Update TaskTypes.md
 //
-// Next value: 86
+// Next value: 87
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
@@ -189,6 +187,9 @@ enum class TaskType : unsigned char {
   // https://www.w3.org/TR/clipboard-apis/#clipboard-task-source
   kClipboard = 85,
 
+  // https://www.w3.org/TR/webnn/#ml-task-source
+  kMachineLearning = 86,
+
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -310,7 +311,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kClipboard,
+  kMaxValue = kMachineLearning,
 };
 
 }  // namespace blink

@@ -45,6 +45,7 @@ pausable. Some internal task queues are not.
 | WebLocks                          | No          | No                      |  No        | No        | No       | Yes          |
 | WakeLock                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | Storage                           | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| MachineLearning                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WebSchedulingPostedTask           | Yes [^3]    | Yes [^3]                |  Yes       | Yes       | Yes      | Yes          |
 | InternalDefault                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | InternalLoading                   | No          | No                      |  Yes       | Yes       | Yes      | No           |

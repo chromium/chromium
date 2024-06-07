@@ -85,6 +85,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "Storage";
     case TaskType::kClipboard:
       return "Clipboard";
+    case TaskType::kMachineLearning:
+      return "MachineLearning";
     case TaskType::kInternalDefault:
       return "InternalDefault";
     case TaskType::kInternalLoading:

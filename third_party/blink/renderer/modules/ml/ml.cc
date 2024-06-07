@@ -94,7 +94,7 @@ void ML::EnsureModelLoaderServiceConnection(ScriptState* script_state) {
   if (!model_loader_service_.is_bound()) {
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
         model_loader_service_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)));
+            GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning)));
   }
 }
 
@@ -114,7 +114,7 @@ void ML::EnsureWebNNServiceConnection() {
   }
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       webnn_context_provider_.BindNewPipeAndPassReceiver(
-          GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)));
+          GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning)));
   webnn_context_provider_.set_disconnect_handler(WTF::BindOnce(
       &ML::OnWebNNServiceConnectionError, WrapWeakPersistent(this)));
 }

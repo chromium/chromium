@@ -234,7 +234,7 @@ void MLModelLoader::OnRemoteLoaderCreated(
 
       remote_loader_.Bind(
           std::move(pending_remote),
-          execution_context->GetTaskRunner(TaskType::kInternalDefault));
+          execution_context->GetTaskRunner(TaskType::kMachineLearning));
 
       remote_loader_->Load(
           base::make_span(static_cast<const uint8_t*>(buffer->Data()),

@@ -199,7 +199,7 @@ void MLContext::OnCreateWebNNContext(
   auto success = std::move(result->get_success());
   remote_context_.Bind(std::move(success->context_remote),
                        ExecutionContext::From(script_state)
-                           ->GetTaskRunner(TaskType::kMiscPlatformAPI));
+                           ->GetTaskRunner(TaskType::kMachineLearning));
   properties_ = std::move(success->context_properties);
 
   resolver->Resolve(this);

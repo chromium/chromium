@@ -157,7 +157,7 @@ MLGraph::MLGraph(ExecutionContext* execution_context,
   // Bind the end point of `WebNNGraph` mojo interface in the blink side.
   remote_graph_.Bind(
       std::move(pending_graph_remote),
-      execution_context->GetTaskRunner(TaskType::kInternalDefault));
+      execution_context->GetTaskRunner(TaskType::kMachineLearning));
 }
 
 MLGraph::~MLGraph() = default;

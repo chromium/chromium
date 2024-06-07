@@ -570,6 +570,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
       TaskType::kJavascriptTimerDelayedLowNesting,
       TaskType::kJavascriptTimerDelayedHighNesting,
       TaskType::kMediaElementEvent,
+      TaskType::kMachineLearning,
       TaskType::kMicrotask,
       TaskType::kMiscPlatformAPI,
       TaskType::kNetworking,

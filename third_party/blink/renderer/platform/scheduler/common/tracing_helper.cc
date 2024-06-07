@@ -171,6 +171,8 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
       return RendererMainThreadTaskExecution::TASK_TYPE_STORAGE;
     case TaskType::kClipboard:
       return RendererMainThreadTaskExecution::TASK_TYPE_CLIPBOARD;
+    case TaskType::kMachineLearning:
+      return RendererMainThreadTaskExecution::TASK_TYPE_MACHINE_LEARNING;
     case TaskType::kWebSchedulingPostedTask:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_WEB_SCHEDULING_POSTED_TASK;
