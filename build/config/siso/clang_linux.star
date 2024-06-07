@@ -209,6 +209,7 @@ def __step_config(ctx, step_config):
                 ],
                 "remote": config.get(ctx, "remote-library-link"),
                 "canonicalize_dir": True,
+                "timeout": "2m",
                 "platform_ref": "large",
                 "accumulate": True,
             },
@@ -234,6 +235,7 @@ def __step_config(ctx, step_config):
                 "remote": config.get(ctx, "remote-library-link"),
                 "canonicalize_dir": True,
                 "platform_ref": "large",
+                "timeout": "2m",
             },
             {
                 "name": "clang/link/gcc_link_wrapper",

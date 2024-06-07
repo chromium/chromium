@@ -40,6 +40,7 @@ def __step_config(ctx, step_config):
                 "*.stamp",
             ],
             "remote": remote_run,
+            "timeout": "2m",
             "handler": "typescript_ts_library",
             "output_local": True,
         },
@@ -59,6 +60,7 @@ def __step_config(ctx, step_config):
                 "*.stamp",
             ],
             "remote": remote_run,
+            "timeout": "2m",
             "handler": "typescript_ts_definitions",
         },
     ])

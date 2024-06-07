@@ -14,11 +14,13 @@ def __step_config(ctx, step_config):
             "name": "v8/torque",
             "command_prefix": platform.python_bin + " ../../v8/tools/run.py ./torque",
             "remote": remote_run,
+            "timeout": "2m",
         },
         {
             "name": "v8/mksnapshot",
             "command_prefix": platform.python_bin + " ../../v8/tools/run.py ./mksnapshot",
             "remote": remote_run,
+            "timeout": "2m",
             # This action may consume a lot of memory on sanitizer builders.
             # 49s on n2-custom-3840-2 -> 32s on n2-highmem-8
             "platform_ref": "large",

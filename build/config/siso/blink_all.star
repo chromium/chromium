@@ -41,6 +41,7 @@ def __step_config(ctx, step_config):
             "name": "blink/generate_bindings",
             "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/generate_bindings.py",
             "remote": True,
+            "timeout": "2m",
             "platform_ref": "large",
         },
     ])
@@ -60,6 +61,7 @@ def __step_config(ctx, step_config):
                     "third_party/pyjson5/src/json5:pylib",
                 ],
                 "remote": True,
+                "timeout": "2m",
             },
         ])
     return step_config
