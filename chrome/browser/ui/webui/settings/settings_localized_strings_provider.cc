@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -82,6 +83,7 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -2288,7 +2290,8 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("searchNoResultsHelp", help_text);
 }
 
-void AddSearchStrings(content::WebUIDataSource* html_source
+void AddSearchStrings(content::WebUIDataSource* html_source,
+                      Profile* profile
 #if BUILDFLAG(IS_CHROMEOS)
                       ,
                       bool for_primary_profile
@@ -2304,8 +2307,6 @@ void AddSearchStrings(content::WebUIDataSource* html_source
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE},
       {"searchEnginesChange",
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CHANGE_DEFAULT_ENGINE},
-      {"searchEnginesSettingsDialogSubtitle",
-       IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE},
       {"searchEnginesSetAsDefaultButton",
        IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE},
       {"searchEnginesCancelButton", IDS_CANCEL},
@@ -2329,6 +2330,17 @@ void AddSearchStrings(content::WebUIDataSource* html_source
 
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
+
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  int country_id = search_engine_choice_service
+                       ? search_engine_choice_service->GetCountryId()
+                       : country_codes::GetCurrentCountryID();
+  html_source->AddLocalizedString(
+      "searchEnginesSettingsDialogSubtitle",
+      search_engines::IsEeaChoiceCountry(country_id)
+          ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
+          : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
 }
 
 void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
@@ -3656,9 +3668,9 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
 #else   // !BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool for_primary_profile = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  AddSearchStrings(html_source, for_primary_profile);
+  AddSearchStrings(html_source, profile, for_primary_profile);
 #else   // !BUILDFLAG(IS_CHROMEOS)
-  AddSearchStrings(html_source);
+  AddSearchStrings(html_source, profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   AddSiteSettingsStrings(html_source, profile);
   AddSiteDataPageStrings(html_source, profile);

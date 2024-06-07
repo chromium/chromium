@@ -104,6 +104,10 @@
     These search engines are popular in your region and are shown in random order
   </message>
 
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region. We want users to understand that they can use any search engine with Chrome.">
+    These search engines are popular in your region
+  </message>
+
   <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE" desc="This string is body text of a Chrome setting that lets a user select the search engine that they want to use. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) The string explains how a search engine will impact their experience in Chrome. The “Learn more” link opens a help center article about the default search engine.">
     The search engine you choose will be used for features like searching from the address bar and from images on web pages.
   </message>
