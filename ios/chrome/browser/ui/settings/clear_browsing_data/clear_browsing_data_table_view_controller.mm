@@ -301,6 +301,10 @@
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (!self.browserState) {
+    return;
+  }
+
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   DCHECK(item);
   switch (item.type) {
@@ -406,6 +410,11 @@
                                timePeriod:(browsing_data::TimePeriod)timePeriod
                                removeMask:(BrowsingDataRemoveMask)removeMask
                           completionBlock:(ProceduralBlock)completionBlock {
+  if (!self.browserState) {
+    return;
+  }
+  CHECK(browserState, base::NotFatalUntil::M130);
+
   base::RecordAction(
       base::UserMetricsAction("MobileClearBrowsingDataTriggeredFromUIRefresh"));
 
