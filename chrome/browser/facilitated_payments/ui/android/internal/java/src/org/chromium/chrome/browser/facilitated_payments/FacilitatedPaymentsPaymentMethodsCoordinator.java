@@ -20,6 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.List;
+
 /**
  * Implements the FacilitatedPaymentsPaymentMethodsComponent. It uses a bottom sheet to let the user
  * select a form of payment.
@@ -41,7 +43,7 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public boolean showSheet(BankAccount[] bankAccounts) {
+    public boolean showSheet(List<BankAccount> bankAccounts) {
         return mMediator.showSheet(bankAccounts);
     }
 

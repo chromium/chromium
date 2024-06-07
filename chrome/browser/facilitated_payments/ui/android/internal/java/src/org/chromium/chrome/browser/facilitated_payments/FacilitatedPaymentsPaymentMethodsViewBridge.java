@@ -19,6 +19,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Bridge class providing an entry point for facilitated payments client to trigger the bottom
  * sheet.
@@ -63,6 +66,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      */
     @CalledByNative
     public boolean requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
-        return mComponent.showSheet((BankAccount[]) bankAccounts);
+        return mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
     }
 }

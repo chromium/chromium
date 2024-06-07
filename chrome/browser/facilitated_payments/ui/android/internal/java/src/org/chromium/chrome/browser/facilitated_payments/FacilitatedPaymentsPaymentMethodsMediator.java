@@ -27,6 +27,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /**
  * Contains the logic for the facilitated payments component. It sets the state of the model and
  * reacts to events like clicks.
@@ -42,8 +44,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate = delegate;
     }
 
-    boolean showSheet(BankAccount[] bankAccounts) {
-        if (bankAccounts == null || bankAccounts.length == 0) {
+    boolean showSheet(List<BankAccount> bankAccounts) {
+        if (bankAccounts == null || bankAccounts.isEmpty()) {
             return false;
         }
 
