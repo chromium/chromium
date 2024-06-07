@@ -83,6 +83,7 @@ TrackingProtectionSettings::TrackingProtectionSettings(
     onboarding_observation_.Observe(onboarding_service_);
   }
 
+  MaybeInitializeIppPref();
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
 }
@@ -173,6 +174,15 @@ ContentSetting TrackingProtectionSettings::GetTrackingProtectionSetting(
     content_settings::SettingInfo* info) const {
   return host_content_settings_map_->GetContentSetting(
       GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, info);
+}
+
+void TrackingProtectionSettings::MaybeInitializeIppPref() {
+  if (pref_service_->GetBoolean(prefs::kIpProtectionInitializedByDogfood) ||
+      !base::FeatureList::IsEnabled(kIpProtectionDogfoodDefaultOn)) {
+    return;
+  }
+  pref_service_->SetBoolean(prefs::kIpProtectionEnabled, true);
+  pref_service_->SetBoolean(prefs::kIpProtectionInitializedByDogfood, true);
 }
 
 void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {

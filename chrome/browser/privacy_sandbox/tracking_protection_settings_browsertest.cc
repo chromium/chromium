@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/privacy_sandbox/tracking_protection_settings.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,7 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -75,4 +76,36 @@ IN_PROC_BROWSER_TEST_P(TrackingProtectionSettingsForEnterpriseBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TrackingProtectionSettingsForEnterpriseBrowserTest,
+                         testing::Bool());
+
+class TrackingProtectionSettingsIppInitializationBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  TrackingProtectionSettingsIppInitializationBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          privacy_sandbox::kIpProtectionDogfoodDefaultOn);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          privacy_sandbox::kIpProtectionDogfoodDefaultOn);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(TrackingProtectionSettingsIppInitializationBrowserTest,
+                       DogfoodDefaultOnFeatureInitializesPrefToEnabled) {
+  EXPECT_EQ(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled),
+      GetParam());
+  EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
+                prefs::kIpProtectionInitializedByDogfood),
+            GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TrackingProtectionSettingsIppInitializationBrowserTest,
                          testing::Bool());

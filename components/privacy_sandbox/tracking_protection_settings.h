@@ -82,6 +82,7 @@ class TrackingProtectionSettings
 
  private:
   void OnEnterpriseControlForPrefsChanged();
+  void MaybeInitializeIppPref();
 
   // Callbacks for pref observation.
   void OnDoNotTrackEnabledPrefChanged();

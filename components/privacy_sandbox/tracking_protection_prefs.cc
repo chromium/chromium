@@ -74,6 +74,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kIpProtectionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kIpProtectionInitializedByDogfood,
+                                false);
   registry->RegisterBooleanPref(
       prefs::kFingerprintingProtectionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
