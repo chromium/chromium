@@ -454,6 +454,9 @@ TEST_F(SavedTabGroupSyncBridgeTest,
 
   // DB should have only the two entries from group 1.
   VerifyEntriesCount(2u);
+
+  group1_from_model = saved_tab_group_model_.Get(group_id1);
+  EXPECT_EQ(std::nullopt, group1_from_model->originator_cache_guid());
 }
 
 // Verify orphaned tabs (tabs missing their group) are added into the correct

@@ -491,6 +491,15 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     write_batch->DeleteData(group_id.AsLowercaseString());
   }
 
+  // Reset the cache guid on sign-out.
+  std::set<base::Uuid> updated_group_ids =
+      model_->UpdateLocalCacheGuid(GetLocalCacheGuid(), std::nullopt);
+  for (const base::Uuid& saved_guid : updated_group_ids) {
+    proto::SavedTabGroupData data =
+        SavedTabGroupToData(*model_->Get(saved_guid));
+    write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
+  }
+
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
