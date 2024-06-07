@@ -16,21 +16,16 @@
 #include "ui/events/gestures/physics_based_fling_curve.h"
 #include "ui/events/mobile_scroller.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/display/win/screen_win.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 using blink::WebGestureCurve;
 
 namespace ui {
 namespace {
 
-constexpr float kDefaultPixelsPerInch = 96.0f;
 std::unique_ptr<GestureCurve> CreateDefaultPlatformCurve(
     blink::WebGestureDevice device_source,
     const gfx::Vector2dF& initial_velocity,
     bool use_mobile_fling_curve,
-    const gfx::PointF& position_in_screen,
+    const gfx::Vector2dF& pixels_per_inch,
     const float boost_multiplier,
     const gfx::Size& bounding_size) {
   if (device_source == blink::WebGestureDevice::kSyntheticAutoscroll) {
@@ -55,12 +50,6 @@ std::unique_ptr<GestureCurve> CreateDefaultPlatformCurve(
   }
 
   if (base::FeatureList::IsEnabled(features::kExperimentalFlingAnimation)) {
-    gfx::Vector2dF pixels_per_inch(kDefaultPixelsPerInch,
-                                   kDefaultPixelsPerInch);
-#if BUILDFLAG(IS_WIN)
-    pixels_per_inch =
-        display::win::ScreenWin::GetPixelsPerInch(position_in_screen);
-#endif
     return std::make_unique<PhysicsBasedFlingCurve>(
         initial_velocity, base::TimeTicks(), pixels_per_inch, boost_multiplier,
         bounding_size);
@@ -79,12 +68,12 @@ WebGestureCurveImpl::CreateFromDefaultPlatformCurve(
     const gfx::Vector2dF& initial_offset,
     bool on_main_thread,
     bool use_mobile_fling_curve,
-    const gfx::PointF& position_in_screen,
+    const gfx::Vector2dF& pixels_per_inch,
     const float boost_multiplier,
     const gfx::Size& viewport_size) {
   return std::unique_ptr<WebGestureCurve>(new WebGestureCurveImpl(
       CreateDefaultPlatformCurve(device_source, initial_velocity,
-                                 use_mobile_fling_curve, position_in_screen,
+                                 use_mobile_fling_curve, pixels_per_inch,
                                  boost_multiplier, viewport_size),
       initial_offset, on_main_thread ? ThreadType::MAIN : ThreadType::IMPL));
 }

@@ -64,6 +64,14 @@ bool FlingSchedulerAndroid::NeedsBeginFrameForFlingProgress() {
   return !window || !window->GetCompositor();
 }
 
+bool FlingSchedulerAndroid::ShouldUseMobileFlingCurve() {
+  return true;
+}
+gfx::Vector2dF FlingSchedulerAndroid::GetPixelsPerInch(
+    const gfx::PointF& position_in_screen) {
+  return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+}
+
 void FlingSchedulerAndroid::ProgressFlingOnBeginFrameIfneeded(
     base::TimeTicks current_time) {
   // If a WindowAndroid is being observed, there is no need for BeginFrames

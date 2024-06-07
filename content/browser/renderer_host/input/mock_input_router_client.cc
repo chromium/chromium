@@ -117,4 +117,17 @@ bool MockInputRouterClient::NeedsBeginFrameForFlingProgress() {
   return false;
 }
 
+bool MockInputRouterClient::ShouldUseMobileFlingCurve() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return true;
+#else
+  return false;
+#endif
+}
+
+gfx::Vector2dF MockInputRouterClient::GetPixelsPerInch(
+    const gfx::PointF& position_in_screen) {
+  return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+}
+
 }  // namespace content

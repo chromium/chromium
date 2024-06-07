@@ -7,7 +7,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_client.h"
-#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -33,17 +32,6 @@ constexpr base::TimeDelta kMaxMicrosecondsFromFlingTimestampToFirstProgress =
 const float kMinInertialScrollDelta = 0.1f;
 
 const char* kFlingTraceName = "FlingController::HandlingGestureFling";
-
-bool ShouldUseMobileFlingCurve() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return true;
-#elif BUILDFLAG(IS_CHROMEOS)
-  CHECK(display::Screen::GetScreen());
-  return display::Screen::GetScreen()->InTabletMode();
-#else
-  return false;
-#endif
-}
 
 }  // namespace
 
@@ -442,7 +430,9 @@ bool FlingController::UpdateCurrentFlingState(
           current_fling_parameters_.source_device,
           current_fling_parameters_.velocity,
           gfx::Vector2dF() /*initial_offset*/, false /*on_main_thread*/,
-          ShouldUseMobileFlingCurve(), current_fling_parameters_.global_point,
+          scheduler_client_->ShouldUseMobileFlingCurve(),
+          scheduler_client_->GetPixelsPerInch(
+              current_fling_parameters_.global_point),
           boost_multiplier, root_widget_viewport_size));
   return true;
 }

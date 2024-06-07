@@ -28,7 +28,7 @@ class WebGestureCurveImpl : public blink::WebGestureCurve {
       const gfx::Vector2dF& initial_offset,
       bool on_main_thread,
       bool use_mobile_fling_curve,
-      const gfx::PointF& position_in_screen,
+      const gfx::Vector2dF& pixels_per_inch,
       // Multiplier for fling distance based on fling boosting. Used in physics
       // based fling curve
       const float boost_multiplier,

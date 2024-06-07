@@ -17,12 +17,6 @@
 #include "ui/events/blink/fling_booster.h"
 #include "ui/events/gestures/physics_based_fling_curve.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/display/win/test/scoped_screen_win.h"
-#elif BUILDFLAG(IS_CHROMEOS)
-#include "ui/display/test/test_screen.h"
-#endif
-
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebMouseWheelEvent;
@@ -96,6 +90,17 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   }
   bool NeedsBeginFrameForFlingProgress() override {
     return needs_begin_frame_for_fling_progress_;
+  }
+  bool ShouldUseMobileFlingCurve() override {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return true;
+#else
+    return false;
+#endif
+  }
+  gfx::Vector2dF GetPixelsPerInch(
+      const gfx::PointF& position_in_screen) override {
+    return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
   }
 
   void SimulateFlingStart(blink::WebGestureDevice source_device,
@@ -217,14 +222,6 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool notified_client_after_fling_stop_ = false;
   bool first_wheel_event_sent_ = false;
   int sent_scroll_gesture_count_ = 0;
-#if BUILDFLAG(IS_WIN)
-  // This is necessary for static methods of `display::ScreenWin`.
-  display::win::test::ScopedScreenWin scoped_screen_win_;
-#elif BUILDFLAG(IS_CHROMEOS)
-  // This is necessary on ChromeOS as it needs to access tablet mode info.
-  display::test::TestScreen test_screen_{/*create_dispay=*/true,
-                                         /*register_screen=*/true};
-#endif
 
  private:
   base::SimpleTestTickClock mock_clock_;

@@ -13,6 +13,14 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/screen.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/display/win/screen_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
 
 FlingScheduler::FlingScheduler(RenderWidgetHostImpl* host) : host_(host) {
@@ -52,6 +60,26 @@ void FlingScheduler::DidStopFlingingOnBrowser(
 
 bool FlingScheduler::NeedsBeginFrameForFlingProgress() {
   return !GetCompositor();
+}
+
+bool FlingScheduler::ShouldUseMobileFlingCurve() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return true;
+#elif BUILDFLAG(IS_CHROMEOS)
+  CHECK(display::Screen::GetScreen());
+  return display::Screen::GetScreen()->InTabletMode();
+#else
+  return false;
+#endif
+}
+
+gfx::Vector2dF FlingScheduler::GetPixelsPerInch(
+    const gfx::PointF& position_in_screen) {
+#if BUILDFLAG(IS_WIN)
+  return display::win::ScreenWin::GetPixelsPerInch(position_in_screen);
+#else
+  return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+#endif
 }
 
 void FlingScheduler::ProgressFlingOnBeginFrameIfneeded(

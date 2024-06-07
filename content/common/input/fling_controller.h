@@ -21,6 +21,8 @@ namespace content {
 
 class FlingController;
 
+inline constexpr float kDefaultPixelsPerInch = 96.0f;
+
 // Interface with which the FlingController can forward generated fling progress
 // events.
 class CONTENT_EXPORT FlingControllerEventSenderClient {
@@ -49,6 +51,11 @@ class CONTENT_EXPORT FlingControllerSchedulerClient {
       base::WeakPtr<FlingController> fling_controller) = 0;
 
   virtual bool NeedsBeginFrameForFlingProgress() = 0;
+
+  virtual bool ShouldUseMobileFlingCurve() = 0;
+
+  virtual gfx::Vector2dF GetPixelsPerInch(
+      const gfx::PointF& position_in_screen) = 0;
 };
 
 class CONTENT_EXPORT FlingController {

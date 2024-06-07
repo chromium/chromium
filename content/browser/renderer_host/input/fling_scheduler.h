@@ -35,6 +35,9 @@ class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
   void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) override;
   bool NeedsBeginFrameForFlingProgress() override;
+  bool ShouldUseMobileFlingCurve() override;
+  gfx::Vector2dF GetPixelsPerInch(
+      const gfx::PointF& position_in_screen) override;
 
   // FlingSchedulerBase
   void ProgressFlingOnBeginFrameIfneeded(base::TimeTicks current_time) override;

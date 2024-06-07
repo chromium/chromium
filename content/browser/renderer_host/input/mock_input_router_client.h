@@ -86,6 +86,9 @@ class MockInputRouterClient : public InputRouterClient,
   void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) override {}
   bool NeedsBeginFrameForFlingProgress() override;
+  bool ShouldUseMobileFlingCurve() override;
+  gfx::Vector2dF GetPixelsPerInch(
+      const gfx::PointF& position_in_screen) override;
 
  private:
   raw_ptr<InputRouter, DanglingUntriaged> input_router_;

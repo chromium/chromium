@@ -16,7 +16,6 @@
 #include "content/common/content_export.h"
 #include "content/common/input/input_router_impl.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "ui/display/screen_infos.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event.h"
 

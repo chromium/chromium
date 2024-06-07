@@ -23,10 +23,6 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/display/test/test_screen.h"
-#endif
-
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -108,6 +104,17 @@ class GestureEventQueueTest : public testing::Test,
   void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) override {}
   bool NeedsBeginFrameForFlingProgress() override { return false; }
+  bool ShouldUseMobileFlingCurve() override {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return true;
+#else
+    return false;
+#endif
+  }
+  gfx::Vector2dF GetPixelsPerInch(
+      const gfx::PointF& position_in_screen) override {
+    return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+  }
 
  protected:
   static GestureEventQueue::Config DefaultConfig() {
@@ -236,11 +243,6 @@ class GestureEventQueueTest : public testing::Test,
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   std::unique_ptr<WebGestureEvent> sync_followup_event_;
   base::test::ScopedFeatureList feature_list_;
-#if BUILDFLAG(IS_CHROMEOS)
-  // This is necessary on ChromeOS to access tablet mode info.
-  display::test::TestScreen test_screen_{/*create_dispay=*/true,
-                                         /*register_screen=*/true};
-#endif
 };
 
 class GestureEventQueueWithCompositorEventQueueTest
