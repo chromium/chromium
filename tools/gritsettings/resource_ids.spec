@@ -834,6 +834,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [5990],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/focus_mode/untrusted_resources/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [5991],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/recorder_app_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [5995],

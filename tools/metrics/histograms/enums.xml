@@ -34264,6 +34264,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1411665301" label="chrome://lock-network/"/>
   <int value="1427179406" label="chrome://gcm-internals/"/>
   <int value="1437913193" label="chrome://file-manager/"/>
+  <int value="1446796271" label="chrome-untrusted://focus-mode-player/"/>
   <int value="1452136061" label="chrome-untrusted://terminal/"/>
   <int value="1454088830" label="chrome://uber-frame/"/>
   <int value="1457759734" label="chrome://user-manager/"/>

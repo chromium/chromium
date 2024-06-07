@@ -4,17 +4,15 @@
 
 #include "chrome/browser/ui/webui/ash/chrome_untrusted_web_ui_configs_chromeos.h"
 
-#include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
-#include "content/public/browser/webui_config.h"
-#include "content/public/browser/webui_config_map.h"
-
 #include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
+#include "ash/webui/focus_mode/focus_mode_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
+#include "base/functional/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/chrome_demo_mode_app_delegate.h"
@@ -26,6 +24,8 @@
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
@@ -70,6 +70,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddUntrustedWebUIConfig(
       std::make_unique<SampleSystemWebAppUntrustedUIConfig>());

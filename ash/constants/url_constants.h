@@ -28,6 +28,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kChromeUIFocusModeMediaHost[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kChromeUIFocusModeMediaURL[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kChromeUIFocusModePlayerHost[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kChromeUIFocusModePlayerURL[];
 
 // The URL for additional help that is given when Linux export/import fails.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLinuxExportImportHelpURL[];

@@ -10,12 +10,16 @@ static_library("focus_mode") {
   sources = [
     "focus_mode_ui.cc",
     "focus_mode_ui.h",
+    "focus_mode_untrusted_ui.cc",
+    "focus_mode_untrusted_ui.h",
   ]
 
   deps = [
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/focus_mode/mojom",
     "//ash/webui/focus_mode/resources",
+    "//ash/webui/focus_mode/untrusted_resources:resources",
     "//content/public/browser",
     "//ui/webui",
   ]

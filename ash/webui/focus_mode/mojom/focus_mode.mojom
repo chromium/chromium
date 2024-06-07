@@ -1,0 +1,41 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.focus_mode.mojom;
+
+import "url/mojom/url.mojom";
+
+// Defines metadata and source URL for a track to play.
+struct TrackDefinition {
+  // The title of the track.
+  string title;
+
+  // The artist.
+  string artist;
+
+  // Where to get the thumbnail from.
+  url.mojom.Url thumbnail_url;
+
+  // Points to the actual audio data.
+  url.mojom.Url media_url;
+};
+
+// Implemented in Typescript and Used by Ash to control media playing.
+interface MediaClient {
+  // Notifies the WebUI that it should start playing the given track. If the
+  // player is already playing a track, it will switch to the given track.
+  StartPlay(TrackDefinition track);
+};
+
+// Implemented in Ash and used by the WebUI side (Typescript) code to get track
+// data from Ash.
+interface TrackProvider {
+  // Used by the player to ask for a track to play. When the player is created,
+  // it will request the first track to play. When the track is finished, it
+  // will request the next track.
+  GetTrack() => (TrackDefinition track);
+
+  // Used at startup to install its implementation of `MediaClient`.
+  SetMediaClient(pending_remote<MediaClient> client);
+};

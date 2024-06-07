@@ -15,6 +15,10 @@ const char16_t kApnSettingsLearnMoreUrl[] =
 const char kChromeUIFocusModeMediaHost[] = "focus-mode-media";
 const char kChromeUIFocusModeMediaURL[] = "chrome://focus-mode-media";
 
+const char kChromeUIFocusModePlayerHost[] = "focus-mode-player";
+const char kChromeUIFocusModePlayerURL[] =
+    "chrome-untrusted://focus-mode-player/";
+
 const char kLinuxExportImportHelpURL[] =
     "https://support.google.com/chromebook?p=linux_backup_restore";
 

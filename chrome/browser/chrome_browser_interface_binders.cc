@@ -284,6 +284,8 @@
 #include "ash/webui/files_internals/mojom/files_internals.mojom.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
+#include "ash/webui/focus_mode/focus_mode_ui.h"
+#include "ash/webui/focus_mode/mojom/focus_mode.mojom.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
@@ -1868,6 +1870,13 @@ void PopulateChromeWebUIFrameBinders(
         privacy_sandbox_internals::mojom::PageHandler,
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsFocusModeEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::focus_mode::mojom::TrackProvider, ash::FocusModeUI>(map);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(
