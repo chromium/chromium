@@ -957,8 +957,7 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::FinishPacket(
   if (data_producer != nullptr) {
     framer.set_data_producer(data_producer.get());
   }
-  size_t max_plaintext_size =
-      framer.GetMaxPlaintextSize(quic::kDefaultMaxPacketSize);
+  size_t max_plaintext_size = framer.GetMaxPlaintextSize(max_plaintext_size_);
   size_t packet_size =
       quic::GetPacketHeaderSize(version_.transport_version, header);
   size_t frames_size = 0;
@@ -1064,8 +1063,9 @@ QuicTestPacketBuilder::~QuicTestPacketBuilder() {
   DeleteFrames(&frames_);
 }
 
-QuicTestPacketBuilder& QuicTestPacketBuilder::AddPaddingFrame() {
-  quic::QuicPaddingFrame padding_frame;
+QuicTestPacketBuilder& QuicTestPacketBuilder::AddPaddingFrame(size_t length) {
+  quic::QuicPaddingFrame padding_frame =
+      (length > 0) ? quic::QuicPaddingFrame(length) : quic::QuicPaddingFrame();
   AddFrame(quic::QuicFrame(padding_frame));
   return *this;
 }

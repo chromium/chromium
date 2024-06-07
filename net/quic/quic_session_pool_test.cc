@@ -3806,6 +3806,236 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_TRUE(socket_data1.AllDataConsumed());
 }
 
+// This test verifies a direct session carrying a proxied session migrates when
+// the default network disconnects, but the proxied session does not migrate.
+TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+  client_maker_.set_use_priority_header(false);
+  client_maker_.set_max_plaintext_size(1350);
+  server_maker_.set_max_plaintext_size(1350);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicSessionPoolPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  GURL proxy(kProxy1Url);
+  auto proxy_origin = url::SchemeHostPort(proxy);
+  auto proxy_chain = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                         proxy_origin.host(), 443),
+  });
+  EXPECT_TRUE(proxy_chain.IsValid());
+
+  // Use a separate packet maker for the connection to the endpoint.
+  QuicTestPacketMaker to_endpoint_maker(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/true);
+  QuicTestPacketMaker from_endpoint_maker(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), "mail.example.org", quic::Perspective::IS_SERVER,
+      /*client_priority_uses_incremental=*/false,
+      /*use_priority_header=*/true);
+
+  int to_proxy_packet_num = 1;
+  int from_proxy_packet_num = 1;
+  int to_endpoint_packet_num = 1;
+  int from_endpoint_packet_num = 1;
+  const uint64_t stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
+  QuicSocketDataProvider socket_data(version_);
+  socket_data
+      .AddWrite("initial-settings",
+                ConstructInitialSettingsPacket(to_proxy_packet_num++))
+      .Sync();
+  socket_data
+      .AddWrite("connect-udp",
+                ConstructConnectUdpRequestPacket(
+                    to_proxy_packet_num++, stream_id, proxy.host(),
+                    "/.well-known/masque/udp/www.example.org/443/", false))
+      .Sync();
+  socket_data.AddRead("server-settings",
+                      ConstructServerSettingsPacket(from_proxy_packet_num++));
+  socket_data.AddRead(
+      "connect-ok-response",
+      ConstructOkResponsePacket(from_proxy_packet_num++, stream_id, true));
+
+  socket_data.AddWrite(
+      "ack-ok", client_maker_.MakeAckPacket(to_proxy_packet_num++, 1, 2, 1));
+
+  spdy::Http2HeaderBlock headers =
+      to_endpoint_maker.GetRequestHeaders("GET", "https", "/");
+  spdy::SpdyPriority priority =
+      ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+
+  socket_data.AddWrite(
+      "initial-settings-and-get",
+      client_maker_.Packet(to_proxy_packet_num++)
+          .AddMessageFrame(ConstructClientH3DatagramFrame(
+              stream_id, kConnectUdpContextId,
+              to_endpoint_maker.MakeInitialSettingsPacket(
+                  to_endpoint_packet_num++)))
+          .AddMessageFrame(ConstructClientH3DatagramFrame(
+              stream_id, kConnectUdpContextId,
+              to_endpoint_maker.MakeRequestHeadersPacket(
+                  to_endpoint_packet_num++, stream_id, /*fin=*/true, priority,
+                  std::move(headers), nullptr)))
+          .Build());
+
+  socket_factory_->AddSocketDataProvider(&socket_data);
+
+  // Create request and QuicHttpStream.
+  RequestBuilder builder(this);
+  builder.proxy_chain = proxy_chain;
+  builder.http_user_agent_settings = &http_user_agent_settings_;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL(kDefaultUrl);
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session to the destination is alive and active.
+  QuicChromiumClientSession* destination_session = GetActiveSession(
+      kDefaultDestination, NetworkAnonymizationKey(), proxy_chain);
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
+
+  // Ensure that the session to the proxy is alive and active.
+  QuicChromiumClientSession* proxy_session =
+      GetActiveSession(proxy_origin, NetworkAnonymizationKey(),
+                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, proxy_session);
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  // Set up second socket data provider that is used after migration.
+  // The response to the earlier request is read on this new socket.
+  QuicSocketDataProvider socket_data1(version_);
+  client_maker_.set_connection_id(cid_on_new_path);
+  socket_data1
+      .AddWrite("probe", client_maker_.Packet(to_proxy_packet_num++)
+                             .AddPathChallengeFrame()
+                             .AddPaddingFrame(1315)
+                             .Build())
+      .Sync();
+  socket_data1.AddRead("probe-back",
+                       server_maker_.Packet(from_proxy_packet_num++)
+                           .AddPathResponseFrame()
+                           .AddPaddingFrame(1315)
+                           .Build());
+  socket_data1
+      .AddWrite("retransmit-and-retire",
+                client_maker_.Packet(to_proxy_packet_num++)
+                    .AddPacketRetransmission(1)
+                    .AddPacketRetransmission(2)
+                    .AddRetireConnectionIdFrame(0u)
+                    .Build())
+      .Sync();
+  socket_data1
+      .AddWrite("ping", client_maker_.MakePingPacket(to_proxy_packet_num++))
+      .Sync();
+  spdy::Http2HeaderBlock response_headers =
+      from_endpoint_maker.GetResponseHeaders("200");
+  socket_data1.AddRead(
+      "proxied-ok-response",
+      server_maker_.Packet(from_proxy_packet_num++)
+          .AddMessageFrame(ConstructClientH3DatagramFrame(
+              stream_id, kConnectUdpContextId,
+              from_endpoint_maker.MakeResponseHeadersPacket(
+                  from_endpoint_packet_num++, stream_id, /*fin=*/true,
+                  std::move(response_headers), nullptr)))
+          .Build());
+
+  socket_factory_->AddSocketDataProvider(&socket_data1);
+
+  // Trigger connection migration.
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumDegradingSessions(factory_.get()));
+  // Cause the connection to report path degrading to both sessions.
+  // The destination session will start to probe the alternate network.
+  destination_session->connection()->OnPathDegradingDetected();
+  proxy_session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumDegradingSessions(factory_.get()));
+
+  // Both sessions should still be alive, not marked as going away.
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
+                               proxy_chain));
+  EXPECT_EQ(1u, destination_session->GetNumActiveStreams());
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
+  EXPECT_EQ(1u, proxy_session->GetNumActiveStreams());
+
+  // Begin reading the response, which only appears on the new connection,
+  // verifying the session to the proxy migrated.
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+
+  // Ensure that the session to the destination is still alive.
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination, NetworkAnonymizationKey(),
+                               proxy_chain));
+  EXPECT_EQ(1u, destination_session->GetNumActiveStreams());
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
+  EXPECT_EQ(1u, proxy_session->GetNumActiveStreams());
+
+  // There should be a task that will complete the migration to the new network.
+  task_runner->RunUntilIdle();
+
+  // Wait for the response headers to be read; this must occur over the new
+  // connection.
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_EQ(200, response.headers->response_code());
+
+  // Deliver a signal that the alternate network now becomes default to session,
+  // this will cancel mgirate back to default network timer.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  // Check that the sessions are still alive.
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), destination_session));
+  EXPECT_TRUE(
+      QuicSessionPoolPeer::IsLiveSession(factory_.get(), proxy_session));
+
+  // Migration back to the default network has begun, so there are no more
+  // posted tasks.
+  EXPECT_TRUE(runner_->GetPostedTasks().empty());
+
+  stream.reset();
+  EXPECT_TRUE(socket_data.AllDataConsumed());
+  EXPECT_TRUE(socket_data1.AllDataConsumed());
+}
+
 // This test receives NCN signals in the following order:
 // - default network disconnected
 // - after a pause, new network is connected.

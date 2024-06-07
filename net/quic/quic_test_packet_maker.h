@@ -438,6 +438,9 @@ class QuicTestPacketMaker {
   void set_save_packet_frames(bool save_packet_frames) {
     connection_state_.save_packet_frames = save_packet_frames;
   }
+  void set_max_plaintext_size(size_t max_plaintext_size) {
+    max_plaintext_size_ = max_plaintext_size;
+  }
 
   std::string QpackEncodeHeaders(quic::QuicStreamId stream_id,
                                  spdy::Http2HeaderBlock headers,
@@ -473,6 +476,7 @@ class QuicTestPacketMaker {
   quic::Perspective perspective_;
   quic::EncryptionLevel encryption_level_ = quic::ENCRYPTION_FORWARD_SECURE;
   quic::QuicLongHeaderType long_header_type_ = quic::INVALID_PACKET_TYPE;
+  size_t max_plaintext_size_ = quic::kDefaultMaxPacketSize;
 
   // The value of incremental flag in generated priority headers.
   bool client_priority_uses_incremental_;
@@ -514,7 +518,7 @@ class QuicTestPacketBuilder {
                         QuicTestPacketMaker::ConnectionState* connection_state);
   ~QuicTestPacketBuilder();
 
-  QuicTestPacketBuilder& AddPaddingFrame();
+  QuicTestPacketBuilder& AddPaddingFrame(size_t padding_size = 0);
   QuicTestPacketBuilder& AddPingFrame();
   QuicTestPacketBuilder& AddRetireConnectionIdFrame(uint64_t sequence_number);
   QuicTestPacketBuilder& AddNewConnectionIdFrame(

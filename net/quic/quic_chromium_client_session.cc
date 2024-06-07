@@ -2099,6 +2099,13 @@ int QuicChromiumClientSession::HandleWriteError(
     }
   }
 
+  // Proxied sessions cannot presently encounter write errors, but in case that
+  // changes, those sessions should not attempt migration when such an error
+  // occurs. The underlying connection to the proxy server may still migrate.
+  if (!session_key_.proxy_chain().is_direct()) {
+    return error_code;
+  }
+
   if (error_code == ERR_MSG_TOO_BIG || session_pool_ == nullptr ||
       !migrate_session_on_network_change_v2_ || !OneRttKeysAvailable()) {
     return error_code;
@@ -2786,6 +2793,14 @@ void QuicChromiumClientSession::OnPathDegrading() {
   handles::NetworkHandle current_network = GetCurrentNetwork();
   for (auto& observer : connectivity_observer_list_) {
     observer.OnSessionPathDegrading(this, current_network);
+  }
+
+  // Proxied sessions should not attempt migration when the path degrades, as
+  // there is nowhere for such a session to migrate to. If the degradation is
+  // due to degradation of the underlying session, then that session may attempt
+  // migration.
+  if (!session_key_.proxy_chain().is_direct()) {
+    return;
   }
 
   if (!session_pool_ || connection()->multi_port_stats()) {
