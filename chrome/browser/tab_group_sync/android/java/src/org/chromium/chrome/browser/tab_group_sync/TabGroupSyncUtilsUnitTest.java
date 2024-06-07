@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -101,6 +102,26 @@ public class TabGroupSyncUtilsUnitTest {
 
         verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_2);
+    }
+
+    @Test
+    public void testUnmapAllTabGroupIdsNotInCurrentFilter_NullLocalId() {
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.syncId = SYNC_GROUP_ID1;
+        SavedTabGroupTab savedTabGroup1Tab1 = new SavedTabGroupTab();
+        SavedTabGroupTab savedTabGroup1Tab2 = new SavedTabGroupTab();
+        group1.savedTabs = List.of(savedTabGroup1Tab1, savedTabGroup1Tab2);
+        group1.localId = null;
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
+
+        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(
+                mTabGroupSyncService, mTabGroupModelFilter);
+
+        // Shouldn't crash and never called.
+        verify(mTabGroupModelFilter, never()).getRootIdFromStableId(any());
+        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
     }
 
     @Test

@@ -96,6 +96,9 @@ public final class TabGroupSyncUtils {
 
         for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
+            // If there is no local ID the group is already hidden so this is a no-op.
+            if (savedTabGroup.localId == null) continue;
+
             if (!isInCurrentWindow(filter, savedTabGroup.localId)) {
                 tabGroupSyncService.removeLocalTabGroupMapping(savedTabGroup.localId);
             }
