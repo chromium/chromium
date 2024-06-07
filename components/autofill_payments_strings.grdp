@@ -59,33 +59,6 @@
     Google Pay logo
   </message>
 
-  <!-- Autofill Credit Card Assisted Filling Infobar -->
-  <if expr="is_android">
-    <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_TITLE" desc="Title text for the Autofill Credit Card Assisted Filling Infobar">
-      Do you want to fill in your card info?
-    </message>
-  </if>
-  <if expr="is_ios">
-    <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_FORMATTED_TITLE" desc="Title text for the Autofill Credit Card Assisted Filling Infobar, which contains the card description in it.">
-      Do you want to fill in your <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph>?
-    </message>
-  </if>
-  <if expr="is_android or is_ios">
-    <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_ACCEPT" desc="Text to show for the Autofill credit card Assisted Filling infobar accept button.">
-      Fill in
-    </message>
-    <if expr="not use_titlecase">
-      <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_NO_THANKS" desc="Text to show for the Autofill credit card Assisted Filling infobar cancel button.">
-        No thanks
-      </message>
-    </if>
-    <if expr="use_titlecase">
-      <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_NO_THANKS" desc="In Title Case: Text to show for the Autofill credit card Assisted Filling infobar cancel button.">
-        No Thanks
-      </message>
-    </if>
-  </if>
-
   <if expr="not is_android">
     <message name="IDS_AUTOFILL_FIELD_LABEL_PHONE" desc="The label of the Phone entry in a settings-like UI to enter a phone number.">
       Phone

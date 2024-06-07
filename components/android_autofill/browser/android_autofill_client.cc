@@ -167,12 +167,6 @@ void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
   NOTREACHED_IN_MIGRATION();
 }
 
-void AndroidAutofillClient::ConfirmCreditCardFillAssist(
-    const autofill::CreditCard& card,
-    base::OnceClosure callback) {
-  NOTIMPLEMENTED();
-}
-
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,

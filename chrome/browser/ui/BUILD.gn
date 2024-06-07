@@ -915,8 +915,6 @@ static_library("ui") {
       "android/hats/survey_config_android.h",
       "android/hats/survey_ui_delegate_android.cc",
       "android/hats/survey_ui_delegate_android.h",
-      "android/infobars/autofill_credit_card_filling_infobar.cc",
-      "android/infobars/autofill_credit_card_filling_infobar.h",
       "android/infobars/autofill_save_card_infobar.cc",
       "android/infobars/autofill_save_card_infobar.h",
       "android/infobars/autofill_virtual_card_enrollment_infobar.cc",

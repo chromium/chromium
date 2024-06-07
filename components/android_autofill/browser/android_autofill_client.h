@@ -96,8 +96,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   translate::TranslateDriver* GetTranslateDriver() override;
   void ShowAutofillSettings(
       autofill::FillingProduct main_filling_product) override;
-  void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
-                                   base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,

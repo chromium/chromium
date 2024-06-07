@@ -530,11 +530,6 @@ class AutofillClient {
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback);
 
-  // Will show an infobar to get user consent for Credit Card assistive filling.
-  // Will run |callback| on success.
-  virtual void ConfirmCreditCardFillAssist(const CreditCard& card,
-                                           base::OnceClosure callback) = 0;
-
   // Show an edit address profile dialog, giving the user an option to alter
   // autofill profile data. `on_user_decision_callback` is used to react to the
   // user decision of either saving changes or not.

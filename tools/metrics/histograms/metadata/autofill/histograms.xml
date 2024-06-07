@@ -1498,17 +1498,6 @@ chromium-metrics-reviews@google.com.
   <token key="FormEventWithMetadata" variants="Autofill.FormEventWithMetadata"/>
 </histogram>
 
-<histogram name="Autofill.CreditCardFillingInfoBar"
-    enum="AutofillCreditCardInfoBar" expires_after="2025-07-01">
-  <owner>battre@chromium.org</owner>
-  <owner>smcgruer@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The relative frequency with which users accept, deny, or ignore the Autofill
-    credit card assisted filling infobar prompt.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.CreditCardInfoBar{AutofillCreditCardInfoBarSaveType}{SaveType}"
     enum="AutofillCreditCardInfoBar" expires_after="2025-07-01">

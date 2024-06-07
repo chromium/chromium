@@ -826,7 +826,6 @@ class AutofillMetrics {
       InfoBarMetric metric,
       bool is_uploading,
       AutofillClient::SaveCreditCardOptions options);
-  static void LogCreditCardFillingInfoBarMetric(InfoBarMetric metric);
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
   static void LogProgressDialogResultMetric(
       bool is_canceled_by_user,

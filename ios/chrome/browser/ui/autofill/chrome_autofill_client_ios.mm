@@ -19,7 +19,6 @@
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
-#import "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -322,19 +321,6 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
               options, card, legal_message_lines, account_info),
           std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
                                                      options))));
-}
-
-void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
-    const CreditCard& card,
-    base::OnceClosure callback) {
-  auto infobar_delegate =
-      std::make_unique<AutofillCreditCardFillingInfoBarDelegateMobile>(
-          card, std::move(callback));
-  auto* raw_delegate = infobar_delegate.get();
-  if (infobar_manager_->AddInfoBar(
-          ::CreateConfirmInfoBar(std::move(infobar_delegate)))) {
-    raw_delegate->set_was_shown();
-  }
 }
 
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(

@@ -207,10 +207,6 @@ void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
                                callback:std::move(callback)];
 }
 
-void WebViewAutofillClientIOS::ConfirmCreditCardFillAssist(
-    const CreditCard& card,
-    base::OnceClosure callback) {}
-
 void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
