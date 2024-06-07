@@ -81,7 +81,7 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
   layer()->SetFillsBoundsOpaquely(false);
 
   SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSecondary));
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   set_allow_deactivate_on_esc(true);
@@ -342,9 +342,9 @@ void SplitViewDividerView::RefreshDividerHandler(bool should_enlarge) {
   }
 
   handler_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysOnSecondary,
-      should_enlarge ? kDividerHandlerEnlargedCornerRadius
-                     : kDividerHandlerCornerRadius));
+      cros_tokens::kCrosSysOutline, should_enlarge
+                                        ? kDividerHandlerEnlargedCornerRadius
+                                        : kDividerHandlerCornerRadius));
   handler_view_->SetVisible(true);
 }
 
