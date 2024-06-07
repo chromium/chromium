@@ -150,11 +150,6 @@ bool AutofillClient::ShowTouchToFillIban(
   return false;
 }
 
-void AutofillClient::UpdateOfferNotification(
-    const AutofillOfferData* offer,
-    const OfferNotificationOptions& options) {
-}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

@@ -157,6 +157,10 @@ IbanAccessManager* PaymentsAutofillClient::GetIbanAccessManager() {
 
 void PaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 
+void PaymentsAutofillClient::UpdateOfferNotification(
+    const AutofillOfferData& offer,
+    const OfferNotificationOptions& options) {}
+
 void PaymentsAutofillClient::DismissOfferNotification() {}
 
 }  // namespace autofill::payments

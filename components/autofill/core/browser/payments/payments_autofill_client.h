@@ -17,6 +17,7 @@
 namespace autofill {
 
 struct AutofillErrorDialogContext;
+class AutofillOfferData;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
 struct CardUnmaskChallengeOption;
@@ -30,6 +31,7 @@ class Iban;
 class IbanAccessManager;
 class IbanManager;
 class MigratableCreditCard;
+struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 struct VirtualCardEnrollmentFields;
@@ -289,6 +291,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // confirmation bubble. If the most recent bubble was an opt-in bubble and it
   // was accepted, this will display the re-auth opt-in confirmation bubble.
   virtual void ShowMandatoryReauthOptInConfirmation();
+
+  // TODO(crbug.com/40134864): Rename all the "domain" in this flow to origin.
+  //                          The server is passing down full origin of the
+  //                          urls. "Domain" is no longer accurate.
+  // Notifies the client to update the offer notification when the `offer` is
+  // available. `options` carries extra configuration options for the offer
+  // notification.
+  virtual void UpdateOfferNotification(const AutofillOfferData& offer,
+                                       const OfferNotificationOptions& options);
 
   // Dismiss any visible offer notification on the current tab.
   virtual void DismissOfferNotification();

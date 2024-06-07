@@ -94,9 +94,10 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     CHECK(IsOfferValid(offer));
     int64_t offer_id = offer->GetOfferId();
     bool offer_id_has_shown_before = shown_notification_ids_.contains(offer_id);
-    client.UpdateOfferNotification(
-        offer, {.notification_has_been_shown = offer_id_has_shown_before,
-                .show_notification_automatically = !offer_id_has_shown_before});
+    client.GetPaymentsAutofillClient()->UpdateOfferNotification(
+        *offer,
+        {.notification_has_been_shown = offer_id_has_shown_before,
+         .show_notification_automatically = !offer_id_has_shown_before});
     shown_notification_ids_.insert(offer_id);
     shopping_service_callback = base::DoNothing();
   } else {
@@ -145,7 +146,8 @@ void OfferNotificationHandler::UpdateOfferNotificationForShoppingServiceOffer(
       .show_notification_automatically =
           ShowShoppingServiceOfferNotificationAutomatically(url, offer)};
 
-  client.UpdateOfferNotification(&offer, offer_notification_options);
+  client.GetPaymentsAutofillClient()->UpdateOfferNotification(
+      offer, offer_notification_options);
   shown_notification_ids_.insert(offer_id);
 }
 

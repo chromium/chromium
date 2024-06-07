@@ -52,7 +52,6 @@ class AutofillOptimizationGuide;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 class FormFieldData;
-struct OfferNotificationOptions;
 
 namespace payments {
 class MandatoryReauthManager;
@@ -181,9 +180,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
-  void UpdateOfferNotification(
-      const AutofillOfferData* offer,
-      const OfferNotificationOptions& options) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data)

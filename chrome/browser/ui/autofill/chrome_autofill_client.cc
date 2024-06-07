@@ -72,12 +72,10 @@
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -808,38 +806,6 @@ void ChromeAutofillClient::HideAutofillSuggestions(
   if (suggestion_controller_.get()) {
     suggestion_controller_->Hide(reason);
   }
-}
-
-void ChromeAutofillClient::UpdateOfferNotification(
-    const AutofillOfferData* offer,
-    const OfferNotificationOptions& options) {
-  DCHECK(offer);
-  CreditCard* card = offer->GetEligibleInstrumentIds().empty()
-                         ? nullptr
-                         : GetPersonalDataManager()
-                               ->payments_data_manager()
-                               .GetCreditCardByInstrumentId(
-                                   offer->GetEligibleInstrumentIds()[0]);
-
-  if (offer->IsCardLinkedOffer() && !card)
-    return;
-
-#if BUILDFLAG(IS_ANDROID)
-  if (options.notification_has_been_shown) {
-    // For Android, if notification has been shown on this merchant, don't show
-    // it again.
-    return;
-  }
-  OfferNotificationControllerAndroid::CreateForWebContents(web_contents());
-  OfferNotificationControllerAndroid* controller =
-      OfferNotificationControllerAndroid::FromWebContents(web_contents());
-  controller->ShowIfNecessary(offer, card);
-#else
-  OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
-  OfferNotificationBubbleControllerImpl* controller =
-      OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  controller->ShowOfferNotificationIfApplicable(offer, card, options);
-#endif
 }
 
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(

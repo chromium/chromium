@@ -23,6 +23,7 @@
 namespace autofill {
 
 class AutofillErrorDialogControllerImpl;
+class AutofillOfferData;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
@@ -34,6 +35,7 @@ class ContentAutofillClient;
 class CreditCardRiskBasedAuthenticator;
 class IbanAccessManager;
 class IbanManager;
+struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 struct VirtualCardEnrollmentFields;
@@ -146,6 +148,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
+  void UpdateOfferNotification(
+      const AutofillOfferData& offer,
+      const OfferNotificationOptions& options) override;
   void DismissOfferNotification() override;
 
   AutofillProgressDialogControllerImpl*

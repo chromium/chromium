@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -532,6 +534,38 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
   // enforce that the confirmation bubble is shown.
   MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
       ->ReshowBubble();
+#endif
+}
+
+void ChromePaymentsAutofillClient::UpdateOfferNotification(
+    const AutofillOfferData& offer,
+    const OfferNotificationOptions& options) {
+  CreditCard* card = offer.GetEligibleInstrumentIds().empty()
+                         ? nullptr
+                         : client_->GetPersonalDataManager()
+                               ->payments_data_manager()
+                               .GetCreditCardByInstrumentId(
+                                   offer.GetEligibleInstrumentIds()[0]);
+
+  if (offer.IsCardLinkedOffer() && !card) {
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (options.notification_has_been_shown) {
+    // For Android, if notification has been shown on this merchant, don't show
+    // it again.
+    return;
+  }
+  OfferNotificationControllerAndroid::CreateForWebContents(web_contents());
+  OfferNotificationControllerAndroid* controller =
+      OfferNotificationControllerAndroid::FromWebContents(web_contents());
+  controller->ShowIfNecessary(&offer, card);
+#else
+  OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
+  OfferNotificationBubbleControllerImpl* controller =
+      OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
+  controller->ShowOfferNotificationIfApplicable(&offer, card, options);
 #endif
 }
 

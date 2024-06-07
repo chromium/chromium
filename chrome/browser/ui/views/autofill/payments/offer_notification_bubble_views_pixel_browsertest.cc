@@ -8,16 +8,17 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#include "chrome/test/base/test_browser_window.h"
 namespace autofill {
 
 namespace {
@@ -80,7 +81,8 @@ class OfferNotificationBubbleViewPixelBrowserTest
         views::test::AnyWidgetTestPasskey{},
         OfferNotificationBubbleViews::kViewClassName);
 
-    autofill_client->UpdateOfferNotification(&offer, {});
+    autofill_client->GetPaymentsAutofillClient()->UpdateOfferNotification(offer,
+                                                                          {});
     OfferNotificationBubbleControllerImpl* controller = GetController();
     EXPECT_TRUE(controller);
     // Ensure the window is active before reshowing the bubble.

@@ -77,7 +77,6 @@ class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriver;
 class AutofillMlPredictionModelHandler;
-class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
@@ -89,7 +88,6 @@ class FormDataImporter;
 class Iban;
 class LogManager;
 class MerchantPromoCodeManager;
-struct OfferNotificationOptions;
 class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
@@ -619,15 +617,6 @@ class AutofillClient {
 
   // Hides the Autofill suggestions UI if it is currently showing.
   virtual void HideAutofillSuggestions(SuggestionHidingReason reason) = 0;
-
-  // TODO(crbug.com/40134864): Rename all the "domain" in this flow to origin.
-  //                          The server is passing down full origin of the
-  //                          urls. "Domain" is no longer accurate.
-  // Notifies the client to update the offer notification when the `offer` is
-  // available. `options` carries extra configuration options for the offer
-  // notification.
-  virtual void UpdateOfferNotification(const AutofillOfferData* offer,
-                                       const OfferNotificationOptions& options);
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with
