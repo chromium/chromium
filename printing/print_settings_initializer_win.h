@@ -6,9 +6,7 @@
 #define PRINTING_PRINT_SETTINGS_INITIALIZER_WIN_H_
 
 #include "printing/page_range.h"
-
-typedef struct HDC__* HDC;
-typedef struct _devicemodeW DEVMODE;
+#include "printing/windows_types.h"
 
 namespace printing {
 

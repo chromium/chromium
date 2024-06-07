@@ -269,6 +269,7 @@ component("printing") {
       "printing_context_system_dialog_win.h",
       "printing_context_win.cc",
       "printing_context_win.h",
+      "windows_types.h",
     ]
 
     deps += [ "//printing/backend" ]
