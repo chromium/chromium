@@ -3116,6 +3116,12 @@ inline constexpr char
     kRemoteAccessHostAllowEnterpriseRemoteSupportConnections[] =
         "enterprise_remote_support_connections_allowed";
 
+// A boolean pref which determines whether a remote admin can start a CRD
+// connection through the 'start crd session' remote command when no local user
+// is present at the device.
+inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
+    "device_allow_enterprise_remote_access_connections";
+
 // A dictionary containing weekly time intervals to automatically sleep and wake
 // up the device.
 inline constexpr char kDeviceWeeklyScheduledSuspend[] =

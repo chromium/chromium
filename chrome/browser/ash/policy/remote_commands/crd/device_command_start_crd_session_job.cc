@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -238,6 +239,14 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
   if (!UserTypeSupportsCrd()) {
     return FinishWithError(
         ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType, "");
+  }
+
+  if (curtain_local_user_session_ && !IsRemoteAccessAllowedByPolicy(CHECK_DEREF(
+                                         g_browser_process->local_state()))) {
+    LOG(ERROR) << "Rejecting CRD session type as CRD remote access is disabled "
+                  "by device policy.";
+    return FinishWithError(
+        ExtendedStartCrdSessionResultCode::kFailureDisabledByPolicy, "");
   }
 
   if (!IsDeviceIdle()) {

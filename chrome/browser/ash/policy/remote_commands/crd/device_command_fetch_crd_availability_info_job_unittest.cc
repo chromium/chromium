@@ -167,6 +167,10 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
     test::StartSessionOfType(user_session_type, user_manager());
   }
 
+  void EnablePref(const char* pref_name) {
+    profile_manager_.local_state()->Get()->SetBoolean(pref_name, true);
+  }
+
   void DisablePref(const char* pref_name) {
     profile_manager_.local_state()->Get()->SetBoolean(pref_name, false);
   }
@@ -187,7 +191,46 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
 // (`TestSessionType`).
 class DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType
     : public DeviceCommandFetchCrdAvailabilityInfoJobTest,
-      public ::testing::WithParamInterface<TestSessionType> {};
+      public ::testing::WithParamInterface<TestSessionType> {
+ public:
+  CrdSessionAvailability GetExpectedRemoteAccessAvailabilityFor(
+      TestSessionType session_type) {
+    switch (session_type) {
+      case TestSessionType::kNoSession:
+        return CrdSessionAvailability::AVAILABLE;
+
+      case TestSessionType::kGuestSession:
+      case TestSessionType::kUnaffiliatedUserSession:
+      case TestSessionType::kManuallyLaunchedWebKioskSession:
+      case TestSessionType::kManuallyLaunchedKioskSession:
+      case TestSessionType::kAutoLaunchedWebKioskSession:
+      case TestSessionType::kAutoLaunchedKioskSession:
+      case TestSessionType::kManagedGuestSession:
+      case TestSessionType::kAffiliatedUserSession:
+        return CrdSessionAvailability::
+            UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
+    }
+  }
+
+  CrdSessionAvailability GetExpectedRemoteSupportAvailabilityFor(
+      TestSessionType session_type) {
+    switch (session_type) {
+      case TestSessionType::kNoSession:
+      case TestSessionType::kGuestSession:
+      case TestSessionType::kUnaffiliatedUserSession:
+        return CrdSessionAvailability::
+            UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
+
+      case TestSessionType::kManuallyLaunchedWebKioskSession:
+      case TestSessionType::kManuallyLaunchedKioskSession:
+      case TestSessionType::kAutoLaunchedWebKioskSession:
+      case TestSessionType::kAutoLaunchedKioskSession:
+      case TestSessionType::kManagedGuestSession:
+      case TestSessionType::kAffiliatedUserSession:
+        return CrdSessionAvailability::AVAILABLE;
+    }
+  }
+};
 
 TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest, GetType) {
   DeviceCommandFetchCrdAvailabilityInfoJob job;
@@ -383,6 +426,50 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
             expected);
 }
 
+TEST_P(
+    DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+    DeviceRemoteAccessPolicyShouldNotEffectRemoteSupportAvailabilityIfDisabled) {
+  DisablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  TestSessionType session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
+
+  StartSessionOfType(session_type);
+
+  Result result = CreateAndRunJob();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteSupportAvailability"),
+            GetExpectedRemoteSupportAvailabilityFor(GetParam()));
+}
+
+TEST_P(
+    DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+    DeviceRemoteAccessPolicyShouldNotEffectRemoteSupportAvailabilityIfEnabled) {
+  EnablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  TestSessionType session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
+
+  StartSessionOfType(session_type);
+
+  Result result = CreateAndRunJob();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteSupportAvailability"),
+            GetExpectedRemoteSupportAvailabilityFor(GetParam()));
+}
+
+TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+       ShouldRespectDisabledByDeviceRemoteAccessPolicy) {
+  DisablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  TestSessionType session_type = GetParam();
+  StartSessionOfType(session_type);
+
+  Result result = CreateAndRunJob();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
+            CrdSessionAvailability::UNAVAILABLE_DISABLED_BY_POLICY);
+}
+
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldReturnRemoteAccessAvailability) {
   TestSessionType session_type = GetParam();
@@ -414,6 +501,35 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 
   EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
             expected);
+}
+
+TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+       ShouldReturnRemoteAccessAvailabilityWhenPolicyIsNotSet) {
+  TestSessionType session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
+
+  AddActiveManagedNetwork();
+  StartSessionOfType(session_type);
+
+  Result result = CreateAndRunJob();
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
+            GetExpectedRemoteAccessAvailabilityFor(GetParam()));
+}
+
+TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
+       ShouldReturnRemoteAccessAvailabilityWhenPolicyIsEnabled) {
+  EnablePref(prefs::kDeviceAllowEnterpriseRemoteAccessConnections);
+  TestSessionType session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
+
+  AddActiveManagedNetwork();
+  StartSessionOfType(session_type);
+
+  Result result = CreateAndRunJob();
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
+            GetExpectedRemoteAccessAvailabilityFor(GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

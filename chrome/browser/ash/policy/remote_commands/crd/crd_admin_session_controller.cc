@@ -723,6 +723,8 @@ void CrdAdminSessionController::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kRemoteAdminWasPresent, false);
   registry->RegisterBooleanPref(
       prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections, true);
+  registry->RegisterBooleanPref(
+      prefs::kDeviceAllowEnterpriseRemoteAccessConnections, true);
 }
 
 }  // namespace policy

@@ -1043,6 +1043,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFloatingSsoDomainBlocklistExceptions,
     prefs::kFloatingSsoDomainBlocklistExceptions,
     base::Value::Type::LIST },
+  { key::kDeviceAllowEnterpriseRemoteAccessConnections,
+    prefs::kDeviceAllowEnterpriseRemoteAccessConnections,
+    base::Value::Type::BOOLEAN
+  },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
