@@ -12,9 +12,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
+import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 
 import android.app.Activity;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,9 +32,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeUnit;
@@ -49,19 +57,35 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private TabModel mArchivedTabModel;
     @Mock private MessageService.MessageObserver mMessageObserver;
+    @Mock private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
+    @Mock private TabModelSelectorBase mArchivedTabModelSelector;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private Activity mActivity;
+    private ViewGroup mRootView;
     private ArchivedTabsMessageService mArchivedTabsMessageService;
 
     @Before
     public void setUp() throws Exception {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mRootView = new FrameLayout(mActivity);
 
         doReturn(TIME_DELTA_HOURS).when(mTabArchiveSettings).getArchiveTimeDeltaHours();
         doReturn(mTabArchiveSettings).when(mArchivedTabModelOrchestrator).getTabArchiveSettings();
 
         mArchivedTabsMessageService =
-                new ArchivedTabsMessageService(mActivity, mArchivedTabModelOrchestrator);
+                new ArchivedTabsMessageService(
+                        mActivity,
+                        mArchivedTabModelOrchestrator,
+                        mBrowserControlsStateProvider,
+                        mTabContentManager,
+                        TabListMode.GRID,
+                        mRootView,
+                        mSnackbarManager);
+        mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
+                mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);
         mArchivedTabsMessageService
                 .getArchivedTabModelOrchestratorObserverForTesting()
@@ -123,5 +147,13 @@ public class ArchivedTabsMessageServiceUnitTest {
         verify(mMessageObserver, times(2))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
         verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
+    }
+
+    @Test
+    public void testClickCard() {
+        PropertyModel customCardPropertyModel =
+                mArchivedTabsMessageService.getCustomCardModelForTesting();
+        customCardPropertyModel.get(CLICK_HANDLER).run();
+        verify(mArchivedTabsDialogCoordinator).show();
     }
 }

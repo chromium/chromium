@@ -267,7 +267,11 @@ public class TabSwitcherCoordinator
                             currentTabModelFilterSupplier,
                             multiWindowModeStateDispatcher,
                             snackbarManager,
-                            modalDialogManager);
+                            modalDialogManager,
+                            mBrowserControlsStateProvider,
+                            mTabContentManager,
+                            mMode,
+                            mCoordinatorView);
             mMessageManager.registerMessages(mTabListCoordinator);
             mMessageManager.bind(mTabListCoordinator, container, mMediator);
 

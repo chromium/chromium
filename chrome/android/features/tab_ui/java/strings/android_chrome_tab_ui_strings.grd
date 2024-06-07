@@ -791,6 +791,17 @@
       <message name="IDS_AUTO_OPEN_SYNCED_TAB_GROUPS_SUMMARY" desc="A title to show in the top toolbar when the Tabs settings page is open.">
         Automatically open tab groups from other devices
       </message>
+
+    <!-- Archived tabs strings -->
+      <message name="IDS_ARCHIVED_TABS_DIALOG_TITLE" desc="The toolbar title for the archived tabs dialog.">
+        {TABS_COUNT, plural,
+          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> inactive tab}
+          other {<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> inactive tabs}
+        }
+      </message>
+      <message name="IDS_ARCHIVED_TABS_DIALOG_CLOSE_ALL_BUTTON" desc="The button title for the archived tabs dialog. Closes all inactive tabs.">
+        Close all inactive tabs
+      </message>
     </messages>
   </release>
 </grit>

@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -128,12 +130,15 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             mPriceWelcomeMessageReviewActionProviderSupplier = new ObservableSupplierImpl<>();
     private final @NonNull ObservableSupplierImpl<TabListCoordinator> mTabListCoordinatorSupplier =
             new ObservableSupplierImpl<>();
+    private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final @NonNull TabContentManager mTabContentManager;
+    private final @TabListMode int mTabListMode;
+    private final @NonNull ViewGroup mRootView;
 
     private @Nullable Profile mProfile;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
     private @Nullable PriceMessageService mPriceMessageService;
     private @Nullable IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
-    private @Nullable ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private @Nullable ArchivedTabsMessageService mArchivedTabsMessageService;
 
     /**
@@ -151,13 +156,21 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager) {
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BrowserControlsStateProvider browserControlStateProvider,
+            @NonNull TabContentManager tabContentManager,
+            @TabListMode int tabListMode,
+            @NonNull ViewGroup rootView) {
         mContext = context;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
+        mBrowserControlsStateProvider = browserControlStateProvider;
+        mTabContentManager = tabContentManager;
+        mTabListMode = tabListMode;
+        mRootView = rootView;
 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(
@@ -251,7 +264,13 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
             mArchivedTabsMessageService =
                     new ArchivedTabsMessageService(
-                            mContext, ArchivedTabModelOrchestrator.getForProfile(mProfile));
+                            mContext,
+                            ArchivedTabModelOrchestrator.getForProfile(mProfile),
+                            mBrowserControlsStateProvider,
+                            mTabContentManager,
+                            mTabListMode,
+                            mRootView,
+                            mSnackbarManager);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }
 

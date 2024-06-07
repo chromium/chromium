@@ -223,7 +223,11 @@ public class TabSwitcherPaneCoordinatorFactory {
                                     .getCurrentTabModelFilterSupplier(),
                             mMultiWindowModeStateDispatcher,
                             mSnackbarManager,
-                            mModalDialogManager);
+                            mModalDialogManager,
+                            mBrowserControlsStateProvider,
+                            mTabContentManager,
+                            mMode,
+                            mActivity.findViewById(R.id.coordinator));
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

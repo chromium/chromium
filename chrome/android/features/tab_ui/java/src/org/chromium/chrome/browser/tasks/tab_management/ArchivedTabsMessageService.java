@@ -11,20 +11,26 @@ import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardV
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -67,10 +73,6 @@ public class ArchivedTabsMessageService extends MessageService
                                     .build();
                     PropertyModelChangeProcessor.create(
                             mCustomCardModel, mCustomCardView, ArchivedTabsCardViewBinder::bind);
-
-                    if (archivedTabModel.getCount() > 0) {
-                        maybeSendMessageToQueue();
-                    }
                 }
             };
 
@@ -97,10 +99,16 @@ public class ArchivedTabsMessageService extends MessageService
                 }
             };
 
-    private final Context mContext;
-    private final TabArchiveSettings mTabArchiveSettings;
-    private final ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    private final @NonNull Context mContext;
+    private final @NonNull TabArchiveSettings mTabArchiveSettings;
+    private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final @NonNull TabContentManager mTabContentManager;
+    private final @TabListMode int mTabListMode;
+    private final @NonNull ViewGroup mRootView;
+    private final @NonNull SnackbarManager mSnackbarManager;
 
+    private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     private TabModel mArchivedTabModel;
     private View mCustomCardView;
     private PropertyModel mCustomCardModel;
@@ -108,11 +116,22 @@ public class ArchivedTabsMessageService extends MessageService
 
     ArchivedTabsMessageService(
             @NonNull Context context,
-            @NonNull ArchivedTabModelOrchestrator archivedTabModelOrchestrator) {
+            @NonNull ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
+            @NonNull BrowserControlsStateProvider browserControlStateProvider,
+            @NonNull TabContentManager tabContentManager,
+            @TabListMode int tabListMode,
+            @NonNull ViewGroup rootView,
+            @NonNull SnackbarManager snackbarManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
 
         mContext = context;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
+        mBrowserControlsStateProvider = browserControlStateProvider;
+        mTabContentManager = tabContentManager;
+        mTabListMode = tabListMode;
+        mRootView = rootView;
+        mSnackbarManager = snackbarManager;
+
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
                     mArchivedTabModelOrchestrator
@@ -148,9 +167,18 @@ public class ArchivedTabsMessageService extends MessageService
 
     // Private methods.
 
+    @Override
+    public void addObserver(MessageService.MessageObserver obs) {
+        super.addObserver(obs);
+        maybeSendMessageToQueue();
+    }
+
     @VisibleForTesting
     void maybeSendMessageToQueue() {
         if (mMessageSentToQueue) return;
+        if (mArchivedTabModel == null) return;
+        if (mArchivedTabModel.getCount() <= 0) return;
+        updateModelProperties();
         sendAvailabilityNotification(new ArchivedTabsMessageData(this));
         mMessageSentToQueue = true;
     }
@@ -163,7 +191,22 @@ public class ArchivedTabsMessageService extends MessageService
     }
 
     private void openArchivedTabsDialog() {
-        // TODO(crbug.com/340581912): Create/show the ui to manage archived tabs.
+        if (mArchivedTabsDialogCoordinator == null) {
+            createArchivedTabsDialogCoordinator();
+        }
+        mArchivedTabsDialogCoordinator.show();
+    }
+
+    private void createArchivedTabsDialogCoordinator() {
+        mArchivedTabsDialogCoordinator =
+                new ArchivedTabsDialogCoordinator(
+                        mContext,
+                        mArchivedTabModelOrchestrator,
+                        mBrowserControlsStateProvider,
+                        mTabContentManager,
+                        mTabListMode,
+                        mRootView,
+                        mSnackbarManager);
     }
 
     private void updateModelProperties() {
@@ -187,5 +230,10 @@ public class ArchivedTabsMessageService extends MessageService
 
     TabModelObserver getArchivedTabModelObserverForTesting() {
         return mArchivedTabModelObserver;
+    }
+
+    void setArchivedTabsDialogCoordiantorForTesting(
+            ArchivedTabsDialogCoordinator archivedTabsDialogCoordinator) {
+        mArchivedTabsDialogCoordinator = archivedTabsDialogCoordinator;
     }
 }
