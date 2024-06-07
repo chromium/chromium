@@ -346,8 +346,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
                       script->ExecutionStartTime());
     }
     ThirdPartyScriptDetector::Technology third_party_technology =
-        ThirdPartyScriptDetector::From(*(script->Window()))
-            .Detect(script->GetSourceLocation().url);
+        ThirdPartyScriptDetector::From(window).Detect(
+            script->GetSourceLocation().url);
     TRACE_EVENT_BEGIN(
         "devtools.timeline", "AnimationFrame::Script::Execute", track_id,
         script->ExecutionStartTime(), [&](perfetto::EventContext ctx) {
