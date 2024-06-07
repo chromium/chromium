@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.devui;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import androidx.test.filters.MediumTest;
 
@@ -27,7 +27,7 @@ import org.chromium.base.test.util.Batch;
 
 /** Test AwNonembeddedUmaRecorder. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.PER_CLASS)
 public class AwNonembeddedUmaRecorderTest {
     private static final String TEST_SERVICE_NAME = MockMetricsBridgeService.class.getName();

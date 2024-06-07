@@ -7,7 +7,7 @@ package org.chromium.android_webview.test.devui.util;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import androidx.test.filters.MediumTest;
 
@@ -31,11 +31,11 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for WebViewCrashLogParser. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 public class WebViewCrashLogParserTest {
     private static final String TEST_LOG_ENTRY =
             "{'crash-local-id':'123456abc','crash-capture-time':1234567890,"
-                    + "'crash-keys':{'app-package-name':'test.package','variations':'123456,7890'}}";
+                + "'crash-keys':{'app-package-name':'test.package','variations':'123456,7890'}}";
 
     @Rule public TemporaryFolder mTestLogDir = new TemporaryFolder();
 

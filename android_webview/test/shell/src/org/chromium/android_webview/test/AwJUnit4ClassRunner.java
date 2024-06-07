@@ -24,10 +24,16 @@ import java.util.List;
  * single-process mode on L-N and multi-process (AKA sandboxed renderer) mode on O+, this test
  * runner defaults to duplicating each test in both modes.
  *
- * <p>
- * Tests can instead be run in either single or multi-process only with {@link OnlyRunIn}. This can
- * be done if the test case needs this for correctness or to save infrastructure resources for tests
- * which exercise code which cannot depend on single vs. multi process.
+ * <p>Tests can instead be run in single and/or multi process modes with {@link OnlyRunIn}:
+ *
+ * <ul>
+ *   <li>SINGLE_PROCESS | MULTI_PROCESS: Run test only in single or multi process mode. This should
+ *       only be used if the test case needs this for correctness.
+ *   <li>EITHER_PROCESS: Run test in either single or multi process mode. This can be used to save
+ *       infrastructure resources if the code being tested does not depend on the renderer process
+ *       so the test will not benefit from duplication
+ *   <li>SINGLE_AND_MULTI_PROCESS: Run test in both single and multi process modes.
+ * </ul>
  */
 public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     // This should match the definition in Android test runner scripts: bit.ly/3ynoREM
@@ -95,6 +101,7 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
                     }
                     break;
                 case MULTI_PROCESS:
+                case EITHER_PROCESS:
                     result.add(new WebViewMultiProcessFrameworkMethod(method));
                     break;
                 case SINGLE_AND_MULTI_PROCESS:

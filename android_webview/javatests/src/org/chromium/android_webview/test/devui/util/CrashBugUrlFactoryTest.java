@@ -13,7 +13,7 @@ import static androidx.test.espresso.intent.matcher.UriMatchers.hasScheme;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.Intent;
 import android.os.Build;
@@ -37,7 +37,7 @@ import java.util.Map;
 
 /** Unit tests for CrashBugUrlFactory class */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class CrashBugUrlFactoryTest {
     @Test

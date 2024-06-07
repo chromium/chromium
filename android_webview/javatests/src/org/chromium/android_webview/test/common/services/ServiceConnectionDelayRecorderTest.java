@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.common.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,7 +28,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 
 /** Unit tests for {@link ServiceConnectionDelayRecorder}. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS)
 @DoNotBatch(reason = "To make sure all bound services are properly killed between tests.")
 public class ServiceConnectionDelayRecorderTest {
     // Test class that increments time with multiples of 1000 ms.

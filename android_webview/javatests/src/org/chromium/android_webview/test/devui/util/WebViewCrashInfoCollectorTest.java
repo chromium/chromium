@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import static org.chromium.android_webview.nonembedded.crash.CrashInfo.createCrashInfoForTesting;
 import static org.chromium.android_webview.nonembedded.crash.CrashInfoEqualityMatcher.equalsTo;
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import androidx.test.filters.SmallTest;
 
@@ -40,7 +40,7 @@ import java.util.List;
 
 /** Unit tests for WebViewCrashInfoCollector. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class WebViewCrashInfoCollectorTest {
     private static class CrashInfoLoadersTestFactory extends CrashInfoLoadersFactory {

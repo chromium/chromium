@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.devui.util;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import androidx.test.filters.SmallTest;
 
@@ -29,7 +29,7 @@ import java.util.List;
 
 /** Unit tests for UnuploadedFilesStateLoader. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class UnuploadedFilesStateLoaderTest {
     private static final String LOCAL_ID = "localId1234";
