@@ -25,6 +25,7 @@
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/sparky_util.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -77,22 +78,26 @@ SparkyProvider::SparkyProvider(
     signin::IdentityManager* identity_manager,
     bool is_demo_mode,
     const std::string& chrome_version,
-    std::unique_ptr<SparkyDelegate> sparky_delegate)
+    std::unique_ptr<SparkyDelegate> sparky_delegate,
+    std::unique_ptr<SystemInfoDelegate> system_info_delegate)
     : BaseProvider(url_loader_factory,
                    identity_manager,
                    is_demo_mode,
                    chrome_version),
-      sparky_delegate_(std::move(sparky_delegate)) {}
+      sparky_delegate_(std::move(sparky_delegate)),
+      system_info_delegate_(std::move(system_info_delegate)) {}
 
 SparkyProvider::SparkyProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<SparkyDelegate> sparky_delegate)
+    std::unique_ptr<SparkyDelegate> sparky_delegate,
+    std::unique_ptr<SystemInfoDelegate> system_info_delegate)
     : SparkyProvider(url_loader_factory,
                      identity_manager,
                      false,
                      std::string(),
-                     std::move(sparky_delegate)) {}
+                     std::move(sparky_delegate),
+                     std::move(system_info_delegate)) {}
 
 SparkyProvider::~SparkyProvider() = default;
 
@@ -101,6 +106,7 @@ void SparkyProvider::QuestionAndAnswer(
     const std::vector<SparkyQAPair> QAHistory,
     const std::string& question,
     proto::Task task,
+    std::unique_ptr<DiagnosticsData> diagnostics_data,
     SparkyShowAnswerCallback done_callback) {
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_SPARKY);
@@ -133,6 +139,9 @@ void SparkyProvider::QuestionAndAnswer(
       auto* settings_data = sparky_context_data->mutable_settings_data();
       AddSettingsProto(*settings_list, settings_data);
     }
+  } else if (task == proto::Task::TASK_DIAGNOSTICS && diagnostics_data) {
+    auto* diagnostics_proto = sparky_context_data->mutable_diagnostics_data();
+    AddDiagnosticsProto(std::move(diagnostics_data), diagnostics_proto);
   }
 
   MantaProtoResponseCallback internal_callback = base::BindOnce(
@@ -186,14 +195,46 @@ void SparkyProvider::RequestAdditionalInformation(
   if (context_request.has_settings()) {
     if (!sparky_delegate_->GetSettingsList()->empty()) {
       QuestionAndAnswer(original_content, QAHistory, question,
-                        proto::TASK_SETTINGS, std::move(done_callback));
-      return;
-    } else {
-      std::move(done_callback).Run("Unable to find settings list", status);
+                        proto::TASK_SETTINGS, nullptr,
+                        std::move(done_callback));
       return;
     }
+    std::move(done_callback).Run("Unable to find settings list", status);
+    return;
+  } else if (context_request.has_diagnostics()) {
+    auto diagnostics_vector =
+        ObtainDiagnosticsVectorFromProto(context_request.diagnostics());
+    if (!diagnostics_vector.empty()) {
+      system_info_delegate_->ObtainDiagnostics(
+          diagnostics_vector,
+          base::BindOnce(&SparkyProvider::OnDiagnosticsReceived,
+                         weak_ptr_factory_.GetWeakPtr(), original_content,
+                         QAHistory, question, std::move(done_callback),
+                         status));
+      return;
+    }
+    std::move(done_callback).Run("No diagnostics were requested", status);
+    return;
   }
+
+  // Occurs if no valid request can be found.
   std::move(done_callback).Run("", status);
+}
+
+void SparkyProvider::OnDiagnosticsReceived(
+    const std::string& original_content,
+    const std::vector<SparkyQAPair> QAHistory,
+    const std::string& question,
+    SparkyShowAnswerCallback done_callback,
+    manta::MantaStatus status,
+    std::unique_ptr<DiagnosticsData> diagnostics_data) {
+  if (diagnostics_data) {
+    QuestionAndAnswer(original_content, QAHistory, question,
+                      proto::TASK_DIAGNOSTICS, std::move(diagnostics_data),
+                      std::move(done_callback));
+    return;
+  }
+  std::move(done_callback).Run("Unable to obtain the diagnostics data", status);
 }
 
 void SparkyProvider::OnActionResponse(proto::FinalResponse final_response,

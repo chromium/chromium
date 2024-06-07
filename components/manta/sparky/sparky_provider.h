@@ -22,6 +22,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -42,7 +43,8 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
       signin::IdentityManager* identity_manager,
       bool is_demo_mode,
       const std::string& chrome_version,
-      std::unique_ptr<SparkyDelegate> sparky_delegate);
+      std::unique_ptr<SparkyDelegate> sparky_delegate,
+      std::unique_ptr<SystemInfoDelegate> system_info_delegate);
 
   SparkyProvider(const SparkyProvider&) = delete;
   SparkyProvider& operator=(const SparkyProvider&) = delete;
@@ -63,13 +65,15 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                          const std::vector<SparkyQAPair> QAHistory,
                          const std::string& question,
                          proto::Task task,
+                         std::unique_ptr<DiagnosticsData> diagnostics_data,
                          SparkyShowAnswerCallback done_callback);
 
  protected:
   SparkyProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      std::unique_ptr<SparkyDelegate> sparky_delegate);
+      std::unique_ptr<SparkyDelegate> sparky_delegate,
+      std::unique_ptr<SystemInfoDelegate> system_info_delegate);
 
  private:
   friend class FakeSparkyProvider;
@@ -100,7 +104,16 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                         SparkyShowAnswerCallback done_callback,
                         manta::MantaStatus status);
 
+  void OnDiagnosticsReceived(const std::string& original_content,
+                             const std::vector<SparkyQAPair> QAHistory,
+                             const std::string& question,
+                             SparkyShowAnswerCallback done_callback,
+                             manta::MantaStatus status,
+                             std::unique_ptr<DiagnosticsData> diagnostics_data);
+
   std::unique_ptr<SparkyDelegate> sparky_delegate_;
+
+  std::unique_ptr<SystemInfoDelegate> system_info_delegate_;
 
   base::WeakPtrFactory<SparkyProvider> weak_ptr_factory_{this};
 };

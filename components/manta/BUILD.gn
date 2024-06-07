@@ -46,6 +46,8 @@ component("manta") {
       "sparky/sparky_provider.h",
       "sparky/sparky_util.cc",
       "sparky/sparky_util.h",
+      "sparky/system_info_delegate.cc",
+      "sparky/system_info_delegate.h",
     ]
     deps += [ "//chromeos/constants:constants" ]
   }

@@ -4,9 +4,12 @@
 
 #include "components/manta/sparky/sparky_util.h"
 
+#include <memory>
+
 #include "base/test/task_environment.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace manta {
@@ -82,6 +85,32 @@ TEST_F(SparkyUtilTest, AddSettingsProto) {
                               current_prefs["ash.night_light.enabled"].get()));
   ASSERT_TRUE(ContainsSetting(
       settings, current_prefs["ash.night_light.color_temperature"].get()));
+}
+
+TEST_F(SparkyUtilTest, AddDiagnosticsProto) {
+  auto cpu_data = std::make_unique<CpuData>(40, 60, 5.0);
+  auto memory_data = std::make_unique<MemoryData>(4.0, 8.0);
+  auto battery_data =
+      std::make_unique<BatteryData>(158, 76, "36 minutes until full", 80);
+  std::unique_ptr<DiagnosticsData> diagnostics_data =
+      std::make_unique<DiagnosticsData>(
+          std::move(battery_data), std::move(cpu_data), std::move(memory_data));
+  proto::SparkyContextData sparky_context_data;
+  auto* diagnostics_proto = sparky_context_data.mutable_diagnostics_data();
+  AddDiagnosticsProto(std::move(diagnostics_data), diagnostics_proto);
+  ASSERT_TRUE(diagnostics_proto->has_battery());
+  ASSERT_TRUE(diagnostics_proto->has_cpu());
+  ASSERT_TRUE(diagnostics_proto->has_memory());
+  ASSERT_DOUBLE_EQ(diagnostics_proto->cpu().clock_speed_ghz(), 5.0);
+  ASSERT_EQ(diagnostics_proto->cpu().cpu_usage_snapshot(), 40);
+  ASSERT_EQ(diagnostics_proto->cpu().temperature(), 60);
+  ASSERT_DOUBLE_EQ(diagnostics_proto->memory().free_ram_gb(), 4.0);
+  ASSERT_DOUBLE_EQ(diagnostics_proto->memory().total_ram_gb(), 8.0);
+  ASSERT_EQ(diagnostics_proto->battery().battery_health(), 76);
+  ASSERT_EQ(diagnostics_proto->battery().battery_charge_percentage(), 80);
+  ASSERT_EQ(diagnostics_proto->battery().cycle_count(), 158);
+  ASSERT_EQ(diagnostics_proto->battery().battery_time(),
+            "36 minutes until full");
 }
 
 }  // namespace manta

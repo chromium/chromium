@@ -34,10 +34,10 @@ enum SettingType {
 }
 
 message BatteryData {
-  optional string battery_health = 1;
-  optional string cycleCount = 2;
+  optional int32 battery_health = 1;
+  optional int32 cycle_count = 2;
   optional string battery_time = 3;
-  optional string battery_charge_percentage = 4;
+  optional int32 battery_charge_percentage = 4;
 }
 
 message StorageData {
@@ -46,14 +46,14 @@ message StorageData {
 }
 
 message CPUData {
-  optional string cpu_usage_snapshot = 1;
-  optional string temperature = 2;
-  optional string clock_speed = 3;
+  optional int32 cpu_usage_snapshot = 1;
+  optional int32 temperature = 2;
+  optional double clock_speed_ghz = 3;
 }
 
 message MemoryData {
-  optional string free_ram = 1;
-  optional string total_ram = 2;
+  optional double free_ram_gb = 1;
+  optional double total_ram_gb = 2;
 }
 
 message DiagnosticsData {

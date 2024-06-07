@@ -6,7 +6,9 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
 
 namespace manta {
@@ -20,6 +22,16 @@ static constexpr auto setting_map =
         {PrefType::kDouble, SettingType::SETTING_TYPE_DOUBLE},
         {PrefType::kInt, SettingType::SETTING_TYPE_INTEGER},
     });
+
+static constexpr auto diagnostic_map =
+    base::MakeFixedFlatMap<manta::proto::Diagnostics, Diagnostics>(
+        {{manta::proto::Diagnostics::DIAGNOSTICS_BATTERY,
+          Diagnostics::kBattery},
+         {manta::proto::Diagnostics::DIAGNOSTICS_CPU, Diagnostics::kCpu},
+         {manta::proto::Diagnostics::DIAGNOSTICS_STORAGE,
+          Diagnostics::kStorage},
+         {manta::proto::Diagnostics::DIAGNOSTICS_MEMORY,
+          Diagnostics::kMemory}});
 
 // Gets the type of setting into the proto enum. Also verifies that the value is
 // of the type specified.
@@ -70,6 +82,62 @@ void AddSettingsProto(const SparkyDelegate::SettingsDataList& settings_list,
       settings_value->set_int_val(setting->value->GetInt());
     } else if (setting->pref_type == PrefType::kString) {
       settings_value->set_text_val(setting->value->GetString());
+    }
+  }
+}
+
+std::vector<Diagnostics> COMPONENT_EXPORT(MANTA)
+    ObtainDiagnosticsVectorFromProto(
+        const ::manta::proto::DiagnosticsRequest& diagnostics_request) {
+  int number_of_diagnostics_requested = diagnostics_request.diagnostics_size();
+  std::vector<Diagnostics> diagnostics_vector;
+  for (int index = 0; index < number_of_diagnostics_requested; index++) {
+    const auto iter =
+        diagnostic_map.find(diagnostics_request.diagnostics(index));
+
+    auto type = iter != diagnostic_map.end()
+                    ? std::optional<Diagnostics>(iter->second)
+                    : std::nullopt;
+    if (type == std::nullopt) {
+      DVLOG(1) << "Invalid diagnostics type";
+      continue;
+    } else {
+      diagnostics_vector.emplace_back(type.value());
+    }
+  }
+  return diagnostics_vector;
+}
+
+void COMPONENT_EXPORT(MANTA)
+    AddDiagnosticsProto(std::unique_ptr<DiagnosticsData> diagnostics_data,
+                        proto::DiagnosticsData* diagnostics_proto) {
+  if (diagnostics_data) {
+    if (diagnostics_data->cpu_data) {
+      auto* cpu_proto = diagnostics_proto->mutable_cpu();
+      cpu_proto->set_temperature(
+          diagnostics_data->cpu_data->average_cpu_temp_celsius);
+      cpu_proto->set_clock_speed_ghz(
+          diagnostics_data->cpu_data->scaling_current_frequency_ghz);
+      cpu_proto->set_cpu_usage_snapshot(
+          diagnostics_data->cpu_data->cpu_usage_percentage_snapshot);
+    }
+    if (diagnostics_data->memory_data) {
+      auto* memory_proto = diagnostics_proto->mutable_memory();
+      memory_proto->set_free_ram_gb(
+          diagnostics_data->memory_data->available_memory_gb);
+      memory_proto->set_total_ram_gb(
+          diagnostics_data->memory_data->total_memory_gb);
+    }
+    if (diagnostics_data->battery_data) {
+      auto* battery_proto = diagnostics_proto->mutable_battery();
+      battery_proto->set_battery_health(
+          diagnostics_data->battery_data->battery_wear_percentage);
+      battery_proto->set_battery_charge_percentage(
+          diagnostics_data->battery_data->battery_percentage);
+      battery_proto->set_cycle_count(
+          diagnostics_data->battery_data->cycle_count);
+      battery_proto->set_battery_time(
+          diagnostics_data->battery_data->power_time);
     }
   }
 }

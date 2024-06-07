@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/sparky/sparky_delegate_impl.h"
+#include "chromeos/ash/components/sparky/system_info_delegate_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
@@ -54,7 +55,8 @@ SparkyManagerImpl::SparkyManagerImpl(Profile* profile,
                                      manta::MantaService* manta_service)
     : profile_(profile),
       sparky_provider_(manta_service->CreateSparkyProvider(
-          std::make_unique<SparkyDelegateImpl>(profile))) {
+          std::make_unique<SparkyDelegateImpl>(profile),
+          std::make_unique<sparky::SystemInfoDelegateImpl>())) {
   CHECK(manta::features::IsMantaServiceEnabled());
 }
 
@@ -93,7 +95,7 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
     sparky_provider_->QuestionAndAnswer(
         base::UTF16ToUTF8(current_panel_content_->page_content),
         current_panel_qa_, base::UTF16ToUTF8(question),
-        manta::proto::Task::TASK_PLANNER,
+        manta::proto::Task::TASK_PLANNER, nullptr,
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                        weak_ptr_factory_.GetWeakPtr(), question,
                        std::move(callback)));
@@ -233,7 +235,7 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   sparky_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       current_panel_qa_, base::UTF16ToUTF8(question),
-      manta::proto::Task::TASK_PLANNER,
+      manta::proto::Task::TASK_PLANNER, nullptr,
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

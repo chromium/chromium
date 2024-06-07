@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
 #include "components/manta/anchovy_provider.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -143,13 +144,15 @@ std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
 }
 
 std::unique_ptr<SparkyProvider> MantaService::CreateSparkyProvider(
-    std::unique_ptr<SparkyDelegate> sparky_delegate) {
-  if (!identity_manager_ or !sparky_delegate) {
+    std::unique_ptr<SparkyDelegate> sparky_delegate,
+    std::unique_ptr<SystemInfoDelegate> system_info_delegate) {
+  if (!identity_manager_ || !sparky_delegate || !system_info_delegate) {
     return nullptr;
   }
   return std::make_unique<SparkyProvider>(
       shared_url_loader_factory_, identity_manager_, is_demo_mode_,
-      chrome_version_, std::move(sparky_delegate));
+      chrome_version_, std::move(sparky_delegate),
+      std::move(system_info_delegate));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

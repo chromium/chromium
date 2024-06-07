@@ -20,6 +20,7 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -86,6 +87,19 @@ class FakeSparkyDelegate : public SparkyDelegate {
   SettingsDataList current_prefs_;
 };
 
+class FakeSystemInfoDelegate : public SystemInfoDelegate {
+ public:
+  FakeSystemInfoDelegate() = default;
+
+  // TODO (b:340963863) Build out this fake component.
+  // manta::SystemInfoDelegate
+  void ObtainDiagnostics(
+      const std::vector<manta::Diagnostics>& diagnostics,
+      manta::DiagnosticsDataCallback diagnostics_callback) override {
+    std::move(diagnostics_callback).Run(nullptr);
+  }
+};
+
 class FakeSparkyProvider : public SparkyProvider, public FakeBaseProvider {
  public:
   FakeSparkyProvider(
@@ -96,7 +110,8 @@ class FakeSparkyProvider : public SparkyProvider, public FakeBaseProvider {
                      /*is_demo_mode=*/false),
         SparkyProvider(test_url_loader_factory,
                        identity_manager,
-                       std::make_unique<FakeSparkyDelegate>()),
+                       std::make_unique<FakeSparkyDelegate>(),
+                       std::make_unique<FakeSystemInfoDelegate>()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 
   std::optional<base::Value> CheckSettingValue(const std::string& setting_id) {
@@ -145,7 +160,7 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
 
   sparky_provider->QuestionAndAnswer(
       "page content", qa_history, "What is the climate like then",
-      proto::Task::TASK_PLANNER,
+      proto::Task::TASK_PLANNER, nullptr,
       base::BindLambdaForTesting(
           [&quit_closure](const std::string& answer_string,
                           MantaStatus manta_status) {
@@ -178,7 +193,7 @@ TEST_F(SparkyProviderTest, EmptyResponseIfSparkyDataIsNotSet) {
 
   sparky_provider->QuestionAndAnswer(
       "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "my question", proto::Task::TASK_PLANNER,
+      "my question", proto::Task::TASK_PLANNER, nullptr,
       base::BindLambdaForTesting([&quit_closure](
                                      const std::string& answer_string,
                                      MantaStatus manta_status) {
@@ -203,7 +218,7 @@ TEST_F(SparkyProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
 
   sparky_provider->QuestionAndAnswer(
       "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "my question", proto::Task::TASK_PLANNER,
+      "my question", proto::Task::TASK_PLANNER, nullptr,
       base::BindLambdaForTesting(
           [&quit_closure](const std::string& answer_string,
                           MantaStatus manta_status) {
@@ -252,7 +267,7 @@ TEST_F(SparkyProviderTest, SettingAction) {
 
   sparky_provider->QuestionAndAnswer(
       "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "Turn on adaptive charging", proto::Task::TASK_SETTINGS,
+      "Turn on adaptive charging", proto::Task::TASK_SETTINGS, nullptr,
       base::BindLambdaForTesting(
           [&quit_closure](const std::string& answer_string,
                           MantaStatus manta_status) {
@@ -313,7 +328,7 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
 
   sparky_provider->QuestionAndAnswer(
       "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "Turn on adaptive charging", proto::Task::TASK_SETTINGS,
+      "Turn on adaptive charging", proto::Task::TASK_SETTINGS, nullptr,
       base::BindLambdaForTesting(
           [&quit_closure](const std::string& answer_string,
                           MantaStatus manta_status) {

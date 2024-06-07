@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/system_info_delegate.h"
 
 namespace signin {
 class IdentityManager;
@@ -66,7 +67,8 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
   std::unique_ptr<SparkyProvider> CreateSparkyProvider(
-      std::unique_ptr<SparkyDelegate> sparky_delegate);
+      std::unique_ptr<SparkyDelegate> sparky_delegate,
+      std::unique_ptr<SystemInfoDelegate> system_info_delegate);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Determines whether the profile for this KeyedService support Orca feature.
