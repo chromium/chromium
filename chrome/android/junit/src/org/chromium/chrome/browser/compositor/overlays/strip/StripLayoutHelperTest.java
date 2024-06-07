@@ -1240,17 +1240,23 @@ public class StripLayoutHelperTest {
 
         // Assert: StripStartMargin is about 1/4 tab width to create space for dragging first tab
         // out of group on strip.
-        // tabWidth(159.2) - tabOverlap(28) * (0.53(ReorderOverlapSwitchPercentage) * 2) = 36.8f
+        float expectedMargin =
+                (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH)
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "StripStartMargin is incorrect",
-                36.8f,
+                expectedMargin,
                 mStripLayoutHelper.getStripStartMarginForReorderForTesting(),
                 0.1f);
 
         // Assert: There should be a scroll offset equal to counter the stripStartMargin, so that
         // the interacting tab would remain visually stationary.
         assertEquals(
-                "scrollOffset is incorrect", -36.8f, mStripLayoutHelper.getScrollOffset(), 0.1f);
+                "scrollOffset is incorrect",
+                -expectedMargin,
+                mStripLayoutHelper.getScrollOffset(),
+                0.1f);
     }
 
     @Test
@@ -1274,7 +1280,12 @@ public class StripLayoutHelperTest {
 
         // Assert: Last tab's trailingMargin should be about 1/4 tab width to create space for
         // dragging last tab out of group on strip.
-        assertEquals("Strip end margin is incorrect", 36.8f, tabs[4].getTrailingMargin(), 0.1f);
+        float expectedMargin =
+                (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH)
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        assertEquals(
+                "Strip end margin is incorrect", expectedMargin, tabs[4].getTrailingMargin(), 0.1f);
     }
 
     @Test
@@ -2511,10 +2522,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Check initial bottom indicator width.
-        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // tabWidth = (availableSize(684) + 5 * overlap(28)) / 6 = 137.3333
-        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(137.3333f, 2, groupTitle);
+        float expectedStartWidth =
+                calculateExpectedBottomIndicatorWidth(
+                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2542,9 +2552,9 @@ public class StripLayoutHelperTest {
         runningAnimator.end();
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // ExpectedWidth = (availableSize(684) + 4 * overlap(28)) / 5 = 159.2
-        float expectedWidthAfterResize = 159.2f;
+        // - groupTitleWidth(46) - titleOverlapWidth(4) = 680.
+        // ExpectedWidth = (availableSize(680) + 4 * overlap(28)) / 5 = 160
+        float expectedWidthAfterResize = 160.f;
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
@@ -2586,10 +2596,9 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Check initial bottom indicator width.
-        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // tabWidth = (availableSize(684) + 5 * overlap(28)) / 6 = 137.3333
-        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(137.3333f, 2, groupTitle);
+        float expectedStartWidth =
+                calculateExpectedBottomIndicatorWidth(
+                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2605,9 +2614,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // ExpectedWidth = (availableSize(684) + 4 * overlap(28)) / 5  = 159.2.
-        float openTabWidth = 159.2f;
+        // - groupTitleWidth(46) - titleOverlapWidth(4) = 680
+        // ExpectedWidth = (availableSize(680) + 4 * overlap(28)) / 5  = 160
+        float openTabWidth = 160.f;
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
@@ -2725,10 +2734,9 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Check initial bottom indicator width.
-        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // tabWidth = (availableSize(684) + 5 * overlap(28)) / 6 = 137.3333
-        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(137.3333f, 2, groupTitle);
+        float expectedStartWidth =
+                calculateExpectedBottomIndicatorWidth(
+                        mStripLayoutHelper.getCachedTabWidthForTesting(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before tab hover.",
                 expectedStartWidth,
@@ -2741,8 +2749,8 @@ public class StripLayoutHelperTest {
         // Start reorder for tab drop between the 1st and 2nd tab.
         mStripLayoutHelper.startReorderModeForTabDrop(150.f);
 
-        // initial bottom indicator width(237) + trailing margin(69).
-        float expectedEndWidth = 306.f;
+        float expectedEndWidth =
+                expectedStartWidth + mStripLayoutHelper.getCachedTabWidthForTesting() / 2;
         assertEquals(
                 "Unexpected bottom indicator width after tab hover.",
                 expectedEndWidth,
@@ -4156,10 +4164,10 @@ public class StripLayoutHelperTest {
 
         // Verify initial dimensions.
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // tabWidth = (availableSize(684) + 3 * overlap(28)) / 4 = 192.f
+        // - groupTitleWidth(46) - titleOverlapWidth(4) = 680.
+        // tabWidth = (availableSize(680) + 3 * overlap(28)) / 4 = 193.f
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        float initialTabWidth = 192.f;
+        float initialTabWidth = 193.f;
         assertEquals("Tab width is incorrect.", initialTabWidth, views[1].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", initialTabWidth, views[2].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", initialTabWidth, views[3].getWidth(), EPSILON);
@@ -4206,9 +4214,9 @@ public class StripLayoutHelperTest {
 
         // Verify final dimensions.
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(46) = 684.
-        // tabWidth = (availableSize(684) + 3 * overlap(28)) / 4 = 192.f
-        float endTabWidth = 192.f;
+        // - groupTitleWidth(46) - titleOverlapWidth(4) = 680.
+        // tabWidth = (availableSize(680) + 3 * overlap(28)) / 4 = 193.f
+        float endTabWidth = 193.f;
         assertEquals("Tab width is incorrect.", endTabWidth, views[1].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", endTabWidth, views[2].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", endTabWidth, views[3].getWidth(), EPSILON);

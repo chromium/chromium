@@ -362,6 +362,13 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private final float mMaxTabWidth;
     private final ListPopupWindow mTabMenu;
 
+    // All views are overlapped by mTabOverlapWidth. Group titles do not need to be overlapped by
+    // this much, so we offset the drawX.
+    private final float mGroupTitleDrawXOffset;
+    // The effective overlap width for group titles. This is the "true" overlap width, but adjusted
+    // to account for the start offset above.
+    private final float mGroupTitleOverlapWidth;
+
     // Strip State
     private StackScroller mScroller;
     private float mScrollOffset;
@@ -484,6 +491,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             @NonNull WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager) {
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_LARGE_DP;
+        mGroupTitleDrawXOffset = mTabOverlapWidth - StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
+        mGroupTitleOverlapWidth = StripLayoutTab.FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP;
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
@@ -2396,8 +2405,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 } else if (!tab.isClosed() && !tab.isDraggedOffStrip()) {
                     tabsWidth += mCachedTabWidth - mTabOverlapWidth;
                 }
-            } else {
-                tabsWidth += view.getWidth();
+            } else if (view instanceof StripLayoutGroupTitle groupTitle) {
+                tabsWidth += (groupTitle.getWidth() - mGroupTitleOverlapWidth);
             }
         }
 
@@ -2988,11 +2997,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 1. Compute the width of the available space for all tabs.
         float stripWidth = mWidth - mLeftMargin - mRightMargin;
-        for (int i = 0; i < mStripViews.length; i++) {
-            final StripLayoutView view = mStripViews[i];
-            if (!(view instanceof StripLayoutTab)) {
-                stripWidth -= view.getWidth();
-            }
+        for (int i = 0; i < mStripGroupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            stripWidth -= (groupTitle.getWidth() - mGroupTitleOverlapWidth);
         }
 
         // 2. Compute additional width we gain from overlapping the tabs.
@@ -3164,10 +3171,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     delta += tab.getTrailingMargin();
                 }
             } else {
-                // Other views don't overlap like tabs, so we need to account for that here.
-                float folioFootLength = StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
-                float drawXOffset = mTabOverlapWidth - folioFootLength;
-                float deltaOffset = drawXOffset - folioFootLength;
+                // Offset to "undo" the tab overlap width as that doesn't apply to non-tab views.
+                // Also applies the desired overlap with the previous tab.
+                float drawXOffset = mGroupTitleDrawXOffset;
+                // Adjust for RTL.
                 if (LocalizationUtils.isLayoutRtl()) {
                     drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
                 }
@@ -3175,7 +3182,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 if (!mGroupTitleSliding) {
                     view.setIdealX(tabPosition + drawXOffset);
                 }
-                delta = view.getWidth() + deltaOffset;
+                delta = view.getWidth() - mGroupTitleOverlapWidth;
             }
 
             delta = MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl());
@@ -5058,10 +5065,17 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     /**
-     * @return The with of the tab strip.
+     * @return The width of the tab strip.
      */
     float getWidthForTesting() {
         return mWidth;
+    }
+
+    /**
+     * @return The width of a tab.
+     */
+    float getCachedTabWidthForTesting() {
+        return mCachedTabWidth;
     }
 
     /**
