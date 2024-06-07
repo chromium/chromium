@@ -115,7 +115,7 @@ ContentSettingImageView::ContentSettingImageView(
                                           ->AccessibilityAnnouncementStringId())
           : std::u16string();
 
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt, accessible_name,
       /*description=*/std::nullopt,
       /*role_description*/ std::nullopt,

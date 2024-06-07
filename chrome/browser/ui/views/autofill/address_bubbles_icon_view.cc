@@ -25,8 +25,8 @@ AddressBubblesIconView::AddressBubblesIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "SaveAutofillAddress") {
-  SetAccessibilityProperties(/*role*/ std::nullopt,
-                             GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetProperties(/*role*/ std::nullopt,
+                                       GetTextForTooltipAndAccessibleName());
 }
 
 AddressBubblesIconView::~AddressBubblesIconView() = default;

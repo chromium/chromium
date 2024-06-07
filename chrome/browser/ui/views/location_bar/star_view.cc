@@ -38,6 +38,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
@@ -62,8 +63,8 @@ StarView::StarView(CommandUpdater* command_updater,
   SetID(VIEW_ID_STAR_BUTTON);
   SetProperty(views::kElementIdentifierKey, kBookmarkStarViewElementId);
   SetActive(false);
-  SetAccessibilityProperties(/*role*/ std::nullopt,
-                             l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
+  GetViewAccessibility().SetProperties(
+      /*role*/ std::nullopt, l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
 }
 
 StarView::~StarView() = default;

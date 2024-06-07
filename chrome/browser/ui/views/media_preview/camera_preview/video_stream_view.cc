@@ -18,6 +18,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 VideoStreamView::VideoStreamView()
     : targeted_aspect_ratio_(video_format_comparison::kDefaultAspectRatio),
@@ -26,7 +27,7 @@ VideoStreamView::VideoStreamView()
       // Placeholder initialization. OnThemeChanged() is expected to be called
       // to re-assign `preview_base_color_` value.
       preview_base_color_(SK_ColorBLACK) {
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       ax::mojom::Role::kImage,
       l10n_util::GetStringUTF16(
           IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));

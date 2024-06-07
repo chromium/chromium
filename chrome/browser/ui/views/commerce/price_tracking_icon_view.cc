@@ -82,7 +82,7 @@ PriceTrackingIconView::PriceTrackingIconView(
       icon_(&omnibox::kPriceTrackingDisabledRefreshIcon) {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 

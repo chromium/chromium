@@ -27,7 +27,7 @@ ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                          "Zoom"),
       icon_(&kZoomMinusIcon) {
   SetVisible(false);
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM,
                                  base::FormatPercent(current_zoom_percent_)));

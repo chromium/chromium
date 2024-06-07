@@ -129,7 +129,7 @@ class IdleAppNameNotificationDelegateView
                       base::Milliseconds(message_visibility_time_in_ms), this,
                       &IdleAppNameNotificationDelegateView::RemoveMessage);
 
-    SetAccessibilityProperties(ax::mojom::Role::kAlert, app_name);
+    GetViewAccessibility().SetProperties(ax::mojom::Role::kAlert, app_name);
   }
 
   IdleAppNameNotificationDelegateView(

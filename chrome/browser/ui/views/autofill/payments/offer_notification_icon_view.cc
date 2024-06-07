@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
@@ -39,7 +40,7 @@ OfferNotificationIconView::OfferNotificationIconView(
                          "PaymentsOfferNotification") {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kOfferNotificationChipElementId);
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
@@ -91,7 +92,7 @@ void OfferNotificationIconView::MaybeShowPageActionLabel() {
   SetPaintLabelOverSolidBackground(true);
   AnimateIn(IDS_DISCOUNT_ICON_EXPANDED_TEXT);
   controller->OnIconExpanded();
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));

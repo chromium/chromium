@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
 ProductSpecificationsIconView::ProductSpecificationsIconView(
@@ -46,7 +47,7 @@ ProductSpecificationsIconView::ProductSpecificationsIconView(
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey,
               kProductSpecificationsChipElementId);
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));

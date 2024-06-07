@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace content {
 class WebContents;
@@ -30,7 +31,7 @@ IntentPickerView::IntentPickerView(
                          page_action_icon_delegate,
                          "IntentPicker"),
       browser_(browser) {
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
 }

@@ -261,7 +261,7 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
           : std::u16string();
 
   if (is_initialization) {
-    SetAccessibilityProperties(role, name, description);
+    GetViewAccessibility().SetProperties(role, name, description);
   } else {
     GetViewAccessibility().SetRole(role);
     GetViewAccessibility().SetName(name);

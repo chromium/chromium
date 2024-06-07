@@ -44,6 +44,7 @@
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -202,7 +203,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   // feature flag is turned off, there is no SavedTabGroupModel.
   DCHECK(browser_->profile()->IsRegularProfile());
   DCHECK(saved_tab_group_model_);
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       ax::mojom::Role::kToolbar,
       /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
 

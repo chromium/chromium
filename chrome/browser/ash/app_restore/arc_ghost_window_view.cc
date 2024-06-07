@@ -94,7 +94,7 @@ class Throbber : public views::View {
         FROM_HERE, base::Milliseconds(30),
         base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
     SchedulePaint();  // paint right away
-    SetAccessibilityProperties(
+    GetViewAccessibility().SetProperties(
         ax::mojom::Role::kProgressIndicator,
         l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER));
   }

@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace autofill {
 
@@ -27,7 +28,7 @@ VirtualCardManualFallbackIconView::VirtualCardManualFallbackIconView(
                          icon_label_bubble_delegate,
                          delegate,
                          "VirtualCardManualFallback") {
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));

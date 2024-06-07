@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -37,7 +38,7 @@ namespace tab_groups {
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       ax::mojom::Role::kButton,
       l10n_util::GetStringUTF16(IsTabGroupsSaveUIUpdateEnabled()
                                     ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING

@@ -66,11 +66,12 @@ SelectedKeywordView::SelectedKeywordView(
   // make more sense to only set `FocusBehavior` when this view will be shown.
   // For now, Eliminate the paint check failure.
   if (GetViewAccessibility().GetCachedName().empty()) {
-    SetAccessibilityProperties(/*role*/ std::nullopt,
-                               /*name*/ std::u16string(),
-                               /*description*/ std::nullopt,
-                               /*role_description*/ std::nullopt,
-                               ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    GetViewAccessibility().SetProperties(
+        /*role*/ std::nullopt,
+        /*name*/ std::u16string(),
+        /*description*/ std::nullopt,
+        /*role_description*/ std::nullopt,
+        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 }
 

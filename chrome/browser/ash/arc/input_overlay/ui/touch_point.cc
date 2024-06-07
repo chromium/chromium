@@ -26,6 +26,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/view_utils.h"
@@ -225,7 +226,7 @@ class CrossTouchPoint : public TouchPoint {
 
   // TouchPoint:
   void Init() override {
-    SetAccessibilityProperties(
+    GetViewAccessibility().SetProperties(
         ax::mojom::Role::kGroup,
         l10n_util::GetStringUTF16(
             IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_CROSS));
@@ -252,7 +253,7 @@ class DotTouchPoint : public TouchPoint {
 
   // TouchPoint:
   void Init() override {
-    SetAccessibilityProperties(
+    GetViewAccessibility().SetProperties(
         ax::mojom::Role::kGroup,
         l10n_util::GetStringUTF16(
             IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_DOT));

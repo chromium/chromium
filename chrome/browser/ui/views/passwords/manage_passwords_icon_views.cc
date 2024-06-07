@@ -31,8 +31,8 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
   // Password icon should not be mirrored in RTL.
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
-  SetAccessibilityProperties(/*role*/ std::nullopt,
-                             GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetProperties(/*role*/ std::nullopt,
+                                       GetTextForTooltipAndAccessibleName());
 }
 
 ManagePasswordsIconViews::~ManagePasswordsIconViews() = default;

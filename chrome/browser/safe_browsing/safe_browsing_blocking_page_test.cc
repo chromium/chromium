@@ -6,6 +6,8 @@
 // threat urls.  It then uses a real browser to go to these urls, and sends
 // "goback" or "proceed" commands and verifies they work.
 
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
+
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -78,7 +80,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"

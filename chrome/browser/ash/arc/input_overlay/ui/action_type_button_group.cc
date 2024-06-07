@@ -100,7 +100,7 @@ void ActionTypeButtonGroup::Init() {
       NOTREACHED_IN_MIGRATION();
   }
 
-  SetAccessibilityProperties(ax::mojom::Role::kRadioGroup);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioGroup);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_OPTIONS_BUTTON_TYPE));
 }

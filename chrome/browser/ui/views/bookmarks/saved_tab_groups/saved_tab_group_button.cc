@@ -101,7 +101,7 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
               group.saved_guid(),
               /*show_pin_unpin_option=*/true),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),
       /*description=*/std::nullopt,
       l10n_util::GetStringUTF16(

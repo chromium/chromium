@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 
 namespace autofill {
@@ -34,7 +35,7 @@ LocalCardMigrationIconView::LocalCardMigrationIconView(
                          "LocalCardMigration") {
   SetID(VIEW_ID_MIGRATE_LOCAL_CREDIT_CARD_BUTTON);
   SetUpForInOutAnimation();
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD));
 }

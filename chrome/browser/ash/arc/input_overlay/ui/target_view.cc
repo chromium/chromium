@@ -23,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -79,7 +80,7 @@ TargetView::TargetView(DisplayOverlayController* controller,
   center_.set_x(bounds.width() / 2);
   center_.set_y(bounds.height() / 2);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       ax::mojom::Role::kPane,
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL));
 }
