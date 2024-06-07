@@ -1095,28 +1095,6 @@ targets.mixin(
     ),
 )
 
-# TODO(b/331775322) Remove when mac migration is done.
-targets.mixin(
-    name = "mac_13_or_14_arm64",
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "arm64",
-            "os": "Mac-13|Mac-14",
-        },
-    ),
-)
-
-# TODO(b/331775322) Remove when mac migration is done.
-targets.mixin(
-    name = "mac_13_or_14_x64",
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "os": "Mac-13|Mac-14",
-        },
-    ),
-)
-
 targets.mixin(
     name = "mac_14_arm64",
     swarming = targets.swarming(
@@ -1220,7 +1198,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
-            "os": "Mac-13|Mac-14",
+            "os": "Mac-14",
         },
     ),
 )
@@ -1233,7 +1211,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
-            "os": "Mac-13|Mac-14",
+            "os": "Mac-14",
         },
     ),
 )

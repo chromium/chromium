@@ -2140,7 +2140,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -2174,7 +2174,7 @@
           'has_native_resultdb_integration',
           'ios_restart_device',
           'limited_capacity_bot',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -2289,7 +2289,7 @@
           'has_native_resultdb_integration',
           'ios_output_disabled_tests',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -3464,7 +3464,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -3621,7 +3621,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_beta',
@@ -3635,7 +3635,7 @@
         'mixins': [
           'finch-chromium-swarming-pool',
           'has_native_resultdb_integration',
-          'mac_13_or_14_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -3666,7 +3666,7 @@
       'ios-simulator-multi-window': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -3680,7 +3680,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'ios_custom_webkit',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -3694,7 +3694,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'ioswpt-chromium-swarming-pool',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'xcode_15_main',
         ],
@@ -3708,7 +3708,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_beta',
@@ -3747,7 +3747,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_beta',
@@ -4994,7 +4994,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5011,7 +5011,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5027,7 +5027,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5247,7 +5247,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5470,7 +5470,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5484,7 +5484,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5498,7 +5498,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -5512,7 +5512,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
@@ -6163,7 +6163,7 @@
       'WebRTC Chromium FYI ios-simulator': {
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_13_or_14_x64',
+          'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',

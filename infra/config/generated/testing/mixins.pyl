@@ -837,22 +837,6 @@
       },
     },
   },
-  'mac_13_or_14_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-13|Mac-14',
-      },
-    },
-  },
-  'mac_13_or_14_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-13|Mac-14',
-      },
-    },
-  },
   'mac_13_x64': {
     'swarming': {
       'dimensions': {
@@ -947,7 +931,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
-        'os': 'Mac-13|Mac-14',
+        'os': 'Mac-14',
       },
     },
   },
@@ -955,7 +939,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'os': 'Mac-13|Mac-14',
+        'os': 'Mac-14',
       },
     },
   },
