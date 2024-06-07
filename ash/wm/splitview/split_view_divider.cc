@@ -22,6 +22,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/screen.h"
@@ -128,6 +129,8 @@ class SplitViewDivider::SplitViewDividerWidget : public views::Widget {
     if (!active || this != Shell::Get()->focus_cycler()->widget_activating()) {
       return false;
     }
+    base::RecordAction(
+        base::UserMetricsAction("SnapGroups_ActivateViaKeyboard"));
     auto* divider_view =
         views::AsViewClass<SplitViewDividerView>(GetContentsView());
     divider_view->SetPaneFocusAndFocusDefault();

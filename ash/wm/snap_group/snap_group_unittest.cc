@@ -8414,10 +8414,11 @@ TEST_F(SnapGroupHistogramTest, RecallSnapGroupUserAction) {
   EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
 }
 
-TEST_F(SnapGroupHistogramTest, SkipPartialOverviewAndSnapGroup) {
+TEST_F(SnapGroupHistogramTest, SkipFormSnapGroupAfterSnapping) {
   UpdateDisplay("800x600");
   base::UserActionTester user_action_tester;
 
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
 
   // Snap using the keyboard shortcut won't record.
@@ -8425,10 +8426,39 @@ TEST_F(SnapGroupHistogramTest, SkipPartialOverviewAndSnapGroup) {
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_EQ(user_action_tester.GetActionCount(
-                "SnapGroups_SkipPartialOverviewAndSnapGroup"),
+                "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);
 
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  // Snap using an invalid snap action source won't record.
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowStateRestore);
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "SnapGroups_SkipFormSnapGroupAfterSnapping"),
+            0);
+
+  // Test that just skipping partial overview normally won't record.
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "SnapGroups_SkipFormSnapGroupAfterSnapping"),
+            0);
+
+  // Selecting the 2nd window in partial overview won't record.
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+  ClickOverviewItem(GetEventGenerator(), w2.get());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "SnapGroups_SkipFormSnapGroupAfterSnapping"),
+            0);
+  MaximizeToClearTheSession(w1.get());
+  MaximizeToClearTheSession(w2.get());
+
   SnapTwoTestWindows(w1.get(), w2.get());
   auto* snap_group_controller = SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
@@ -8446,7 +8476,7 @@ TEST_F(SnapGroupHistogramTest, SkipPartialOverviewAndSnapGroup) {
   ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
   ASSERT_FALSE(IsInOverviewSession());
   EXPECT_EQ(user_action_tester.GetActionCount(
-                "SnapGroups_SkipPartialOverviewAndSnapGroup"),
+                "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             1);
 }
 

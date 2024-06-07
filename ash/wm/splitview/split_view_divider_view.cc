@@ -11,6 +11,7 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -303,6 +304,7 @@ void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
 
 void SplitViewDividerView::ResizeOnKeyEvent(bool left_or_top, bool horizontal) {
   CHECK(divider_);
+  base::RecordAction(base::UserMetricsAction("SnapGroups_ResizeViaKeyboard"));
   const gfx::Point start_location(GetBoundsInScreen().CenterPoint());
   StartResizing(start_location);
   const int distance = left_or_top ? -kSplitViewDividerResizeDistance

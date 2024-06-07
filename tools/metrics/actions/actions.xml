@@ -37789,6 +37789,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SnapGroups_ActivateViaKeyboard">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the divider is activated via the keyboard.
+  </description>
+</action>
+
 <action name="SnapGroups_AddSnapGroup">
   <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
@@ -37836,7 +37845,16 @@ should be able to be added at any place in this file.
   <description>Recorded when a snap group is being resized.</description>
 </action>
 
-<action name="SnapGroups_SkipPartialOverviewAndSnapGroup">
+<action name="SnapGroups_ResizeViaKeyboard">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the divider is resized via the keyboard.
+  </description>
+</action>
+
+<action name="SnapGroups_SkipFormSnapGroupAfterSnapping">
   <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <description>
