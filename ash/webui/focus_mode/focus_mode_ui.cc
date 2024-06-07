@@ -30,7 +30,7 @@ namespace {
 void HandleTrack(focus_mode::mojom::TrackProvider::GetTrackCallback callback,
                  const std::optional<FocusModeSoundsDelegate::Track>& track) {
   if (!track) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(focus_mode::mojom::TrackDefinition::New());
     return;
   }
   auto mojo_track = focus_mode::mojom::TrackDefinition::New(
