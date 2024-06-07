@@ -51,8 +51,6 @@ constexpr char kNonCommerceUrl[] = "https://www.foo.com";
 constexpr char kCommerceUrl[] = "https://www.buy-stuff.com/checkout.html";
 constexpr char kManagedDomain[] = "corporate.com";
 
-constexpr char kUmaSubmission[] = "PlusAddresses.Submission";
-
 // Short-hands for the bucket enum used to record bucketed plus address counts.
 constexpr int64_t kNoPlusAddress = 0;
 constexpr int64_t kOneToThreePlusAddresses = 1;
@@ -195,6 +193,32 @@ struct PlusAddressSubmissionTestCase {
     // was emitted. Otherwise, no `PlusAddresses.Submission` emission is
     // expected.
     std::optional<bool> submitted_plus_address;
+    // If set, contains the value of the single
+    // `PlusAddress.Submission.FirstTimeUser.No` histogram that was emitted.
+    // Otherwise, no emission is expected for this histogram.
+    std::optional<bool> submitted_plus_address_first_time_user_no;
+    // If set, contains the value of the single
+    // `PlusAddress.Submission.FirstTimeUser.Yes` histogram that was emitted.
+    // Otherwise, no emission is expected for this histogram.
+    std::optional<bool> submitted_plus_address_first_time_user_yes;
+    // If set, contains the value of the single
+    // `PlusAddress.Submission.ManagedUser.No` histogram that was emitted.
+    // Otherwise, no emission is expected for this histogram.
+    std::optional<bool> submitted_plus_address_managed_user_no;
+    // If set, contains the value of the single
+    // `PlusAddress.Submission.ManagedUser.Yes` histogram that was emitted.
+    // Otherwise, no emission is expected for this histogram.
+    std::optional<bool> submitted_plus_address_managed_user_yes;
+    // If set, contains the value of the
+    // `PlusAddress.Submission.IsSingleFieldRendererForm' histogram that was
+    // emitted. Otherwise, no emission is expected for this histogram.
+    std::optional<bool> submitted_plus_address_is_single_field_renderer_form;
+    // If set, contains the value of the
+    // `PlusAddress.Submission.IsSingleFieldRendererForm.ManagedUser.No'
+    // histogram that was emitted. Otherwise, no emission is expected for this
+    // histogram.
+    std::optional<bool>
+        submitted_plus_address_is_single_field_renderer_form_managed_user_no;
   };
   const Uma uma;
 };
@@ -236,13 +260,29 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
   autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
                                      kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().ukms));
+
+  auto check_boolean_histogram = [&](std::string_view histogram_suffix,
+                                     std::optional<bool> expected_value) {
+    const std::string histogram = base::StrCat(
+        {PlusAddressSubmissionLogger::kUmaSubmissionPrefix, histogram_suffix});
+    if (expected_value) {
+      histogram_tester.ExpectUniqueSample(histogram, *expected_value, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(histogram, 0);
+    }
+  };
   const PlusAddressSubmissionTestCase::Uma& uma = GetParam().uma;
-  if (uma.submitted_plus_address) {
-    histogram_tester.ExpectUniqueSample(kUmaSubmission,
-                                        uma.submitted_plus_address.value(), 1);
-  } else {
-    histogram_tester.ExpectTotalCount(kUmaSubmission, 0);
-  }
+  check_boolean_histogram("", uma.submitted_plus_address);
+  check_boolean_histogram(".ManagedUser.No",
+                          uma.submitted_plus_address_managed_user_no);
+  check_boolean_histogram(".ManagedUser.Yes",
+                          uma.submitted_plus_address_managed_user_yes);
+  check_boolean_histogram(
+      ".SingleFieldRendererForm",
+      uma.submitted_plus_address_is_single_field_renderer_form);
+  check_boolean_histogram(
+      ".SingleFieldRendererForm.ManagedUser.No",
+      uma.submitted_plus_address_is_single_field_renderer_form_managed_user_no);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -268,7 +308,13 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kNoPasswordForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = true}},
+            .uma =
+                {.submitted_plus_address = true,
+                 .submitted_plus_address_first_time_user_yes = true,
+                 .submitted_plus_address_managed_user_no = true,
+                 .submitted_plus_address_is_single_field_renderer_form = true,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     true}},
         // Submission of an email form after seeing combined plus address &
         // Autocomplete suggestions and creating and filling a new plus address.
         PlusAddressSubmissionTestCase{
@@ -287,7 +333,13 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kNoPasswordForm,
                 SuggestionContext::kAutocomplete)},
-            .uma = {.submitted_plus_address = true}},
+            .uma =
+                {.submitted_plus_address = true,
+                 .submitted_plus_address_first_time_user_yes = true,
+                 .submitted_plus_address_managed_user_no = true,
+                 .submitted_plus_address_is_single_field_renderer_form = true,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     true}},
         // Submission of an email form after filling an existing plus address.
         PlusAddressSubmissionTestCase{
             .input =
@@ -306,7 +358,13 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kSingleUsernameForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = true}},
+            .uma =
+                {.submitted_plus_address = true,
+                 .submitted_plus_address_first_time_user_no = true,
+                 .submitted_plus_address_managed_user_no = true,
+                 .submitted_plus_address_is_single_field_renderer_form = true,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     true}},
         // Submission from a managed account.
         PlusAddressSubmissionTestCase{
             .input =
@@ -326,7 +384,11 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kSingleUsernameForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = true}},
+            .uma = {.submitted_plus_address = true,
+                    .submitted_plus_address_first_time_user_no = true,
+                    .submitted_plus_address_managed_user_yes = true,
+                    .submitted_plus_address_is_single_field_renderer_form =
+                        true}},
         // Submission from a main frame URL with a checkout context.
         PlusAddressSubmissionTestCase{
             .input =
@@ -346,7 +408,13 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kSingleUsernameForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = true}},
+            .uma =
+                {.submitted_plus_address = true,
+                 .submitted_plus_address_first_time_user_no = true,
+                 .submitted_plus_address_managed_user_no = true,
+                 .submitted_plus_address_is_single_field_renderer_form = true,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     true}},
         // Submission of an email form with GAIA email after seeing a fill plus
         // address suggestion.
         PlusAddressSubmissionTestCase{
@@ -366,7 +434,13 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/false,
                 PasswordFormType::kSingleUsernameForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = false}},
+            .uma =
+                {.submitted_plus_address = false,
+                 .submitted_plus_address_first_time_user_no = false,
+                 .submitted_plus_address_managed_user_no = false,
+                 .submitted_plus_address_is_single_field_renderer_form = false,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     false}},
         // Submission of an email form with GAIA email after seeing a create
         // plus address suggestion.
         PlusAddressSubmissionTestCase{
@@ -386,7 +460,13 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/false,
                 PasswordFormType::kNoPasswordForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = false}},
+            .uma =
+                {.submitted_plus_address = false,
+                 .submitted_plus_address_first_time_user_no = false,
+                 .submitted_plus_address_managed_user_no = false,
+                 .submitted_plus_address_is_single_field_renderer_form = false,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     false}},
         // Submission of a form with many fields - the field counts are
         // bucketed.
         PlusAddressSubmissionTestCase{
@@ -408,7 +488,9 @@ INSTANTIATE_TEST_SUITE_P(
                 /*submitted_plus_address=*/true,
                 PasswordFormType::kNoPasswordForm,
                 SuggestionContext::kAutofillProfileOnEmailField)},
-            .uma = {.submitted_plus_address = true}},
+            .uma = {.submitted_plus_address = true,
+                    .submitted_plus_address_first_time_user_no = true,
+                    .submitted_plus_address_managed_user_no = true}},
         // Submission of an email form after filling no email address at all.
         PlusAddressSubmissionTestCase{
             .input =

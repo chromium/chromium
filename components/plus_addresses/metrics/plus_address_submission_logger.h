@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace signin {
 class IdentityManager;
@@ -25,6 +26,9 @@ namespace plus_addresses::metrics {
 
 class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
  public:
+  // The prefix for all UMAs emitted by this class.
+  static constexpr char kUmaSubmissionPrefix[] = "PlusAddresses.Submission";
+
   // A callback used to verify whether a string corresponds to a valid plus
   // address.
   using PlusAddressVerifier = base::RepeatingCallback<bool(const std::string&)>;
@@ -63,12 +67,25 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
   // are deleted if the form containing the field is submitted or the Autofill
   // manager that belongs to the browser form containing the form field is reset
   // or destroyed.
-  using Record = ukm::builders::PlusAddresses_Submission;
+  struct Record final {
+    Record(ukm::SourceId source_id,
+           bool is_single_field_in_renderer_form,
+           bool is_first_time_user);
+    Record(Record&&);
+    Record& operator=(Record&&);
+    ~Record();
+
+    std::unique_ptr<ukm::builders::PlusAddresses_Submission> ukm_builder;
+    // This information for the following members is contained in the builder
+    // but cannot be read from there. This duplicates it to allow recording a
+    // UMA at submission.
+    bool is_single_field_in_renderer_form = false;
+    bool is_first_time_user = false;
+  };
   // TODO: crbug.com/343124027 - Consider just keeping one map keyed by
   // FieldGlobalId once frame tokens are set on iOS.
-  base::flat_map<
-      autofill::AutofillManager*,
-      base::flat_map<autofill::FieldGlobalId, std::unique_ptr<Record>>>
+  base::flat_map<autofill::AutofillManager*,
+                 base::flat_map<autofill::FieldGlobalId, Record>>
       records_;
 
   // Observations of all managers for which there is an entry in `records_`. The

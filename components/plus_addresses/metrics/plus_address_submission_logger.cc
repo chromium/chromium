@@ -65,6 +65,22 @@ bool IsCartOrCheckoutUrl(const GURL& url) {
 
 }  // namespace
 
+PlusAddressSubmissionLogger::Record::Record(
+    ukm::SourceId source_id,
+    bool is_single_field_in_renderer_form,
+    bool is_first_time_user)
+    : ukm_builder(
+          std::make_unique<ukm::builders::PlusAddresses_Submission>(source_id)),
+      is_single_field_in_renderer_form(is_single_field_in_renderer_form),
+      is_first_time_user(is_first_time_user) {}
+
+PlusAddressSubmissionLogger::Record::Record(Record&&) = default;
+
+PlusAddressSubmissionLogger::Record&
+PlusAddressSubmissionLogger::Record::operator=(Record&&) = default;
+
+PlusAddressSubmissionLogger::Record::~Record() = default;
+
 PlusAddressSubmissionLogger::PlusAddressSubmissionLogger(
     signin::IdentityManager* identity_manager,
     PlusAddressVerifier plus_address_verifier)
@@ -115,8 +131,10 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
           const std::unique_ptr<autofill::AutofillField>& field) {
         return field->renderer_form_id() == renderer_form_id;
       });
-  auto record = std::make_unique<Record>(manager.client().GetUkmSourceId());
-  record
+  Record record(manager.client().GetUkmSourceId(),
+                field_count_in_renderer_form == 1,
+                /*is_first_time_user=*/plus_address_count == 0);
+  record.ukm_builder
       ->SetCheckoutOrCartPage(IsCartOrCheckoutUrl(
           manager.client().GetLastCommittedPrimaryMainFrameURL()))
       .SetFieldCountBrowserForm(ukm::GetExponentialBucketMinForCounts1000(
@@ -151,6 +169,8 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
   if (core_account_info.IsEmpty()) {
     return;
   }
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfo(core_account_info);
 
   bool gaia_email_submitted = false;
   bool plus_address_submitted = false;
@@ -172,7 +192,7 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
     return;
   }
 
-  base::flat_map<FieldGlobalId, std::unique_ptr<Record>>& records_for_manager =
+  base::flat_map<FieldGlobalId, Record>& records_for_manager =
       records_[&manager];
   bool has_recorded_submission = false;
   for (const FormFieldData& field : form.fields) {
@@ -184,17 +204,36 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
     // general, there will be multiple fields for which suggestions were shown
     // and we pick an arbitrary one.
     if (!has_recorded_submission) {
-      Record& record = *it->second;
+      Record& record = it->second;
       if (!plus_address_submitted) {
-        record.SetNewlyCreatedPlusAddress(false);
+        record.ukm_builder->SetNewlyCreatedPlusAddress(false);
       }
-      record.SetSubmittedPlusAddress(plus_address_submitted);
-      record.Record(manager.client().GetUkmRecorder());
+      record.ukm_builder->SetSubmittedPlusAddress(plus_address_submitted);
+      record.ukm_builder->Record(manager.client().GetUkmRecorder());
       has_recorded_submission = true;
 
       // Record a subset of the data also in form of UMAs.
-      base::UmaHistogramBoolean("PlusAddresses.Submission",
-                                plus_address_submitted);
+      base::UmaHistogramBoolean(kUmaSubmissionPrefix, plus_address_submitted);
+      base::UmaHistogramBoolean(
+          base::StrCat({kUmaSubmissionPrefix, ".FirstTimeUser",
+                        account_info.IsManaged() ? ".Yes" : ".No"}),
+          plus_address_submitted);
+      base::UmaHistogramBoolean(
+          base::StrCat({kUmaSubmissionPrefix, ".ManagedUser",
+                        account_info.IsManaged() ? ".Yes" : ".No"}),
+          plus_address_submitted);
+      if (record.is_single_field_in_renderer_form) {
+        base::UmaHistogramBoolean(
+            base::StrCat({kUmaSubmissionPrefix, ".SingleFieldRendererForm"}),
+            plus_address_submitted);
+      }
+      if (record.is_single_field_in_renderer_form &&
+          !account_info.IsManaged()) {
+        base::UmaHistogramBoolean(
+            base::StrCat({kUmaSubmissionPrefix,
+                          ".SingleFieldRendererForm.ManagedUser.No"}),
+            plus_address_submitted);
+      }
     }
     records_for_manager.erase(it);
   }

@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="PlusAddresses.Submission" enum="PlusAddressOrGaia"
+<histogram name="PlusAddresses.Submission{Segment}" enum="PlusAddressOrGaia"
     expires_after="2024-12-31">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
@@ -31,8 +31,28 @@ chromium-metrics-reviews@google.com.
 
     Emitted whenever a user submits a form for which they have previously seen
     at least one plus address suggestion and one of the form fields contains
-    either a plus address or the user's GAIA email.
+    either a plus address or the user's GAIA email. {Segment}
   </summary>
+  <token key="Segment">
+    <variant name="" summary=""/>
+    <variant name=".FirstTimeUser.No"
+        summary="Emitted only for users who do not have a plus address (on
+                 any domain) when the plus address suggestion is shown."/>
+    <variant name=".FirstTimeUser.Yes"
+        summary="Emitted only for users who have at least one plus address
+                 (on any domain) when the plus address suggestion is shown."/>
+    <variant name=".ManagedUser.No"
+        summary="Emitted only for users whose Chrome profile is not managed."/>
+    <variant name=".ManagedUser.Yes"
+        summary="Emitted only for users whose Chrome profile is managed."/>
+    <variant name=".SingleFieldRendererForm"
+        summary="Emitted only if the focused field was the only field in its
+                 renderer form."/>
+    <variant name=".SingleFieldRendererForm.ManagedUser.No"
+        summary="Emitted only if the focused field was the only field in its
+                 renderer form and a user whose Chrome profile is not
+                 managed."/>
+  </token>
 </histogram>
 
 </histograms>
