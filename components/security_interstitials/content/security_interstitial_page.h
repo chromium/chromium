@@ -98,7 +98,6 @@ class SecurityInterstitialPage {
   bool create_view_;
 
   // Store some data about the initial state of extended reporting opt-in.
-  bool on_show_extended_reporting_pref_exists_;
   bool on_show_extended_reporting_pref_value_;
 
   // For subclasses that don't have their own ControllerClients yet.

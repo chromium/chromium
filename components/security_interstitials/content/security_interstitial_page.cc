@@ -29,7 +29,6 @@ SecurityInterstitialPage::SecurityInterstitialPage(
     : web_contents_(web_contents),
       request_url_(request_url),
       create_view_(true),
-      on_show_extended_reporting_pref_exists_(false),
       on_show_extended_reporting_pref_value_(false),
       controller_(std::move(controller)) {
   // Determine if any prefs need to be updated prior to showing the security
@@ -96,8 +95,6 @@ void SecurityInterstitialPage::SetUpMetrics() {
   // to the same data when the interstitial is closed.
   PrefService* prefs = controller_->GetPrefService();
   if (prefs) {
-    on_show_extended_reporting_pref_exists_ =
-        safe_browsing::ExtendedReportingPrefExists(*prefs);
     on_show_extended_reporting_pref_value_ =
         safe_browsing::IsExtendedReportingEnabled(*prefs);
   }

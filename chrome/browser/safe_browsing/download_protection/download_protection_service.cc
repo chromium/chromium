@@ -653,8 +653,7 @@ bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
     download::DownloadItem* download,
     DownloadCommands::Command download_command) {
   PrefService* prefs = profile->GetPrefs();
-  bool is_extended_reporting =
-      ExtendedReportingPrefExists(*prefs) && IsExtendedReportingEnabled(*prefs);
+  bool is_extended_reporting = IsExtendedReportingEnabled(*prefs);
   if (!profile->IsOffTheRecord() && is_extended_reporting) {
     feedback_service_->BeginFeedbackForDownload(profile, download,
                                                 download_command);

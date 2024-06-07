@@ -358,10 +358,6 @@ bool IsSafeBrowsingEnabled(const PrefService& prefs);
 // Returns whether Safe Browsing enhanced protection is enabled for the user.
 bool IsEnhancedProtectionEnabled(const PrefService& prefs);
 
-// Returns whether the currently active Safe Browsing Extended Reporting
-// preference exists (eg: has been set before).
-bool ExtendedReportingPrefExists(const PrefService& prefs);
-
 // Returns the level of reporting available for the current user.
 ExtendedReportingLevel GetExtendedReportingLevel(const PrefService& prefs);
 

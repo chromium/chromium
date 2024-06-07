@@ -107,10 +107,6 @@ bool IsEnhancedProtectionEnabled(const PrefService& prefs) {
          IsSafeBrowsingEnabled(prefs);
 }
 
-bool ExtendedReportingPrefExists(const PrefService& prefs) {
-  return prefs.HasPrefPath(prefs::kSafeBrowsingScoutReportingEnabled);
-}
-
 ExtendedReportingLevel GetExtendedReportingLevel(const PrefService& prefs) {
   return IsExtendedReportingEnabled(prefs) ? SBER_LEVEL_SCOUT : SBER_LEVEL_OFF;
 }
