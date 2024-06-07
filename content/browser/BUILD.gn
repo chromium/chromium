@@ -1696,8 +1696,6 @@ source_set("browser") {
     "renderer_host/input/motion_event_web.h",
     "renderer_host/input/mouse_wheel_phase_handler.cc",
     "renderer_host/input/mouse_wheel_phase_handler.h",
-    "renderer_host/input/render_widget_host_latency_tracker.cc",
-    "renderer_host/input/render_widget_host_latency_tracker.h",
     "renderer_host/input/stylus_text_selector.cc",
     "renderer_host/input/stylus_text_selector.h",
     "renderer_host/input/synthetic_gesture_target_aura.cc",

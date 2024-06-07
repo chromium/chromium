@@ -18,6 +18,7 @@
 #include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_input_router_delegate.h"
 #include "content/common/input/render_input_router_iterator.h"
+#include "content/common/input/render_input_router_latency_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +40,8 @@ class MockRenderInputRouter;
 // (https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE),
 // this will also be used to handle input events on VizCompositorThread (GPU
 // process).
-class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
+class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
+                                         public InputDispositionHandler {
  public:
   RenderInputRouter(const RenderInputRouter&) = delete;
   RenderInputRouter& operator=(const RenderInputRouter&) = delete;
@@ -69,6 +71,8 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   void StopFling();
 
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler();
+
+  void SetView(RenderWidgetHostViewInput* view);
 
   // InputRouterImplClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
@@ -110,6 +114,28 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;
 
+  // InputDispositionHandler
+  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
+  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
+  void OnGestureEventAck(
+      const input::GestureEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) override;
+
+  // Dispatch input events with latency information
+  void DispatchInputEventWithLatencyInfo(
+      const blink::WebInputEvent& event,
+      ui::LatencyInfo* latency,
+      ui::EventLatencyMetadata* event_latency_metadata);
+
+  virtual void ForwardTouchEventWithLatencyInfo(
+      const blink::WebTouchEvent& touch_event,
+      const ui::LatencyInfo& latency);  // Virtual for testing
+
   // Retrieve an iterator over any RenderInputRouters that are
   // immediately embedded within this one. This does not return
   // RenderInputRouters that are embedded indirectly (i.e. nested within
@@ -132,6 +158,10 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   }
 
   void DidStopFlinging() { is_in_touchpad_gesture_fling_ = false; }
+
+  content::RenderInputRouterLatencyTracker* GetLatencyTracker() {
+    return latency_tracker_.get();
+  }
 
   void FlushForTesting() {
     if (widget_input_handler_) {
@@ -165,6 +195,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
              base::checked_cast<size_t>(blink::WebGestureDevice::kMaxValue) + 1>
       is_in_gesture_scroll_ = {{false}};
   bool is_in_touchpad_gesture_fling_ = false;
+  std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
   raw_ptr<InputRouterImplClient> input_router_impl_client_;
   raw_ptr<InputDispositionHandler> input_disposition_handler_;
@@ -179,6 +210,8 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
       frame_widget_input_handler_;
 
   bool force_enable_zoom_ = false;
+
+  base::WeakPtr<RenderWidgetHostViewInput> view_input_;
 };
 
 }  // namespace content

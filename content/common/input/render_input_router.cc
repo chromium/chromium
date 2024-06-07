@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "content/common/input/input_router_config_helper.h"
+#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/render_widget_host_view_input.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -113,6 +114,8 @@ RenderInputRouter::RenderInputRouter(
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fling_scheduler_(std::move(fling_scheduler)),
+      latency_tracker_(
+          std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
       input_router_impl_client_(host),
       input_disposition_handler_(handler),
       delegate_(delegate),
@@ -122,7 +125,7 @@ void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("toplevel.flow", "RenderInputRouter::SetupInputRouter");
 
   input_router_ = std::make_unique<InputRouterImpl>(
-      this, input_disposition_handler_, fling_scheduler_.get(),
+      this, this, fling_scheduler_.get(),
       GetInputRouterConfigForPlatform(task_runner_));
 
   // input_router_ recreated, need to update the force_enable_zoom_ state.
@@ -281,6 +284,75 @@ void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
                                                               latency_info);
 }
 
+void RenderInputRouter::OnWheelEventAck(
+    const input::MouseWheelEventWithLatencyInfo& wheel_event,
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result) {
+  latency_tracker_->OnInputEventAck(wheel_event.event, &wheel_event.latency,
+                                    ack_result);
+  delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
+                                             wheel_event.event);
+
+  input_disposition_handler_->OnWheelEventAck(wheel_event, ack_source,
+                                              ack_result);
+}
+
+void RenderInputRouter::OnTouchEventAck(
+    const input::TouchEventWithLatencyInfo& event,
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result) {
+  latency_tracker_->OnInputEventAck(event.event, &event.latency, ack_result);
+  delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
+                                             event.event);
+
+  auto* input_event_router = delegate_->GetInputEventRouter();
+
+  // At present interstitial pages might not have an input event router, so we
+  // just have the view process the ack directly in that case; the view is
+  // guaranteed to be a top-level view with an appropriate implementation of
+  // ProcessAckedTouchEvent().
+  if (input_event_router) {
+    input_event_router->ProcessAckedTouchEvent(event, ack_result,
+                                               view_input_.get());
+  } else if (view_input_) {
+    view_input_->ProcessAckedTouchEvent(event, ack_result);
+  }
+}
+
+void RenderInputRouter::OnGestureEventAck(
+    const input::GestureEventWithLatencyInfo& event,
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result) {
+  latency_tracker_->OnInputEventAck(event.event, &event.latency, ack_result);
+  delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
+                                             event.event);
+
+  input_disposition_handler_->OnGestureEventAck(event, ack_source, ack_result);
+}
+
+void RenderInputRouter::DispatchInputEventWithLatencyInfo(
+    const WebInputEvent& event,
+    ui::LatencyInfo* latency,
+    ui::EventLatencyMetadata* event_latency_metadata) {
+  latency_tracker_->OnInputEvent(event, latency, event_latency_metadata);
+  delegate_->NotifyObserversOfInputEvent(event);
+}
+
+void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
+    const blink::WebTouchEvent& touch_event,
+    const ui::LatencyInfo& latency) {
+  TRACE_EVENT0("input", "RenderInputRouter::ForwardTouchEvent");
+
+  // Always forward TouchEvents for touch stream consistency. They will be
+  // ignored if appropriate in FilterInputEvent().
+
+  input::TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
+  DispatchInputEventWithLatencyInfo(
+      touch_with_latency.event, &touch_with_latency.latency,
+      &touch_with_latency.event.GetModifiableEventLatencyMetadata());
+  input_router_->SendTouchEvent(touch_with_latency);
+}
+
 std::unique_ptr<RenderInputRouterIterator>
 RenderInputRouter::GetEmbeddedRenderInputRouters() {
   return delegate_->GetEmbeddedRenderInputRouters();
@@ -342,6 +414,14 @@ RenderInputRouter::GetFrameWidgetInputHandler() {
     return nullptr;
   }
   return frame_widget_input_handler_.get();
+}
+
+void RenderInputRouter::SetView(RenderWidgetHostViewInput* view) {
+  if (!view) {
+    view_input_.reset();
+    return;
+  }
+  view_input_ = view->GetInputWeakPtr();
 }
 
 void RenderInputRouter::ResetFrameWidgetInputInterfaces() {

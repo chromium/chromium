@@ -414,6 +414,8 @@ class MockRenderWidgetHostOwnerDelegate
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  public:
+  using RenderWidgetHostImpl::render_input_router_;
+
   MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
                            base::SafeRef<SiteInstanceGroup> site_instance_group,
                            int32_t routing_id,
@@ -466,8 +468,12 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   MOCK_METHOD0(Focus, void());
   MOCK_METHOD0(Blur, void());
 
+  MockRenderInputRouter* mock_render_input_router() {
+    return static_cast<MockRenderInputRouter*>(render_input_router_.get());
+  }
+
   MockWidgetInputHandler* input_handler() {
-    return mock_render_input_router_->mock_widget_input_handler_.get();
+    return mock_render_input_router()->mock_widget_input_handler_.get();
   }
 
   MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
@@ -475,7 +481,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   }
 
   RenderInputRouter* GetRenderInputRouter() override {
-    return mock_render_input_router_.get();
+    return render_input_router_.get();
   }
 
   const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
@@ -487,13 +493,12 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   void BlurImpl() { RenderWidgetHostImpl::Blur(); }
 
   void SetupMockRenderInputRouter() {
-    mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
+    render_input_router_ = std::make_unique<MockRenderInputRouter>(
         this, this, MakeFlingScheduler(), this,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     SetupInputRouter();
   }
 
-  std::unique_ptr<MockRenderInputRouter> mock_render_input_router_;
   ui::LatencyInfo last_wheel_event_latency_info_;
 };
 

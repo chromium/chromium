@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/render_widget_host_latency_tracker.h"
+#include "content/common/input/render_input_router_latency_tracker.h"
 
 #include <stddef.h>
 #include <string>
@@ -13,9 +13,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_widget_host_delegate.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
+#include "content/common/input/render_input_router_delegate.h"
 #include "content/public/common/content_client.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
@@ -81,23 +79,27 @@ const char* GetTraceNameFromType(blink::WebInputEvent::Type type) {
 }
 }  // namespace
 
-RenderWidgetHostLatencyTracker::RenderWidgetHostLatencyTracker(
-    RenderWidgetHostDelegate* delegate)
+RenderInputRouterLatencyTracker::RenderInputRouterLatencyTracker(
+    RenderInputRouterDelegate* delegate)
     : has_seen_first_gesture_scroll_update_(false),
       gesture_scroll_id_(-1),
       touch_trace_id_(-1),
       active_multi_finger_gesture_(false),
       touch_start_default_prevented_(false),
-      render_widget_host_delegate_(delegate) {}
+      render_input_router_delegate_(delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-RenderWidgetHostLatencyTracker::~RenderWidgetHostLatencyTracker() {}
+RenderInputRouterLatencyTracker::~RenderInputRouterLatencyTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-void RenderWidgetHostLatencyTracker::OnInputEvent(
+void RenderInputRouterLatencyTracker::OnInputEvent(
     const blink::WebInputEvent& event,
     LatencyInfo* latency,
     ui::EventLatencyMetadata* event_latency_metadata) {
   DCHECK(latency);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   OnEventStart(latency);
 
@@ -180,7 +182,7 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
   }
 }
 
-void RenderWidgetHostLatencyTracker::OnInputEventAck(
+void RenderInputRouterLatencyTracker::OnInputEventAck(
     const blink::WebInputEvent& event,
     LatencyInfo* latency,
     blink::mojom::InputEventResultState ack_result) {
@@ -215,11 +217,11 @@ void RenderWidgetHostLatencyTracker::OnInputEventAck(
   }
 }
 
-void RenderWidgetHostLatencyTracker::OnEventStart(ui::LatencyInfo* latency) {
+void RenderInputRouterLatencyTracker::OnEventStart(ui::LatencyInfo* latency) {
   static uint64_t global_trace_id = 0;
   latency->set_trace_id(++global_trace_id);
   latency->set_ukm_source_id(
-      render_widget_host_delegate_->GetCurrentPageUkmSourceId());
+      render_input_router_delegate_->GetCurrentPageUkmSourceId());
 }
 
 }  // namespace content

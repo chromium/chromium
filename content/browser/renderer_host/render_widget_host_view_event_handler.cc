@@ -909,7 +909,8 @@ void RenderWidgetHostViewEventHandler::ProcessMouseWheelEvent(
 void RenderWidgetHostViewEventHandler::ProcessTouchEvent(
     const blink::WebTouchEvent& event,
     const ui::LatencyInfo& latency) {
-  host_->ForwardTouchEventWithLatencyInfo(event, latency);
+  host_->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(event,
+                                                                  latency);
 }
 
 bool RenderWidgetHostViewEventHandler::IsKeyLocked(const ui::KeyEvent& event) {

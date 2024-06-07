@@ -142,6 +142,8 @@ source_set("common") {
     "input/render_input_router.h",
     "input/render_input_router_delegate.h",
     "input/render_input_router_iterator.h",
+    "input/render_input_router_latency_tracker.cc",
+    "input/render_input_router_latency_tracker.h",
     "input/render_widget_host_input_event_router.cc",
     "input/render_widget_host_input_event_router.h",
     "input/render_widget_host_view_input.h",

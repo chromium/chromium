@@ -407,7 +407,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       should_disable_hang_monitor_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kDisableHangMonitor)),
-      latency_tracker_(delegate_),
       hung_renderer_delay_(kHungRendererDelay),
       new_content_rendering_delay_(blink::kNewContentRenderingDelay),
       frame_token_message_queue_(std::move(frame_token_message_queue)),
@@ -429,6 +428,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   CHECK(delegate_);
   CHECK_NE(MSG_ROUTING_NONE, routing_id_);
   CHECK(base::ThreadPoolInstance::Get());
+
+  AddInputEventObserver(BrowserAccessibilityStateImpl::GetInstance());
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
@@ -564,6 +565,7 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
   } else {
     view_.reset();
   }
+  GetRenderInputRouter()->SetView(view);
 }
 
 // static
@@ -1456,9 +1458,6 @@ void RenderWidgetHostImpl::StopInputEventAckTimeout() {
 }
 
 void RenderWidgetHostImpl::DidNavigate() {
-  // Stop the flinging after navigating to a new page.
-  StopFling();
-
   // Resize messages before navigation are not acked, so reset
   // |visual_properties_ack_pending_| and make sure the next resize will be
   // acked if the last resize before navigation was supposed to be acked.
@@ -1502,12 +1501,6 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
   CHECK_GE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeFirst);
   CHECK_LE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeLast);
 
-  // This is used to auto-disable accessibility if we detect user input
-  // but no accessibility API usage.
-  if (mouse_event.GetType() == WebInputEvent::Type::kMouseDown) {
-    BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
-  }
-
   for (auto& mouse_event_callback : mouse_event_callbacks_) {
     if (mouse_event_callback.Run(mouse_event)) {
       return;
@@ -1525,7 +1518,7 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
   }
 
   input::MouseEventWithLatencyInfo mouse_with_latency(mouse_event, latency);
-  DispatchInputEventWithLatencyInfo(
+  GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       mouse_with_latency.event, &mouse_with_latency.latency,
       &mouse_with_latency.event.GetModifiableEventLatencyMetadata());
   input_router()->SendMouseEvent(
@@ -1556,7 +1549,7 @@ void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
 
   input::MouseWheelEventWithLatencyInfo wheel_with_latency(wheel_event,
                                                            latency);
-  DispatchInputEventWithLatencyInfo(
+  GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       wheel_with_latency.event, &wheel_with_latency.latency,
       &wheel_with_latency.event.GetModifiableEventLatencyMetadata());
   input_router()->SendWheelEvent(wheel_with_latency);
@@ -1591,12 +1584,6 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
     const ui::LatencyInfo& latency) {
   TRACE_EVENT1("input", "RenderWidgetHostImpl::ForwardGestureEvent", "type",
                WebInputEvent::GetName(gesture_event.GetType()));
-
-  // This is used to auto-disable accessibility if we detect user input
-  // but no accessibility API usage.
-  if (gesture_event.GetType() == WebInputEvent::Type::kGestureTapDown) {
-    BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
-  }
 
   // Early out if necessary, prior to performing latency logic.
   if (IsIgnoringWebInputEvents(gesture_event)) {
@@ -1644,31 +1631,10 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
 
   input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
                                                           latency);
-  DispatchInputEventWithLatencyInfo(
+  GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       gesture_with_latency.event, &gesture_with_latency.latency,
       &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
   GetRenderInputRouter()->SendGestureEventWithLatencyInfo(gesture_with_latency);
-}
-
-void RenderWidgetHostImpl::ForwardTouchEventWithLatencyInfo(
-    const blink::WebTouchEvent& touch_event,
-    const ui::LatencyInfo& latency) {
-  TRACE_EVENT0("input", "RenderWidgetHostImpl::ForwardTouchEvent");
-
-  // This is used to auto-disable accessibility if we detect user input
-  // but no accessibility API usage.
-  if (touch_event.GetType() == WebInputEvent::Type::kTouchStart) {
-    BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
-  }
-
-  // Always forward TouchEvents for touch stream consistency. They will be
-  // ignored if appropriate in FilterInputEvent().
-
-  input::TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
-  DispatchInputEventWithLatencyInfo(
-      touch_with_latency.event, &touch_with_latency.latency,
-      &touch_with_latency.event.GetModifiableEventLatencyMetadata());
-  input_router()->SendTouchEvent(touch_with_latency);
 }
 
 void RenderWidgetHostImpl::ForwardKeyboardEvent(
@@ -1695,13 +1661,6 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
     std::vector<blink::mojom::EditCommandPtr> commands,
     bool* update_event) {
   CHECK(WebInputEvent::IsKeyboardEventType(key_event.GetType()));
-
-  // This is used to auto-disable accessibility if we detect user input
-  // but no accessibility API usage.
-  if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown ||
-      key_event.GetType() == WebInputEvent::Type::kKeyDown) {
-    BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
-  }
 
   TRACE_EVENT0("input", "RenderWidgetHostImpl::ForwardKeyboardEvent");
   if (owner_delegate_ &&
@@ -1791,7 +1750,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
   input::NativeWebKeyboardEventWithLatencyInfo key_event_with_latency(key_event,
                                                                       latency);
   key_event_with_latency.event.is_browser_shortcut = is_shortcut;
-  DispatchInputEventWithLatencyInfo(
+  GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       key_event_with_latency.event, &key_event_with_latency.latency,
       &key_event_with_latency.event.GetModifiableEventLatencyMetadata());
   // TODO(foolip): |InputRouter::SendKeyboardEvent()| may filter events, in
@@ -2372,12 +2331,9 @@ void RenderWidgetHostImpl::OnMouseEventAck(
     const input::MouseEventWithLatencyInfo& mouse_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  latency_tracker_.OnInputEventAck(mouse_event.event, &mouse_event.latency,
-                                   ack_result);
-  for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result,
-                                         mouse_event.event);
-  }
+  GetRenderInputRouter()->GetLatencyTracker()->OnInputEventAck(
+      mouse_event.event, &mouse_event.latency, ack_result);
+  NotifyObserversOfInputEventAcks(ack_source, ack_result, mouse_event.event);
 
   // Give the delegate the ability to handle a mouse event that wasn't consumed
   // by the renderer. eg. Back/Forward mouse buttons.
@@ -2506,10 +2462,9 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
     const input::NativeWebKeyboardEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);
-  for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result, event.event);
-  }
+  GetRenderInputRouter()->GetLatencyTracker()->OnInputEventAck(
+      event.event, &event.latency, ack_result);
+  NotifyObserversOfInputEventAcks(ack_source, ack_result, event.event);
 
   bool processed =
       (blink::mojom::InputEventResultState::kConsumed == ack_result);
@@ -2540,6 +2495,10 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
     view_->SetBounds(bounds);
   }
   std::move(callback).Run();
+}
+
+RenderWidgetHostInputEventRouter* RenderWidgetHostImpl::GetInputEventRouter() {
+  return delegate()->GetInputEventRouter();
 }
 
 RenderWidgetHostViewInput* RenderWidgetHostImpl::GetPointerLockView() {
@@ -2594,6 +2553,27 @@ void RenderWidgetHostImpl::ResetDelegatedInkPointPrediction(
 const cc::RenderFrameMetadata&
 RenderWidgetHostImpl::GetLastRenderFrameMetadata() {
   return render_frame_metadata_provider()->LastRenderFrameMetadata();
+}
+
+ukm::SourceId RenderWidgetHostImpl::GetCurrentPageUkmSourceId() {
+  return delegate()->GetCurrentPageUkmSourceId();
+}
+
+void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
+    const WebInputEvent& event) {
+  AddPendingUserActivation(event);
+  for (auto& observer : input_event_observers_) {
+    observer.OnInputEvent(event);
+  }
+}
+
+void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
+    blink::mojom::InputEventResultSource ack_source,
+    blink::mojom::InputEventResultState ack_result,
+    const WebInputEvent& event) {
+  for (auto& input_event_observer : input_event_observers_) {
+    input_event_observer.OnInputEventAck(ack_source, ack_result, event);
+  }
 }
 
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
@@ -3388,28 +3368,10 @@ RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParamsForNewWindow() {
   return params;
 }
 
-void RenderWidgetHostImpl::DispatchInputEventWithLatencyInfo(
-    const WebInputEvent& event,
-    ui::LatencyInfo* latency,
-    ui::EventLatencyMetadata* event_latency_metadata) {
-  latency_tracker_.OnInputEvent(event, latency, event_latency_metadata);
-  AddPendingUserActivation(event);
-  for (auto& observer : input_event_observers_) {
-    observer.OnInputEvent(event);
-  }
-}
-
 void RenderWidgetHostImpl::OnWheelEventAck(
     const input::MouseWheelEventWithLatencyInfo& wheel_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  latency_tracker_.OnInputEventAck(wheel_event.event, &wheel_event.latency,
-                                   ack_result);
-  for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result,
-                                         wheel_event.event);
-  }
-
   if (!is_hidden() && view_) {
     if (ack_result != blink::mojom::InputEventResultState::kConsumed &&
         delegate_ && delegate_->HandleWheelEvent(wheel_event.event)) {
@@ -3423,11 +3385,6 @@ void RenderWidgetHostImpl::OnGestureEventAck(
     const input::GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);
-  for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result, event.event);
-  }
-
   // If the TouchEmulator didn't exist when this GestureEvent was sent, we
   // shouldn't create it here.
   if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
@@ -3436,29 +3393,6 @@ void RenderWidgetHostImpl::OnGestureEventAck(
 
   if (view_) {
     view_->GestureEventAck(event.event, ack_result);
-  }
-}
-
-void RenderWidgetHostImpl::OnTouchEventAck(
-    const input::TouchEventWithLatencyInfo& event,
-    blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result) {
-  latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);
-  for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result, event.event);
-  }
-
-  auto* input_event_router =
-      delegate() ? delegate()->GetInputEventRouter() : nullptr;
-
-  // At present interstitial pages might not have an input event router, so we
-  // just have the view process the ack directly in that case; the view is
-  // guaranteed to be a top-level view with an appropriate implementation of
-  // ProcessAckedTouchEvent().
-  if (input_event_router) {
-    input_event_router->ProcessAckedTouchEvent(event, ack_result, view_.get());
-  } else if (view_) {
-    view_->ProcessAckedTouchEvent(event, ack_result);
   }
 }
 
@@ -3553,7 +3487,7 @@ void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
 
 void RenderWidgetHostImpl::DetachDelegate() {
   delegate_ = nullptr;
-  latency_tracker_.reset_delegate();
+  GetRenderInputRouter()->GetLatencyTracker()->reset_delegate();
 }
 
 void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {

@@ -1440,7 +1440,8 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
                                                                latency_info);
   } else {
-    host()->ForwardTouchEventWithLatencyInfo(web_event, latency_info);
+    host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        web_event, latency_info);
   }
 
   // Send a proactive BeginFrame for this vsync to reduce scroll latency for
@@ -1488,7 +1489,8 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
       host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
           this, &web_event, latency_info);
     } else {
-      host()->ForwardTouchEventWithLatencyInfo(web_event, latency_info);
+      host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+          web_event, latency_info);
     }
   }
 }

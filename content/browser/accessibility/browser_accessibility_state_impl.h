@@ -13,6 +13,7 @@
 #include "content/browser/accessibility/scoped_mode_collection.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/render_widget_host.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
 
@@ -39,7 +40,8 @@ struct FocusedNodeDetails;
 //     technologies.
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
-      public ui::AXPlatform::Delegate {
+      public ui::AXPlatform::Delegate,
+      public content::RenderWidgetHost::InputEventObserver {
  public:
   BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
   BrowserAccessibilityStateImpl& operator=(
@@ -100,6 +102,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   ui::AXMode GetProcessMode() override;
   void SetProcessMode(ui::AXMode new_mode) override;
   void OnAccessibilityApiUsage() override;
+
+  // content::RenderWidgetHost::InputEventObserver:
+  void OnInputEvent(const blink::WebInputEvent& event) override;
 
   // The global accessibility mode is automatically enabled based on
   // usage of accessibility APIs. When we detect a significant amount

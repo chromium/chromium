@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/render_widget_host_latency_tracker.h"
+#include "content/common/input/render_input_router_latency_tracker.h"
 
 #include <memory>
 #include <string>
@@ -36,7 +36,7 @@ namespace {
 const char kUrl[] = "http://www.foo.bar.com/subpage/1";
 
 void AddFakeComponentsWithTimeStamp(
-    const RenderWidgetHostLatencyTracker& tracker,
+    const RenderInputRouterLatencyTracker& tracker,
     ui::LatencyInfo* latency,
     base::TimeTicks time_stamp) {
   latency->AddLatencyNumberWithTimestamp(ui::INPUT_EVENT_LATENCY_UI_COMPONENT,
@@ -65,17 +65,17 @@ void AddRenderingScheduledComponent(ui::LatencyInfo* latency,
 
 }  // namespace
 
-class RenderWidgetHostLatencyTrackerTestBrowserClient
+class RenderInputRouterLatencyTrackerTestBrowserClient
     : public TestContentBrowserClient {
  public:
-  RenderWidgetHostLatencyTrackerTestBrowserClient() {}
+  RenderInputRouterLatencyTrackerTestBrowserClient() {}
 
-  RenderWidgetHostLatencyTrackerTestBrowserClient(
-      const RenderWidgetHostLatencyTrackerTestBrowserClient&) = delete;
-  RenderWidgetHostLatencyTrackerTestBrowserClient& operator=(
-      const RenderWidgetHostLatencyTrackerTestBrowserClient&) = delete;
+  RenderInputRouterLatencyTrackerTestBrowserClient(
+      const RenderInputRouterLatencyTrackerTestBrowserClient&) = delete;
+  RenderInputRouterLatencyTrackerTestBrowserClient& operator=(
+      const RenderInputRouterLatencyTrackerTestBrowserClient&) = delete;
 
-  ~RenderWidgetHostLatencyTrackerTestBrowserClient() override {}
+  ~RenderInputRouterLatencyTrackerTestBrowserClient() override {}
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
 
@@ -83,17 +83,17 @@ class RenderWidgetHostLatencyTrackerTestBrowserClient
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
-class RenderWidgetHostLatencyTrackerTest
+class RenderInputRouterLatencyTrackerTest
     : public RenderViewHostImplTestHarness {
  public:
-  RenderWidgetHostLatencyTrackerTest() : old_browser_client_(nullptr) {
+  RenderInputRouterLatencyTrackerTest() : old_browser_client_(nullptr) {
     ResetHistograms();
   }
 
-  RenderWidgetHostLatencyTrackerTest(
-      const RenderWidgetHostLatencyTrackerTest&) = delete;
-  RenderWidgetHostLatencyTrackerTest& operator=(
-      const RenderWidgetHostLatencyTrackerTest&) = delete;
+  RenderInputRouterLatencyTrackerTest(
+      const RenderInputRouterLatencyTrackerTest&) = delete;
+  RenderInputRouterLatencyTrackerTest& operator=(
+      const RenderInputRouterLatencyTrackerTest&) = delete;
 
   void ExpectUkmReported(ukm::SourceId source_id,
                          const char* event_name,
@@ -125,7 +125,7 @@ class RenderWidgetHostLatencyTrackerTest
     }
   }
 
-  RenderWidgetHostLatencyTracker* tracker() { return tracker_.get(); }
+  RenderInputRouterLatencyTracker* tracker() { return tracker_.get(); }
   ui::LatencyTracker* viz_tracker() { return &viz_tracker_; }
 
   void ResetHistograms() {
@@ -139,20 +139,22 @@ class RenderWidgetHostLatencyTrackerTest
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     old_browser_client_ = SetBrowserClientForTesting(&test_browser_client_);
-    tracker_ = std::make_unique<RenderWidgetHostLatencyTracker>(contents());
+    tracker_ = std::make_unique<RenderInputRouterLatencyTracker>(
+        main_test_rfh()->GetRenderWidgetHost());
   }
 
   void TearDown() override {
     SetBrowserClientForTesting(old_browser_client_);
+    tracker_.reset();
     RenderViewHostImplTestHarness::TearDown();
     test_browser_client_.GetTestUkmRecorder()->Purge();
   }
 
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<RenderWidgetHostLatencyTracker> tracker_;
+  std::unique_ptr<RenderInputRouterLatencyTracker> tracker_;
   ui::LatencyTracker viz_tracker_;
-  RenderWidgetHostLatencyTrackerTestBrowserClient test_browser_client_;
+  RenderInputRouterLatencyTrackerTestBrowserClient test_browser_client_;
   raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
@@ -164,7 +166,7 @@ class RenderWidgetHostLatencyTrackerTest
 #define MAYBE_TestWheelToFirstScrollHistograms TestWheelToFirstScrollHistograms
 #endif
 
-TEST_F(RenderWidgetHostLatencyTrackerTest,
+TEST_F(RenderInputRouterLatencyTrackerTest,
        MAYBE_TestWheelToFirstScrollHistograms) {
   const GURL url(kUrl);
   size_t total_ukm_entry_count = 0;
@@ -218,7 +220,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
 #define MAYBE_TestWheelToScrollHistograms TestWheelToScrollHistograms
 #endif
 
-TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
+TEST_F(RenderInputRouterLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
   const GURL url(kUrl);
   size_t total_ukm_entry_count = 0;
   contents()->NavigateAndCommit(url);
@@ -264,7 +266,8 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
   }
 }
 
-TEST_F(RenderWidgetHostLatencyTrackerTest, LatencyTerminatedOnAckIfGSUIgnored) {
+TEST_F(RenderInputRouterLatencyTrackerTest,
+       LatencyTerminatedOnAckIfGSUIgnored) {
   for (blink::WebGestureDevice source_device :
        {blink::WebGestureDevice::kTouchscreen,
         blink::WebGestureDevice::kTouchpad}) {
@@ -290,7 +293,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, LatencyTerminatedOnAckIfGSUIgnored) {
   }
 }
 
-TEST_F(RenderWidgetHostLatencyTrackerTest, ScrollLatency) {
+TEST_F(RenderInputRouterLatencyTrackerTest, ScrollLatency) {
   auto scroll_begin = blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
       5, -5, blink::WebGestureDevice::kTouchscreen);
   ui::LatencyInfo scroll_latency;

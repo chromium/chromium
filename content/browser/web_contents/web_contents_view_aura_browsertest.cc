@@ -932,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     // Send touch press.
     blink::SyntheticWebTouchEvent touch;
     touch.PressPoint(bounds.x() + 2, bounds.y() + 10);
-    GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(touch,
-                                                            ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
     touch_start_waiter.Wait();
     WaitAFrame();
 
@@ -947,8 +948,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
           return event.GetType() == blink::WebGestureEvent::Type::kTouchMove &&
                  state == blink::mojom::InputEventResultState::kNotConsumed;
         }));
-    GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(touch,
-                                                            ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
     touch_move_waiter.Wait();
 
     blink::WebGestureEvent scroll_begin =
@@ -963,8 +965,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     for (int i = 2; i <= 10; ++i) {
       // Send a touch move, followed by a scroll update
       touch.MovePoint(0, bounds.x() + 20 + i * dx, bounds.y() + 100);
-      GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(
-          touch, ui::LatencyInfo());
+      GetRenderWidgetHost()
+          ->GetRenderInputRouter()
+          ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
       WaitAFrame();
 
       blink::WebGestureEvent scroll_update =
@@ -978,8 +981,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     }
 
     touch.ReleasePoint(0);
-    GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(touch,
-                                                            ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
     WaitAFrame();
 
     blink::WebGestureEvent scroll_end(

@@ -612,6 +612,19 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
   }
 }
 
+void BrowserAccessibilityStateImpl::OnInputEvent(
+    const blink::WebInputEvent& event) {
+  // |this| observer cares about user input events (specifically keyboard,
+  // mouse & touch events) to decide if the accessibility APIs can be disabled.
+  if (event.GetType() == blink::WebInputEvent::Type::kMouseDown ||
+      event.GetType() == blink::WebInputEvent::Type::kGestureTapDown ||
+      event.GetType() == blink::WebInputEvent::Type::kTouchStart ||
+      event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
+      event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
+    OnUserInputEvent();
+  }
+}
+
 std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
   return scoped_modes_for_process_.Add(mode);

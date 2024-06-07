@@ -36,7 +36,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
-#include "content/browser/renderer_host/input/render_widget_host_latency_tracker.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -364,10 +363,17 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
   std::unique_ptr<RenderInputRouterIterator> GetEmbeddedRenderInputRouters()
       override;
+  RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   void ForwardDelegatedInkPoint(gfx::DelegatedInkPoint& delegated_ink_point,
                                 bool& ended_delegated_ink_trail) override;
   void ResetDelegatedInkPointPrediction(
       bool& ended_delegated_ink_trail) override;
+  ukm::SourceId GetCurrentPageUkmSourceId() override;
+  void NotifyObserversOfInputEvent(const blink::WebInputEvent& event) override;
+  void NotifyObserversOfInputEventAcks(
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result,
+      const blink::WebInputEvent& event) override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -557,9 +563,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void ForwardGestureEventWithLatencyInfo(
       const blink::WebGestureEvent& gesture_event,
       const ui::LatencyInfo& latency) override;
-  virtual void ForwardTouchEventWithLatencyInfo(
-      const blink::WebTouchEvent& touch_event,
-      const ui::LatencyInfo& latency);  // Virtual for testing.
   void ForwardMouseEventWithLatencyInfo(const blink::WebMouseEvent& mouse_event,
                                         const ui::LatencyInfo& latency);
   void ForwardWheelEventWithLatencyInfo(
@@ -1011,9 +1014,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
-  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
-                       blink::mojom::InputEventResultSource ack_source,
-                       blink::mojom::InputEventResultState ack_result) override;
+  void OnTouchEventAck(
+      const input::TouchEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) override {}
   void OnGestureEventAck(
       const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
@@ -1157,12 +1161,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DidStartScrollingViewport() override;
   void OnSetCompositorAllowedTouchAction(cc::TouchAction) override {}
   void OnInvalidInputEventSource() override;
-
-  // Dispatch input events with latency information
-  void DispatchInputEventWithLatencyInfo(
-      const blink::WebInputEvent& event,
-      ui::LatencyInfo* latency,
-      ui::EventLatencyMetadata* event_latency_metadata);
 
   void WindowSnapshotReachedScreen(int snapshot_id);
 
@@ -1446,17 +1444,19 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // awkward.
   std::unique_ptr<SyntheticGestureController> synthetic_gesture_controller_;
 
+  // These need to be destroyed after RenderInputRouter to avoid UAF bugs which
+  // can arise when handling acks.
+  base::OneShotTimer input_event_ack_timeout_;
+  std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+      user_input_active_handle_;
+
   // Receives and handles input events.
   std::unique_ptr<RenderInputRouter> render_input_router_;
-
-  base::OneShotTimer input_event_ack_timeout_;
 
   base::CallbackListSubscription
       render_process_blocked_state_changed_subscription_;
 
   std::unique_ptr<TimeoutMonitor> new_content_rendering_timeout_;
-
-  RenderWidgetHostLatencyTracker latency_tracker_;
 
   int next_browser_snapshot_id_ = 1;
   using PendingSnapshotMap = std::map<int, GetSnapshotFromBrowserCallback>;
@@ -1555,9 +1555,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget_;
 
   mojo::Remote<blink::mojom::WidgetCompositor> widget_compositor_;
-
-  std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
-      user_input_active_handle_;
 
   // Same-process cross-RenderFrameHost navigations may reuse the compositor
   // from the previous RenderFrameHost. While the speculative RenderWidgetHost

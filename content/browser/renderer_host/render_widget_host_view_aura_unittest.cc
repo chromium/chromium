@@ -330,7 +330,9 @@ class FullscreenLayoutManager : public aura::LayoutManager {
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  public:
-  ~MockRenderWidgetHostImpl() override {}
+  using RenderWidgetHostImpl::render_input_router_;
+
+  ~MockRenderWidgetHostImpl() override = default;
 
   // Extracts |latency_info| for wheel event, and stores it in
   // |last_wheel_or_touch_event_latency_info_|.
@@ -339,17 +341,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
       const ui::LatencyInfo& ui_latency) override {
     RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
                                                            ui_latency);
-    last_wheel_or_touch_event_latency_info_ = ui::LatencyInfo(ui_latency);
-  }
-
-  // Extracts |latency_info| for touch event, and stores it in
-  // |last_wheel_or_touch_event_latency_info_|.
-  void ForwardTouchEventWithLatencyInfo(
-      const blink::WebTouchEvent& touch_event,
-      const ui::LatencyInfo& ui_latency) override {
-    RenderWidgetHostImpl::ForwardTouchEventWithLatencyInfo(touch_event,
-                                                           ui_latency);
-    last_wheel_or_touch_event_latency_info_ = ui::LatencyInfo(ui_latency);
+    GetMockRenderInputRouter()->SetLastWheelOrTouchEventLatencyInfo(
+        ui::LatencyInfo(ui_latency));
   }
 
   void ForwardGestureEventWithLatencyInfo(
@@ -398,11 +391,15 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   }
 
   MockWidgetInputHandler* input_handler() {
-    return mock_render_input_router_->mock_widget_input_handler_.get();
+    return GetMockRenderInputRouter()->mock_widget_input_handler_.get();
+  }
+
+  MockRenderInputRouter* GetMockRenderInputRouter() {
+    return static_cast<MockRenderInputRouter*>(render_input_router_.get());
   }
 
   RenderInputRouter* GetRenderInputRouter() override {
-    return mock_render_input_router_.get();
+    return render_input_router_.get();
   }
 
   void reset_new_content_rendering_timeout_fired() {
@@ -415,10 +412,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
 
   void SetTouchActionFromMain(cc::TouchAction touch_action) {
     widget_.SetTouchActionFromMain(touch_action);
-  }
-
-  const ui::LatencyInfo& LastWheelOrTouchEventLatencyInfo() const {
-    return last_wheel_or_touch_event_latency_info_;
   }
 
  private:
@@ -448,17 +441,15 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   }
 
   void SetupMockRenderInputRouter() {
-    mock_render_input_router_.reset();
-    mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
+    render_input_router_.reset();
+    render_input_router_ = std::make_unique<MockRenderInputRouter>(
         this, this, MakeFlingScheduler(), this,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     SetupInputRouter();
   }
 
-  ui::LatencyInfo last_wheel_or_touch_event_latency_info_;
   bool new_content_rendering_timeout_fired_ = false;
   MockWidget widget_;
-  std::unique_ptr<MockRenderInputRouter> mock_render_input_router_;
   std::optional<WebGestureEvent> last_forwarded_gesture_event_;
 };
 
@@ -1004,8 +995,8 @@ class RenderWidgetHostViewAuraOverscrollTest
 
   uint32_t SendTouchEvent() {
     uint32_t touch_event_id = touch_event_.unique_touch_event_id;
-    widget_host_->ForwardTouchEventWithLatencyInfo(touch_event_,
-                                                   ui::LatencyInfo());
+    widget_host_->GetMockRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        touch_event_, ui::LatencyInfo());
     touch_event_.ResetPoints();
     base::RunLoop().RunUntilIdle();
     return touch_event_id;
@@ -3433,9 +3424,10 @@ TEST_F(RenderWidgetHostViewAuraTest, SourceEventTypeExistsInLatencyInfo) {
   ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(2, 2), ui::EventTimeForNow(),
                          0, 0, 0, 0, 0, 2);
   view_->OnScrollEvent(&scroll);
-  EXPECT_EQ(
-      widget_host_->LastWheelOrTouchEventLatencyInfo().source_event_type(),
-      ui::SourceEventType::WHEEL);
+  EXPECT_EQ(widget_host_->GetMockRenderInputRouter()
+                ->GetLastWheelOrTouchEventLatencyInfo()
+                ->source_event_type(),
+            ui::SourceEventType::WHEEL);
 
   // TOUCH source exists.
   ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(30, 30),
@@ -3449,9 +3441,10 @@ TEST_F(RenderWidgetHostViewAuraTest, SourceEventTypeExistsInLatencyInfo) {
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   view_->OnTouchEvent(&press);
   view_->OnTouchEvent(&move);
-  EXPECT_EQ(
-      widget_host_->LastWheelOrTouchEventLatencyInfo().source_event_type(),
-      ui::SourceEventType::TOUCH);
+  EXPECT_EQ(widget_host_->GetMockRenderInputRouter()
+                ->GetLastWheelOrTouchEventLatencyInfo()
+                ->source_event_type(),
+            ui::SourceEventType::TOUCH);
   view_->OnTouchEvent(&release);
 }
 

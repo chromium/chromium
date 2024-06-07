@@ -34,11 +34,37 @@ class MockRenderInputRouter : public RenderInputRouter {
   // InputRouterImplClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
 
+  // InputDispositionHandler overrides.
+  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
+
   void SetupForInputRouterTest();
+
+  void ForwardTouchEventWithLatencyInfo(
+      const blink::WebTouchEvent& touch_event,
+      const ui::LatencyInfo& ui_latency) override;
+
+  void SetLastWheelOrTouchEventLatencyInfo(ui::LatencyInfo latency_info) {
+    last_wheel_or_touch_event_latency_info_ = latency_info;
+  }
+
+  std::optional<ui::LatencyInfo> GetLastWheelOrTouchEventLatencyInfo() {
+    return last_wheel_or_touch_event_latency_info_;
+  }
 
   MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages();
 
+  std::optional<blink::WebInputEvent::Type> acked_touch_event_type() const {
+    return acked_touch_event_type_;
+  }
+
+  std::optional<blink::WebInputEvent::Type> acked_touch_event_type_;
+
   std::unique_ptr<MockWidgetInputHandler> mock_widget_input_handler_;
+
+ private:
+  std::optional<ui::LatencyInfo> last_wheel_or_touch_event_latency_info_;
 };
 
 }  // namespace content

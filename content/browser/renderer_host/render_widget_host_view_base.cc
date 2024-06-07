@@ -785,7 +785,8 @@ void RenderWidgetHostViewBase::ProcessTouchEvent(
   }
 
   PreProcessTouchEvent(event);
-  host()->ForwardTouchEventWithLatencyInfo(event, latency);
+  host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(event,
+                                                                   latency);
 }
 
 void RenderWidgetHostViewBase::ProcessGestureEvent(

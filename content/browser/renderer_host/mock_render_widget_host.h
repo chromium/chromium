@@ -25,6 +25,7 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
   using RenderWidgetHostImpl::GetVisualProperties;
   using RenderWidgetHostImpl::is_hidden_;
   using RenderWidgetHostImpl::old_visual_properties_;
+  using RenderWidgetHostImpl::render_input_router_;
   using RenderWidgetHostImpl::RendererExited;
   using RenderWidgetHostImpl::visual_properties_ack_pending_;
 
@@ -32,10 +33,6 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
   MockRenderWidgetHost& operator=(const MockRenderWidgetHost&) = delete;
 
   ~MockRenderWidgetHost() override;
-
-  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
-                       blink::mojom::InputEventResultSource ack_source,
-                       blink::mojom::InputEventResultState ack_result) override;
 
   void reset_new_content_rendering_timeout_fired() {
     new_content_rendering_timeout_fired_ = false;
@@ -47,8 +44,8 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   void ExpectForceEnableZoom(bool enable);
 
-  blink::WebInputEvent::Type acked_touch_event_type() const {
-    return acked_touch_event_type_;
+  std::optional<blink::WebInputEvent::Type> acked_touch_event_type() {
+    return mock_render_input_router()->acked_touch_event_type();
   }
 
   void SetupForInputRouterTest();
@@ -58,7 +55,7 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
   }
 
   MockRenderInputRouter* mock_render_input_router() {
-    return mock_render_input_router_.get();
+    return static_cast<MockRenderInputRouter*>(render_input_router_.get());
   }
 
   static std::unique_ptr<MockRenderWidgetHost> Create(
@@ -80,7 +77,6 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
   void NotifyNewContentRenderingTimeoutForTesting() override;
 
   bool new_content_rendering_timeout_fired_;
-  blink::WebInputEvent::Type acked_touch_event_type_;
 
  private:
   MockRenderWidgetHost(
@@ -91,7 +87,6 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
       mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget);
 
   void SetupMockRenderInputRouter();
-  std::unique_ptr<MockRenderInputRouter> mock_render_input_router_;
 };
 
 }  // namespace content

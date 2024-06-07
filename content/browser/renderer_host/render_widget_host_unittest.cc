@@ -790,7 +790,8 @@ class RenderWidgetHostTest : public testing::Test {
   // handler or not).
   uint32_t SendTouchEvent() {
     uint32_t touch_event_id = touch_event_.unique_touch_event_id;
-    host_->ForwardTouchEventWithLatencyInfo(touch_event_, ui::LatencyInfo());
+    host_->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        touch_event_, ui::LatencyInfo());
 
     touch_event_.ResetPoints();
     return touch_event_id;
@@ -2361,8 +2362,8 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
-                                           &event_latency_metadata);
+  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
+      native_event, &latency_info, &event_latency_metadata);
 
   // Remove InputEventObserver.
   host_->RemoveInputEventObserver(&observer);
@@ -2371,8 +2372,8 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
   latency_info = ui::LatencyInfo();
   event_latency_metadata = ui::EventLatencyMetadata();
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
-                                           &event_latency_metadata);
+  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
+      native_event, &latency_info, &event_latency_metadata);
 }
 
 TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
@@ -2392,8 +2393,8 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
-                                           &event_latency_metadata);
+  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
+      native_event, &latency_info, &event_latency_metadata);
 
   // Remove InputEventObserver.
   scoped_observation.Reset();
@@ -2402,8 +2403,8 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
   latency_info = ui::LatencyInfo();
   event_latency_metadata = ui::EventLatencyMetadata();
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
-                                           &event_latency_metadata);
+  host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
+      native_event, &latency_info, &event_latency_metadata);
 }
 
 #if BUILDFLAG(IS_ANDROID)

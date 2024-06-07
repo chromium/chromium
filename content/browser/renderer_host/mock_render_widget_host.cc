@@ -14,17 +14,8 @@ namespace content {
 
 MockRenderWidgetHost::~MockRenderWidgetHost() {}
 
-void MockRenderWidgetHost::OnTouchEventAck(
-    const input::TouchEventWithLatencyInfo& event,
-    blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result) {
-  // Sniff touch acks.
-  acked_touch_event_type_ = event.event.GetType();
-  RenderWidgetHostImpl::OnTouchEventAck(event, ack_source, ack_result);
-}
-
 void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
-  EXPECT_EQ(enable, mock_render_input_router_->GetForceEnableZoom());
+  EXPECT_EQ(enable, render_input_router_->GetForceEnableZoom());
 
   InputRouterImpl* input_router_impl =
       static_cast<InputRouterImpl*>(input_router());
@@ -32,7 +23,7 @@ void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
 }
 
 void MockRenderWidgetHost::SetupForInputRouterTest() {
-  mock_render_input_router_->SetupForInputRouterTest();
+  mock_render_input_router()->SetupForInputRouterTest();
 }
 
 // static
@@ -59,7 +50,7 @@ std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
 }
 
 RenderInputRouter* MockRenderWidgetHost::GetRenderInputRouter() {
-  return mock_render_input_router_.get();
+  return render_input_router_.get();
 }
 
 void MockRenderWidgetHost::NotifyNewContentRenderingTimeoutForTesting() {
@@ -83,7 +74,6 @@ MockRenderWidgetHost::MockRenderWidgetHost(
                            std::make_unique<FrameTokenMessageQueue>()),
       new_content_rendering_timeout_fired_(false) {
   SetupMockRenderInputRouter();
-  acked_touch_event_type_ = blink::WebInputEvent::Type::kUndefined;
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   BindWidgetInterfaces(
       blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
@@ -91,7 +81,7 @@ MockRenderWidgetHost::MockRenderWidgetHost(
 }
 
 void MockRenderWidgetHost::SetupMockRenderInputRouter() {
-  mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
+  render_input_router_ = std::make_unique<MockRenderInputRouter>(
       this, this, MakeFlingScheduler(), this,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   SetupInputRouter();
