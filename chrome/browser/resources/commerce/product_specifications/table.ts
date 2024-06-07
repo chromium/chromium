@@ -90,8 +90,19 @@ export class TableElement extends PolymerElement {
     }));
   }
 
+  private shouldShowRow_(row: TableRow): boolean {
+    return this.shouldShowDescriptionRow_(row) ||
+        this.shouldShowSummaryRow_(row);
+  }
+
+  private shouldShowDescriptionRow_(row: TableRow): boolean {
+    return row.descriptions.some(
+        (description) => (description.length > 0 && description !== 'N/A'));
+  }
+
   private shouldShowSummaryRow_(row: TableRow): boolean {
-    return row.summaries.some((summary) => summary.length > 0);
+    return row.summaries.some(
+        (summary) => (summary.length > 0 && summary !== 'N/A'));
   }
 }
 

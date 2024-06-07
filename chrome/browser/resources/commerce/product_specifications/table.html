@@ -1,4 +1,9 @@
 <style include="cr-icons cr-hidden-style">
+  table {
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
   .separator {
     height: 16px;
   }
@@ -30,13 +35,23 @@
     z-index: 1;
   }
 
-  .row-header {
-    font-weight: 500;
+  .row-border {
+    border-bottom: 1px solid var(--color-product-specifications-divider);
   }
 
-  .row-content
+  .row-header {
+    font-weight: 500;
+    padding-bottom: 4px;
+  }
+
+  .row-content,
   .row-summary {
-    padding-bottom: 24px;
+    color: var(--cr-secondary-text-color);
+    padding: 4px 6px 24px 6px;
+  }
+
+  td:first-child {
+    padding-inline-start: 0px;
   }
 </style>
 
@@ -65,26 +80,32 @@
   <tbody>
     <tr class="separator"></tr>
     <template is="dom-repeat" items="[[rows]]" as="row">
-      <tr class="row">
-        <td class="row-header">
-          <div>[[row.title]]</div>
-        </td>
-      </tr>
-      <tr class="row">
-        <template is="dom-repeat" items="[[row.descriptions]]" as="description">
-          <td class="row-content" on-pointerenter="onShowOpenTabButton_">
-            <div>[[description]]</div>
+      <template is="dom-if" if="[[shouldShowRow_(row)]]">
+        <tr class="row row-border">
+          <td class="row-header">
+            <div>[[row.title]]</div>
           </td>
-        </template>
-      </tr>
-      <template is="dom-if" if="[[shouldShowSummaryRow_(row)]]">
-        <tr class="row">
-          <template is="dom-repeat" items="[[row.summaries]]" as="summary">
-            <td class="row-summary" on-pointerenter="onShowOpenTabButton_">
-              <div>[[summary]]</div>
-            </td>
-          </template>
         </tr>
+        <template is="dom-if" if="[[shouldShowDescriptionRow_(row)]]">
+          <tr class="row">
+            <template is="dom-repeat"
+                items="[[row.descriptions]]"
+                as="description">
+              <td class="row-content" on-pointerenter="onShowOpenTabButton_">
+                <div>[[description]]</div>
+              </td>
+            </template>
+          </tr>
+        </template>
+        <template is="dom-if" if="[[shouldShowSummaryRow_(row)]]">
+          <tr class="row">
+            <template is="dom-repeat" items="[[row.summaries]]" as="summary">
+              <td class="row-summary" on-pointerenter="onShowOpenTabButton_">
+                <div>[[summary]]</div>
+              </td>
+            </template>
+          </tr>
+        </template>
       </template>
     </template>
   </tbody>
