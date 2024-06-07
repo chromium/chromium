@@ -616,6 +616,21 @@ const base::FeatureParam<bool>
         &kAutofillGranularFillingAvailable,
         "autofill_granular_filling_with_fill_everything_in_the_footer", true};
 
+// This variation controls whether the expand children suggestions control is
+// hidden for non-selected/non-expanded suggestions (and the control shows up
+// when any part of the suggestion row is selected/hovered).
+// This adjustment in behavior is not a part of the originally approved
+// functionality and only exists to investigate one of the hypothesises of
+// the acceptance rate drop reasons, namely, user's potential confusion due to
+// the newly introduced UI pattern.
+// TODO(crbug.com/40274514): Clean up when launched.
+const base::FeatureParam<bool>
+    kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly{
+        &kAutofillGranularFillingAvailable,
+        "autofill_granular_filling_with_expand_control_visible_on_selection_"
+        "only",
+        false};
+
 // Controls whether field filling through the context menu will be available for
 // the unclassified fields.
 // TODO(crbug.com/40285811): Clean up when launched.

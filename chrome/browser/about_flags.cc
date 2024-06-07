@@ -3749,26 +3749,45 @@ const FeatureEntry::FeatureParam
     kAutofillGranularFillingAvailableVariationWithoutImprovedLabels[] = {
         {"autofill_granular_filling_with_improved_labels", "false"},
         {"autofill_granular_filling_with_fill_everything_in_the_footer",
-         "true"}};
+         "true"},
+        {"autofill_granular_filling_with_expand_control_visible_on_selection_"
+         "only",
+         "false"}};
 
 const FeatureEntry::FeatureParam
     kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop[] = {
         {"autofill_granular_filling_with_improved_labels", "true"},
         {"autofill_granular_filling_with_fill_everything_in_the_footer",
+         "false"},
+        {"autofill_granular_filling_with_expand_control_visible_on_selection_"
+         "only",
          "false"}};
 
-const FeatureEntry::FeatureVariation
-    kAutofillGranularFillingAvailableVariations[] = {
-        {"Without improved labels",
-         kAutofillGranularFillingAvailableVariationWithoutImprovedLabels,
-         std::size(
-             kAutofillGranularFillingAvailableVariationWithoutImprovedLabels),
-         nullptr},
-        {"With \"Fill everything\" at the top",
-         kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop,
-         std::size(
-             kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop),
-         nullptr}};
+const FeatureEntry::FeatureParam
+    kAutofillGranularFillingAvailableVariationWithExpandControlVisibleOnSelectionOnly
+        [] = {{"autofill_granular_filling_with_improved_labels", "true"},
+              {"autofill_granular_filling_with_fill_everything_in_the_footer",
+               "true"},
+              {"autofill_granular_filling_with_expand_control_visible_on_"
+               "selection_only",
+               "true"}};
+
+const FeatureEntry::FeatureVariation kAutofillGranularFillingAvailableVariations[] =
+    {{"Without improved labels",
+      kAutofillGranularFillingAvailableVariationWithoutImprovedLabels,
+      std::size(
+          kAutofillGranularFillingAvailableVariationWithoutImprovedLabels),
+      nullptr},
+     {"With \"Fill everything\" at the top",
+      kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop,
+      std::size(
+          kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop),
+      nullptr},
+     {"With sub-popup expand control visible for selected/expanded rows only",
+      kAutofillGranularFillingAvailableVariationWithExpandControlVisibleOnSelectionOnly,
+      std::size(
+          kAutofillGranularFillingAvailableVariationWithExpandControlVisibleOnSelectionOnly),
+      nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr flags_ui::FeatureEntry::FeatureParam

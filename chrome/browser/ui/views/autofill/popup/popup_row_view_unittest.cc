@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
@@ -21,6 +23,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -59,6 +62,15 @@ constexpr gfx::Point kOutOfBounds{1000, 1000};
 
 class PopupRowViewTest : public ChromeViewsTestBase {
  public:
+  PopupRowViewTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        features::kAutofillGranularFillingAvailable,
+        {{features::
+              kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
+                  .name,
+          "false"}});
+  }
+
   // views::ViewsTestBase:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -73,9 +85,11 @@ class PopupRowViewTest : public ChromeViewsTestBase {
         .WillByDefault(Return(web_contents_.get()));
   }
 
-  void ShowView(int line_number, bool has_control) {
+  void ShowView(int line_number,
+                bool has_control,
+                SuggestionType type = SuggestionType::kAddressEntry) {
     std::vector<Suggestion> suggestions(line_number + 1);
-    suggestions[line_number].type = SuggestionType::kAddressEntry;
+    suggestions[line_number].type = type;
     suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
       suggestions[line_number].children = {Suggestion()};
@@ -144,6 +158,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   }
   MockAutofillPopupController& controller() { return mock_controller_; }
   PopupRowView& row_view() { return *row_view_; }
+  base::test::ScopedFeatureList& features() { return features_; }
 
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
@@ -155,6 +170,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   NiceMock<MockSelectionDelegate> mock_selection_delegate_;
   NiceMock<MockAutofillPopupController> mock_controller_;
   raw_ptr<PopupRowView> row_view_ = nullptr;
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
@@ -423,6 +439,95 @@ TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
   EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
+
+TEST_F(PopupRowViewTest, ExpandChildSuggestionsIconRemainsVisible) {
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+
+  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
+  ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
+
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(CellType::kControl);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(std::nullopt);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+}
+
+TEST_F(PopupRowViewTest,
+       ExpandChildSuggestionsIconVisibleDependsOnSelectedCell) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kAutofillGranularFillingAvailable,
+      {{features::
+            kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
+                .name,
+        "true"}});
+
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+
+  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
+  ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
+
+  EXPECT_FALSE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(CellType::kControl);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(std::nullopt);
+  EXPECT_FALSE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+}
+
+class PopupRowExpandVisibilityNonEligibleSuggestionsTest
+    : public PopupRowViewTest,
+      public ::testing::WithParamInterface<SuggestionType> {};
+
+TEST_P(PopupRowExpandVisibilityNonEligibleSuggestionsTest, All) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kAutofillGranularFillingAvailable,
+      {{features::
+            kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
+                .name,
+        "true"}});
+
+  ShowView(/*line_number=*/0, /*has_control=*/true, GetParam());
+  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
+  ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
+
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+
+  row_view().SetSelectedCell(std::nullopt);
+  EXPECT_TRUE(
+      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupRowExpandVisibilityNonEligibleSuggestionsTest,
+                         ::testing::ValuesIn({
+                             SuggestionType::kComposeProactiveNudge,
+                             SuggestionType::kDevtoolsTestAddresses,
+                         }));
 
 struct PosInSetTestdata {
   // The popup item ids of the suggestions to be shown.

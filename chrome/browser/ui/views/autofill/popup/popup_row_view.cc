@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
@@ -25,8 +26,10 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -121,6 +124,17 @@ std::u16string GetSuggestionA11yString(const Suggestion& suggestion,
   }
 
   return base::JoinString(text, u". ");
+}
+
+bool CanHaveExpandControlVisibilityDynamic(const Suggestion& suggestion) {
+  return GetFillingProductFromSuggestionType(suggestion.type) ==
+             FillingProduct::kAddress &&
+         suggestion.type != SuggestionType::kDevtoolsTestAddresses &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillGranularFillingAvailable) &&
+         features::
+             kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
+                 .Get();
 }
 
 }  // namespace
@@ -247,15 +261,18 @@ PopupRowView::PopupRowView(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
             gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
-    expand_child_suggestions_view_->AddChildView(
-        std::make_unique<views::ImageView>(
-            popup_cell_utils::ImageModelFromVectorIcon(
-                popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
-                kExpandChildSuggestionsIconWidth)));
+    expand_child_suggestions_view_icon_ =
+        expand_child_suggestions_view_->AddChildView(
+            std::make_unique<views::ImageView>(
+                popup_cell_utils::ImageModelFromVectorIcon(
+                    popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
+                    kExpandChildSuggestionsIconWidth)));
     expand_child_suggestions_view_->AddObserver(this);
     control_event_handler_ = set_exit_enter_callbacks(
         CellType::kControl, *expand_child_suggestions_view_);
     layout->SetFlexForView(expand_child_suggestions_view_.get(), 0);
+
+    UpdateExpandControlVisibility();
   }
 }
 
@@ -381,14 +398,14 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     selected_cell_ = std::nullopt;
   }
 
-  UpdateBackground();
+  UpdateUI();
 }
 
 void PopupRowView::SetChildSuggestionsDisplayed(
     bool child_suggestions_displayed) {
   child_suggestions_displayed_ = child_suggestions_displayed;
 
-  UpdateBackground();
+  UpdateUI();
 }
 
 gfx::RectF PopupRowView::GetControlCellBounds() const {
@@ -429,6 +446,11 @@ bool PopupRowView::HandleKeyPressEvent(
   }
 }
 
+void PopupRowView::UpdateUI() {
+  UpdateBackground();
+  UpdateExpandControlVisibility();
+}
+
 void PopupRowView::UpdateBackground() {
   // The whole row is highlighted when:
   // * The subpopup is open, or
@@ -443,6 +465,18 @@ void PopupRowView::UpdateBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       kBackgroundColorId, ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
                               views::Emphasis::kMedium)));
+}
+
+void PopupRowView::UpdateExpandControlVisibility() {
+  if (!expand_child_suggestions_view_icon_ ||
+      line_number_ >= controller_->GetLineCount() ||
+      !CanHaveExpandControlVisibilityDynamic(
+          controller_->GetSuggestionAt(line_number_))) {
+    return;
+  }
+
+  expand_child_suggestions_view_icon_->SetVisible(selected_cell_ ||
+                                                  child_suggestions_displayed_);
 }
 
 BEGIN_METADATA(PopupRowView)

@@ -1954,6 +1954,7 @@
                 {
                     "name": "Enabled_GranularFillingOnly",
                     "params": {
+                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
                         "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
                         "autofill_granular_filling_with_improved_labels": "true"
                     },
@@ -1967,6 +1968,7 @@
                 {
                     "name": "Enabled_GranularFillingAndManualFallbackForUnclassifiedFields",
                     "params": {
+                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
                         "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
                         "autofill_granular_filling_with_improved_labels": "true"
                     },
@@ -1978,6 +1980,7 @@
                 {
                     "name": "Enabled_GranularFillingOnly_WithoutImprovedLabels",
                     "params": {
+                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
                         "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
                         "autofill_granular_filling_with_improved_labels": "false"
                     },
@@ -1991,8 +1994,23 @@
                 {
                     "name": "Enabled_GranularFillingOnly_WithFillEverythingAtTheTop",
                     "params": {
+                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "false",
                         "autofill_granular_filling_with_fill_everything_in_the_footer": "false",
                         "autofill_granular_filling_with_improved_labels": "true"
+                    },
+                    "enable_features": [
+                        "AutofillGranularFillingAvailable"
+                    ],
+                    "disable_features": [
+                        "AutofillForUnclassifiedFieldsAvailable"
+                    ]
+                },
+                {
+                    "name": "Enabled_GranularFillingOnly_WithExpandControlVisibleOnSelectionOnly",
+                    "params": {
+                        "autofill_granular_filling_with_expand_control_visible_on_selection_only": "true",
+                        "autofill_granular_filling_with_fill_everything_in_the_footer": "true",
+                        "autofill_granular_filling_with_improved_labels": "false"
                     },
                     "enable_features": [
                         "AutofillGranularFillingAvailable"

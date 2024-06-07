@@ -120,6 +120,10 @@ class PopupRowView : public views::View, public views::ViewObserver {
     return expand_child_suggestions_view_.get();
   }
 
+  views::View* GetExpandChildSuggestionsIconViewForTesting() {
+    return expand_child_suggestions_view_icon_.get();
+  }
+
  protected:
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
@@ -130,8 +134,20 @@ class PopupRowView : public views::View, public views::ViewObserver {
     return a11y_selection_delegate_.get();
   }
 
+  // Updates all UI parts that may have changed based on the current state,
+  // for now they are the background and expand control visibility.
+  void UpdateUI();
+
   // Updates the background according to the control cell highlighting state.
   void UpdateBackground();
+
+  // Updates the expand control icon visibility: if any cell is selected or
+  // the sub-popup is open it is visible, otherwise - hidden. This is done for
+  // experimentation purposes only. When the corresponding feature param is
+  // disabled, this method is noop.
+  // TODO(crbug.com/40274514): Remove when the field-by-field filling eperiments
+  // are over.
+  void UpdateExpandControlVisibility();
 
   // The delegate used for accessibility announcements (implemented by the
   // parent view).
@@ -150,6 +166,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   raw_ptr<PopupRowContentView> content_view_ = nullptr;
   // The view wrapping the control area of the row.
   raw_ptr<views::View> expand_child_suggestions_view_ = nullptr;
+  raw_ptr<views::View> expand_child_suggestions_view_icon_ = nullptr;
 
   // Overriding event handles for the content and control views.
   std::unique_ptr<ui::EventHandler> content_event_handler_;
