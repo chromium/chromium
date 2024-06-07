@@ -365,7 +365,10 @@ class DlpContentManagerReportingBrowserTest
         .WillByDefault(testing::Return(::reporting::Status::StatusOK()));
 
     auto config_result = ::reporting::ReportQueueConfiguration::Create(
-        ::reporting::EventType::kDevice, destination_, policy_check_callback_);
+                             {.event_type = ::reporting::EventType::kDevice,
+                              .destination = destination_})
+                             .SetPolicyCheckCallback(policy_check_callback_)
+                             .Build();
 
     ASSERT_TRUE(config_result.has_value());
 

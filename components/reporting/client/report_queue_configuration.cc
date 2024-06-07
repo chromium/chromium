@@ -113,21 +113,6 @@ ReportQueueConfiguration::Builder ReportQueueConfiguration::Create(
   return Builder(settings);
 }
 
-// static
-StatusOr<std::unique_ptr<ReportQueueConfiguration>>
-ReportQueueConfiguration::Create(
-    EventType event_type,
-    Destination destination,
-    PolicyCheckCallback policy_check_callback,
-    std::unique_ptr<RateLimiterInterface> rate_limiter,
-    int64_t reserved_space) {
-  return ReportQueueConfiguration::Builder({.event_type = event_type,
-                                            .destination = destination,
-                                            .reserved_space = reserved_space})
-      .SetPolicyCheckCallback(policy_check_callback)
-      .SetRateLimiter(std::move(rate_limiter))
-      .Build();
-}
 
 // static
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>

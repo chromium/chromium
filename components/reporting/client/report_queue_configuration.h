@@ -112,27 +112,6 @@ class ReportQueueConfiguration {
       std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
       int64_t reserved_space = 0L);
 
-  // Deprecated and should not be used. Use `Create({settings})` instead.
-  //
-  // Factory for generating a ReportQueueConfiguration.
-  // `event_type` is the type of event being reported, and is indirectly used to
-  // retrieve DM tokens for downstream processing when building the report
-  // queue. Using `EventType::kDevice` will skip DM token retrieval, so please
-  // use `EventType::kUser` for events that need to be associated with the
-  // current user. If any of the parameters are invalid, will return
-  // error::INVALID_ARGUMENT. `destination` is valid when it is any value other
-  // than Destination::UNDEFINED_DESTINATION.
-  // `reserved_space` is optional. If it is > 0, respective ReportQueue will be
-  // "opportunistic" - underlying Storage would only accept an enqueue request
-  // if after adding the new record remaining amount of disk space will not drop
-  // below `reserved_space`.
-  static StatusOr<std::unique_ptr<ReportQueueConfiguration>> Create(
-      EventType event_type,
-      Destination destination,
-      PolicyCheckCallback policy_check_callback,
-      std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
-      int64_t reserved_space = 0L);
-
   Destination destination() const { return destination_; }
 
   std::string dm_token() { return dm_token_; }
