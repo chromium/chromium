@@ -912,7 +912,9 @@ void MailboxHoldersReleased(const gpu::SyncToken& sync_token) {}
 // unable to wrap a video frame texture (eg due to being abandoned).
 TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
   auto context_provider = viz::TestContextProvider::Create();
+  CHECK(context_provider);
   context_provider->BindToCurrentSequence();
+  CHECK(context_provider->GrContext());
   context_provider->GrContext()->abandonContext();
 
   cc::SkiaPaintCanvas canvas(AllocBitmap(kWidth, kHeight));
