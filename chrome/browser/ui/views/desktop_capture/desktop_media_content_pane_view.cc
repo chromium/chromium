@@ -15,7 +15,7 @@
 DesktopMediaContentPaneView::DesktopMediaContentPaneView(
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<ShareAudioView> share_audio_view) {
-  float bottom_radius = features::IsChromeRefresh2023() ? 8 : 4;
+  float bottom_radius = 8;
   SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
                                                          /*top_radius=*/0,
                                                          bottom_radius));
