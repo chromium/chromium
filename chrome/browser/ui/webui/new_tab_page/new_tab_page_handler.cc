@@ -78,7 +78,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -942,10 +941,7 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
     feature_promo_helper_->RecordFeatureUsage(
         feature_engagement::events::kCustomizeChromeOpened, tab);
     feature_promo_helper_->CloseFeaturePromo(
-        features::IsChromeRefresh2023()
-            ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
-            : feature_engagement::kIPHDesktopCustomizeChromeFeature,
-        tab);
+        feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
   }
 }
 
@@ -975,21 +971,9 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
 
   switch (iph_feature) {
     case new_tab_page::mojom::IphFeature::kCustomizeChrome: {
-      if (features::IsChromeRefresh2023()) {
-        feature_promo_helper_->MaybeShowFeaturePromo(
-            feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-            web_contents_.get());
-      } else {
-        const auto customize_chrome_button_open_count =
-            profile_->GetPrefs()->GetInteger(
-                prefs::kNtpCustomizeChromeButtonOpenCount);
-
-        if (customize_chrome_button_open_count == 0) {
-          feature_promo_helper_->MaybeShowFeaturePromo(
-              feature_engagement::kIPHDesktopCustomizeChromeFeature,
-              web_contents_.get());
-        }
-      }
+      feature_promo_helper_->MaybeShowFeaturePromo(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+          web_contents_.get());
     } break;
     case new_tab_page::mojom::IphFeature::kCustomizeModules: {
       feature_promo_helper_->MaybeShowFeaturePromo(

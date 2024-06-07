@@ -68,7 +68,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_recipe.h"
@@ -1152,10 +1151,7 @@ TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
 }
 
 // TODO (crbug/1521350): Fails when ChromeRefresh2023 is enabled.
-TEST_F(NewTabPageHandlerTest, MaybeShowFeaturePromo_CustomizeChrome) {
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+TEST_F(NewTabPageHandlerTest, DISABLED_MaybeShowFeaturePromo_CustomizeChrome) {
   EXPECT_CALL(*mock_feature_promo_helper_, IsSigninModalDialogOpen)
       .WillRepeatedly(testing::Return(false));
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
