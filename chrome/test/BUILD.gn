@@ -10442,7 +10442,6 @@ test("unit_tests") {
       "../browser/ui/views/translate/partial_translate_bubble_view_unittest.cc",
       "../browser/ui/views/translate/translate_bubble_controller_unittest.cc",
       "../browser/ui/views/translate/translate_bubble_view_unittest.cc",
-      "../browser/ui/views/user_education/browser_feature_promo_controller_unittest.cc",
       "../browser/ui/views/user_education/browser_user_education_service_unittest.cc",
       "../browser/ui/views/user_education/help_bubble_view_timeout_unittest.cc",
       "../browser/ui/views/user_education/recent_session_observer_impl_unittest.cc",
@@ -10452,6 +10451,9 @@ test("unit_tests") {
       "../browser/ui/views/web_apps/view_visible_in_active_widget_notifier_unittest.cc",
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
+    if (!is_chrome_for_testing) {
+      sources += [ "../browser/ui/views/user_education/browser_feature_promo_controller_unittest.cc" ]
+    }
     if (is_linux) {
       sources += [
         "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc",
