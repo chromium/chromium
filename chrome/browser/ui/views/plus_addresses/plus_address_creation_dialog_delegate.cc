@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/plus_addresses/features.h"
@@ -283,6 +284,10 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .SetTextStyle(views::style::STYLE_PRIMARY)
           .Build());
+  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+    plus_address_label_->SetTextContext(views::style::CONTEXT_LABEL);
+    plus_address_label_->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
+  }
   plus_address_label_->SetProperty(views::kElementIdentifierKey,
                                    kPlusAddressSuggestedEmailElementId);
   plus_address_label_->SetSelectable(true);
