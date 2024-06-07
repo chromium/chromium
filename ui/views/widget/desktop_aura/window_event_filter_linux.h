@@ -37,9 +37,11 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
 
   ~WindowEventFilterLinux() override;
 
-  void HandleMouseEventWithHitTest(int hit_test, ui::MouseEvent* event);
+  void HandleLocatedEventWithHitTest(int hit_test, ui::LocatedEvent* event);
 
  private:
+  bool HandleMouseEventWithHitTest(int hit_test, ui::MouseEvent* event);
+
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
 

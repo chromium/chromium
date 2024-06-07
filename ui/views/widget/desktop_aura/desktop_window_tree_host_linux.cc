@@ -238,9 +238,10 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   // or not as SendEventToSink results in copying the event and our copy of the
   // event will not set to handled unless a dispatcher or a target are
   // destroyed.
-  if (event->IsMouseEvent() && non_client_window_event_filter_) {
-    non_client_window_event_filter_->HandleMouseEventWithHitTest(
-        hit_test_code, event->AsMouseEvent());
+  if ((event->IsMouseEvent() || event->IsTouchEvent()) &&
+      non_client_window_event_filter_) {
+    non_client_window_event_filter_->HandleLocatedEventWithHitTest(
+        hit_test_code, event->AsLocatedEvent());
   }
 
   if (!event->handled())
