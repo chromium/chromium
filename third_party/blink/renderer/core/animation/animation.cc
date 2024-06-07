@@ -2820,12 +2820,15 @@ bool Animation::IsEventDispatchAllowed() const {
 
 std::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
   DCHECK(!outdated_);
-  if (!start_time_ || hold_time_ || !playback_rate_)
+  if (!start_time_ || hold_time_ || !playback_rate_) {
     return std::nullopt;
+  }
 
   if (!content_) {
     std::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
-    DCHECK(current_time);
+    if (!current_time) {
+      return std::nullopt;
+    }
     return -current_time.value() / playback_rate_;
   }
 
