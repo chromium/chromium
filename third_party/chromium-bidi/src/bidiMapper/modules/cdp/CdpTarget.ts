@@ -22,7 +22,9 @@ import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import type {ChromiumBidi} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
+import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
+import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
@@ -35,6 +37,7 @@ export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
+  readonly #realmStorage: RealmStorage;
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
@@ -43,6 +46,7 @@ export class CdpTarget {
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
+  readonly #logger: LoggerFn | undefined;
 
   #networkDomainEnabled = false;
   #fetchDomainStages = {
@@ -68,10 +72,12 @@ export class CdpTarget {
       cdpClient,
       browserCdpClient,
       eventManager,
+      realmStorage,
       preloadScriptStorage,
       browsingContextStorage,
       networkStorage,
-      acceptInsecureCerts
+      acceptInsecureCerts,
+      logger
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
@@ -90,19 +96,23 @@ export class CdpTarget {
     cdpClient: CdpClient,
     browserCdpClient: CdpClient,
     eventManager: EventManager,
+    realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
-    acceptInsecureCerts: boolean
+    acceptInsecureCerts: boolean,
+    logger?: LoggerFn
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
     this.#eventManager = eventManager;
+    this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#acceptInsecureCerts = acceptInsecureCerts;
+    this.#logger = logger;
   }
 
   /** Returns a deferred that resolves when the target is unblocked. */
@@ -134,8 +144,21 @@ export class CdpTarget {
   async #unblock() {
     try {
       await Promise.all([
-        this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.enable'),
+        // There can be some existing frames in the target, if reconnecting to an
+        // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
+        // contexts for the frames to correctly handle further events, like
+        // `Runtime.executionContextCreated`.
+        // It's important to schedule this task together with enabling domains commands to
+        // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
+        // coming.
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
+        this.#cdpClient
+          .sendCommand('Page.getFrameTree')
+          .then((frameTree) =>
+            this.#restoreFrameTreeState(frameTree.frameTree)
+          ),
+        this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         }),
@@ -153,6 +176,7 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
       ]);
     } catch (error: any) {
+      this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {
         this.#unblocked.resolve({
@@ -167,6 +191,34 @@ export class CdpTarget {
       kind: 'success',
       value: undefined,
     });
+  }
+
+  #restoreFrameTreeState(frameTree: Protocol.Page.FrameTree) {
+    const frame = frameTree.frame;
+    if (
+      this.#browsingContextStorage.findContext(frame.id) === undefined &&
+      frame.parentId !== undefined
+    ) {
+      // Can restore only not yet known nested frames. The top-level frame is created
+      // when the target is attached.
+      const parentBrowsingContext = this.#browsingContextStorage.getContext(
+        frame.parentId
+      );
+      BrowsingContextImpl.create(
+        frame.id,
+        frame.parentId,
+        parentBrowsingContext.userContext,
+        parentBrowsingContext.cdpTarget,
+        this.#eventManager,
+        this.#browsingContextStorage,
+        this.#realmStorage,
+        frame.url,
+        this.#logger
+      );
+    }
+    frameTree.childFrames?.map((frameTree) =>
+      this.#restoreFrameTreeState(frameTree)
+    );
   }
 
   async toggleFetchIfNeeded() {
