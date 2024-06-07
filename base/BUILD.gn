@@ -2534,6 +2534,8 @@ buildflag_header("debugging_buildflags") {
         symbol_level > 0,
         "symbol_level must be set to greater than 0 for source line numbers.")
   }
+  _enable_stack_trace_line_numbers =
+      !print_unsymbolized_stack_traces && enable_stack_trace_line_numbers
 
   flags = [
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
@@ -2545,10 +2547,11 @@ buildflag_header("debugging_buildflags") {
     "ENABLE_GDBINIT_WARNING=$enable_gdbinit_warning",
     "ENABLE_LLDBINIT_WARNING=$enable_lldbinit_warning",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
-    "ENABLE_STACK_TRACE_LINE_NUMBERS=$enable_stack_trace_line_numbers",
+    "ENABLE_STACK_TRACE_LINE_NUMBERS=$_enable_stack_trace_line_numbers",
     "ENABLE_COMMANDLINE_SEQUENCE_CHECKS=$enable_commandline_sequence_checks",
     "ENABLE_ALLOCATION_STACK_TRACE_RECORDER=$build_allocation_stack_trace_recorder",
     "ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=$build_allocation_trace_recorder_full_reporting",
+    "PRINT_UNSYMBOLIZED_STACK_TRACES=$print_unsymbolized_stack_traces",
   ]
 }
 

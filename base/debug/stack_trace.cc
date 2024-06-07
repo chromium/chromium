@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -272,9 +273,9 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
   // address offsets which are symbolized on the test host system, rather than
   // being symbolized in-process.
   return false;
-#elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-  // Sanitizer configurations (ASan, TSan, MSan) emit unsymbolized stacks.
+#elif BUILDFLAG(PRINT_UNSYMBOLIZED_STACK_TRACES)
+  // Typically set in sanitizer configurations (ASan, TSan, MSan), which emit
+  // unsymbolized stacks and rely on an external script for symbolization.
   return false;
 #else
   return true;

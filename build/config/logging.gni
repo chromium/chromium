@@ -11,5 +11,14 @@ declare_args() {
   enable_log_error_not_reached =
       is_chromeos_ash && !(is_debug || dcheck_always_on)
 
+  # Stack traces will not include function names. Instead they will contain
+  # file and offset information that can be used with
+  # tools/valgrind/asan/asan_symbolize.py. By piping stderr through this script,
+  # and also enabling symbol_level = 2, you can get much more detailed stack
+  # traces with file names and line numbers, even in non-ASAN builds.
+  print_unsymbolized_stack_traces = is_asan || is_lsan || is_msan || is_tsan
+
+  # Enables the DWARF line number reader on Linux. This only has an effect if
+  # print_unsymbolized_stack_traces is false.
   enable_stack_trace_line_numbers = symbol_level > 0
 }
