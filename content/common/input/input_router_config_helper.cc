@@ -14,9 +14,9 @@
 namespace content {
 namespace {
 
-PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
+input::PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  PassthroughTouchEventQueue::Config config;
+  input::PassthroughTouchEventQueue::Config config;
 
 #if BUILDFLAG(IS_ANDROID)
   // For historical reasons only Android enables the touch ack timeout.
@@ -28,8 +28,8 @@ PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
   return config;
 }
 
-GestureEventQueue::Config GetGestureEventQueueConfig() {
-  GestureEventQueue::Config config;
+input::GestureEventQueue::Config GetGestureEventQueueConfig() {
+  input::GestureEventQueue::Config config;
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
   config.debounce_interval =

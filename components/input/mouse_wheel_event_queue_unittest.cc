@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/mouse_wheel_event_queue.h"
+#include "components/input/mouse_wheel_event_queue.h"
 
 #include <stddef.h>
 
@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/common/input/timeout_monitor.h"
+#include "components/input/timeout_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -25,7 +25,7 @@ using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebMouseWheelEvent;
 
-namespace content {
+namespace input {
 namespace {
 
 const float kWheelScrollX = 10;
@@ -155,7 +155,7 @@ class MouseWheelEventQueueTest : public testing::Test,
 
   // MouseWheelEventQueueClient
   void SendMouseWheelEventImmediately(
-      const input::MouseWheelEventWithLatencyInfo& event,
+      const MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) override {
     WebMouseWheelEvent* cloned_event = new WebMouseWheelEvent();
     std::unique_ptr<WebInputEvent> cloned_event_holder(cloned_event);
@@ -163,7 +163,7 @@ class MouseWheelEventQueueTest : public testing::Test,
     sent_events_.push_back(std::move(cloned_event_holder));
     callbacks_.emplace_back(base::BindOnce(
         [](MouseWheelEventHandledCallback callback,
-           const input::MouseWheelEventWithLatencyInfo& event,
+           const MouseWheelEventWithLatencyInfo& event,
            blink::mojom::InputEventResultSource ack_source,
            blink::mojom::InputEventResultState ack_result) {
           std::move(callback).Run(event, ack_source, ack_result);
@@ -186,7 +186,7 @@ class MouseWheelEventQueueTest : public testing::Test,
   }
 
   void OnMouseWheelEventAck(
-      const input::MouseWheelEventWithLatencyInfo& event,
+      const MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_event_count_;
@@ -261,7 +261,7 @@ class MouseWheelEventQueueTest : public testing::Test,
     event.momentum_phase = momentum_phase;
     event.rails_mode = rails_mode;
     event.has_synthetic_phase = has_synthetic_phase;
-    queue_->QueueEvent(input::MouseWheelEventWithLatencyInfo(event));
+    queue_->QueueEvent(MouseWheelEventWithLatencyInfo(event));
   }
   void SendMouseWheel(float x,
                       float y,
@@ -284,7 +284,7 @@ class MouseWheelEventQueueTest : public testing::Test,
                           ui::EventTimeForNow(),
                           blink::WebGestureDevice::kTouchscreen);
     queue_->OnGestureScrollEvent(
-        input::GestureEventWithLatencyInfo(event, ui::LatencyInfo()));
+        GestureEventWithLatencyInfo(event, ui::LatencyInfo()));
   }
 
   static void RunTasksAndWait(base::TimeDelta delay) {
@@ -692,4 +692,4 @@ TEST_F(MouseWheelEventQueueTest, DoNotSwapXYForShiftScroll) {
   EXPECT_EQ(2U, GetAndResetSentEventCount());
 }
 #endif
-}  // namespace content
+}  // namespace input

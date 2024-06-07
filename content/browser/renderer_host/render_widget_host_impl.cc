@@ -44,6 +44,7 @@
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -84,7 +85,6 @@
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
 #include "content/common/input/synthetic_gesture_target.h"
-#include "content/common/input/timeout_monitor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -457,7 +457,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDisableNewContentRenderingTimeout)) {
-    new_content_rendering_timeout_ = std::make_unique<TimeoutMonitor>(
+    new_content_rendering_timeout_ = std::make_unique<input::TimeoutMonitor>(
         base::BindRepeating(&RenderWidgetHostImpl::ClearDisplayedGraphics,
                             weak_factory_.GetWeakPtr()),
         GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));

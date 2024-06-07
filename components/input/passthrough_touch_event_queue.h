@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
-#define CONTENT_COMMON_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
+#ifndef COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
+#define COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
 
 #include <set>
 #include <string>
@@ -14,26 +14,30 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/input/event_with_latency_info.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
 
 namespace content {
+class InputRouterImplTestBase;
+} // namespace content
+
+namespace input {
 
 class TouchTimeoutHandler;
 
 // Interface with which PassthroughTouchEventQueue can forward touch events, and
 // dispatch touch event responses.
-class CONTENT_EXPORT PassthroughTouchEventQueueClient {
+class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueueClient {
  public:
   virtual ~PassthroughTouchEventQueueClient() {}
 
   virtual void SendTouchEventImmediately(
-      const input::TouchEventWithLatencyInfo& event) = 0;
+      const TouchEventWithLatencyInfo& event) = 0;
 
   virtual void OnTouchEventAck(
-      const input::TouchEventWithLatencyInfo& event,
+      const TouchEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 
@@ -57,9 +61,9 @@ class CONTENT_EXPORT PassthroughTouchEventQueueClient {
 // default, we always forward touchstart and touchend but, if there are no
 // handlers, touchmoves are filtered out of the sequence. The filtering logic
 // is implemented in |FilterBeforeForwarding|.
-class CONTENT_EXPORT PassthroughTouchEventQueue {
+class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
  public:
-  struct CONTENT_EXPORT Config {
+  struct COMPONENT_EXPORT(INPUT) Config {
     Config();
     ~Config();
     Config(const Config& other);
@@ -95,7 +99,7 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
 
   ~PassthroughTouchEventQueue();
 
-  void QueueEvent(const input::TouchEventWithLatencyInfo& event);
+  void QueueEvent(const TouchEventWithLatencyInfo& event);
 
   void PrependTouchScrollNotification();
 
@@ -105,7 +109,7 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
                        const uint32_t unique_touch_event_id,
                        bool should_stop_timeout_monitor);
 
-  void OnGestureEventAck(const input::GestureEventWithLatencyInfo& event,
+  void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
                          blink::mojom::InputEventResultState ack_result);
 
   void OnHasTouchEventHandlers(bool has_handlers);
@@ -128,13 +132,13 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
 
  protected:
   void SendTouchCancelEventForTouchEvent(
-      const input::TouchEventWithLatencyInfo& event_to_cancel);
+      const TouchEventWithLatencyInfo& event_to_cancel);
   void UpdateTouchConsumerStates(
       const blink::WebTouchEvent& event,
       blink::mojom::InputEventResultState ack_result);
 
  private:
-  friend class InputRouterImplTestBase;
+  friend class content::InputRouterImplTestBase;
   friend class PassthroughTouchEventQueueTest;
   FRIEND_TEST_ALL_PREFIXES(PassthroughTouchEventQueueTest,
                            TouchScrollStartedUnfiltered);
@@ -170,10 +174,10 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   friend class TouchTimeoutHandler;
 
   class TouchEventWithLatencyInfoAndAckState
-      : public input::TouchEventWithLatencyInfo {
+      : public TouchEventWithLatencyInfo {
    public:
     TouchEventWithLatencyInfoAndAckState(
-        const input::TouchEventWithLatencyInfo&);
+        const TouchEventWithLatencyInfo&);
     blink::mojom::InputEventResultState ack_state() const { return ack_state_; }
     blink::mojom::InputEventResultSource ack_source() const {
       return ack_source_;
@@ -221,11 +225,11 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   bool ShouldFilterForEvent(const blink::WebTouchEvent& event);
 
   void AckTouchEventToClient(
-      const input::TouchEventWithLatencyInfo& acked_event,
+      const TouchEventWithLatencyInfo& acked_event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
 
-  void SendTouchEventImmediately(input::TouchEventWithLatencyInfo* touch,
+  void SendTouchEventImmediately(TouchEventWithLatencyInfo* touch,
                                  bool wait_for_ack);
 
   void AckCompletedEvents();
@@ -275,6 +279,6 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   static const base::FeatureParam<std::string> kSkipTouchEventFilterType;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
+#endif  // COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_

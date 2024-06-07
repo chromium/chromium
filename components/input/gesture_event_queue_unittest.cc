@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/gesture_event_queue.h"
+#include "components/input/gesture_event_queue.h"
 
 #include <stddef.h>
 
@@ -27,12 +27,12 @@ using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
-namespace content {
+namespace input {
 
 class GestureEventQueueTest : public testing::Test,
                               public GestureEventQueueClient,
-                              public input::FlingControllerEventSenderClient,
-                              public input::FlingControllerSchedulerClient {
+                              public FlingControllerEventSenderClient,
+                              public FlingControllerSchedulerClient {
  public:
   GestureEventQueueTest()
       : task_environment_(
@@ -68,7 +68,7 @@ class GestureEventQueueTest : public testing::Test,
 
   // GestureEventQueueClient
   void SendGestureEventImmediately(
-      const input::GestureEventWithLatencyInfo& event) override {
+      const GestureEventWithLatencyInfo& event) override {
     ++sent_gesture_event_count_;
     if (sync_ack_result_) {
       std::unique_ptr<blink::mojom::InputEventResultState> ack_result =
@@ -78,7 +78,7 @@ class GestureEventQueueTest : public testing::Test,
   }
 
   void OnGestureEventAck(
-      const input::GestureEventWithLatencyInfo& event,
+      const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_gesture_event_count_;
@@ -91,18 +91,18 @@ class GestureEventQueueTest : public testing::Test,
 
   // FlingControllerEventSenderClient
   void SendGeneratedWheelEvent(
-      const input::MouseWheelEventWithLatencyInfo& wheel_event) override {}
+      const MouseWheelEventWithLatencyInfo& wheel_event) override {}
   void SendGeneratedGestureScrollEvents(
-      const input::GestureEventWithLatencyInfo& gesture_event) override {}
+      const GestureEventWithLatencyInfo& gesture_event) override {}
   gfx::Size GetRootWidgetViewportSize() override {
     return gfx::Size(1920, 1080);
   }
 
   // FlingControllerSchedulerClient
   void ScheduleFlingProgress(
-      base::WeakPtr<input::FlingController> fling_controller) override {}
+      base::WeakPtr<FlingController> fling_controller) override {}
   void DidStopFlingingOnBrowser(
-      base::WeakPtr<input::FlingController> fling_controller) override {}
+      base::WeakPtr<FlingController> fling_controller) override {}
   bool NeedsBeginFrameForFlingProgress() override { return false; }
   bool ShouldUseMobileFlingCurve() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -127,7 +127,7 @@ class GestureEventQueueTest : public testing::Test,
   }
 
   void SimulateGestureEvent(const WebGestureEvent& gesture) {
-    input::GestureEventWithLatencyInfo gesture_event(gesture);
+    GestureEventWithLatencyInfo gesture_event(gesture);
     if (!queue()->PassToFlingController(gesture_event)) {
       queue()->DebounceOrForwardEvent(gesture_event);
     }
@@ -596,4 +596,4 @@ TEST_F(GestureEventQueueWithCompositorEventQueueTest,
   EXPECT_EQ(0U, GetAndResetSentGestureEventCount());
 }
 
-}  // namespace content
+}  // namespace input

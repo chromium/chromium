@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "content/common/input/web_touch_event_traits.h"
+#include "components/input/web_touch_event_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 

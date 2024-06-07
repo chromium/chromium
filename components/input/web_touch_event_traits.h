@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_WEB_TOUCH_EVENT_TRAITS_H_
-#define CONTENT_COMMON_INPUT_WEB_TOUCH_EVENT_TRAITS_H_
+#ifndef COMPONENTS_INPUT_WEB_TOUCH_EVENT_TRAITS_H_
+#define COMPONENTS_INPUT_WEB_TOUCH_EVENT_TRAITS_H_
 
 #include "base/time/time.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
 namespace blink {
 class WebTouchEvent;
 }
 
-namespace content {
+namespace input {
 
 // Utility class for performing operations on and with WebTouchEvents.
-class CONTENT_EXPORT WebTouchEventTraits {
+class COMPONENT_EXPORT(INPUT) WebTouchEventTraits {
  public:
   // Returns whether all touches in the event have the specified state.
   static bool AllTouchPointsHaveState(const blink::WebTouchEvent& event,
@@ -36,6 +36,6 @@ class CONTENT_EXPORT WebTouchEventTraits {
                                       blink::WebTouchEvent* event);
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_WEB_TOUCH_EVENT_TRAITS_H_
+#endif  // COMPONENTS_INPUT_WEB_TOUCH_EVENT_TRAITS_H_

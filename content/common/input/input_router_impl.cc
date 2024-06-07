@@ -14,11 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/input/gesture_event_queue.h"
+#include "components/input/web_touch_event_traits.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/input/gesture_event_queue.h"
 #include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_router_client.h"
-#include "content/common/input/web_touch_event_traits.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/input_event_ack_state.h"
 #include "ipc/ipc_sender.h"
@@ -321,7 +321,7 @@ void InputRouterImpl::StopFling() {
 
 void InputRouterImpl::ProcessDeferredGestureEventQueue() {
   TRACE_EVENT0("input", "InputRouterImpl::ProcessDeferredGestureEventQueue");
-  GestureEventQueue::GestureQueue deferred_gesture_events =
+  input::GestureEventQueue::GestureQueue deferred_gesture_events =
       gesture_event_queue_.TakeDeferredEvents();
   for (auto& it : deferred_gesture_events) {
     FilterGestureEventResult result =

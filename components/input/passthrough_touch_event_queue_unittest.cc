@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/passthrough_touch_event_queue.h"
+#include "components/input/passthrough_touch_event_queue.h"
 
 #include <stddef.h>
 
@@ -16,10 +16,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "content/common/input/timeout_monitor.h"
-#include "content/common/input/web_touch_event_traits.h"
-#include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
+#include "components/input/timeout_monitor.h"
+#include "components/input/web_touch_event_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -31,7 +29,7 @@ using blink::WebInputEvent;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 
-namespace content {
+namespace input {
 namespace {
 
 const double kMinSecondsBetweenThrottledTouchmoves = 0.2;
@@ -66,7 +64,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   // PassthroughTouchEventQueueClient
   void SendTouchEventImmediately(
-      const input::TouchEventWithLatencyInfo& event) override {
+      const TouchEventWithLatencyInfo& event) override {
     sent_events_.push_back(event.event);
     sent_events_ids_.push_back(event.event.unique_touch_event_id);
     if (sync_ack_result_) {
@@ -77,7 +75,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void OnTouchEventAck(
-      const input::TouchEventWithLatencyInfo& event,
+      const TouchEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_event_count_;
@@ -140,7 +138,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
           event.GetType() == WebInputEvent::Type::kTouchMove;
     }
     queue_->QueueEvent(
-        input::TouchEventWithLatencyInfo(event, ui::LatencyInfo()));
+        TouchEventWithLatencyInfo(event, ui::LatencyInfo()));
   }
 
   void SendTouchEventAck(blink::mojom::InputEventResultState ack_result) {
@@ -169,7 +167,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   void SendGestureEventAck(WebInputEvent::Type type,
                            blink::mojom::InputEventResultState ack_result) {
-    input::GestureEventWithLatencyInfo event(
+    GestureEventWithLatencyInfo event(
         type, blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
         ui::LatencyInfo());
     queue_->OnGestureEventAck(event, ack_result);
@@ -336,7 +334,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     queue_->OnHasTouchEventHandlers(true);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<PassthroughTouchEventQueue> queue_;
   size_t acked_event_count_;
   WebTouchEvent last_acked_event_;
@@ -1980,4 +1978,4 @@ TEST_F(PassthroughTouchEventQueueTest, TouchMoveUnfilteredWithForwardAll) {
             FilterBeforeForwarding(event));
 }
 
-}  // namespace content
+}  // namespace input

@@ -10,10 +10,10 @@
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/input/web_touch_event_traits.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #include "content/common/input/events_helper.h"
 #include "content/common/input/render_widget_host_view_input.h"
-#include "content/common/input/web_touch_event_traits.h"
 #include "content/grit/content_resources.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -484,7 +484,7 @@ void TouchEmulatorImpl::CancelTouch() {
     return;
   }
 
-  WebTouchEventTraits::ResetTypeAndTouchStates(
+  input::WebTouchEventTraits::ResetTypeAndTouchStates(
       WebInputEvent::Type::kTouchCancel, ui::EventTimeForNow(), &touch_event_);
   DCHECK(gesture_provider_);
   if (gesture_provider_->GetCurrentDownEvent())
@@ -576,7 +576,7 @@ void TouchEmulatorImpl::FillTouchEventAndPoint(const WebMouseEvent& mouse_event,
   }
   touch_event_.touches_length = 1;
   touch_event_.SetModifiers(ModifiersWithoutMouseButtons(mouse_event));
-  WebTouchEventTraits::ResetTypeAndTouchStates(
+  input::WebTouchEventTraits::ResetTypeAndTouchStates(
       eventType, mouse_event.TimeStamp(), &touch_event_);
   WebTouchPoint& point = touch_event_.touches[0];
   point.id = 0;

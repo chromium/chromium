@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/timeout_monitor.h"
+#include "components/input/timeout_monitor.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -10,7 +10,7 @@
 
 using base::TimeTicks;
 
-namespace content {
+namespace input {
 
 TimeoutMonitor::TimeoutMonitor(
     const TimeoutHandler& timeout_handler,
@@ -119,4 +119,4 @@ base::TimeDelta TimeoutMonitor::GetCurrentDelay() {
   return time_when_considered_timed_out_ - TimeTicks::Now();
 }
 
-}  // namespace content
+}  // namespace input

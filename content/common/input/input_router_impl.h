@@ -15,15 +15,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
+#include "components/input/gesture_event_queue.h"
+#include "components/input/mouse_wheel_event_queue.h"
+#include "components/input/passthrough_touch_event_queue.h"
+#include "components/input/touchpad_pinch_event_queue.h"
 #include "content/common/content_export.h"
-#include "content/common/input/gesture_event_queue.h"
 #include "content/common/input/input_event_stream_validator.h"
 #include "content/common/input/input_router.h"
 #include "content/common/input/input_router_client.h"
-#include "content/common/input/mouse_wheel_event_queue.h"
-#include "content/common/input/passthrough_touch_event_queue.h"
 #include "content/common/input/touch_action_filter.h"
-#include "content/common/input/touchpad_pinch_event_queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -62,11 +62,11 @@ class CONTENT_EXPORT InputRouterImplClient : public InputRouterClient {
 // A default implementation for browser input event routing.
 class CONTENT_EXPORT InputRouterImpl
     : public InputRouter,
-      public GestureEventQueueClient,
+      public input::GestureEventQueueClient,
       public input::FlingControllerEventSenderClient,
-      public MouseWheelEventQueueClient,
-      public PassthroughTouchEventQueueClient,
-      public TouchpadPinchEventQueueClient,
+      public input::MouseWheelEventQueueClient,
+      public input::PassthroughTouchEventQueueClient,
+      public input::TouchpadPinchEventQueueClient,
       public blink::mojom::WidgetInputHandlerHost {
  public:
   InputRouterImpl(InputRouterImplClient* client,
@@ -192,8 +192,8 @@ class CONTENT_EXPORT InputRouterImpl
   // TouchpadPinchEventQueueClient
   void SendMouseWheelEventForPinchImmediately(
       const input::MouseWheelEventWithLatencyInfo& event,
-      TouchpadPinchEventQueueClient::MouseWheelEventHandledCallback callback)
-      override;
+      input::TouchpadPinchEventQueueClient::MouseWheelEventHandledCallback
+          callback) override;
   void OnGestureEventForPinchAck(
       const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
@@ -270,10 +270,10 @@ class CONTENT_EXPORT InputRouterImpl
   // stylus writing, moving cursor or scrolling. This is set from main thread.
   blink::mojom::PanAction pan_action_ = blink::mojom::PanAction::kNone;
 
-  MouseWheelEventQueue wheel_event_queue_;
-  PassthroughTouchEventQueue touch_event_queue_;
-  TouchpadPinchEventQueue touchpad_pinch_event_queue_;
-  GestureEventQueue gesture_event_queue_;
+  input::MouseWheelEventQueue wheel_event_queue_;
+  input::PassthroughTouchEventQueue touch_event_queue_;
+  input::TouchpadPinchEventQueue touchpad_pinch_event_queue_;
+  input::GestureEventQueue gesture_event_queue_;
   TouchActionFilter touch_action_filter_;
   InputEventStreamValidator input_stream_validator_;
   InputEventStreamValidator output_stream_validator_;

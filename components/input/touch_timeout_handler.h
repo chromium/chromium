@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TOUCH_TIMEOUT_HANDLER_H_
-#define CONTENT_COMMON_INPUT_TOUCH_TIMEOUT_HANDLER_H_
+#ifndef COMPONENTS_INPUT_TOUCH_TIMEOUT_HANDLER_H_
+#define COMPONENTS_INPUT_TOUCH_TIMEOUT_HANDLER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,10 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/input/event_with_latency_info.h"
-#include "content/common/input/timeout_monitor.h"
+#include "components/input/timeout_monitor.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
-namespace content {
+namespace input {
 
 class PassthroughTouchEventQueue;
 
@@ -27,7 +27,7 @@ class TouchTimeoutHandler {
 
   ~TouchTimeoutHandler();
 
-  void StartIfNecessary(const input::TouchEventWithLatencyInfo& event);
+  void StartIfNecessary(const TouchEventWithLatencyInfo& event);
   bool ConfirmTouchEvent(uint32_t unique_touch_event_id,
                          blink::mojom::InputEventResultState ack_result,
                          bool should_stop_timeout_monitor);
@@ -67,7 +67,7 @@ class TouchTimeoutHandler {
   PendingAckState pending_ack_state_;
 
   // The event for which the ack timeout is triggered.
-  input::TouchEventWithLatencyInfo timeout_event_;
+  TouchEventWithLatencyInfo timeout_event_;
 
   // Provides timeout-based callback behavior.
   TimeoutMonitor timeout_monitor_;
@@ -80,6 +80,6 @@ class TouchTimeoutHandler {
   bool sequence_using_mobile_timeout_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TOUCH_TIMEOUT_HANDLER_H_
+#endif  // COMPONENTS_INPUT_TOUCH_TIMEOUT_HANDLER_H_

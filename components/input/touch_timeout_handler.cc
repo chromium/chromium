@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touch_timeout_handler.h"
+#include "components/input/touch_timeout_handler.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "content/common/input/passthrough_touch_event_queue.h"
+#include "components/input/passthrough_touch_event_queue.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -20,7 +20,7 @@ using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 using ui::LatencyInfo;
 
-namespace content {
+namespace input {
 namespace {
 
 bool ShouldTouchTriggerTimeout(const WebTouchEvent& event) {
@@ -56,7 +56,7 @@ TouchTimeoutHandler::~TouchTimeoutHandler() {
 }
 
 void TouchTimeoutHandler::StartIfNecessary(
-    const input::TouchEventWithLatencyInfo& event) {
+    const TouchEventWithLatencyInfo& event) {
   if (pending_ack_state_ != PENDING_ACK_NONE)
     return;
 
@@ -225,4 +225,4 @@ bool TouchTimeoutHandler::HasTimeoutEvent() const {
   return pending_ack_state_ != PENDING_ACK_NONE;
 }
 
-}  // namespace content
+}  // namespace input

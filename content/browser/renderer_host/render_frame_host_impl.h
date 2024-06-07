@@ -225,6 +225,10 @@ namespace gfx {
 class Range;
 }
 
+namespace input {
+class TimeoutMonitor;
+}  // namespace input
+
 namespace mojo {
 class MessageFilter;
 class UrgentMessageScope;
@@ -293,7 +297,6 @@ class RenderWidgetHostView;
 class ServiceWorkerClient;
 class SiteInfo;
 class SpeechSynthesisImpl;
-class TimeoutMonitor;
 class WebAuthRequestSecurityChecker;
 class WebUIImpl;
 struct PendingNavigation;
@@ -4427,7 +4430,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // DispatchBeforeUnload() until either the render process invokes the
   // respective completion callback (ProcessBeforeUnloadCompleted()), or until
   // the timeout triggers.
-  std::unique_ptr<TimeoutMonitor> beforeunload_timeout_;
+  std::unique_ptr<input::TimeoutMonitor> beforeunload_timeout_;
 
   // The delay to use for the beforeunload timeout monitor above.
   base::TimeDelta beforeunload_timeout_delay_;
@@ -4467,7 +4470,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The timeout monitor that runs from when the page close is started in
   // ClosePage() until either the renderer process ACKs the close, or until the
   // timeout triggers and the page is forcibly closed.
-  std::unique_ptr<TimeoutMonitor> close_timeout_;
+  std::unique_ptr<input::TimeoutMonitor> close_timeout_;
 
   // Returns whether the tab was previously discarded.
   // This is passed to CommitNavigationParams in NavigationRequest.
@@ -4486,7 +4489,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Used to clean up this RFH when the unload event is taking too long to
   // execute. May be null in tests.
-  std::unique_ptr<TimeoutMonitor> unload_event_monitor_timeout_;
+  std::unique_ptr<input::TimeoutMonitor> unload_event_monitor_timeout_;
 
   // GeolocationService which provides Geolocation.
   std::unique_ptr<GeolocationServiceImpl> geolocation_service_;

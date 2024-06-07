@@ -22,7 +22,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/common/input/web_touch_event_traits.h"
+#include "components/input/web_touch_event_traits.h"
 #include "content/public/common/content_features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "ppapi/c/pp_input_event.h"
@@ -401,7 +401,7 @@ WebTouchEvent* BuildTouchEvent(const InputEventData& event) {
     default:
       NOTREACHED_IN_MIGRATION();
   }
-  WebTouchEventTraits::ResetType(
+  input::WebTouchEventTraits::ResetType(
       type, base::TimeTicks() + base::Seconds(event.event_time_stamp),
       web_event);
   web_event->touches_length = 0;

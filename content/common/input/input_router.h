@@ -11,10 +11,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "components/input/event_with_latency_info.h"
+#include "components/input/gesture_event_queue.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/input/passthrough_touch_event_queue.h"
 #include "content/common/content_export.h"
-#include "content/common/input/gesture_event_queue.h"
-#include "content/common/input/passthrough_touch_event_queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -31,8 +31,8 @@ class InputRouter {
  public:
   struct CONTENT_EXPORT Config {
     Config();
-    GestureEventQueue::Config gesture_config;
-    PassthroughTouchEventQueue::Config touch_config;
+    input::GestureEventQueue::Config gesture_config;
+    input::PassthroughTouchEventQueue::Config touch_config;
   };
 
   virtual ~InputRouter() = default;

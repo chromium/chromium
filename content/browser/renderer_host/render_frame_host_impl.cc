@@ -53,6 +53,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -170,7 +171,6 @@
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/input/input_router.h"
-#include "content/common/input/timeout_monitor.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
@@ -1768,11 +1768,11 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   auto task_runner = GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
   // TODO(crbug.com/41483375): Stop using BrowserTaskType::kUserInput task
   // runner for non-input related tasks.
-  unload_event_monitor_timeout_ = std::make_unique<TimeoutMonitor>(
+  unload_event_monitor_timeout_ = std::make_unique<input::TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::OnNavigationUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()),
       task_runner);
-  beforeunload_timeout_ = std::make_unique<TimeoutMonitor>(
+  beforeunload_timeout_ = std::make_unique<input::TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()),
       task_runner);
@@ -6183,7 +6183,7 @@ void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   page_close_state_ = PageCloseState::kRunningUnloadHandlers;
 
   if (IsRenderFrameLive() && !IsPageReadyToBeClosed()) {
-    close_timeout_ = std::make_unique<TimeoutMonitor>(
+    close_timeout_ = std::make_unique<input::TimeoutMonitor>(
         base::BindRepeating(&RenderFrameHostImpl::ClosePageTimeout,
                             weak_ptr_factory_.GetWeakPtr(), source),
         GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));

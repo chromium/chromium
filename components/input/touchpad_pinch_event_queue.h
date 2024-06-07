@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_
-#define CONTENT_COMMON_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_
+#ifndef COMPONENTS_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_
+#define COMPONENTS_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_
 
 #include <memory>
 #include <optional>
@@ -11,30 +11,30 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "components/input/event_with_latency_info.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
-namespace content {
+namespace input {
 
 class QueuedTouchpadPinchEvent;
 
 // Interface with which TouchpadPinchEventQueue can forward synthetic mouse
 // wheel events and notify of pinch events.
-class CONTENT_EXPORT TouchpadPinchEventQueueClient {
+class COMPONENT_EXPORT(INPUT) TouchpadPinchEventQueueClient {
  public:
   virtual ~TouchpadPinchEventQueueClient() = default;
 
   using MouseWheelEventHandledCallback = base::OnceCallback<void(
-      const input::MouseWheelEventWithLatencyInfo& event,
+      const MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result)>;
 
   virtual void SendMouseWheelEventForPinchImmediately(
-      const input::MouseWheelEventWithLatencyInfo& event,
+      const MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) = 0;
   virtual void OnGestureEventForPinchAck(
-      const input::GestureEventWithLatencyInfo& event,
+      const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 };
@@ -45,7 +45,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueueClient {
 // has prevented the pinch, the TouchpadPinchEventQueueClient may proceed with
 // handling the pinch.
 // See README.md for further details.
-class CONTENT_EXPORT TouchpadPinchEventQueue {
+class COMPONENT_EXPORT(INPUT) TouchpadPinchEventQueue {
  public:
   // The |client| must outlive the TouchpadPinchEventQueue.
   TouchpadPinchEventQueue(TouchpadPinchEventQueueClient* client);
@@ -57,7 +57,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
 
   // Adds the given touchpad pinch |event| to the queue. The event may be
   // coalesced with previously queued events.
-  void QueueEvent(const input::GestureEventWithLatencyInfo& event);
+  void QueueEvent(const GestureEventWithLatencyInfo& event);
 
   [[nodiscard]] bool has_pending() const;
 
@@ -65,7 +65,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   // Notifies the queue that a synthetic mouse wheel event has been processed
   // by the renderer.
   void ProcessMouseWheelAck(
-      const input::MouseWheelEventWithLatencyInfo& ack_event,
+      const MouseWheelEventWithLatencyInfo& ack_event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
 
@@ -78,6 +78,6 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   std::optional<bool> first_event_prevented_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_
+#endif  // COMPONENTS_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_

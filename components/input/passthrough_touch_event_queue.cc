@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/passthrough_touch_event_queue.h"
+#include "components/input/passthrough_touch_event_queue.h"
 
 #include <memory>
 #include <string>
@@ -12,8 +12,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "content/common/input/touch_timeout_handler.h"
-#include "content/common/input/web_touch_event_traits.h"
+#include "components/input/touch_timeout_handler.h"
+#include "components/input/web_touch_event_traits.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -22,7 +22,7 @@ using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 using ui::LatencyInfo;
 
-namespace content {
+namespace input {
 namespace {
 
 // Compare all properties of touch points to determine the state.
@@ -57,8 +57,8 @@ const base::FeatureParam<std::string>
 
 PassthroughTouchEventQueue::TouchEventWithLatencyInfoAndAckState::
     TouchEventWithLatencyInfoAndAckState(
-        const input::TouchEventWithLatencyInfo& event)
-    : input::TouchEventWithLatencyInfo(event),
+        const TouchEventWithLatencyInfo& event)
+    : TouchEventWithLatencyInfo(event),
       ack_state_(blink::mojom::InputEventResultState::kUnknown) {}
 
 PassthroughTouchEventQueue::PassthroughTouchEventQueue(
@@ -82,8 +82,8 @@ PassthroughTouchEventQueue::PassthroughTouchEventQueue(
 PassthroughTouchEventQueue::~PassthroughTouchEventQueue() {}
 
 void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
-    const input::TouchEventWithLatencyInfo& event_to_cancel) {
-  input::TouchEventWithLatencyInfo event = event_to_cancel;
+    const TouchEventWithLatencyInfo& event_to_cancel) {
+  TouchEventWithLatencyInfo event = event_to_cancel;
   WebTouchEventTraits::ResetTypeAndTouchStates(
       WebInputEvent::Type::kTouchCancel,
       // TODO(rbyers): Shouldn't we use a fresh timestamp?
@@ -92,7 +92,7 @@ void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
 }
 
 void PassthroughTouchEventQueue::QueueEvent(
-    const input::TouchEventWithLatencyInfo& event) {
+    const TouchEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "PassthroughTouchEventQueue::QueueEvent");
 
   if (FilterBeforeForwarding(event.event) != PreFilterResult::kUnfiltered) {
@@ -106,7 +106,7 @@ void PassthroughTouchEventQueue::QueueEvent(
     AckCompletedEvents();
     return;
   }
-  input::TouchEventWithLatencyInfo cloned_event(event);
+  TouchEventWithLatencyInfo cloned_event(event);
   SendTouchEventImmediately(&cloned_event, true);
 }
 
@@ -114,7 +114,7 @@ void PassthroughTouchEventQueue::PrependTouchScrollNotification() {
   TRACE_EVENT0("input",
                "PassthroughTouchEventQueue::PrependTouchScrollNotification");
 
-  input::TouchEventWithLatencyInfo touch(
+  TouchEventWithLatencyInfo touch(
       WebInputEvent::Type::kTouchScrollStarted, WebInputEvent::kNoModifiers,
       ui::EventTimeForNow(), LatencyInfo());
   touch.event.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
@@ -148,7 +148,7 @@ void PassthroughTouchEventQueue::ProcessTouchAck(
 }
 
 void PassthroughTouchEventQueue::OnGestureEventAck(
-    const input::GestureEventWithLatencyInfo& event,
+    const GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultState ack_result) {
   // When the scroll finishes allow TouchEvents to be blocking again.
   if (event.event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd) {
@@ -238,7 +238,7 @@ void PassthroughTouchEventQueue::AckCompletedEvents() {
 }
 
 void PassthroughTouchEventQueue::AckTouchEventToClient(
-    const input::TouchEventWithLatencyInfo& acked_event,
+    const TouchEventWithLatencyInfo& acked_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   UpdateTouchConsumerStates(acked_event.event, ack_result);
@@ -250,7 +250,7 @@ void PassthroughTouchEventQueue::AckTouchEventToClient(
 }
 
 void PassthroughTouchEventQueue::SendTouchEventImmediately(
-    input::TouchEventWithLatencyInfo* touch,
+    TouchEventWithLatencyInfo* touch,
     bool wait_for_ack) {
   // Note: Touchstart events are marked cancelable to allow transitions between
   // platform scrolling and JS pinching. Touchend events, however, remain
@@ -448,4 +448,4 @@ bool PassthroughTouchEventQueue::IsTimeoutRunningForTesting() const {
   return timeout_handler_ && timeout_handler_->IsTimeoutTimerRunning();
 }
 
-}  // namespace content
+}  // namespace input

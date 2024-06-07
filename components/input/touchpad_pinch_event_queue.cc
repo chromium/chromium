@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touchpad_pinch_event_queue.h"
+#include "components/input/touchpad_pinch_event_queue.h"
 
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
-#include "content/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/latency/latency_info.h"
 
-namespace content {
+namespace input {
 
 namespace {
 
@@ -75,11 +74,11 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
 }  // namespace
 
 // This is a single queued pinch event to which we add trace events.
-class QueuedTouchpadPinchEvent : public input::GestureEventWithLatencyInfo {
+class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
  public:
   QueuedTouchpadPinchEvent(
-      const input::GestureEventWithLatencyInfo& original_event)
-      : input::GestureEventWithLatencyInfo(original_event) {
+      const GestureEventWithLatencyInfo& original_event)
+      : GestureEventWithLatencyInfo(original_event) {
     TRACE_EVENT_ASYNC_BEGIN0("input", "TouchpadPinchEventQueue::QueueEvent",
                              this);
   }
@@ -102,7 +101,7 @@ TouchpadPinchEventQueue::TouchpadPinchEventQueue(
 TouchpadPinchEventQueue::~TouchpadPinchEventQueue() = default;
 
 void TouchpadPinchEventQueue::QueueEvent(
-    const input::GestureEventWithLatencyInfo& event) {
+    const GestureEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "TouchpadPinchEventQueue::QueueEvent");
 
   if (!pinch_queue_.empty()) {
@@ -127,7 +126,7 @@ void TouchpadPinchEventQueue::QueueEvent(
 }
 
 void TouchpadPinchEventQueue::ProcessMouseWheelAck(
-    const input::MouseWheelEventWithLatencyInfo& ack_event,
+    const MouseWheelEventWithLatencyInfo& ack_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "TouchpadPinchEventQueue::ProcessMouseWheelAck");
@@ -199,7 +198,7 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
   blink::WebMouseWheelEvent wheel_event_awaiting_ack =
       CreateSyntheticWheelFromTouchpadPinchEvent(
           pinch_event_awaiting_ack_->event, phase, cancelable);
-  const input::MouseWheelEventWithLatencyInfo synthetic_wheel(
+  const MouseWheelEventWithLatencyInfo synthetic_wheel(
       wheel_event_awaiting_ack, pinch_event_awaiting_ack_->latency);
 
   client_->SendMouseWheelEventForPinchImmediately(
@@ -212,4 +211,4 @@ bool TouchpadPinchEventQueue::has_pending() const {
   return !pinch_queue_.empty() || pinch_event_awaiting_ack_;
 }
 
-}  // namespace content
+}  // namespace input

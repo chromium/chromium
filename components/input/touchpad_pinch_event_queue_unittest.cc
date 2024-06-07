@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touchpad_pinch_event_queue.h"
+#include "components/input/touchpad_pinch_event_queue.h"
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
 
-namespace content {
+namespace input {
 
 class MockTouchpadPinchEventQueueClient {
  public:
@@ -23,9 +23,9 @@ class MockTouchpadPinchEventQueueClient {
 
   // TouchpadPinchEventQueueClient
   MOCK_METHOD1(SendMouseWheelEventForPinchImmediately,
-               void(const input::MouseWheelEventWithLatencyInfo& event));
+               void(const MouseWheelEventWithLatencyInfo& event));
   MOCK_METHOD3(OnGestureEventForPinchAck,
-               void(const input::GestureEventWithLatencyInfo& event,
+               void(const GestureEventWithLatencyInfo& event,
                     blink::mojom::InputEventResultSource ack_source,
                     blink::mojom::InputEventResultState ack_result));
 };
@@ -39,7 +39,7 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   ~TouchpadPinchEventQueueTest() = default;
 
   void QueueEvent(const blink::WebGestureEvent& event) {
-    queue_->QueueEvent(input::GestureEventWithLatencyInfo(event));
+    queue_->QueueEvent(GestureEventWithLatencyInfo(event));
   }
 
   void QueuePinchBegin() {
@@ -104,12 +104,12 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   }
 
   void SendMouseWheelEventForPinchImmediately(
-      const input::MouseWheelEventWithLatencyInfo& event,
+      const MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) override {
     mock_client_.SendMouseWheelEventForPinchImmediately(event);
     callbacks_.emplace_back(base::BindOnce(
         [](MouseWheelEventHandledCallback callback,
-           const input::MouseWheelEventWithLatencyInfo& event,
+           const MouseWheelEventWithLatencyInfo& event,
            blink::mojom::InputEventResultSource ack_source,
            blink::mojom::InputEventResultState ack_result) {
           std::move(callback).Run(event, ack_source, ack_result);
@@ -118,7 +118,7 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool>,
   }
 
   void OnGestureEventForPinchAck(
-      const input::GestureEventWithLatencyInfo& event,
+      const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     mock_client_.OnGestureEventForPinchAck(event, ack_source, ack_result);
@@ -625,4 +625,4 @@ TEST_F(TouchpadPinchEventQueueTest, IgnoreNonMatchingEvents) {
                     blink::mojom::InputEventResultState::kIgnored);
 }
 
-}  // namespace content
+}  // namespace input

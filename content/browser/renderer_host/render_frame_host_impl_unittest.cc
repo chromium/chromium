@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+
 #include <memory>
 
 #include "base/memory/ptr_util.h"
@@ -9,11 +11,10 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "components/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
-#include "content/common/input/timeout_monitor.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/web_contents_delegate.h"

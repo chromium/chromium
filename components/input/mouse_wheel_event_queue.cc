@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/mouse_wheel_event_queue.h"
+#include "components/input/mouse_wheel_event_queue.h"
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/common/content_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
@@ -17,7 +16,7 @@ using blink::WebInputEvent;
 using blink::WebMouseWheelEvent;
 using ui::LatencyInfo;
 
-namespace content {
+namespace input {
 
 MouseWheelEventQueue::MouseWheelEventQueue(MouseWheelEventQueueClient* client)
     : client_(client),
@@ -30,7 +29,7 @@ MouseWheelEventQueue::~MouseWheelEventQueue() {
 }
 
 void MouseWheelEventQueue::QueueEvent(
-    const input::MouseWheelEventWithLatencyInfo& event) {
+    const MouseWheelEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "MouseWheelEventQueue::QueueEvent");
 
   if (event_sent_for_gesture_ack_ && !wheel_queue_.empty()) {
@@ -53,7 +52,7 @@ void MouseWheelEventQueue::QueueEvent(
     }
   }
 
-  input::MouseWheelEventWithLatencyInfo event_with_action(event.event,
+  MouseWheelEventWithLatencyInfo event_with_action(event.event,
                                                           event.latency);
   event_with_action.event.event_action =
       WebMouseWheelEvent::GetPlatformSpecificDefaultEventAction(event.event);
@@ -101,7 +100,7 @@ bool MouseWheelEventQueue::CanGenerateGestureScroll(
 }
 
 void MouseWheelEventQueue::ProcessMouseWheelAck(
-    const input::MouseWheelEventWithLatencyInfo& ack_event,
+    const MouseWheelEventWithLatencyInfo& ack_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "MouseWheelEventQueue::ProcessMouseWheelAck");
@@ -241,7 +240,7 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
 }
 
 void MouseWheelEventQueue::OnGestureScrollEvent(
-    const input::GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event) {
   if (gesture_event.event.GetType() ==
       blink::WebInputEvent::Type::kGestureScrollBegin) {
     scrolling_device_ = gesture_event.event.SourceDevice();
@@ -322,4 +321,4 @@ void MouseWheelEventQueue::SendScrollBegin(
       scroll_begin, ui::LatencyInfo(ui::SourceEventType::WHEEL));
 }
 
-}  // namespace content
+}  // namespace input

@@ -95,6 +95,7 @@ class Vector2dF;
 }  // namespace gfx
 
 namespace input {
+class TimeoutMonitor;
 class FlingSchedulerBase;
 }  // namespace input
 
@@ -113,7 +114,6 @@ class RenderWidgetHostOwnerDelegate;
 class RenderWidgetHostFactory;
 class SiteInstanceGroup;
 class SyntheticGestureController;
-class TimeoutMonitor;
 class TouchEmulatorImpl;
 class VisibleTimeRequestTrigger;
 
@@ -1459,7 +1459,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::CallbackListSubscription
       render_process_blocked_state_changed_subscription_;
 
-  std::unique_ptr<TimeoutMonitor> new_content_rendering_timeout_;
+  std::unique_ptr<input::TimeoutMonitor> new_content_rendering_timeout_;
 
   int next_browser_snapshot_id_ = 1;
   using PendingSnapshotMap = std::map<int, GetSnapshotFromBrowserCallback>;

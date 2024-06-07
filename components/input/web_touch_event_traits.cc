@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/web_touch_event_traits.h"
+#include "components/input/web_touch_event_traits.h"
 
 #include <stddef.h>
 
@@ -14,7 +14,7 @@ using blink::WebInputEvent;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 
-namespace content {
+namespace input {
 
 bool WebTouchEventTraits::AllTouchPointsHaveState(
     const WebTouchEvent& event,
@@ -71,4 +71,4 @@ void WebTouchEventTraits::ResetTypeAndTouchStates(WebInputEvent::Type type,
     event->touches[i].state = newState;
 }
 
-}  // namespace content
+}  // namespace input

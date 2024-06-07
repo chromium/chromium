@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_GESTURE_EVENT_QUEUE_H_
-#define CONTENT_COMMON_INPUT_GESTURE_EVENT_QUEUE_H_
+#ifndef COMPONENTS_INPUT_GESTURE_EVENT_QUEUE_H_
+#define COMPONENTS_INPUT_GESTURE_EVENT_QUEUE_H_
 
 #include <stddef.h>
 
@@ -13,25 +13,28 @@
 #include "base/timer/timer.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/fling_controller.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace content {
-class GestureEventQueueTest;
 class MockRenderWidgetHost;
+}  // namespace content
+
+namespace input {
+class GestureEventQueueTest;
 
 // Interface with which the GestureEventQueue can forward gesture events, and
 // dispatch gesture event responses.
-class CONTENT_EXPORT GestureEventQueueClient {
+class COMPONENT_EXPORT(INPUT) GestureEventQueueClient {
  public:
   virtual ~GestureEventQueueClient() {}
 
   virtual void SendGestureEventImmediately(
-      const input::GestureEventWithLatencyInfo& event) = 0;
+      const GestureEventWithLatencyInfo& event) = 0;
 
   virtual void OnGestureEventAck(
-      const input::GestureEventWithLatencyInfo& event,
+      const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 };
@@ -58,13 +61,13 @@ class CONTENT_EXPORT GestureEventQueueClient {
 // events were sent, not ACK'd. This means an ACK'd event that was sent after
 // an event still awaiting an ACK won't notify the client until the earlier
 // event is ACK'd.
-class CONTENT_EXPORT GestureEventQueue {
+class COMPONENT_EXPORT(INPUT) GestureEventQueue {
  public:
-  using GestureQueue = base::circular_deque<input::GestureEventWithLatencyInfo>;
-  struct CONTENT_EXPORT Config {
+  using GestureQueue = base::circular_deque<GestureEventWithLatencyInfo>;
+  struct COMPONENT_EXPORT(INPUT) Config {
     Config();
 
-    input::FlingController::Config fling_config;
+    FlingController::Config fling_config;
 
     // Determines whether non-scroll gesture events are "debounced" during an
     // active scroll sequence, suppressing brief scroll interruptions.
@@ -75,8 +78,8 @@ class CONTENT_EXPORT GestureEventQueue {
   // Both |client| and |touchpad_client| must outlive the GestureEventQueue.
   GestureEventQueue(
       GestureEventQueueClient* client,
-      input::FlingControllerEventSenderClient* fling_event_sender_client,
-      input::FlingControllerSchedulerClient* fling_scheduler_client,
+      FlingControllerEventSenderClient* fling_event_sender_client,
+      FlingControllerSchedulerClient* fling_scheduler_client,
       const Config& config);
 
   GestureEventQueue(const GestureEventQueue&) = delete;
@@ -87,15 +90,15 @@ class CONTENT_EXPORT GestureEventQueue {
   // Allow the fling controller to observe the gesture event. Returns true if
   // the event was filtered by the fling controller and shouldn't be further
   // forwarded.
-  bool PassToFlingController(const input::GestureEventWithLatencyInfo&);
+  bool PassToFlingController(const GestureEventWithLatencyInfo&);
 
   // Filter the event for debouncing or forward it to the renderer. Returns
   // true if the event was forwarded, false if was filtered for debouncing.
-  bool DebounceOrForwardEvent(const input::GestureEventWithLatencyInfo&);
+  bool DebounceOrForwardEvent(const GestureEventWithLatencyInfo&);
 
   // Adds a gesture to the queue of events that needs to be deferred until the
   // touch action is known.
-  void QueueDeferredEvents(const input::GestureEventWithLatencyInfo&);
+  void QueueDeferredEvents(const GestureEventWithLatencyInfo&);
 
   // Returns events in the |deferred_gesture_queue_| and empty the queue.
   GestureQueue TakeDeferredEvents();
@@ -108,13 +111,13 @@ class CONTENT_EXPORT GestureEventQueue {
                          const ui::LatencyInfo& latency);
 
   // Returns the |TouchpadTapSuppressionController| instance.
-  input::TouchpadTapSuppressionController*
+  TouchpadTapSuppressionController*
   GetTouchpadTapSuppressionController();
 
   // Sends the gesture event to the renderer. Stores the sent event for when
   // the renderer replies with an ACK.
   void ForwardGestureEvent(
-      const input::GestureEventWithLatencyInfo& gesture_event);
+      const GestureEventWithLatencyInfo& gesture_event);
 
   bool empty() const {
     return sent_events_awaiting_ack_.empty() &&
@@ -134,7 +137,7 @@ class CONTENT_EXPORT GestureEventQueue {
   // event queue, but this is needed to pass them through to the
   // FlingController. The FlingController should probably be owned by the
   // InputRouter instead.
-  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
+  void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result);
 
@@ -145,10 +148,10 @@ class CONTENT_EXPORT GestureEventQueue {
   friend class MockRenderWidgetHost;
 
   class GestureEventWithLatencyInfoAckState
-      : public input::GestureEventWithLatencyInfo {
+      : public GestureEventWithLatencyInfo {
    public:
     GestureEventWithLatencyInfoAckState(
-        const input::GestureEventWithLatencyInfo&);
+        const GestureEventWithLatencyInfo&);
     blink::mojom::InputEventResultState ack_state() const { return ack_state_; }
     void set_ack_info(blink::mojom::InputEventResultSource source,
                       blink::mojom::InputEventResultState state) {
@@ -172,12 +175,12 @@ class CONTENT_EXPORT GestureEventQueue {
 
   // Sub-filter for removing bounces from in-progress scrolls.
   bool ShouldForwardForBounceReduction(
-      const input::GestureEventWithLatencyInfo& gesture_event);
+      const GestureEventWithLatencyInfo& gesture_event);
 
   // ACK completed events in order until we have reached an incomplete event.
   // Will preserve the FIFO order as events originally arrived.
   void AckCompletedEvents();
-  void AckGestureEventToClient(const input::GestureEventWithLatencyInfo&,
+  void AckGestureEventToClient(const GestureEventWithLatencyInfo&,
                                blink::mojom::InputEventResultSource,
                                blink::mojom::InputEventResultState);
 
@@ -219,13 +222,13 @@ class CONTENT_EXPORT GestureEventQueue {
   // An object for filtering unnecessary GFC events, as well as gestureTap/mouse
   // events that happen immediately after touchscreen/touchpad fling canceling
   // taps.
-  input::FlingController fling_controller_;
+  FlingController fling_controller_;
 
   // True when the last GSE event is either in the debouncing_deferral_queue_ or
   // pushed to the queue and dropped from it later on.
   bool scroll_end_filtered_by_deboucing_deferral_queue_ = false;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_GESTURE_EVENT_QUEUE_H_
+#endif  // COMPONENTS_INPUT_GESTURE_EVENT_QUEUE_H_

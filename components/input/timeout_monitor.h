@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TIMEOUT_MONITOR_H_
-#define CONTENT_COMMON_INPUT_TIMEOUT_MONITOR_H_
+#ifndef COMPONENTS_INPUT_TIMEOUT_MONITOR_H_
+#define COMPONENTS_INPUT_TIMEOUT_MONITOR_H_
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 
-namespace content {
+namespace input {
 
 // Utility class for handling a timeout callback with periodic starts and stops.
-class CONTENT_EXPORT TimeoutMonitor {
+class COMPONENT_EXPORT(INPUT) TimeoutMonitor {
  public:
   typedef base::RepeatingClosure TimeoutHandler;
   // |task_runner| must run tasks on the same sequence which TimeoutMonitor is
@@ -51,6 +51,6 @@ class CONTENT_EXPORT TimeoutMonitor {
   base::OneShotTimer timeout_timer_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TIMEOUT_MONITOR_H_
+#endif  // COMPONENTS_INPUT_TIMEOUT_MONITOR_H_
