@@ -2570,8 +2570,8 @@ crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTra
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
-[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?gpu [ Skip Timeout ]
+crbug.com/345585682 external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
+crbug.com/345547966 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/345002381 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?cpu [ Skip Timeout ]
 crbug.com/343991292 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?gpu [ Skip Timeout ]
 crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
