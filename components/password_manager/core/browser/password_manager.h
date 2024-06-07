@@ -275,6 +275,10 @@ class PasswordManager : public PasswordManagerInterface {
   // appropriate.
   void OnLoginSuccessful();
 
+  // Called when the login was considered unsuccessful. Takes care of logging
+  // and reporting metrics and resets the submitted manager data.
+  void OnLoginFailed(BrowserSavePasswordProgressLogger* logger);
+
   // Checks for every form in |forms_data| whether |pending_login_managers_|
   // already contain a manager for that form. If not, adds a manager for each
   // such form.
@@ -363,6 +367,12 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Triggers a user survey to rate Password Manager, if the user actively
+  // engaged with Password Manager (filled a form manually).
+  void MaybeTriggerHatsSurvey(PasswordFormManager& form_manager);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
   // Even though the formal submission might not happen, the manager

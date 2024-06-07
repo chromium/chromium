@@ -261,6 +261,16 @@ void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool HasManuallyFilledFields(const PasswordForm& form) {
+  return base::ranges::any_of(
+      form.form_data.fields, [&](const autofill::FormFieldData& field) {
+        return field.properties_mask() &
+               autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
+      });
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 // static
@@ -1163,11 +1173,7 @@ void PasswordManager::OnPasswordFormsRendered(
   // If the server throws an internal error, access denied page, page not
   // found etc. after a login attempt, we do not save the credentials.
   if (client_->WasLastNavigationHTTPError()) {
-    if (logger) {
-      logger->LogMessage(Logger::STRING_DECISION_DROP);
-    }
-    submitted_manager->GetMetricsRecorder()->LogSubmitFailed();
-    ResetSubmittedManager();
+    OnLoginFailed(logger.get());
     return;
   }
 
@@ -1205,13 +1211,11 @@ void PasswordManager::OnPasswordFormsRendered(
                 form_data, *submitted_manager->GetSubmittedForm())) {
           continue;
         }
-        submitted_manager->GetMetricsRecorder()->LogSubmitFailed();
         if (logger) {
           logger->LogFormData(Logger::STRING_PASSWORD_FORM_REAPPEARED,
                               form_data);
-          logger->LogMessage(Logger::STRING_DECISION_DROP);
         }
-        ResetSubmittedManager();
+        OnLoginFailed(logger.get());
         // Clear visible_forms_data_ once we found the match.
         visible_forms_data_.clear();
         return;
@@ -1244,6 +1248,10 @@ void PasswordManager::OnLoginSuccessful() {
   CHECK(submitted_manager);
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
   CHECK(submitted_form);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  MaybeTriggerHatsSurvey(*submitted_manager);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // User might fill several login flows during their user journey. For example,
   // Forgot Password Flow followed by sign-in flow. To not suggest usernames
@@ -1354,6 +1362,22 @@ void PasswordManager::OnLoginSuccessful() {
                                      /*is_update_confirmation=*/false);
     }
   }
+  ResetSubmittedManager();
+}
+
+void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
+  if (logger) {
+    logger->LogMessage(Logger::STRING_DECISION_DROP);
+  }
+
+  PasswordFormManager* submitted_manager = GetSubmittedManager();
+  DCHECK(submitted_manager);
+  submitted_manager->GetMetricsRecorder()->LogSubmitFailed();
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  MaybeTriggerHatsSurvey(*submitted_manager);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   ResetSubmittedManager();
 }
 
@@ -1594,6 +1618,20 @@ bool PasswordManager::IsFormManagerPendingPasswordUpdate() const {
   return owned_submitted_form_manager_ &&
          owned_submitted_form_manager_->IsPasswordUpdate();
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void PasswordManager::MaybeTriggerHatsSurvey(
+    PasswordFormManager& form_manager) {
+  const PasswordForm* submitted_form = form_manager.GetSubmittedForm();
+  if (submitted_form && HasManuallyFilledFields(*submitted_form) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillPasswordUserPerceptionSurvey)) {
+    client_->TriggerUserPerceptionOfPasswordManagerSurvey(
+        form_manager.GetMetricsRecorder()
+            ->FillingAssinstanceToHatsInProductDataString());
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
 bool PasswordManager::DetectPotentialSubmission(

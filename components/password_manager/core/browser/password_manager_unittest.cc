@@ -237,6 +237,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetStoreResultFilter,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              TriggerUserPerceptionOfPasswordManagerSurvey,
+              (const std::string&),
+              (override));
   MOCK_METHOD(PasswordManagerMetricsRecorder*,
               GetMetricsRecorder,
               (),
@@ -5781,6 +5785,106 @@ TEST_P(PasswordManagerTest, ParsingDifferenceFillingAndSavingUKM) {
       ukm::builders::PasswordForm::kParsingDiffFillingAndSavingName,
       PasswordFormMetricsRecorder::ParsingDifference::kNone);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Check that a happiness surney is triggered after the user has submitted
+// a manually filled form and logged in.
+TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnSuccessfulLogin) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kAutofillPasswordUserPerceptionSurvey};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Simulate adding a credential that the user will fill.
+  PasswordForm form(MakeSimpleForm());
+  form.username_value = u"username";
+  form.password_value = u"password";
+  store_->AddLogin(form);
+
+  FormData observed_form = form.form_data;
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  task_environment_.RunUntilIdle();
+
+  // Simulate the user typing username, manually filling password and
+  // successfully submitting the form.
+  observed_form.fields[0].set_value(form.username_value);
+  observed_form.fields[0].set_properties_mask(
+      autofill::FieldPropertiesFlags::kUserTyped);
+  observed_form.fields[1].set_value(form.password_value);
+  observed_form.fields[1].set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+
+  EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey(
+                           "Password was filled (automatically or manually), "
+                           "known username was typed"));
+  manager()->OnPasswordFormsRendered(&driver_, {});
+}
+
+// Check that a happiness surney is triggered after the user has submitted
+// a manually filled form, but failed to log in.
+TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnFailedLogin) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kAutofillPasswordUserPerceptionSurvey};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Simulate adding a credential that the user will fill.
+  PasswordForm form(MakeSimpleForm());
+  form.username_value = u"username";
+  form.password_value = u"password";
+  store_->AddLogin(form);
+
+  FormData observed_form = form.form_data;
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  task_environment_.RunUntilIdle();
+
+  // Simulate the user manually filling credentials and submitting the form.
+  observed_form.fields[0].set_value(form.username_value);
+  observed_form.fields[0].set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  observed_form.fields[1].set_value(form.password_value);
+  observed_form.fields[1].set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+
+  EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey(
+                           "Credentials were filled manually, without typing"));
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+}
+
+// Check that a happiness surney is not triggered after the user has submitted
+// a form filled on a page load and logged in.
+TEST_P(PasswordManagerTest, HatsSurveyNotTriggeredAfterAutomaticFilling) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kAutofillPasswordUserPerceptionSurvey};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Simulate adding a credential that the user will fill.
+  PasswordForm form(MakeSimpleForm());
+  form.username_value = u"username";
+  form.password_value = u"password";
+  store_->AddLogin(form);
+
+  FormData observed_form = form.form_data;
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  task_environment_.RunUntilIdle();
+
+  // Simulate the user typing username, manually filling password and
+  // successfully submitting the form.
+  observed_form.fields[0].set_value(form.username_value);
+  observed_form.fields[0].set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnPageLoad);
+  observed_form.fields[1].set_value(form.password_value);
+  observed_form.fields[1].set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnPageLoad);
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+
+  EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey).Times(0);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, ::testing::Bool());
 
