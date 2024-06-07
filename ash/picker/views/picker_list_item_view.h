@@ -53,11 +53,13 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void SetBadgeAction(PickerActionType action);
   void SetBadgeVisible(bool visible);
 
-  // Starts to retrieve a thumbnail preview of `file_path` to be used as the
-  // icon and when the the item is hovered on.
+  // Starts to retrieve a thumbnail preview of `file_path` to be used when the
+  // item is hovered on. If `update_icon` is true, then the leading icon of this
+  // item will also be updated to match the thumbnail.
   void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
                   base::FilePath file_path,
-                  AsyncBitmapResolver async_bitmap_resolver);
+                  AsyncBitmapResolver async_bitmap_resolver,
+                  bool update_icon = false);
 
   // views::Button:
   void OnMouseEntered(const ui::MouseEvent& event) override;

@@ -222,7 +222,8 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
 void PickerListItemView::SetPreview(
     PickerPreviewBubbleController* preview_bubble_controller,
     base::FilePath file_path,
-    AsyncBitmapResolver async_bitmap_resolver) {
+    AsyncBitmapResolver async_bitmap_resolver,
+    bool update_icon) {
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->CloseBubble();
   }
@@ -230,17 +231,19 @@ void PickerListItemView::SetPreview(
   async_preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
       PickerPreviewBubbleView::kPreviewImageSize, file_path,
       async_bitmap_resolver);
-  async_preview_icon_ = std::make_unique<ash::HoldingSpaceImage>(
-      kLeadingIconSizeDip, file_path, std::move(async_bitmap_resolver));
   preview_bubble_controller_ = preview_bubble_controller;
 
-  // base::Unretained is safe here since `async_icon_subscription_` is a member.
-  // During destruction, `async_icon_subscription_` will be destroyed before the
-  // other members, so the callback is guaranteed to be safe.
-  async_icon_subscription_ =
-      async_preview_icon_->AddImageSkiaChangedCallback(base::BindRepeating(
-          &PickerListItemView::UpdateIconWithPreview, base::Unretained(this)));
-  UpdateIconWithPreview();
+  if (update_icon) {
+    // base::Unretained is safe here since `async_icon_subscription_` is a
+    // member. During destruction, `async_icon_subscription_` will be destroyed
+    // before the other members, so the callback is guaranteed to be safe.
+    async_preview_icon_ = std::make_unique<ash::HoldingSpaceImage>(
+        kLeadingIconSizeDip, file_path, std::move(async_bitmap_resolver));
+    async_icon_subscription_ = async_preview_icon_->AddImageSkiaChangedCallback(
+        base::BindRepeating(&PickerListItemView::UpdateIconWithPreview,
+                            base::Unretained(this)));
+    UpdateIconWithPreview();
+  }
 }
 
 void PickerListItemView::OnMouseEntered(const ui::MouseEvent&) {

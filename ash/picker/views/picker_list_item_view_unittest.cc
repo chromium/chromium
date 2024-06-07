@@ -116,7 +116,7 @@ TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
   widget->Show();
 
   item_view->SetPreview(&preview_controller, base::FilePath(),
-                        base::DoNothing());
+                        base::DoNothing(), /*update_icon=*/true);
 
   EXPECT_EQ(item_view->leading_icon_view_for_testing()
                 .GetImageModel()
@@ -143,7 +143,8 @@ TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconOncePreviewIconResolves) {
               HoldingSpaceImage::BitmapCallback callback) {
             std::move(callback).Run(&bitmap, base::File::Error::FILE_OK);
             run_loop.Quit();
-          }));
+          }),
+      /*update_icon=*/true);
 
   run_loop.Run();
   EXPECT_EQ(item_view->leading_icon_view_for_testing()
