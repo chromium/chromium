@@ -2,6 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ *
+ * 'settings-slider-row' is a component which wraps a basic 'settings-row' with
+ * a slotted control component `settings-slider-v2`. This component can be used
+ * with or without prefs.
+ *
+ * - Usage: without pref
+ *   - `value` must be specified and `pref` must not be used.
+ *
+ *   <settings-slider-row
+ *       label="Lorem ipsum"
+ *       sublabel="Lorem ipsum dolor sit amet"
+ *       icon="os-settings:display"
+ *       value="[[sliderValue_]]"
+ *       ticks="[[sliderTicks_]]"
+ *       on-change="onSliderRowChange_"
+ *       min-label="$i18n{low}"
+ *       max-label="$i18n{high}">
+ *   <settings-slider-v2>
+ *
+ * - Usage: with pref
+ *   - `pref` must be specified and `value` must not be used.
+ *
+ *   <settings-slider-row
+ *       label="Lorem ipsum"
+ *       sublabel="Lorem ipsum dolor sit amet"
+ *       icon="os-settings:display"
+ *       pref="[[prefs.foo.bar]]"
+ *       min="0"
+ *       max="100"
+ *       scale="100"
+ *       on-change="onSliderRowChange_"
+ *       min-label="$i18n{low}"
+ *       max-label="$i18n{high}"
+ *       update-value-instantly>
+ *   <settings-slider-row>
+ */
+
 import './settings_slider_v2.js';
 import './settings_row.js';
 
