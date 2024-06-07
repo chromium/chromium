@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
@@ -67,6 +67,31 @@ suite('voice and language utils', () => {
 
     // Unsupported languages are undefined
     assertEquals(convertLangOrLocaleForVoicePackManager('cn'), undefined);
+  });
+
+  test('convertLangOrLocaleToExactVoicePackLocale', () => {
+    // Converts to voice pack locale when multiple supported
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('en'), 'en-us');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('es'), 'es-es');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('pt'), 'pt-br');
+
+    // Converts to voice pack locale when only one locale supported
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('fr'), 'fr-fr');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('it'), 'it-it');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('bn'), 'bn-bd');
+
+    // Converts from unsupported locale to supported locale when necessary
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('en-UK'), 'en-us');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('es-MX'), 'es-es');
+
+    // Keeps locale when necesseary
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('en-GB'), 'en-gb');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('es-es'), 'es-es');
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('pt-Br'), 'pt-br');
+
+    // Unsupported languages are undefined
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('cn'), undefined);
+    assertEquals(convertLangOrLocaleToExactVoicePackLocale('ar'), undefined);
   });
 
   test('convertLangToAnAvailableLangIfPresent', () => {

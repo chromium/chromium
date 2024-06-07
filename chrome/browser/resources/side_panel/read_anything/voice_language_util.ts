@@ -241,6 +241,18 @@ export function convertLangOrLocaleForVoicePackManager(langOrLocale: string):
   return undefined;
 }
 
+export function convertLangOrLocaleToExactVoicePackLocale(langOrLocale: string):
+    string|undefined {
+  const possibleConvertedLang =
+      convertLangOrLocaleForVoicePackManager(langOrLocale);
+  if (!possibleConvertedLang) {
+    return possibleConvertedLang;
+  }
+
+  return [...AVAILABLE_GOOGLE_TTS_LOCALES].find(
+      locale => locale.startsWith(possibleConvertedLang.toLowerCase()));
+}
+
 function convertUnsupportedBaseLangToSupportedLocale(baseLang: string): string|
     undefined {
   // Check if it's a base lang that supports a locale. These are the only

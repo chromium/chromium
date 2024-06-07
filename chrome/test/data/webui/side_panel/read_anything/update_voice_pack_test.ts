@@ -37,6 +37,8 @@ suite('UpdateVoicePack', () => {
           {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
       );
     };
+    // @ts-ignore
+    app.getVoices(true);
   }
 
   function enabledLangs(): string[] {
@@ -212,9 +214,66 @@ suite('UpdateVoicePack', () => {
             VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
             getVoicePackServerInstallStatus(lang).id, 'Successful response');
-
         assertEquals(
             getVoicePackLocalStatus(lang), VoiceClientSideStatusCode.AVAILABLE);
+        // @ts-ignore
+        assertTrue(app.getVoices().some(v => v.lang.toLowerCase() === lang));
+        // @ts-ignore
+        assertEquals(app.selectedVoice, undefined);
+      });
+
+  test(
+      'with flag switches to newly available voices if it\'s for the current language',
+      () => {
+        const lang = 'en-us';
+        chrome.readingMode.isLanguagePackDownloadingEnabled = true;
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        // @ts-ignore
+        app.selectedVoice = app.synth.getVoices()[0];
+        app.$.toolbar.updateFonts = () => {};
+        chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
+        chrome.readingMode.getStoredVoice = () => '';
+        app.languageChanged();
+        // Confirm en-us is not in the voice list yet
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        assertFalse(
+            app.synth.getVoices().some(v => v.lang.toLowerCase() === lang));
+
+        addNaturalVoicesForLang(lang);
+        app.updateVoicePackStatus(lang, 'kInstalled');
+
+        // @ts-ignore
+        assertEquals(app.selectedVoice.lang, lang);
+        // @ts-ignore
+        assertTrue(app.selectedVoice.name.includes('Natural'));
+      });
+
+  test(
+      'with flag does not switch to newly available voices if it\'s not for the current language',
+      () => {
+        const lang = 'en-us';
+        chrome.readingMode.isLanguagePackDownloadingEnabled = true;
+        chrome.readingMode.baseLanguageForSpeech = 'pt-br';
+        const currentVoice = {
+          name: 'Portuguese voice 1',
+          lang: chrome.readingMode.baseLanguageForSpeech,
+        } as SpeechSynthesisVoice;
+        // @ts-ignore
+        app.selectedVoice = currentVoice;
+        app.$.toolbar.updateFonts = () => {};
+        chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
+        chrome.readingMode.getStoredVoice = () => '';
+        app.languageChanged();
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        assertFalse(
+            app.synth.getVoices().some(v => v.lang.toLowerCase() === lang));
+
+        addNaturalVoicesForLang(lang);
+        app.updateVoicePackStatus(lang, 'kInstalled');
+
+        // The selected voice should stay the same as it was.
+        // @ts-ignore
+        assertEquals(app.selectedVoice, currentVoice);
       });
 
   test('with error code marks the status', () => {

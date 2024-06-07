@@ -22,7 +22,7 @@ suite('LanguageChanged', () => {
   const langForDefaultVoice = 'en';
   const lang1 = 'zh';
   const lang2 = 'tr';
-  const lang3 = 'pt';
+  const lang3 = 'pt-br';
   const langWithNoVoices = 'elvish';
 
   const defaultVoice = {
@@ -62,6 +62,24 @@ suite('LanguageChanged', () => {
     return app.selectedVoice;
   }
 
+  function enableLangs(...langs: string[]) {
+    for (const l of langs) {
+      // @ts-ignore
+      if (!app.enabledLanguagesInPref.includes(l)) {
+        // @ts-ignore
+        app.enabledLanguagesInPref.push(l);
+      }
+    }
+  }
+
+  function setInstalled(lang: string) {
+    // @ts-ignore
+    app.voicePackInstallStatusServerResponses[lang] = {
+      id: 'Successful response',
+      code: VoicePackServerStatusSuccessCode.INSTALLED,
+    };
+  }
+
   setup(() => {
     suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
@@ -75,6 +93,8 @@ suite('LanguageChanged', () => {
 
     // @ts-ignore
     app.availableVoices = voices;
+    // @ts-ignore
+    app.availableLangs = voices.map(v => v.lang);
     flush();
   });
 
@@ -100,11 +120,20 @@ suite('LanguageChanged', () => {
   suite('with flag updates selected voice', () => {
     setup(() => {
       chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
+      chrome.readingMode.isLanguagePackDownloadingEnabled = true;
+
+      for (const v of voices) {
+        setInstalled(v.lang);
+        enableLangs(v.lang);
+      }
     });
 
     test('to the stored voice for this language if there is one', () => {
       chrome.readingMode.getStoredVoice = () => otherVoice.name;
+      chrome.readingMode.baseLanguageForSpeech = otherVoice.lang;
+
       app.languageChanged();
+
       assertEquals(selectedVoice(), otherVoice);
     });
 
@@ -142,8 +171,6 @@ suite('LanguageChanged', () => {
 
       suite('and this locale is enabled', () => {
         test('to a natural voice for this language', () => {
-          // @ts-ignore
-          app.enabledLanguagesInPref = [lang3];
           chrome.readingMode.baseLanguageForSpeech = lang3;
           app.languageChanged();
           assertEquals(selectedVoice(), naturalVoiceWithLang3);
@@ -152,8 +179,6 @@ suite('LanguageChanged', () => {
         test(
             'to the default voice for this language if there\'s no natural voice',
             () => {
-              // @ts-ignore
-              app.enabledLanguagesInPref = [lang1];
               chrome.readingMode.baseLanguageForSpeech = lang1;
               app.languageChanged();
               assertEquals(selectedVoice(), defaultVoiceWithLang1);
@@ -162,8 +187,6 @@ suite('LanguageChanged', () => {
         test(
             'to the first listed voice for this language if there\'s no default',
             () => {
-              // @ts-ignore
-              app.enabledLanguagesInPref = [lang2];
               chrome.readingMode.baseLanguageForSpeech = lang2;
               app.languageChanged();
               assertEquals(selectedVoice(), firstVoiceWithLang2);
@@ -171,6 +194,35 @@ suite('LanguageChanged', () => {
       });
 
       suite('and this locale is disabled', () => {
+        test('and it enables pack manager locale', () => {
+          // @ts-ignore
+          app.enabledLanguagesInPref = [];
+          flush();
+          chrome.readingMode.baseLanguageForSpeech = lang3;
+
+          app.languageChanged();
+
+          // @ts-ignore
+          assertTrue(app.enabledLanguagesInPref.includes(lang3));
+          assertEquals(selectedVoice(), naturalVoiceWithLang3);
+        });
+
+        test(
+            'and it enables other locale if not supported by pack manager',
+            () => {
+              // @ts-ignore
+              app.enabledLanguagesInPref = [];
+              flush();
+              chrome.readingMode.baseLanguageForSpeech = lang1;
+
+              app.languageChanged();
+
+              // @ts-ignore
+              assertTrue(app.enabledLanguagesInPref.includes(lang1));
+              assertEquals(selectedVoice(), defaultVoiceWithLang1);
+            });
+
+
         test('to voice in different locale and same language', () => {
           const voice = {lang: 'en-GB', name: 'British', default: true} as
               SpeechSynthesisVoice;
@@ -178,6 +230,8 @@ suite('LanguageChanged', () => {
           app.enabledLanguagesInPref = ['en-gb'];
           // @ts-ignore
           app.availableVoices = [voice];
+          setInstalled('en-gb');
+          setInstalled('en-us');
           flush();
           chrome.readingMode.baseLanguageForSpeech = 'en-US';
 

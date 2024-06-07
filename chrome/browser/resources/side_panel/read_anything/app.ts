@@ -23,7 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
@@ -1003,6 +1003,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             this.getVoices(true);
           }
 
+          this.autoSwitchVoice_(lang);
+
           // Even though the voice may be installed on disk, it still may not be
           // available to the speechSynthesis API. Check whether to mark the
           // voice as AVAILABLE or INSTALLED_AND_UNAVAILABLE
@@ -1020,6 +1022,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           return newStatusCode satisfies never;
       }
     } else if (isVoicePackStatusError(newVoicePackStatus)) {
+      this.autoSwitchVoice_(lang);
       const newStatusCode = newVoicePackStatus.code;
 
       switch (newStatusCode) {
@@ -1129,12 +1132,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const voicesForCurrentEnabledLocale = voicesForLanguage.filter(
         v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
     if (!voicesForCurrentEnabledLocale ||
-        voicesForCurrentEnabledLocale.length === 0) {
+        !voicesForCurrentEnabledLocale.length) {
       // If there's no enabled locales for this language, check for any other
       // voices for enabled locales.
       const allVoicesForEnabledLocales = allPossibleVoices.filter(
           v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
-      if (!allVoicesForEnabledLocales) {
+      if (!allVoicesForEnabledLocales.length) {
         // If there are no voices for the enabled locales, or no enabled
         // locales at all, we can't select a voice. So return undefined so we
         // can disable the play button.
@@ -2544,9 +2547,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   languageChanged() {
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.$.toolbar.updateFonts();
-    if (chrome.readingMode.isAutoVoiceSwitchingEnabled) {
-      this.selectPreferredVoice_();
-    }
     // Don't check for Google locales when the language has changed.
     this.installVoicePackIfPossible(
         this.speechSynthesisLanguage,
@@ -2563,6 +2563,45 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       willDrawAgainSoon: boolean = this.willDrawAgainSoon_): boolean {
     return hasContent && speechEngineLoaded && (selectedVoice !== undefined) &&
         !willDrawAgainSoon;
+  }
+
+  private autoSwitchVoice_(lang: string) {
+    if (!chrome.readingMode.isAutoVoiceSwitchingEnabled) {
+      return;
+    }
+
+    // Only enable this language if it has available voices and is the current
+    // language. Otherwise switch to a default voice if nothing is selected.
+    const availableLang =
+        convertLangToAnAvailableLangIfPresent(lang, this.availableLangs);
+    if (!availableLang ||
+        !availableLang.startsWith(this.speechSynthesisLanguage.split('-')[0])) {
+      this.selectPreferredVoice_();
+      return;
+    }
+
+    // Only enable Google TTS supported locales for this language if they exist.
+    let localesToEnable: string[] = [];
+    const voicePackLocale =
+        convertLangOrLocaleToExactVoicePackLocale(availableLang);
+    if (voicePackLocale) {
+      localesToEnable.push(voicePackLocale);
+    } else {
+      // If there are no Google TTS locales for this language then enable any
+      // available locale for this language.
+      localesToEnable =
+          this.availableLangs.filter(l => l.startsWith(availableLang));
+    }
+
+    // Enable the locales so we can select a voice for the given language and
+    // show it in the voice menu.
+    localesToEnable.forEach(langToEnable => {
+      if (!this.enabledLanguagesInPref.includes(langToEnable)) {
+        this.enabledLanguagesInPref =
+            [...this.enabledLanguagesInPref, langToEnable];
+      }
+    });
+    this.selectPreferredVoice_();
   }
 
   // Kicks off a workflow to install a voice pack.
@@ -2587,6 +2626,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // page language), this check can be skipped.
     if (onlyInstallExactGoogleLocaleMatch &&
         !AVAILABLE_GOOGLE_TTS_LOCALES.has(langOrLocale)) {
+      this.autoSwitchVoice_(langOrLocale);
       return;
     }
 
@@ -2594,12 +2634,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         convertLangOrLocaleForVoicePackManager(langOrLocale);
 
     if (!langCodeForVoicePackManager) {
+      this.autoSwitchVoice_(langOrLocale);
       return;
     }
 
     const statusForLang =
         this.voicePackInstallStatusServerResponses[langCodeForVoicePackManager];
 
+    // If we send an install request for this language, we'll auto switch
+    // voices after it installs.
     if (!statusForLang ||
         (isVoicePackStatusSuccess(statusForLang) &&
          statusForLang.code ===
@@ -2621,6 +2664,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       chrome.readingMode.sendInstallVoicePackRequest(
           langCodeForVoicePackManager);
+    } else {
+      this.autoSwitchVoice_(langCodeForVoicePackManager);
     }
   }
 
