@@ -962,6 +962,10 @@ extern const char kIOSLargeFakeboxDescription[];
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
+// Title and description for the flag to enable Lens Overlay.
+extern const char kEnableLensOverlayName[];
+extern const char kEnableLensOverlayDescription[];
+
 // Title and description for the flag to enable session serialization
 // optimizations (go/bling-session-restoration).
 extern const char kEnableSessionSerializationOptimizationsName[];

@@ -3354,6 +3354,11 @@
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
     "expiry_milestone": 125
   },
+    {
+    "name": "enable-lens-overlay",
+    "owners": [ "stkhapugin@chromium.org" ],
+    "expiry_milestone": 135
+  },
   {
     "name": "enable-lens-region-search-static-page",
     "owners": ["juanmojica@google.com", "stanfield@google.com", "lens-chrome@google.com"],
