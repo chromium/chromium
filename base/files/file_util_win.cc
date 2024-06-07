@@ -886,7 +886,7 @@ bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,
     // increment after the '\0' that terminates the current string.
     size_t idx = drive_mapping.find(L'\0');
     CHECK(idx != std::wstring_view::npos);
-    drive_mapping = drive_mapping.substr(idx);
+    drive_mapping = drive_mapping.substr(idx + 1u);
   }
 
   // No drive matched.  The path does not start with a device junction
