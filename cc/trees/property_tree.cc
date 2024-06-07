@@ -94,6 +94,17 @@ int PropertyTree<T>::Insert(const T& tree_node, int parent_id) {
 }
 
 template <typename T>
+void PropertyTree<T>::RemoveNodes(size_t n) {
+  CHECK_LE(n, nodes_.size());
+  nodes_.resize(nodes_.size() - n);
+
+  const int upper_bound = base::checked_cast<int>(nodes_.size());
+  base::EraseIf(element_id_to_node_index_, [upper_bound](const auto& entry) {
+    return entry.second >= upper_bound;
+  });
+}
+
+template <typename T>
 void PropertyTree<T>::clear() {
   needs_update_ = false;
   nodes_.clear();
@@ -138,6 +149,11 @@ int TransformTree::Insert(const TransformNode& tree_node, int parent_id) {
 
   cached_data_.push_back(TransformCachedNodeData());
   return node_id;
+}
+
+void TransformTree::RemoveNodes(size_t n) {
+  PropertyTree<TransformNode>::RemoveNodes(n);
+  cached_data_.resize(cached_data_.size() - n);
 }
 
 void TransformTree::clear() {
@@ -889,6 +905,11 @@ int EffectTree::Insert(const EffectNode& tree_node, int parent_id) {
 
   render_surfaces_.push_back(nullptr);
   return node_id;
+}
+
+void EffectTree::RemoveNodes(size_t n) {
+  PropertyTree<EffectNode>::RemoveNodes(n);
+  render_surfaces_.resize(render_surfaces_.size() - n);
 }
 
 void EffectTree::clear() {

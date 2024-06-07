@@ -4,28 +4,53 @@
 
 module viz.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
+import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Metadata about a layer tree to be updated with each LayerContext commit.
+// Metadata and contents of a service-side display tree to be updated each time
+// the corresponding client layer tree activates.
+//
+// TODO(https://crbug.com/40902503): Split less frequently updated fields out
+// into an optional substructure to reduce serialization load.
 struct LayerTreeUpdate {
+  // The main frame commit whose tree is driving this update. Incremented over
+  // time with each client-side commit.
+  int32 source_frame_number;
+
+  // Links trace events on the display side to other events in the client.
+  uint64 trace_id;
+
+  // The device viewport and scale factor set by the tree's client.
   gfx.mojom.Rect device_viewport;
   float device_scale_factor;
-  LocalSurfaceId local_surface_id_from_parent;
+
+  // If a new LocalSurfaceId is assigned by the parent, it's included here.
+  LocalSurfaceId? local_surface_id_from_parent;
+
+  // The background color with which to fill any space not covered by layers
+  // within the tree's content rect.
+  skia.mojom.SkColor4f background_color;
+
+  // Nodes added or modified on any property tree since the last update.
+  // TODO(rockot): Add fields for clip, effect, and scroll trees.
+  array<TransformNode> transform_nodes;
+
+  // The total number of nodes in each property tree.
+  // TODO(rockot): Add fields for clip, effect, and scroll trees.
+  uint32 num_transform_nodes;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
 // client-side (e.g. renderer- or browser-side) LayerTreeHost.
 interface LayerContext {
-  // Updates the LocalSurfaceId associated with the tree.
-  SetTargetLocalSurfaceId(LocalSurfaceId id);
-
   // Globally controls whether the tree contents are visible.
   SetVisible(bool visible);
 
-  // Flushes pending updates from the client to the LayerTreeHostImpl.
-  Commit(LayerTreeUpdate update);
+  // Flushes pending updates from the client to the service-side display tree.
+  UpdateDisplayTree(LayerTreeUpdate update);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding

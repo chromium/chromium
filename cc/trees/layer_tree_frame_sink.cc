@@ -163,7 +163,8 @@ void LayerTreeFrameSink::DetachFromClient() {
   }
 }
 
-std::unique_ptr<LayerContext> LayerTreeFrameSink::CreateLayerContext() {
+std::unique_ptr<LayerContext> LayerTreeFrameSink::CreateLayerContext(
+    LayerTreeHostImpl& host_impl) {
   return nullptr;
 }
 

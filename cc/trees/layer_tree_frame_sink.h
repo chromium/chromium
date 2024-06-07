@@ -40,6 +40,7 @@ namespace cc {
 
 class LayerContext;
 class LayerTreeFrameSinkClient;
+class LayerTreeHostImpl;
 
 // An interface for submitting CompositorFrames to a display compositor
 // which will compose frames from multiple clients to show on screen to the
@@ -146,7 +147,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
 
   // Creates a new LayerContext through which the client can control layers in
   // a GPU-side display tree.
-  virtual std::unique_ptr<LayerContext> CreateLayerContext();
+  virtual std::unique_ptr<LayerContext> CreateLayerContext(
+      LayerTreeHostImpl& host_impl);
 
   // viz::SharedBitmapReporter implementation.
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,

@@ -5,8 +5,11 @@
 #ifndef CC_MOJO_EMBEDDER_VIZ_LAYER_CONTEXT_H_
 #define CC_MOJO_EMBEDDER_VIZ_LAYER_CONTEXT_H_
 
+#include "base/memory/raw_ref.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
 #include "cc/trees/layer_context.h"
+#include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/property_tree.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -22,7 +25,8 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
  public:
   // Constructs a VizLayerContext which submits content on behalf of
   // `frame_sink`. `client` must outlive this object.
-  explicit VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink);
+  VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
+                  LayerTreeHostImpl& host_impl);
   ~VizLayerContext() override;
 
   // LayerContext:
@@ -33,9 +37,13 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
   void OnRequestCommitForFrame(const viz::BeginFrameArgs& args) override;
 
  private:
+  const raw_ref<LayerTreeHostImpl> host_impl_;
+
   mojo::AssociatedReceiver<viz::mojom::LayerContextClient> client_receiver_{
       this};
   mojo::AssociatedRemote<viz::mojom::LayerContext> service_;
+
+  PropertyTrees last_committed_property_trees_{*host_impl_};
 };
 
 }  // namespace cc::mojo_embedder

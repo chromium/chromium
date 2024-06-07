@@ -36,6 +36,7 @@
 namespace cc {
 
 class LayerContext;
+class LayerTreeHostImpl;
 class RasterContextProviderWrapper;
 
 namespace mojo_embedder {
@@ -138,7 +139,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override;
-  std::unique_ptr<LayerContext> CreateLayerContext() override;
+  std::unique_ptr<LayerContext> CreateLayerContext(
+      LayerTreeHostImpl& host_impl) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const viz::SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;

@@ -44,6 +44,8 @@ namespace cc {
 struct CC_PAINT_EXPORT ElementId {
   using InternalValue = uint64_t;
 
+  static constexpr InternalValue kInvalidElementId = 0;
+
   // Constructs an invalid element id.
   constexpr ElementId() : id_(kInvalidElementId) {}
 
@@ -71,7 +73,6 @@ struct CC_PAINT_EXPORT ElementId {
 
  private:
   friend struct ElementIdHash;
-  static constexpr InternalValue kInvalidElementId = 0;
 
   // The compositor treats this as an opaque handle and should not know how to
   // interpret these bits. Non-blink cc clients typically operate in terms of

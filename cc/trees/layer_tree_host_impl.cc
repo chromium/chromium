@@ -3945,9 +3945,11 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   has_valid_layer_tree_frame_sink_ = false;
 
   ReleaseTreeResources();
-  CleanUpTileManagerResources();
-  resource_pool_ = nullptr;
-  ClearUIResources();
+  if (!settings_.is_display_tree) {
+    CleanUpTileManagerResources();
+    resource_pool_ = nullptr;
+    ClearUIResources();
+  }
 
   bool should_finish = true;
 #if BUILDFLAG(IS_WIN)
@@ -4034,7 +4036,7 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   layer_tree_frame_sink_ = layer_tree_frame_sink;
   has_valid_layer_tree_frame_sink_ = true;
   if (use_layer_context_for_display_) {
-    layer_context_ = layer_tree_frame_sink_->CreateLayerContext();
+    layer_context_ = layer_tree_frame_sink_->CreateLayerContext(*this);
   }
 
   UpdateRasterCapabilities();

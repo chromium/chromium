@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "cc/mojom/element_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// Details about a new or updated node within a transform property tree.
+struct TransformNode {
+  // The ID of this node. Must be in the range [0, N) for a transform tree with
+  // N nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for a transform tree
+  // with N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of the nearest ancestor node in the tree which corresponds to the
+  // root of a visible frame. Must be in the range [0, N) for a transform tree
+  // with N nodes, or -1 if no ancestor is desginated as a frame root by the
+  // client. May be the same as `id`.
+  int32 parent_frame_id;
+
+  // The stable ElementId of the client-side object to which this transform node
+  // applies.
+  cc.mojom.ElementId? element_id;
+
+  // Actual transformation parameters for this node. See cc::TransformNode.
+  gfx.mojom.Transform local;
+  gfx.mojom.Point3F origin;
+  gfx.mojom.PointF scroll_offset;
+
+  // The stable ElementId of the client-side object (e.g. document, in Blink)
+  // corresponding to this node, if this node corresponds to the root of a
+  // visible frame.
+  cc.mojom.ElementId? visible_frame_element_id;
+};

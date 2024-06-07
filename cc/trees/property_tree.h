@@ -68,6 +68,8 @@ class CC_EXPORT PropertyTree {
   friend class PropertyTrees;
 
  public:
+  using NodeType = T;
+
   PropertyTree(const PropertyTree& other) = delete;
   ~PropertyTree();
   PropertyTree<T>& operator=(const PropertyTree<T>&);
@@ -77,6 +79,9 @@ class CC_EXPORT PropertyTree {
 #endif
 
   int Insert(const T& tree_node, int parent_id);
+
+  // Removes the last `n` nodes from the tree.
+  void RemoveNodes(size_t n);
 
   T* Node(int i) {
     CHECK_LT(i, static_cast<int>(nodes_.size()));
@@ -172,6 +177,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 #endif
 
   int Insert(const TransformNode& tree_node, int parent_id);
+  void RemoveNodes(size_t n);
 
   void clear();
 
@@ -379,6 +385,7 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 #endif
 
   int Insert(const EffectNode& tree_node, int parent_id);
+  void RemoveNodes(size_t n);
 
   void clear();
 

@@ -103,5 +103,25 @@ mojom("mojom") {
 }
 
 mojom("layer_type") {
+  generate_java = true
   sources = [ "layer_type.mojom" ]
+}
+
+mojom("element_id") {
+  generate_java = true
+  sources = [ "element_id.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.ElementId"
+          cpp = "::cc::ElementId"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "element_id_mojom_traits.h" ]
+      traits_public_deps = [ "//cc/paint" ]
+    },
+  ]
 }

@@ -1016,7 +1016,10 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
   DCHECK(!pending_frames_.empty());
   bool was_pending_manual_begin_frame_source_ =
       pending_manual_begin_frame_source_;
-  bool was_local_frame = pending_frames_.front().local_frame;
+
+  // TODO(https://crbug.com/40902503): Drawing from a layer context is indeed
+  // local, but we'll likely want to use a different resource return policy.
+  bool was_local_frame = pending_frames_.front().local_frame || layer_context_;
   pending_frames_.pop_front();
 
   if (pending_frames_.empty()) {

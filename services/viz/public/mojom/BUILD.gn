@@ -25,6 +25,7 @@ mojom("mojom") {
     "compositing/frame_sink_bundle_id.mojom",
     "compositing/frame_sink_id.mojom",
     "compositing/frame_timing_details.mojom",
+    "compositing/layer.mojom",
     "compositing/layer_context.mojom",
     "compositing/local_surface_id.mojom",
     "compositing/offset_tag.mojom",
@@ -56,6 +57,8 @@ mojom("mojom") {
   public_deps = [
     ":shared_image_format",
     ":singleplanar_format",
+    "//cc/mojom:element_id",
+    "//cc/mojom:layer_type",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",

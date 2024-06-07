@@ -6,8 +6,10 @@
 #define COMPONENTS_VIZ_SERVICE_LAYERS_LAYER_CONTEXT_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "cc/animation/animation_host.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -103,9 +105,11 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
 
   // mojom::LayerContext:
-  void SetTargetLocalSurfaceId(const LocalSurfaceId& id) override;
   void SetVisible(bool visible) override;
-  void Commit(mojom::LayerTreeUpdatePtr update) override;
+  void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
+
+  base::expected<void, std::string> DoUpdateDisplayTree(
+      mojom::LayerTreeUpdatePtr update);
 
   const raw_ptr<CompositorFrameSinkSupport> compositor_sink_;
   const std::unique_ptr<cc::AnimationHost> animation_host_{

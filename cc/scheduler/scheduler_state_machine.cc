@@ -1018,13 +1018,14 @@ void SchedulerStateMachine::WillActivate() {
 
   has_pending_tree_ = false;
   pending_tree_is_ready_for_activation_ = false;
-  active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
-  pending_tree_needs_first_draw_on_activation_ = false;
   if (settings_.use_layer_context_for_display) {
     needs_update_display_tree_ = true;
     did_update_display_tree_ = false;
   } else {
     needs_redraw_ = true;
+    active_tree_needs_first_draw_ =
+        pending_tree_needs_first_draw_on_activation_;
+    pending_tree_needs_first_draw_on_activation_ = false;
   }
   waiting_for_activation_after_rendering_resumed_ = false;
 

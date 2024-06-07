@@ -279,9 +279,11 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
 }
 
-std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext() {
+std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext(
+    LayerTreeHostImpl& host_impl) {
   CHECK(compositor_frame_sink_ptr_);
-  return std::make_unique<VizLayerContext>(*compositor_frame_sink_ptr_);
+  return std::make_unique<VizLayerContext>(*compositor_frame_sink_ptr_,
+                                           host_impl);
 }
 
 void AsyncLayerTreeFrameSink::DidAllocateSharedBitmap(

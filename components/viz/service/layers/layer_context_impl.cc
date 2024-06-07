@@ -4,13 +4,17 @@
 
 #include "components/viz/service/layers/layer_context_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
+#include "base/types/expected_macros.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
-#include "cc/trees/commit_state.h"
+#include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -30,6 +34,79 @@ cc::LayerListSettings GetDisplayTreeSettings() {
   cc::LayerListSettings settings;
   settings.is_display_tree = true;
   return settings;
+}
+
+template <typename TreeType>
+bool IsPropertyTreeIndexValid(const TreeType& tree, int32_t index) {
+  return index >= 0 && index < tree.next_available_id();
+}
+
+template <typename TreeType>
+bool IsOptionalPropertyTreeIndexValid(const TreeType& tree, int32_t index) {
+  return index == cc::kInvalidPropertyNodeId ||
+         IsPropertyTreeIndexValid(tree, index);
+}
+
+base::expected<void, std::string> UpdatePropertyTreeNode(
+    cc::PropertyTrees& trees,
+    cc::TransformNode& node,
+    const mojom::TransformNode& wire) {
+  auto& tree = trees.transform_tree_mutable();
+  if (!IsOptionalPropertyTreeIndexValid(tree, wire.parent_frame_id)) {
+    return base::unexpected("Invalid parent_frame_id");
+  }
+  node.parent_frame_id = wire.parent_frame_id;
+  node.element_id = wire.element_id;
+  if (node.element_id) {
+    tree.SetElementIdForNodeId(node.id, node.element_id);
+  }
+  node.local = wire.local;
+  node.origin = wire.origin;
+  node.scroll_offset = wire.scroll_offset;
+  node.visible_frame_element_id = wire.visible_frame_element_id;
+  node.transform_changed = true;
+  return base::ok();
+}
+
+template <typename TreeType, typename WireContainerType>
+base::expected<bool, std::string> UpdatePropertyTree(
+    cc::PropertyTrees& trees,
+    TreeType& tree,
+    const WireContainerType& wire_updates,
+    uint32_t num_nodes) {
+  const bool changed_anything =
+      !wire_updates.empty() || num_nodes < tree.nodes().size();
+  if (num_nodes < tree.nodes().size()) {
+    tree.RemoveNodes(tree.nodes().size() - num_nodes);
+  } else {
+    using NodeType = typename TreeType::NodeType;
+    for (size_t i = tree.nodes().size(); i < num_nodes; ++i) {
+      tree.Insert(NodeType(), cc::kRootPropertyNodeId);
+    }
+  }
+
+  for (const auto& wire : wire_updates) {
+    if (!IsPropertyTreeIndexValid(tree, wire->id)) {
+      return base::unexpected("Invalid property tree node ID");
+    }
+
+    if (!IsOptionalPropertyTreeIndexValid(tree, wire->parent_id)) {
+      return base::unexpected("Invalid property tree node parent_id");
+    }
+
+    if (wire->parent_id == cc::kInvalidPropertyNodeId &&
+        wire->id != cc::kRootPropertyNodeId &&
+        wire->id != cc::kSecondaryRootPropertyNodeId) {
+      return base::unexpected(
+          "Invalid parent_id for non-root property tree node");
+    }
+
+    auto& node = *tree.Node(wire->id);
+    node.id = wire->id;
+    node.parent_id = wire->parent_id;
+    RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
+  }
+  return changed_anything;
 }
 
 }  // namespace
@@ -80,7 +157,7 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
 }
 
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void LayerContextImpl::SetBeginFrameSource(BeginFrameSource* source) {}
@@ -108,11 +185,11 @@ void LayerContextImpl::SetNeedsOneBeginImplFrameOnImplThread() {
 }
 
 void LayerContextImpl::SetNeedsUpdateDisplayTreeOnImplThread() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void LayerContextImpl::SetNeedsCommitOnImplThread() {
@@ -228,19 +305,46 @@ void LayerContextImpl::DidAllocateSharedBitmap(
 
 void LayerContextImpl::DidDeleteSharedBitmap(const SharedBitmapId& id) {}
 
-void LayerContextImpl::SetTargetLocalSurfaceId(const LocalSurfaceId& id) {
-  NOTIMPLEMENTED();
-}
-
 void LayerContextImpl::SetVisible(bool visible) {
   host_impl_->SetVisible(visible);
 }
 
-void LayerContextImpl::Commit(mojom::LayerTreeUpdatePtr update) {
-  if (update->local_surface_id_from_parent.is_valid()) {
-    host_impl_->SetTargetLocalSurfaceId(update->local_surface_id_from_parent);
+void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
+  auto result = DoUpdateDisplayTree(std::move(update));
+  if (!result.has_value()) {
+    receiver_.ReportBadMessage(result.error());
   }
+}
+
+base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
+    mojom::LayerTreeUpdatePtr update) {
+  cc::LayerTreeImpl& layers = *host_impl_->active_tree();
+
+  // We update property trees first, as they may change dimensions here and we
+  // need to validate tree node references when updating layers below.
+  // TODO(rockot): Update clip, effect, and scroll trees as well.
+  cc::PropertyTrees& property_trees = *layers.property_trees();
+  ASSIGN_OR_RETURN(const bool transform_changed,
+                   UpdatePropertyTree(
+                       property_trees, property_trees.transform_tree_mutable(),
+                       update->transform_nodes, update->num_transform_nodes));
+
+  layers.set_background_color(update->background_color);
+  layers.set_source_frame_number(update->source_frame_number);
+  layers.set_trace_id(update->trace_id);
+  layers.SetDeviceViewportRect(update->device_viewport);
+  layers.SetDeviceScaleFactor(update->device_scale_factor);
+  if (update->local_surface_id_from_parent) {
+    layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
+  }
+
+  property_trees.UpdateChangeTracking();
+  property_trees.transform_tree_mutable().set_needs_update(
+      transform_changed || property_trees.transform_tree().needs_update());
+  property_trees.set_changed(transform_changed);
+
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  return base::ok();
 }
 
 }  // namespace viz
