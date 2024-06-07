@@ -11009,21 +11009,6 @@
             ]
         }
     ],
-    "IOSDownloadNoUIUpdateInBackground": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSDownloadNoUIUpdateInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEnableColorLensAndVoiceIconsInHomeScreenWidget": [
         {
             "platforms": [
@@ -11300,8 +11285,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240523",
                     "enable_features": [
+                        "IOSDownloadNoUIUpdateInBackground",
                         "IOSSaveToDrive"
                     ]
                 }
