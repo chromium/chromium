@@ -283,6 +283,18 @@ TEST_F(ProfileReportGeneratorTest, PendingRequest) {
   EXPECT_EQ(kJustification, report->extension_requests(0).justification());
 }
 
+TEST_F(ProfileReportGeneratorTest, PendingRequestNotSupportProfileReporting) {
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kCloudExtensionRequestEnabled,
+      std::make_unique<base::Value>(true));
+  std::vector<std::string> ids = {kExtensionId};
+  SetExtensionToPendingList(ids);
+
+  generator_.set_is_machine_scope(false);
+  auto report = GenerateReport();
+  ASSERT_EQ(0, report->extension_requests_size());
+}
+
 TEST_F(ProfileReportGeneratorTest, NoPendingRequestWhenItsDisabled) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,

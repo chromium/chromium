@@ -67,7 +67,10 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   if (extensions_enabled_) {
     delegate_->GetExtensionInfo(report_.get());
   }
-  delegate_->GetExtensionRequest(report_.get());
+
+  if (is_machine_scope_) {
+    delegate_->GetExtensionRequest(report_.get());
+  }
 
   if (policies_enabled_) {
     // TODO(crbug.com/40635691): Upload policy error as their IDs.
