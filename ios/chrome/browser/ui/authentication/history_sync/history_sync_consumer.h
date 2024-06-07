@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/public/identity_manager/tribool.h"
+
 // Handles history sync UI updates
 @protocol HistorySyncConsumer
 
@@ -21,7 +23,7 @@
 - (void)setFooterText:(NSString*)footerText;
 
 // Set the button style and update button visibility.
-- (void)displayButtonsWithRestrictionStatus:(BOOL)isRestricted;
+- (void)displayButtonsWithRestrictionCapability:(signin::Tribool)capability;
 
 @end
 

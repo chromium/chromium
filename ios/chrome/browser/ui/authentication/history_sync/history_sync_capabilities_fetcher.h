@@ -8,10 +8,10 @@
 #import <Foundation/Foundation.h>
 
 #import "base/functional/callback.h"
+#import "components/signin/public/identity_manager/tribool.h"
 
-using CapabilityFetchCompletionCallback = base::OnceCallback<void(bool)>;
-
-class AuthenticationService;
+using CapabilityFetchCompletionCallback =
+    base::OnceCallback<void(signin::Tribool)>;
 
 namespace signin {
 class IdentityManager;
@@ -23,10 +23,8 @@ class IdentityManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)
-    initWithAuthenticationService:(AuthenticationService*)authenticationService
-                  identityManager:(signin::IdentityManager*)identityManager
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithIdentityManager:
+    (signin::IdentityManager*)identityManager NS_DESIGNATED_INITIALIZER;
 
 // Stops processing callbacks and stops the async AccountInfo capability
 // fetcher.
@@ -36,10 +34,9 @@ class IdentityManager;
 - (void)startFetchingRestrictionCapabilityWithCallback:
     (CapabilityFetchCompletionCallback)callback;
 
-// Fetches available capabilities. If capabilities are not immediately ready,
-// use fallback value.
-- (void)fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
-    (CapabilityFetchCompletionCallback)callback;
+// Returns the CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability
+// value.
+- (signin::Tribool)canShowUnrestrictedOptInsCapability;
 
 @end
 

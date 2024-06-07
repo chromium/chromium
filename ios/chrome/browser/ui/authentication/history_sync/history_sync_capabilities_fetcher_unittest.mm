@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 
 #import "base/run_loop.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
@@ -17,14 +15,8 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -34,30 +26,16 @@ const char kTestEmail[] = "test@gmail.com";
 
 class HistorySyncCapabilitiesFetcherTest
     : public PlatformTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<signin::Tribool> {
  public:
-  bool IsFetchingImmediatelyAvailableCapabilities() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool ExpectedCapabilityValue() const { return std::get<1>(GetParam()); }
+  signin::Tribool ExpectedCapabilityValue() const { return GetParam(); }
 
   void SetUp() override {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    feature_list_
-        .InitWithFeatures(/*enabled_features=*/
-                          {switches::kMinorModeRestrictionsForHistorySyncOptIn,
-                           switches::
-                               kUseSystemCapabilitiesForMinorModeRestrictions},
-                          /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }
 
   void TearDown() override {
@@ -66,61 +44,37 @@ class HistorySyncCapabilitiesFetcherTest
     PlatformTest::TearDown();
   }
 
-  FakeSystemIdentityManager* GetSystemIdentityManager() {
-    return FakeSystemIdentityManager::FromSystemIdentityManager(
-        GetApplicationContext()->GetSystemIdentityManager());
-  }
-
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
   }
 
   HistorySyncCapabilitiesFetcher* BuildHistorySyncCapabilitiesFetcher() {
-    AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     HistorySyncCapabilitiesFetcher* fetcher =
         [[HistorySyncCapabilitiesFetcher alloc]
-            initWithAuthenticationService:auth_service
-                          identityManager:identity_manager()];
+            initWithIdentityManager:identity_manager()];
     return fetcher;
   }
 
   AccountInfo SignInPrimaryAccount() {
-    // Sign in SystemIdentity with unknown capabilities.
-    const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-    GetSystemIdentityManager()->AddIdentityWithUnknownCapabilities(identity);
-    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     // Sign in AccountInfo.
     AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
         kTestEmail, signin::ConsentLevel::kSignin);
     return account;
   }
 
-  void SetAccountInfoCanShowUnrestrictedOptInsCapability(AccountInfo account,
-                                                         bool value) {
+  void SetAccountInfoCanShowUnrestrictedOptInsCapability(
+      AccountInfo account,
+      signin::Tribool capability) {
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-        value);
+        capability == signin::Tribool::kTrue);
     identity_test_env_.UpdateAccountInfoForAccount(account);
-  }
-
-  void SystemSignInWithCanShowUnrestrictedOptInsCapability(bool value) {
-    const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-    GetSystemIdentityManager()->AddIdentity(identity);
-    AccountCapabilitiesTestMutator* mutator =
-        GetSystemIdentityManager()->GetCapabilitiesMutator(identity);
-    mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-        value);
-    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList feature_list_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   HistorySyncCapabilitiesFetcher* fetcher_ = nil;
 };
@@ -131,7 +85,7 @@ class HistorySyncCapabilitiesFetcherTest
 TEST_P(HistorySyncCapabilitiesFetcherTest,
        TestFetchingAvailableAccountInfoCapabilities) {
   base::HistogramTester histogram_tester;
-  bool expected_capability = ExpectedCapabilityValue();
+  signin::Tribool expected_capability = ExpectedCapabilityValue();
 
   // Make account capabilities available before the fetcher is created.
   AccountInfo account = SignInPrimaryAccount();
@@ -140,72 +94,58 @@ TEST_P(HistorySyncCapabilitiesFetcherTest,
 
   base::RunLoop run_loop;
   CapabilityFetchCompletionCallback callback = base::BindLambdaForTesting(
-      [&run_loop, expected_capability](bool capability) {
+      [&run_loop, expected_capability](signin::Tribool capability) {
         EXPECT_EQ(capability, expected_capability);
         run_loop.Quit();
       });
 
   // Create the fetcher and attempt to fetch existing capabilities.
   fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+  EXPECT_EQ([fetcher_ canShowUnrestrictedOptInsCapability],
+            expected_capability);
 
-  if (IsFetchingImmediatelyAvailableCapabilities()) {
-    [fetcher_ fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
-                  std::move(callback)];
-    run_loop.Run();
+  [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
+  run_loop.Run();
 
-    // Do not record metrics when fetching immediately available capabilities.
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 0);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 0);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      0);
-
-  } else {
-    [fetcher_
-        startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
-    run_loop.Run();
-
-    histogram_tester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", true, 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
-    histogram_tester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.UserVisibleLatency", 0, 1);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      0);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.UserVisibleLatency", 0, 1);
+  histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
+                                    0);
 }
 
 // Tests that the account capability is processed on AccountInfo received.
 TEST_P(HistorySyncCapabilitiesFetcherTest,
        TestAccountInfoReceivedWithCapability) {
   base::HistogramTester histogram_tester;
-  bool expected_capability = ExpectedCapabilityValue();
+  signin::Tribool expected_capability = ExpectedCapabilityValue();
   fetcher_ = BuildHistorySyncCapabilitiesFetcher();
 
   // Sign in AccountInfo without capabilities setup.
   AccountInfo account = SignInPrimaryAccount();
+  EXPECT_EQ([fetcher_ canShowUnrestrictedOptInsCapability],
+            signin::Tribool::kUnknown);
 
   // Set up the callback.
   base::RunLoop run_loop;
   CapabilityFetchCompletionCallback callback = base::BindLambdaForTesting(
-      [&run_loop, expected_capability](bool capability) {
+      [&run_loop, expected_capability](signin::Tribool capability) {
         EXPECT_EQ(capability, expected_capability);
         run_loop.Quit();
       });
 
-  if (IsFetchingImmediatelyAvailableCapabilities()) {
-    [fetcher_ fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
-                  std::move(callback)];
-  } else {
-    [fetcher_
-        startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
-  }
+  // Test that onExtendedAccountInfoUpdated can be executed during async
+  // capability fetching.
+  [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
 
   // Set up AccountInfo capabilities.
   SetAccountInfoCanShowUnrestrictedOptInsCapability(account,
                                                     expected_capability);
+  EXPECT_EQ([fetcher_ canShowUnrestrictedOptInsCapability],
+            expected_capability);
 
   // Trigger onExtendedAccountInfoUpdated
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
@@ -215,125 +155,50 @@ TEST_P(HistorySyncCapabilitiesFetcherTest,
 
   run_loop.Run();
 
-  if (IsFetchingImmediatelyAvailableCapabilities()) {
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 0);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 0);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      0);
-
-  } else {
-    histogram_tester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 1);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      1);
-  }
-}
-
-// Tests that the system capability is processed.
-TEST_P(HistorySyncCapabilitiesFetcherTest, TestFetchingSystemCapability) {
-  base::HistogramTester histogram_tester;
-  bool expected_capability = ExpectedCapabilityValue();
-  SystemSignInWithCanShowUnrestrictedOptInsCapability(expected_capability);
-
-  base::RunLoop run_loop;
-  CapabilityFetchCompletionCallback callback = base::BindLambdaForTesting(
-      [&run_loop, expected_capability](bool capability) {
-        EXPECT_EQ(capability, expected_capability);
-        run_loop.Quit();
-      });
-
-  // Create the fetcher and attempt to fetch existing system capabilities.
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
-  if (IsFetchingImmediatelyAvailableCapabilities()) {
-    [fetcher_ fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
-                  std::move(callback)];
-    run_loop.Run();
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 0);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 0);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      0);
-
-  } else {
-    [fetcher_
-        startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
-    run_loop.Run();
-
-    histogram_tester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 1);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      1);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.UserVisibleLatency", 1);
+  histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
+                                    1);
 }
 
 // Tests that the fallback capability value is processed on fetch deadline.
 TEST_P(HistorySyncCapabilitiesFetcherTest, TestCapabilityFetchDeadline) {
   base::HistogramTester histogram_tester;
   base::ScopedMockClockOverride scoped_clock;
-
-  // Sign in fake identity without setting up capabilities.
-  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  GetSystemIdentityManager()->AddIdentityWithUnknownCapabilities(identity);
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-
   base::RunLoop run_loop;
 
   // Create the fetcher and wait for capability fetch timeout.
   CapabilityFetchCompletionCallback callback =
-      base::BindLambdaForTesting([&run_loop](bool capability) {
-        EXPECT_FALSE(capability);
+      base::BindLambdaForTesting([&run_loop](signin::Tribool capability) {
+        EXPECT_EQ(capability, signin::Tribool::kUnknown);
         run_loop.Quit();
       });
 
   fetcher_ = BuildHistorySyncCapabilitiesFetcher();
-  if (IsFetchingImmediatelyAvailableCapabilities()) {
-    [fetcher_ fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
-                  std::move(callback)];
-    scoped_clock.Advance(base::Milliseconds(
-        switches::kFetchImmediatelyAvailableCapabilityDeadlineMs.Get()));
-    run_loop.Run();
 
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 0);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 0);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      0);
-  } else {
-    [fetcher_
-        startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
-    scoped_clock.Advance(base::Milliseconds(
-        switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));
-    run_loop.Run();
+  [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
+  scoped_clock.Advance(base::Milliseconds(
+      switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));
+  run_loop.Run();
 
-    histogram_tester.ExpectUniqueSample(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.AccountCapabilities.UserVisibleLatency", 1);
-    histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                      1);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.ImmediatelyAvailable", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.UserVisibleLatency", 1);
+  histogram_tester.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
+                                    1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    HistorySyncCapabilitiesFetcherTest,
-    ::testing::Combine(
-        /*IsFetchingImmediatelyAvailableCapabilities*/ ::testing::Bool(),
-        /*ExpectedCapabilityValue*/ ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         HistorySyncCapabilitiesFetcherTest,
+                         /*ExpectedCapabilityValue*/
+                         ::testing::Values(signin::Tribool::kFalse,
+                                           signin::Tribool::kTrue));
 
 }  // namespace

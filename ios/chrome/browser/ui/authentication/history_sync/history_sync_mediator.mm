@@ -73,8 +73,7 @@
 
     if ([self useMinorModeRestrictions]) {
       _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-          initWithAuthenticationService:authenticationService
-                        identityManager:identityManager];
+          initWithIdentityManager:identityManager];
     } else {
       _accountCapabilitiesLatencyTracker =
           std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
@@ -133,16 +132,11 @@
           : l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
   [_consumer setFooterText:footerText];
 
-  // Fetch capabilities to update action buttons.
-  __weak __typeof(self) weakSelf = self;
-  CapabilityFetchCompletionCallback callback =
-      base::BindOnce(^(bool capability) {
-        bool isRestricted = !capability;
-        [weakSelf.consumer displayButtonsWithRestrictionStatus:isRestricted];
-      });
-  [_capabilitiesFetcher
-      fetchImmediatelyAvailableRestrictionCapabilityWithCallback:std::move(
-                                                                     callback)];
+  if ([self useMinorModeRestrictions]) {
+    [self.consumer
+        displayButtonsWithRestrictionCapability:
+            [_capabilitiesFetcher canShowUnrestrictedOptInsCapability]];
+  }
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

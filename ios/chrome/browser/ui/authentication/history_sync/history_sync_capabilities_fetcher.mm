@@ -16,12 +16,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/signin/public/identity_manager/tribool.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/capabilities_types.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 using signin::Tribool;
 
@@ -30,7 +24,7 @@ namespace {
 // Fallback value for the capability
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions if it is not available
 // after `kMinorModeRestrictionsFetchDeadlineMs`.
-const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
+const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kUnknown;
 
 }  // namespace
 
@@ -39,26 +33,21 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 @end
 
 @implementation HistorySyncCapabilitiesFetcher {
-  raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   CapabilityFetchCompletionCallback _completionCallback;
   std::unique_ptr<base::ElapsedTimer> _fetchLatencyTimer;
-  // Whether capabilities fetch latency metrics should be recorded.
-  BOOL _shouldRecordLatencyMetrics;
   // Check that `onRestrictionCapabilityReceived` is called from the correct
   // sequence.
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (instancetype)
-    initWithAuthenticationService:(AuthenticationService*)authenticationService
-                  identityManager:(signin::IdentityManager*)identityManager {
+- (instancetype)initWithIdentityManager:
+    (signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
-    _authenticationService = authenticationService;
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
@@ -70,7 +59,6 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 - (void)shutdown {
   _completionCallback = CapabilityFetchCompletionCallback();
   _identityManagerObserver.reset();
-  _authenticationService = nullptr;
   _identityManager = nullptr;
 }
 
@@ -79,65 +67,25 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
   // Existing non-null callback should not be replaced.
   CHECK(_completionCallback.is_null());
   _completionCallback = std::move(callback);
-  _shouldRecordLatencyMetrics = YES;
-  [self fetchRestrictionCapabilityWithTimeout:
-            base::Milliseconds(
-                switches::kMinorModeRestrictionsFetchDeadlineMs.Get())];
-}
 
-- (void)fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
-    (CapabilityFetchCompletionCallback)callback {
-  // Existing non-null callback should not be replaced.
-  CHECK(_completionCallback.is_null());
-  _completionCallback = std::move(callback);
-  _shouldRecordLatencyMetrics = NO;
-  // System capabilities cannot be fetched synchronously. A short, non-zero
-  // timeout is used to terminate async system capabilities fetch.
-  [self
-      fetchRestrictionCapabilityWithTimeout:
-          base::Milliseconds(
-              switches::kFetchImmediatelyAvailableCapabilityDeadlineMs.Get())];
-}
-
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)accountInfo {
-  if (base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
-    [self
-        onRestrictionCapabilityReceived:
-            accountInfo.capabilities
-                .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
-  }
-}
-
-#pragma mark - Private
-
-- (void)fetchRestrictionCapabilityWithTimeout:(base::TimeDelta)timeout {
   // Manually fetch AccountInfo::capabilities. The capability might have been
   // available and onExtendedAccountInfoUpdated would not be triggered.
-  CoreAccountInfo primaryAccount =
-      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  AccountInfo accountInfo =
-      _identityManager->FindExtendedAccountInfo(primaryAccount);
-  [self
-      onRestrictionCapabilityReceived:
-          accountInfo.capabilities
-              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
+  Tribool capability = [self canShowUnrestrictedOptInsCapability];
 
-  if (_completionCallback.is_null()) {
+  if (capability != Tribool::kUnknown) {
+    [self onRestrictionCapabilityReceived:capability];
     // The AccountInfo capability was immediately available and the callback was
     // executed.
-    [self recordImmediateAvailabilityMetrics];
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              true);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            base::Seconds(0));
   } else {
-    // The AccountInfo capability was not yet available.
-    [self startLatencyTimer];
+    // The AccountInfo capability was not available; start the latency timer.
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              false);
+    _fetchLatencyTimer = std::make_unique<base::ElapsedTimer>();
 
-    // Start fetching system capabilities.
-    if (base::FeatureList::IsEnabled(
-            switches::kUseSystemCapabilitiesForMinorModeRestrictions)) {
-      [self fetchSystemCapabilities];
-    }
     // Set timeout with fallback capability value.
     __weak __typeof(self) weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -145,45 +93,41 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
           [weakSelf onRestrictionCapabilityReceived:
                         kCanShowUnrestrictedOptInsFallbackValue];
         }),
-        timeout);
+        base::Milliseconds(
+            switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));
   }
 }
 
-- (void)fetchSystemCapabilities {
-  __weak __typeof(self) weakSelf = self;
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  CHECK(identity);
-  GetApplicationContext()
-      ->GetSystemIdentityManager()
-      ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-          identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
-            [weakSelf onRestrictionCapabilityReceived:
-                          signin::TriboolFromCapabilityResult(result)];
-          }));
+- (Tribool)canShowUnrestrictedOptInsCapability {
+  DCHECK(_identityManager);
+  CoreAccountInfo primaryAccount =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo accountInfo =
+      _identityManager->FindExtendedAccountInfo(primaryAccount);
+  return accountInfo.capabilities
+      .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
 }
 
-- (void)recordImmediateAvailabilityMetrics {
-  if (_shouldRecordLatencyMetrics) {
-    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
-                              true);
-    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
-                            base::Seconds(0));
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)accountInfo {
+  if (base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    signin::Tribool capability =
+        accountInfo.capabilities
+            .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
+    // Only process known capability values.
+    if (capability != Tribool::kUnknown) {
+      [self onRestrictionCapabilityReceived:capability];
+    }
   }
 }
 
-- (void)startLatencyTimer {
-  if (_shouldRecordLatencyMetrics) {
-    // Start the latency timer.
-    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
-                              false);
-    _fetchLatencyTimer = std::make_unique<base::ElapsedTimer>();
-  }
-}
+#pragma mark - Private
 
 - (void)onRestrictionCapabilityReceived:(Tribool)capability {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (capability != Tribool::kUnknown && !_completionCallback.is_null()) {
+  if (!_completionCallback.is_null()) {
     // Stop listening to AccountInfo updates.
     _identityManagerObserver.reset();
     // Record latency metrics
@@ -194,8 +138,7 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
       base::UmaHistogramTimes("Signin.AccountCapabilities.FetchLatency",
                               elapsed);
     }
-    // Convert capability to boolean value.
-    std::move(_completionCallback).Run(capability == Tribool::kTrue);
+    std::move(_completionCallback).Run(capability);
   }
 }
 

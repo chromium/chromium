@@ -15,6 +15,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
@@ -431,14 +432,13 @@ bool HasMachineLevelPolicies() {
   // Create the capability fetcher and start fetching capabilities.
   __weak __typeof(self) weakSelf = self;
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-      initWithAuthenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(browserState)
-                    identityManager:IdentityManagerFactory::GetForBrowserState(
-                                        browserState)];
+      initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+                                  browserState)];
 
   [_capabilitiesFetcher
       startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
-                                                         bool capability) {
+                                                         signin::Tribool
+                                                             capability) {
         // The capability value is ignored.
         [weakSelf continueSignin];
       })];

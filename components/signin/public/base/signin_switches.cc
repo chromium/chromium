@@ -166,17 +166,6 @@ BASE_FEATURE(kEnableClearCut,
              "EnableClearcut",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseSystemCapabilitiesForMinorModeRestrictions,
-             "UseSystemCapabilitiesForMinorModeRestrictions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr int kFetchImmediatelyAvailableCapabilityDeadlineDefaultValueMs = 100;
-
-const base::FeatureParam<int> kFetchImmediatelyAvailableCapabilityDeadlineMs{
-    &kUseSystemCapabilitiesForMinorModeRestrictions,
-    /*name=*/"FetchImmediatelyAvailableCapabilityDeadlineMs",
-    kFetchImmediatelyAvailableCapabilityDeadlineDefaultValueMs};
-
 BASE_FEATURE(kRemoveSignedInAccountsDialog,
              "RemoveSignedInAccountsDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
