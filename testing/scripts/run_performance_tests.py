@@ -673,6 +673,7 @@ class CrossbenchTest(object):
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
   CHROME_BROWSER = '--browser=%s'
+  STORY_LABEL = 'default'
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
@@ -731,7 +732,8 @@ class CrossbenchTest(object):
       if return_code == 0:
         crossbench_result_converter.convert(
             pathlib.Path(working_dir) / 'output',
-            pathlib.Path(output_paths.perf_results), display_name)
+            pathlib.Path(output_paths.perf_results), display_name,
+            self.STORY_LABEL)
     except Exception:
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
