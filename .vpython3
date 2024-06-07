@@ -42,7 +42,7 @@ verify_pep425_tag: [
 #   build/android/pylib/local/emulator/avd.py
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
-  version: "version:4.25.1"
+  version: "version:3.20.0"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
@@ -225,20 +225,20 @@ wheel: <
   version: "version:2.0.1"
 >
 wheel: <
-  name: "infra/python/wheels/uritemplate-py3"
-  version: "version:4.1.1"
+  name: "infra/python/wheels/uritemplate-py2_py3"
+  version: "version:3.0.0"
 >
 wheel: <
-  name: "infra/python/wheels/google-auth-py3"
-  version: "version:2.16.2"
+  name: "infra/python/wheels/google-auth-py2_py3"
+  version: "version:1.25.0"
 >
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
-  version: "version:1.61.0"
+  version: "version:1.52.0"
 >
 wheel: <
   name: "infra/python/wheels/google-api-core-py3"
-  version: "version:2.14.0"
+  version: "version:1.31.5"
 >
 wheel: <
   name: "infra/python/wheels/google-auth-httplib2-py2_py3"
@@ -246,15 +246,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/google-api-python-client-py3"
-  version: "version:2.111.0"
->
-wheel: <
-  name: "infra/python/wheels/google-cloud-core-py3"
-  version: "version:2.3.3"
->
-wheel: <
-  name: "infra/python/wheels/grpcio-status-py3"
-  version: "version:1.57.0"
+  version: "version:2.2.0"
 >
 wheel: <
   name: "infra/python/wheels/oauth2client-py2_py3"
@@ -271,7 +263,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/grpcio/${vpython_platform}"
-  version: "version:1.57.0"
+  version: "version:1.44.0"
 >
 
 wheel: <
@@ -400,8 +392,8 @@ wheel: <
 >
 
 wheel: <
-  name: "infra/python/wheels/packaging-py3"
-  version: "version:21.3"
+  name: "infra/python/wheels/packaging-py2_py3"
+  version: "version:16.8"
 >
 
 wheel: <
@@ -631,23 +623,4 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/immutabledict-py3"
   version: "version:4.1.0"
->
-
-# Used by:
-#   //testing/unexpected_passes_common
-wheel: <
-  name: "infra/python/wheels/google-cloud-bigquery-py3"
-  version: "version:3.23.1"
->
-wheel: <
-  name: "infra/python/wheels/google-crc32c/${vpython_platform}"
-  version: "version:1.5.0"
-  # There is currently no Linux arm/arm64 version in CIPD.
-  not_match_tag <
-    platform: "linux_arm64"
-  >
->
-wheel: <
-  name: "infra/python/wheels/google-resumable-media-py3"
-  version: "version:2.3.0"
 >
