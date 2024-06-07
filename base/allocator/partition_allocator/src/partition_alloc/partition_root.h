@@ -1783,13 +1783,13 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
                 !IsDirectMappedBucket(slot_span->bucket))) {
     size_t bucket_index =
         static_cast<size_t>(slot_span->bucket - this->buckets);
-    size_t slot_size;
-    if (PA_LIKELY(thread_cache->MaybePutInCache(slot_start, bucket_index,
-                                                &slot_size))) {
+    std::optional<size_t> slot_size =
+        thread_cache->MaybePutInCache(slot_start, bucket_index);
+    if (PA_LIKELY(slot_size.has_value())) {
       // This is a fast path, avoid calling GetSlotUsableSize() in Release
       // builds as it is costlier. Copy its small bucket path instead.
       PA_DCHECK(!slot_span->CanStoreRawSize());
-      size_t usable_size = AdjustSizeForExtrasSubtract(slot_size);
+      size_t usable_size = AdjustSizeForExtrasSubtract(slot_size.value());
       PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
       thread_cache->RecordDeallocation(usable_size);
       return;

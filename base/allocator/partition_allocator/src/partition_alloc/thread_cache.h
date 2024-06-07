@@ -298,12 +298,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // The slot comes from the bucket at index |bucket_index| from the partition
   // this cache is for.
   //
-  // Returns true if the slot was put in the cache, and false otherwise. This
-  // can happen either because the cache is full or the allocation was too
-  // large.
-  PA_ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start,
-                                        size_t bucket_index,
-                                        size_t* slot_size);
+  // Returns the slot size if the insertion succeeds, `nullopt` otherwise.
+  // Insertion can fail either because the cache is full or the
+  // allocation was too large.
+  PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(uintptr_t slot_start,
+                                                         size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
   // Returns 0 on failure.
@@ -475,15 +474,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   friend class tools::ThreadCacheInspector;
 };
 
-PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
-                                                   size_t bucket_index,
-                                                   size_t* slot_size) {
+PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
+    uintptr_t slot_start,
+    size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
 
   if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     PA_INCREMENT_COUNTER(stats_.cache_fill_misses);
-    return false;
+    return std::nullopt;
   }
 
   auto& bucket = buckets_[bucket_index];
@@ -508,8 +507,7 @@ PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
     PurgeInternal();
   }
 
-  *slot_size = bucket.slot_size;
-  return true;
+  return bucket.slot_size;
 }
 
 PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
