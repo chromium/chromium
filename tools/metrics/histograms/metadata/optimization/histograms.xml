@@ -1779,24 +1779,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.PushNotifications.GotPushNotification"
-    enum="Boolean" expires_after="M130">
-  <owner>robertogden@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>Records a true sample for every incoming push notification.</summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PushNotifications.PushNotificationHandledSuccessfully"
-    enum="BooleanSuccess" expires_after="M130">
-  <owner>robertogden@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Whether an incoming push notification was handled successfully. Recorded
-    once for every such notification.
-  </summary>
-</histogram>
-
 <histogram name="OptimizationGuide.PushNotifications.ReadCacheResult"
     enum="OptimizationGuideReadCacheResult" expires_after="M130">
   <owner>robertogden@chromium.org</owner>
