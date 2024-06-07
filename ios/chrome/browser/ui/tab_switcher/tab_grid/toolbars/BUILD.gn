@@ -14,7 +14,9 @@ source_set("toolbars") {
   deps = [
     ":toolbars_ui",
     "//base",
+    "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

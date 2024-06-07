@@ -524,6 +524,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
 // Tests closing the group from the close button.
 - (void)testCloseTabGroup {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.iph_feature_enabled = "IPH_iOSSavedTabGroupClosed";
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -548,6 +552,26 @@ void DeleteGroupAtIndex(int group_cell_index) {
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the second close doesn't trigger the IPH.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TabGridCloseButtonForGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_nil()];
+
+  // The IPH is *not* shown.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabelId(
+                     IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests the creation of a new group in selection mode.

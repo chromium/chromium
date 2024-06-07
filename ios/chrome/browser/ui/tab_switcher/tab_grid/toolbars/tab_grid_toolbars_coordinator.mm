@@ -7,6 +7,8 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -63,6 +65,14 @@
 #pragma mark - TabGridToolbarCommands
 
 - (void)showSavedTabGroupIPH {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  if (!tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSSavedTabGroupClosed)) {
+    return;
+  }
+
   [self.topToolbar highlightLastPageControl];
   NSString* IPHTitle =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS);
@@ -78,7 +88,7 @@
           dismissalCallback:^(
               IPHDismissalReasonType reason,
               feature_engagement::Tracker::SnoozeAction action) {
-            [weakSelf.topToolbar resetLastPageControlHighlight];
+            [weakSelf savedTabGroupIPHDismissed];
           }];
 
   CGRect lastSegmentFrame = [self.topToolbar.pageControl lastSegmentFrame];
@@ -93,6 +103,16 @@
 
 #pragma mark - Private
 
+// Callback for when the saved tab group IPH is dismissed.
+- (void)savedTabGroupIPHDismissed {
+  [self.topToolbar resetLastPageControlHighlight];
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tracker->Dismissed(feature_engagement::kIPHiOSSavedTabGroupClosed);
+}
+
+// Configures the top toolbar.
 - (void)setupTopToolbar {
   // In iOS 13+, constraints break if the UIToolbar is initialized with a null
   // or zero rect frame. An arbitrary non-zero frame fixes this issue.

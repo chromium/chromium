@@ -319,6 +319,18 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSSavedTabGroupClosed.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("saved_tab_group_closed_used",
+                               Comparator(ANY, 0), 365, 365);
+    config->trigger = EventConfig("saved_tab_group_closed_trigger",
+                                  Comparator(EQUAL, 0), 365, 365);
+    return config;
+  }
+
   return std::nullopt;
 }
 }  // namespace

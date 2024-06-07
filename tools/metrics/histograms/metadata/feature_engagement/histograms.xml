@@ -285,6 +285,9 @@ chromium-metrics-reviews@google.com.
       summary="the full screen IPH for pull to refresh"/>
   <variant name="IPH_iOSReplaceSyncPromosWithSignInPromos"
       summary="account row in settings page"/>
+  <variant name="IPH_iOSSavedTabGroupClosed"
+      summary="showing the IPH when closing a saved tab group for the first
+               time"/>
   <variant name="IPH_iOSShareToolbarItemFeature"
       summary="the share tool bar item (bottom on iPhone, top on iPad)"/>
   <variant name="IPH_iOSSwipeBackForward"

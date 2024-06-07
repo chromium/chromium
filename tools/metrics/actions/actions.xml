@@ -43378,6 +43378,8 @@ should be able to be added at any place in this file.
       label="For iOSPullToRefreshFeature feature"/>
   <suffix name="iOSReplaceSyncPromosWithSignInPromos"
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
+  <suffix name="iOSSavedTabGroupClosed"
+      label="For Saved Tab Group closed for the first time."/>
   <suffix name="iOSShareToolbarItemFeature"
       label="For iOSShareToolbarItemFeature feature"/>
   <suffix name="iOSSwipeBackForwardFeature"
