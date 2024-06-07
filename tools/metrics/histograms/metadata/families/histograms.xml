@@ -260,6 +260,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.OnDeviceControls.BlockedAppDialogShown"
+    enum="OnDeviceControlsBlockedAppDialog" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Recorded when the user attempts to open an app blocked by on-device controls
+    and is shown the blocked app system dialog.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.OnDeviceControls.BlockedAppsCount" units="Apps"
     expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>
@@ -285,9 +295,9 @@ chromium-metrics-reviews@google.com.
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Records user interactions with the dialogs related to the on-device parental
-    controls feature. Records actions such as the user opening the dialog and
-    the user completing the dialog flow.
+    Records user interactions with the dialogs in OS settings related to the
+    on-device parental controls feature. Records actions such as the user
+    opening the dialog and the user completing the dialog flow.
   </summary>
   <token key="DialogType">
     <variant name="SetUpControls"/>

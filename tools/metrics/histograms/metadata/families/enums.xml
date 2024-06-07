@@ -251,6 +251,11 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OnDeviceControlsBlockedAppDialog">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Existing dialog replaced"/>
+</enum>
+
 <enum name="OnDeviceControlsDialogAction">
   <int value="0" label="Dialog opened">
     Recorded when the user opens the dialog.

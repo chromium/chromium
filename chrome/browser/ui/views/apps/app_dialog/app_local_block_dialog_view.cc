@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,6 +22,19 @@ AppLocalBlockDialogView* g_app_local_block_dialog_view = nullptr;
 
 constexpr int32_t kIconSize = 48;
 
+constexpr char kOnDeviceControlsBlockDialogHistogram[] =
+    "ChromeOS.OnDeviceControls.BlockedAppDialogShown";
+
+// Used for metrics. Those values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused. Please keep in sync
+// with "OnDeviceControlsBlockedAppDialog" in
+// src/tools/metrics/histograms/metadata/families/enums.xml.
+enum class OnDeviceControlsBlockedAppDialog {
+  kDialogShown = 0,
+  kDialogReplaced = 1,
+  kMaxValue = kDialogReplaced,
+};
+
 }  // namespace
 
 // static
@@ -28,12 +42,17 @@ void apps::AppServiceProxy::CreateLocalBlockDialog(
     const std::string& app_name) {
   if (g_app_local_block_dialog_view) {
     g_app_local_block_dialog_view->AddApp(app_name);
+    base::UmaHistogramEnumeration(
+        kOnDeviceControlsBlockDialogHistogram,
+        OnDeviceControlsBlockedAppDialog::kDialogReplaced);
     return;
   }
 
   views::DialogDelegate::CreateDialogWidget(
       new AppLocalBlockDialogView(app_name), nullptr, nullptr)
       ->Show();
+  base::UmaHistogramEnumeration(kOnDeviceControlsBlockDialogHistogram,
+                                OnDeviceControlsBlockedAppDialog::kDialogShown);
 }
 
 AppLocalBlockDialogView::AppLocalBlockDialogView(const std::string& app_name)
