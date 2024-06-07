@@ -310,7 +310,6 @@ class SkiaOutputSurfaceImplOnGpu
     MailboxAccessData& operator=(MailboxAccessData&& other);
     ~MailboxAccessData();
 
-    SkISize size;
     gpu::Mailbox mailbox;
     std::unique_ptr<gpu::SkiaImageRepresentation> representation;
     std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
@@ -433,19 +432,16 @@ class SkiaOutputSurfaceImplOnGpu
       skgpu::graphite::GpuFinishedProc graphite_finished_proc = nullptr,
       void* finished_context = nullptr);
 
-  // Creates surfaces needed to store the data in NV12 format.
-  // `mailbox_access_datas` will be populated with information needed to access
-  // the NV12 texture.
-  bool CreateSurfacesForNV12(gfx::Size dst_size,
-                             const gfx::ColorSpace& color_space,
-                             MailboxAccessData& mailbox_access_data);
-
-  // Imports surfaces needed to store the data in NV12 format from a blit
-  // request. `mailbox_access_data` will be populated with information needed
-  // to access the NV12 texture.
-  bool ImportSurfacesForNV12(const BlitRequest& blit_request,
-                             gfx::Size intermediate_dst_size,
-                             MailboxAccessData& mailbox_access_data);
+  // Begins access to the CopyOutputRequest destination shared image. If request
+  // has `BlitRequest` then specified mailbox will be accessed. Otherwise a new
+  // shared image to store the result will be allocated. `mailbox_access_data`
+  // will be populated with information needed to access the texture if function
+  // returns true.
+  bool CreateDestinationImageIfNeededAndBeginAccess(
+      CopyOutputRequest* request,
+      gfx::Size intermediate_dst_size,
+      const gfx::ColorSpace& color_space,
+      MailboxAccessData& mailbox_access_data);
 
   // Helper, blends `BlendBitmap`s set on the |blit_request| over the |canvas|.
   // Used to implement handling of `CopyOutputRequest`s that contain
