@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -14,10 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-
-namespace wireless_android_enterprise_devicemanagement {
-class OmahaSettingsClientProto;
-}
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace device_management_storage {
 
@@ -188,11 +186,10 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   // information loaded from file |policy_cache_root_|\CachedPolicyInfo.
   std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo() const;
 
-  // Returns the Omaha policy settings loaded from PolicyFetchResponse file in
-  // |policy_cache_root_|\{Base64Encoded{kGoogleUpdatePolicyType}} directory.
-  std::unique_ptr<
-      ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
-  GetOmahaPolicySettings() const;
+  // Returns the policy data loaded from the PolicyFetchResponse file in the
+  // |policy_cache_root_|\{Base64Encoded{|policy_type|}} directory.
+  std::optional<enterprise_management::PolicyData> ReadPolicyData(
+      const std::string& policy_type);
 
   // Returns the folder that caches the downloaded policies.
   base::FilePath policy_cache_folder() const { return policy_cache_root_; }

@@ -5,6 +5,7 @@
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -297,6 +298,33 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   EXPECT_TRUE(policy_info->public_key().empty());
   EXPECT_FALSE(policy_info->has_key_version());
   EXPECT_EQ(policy_info->timestamp(), 0);
+}
+
+TEST(DMStorage, ReadPolicyData) {
+  ::enterprise_management::PolicyFetchResponse fake_response;
+  ::enterprise_management::PolicyData fake_policy_data;
+  fake_policy_data.set_policy_value("fake policy value");
+  fake_response.set_policy_data(fake_policy_data.SerializeAsString());
+  DMPolicyMap policies({
+      {"google/test-policy-type", fake_response.SerializeAsString()},
+  });
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(
+      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->CanPersistPolicies());
+  EXPECT_TRUE(storage->PersistPolicies(policies));
+
+  std::optional<enterprise_management::PolicyData> policy_data =
+      storage->ReadPolicyData("google/test-policy-type");
+  ASSERT_TRUE(policy_data);
+  EXPECT_EQ(policy_data->policy_value(), "fake policy value");
+
+  // Verify no policy settings once device is de-registered.
+  EXPECT_TRUE(storage->InvalidateDMToken());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
+  EXPECT_FALSE(storage->IsValidDMToken());
+  ASSERT_FALSE(storage->ReadPolicyData("google/test-policy-type"));
 }
 
 }  // namespace device_management_storage

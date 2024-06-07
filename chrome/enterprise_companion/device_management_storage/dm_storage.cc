@@ -5,6 +5,7 @@
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -211,6 +213,41 @@ std::unique_ptr<CachedPolicyInfo> DMStorage::GetCachedPolicyInfo() const {
   }
 
   return cached_info;
+}
+
+std::optional<enterprise_management::PolicyData> DMStorage::ReadPolicyData(
+    const std::string& policy_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsValidDMToken()) {
+    VLOG(1) << "No valid DM token.";
+    return std::nullopt;
+  }
+
+  std::string response_data;
+  enterprise_management::PolicyFetchResponse response;
+  enterprise_management::PolicyData policy_data;
+  base::FilePath policy_file =
+      policy_cache_root_.AppendASCII(base::Base64Encode(policy_type))
+          .AppendASCII(kPolicyFileName);
+  if (!base::PathExists(policy_file)) {
+    VLOG(1) << "No policy file exists for " << policy_type;
+    return std::nullopt;
+  }
+  if (!base::ReadFileToString(policy_file, &response_data)) {
+    VLOG(1) << "Failed to read policy file " << policy_file << " for "
+            << policy_type;
+    return std::nullopt;
+  }
+
+  if (response_data.empty() || !response.ParseFromString(response_data) ||
+      !policy_data.ParseFromString(response.policy_data())) {
+    VLOG(1) << "Failed to parse policy data from " << policy_file << " for "
+            << policy_type;
+    return std::nullopt;
+  }
+
+  return policy_data;
 }
 
 }  // namespace device_management_storage
