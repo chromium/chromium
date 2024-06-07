@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Pointwise;
 
@@ -2585,6 +2586,35 @@ TEST(SpanTest, CompareOrdered) {
   static_assert(span(arr2_c) <=> span(arr3_lc).first(2u) == 0);
 }
 
+TEST(SpanTest, GMockMacroCompatibility) {
+  int arr1[] = {1, 3, 5};
+  int arr2[] = {1, 3, 5};
+  std::vector vec1(std::begin(arr1), std::end(arr1));
+  std::vector vec2(std::begin(arr2), std::end(arr2));
+  span<int, 3> static_span1(arr1);
+  span<int, 3> static_span2(arr2);
+  span<int> dynamic_span1(vec1);
+  span<int> dynamic_span2(vec2);
+
+  EXPECT_THAT(arr1, ElementsAreArray(static_span2));
+  EXPECT_THAT(arr1, ElementsAreArray(dynamic_span2));
+
+  EXPECT_THAT(vec1, ElementsAreArray(static_span2));
+  EXPECT_THAT(vec1, ElementsAreArray(dynamic_span2));
+
+  EXPECT_THAT(static_span1, ElementsAre(1, 3, 5));
+  EXPECT_THAT(static_span1, ElementsAreArray(arr2));
+  EXPECT_THAT(static_span1, ElementsAreArray(static_span2));
+  EXPECT_THAT(static_span1, ElementsAreArray(dynamic_span2));
+  EXPECT_THAT(static_span1, ElementsAreArray(vec2));
+
+  EXPECT_THAT(dynamic_span1, ElementsAre(1, 3, 5));
+  EXPECT_THAT(dynamic_span1, ElementsAreArray(arr2));
+  EXPECT_THAT(dynamic_span1, ElementsAreArray(static_span2));
+  EXPECT_THAT(dynamic_span1, ElementsAreArray(dynamic_span2));
+  EXPECT_THAT(dynamic_span1, ElementsAreArray(vec2));
+}
+
 // These are all examples from //docs/unsafe_buffers.md, copied here to ensure
 // they compile.
 TEST(SpanTest, Example_UnsafeBuffersPatterns) {
@@ -2650,7 +2680,7 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
   UNSAFE_BUFFERS({
     uint8_t array1[12] = {};
     uint8_t array2[12] = {};
-    [[maybe_unused]] bool eq = memcmp(array1, array2, sizeof(array1)) == 0;
+    [[maybe_unused]] bool ne = memcmp(array1, array2, sizeof(array1)) == 0;
     [[maybe_unused]] bool less = memcmp(array1, array2, sizeof(array1)) < 0;
 
     // In tests.
