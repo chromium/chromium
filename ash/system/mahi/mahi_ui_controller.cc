@@ -167,6 +167,10 @@ void MahiUiController::UpdateSummaryAndOutlines() {
       &MahiUiController::OnOutlinesLoaded, weak_ptr_factory_.GetWeakPtr()));
 }
 
+void MahiUiController::SetUpdateSummaryAfterAnswerQuestion() {
+  update_summary_after_answer_question_ = true;
+}
+
 void MahiUiController::HandleError(const MahiUiError& error) {
   // `chromeos::MahiResponseStatus::kLowQuota` is a warning not an error.
   CHECK_NE(error.status, chromeos::MahiResponseStatus::kLowQuota);
@@ -212,6 +216,7 @@ void MahiUiController::OnAnswerLoaded(std::optional<std::u16string> answer,
   if (IsErrorStatus(status)) {
     HandleError(MahiUiError(
         status, /*origin_state=*/VisibilityState::kQuestionAndAnswer));
+    update_summary_after_answer_question_ = false;
     return;
   }
 
@@ -224,6 +229,12 @@ void MahiUiController::OnAnswerLoaded(std::optional<std::u16string> answer,
   const std::u16string answer_after_process = answer.value_or(std::u16string());
   NotifyUiUpdate(
       MahiUiUpdate(MahiUiUpdateType::kAnswerLoaded, answer_after_process));
+
+  if (update_summary_after_answer_question_) {
+    // TODO(b/345621992): Add test to verify this behavior.
+    UpdateSummaryAndOutlines();
+    update_summary_after_answer_question_ = false;
+  }
 }
 
 void MahiUiController::OnOutlinesLoaded(

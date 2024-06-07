@@ -112,6 +112,15 @@ void FakeMahiManager::OnContextMenuClicked(
         return;
       }
 
+      // Because we call `MahiUiController::SendQuestion` right after
+      // opening the panel here, `SendQuestion` will cancel the call to get
+      // summary due to `MahiUiController::InvalidatePendingRequests()`. Thus,
+      // we need to update the summary after answering the question to make sure
+      // that user gets summary when navigating back to the summary UI
+      // (b/345621992).
+      // TODO(b/345621992): Make this a param of `SendQuestion()` instead.
+      ui_controller_.SetUpdateSummaryAfterAnswerQuestion();
+
       ui_controller_.SendQuestion(context_menu_request->question.value(),
                                   /*current_panel_content=*/true,
                                   MahiUiController::QuestionSource::kMenuView);

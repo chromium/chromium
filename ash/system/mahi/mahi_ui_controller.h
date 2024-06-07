@@ -116,6 +116,9 @@ class ASH_EXPORT MahiUiController {
   // requests are fulfilled.
   void UpdateSummaryAndOutlines();
 
+  // Makes sure that we update the summary after `OnAnswerLoaded` is called.
+  void SetUpdateSummaryAfterAnswerQuestion();
+
   MahiPanelDragController* drag_controller() { return drag_controller_.get(); }
 
   views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
@@ -158,6 +161,9 @@ class ASH_EXPORT MahiUiController {
   // Set when the controller receives a request to send a question.
   // Reset when the content is refreshed.
   std::optional<MahiQuestionParams> most_recent_question_params_;
+
+  // Indicates that we need to update summary after answer is fully loaded.
+  bool update_summary_after_answer_question_ = false;
 
   base::WeakPtrFactory<MahiUiController> weak_ptr_factory_{this};
 };
