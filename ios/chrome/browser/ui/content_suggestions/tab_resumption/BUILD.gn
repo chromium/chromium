@@ -72,6 +72,20 @@ source_set("constants") {
   deps = [ "//base" ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_resumption_item_unittest.mm" ]
+  deps = [
+    ":tab_resumption",
+    "//base",
+    "//base/test:test_support",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

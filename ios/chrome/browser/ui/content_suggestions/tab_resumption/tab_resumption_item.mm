@@ -32,6 +32,8 @@
   _syncedTime = item.syncedTime;
   _faviconImage = item.faviconImage;
   _salientImage = item.salientImage;
+  _URLKey = item.URLKey;
+  _requestID = item.requestID;
 }
 
 @end

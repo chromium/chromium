@@ -154,6 +154,9 @@ const char kGStatic[] = ".gstatic.com";
       _identityManagerObserverBridge;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserverBridge;
+
+  // Whether the item is currently presented as Top Module by Magic Stack.
+  BOOL _currentlyTopModule;
   PrefBackedBoolean* _tabResumptionDisabled;
 }
 
@@ -307,6 +310,7 @@ const char kGStatic[] = ".gstatic.com";
 - (void)magicStackModule:(MagicStackModule*)magicStackModule
      wasDisplayedAtIndex:(NSUInteger)index {
   CHECK(self.itemConfig == magicStackModule);
+  _currentlyTopModule = (index == 0);
   if (IsTabResumption2_0Enabled() && index == 0 && _visitedURLRankingService) {
     _visitedURLRankingService->RecordAction(visited_url_ranking::kSeen,
                                             self.itemConfig.URLKey,
@@ -366,6 +370,7 @@ const char kGStatic[] = ".gstatic.com";
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
   if (self.itemConfig && self.itemConfig.itemType == kMostRecentTab) {
     [self.delegate removeTabResumptionModule];
+    _currentlyTopModule = NO;
     self.itemConfig = nil;
   }
 }
@@ -542,6 +547,18 @@ const char kGStatic[] = ".gstatic.com";
     [self.delegate tabResumptionHelperDidReceiveItem];
     return;
   }
+
+  if (IsTabResumption2_0Enabled() && _currentlyTopModule &&
+      _visitedURLRankingService) {
+    // If the item is currently displayed, report the display of the new URL.
+    if (item.requestID != self.itemConfig.requestID ||
+        item.URLKey != self.itemConfig.URLKey) {
+      _visitedURLRankingService->RecordAction(visited_url_ranking::kSeen,
+                                              self.itemConfig.URLKey,
+                                              self.itemConfig.requestID);
+    }
+  }
+
   // The item is already used by some view, so it cannot be replaced.
   // Instead the existing config must be updated.
   [self.itemConfig reconfigureWithItem:item];
