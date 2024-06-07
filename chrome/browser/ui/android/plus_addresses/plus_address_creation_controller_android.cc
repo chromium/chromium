@@ -65,7 +65,17 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
 }
 
 void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
-  NOTIMPLEMENTED();
+  PlusAddressService* plus_address_service =
+      PlusAddressServiceFactory::GetForBrowserContext(
+          GetWebContents().GetBrowserContext());
+  if (!plus_address_service) {
+    return;
+  }
+  plus_address_service->RefreshPlusAddress(
+      relevant_origin_,
+      base::BindOnce(
+          &PlusAddressCreationControllerAndroid::OnPlusAddressReserved,
+          GetWeakPtr()));
 }
 
 void PlusAddressCreationControllerAndroid::OnConfirmed() {

@@ -75,6 +75,28 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
+                       OfferUi_RefreshPlusAddress) {
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      chrome_test_utils::GetActiveWebContents(this));
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(
+          chrome_test_utils::GetActiveWebContents(this));
+  base::test::TestFuture<const std::string&> future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.com")),
+      future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  controller->OnRefreshClicked();
+  EXPECT_FALSE(future.IsReady());
+
+  controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), FakePlusAddressService::kFakePlusAddress);
+}
+
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
                        DoubleOfferUi) {
   PlusAddressCreationControllerAndroid::CreateForWebContents(
       chrome_test_utils::GetActiveWebContents(this));

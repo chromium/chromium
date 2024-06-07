@@ -117,6 +117,12 @@ void PlusAddressCreationViewAndroid::ShowInit(
       j_error_report_url);
 }
 
+void PlusAddressCreationViewAndroid::OnRefreshClicked(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  controller_->OnRefreshClicked();
+}
+
 void PlusAddressCreationViewAndroid::OnConfirmRequested(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {

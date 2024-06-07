@@ -371,6 +371,7 @@ public abstract class ChromeFeatureList {
             "PermissionDedicatedCpssSettingAndroid";
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PLUS_ADDRESS_UI_REDESIGN = "PlusAddressUIRedesign";
+    public static final String PLUS_ADDRESS_REFRESH_UI_IN_ANDROID = "PlusAddressRefreshUiInAndroid";
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
             "PrefetchBrowserInitiatedTriggers";
     public static final String PRERENDER2 = "Prerender2";

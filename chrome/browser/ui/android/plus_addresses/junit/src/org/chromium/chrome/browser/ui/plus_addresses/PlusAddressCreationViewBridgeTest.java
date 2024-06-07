@@ -157,6 +157,21 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Test
     @SmallTest
+    public void testOnRefreshClicked_callsNativeOnRefreshClicked() {
+        mPlusAddressCreationViewBridge.onRefreshClicked();
+        verify(mBridgeNatives).onRefreshClicked(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testRefreshClicked_doesNotCallNative_afterDestroy() {
+        mPlusAddressCreationViewBridge.destroy();
+        mPlusAddressCreationViewBridge.onRefreshClicked();
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    @SmallTest
     public void testOnConfirmRequested_callsNativeOnConfirmRequested() {
         mPlusAddressCreationViewBridge.onConfirmRequested();
         verify(mBridgeNatives, times(1))

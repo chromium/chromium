@@ -100,6 +100,12 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
+    public void testDidClickRefresh_callsOnRefreshRequested() {
+        mMediator.onRefreshClicked();
+        verify(mBridge).onRefreshClicked();
+    }
+
+    @Test
     public void testDidClickConfirm_callsOnConfirmRequested() {
         mMediator.onConfirmRequested();
         verify(mBridge).onConfirmRequested();

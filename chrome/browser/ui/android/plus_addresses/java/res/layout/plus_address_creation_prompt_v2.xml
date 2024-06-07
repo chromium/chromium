@@ -70,6 +70,7 @@ found in the LICENSE file.
         android:id="@+id/favicon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:src="@drawable/ic_logo_googleg_20dp"
         android:importantForAccessibility="no"
         android:layout_gravity="center_vertical"
@@ -77,12 +78,26 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/proposed_plus_address"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+    <ImageView
+        android:id="@+id/refresh_plus_address_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:src="@drawable/ic_refresh_white_24dp"
+        android:contentDescription="@string/plus_address_model_refresh_button_accessible_name_android"
+        app:tint="@macro/default_icon_color_accent1"
+        android:tintMode="src_in"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"/>
 
 </LinearLayout>
 

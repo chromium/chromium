@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -29,6 +30,9 @@ import org.chromium.url.GURL;
 public class PlusAddressCreationBottomSheetContent implements BottomSheetContent {
     private final ViewGroup mContentView;
     private final LoadingView mLoadingView;
+    private final TextView mProposedPlusAddress;
+    @Nullable private final ImageView mRefreshIcon;
+    private final Button mPlusAddressConfirmButton;
     private boolean mShowingLoadingView;
     private PlusAddressCreationDelegate mDelegate;
 
@@ -62,6 +66,10 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mLoadingView.setVisibility(View.GONE);
         mContentView.addView(mLoadingView);
 
+        mProposedPlusAddress = mContentView.findViewById(R.id.proposed_plus_address);
+        mRefreshIcon = mContentView.findViewById(R.id.refresh_plus_address_icon);
+        mPlusAddressConfirmButton = mContentView.findViewById(R.id.plus_address_confirm_button);
+
         // TODO(b/303054310): Once project exigencies allow for it, convert all of
         // these back to the android view XML.
         TextView modalTitleView = mContentView.findViewById(R.id.plus_address_notice_title);
@@ -90,11 +98,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             plusAddressDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
-        TextView proposedPlusAddressView = mContentView.findViewById(R.id.proposed_plus_address);
-        proposedPlusAddressView.setText(proposedPlusAddressPlaceholder);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
-            proposedPlusAddressView.setTypeface(Typeface.MONOSPACE);
-        }
+        mProposedPlusAddress.setText(proposedPlusAddressPlaceholder);
 
         NoUnderlineClickableSpan errorReportLink =
                 new NoUnderlineClickableSpan(
@@ -112,31 +116,41 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         plusAddressErrorReportView.setMovementMethod(LinkMovementMethod.getInstance());
         plusAddressErrorReportView.setVisibility(View.GONE);
 
-        Button plusAddressConfirmButton =
-                mContentView.findViewById(R.id.plus_address_confirm_button);
-        plusAddressConfirmButton.setText(plusAddressModalOkText);
-        plusAddressConfirmButton.setOnClickListener(
+        mPlusAddressConfirmButton.setEnabled(false);
+        mPlusAddressConfirmButton.setText(plusAddressModalOkText);
+        mPlusAddressConfirmButton.setOnClickListener(
                 (View _view) -> {
                     showLoadingIndicator();
                     mDelegate.onConfirmRequested();
                 });
 
-        Button plusAddressCancelButton = mContentView.findViewById(R.id.plus_address_cancel_button);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
+            mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID)) {
+                mRefreshIcon.setVisibility(View.VISIBLE);
+                mRefreshIcon.setOnClickListener(
+                        v -> {
+                            if (mPlusAddressConfirmButton.isEnabled()) {
+                                mPlusAddressConfirmButton.setEnabled(false);
+
+                                mProposedPlusAddress.setText(
+                                        R.string
+                                                .plus_address_model_refresh_temporary_label_content_android);
+                                mDelegate.onRefreshClicked();
+                            }
+                        });
+            }
+        } else {
+            Button plusAddressCancelButton =
+                    mContentView.findViewById(R.id.plus_address_cancel_button);
             plusAddressCancelButton.setText(plusAddressModalCancelText);
             plusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
         }
     }
 
     public void setProposedPlusAddress(String proposedPlusAddress) {
-        TextView proposedPlusAddressView = mContentView.findViewById(R.id.proposed_plus_address);
-        proposedPlusAddressView.setText(proposedPlusAddress);
-        // Enable Confirm button if modal use was blocked up until now.
-        Button plusAddressConfirmButton =
-                mContentView.findViewById(R.id.plus_address_confirm_button);
-        if (!plusAddressConfirmButton.isEnabled()) {
-            plusAddressConfirmButton.setEnabled(true);
-        }
+        mProposedPlusAddress.setText(proposedPlusAddress);
+        mPlusAddressConfirmButton.setEnabled(true);
     }
 
     public void showError() {
@@ -145,18 +159,14 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                     .findViewById(R.id.proposed_plus_address_container)
                     .setVisibility(View.GONE);
         } else {
-            mContentView.findViewById(R.id.proposed_plus_address).setVisibility(View.GONE);
+            mProposedPlusAddress.setVisibility(View.GONE);
         }
         TextViewWithClickableSpans plusAddressErrorReportView =
                 mContentView.findViewById(R.id.plus_address_modal_error_report);
         plusAddressErrorReportView.setVisibility(View.VISIBLE);
 
         // Disable Confirm button if attempts to Confirm() fail.
-        Button plusAddressConfirmButton =
-                mContentView.findViewById(R.id.plus_address_confirm_button);
-        if (plusAddressConfirmButton.isEnabled()) {
-            plusAddressConfirmButton.setEnabled(false);
-        }
+        mPlusAddressConfirmButton.setEnabled(false);
         hideLoadingIndicator();
     }
 

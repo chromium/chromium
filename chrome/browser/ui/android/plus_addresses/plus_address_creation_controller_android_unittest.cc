@@ -115,6 +115,36 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
       kDuration, 1);
 }
 
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+  controller->SetClockForTesting(&test_clock_);
+  base::test::TestFuture<const std::string&> future;
+  test_clock_.SetNow(kStartTime);
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
+  controller->OnRefreshClicked();
+  test_clock_.SetNow(kStartTime + kDuration);
+  controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      kDuration, 1);
+}
+
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();

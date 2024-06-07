@@ -323,6 +323,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,
     &plus_addresses::features::kPlusAddressesEnabled,
     &plus_addresses::features::kPlusAddressUIRedesign,
+    &plus_addresses::features::kPlusAddressRefreshUiInAndroid,
     &privacy_sandbox::kFingerprintingProtectionSetting,
     &privacy_sandbox::kIpProtectionV1,
     &privacy_sandbox::kIpProtectionUx,

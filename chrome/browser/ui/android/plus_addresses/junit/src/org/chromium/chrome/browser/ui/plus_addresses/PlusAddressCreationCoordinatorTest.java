@@ -33,7 +33,10 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
+@DisableFeatures({
+    ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN,
+    ChromeFeatureList.PLUS_ADDRESS_REFRESH_UI_IN_ANDROID
+})
 public class PlusAddressCreationCoordinatorTest {
     private static final String MODAL_TITLE = "lorem ipsum title";
     private static final String MODAL_PLUS_ADDRESS_DESCRIPTION =

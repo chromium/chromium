@@ -27,6 +27,8 @@ class PlusAddressCreationViewAndroid {
   ~PlusAddressCreationViewAndroid();
 
   void ShowInit(const std::string& primary_email_address);
+  void OnRefreshClicked(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj);
   void OnConfirmRequested(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
   void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);

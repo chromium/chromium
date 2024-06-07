@@ -93,6 +93,11 @@ import org.chromium.url.GURL;
 
     // PlusAddressCreationDelegate implementation:
     @Override
+    public void onRefreshClicked() {
+        mBridge.onRefreshClicked();
+    }
+
+    @Override
     public void onConfirmRequested() {
         mBridge.onConfirmRequested();
     }
