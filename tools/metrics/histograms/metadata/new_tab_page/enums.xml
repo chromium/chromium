@@ -428,6 +428,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="NTP Promo restored"/>
 </enum>
 
+<enum name="NtpTabResumeResultStatus">
+  <int value="0" label="Error"/>
+  <int value="1" label="Success"/>
+</enum>
+
 <enum name="NTPTileTitleSource">
   <summary>
     The source where the displayed title of an NTP tile originates from.
@@ -480,6 +485,11 @@ chromium-metrics-reviews@google.com.
     The item displays a default gray box in place of a thumbnail. Removed
     9/2019.
   </int>
+</enum>
+
+<enum name="NtpURLVisitAggregateTypes">
+  <int value="0" label="Tab"/>
+  <int value="1" label="History"/>
 </enum>
 
 <enum name="NtpWallpaperSearchStatus">

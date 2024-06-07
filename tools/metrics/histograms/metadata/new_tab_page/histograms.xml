@@ -1833,6 +1833,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.TabResumption.ResultStatus"
+    enum="NtpTabResumeResultStatus" expires_after="2024-11-03">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records result status of the fetcher. Only logged on the 1P NTP and when the
+    Tab Resumption module is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.TabResumption.TabCount" units="count"
     expires_after="2024-09-01">
   <owner>mfacey@google.com</owner>
@@ -1852,6 +1863,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time elapsed since the tab that was clicked was last visited.
     Only logged on the 1P NTP and when the Tab Resumption module is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed"
+    enum="NtpURLVisitAggregateTypes" expires_after="2024-11-03">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the data type of each entry shown in the tab resumption module.
+    Logged when the module is shown on the NTP. Only logged on the 1P NTP and
+    when the Tab Resumption module is enabled.
   </summary>
 </histogram>
 

@@ -27,7 +27,7 @@ struct Tab {
   DeviceType device_type;
 
   // Name of session to be displayed on surfaces such as NTP.
-  string session_name;
+  string? session_name;
 
   // URL of tab for display.
   url.mojom.Url url;

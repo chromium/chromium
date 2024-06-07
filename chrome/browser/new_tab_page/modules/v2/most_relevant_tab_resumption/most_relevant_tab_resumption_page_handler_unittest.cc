@@ -123,12 +123,22 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
             url_visit_aggregates.emplace_back(
                 visited_url_ranking::CreateSampleURLVisitAggregate(
-                    GURL(visited_url_ranking::kSampleSearchUrl)));
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now(), {Fetcher::kSession}));
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now(), {Fetcher::kHistory}));
 
             std::move(callback).Run(ResultStatus::kSuccess,
                                     std::move(url_visit_aggregates));
           }));
 
   auto tabs_mojom = RunGetTabs();
-  ASSERT_EQ(1u, tabs_mojom.size());
+  ASSERT_EQ(2u, tabs_mojom.size());
+  for (const auto& tab_mojom : tabs_mojom) {
+    ASSERT_EQ(history::mojom::DeviceType::kUnknown, tab_mojom->device_type);
+    ASSERT_EQ("sample_title", tab_mojom->title);
+    ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl), tab_mojom->url);
+  }
 }

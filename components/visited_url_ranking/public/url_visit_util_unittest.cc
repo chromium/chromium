@@ -62,6 +62,22 @@ TEST_P(URLVisitUtilTest, CreateInputContextFromURLVisitAggregateSingleFetcher) {
   }
 }
 
+TEST_P(URLVisitUtilTest, GettersReturnDataURLVisitAggregateSingleFetcher) {
+  const auto fetcher = GetParam();
+  auto aggregate = CreateSampleURLVisitAggregate(GURL(kSampleSearchUrl), 1.0f,
+                                                 base::Time::Now(), {fetcher});
+  if (fetcher == Fetcher::kHistory) {
+    const history::AnnotatedVisit* visit =
+        GetHistoryEntryVisitIfExists(aggregate);
+    ASSERT_EQ(GURL(kSampleSearchUrl), visit->url_row.url());
+    ASSERT_EQ(u"sample_title", visit->url_row.title());
+  } else {
+    const URLVisitAggregate::Tab* tab = GetTabIfExists(aggregate);
+    ASSERT_EQ(GURL(kSampleSearchUrl), tab->visit.url);
+    ASSERT_EQ(u"sample_title", tab->visit.title);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          URLVisitUtilTest,
                          ::testing::Values(Fetcher::kHistory,

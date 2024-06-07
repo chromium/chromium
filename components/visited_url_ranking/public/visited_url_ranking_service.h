@@ -39,9 +39,12 @@ struct Config {
   std::string key;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ResultStatus {
   kError = 0,
   kSuccess = 1,
+  kMaxValue = kSuccess,
 };
 
 // Provides APIs suitable for combining URL Visit data across various data

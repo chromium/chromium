@@ -164,7 +164,7 @@ private shouldShowDeviceIcon_:
     }
   }
 
-  private computeDeviceName_(tab: Tab): string {
+  private computeDeviceName_(tab: Tab): string|null {
     return loadTimeData.getBoolean('modulesRedesignedEnabled') ?
         tab.sessionName :
         this.i18n('modulesTabResumptionDevicePrefix') + ` ${tab.sessionName}`;
@@ -178,8 +178,8 @@ private shouldShowDeviceIcon_:
     return 18;
   }
 
-  private shouldShowReason_(): boolean {
-    return this.format === 'wide' || this.shouldShowDeviceIcon_;
+  private computeShouldShowDeviceName_(tab: Tab): boolean {
+    return !this.shouldShowDeviceIcon_ && !!this.computeDeviceName_(tab);
   }
 }
 

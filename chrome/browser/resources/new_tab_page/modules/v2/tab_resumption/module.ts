@@ -161,7 +161,7 @@ tabs:
     return domain;
   }
 
-  private computeDeviceName_(tab: Tab): string {
+  private computeDeviceName_(tab: Tab): string|null {
     return loadTimeData.getBoolean('modulesRedesignedEnabled') ?
         tab.sessionName :
         this.i18n('modulesTabResumptionDevicePrefix') + ` ${tab.sessionName}`;

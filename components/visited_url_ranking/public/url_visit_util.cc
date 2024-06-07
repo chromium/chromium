@@ -134,4 +134,43 @@ scoped_refptr<InputContext> AsInputContext(
   return input_context;
 }
 
+const URLVisitAggregate::Tab* GetTabIfExists(
+    const URLVisitAggregate& url_visit_aggregate) {
+  const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
+  if (fetcher_data_map.find(Fetcher::kSession) != fetcher_data_map.end()) {
+    const URLVisitAggregate::TabData* tab_data =
+        std::get_if<URLVisitAggregate::TabData>(
+            &fetcher_data_map.at(Fetcher::kSession));
+    if (tab_data) {
+      return &tab_data->last_active_tab;
+    }
+  }
+
+  if (fetcher_data_map.find(Fetcher::kTabModel) != fetcher_data_map.end()) {
+    const URLVisitAggregate::TabData* tab_data =
+        std::get_if<URLVisitAggregate::TabData>(
+            &fetcher_data_map.at(Fetcher::kTabModel));
+    if (tab_data) {
+      return &tab_data->last_active_tab;
+    }
+  }
+
+  return nullptr;
+}
+
+const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
+    const URLVisitAggregate& url_visit_aggregate) {
+  const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
+  if (fetcher_data_map.find(Fetcher::kHistory) != fetcher_data_map.end()) {
+    const URLVisitAggregate::HistoryData* history_data =
+        std::get_if<URLVisitAggregate::HistoryData>(
+            &fetcher_data_map.at(Fetcher::kHistory));
+    if (history_data) {
+      return &history_data->last_visited;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace visited_url_ranking

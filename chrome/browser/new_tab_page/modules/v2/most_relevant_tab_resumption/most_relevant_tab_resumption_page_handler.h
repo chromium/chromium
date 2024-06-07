@@ -20,6 +20,14 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class URLVisitAggregateDataType {
+  kTab = 0,
+  kHistory = 1,
+  kMaxValue = kHistory,
+};
+
 // The handler for communication between the WebUI.
 class MostRelevantTabResumptionPageHandler
     : public ntp::most_relevant_tab_resumption::mojom::PageHandler {
