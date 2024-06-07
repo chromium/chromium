@@ -2764,6 +2764,19 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.{Feature}.Successful"
+    enum="BooleanSuccess" expires_after="2025-02-28">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if a request to {Feature} of ScreenAI service was successful or not.
+  </summary>
+  <token key="Feature">
+    <variant name="MainContentExtraction" summary="Main Content Extraction"/>
+    <variant name="OCR" summary="Optical Character Recognition"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.{Step}.Initialized"
     enum="BooleanSuccess" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>
