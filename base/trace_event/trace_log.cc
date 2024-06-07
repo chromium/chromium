@@ -258,19 +258,24 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event,
   perfetto::DynamicCategory category(
       TraceLog::GetInstance()->GetCategoryGroupName(
           trace_event->category_group_enabled()));
-  auto write_args = [trace_event](perfetto::EventContext ctx) {
+
+  auto phase = trace_event->phase();
+  if (phase == TRACE_EVENT_PHASE_COMPLETE) {
+    phase = TRACE_EVENT_PHASE_BEGIN;
+  }
+
+  auto write_args = [trace_event, phase](perfetto::EventContext ctx) {
     WriteDebugAnnotations(trace_event, ctx.event());
     uint32_t id_flags = trace_event->flags() & (TRACE_EVENT_FLAG_HAS_ID |
                                                 TRACE_EVENT_FLAG_HAS_LOCAL_ID |
                                                 TRACE_EVENT_FLAG_HAS_GLOBAL_ID);
     if (!id_flags &&
-        perfetto::internal::TrackEventLegacy::PhaseToType(
-            trace_event->phase()) !=
+        perfetto::internal::TrackEventLegacy::PhaseToType(phase) !=
             perfetto::protos::pbzero::TrackEvent::TYPE_UNSPECIFIED) {
       return;
     }
     auto* legacy_event = ctx.event()->set_legacy_event();
-    legacy_event->set_phase(trace_event->phase());
+    legacy_event->set_phase(phase);
     switch (id_flags) {
       case TRACE_EVENT_FLAG_HAS_ID:
         legacy_event->set_unscoped_id(trace_event->id());
@@ -286,14 +291,11 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event,
     }
   };
 
-  auto phase = trace_event->phase();
   auto flags = trace_event->flags();
   base::TimeTicks timestamp = trace_event->timestamp().is_null()
                                   ? TRACE_TIME_TICKS_NOW()
                                   : trace_event->timestamp();
-  if (phase == TRACE_EVENT_PHASE_COMPLETE) {
-    phase = TRACE_EVENT_PHASE_BEGIN;
-  } else if (phase == TRACE_EVENT_PHASE_INSTANT) {
+  if (phase == TRACE_EVENT_PHASE_INSTANT) {
     auto scope = flags & TRACE_EVENT_FLAG_SCOPE_MASK;
     switch (scope) {
       case TRACE_EVENT_SCOPE_GLOBAL:
