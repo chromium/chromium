@@ -83,7 +83,10 @@ test("device_unittests") {
   }
 
   if (is_mac) {
-    sources += [ "bluetooth/bluetooth_adapter_mac_unittest.mm" ]
+    sources += [
+      "bluetooth/bluetooth_adapter_mac_unittest.mm",
+      "bluetooth/bluetooth_classic_device_mac_unittest.mm",
+    ]
   }
 
   if (is_android) {

@@ -53,6 +53,53 @@ extern "C" {
 void IOBluetoothPreferenceSetControllerPowerState(int state);
 }
 
+// A simple helper class that forwards any Bluetooth device connect notification
+// to its wrapped |_adapter|.
+@interface BluetoothDevicesConnectListener : NSObject {
+ @private
+  // The BluetoothAdapterMac that owns |self|.
+  raw_ptr<device::BluetoothAdapterMac> _adapter;
+
+  // The OS mechanism used to subscribe to and unsubscribe from any Bluetooth
+  // device connect notification.
+  IOBluetoothUserNotification* __weak _connectNotification;
+}
+
+- (instancetype)initWithAdapter:(device::BluetoothAdapterMac*)adapter;
+- (void)deviceConnected:(IOBluetoothUserNotification*)notification
+                 device:(IOBluetoothDevice*)device;
+- (void)stopListening;
+
+@end
+
+@implementation BluetoothDevicesConnectListener
+
+- (instancetype)initWithAdapter:(device::BluetoothAdapterMac*)adapter {
+  if ((self = [super init])) {
+    _adapter = adapter;
+
+    _connectNotification = [IOBluetoothDevice
+        registerForConnectNotifications:self
+                               selector:@selector(deviceConnected:device:)];
+    if (!_connectNotification) {
+      BLUETOOTH_LOG(ERROR) << "Failed to register for connect notification!";
+    }
+  }
+  return self;
+}
+
+- (void)deviceConnected:(IOBluetoothUserNotification*)notification
+                 device:(IOBluetoothDevice*)device {
+  _adapter->DeviceConnected(
+      std::make_unique<device::BluetoothClassicDeviceMac>(_adapter, device));
+}
+
+- (void)stopListening {
+  [_connectNotification unregister];
+}
+
+@end
+
 namespace {
 
 // The frequency with which to poll the adapter for updates.
@@ -109,7 +156,10 @@ BluetoothAdapterMac::BluetoothAdapterMac()
           base::BindRepeating(&IsDeviceSystemPaired)) {
 }
 
-BluetoothAdapterMac::~BluetoothAdapterMac() = default;
+BluetoothAdapterMac::~BluetoothAdapterMac() {
+  [connect_listener_ stopListening];
+  connect_listener_ = nil;
+}
 
 std::string BluetoothAdapterMac::GetAddress() const {
   const_cast<BluetoothAdapterMac*>(this)->LazyInitialize();
@@ -239,12 +289,20 @@ void BluetoothAdapterMac::ClassicDiscoveryStopped(bool unexpected) {
     observer.AdapterDiscoveringChanged(this, false);
 }
 
-void BluetoothAdapterMac::DeviceConnected(IOBluetoothDevice* device) {
-  // TODO(isherman): Investigate whether this method can be replaced with a call
-  // to +registerForConnectNotifications:selector:.
-  DVLOG(1) << "Adapter registered a new connection from device with address: "
-           << BluetoothClassicDeviceMac::GetDeviceAddress(device);
-  ClassicDeviceAdded(std::make_unique<BluetoothClassicDeviceMac>(this, device));
+void BluetoothAdapterMac::DeviceConnected(
+    std::unique_ptr<BluetoothDevice> device) {
+  std::string device_address = device->GetAddress();
+  BLUETOOTH_LOG(EVENT) << "Device connected: name: "
+                       << device->GetNameForDisplay()
+                       << " address: " << device_address;
+  BluetoothDevice* old_device = GetDevice(device_address);
+  if (old_device) {
+    NotifyDeviceChanged(old_device);
+    return;
+  }
+  // This might happen if the device is paired and connected within the
+  // kPollIntervalMs.
+  ClassicDeviceAdded(std::move(device));
 }
 
 base::WeakPtr<BluetoothAdapter> BluetoothAdapterMac::GetWeakPtr() {
@@ -272,6 +330,8 @@ void BluetoothAdapterMac::LazyInitialize() {
   classic_discovery_manager_.reset(
       BluetoothDiscoveryManagerMac::CreateClassic(this));
   BluetoothLowEnergyAdapterApple::LazyInitialize();
+  connect_listener_ =
+      [[BluetoothDevicesConnectListener alloc] initWithAdapter:this];
   PollAdapter();
 }
 
@@ -418,6 +478,8 @@ void BluetoothAdapterMac::ClassicDeviceAdded(
 
   BluetoothDevice* new_device = device.get();
   devices_[device_address] = std::move(device);
+  static_cast<BluetoothClassicDeviceMac*>(new_device)
+      ->StartListeningDisconnectEvent();
 
   if (old_device) {
     DVLOG(1) << "Classic device changed: " << device_address;

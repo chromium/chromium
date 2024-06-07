@@ -13,6 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
@@ -25,6 +26,53 @@
     BluetoothHCIReadTransmitPowerLevel:(BluetoothConnectionHandle)connection
                                 inType:(BluetoothHCITransmitPowerLevelType)type
                  outTransmitPowerLevel:(BluetoothHCITransmitPowerLevel*)level;
+@end
+
+// A simple helper class that forwards Bluetooth device disconnect notification
+// to its wrapped |_device|.
+@interface BluetoothDeviceDisconnectListener : NSObject {
+ @private
+  // The BluetoothClassicDeviceMac that owns |self|.
+  raw_ptr<device::BluetoothClassicDeviceMac> _device;
+
+  // The OS mechanism used to subscribe to and unsubscribe from Bluetooth device
+  // disconnect notification.
+  IOBluetoothUserNotification* __weak _disconnectNotification;
+}
+
+- (instancetype)initWithDevice:(device::BluetoothClassicDeviceMac*)device;
+- (void)deviceDisconnected:(IOBluetoothUserNotification*)notification
+                    device:(IOBluetoothDevice*)device;
+- (void)stopListening;
+
+@end
+
+@implementation BluetoothDeviceDisconnectListener
+
+- (instancetype)initWithDevice:(device::BluetoothClassicDeviceMac*)device {
+  if ((self = [super init])) {
+    _device = device;
+
+    _disconnectNotification = [device->device()
+        registerForDisconnectNotification:self
+                                 selector:@selector(deviceDisconnected:
+                                                                device:)];
+    if (!_disconnectNotification) {
+      BLUETOOTH_LOG(ERROR) << "Failed to register for disconnect notification!";
+    }
+  }
+  return self;
+}
+
+- (void)deviceDisconnected:(IOBluetoothUserNotification*)notification
+                    device:(IOBluetoothDevice*)device {
+  _device->OnDeviceDisconnected();
+}
+
+- (void)stopListening {
+  [_disconnectNotification unregister];
+}
+
 @end
 
 namespace device {
@@ -95,7 +143,10 @@ BluetoothClassicDeviceMac::BluetoothClassicDeviceMac(
   UpdateTimestamp();
 }
 
-BluetoothClassicDeviceMac::~BluetoothClassicDeviceMac() = default;
+BluetoothClassicDeviceMac::~BluetoothClassicDeviceMac() {
+  [disconnect_listener_ stopListening];
+  disconnect_listener_ = nil;
+}
 
 uint32_t BluetoothClassicDeviceMac::GetBluetoothClass() const {
   return [device_ classOfDevice];
@@ -309,6 +360,21 @@ std::string BluetoothClassicDeviceMac::GetDeviceAddress(
 
 bool BluetoothClassicDeviceMac::IsLowEnergyDevice() {
   return false;
+}
+
+void BluetoothClassicDeviceMac::OnDeviceDisconnected() {
+  BLUETOOTH_LOG(EVENT) << "Device disconnected: name: "
+                       << this->GetNameForDisplay()
+                       << " address: " << this->GetAddress();
+  GetAdapter()->NotifyDeviceChanged(this);
+}
+
+void BluetoothClassicDeviceMac::StartListeningDisconnectEvent() {
+  if (!device_ || disconnect_listener_) {
+    return;
+  }
+  disconnect_listener_ =
+      [[BluetoothDeviceDisconnectListener alloc] initWithDevice:this];
 }
 
 }  // namespace device

@@ -826,7 +826,8 @@ void BluetoothSocketMac::AcceptConnectionRequest() {
       std::move(accept_queue_.front());
   accept_queue_.pop();
 
-  adapter_->DeviceConnected(channel->GetDevice());
+  adapter_->DeviceConnected(std::make_unique<device::BluetoothClassicDeviceMac>(
+      adapter_.get(), channel->GetDevice()));
   BluetoothDevice* device = adapter_->GetDevice(channel->GetDeviceAddress());
   DCHECK(device);
 

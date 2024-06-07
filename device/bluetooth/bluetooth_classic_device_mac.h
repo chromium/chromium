@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
 
+@class BluetoothDeviceDisconnectListener;
 @class IOBluetoothDevice;
 
 namespace device {
@@ -21,7 +22,8 @@ namespace device {
 class BluetoothAdapterMac;
 class BluetoothUUID;
 
-class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
+class DEVICE_BLUETOOTH_EXPORT BluetoothClassicDeviceMac
+    : public BluetoothDeviceMac {
  public:
   explicit BluetoothClassicDeviceMac(BluetoothAdapterMac* adapter,
                                      IOBluetoothDevice* device);
@@ -77,10 +79,15 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
 
   base::Time GetLastUpdateTime() const override;
 
+  void OnDeviceDisconnected();
+
   // Returns the Bluetooth address for the |device|. The returned address has a
   // normalized format (see below).
   static std::string GetDeviceAddress(IOBluetoothDevice* device);
   bool IsLowEnergyDevice() override;
+  IOBluetoothDevice* device() { return device_; }
+
+  void StartListeningDisconnectEvent();
 
  protected:
   // BluetoothDevice override
@@ -97,6 +104,7 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
       BluetoothHCITransmitPowerLevelType power_level_type) const;
 
   IOBluetoothDevice* __strong device_;
+  BluetoothDeviceDisconnectListener* __strong disconnect_listener_;
 };
 
 }  // namespace device
