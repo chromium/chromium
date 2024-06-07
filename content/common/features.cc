@@ -340,7 +340,7 @@ BASE_FEATURE(kIOSurfaceCapturer,
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kMacWebContentsOcclusion,
              "MacWebContentsOcclusion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // If this feature is enabled, media-device enumerations use a cache that is
