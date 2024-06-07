@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_SOUNDS_CONTROLLER_H_
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_SOUNDS_CONTROLLER_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -72,8 +73,8 @@ class ASH_EXPORT FocusModeSoundsController {
       delete;
   ~FocusModeSoundsController();
 
-  using GetNextTrackCallback =
-      base::OnceCallback<void(const FocusModeSoundsDelegate::Track&)>;
+  using GetNextTrackCallback = base::OnceCallback<void(
+      const std::optional<FocusModeSoundsDelegate::Track>&)>;
   void GetNextTrack(GetNextTrackCallback callback);
 
   const std::vector<std::unique_ptr<Playlist>>& soundscape_playlists() const {

@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_focus_mode_resources.h"
 #include "ash/webui/grit/ash_focus_mode_resources_map.h"
@@ -23,15 +25,28 @@
 
 namespace ash {
 
+namespace {
+
+void HandleTrack(focus_mode::mojom::TrackProvider::GetTrackCallback callback,
+                 const std::optional<FocusModeSoundsDelegate::Track>& track) {
+  if (!track) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  auto mojo_track = focus_mode::mojom::TrackDefinition::New(
+      track->title, track->artist, track->thumbnail_url, track->source_url);
+  std::move(callback).Run(std::move(mojo_track));
+}
+
+}  // namespace
+
 class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
  public:
   void GetTrack(GetTrackCallback callback) override {
-    // TODO: Get the actual track from focus mode.
-    auto track = focus_mode::mojom::TrackDefinition::New(
-        "Title", "Artist", GURL{},
-        GURL{"https://www.gstatic.com/chromeos-focusmode/tracks/flow/"
-             "Release_20240516.mp3"});
-    std::move(callback).Run(std::move(track));
+    auto* sounds_controller =
+        FocusModeController::Get()->focus_mode_sounds_controller();
+    sounds_controller->GetNextTrack(
+        base::BindOnce(&HandleTrack, std::move(callback)));
   }
 
   void SetMediaClient(

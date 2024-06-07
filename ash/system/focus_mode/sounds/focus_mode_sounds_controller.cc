@@ -156,10 +156,9 @@ void OnTrackFetched(
   if (!track) {
     // TODO(b/343961303): Potentially retry the request.
     LOG(WARNING) << "Retrieving track failed";
-    return;
   }
 
-  std::move(callback).Run(*track);
+  std::move(callback).Run(track);
 }
 
 // Parses the ash.focus_mode.sounds_enabled pref and returns a set of the

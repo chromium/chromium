@@ -15,6 +15,7 @@ static_library("focus_mode") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/focus_mode/mojom",
