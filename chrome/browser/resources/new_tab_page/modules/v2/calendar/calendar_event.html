@@ -25,20 +25,23 @@
     width: 56px;
   }
 
-  #location {
+  .cr-icon {
+    --cr-icon-color: var(--color-new-tab-page-secondary-foreground);
+    --cr-icon-size: 14px;
+    height: 16px;
+    margin: 0;
+    width: 16px;
+  }
+
+  #attachments, #location {
     column-gap: 8px;
     display: flex;
     margin-top: 8px;
     width: 100%;
   }
 
-  #location .cr-icon {
-    --cr-icon-color: var(--color-new-tab-page-secondary-foreground);
+  #location-icon {
     --cr-icon-image: url(modules/v2/calendar/icons/location.svg);
-    --cr-icon-size: 16px;
-    height: 16px;
-    margin: 0;
-    width: 16px;
   }
 
   #location p {
@@ -50,6 +53,36 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  #attachments {
+    overflow: hidden;
+    position: relative;
+  }
+
+  #attachment-icon {
+    --cr-icon-image: url(modules/v2/calendar/icons/attachment.svg);
+  }
+
+  #attachments cr-chip {
+    --cr-chip-color: var(--color-new-tab-page-link);
+    --cr-chip-border-radius: 100px;
+    --cr-chip-font-size: var(--ntp-module-secondary-text-size);
+    --cr-chip-height: 20px;
+  }
+
+  #attachments img {
+    height: 14px;
+    width: 14px;
+  }
+
+  #fade {
+    background: linear-gradient(to right, transparent,
+        var(--color-new-tab-page-module-calendar-event-expanded-background));
+    height: 100%;
+    position: absolute;
+    inset-inline-end: -12px;
+    width: 30px;
+  }
 </style>
 <a id="header" href="[[event.url.url]]">
   <span id="startTime">[[formattedStartTime_]]</span>
@@ -57,7 +90,18 @@
 </a>
 <template is="dom-if" if="[[expanded]]">
   <div id="location" hidden$="[[!showLocation_(event.location)]]">
-    <div class="cr-icon"></div>
+    <div id="location-icon" class="cr-icon"></div>
     <p>[[event.location]]</p>
+  </div>
+  <div id="attachments" hidden$="[[!showAttachments_(event.attachments)]]">
+    <div id="attachment-icon" class="cr-icon"></div>
+    <template is="dom-repeat" items="[[event.attachments]]">
+      <cr-chip on-click="openAttachment_" chip-role="link">
+        <img is="cr-auto-img"
+            auto-src="[[item.iconUrl.url]]" alt=""></img>
+        [[item.title]]
+      </cr-chip>
+    </template>
+    <div id="fade"></div>
   </div>
 </template>

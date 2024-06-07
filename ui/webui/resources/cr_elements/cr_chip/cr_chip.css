@@ -8,6 +8,14 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  --cr-chip-border-radius: 8px;
+  --cr-chip-color: var(--color-chip-foreground,
+      var(--cr-fallback-color-on-surface));
+  --cr-chip-font-size: 12px;
+  --cr-chip-height: 28px;
+}
+
 button {
   --cr-icon-button-margin-start: 0;
   --cr-icon-color: var(--color-chip-icon, var(--cr-fallback-color-primary));
@@ -23,19 +31,20 @@ button {
   background-color: transparent;
   border: 1px solid var(--color-chip-border,
       var(--cr-fallback-color-tonal-outline));
-  border-radius: 8px;
-  color: var(--color-chip-foreground, var(--cr-fallback-color-on-surface));
+  border-radius: var(--cr-chip-border-radius);
+  color: var(--cr-chip-color);
   cursor: pointer;
   font-family: inherit;
   display: flex;
   flex-direction: row;
-  font-size: 12px;
+  font-size: var(--cr-chip-font-size);
   font-weight: 500;
   gap: 4px;
-  height: 28px;
+  height: var(--cr-chip-height);
   overflow: hidden;
   padding: 0 8px;
   position: relative;
+  white-space: nowrap;
 }
 
 button:not(:is([disabled], [selected])):hover {

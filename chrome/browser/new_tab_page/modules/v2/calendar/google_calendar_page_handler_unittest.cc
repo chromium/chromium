@@ -30,9 +30,10 @@ const char kGoogleCalendarLastDismissedTimePrefName[] =
 // Handles an HTTP request by returning a response from a json file in
 // google_apis/test/data/.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const std::string& json_path,
     const net::test_server::HttpRequest& request) {
   return google_apis::test_util::CreateHttpResponseFromFile(
-      google_apis::test_util::GetTestFilePath("calendar/events.json"));
+      google_apis::test_util::GetTestFilePath(json_path));
 }
 
 }  // namespace
@@ -47,23 +48,29 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
     feature_list_.InitAndEnableFeature(ntp_features::kNtpCalendarModule);
     profile_ = std::make_unique<TestingProfile>();
     pref_service_ = profile_->GetPrefs();
-
-    test_server_.RegisterRequestHandler(base::BindRepeating(&HandleRequest));
-    test_server_handle_ = test_server_.StartAndReturnHandle();
   }
 
-  void SetUp() override {
+  std::unique_ptr<GoogleCalendarPageHandler> CreateHandler() {
+    return std::make_unique<GoogleCalendarPageHandler>(
+        mojo::PendingReceiver<
+            ntp::calendar::mojom::GoogleCalendarPageHandler>(),
+        &profile());
+  }
+
+  std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithTestServer(
+      const std::string& json_path) {
+    test_server_ = std::make_unique<net::EmbeddedTestServer>();
+    test_server_->RegisterRequestHandler(
+        base::BindRepeating(&HandleRequest, json_path));
+    test_server_handle_ = test_server_->StartAndReturnHandle();
     google_apis::calendar::CalendarApiUrlGenerator url_generator;
-    url_generator.SetBaseUrlForTesting(test_server_.base_url().spec());
-    handler_ = std::make_unique<GoogleCalendarPageHandler>(
+    url_generator.SetBaseUrlForTesting(test_server_->base_url().spec());
+    return std::make_unique<GoogleCalendarPageHandler>(
         mojo::PendingReceiver<
             ntp::calendar::mojom::GoogleCalendarPageHandler>(),
         profile_.get(), MakeRequestSender(), url_generator);
   }
 
-  void TearDown() override { handler_.reset(); }
-
-  GoogleCalendarPageHandler& handler() { return *handler_; }
   PrefService& pref_service() { return *pref_service_; }
   TestingProfile& profile() { return *profile_; }
   content::BrowserTaskEnvironment& task_environment() {
@@ -86,37 +93,31 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer test_server_;
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   scoped_refptr<network::TestSharedURLLoaderFactory>
       test_shared_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<GoogleCalendarPageHandler> handler_;
   raw_ptr<PrefService> pref_service_;
 };
 
-// Simple test just to make sure the other constructor runs through.
-TEST_F(GoogleCalendarPageHandlerTest, ConstructorWithRealSender) {
-  GoogleCalendarPageHandler(
-      mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>(),
-      &profile());
-}
-
 TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
+  std::unique_ptr<GoogleCalendarPageHandler> handler = CreateHandler();
   EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
             base::Time());
-  handler().DismissModule();
+  handler->DismissModule();
 
   EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
             base::Time::Now());
-  handler().RestoreModule();
+  handler->RestoreModule();
 
   EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
             base::Time());
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, DismissModuleAffectsEvents) {
+  std::unique_ptr<GoogleCalendarPageHandler> handler = CreateHandler();
   base::FieldTrialParams params;
   params[ntp_features::kNtpCalendarModuleDataParam] = "fake";
   feature_list().Reset();
@@ -140,24 +141,25 @@ TEST_F(GoogleCalendarPageHandlerTest, DismissModuleAffectsEvents) {
             response2 = std::move(events);
           }));
 
-  handler().DismissModule();
+  handler->DismissModule();
 
   // Move time forward 1 hour.
   task_environment().AdvanceClock(base::Hours(1));
 
   // Expect empty result since it has been less than 12 hours.
-  handler().GetEvents(callback1.Get());
+  handler->GetEvents(callback1.Get());
   EXPECT_EQ(response1.size(), 0u);
 
   // Move clock forward 11 more hours to be at 12 hours since dismissal.
   task_environment().AdvanceClock(base::Hours(11));
 
   // Expect non-empty result since it has been 12 hours.
-  handler().GetEvents(callback2.Get());
+  handler->GetEvents(callback2.Get());
   EXPECT_GT(response2.size(), 0u);
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
+  std::unique_ptr<GoogleCalendarPageHandler> handler = CreateHandler();
   base::FieldTrialParams params;
   params[ntp_features::kNtpCalendarModuleDataParam] = "fake";
   feature_list().Reset();
@@ -173,7 +175,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
             response = std::move(events);
           }));
 
-  handler().GetEvents(callback.Get());
+  handler->GetEvents(callback.Get());
   EXPECT_EQ(response.size(), 5u);
   for (int i = 0; i < 5; ++i) {
     EXPECT_EQ(response[i]->title, "Calendar Event " + base::NumberToString(i));
@@ -181,10 +183,20 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
               base::Time::Now() + base::Minutes(i * 30));
     EXPECT_EQ(response[i]->url,
               GURL("https://foo.com/" + base::NumberToString(i)));
+    EXPECT_EQ(response[i]->attachments.size(), 3u);
+    for (int j = 0; j < 3; ++j) {
+      ntp::calendar::mojom::AttachmentPtr attachment =
+          std::move(response[i]->attachments[j]);
+      EXPECT_EQ(attachment->title, "Attachment " + base::NumberToString(j));
+      EXPECT_EQ(attachment->resource_url,
+                "https://foo.com/attachment" + base::NumberToString(j));
+    }
   }
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
+  std::unique_ptr<GoogleCalendarPageHandler> handler =
+      CreateHandlerWithTestServer("calendar/events.json");
   std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
@@ -195,7 +207,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
           }));
 
   base::RunLoop run_loop;
-  handler().GetEvents(
+  handler->GetEvents(
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
 
@@ -209,4 +221,33 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   EXPECT_EQ(
       response[0]->url.spec(),
       "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest");
+}
+
+TEST_F(GoogleCalendarPageHandlerTest, GetEventWithAttachments) {
+  std::unique_ptr<GoogleCalendarPageHandler> handler =
+      CreateHandlerWithTestServer("calendar/event_with_attachments.json");
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
+  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+            response = std::move(events);
+          }));
+
+  base::RunLoop run_loop;
+  handler->GetEvents(
+      google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
+  run_loop.Run();
+
+  EXPECT_EQ(response.size(), 1u);
+  EXPECT_EQ(response[0]->attachments.size(), 2u);
+  EXPECT_EQ(response[0]->attachments[0]->title, "Google Docs Attachment");
+  EXPECT_EQ(response[0]->attachments[0]->icon_url,
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "docs_2020q4_48dp.png");
+  EXPECT_EQ(response[0]->attachments[0]->resource_url,
+            "https://docs.google.com/document/d/"
+            "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw/"
+            "edit?tab=t.0&resourcekey=0-yNQRr67lHMYKNFyrXmvwBw");
 }

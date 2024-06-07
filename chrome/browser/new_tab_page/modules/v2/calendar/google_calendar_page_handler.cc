@@ -30,6 +30,10 @@ namespace {
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 
+const char kGoogleCalendarDriveIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/16/type/application/"
+    "vnd.google-apps.document";
+
 // TODO(crbug.com/343738665): Update when more granular policy is added.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("google_calendar_page_handler", R"(
@@ -87,6 +91,15 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
   event->start_time = base::Time::Now() + base::Minutes(index * 30);
   event->url = GURL("https://foo.com/" + base::NumberToString(index));
   event->location = "Conference Room " + base::NumberToString(index);
+  for (int i = 0; i < 3; ++i) {
+    ntp::calendar::mojom::AttachmentPtr attachment =
+        ntp::calendar::mojom::Attachment::New();
+    attachment->title = "Attachment " + base::NumberToString(i);
+    attachment->resource_url =
+        GURL("https://foo.com/attachment" + base::NumberToString(i));
+    attachment->icon_url = GURL(kGoogleCalendarDriveIconUrl);
+    event->attachments.push_back(std::move(attachment));
+  }
   return event;
 }
 
@@ -206,6 +219,14 @@ void GoogleCalendarPageHandler::OnRequestComplete(
       formatted_event->start_time = event->start_time().date_time();
       formatted_event->url = GURL(event->html_link());
       formatted_event->location = event->location();
+      for (const auto& attachment : event->attachments()) {
+        ntp::calendar::mojom::AttachmentPtr formatted_attachment =
+            ntp::calendar::mojom::Attachment::New();
+        formatted_attachment->title = attachment.title();
+        formatted_attachment->resource_url = attachment.file_url();
+        formatted_attachment->icon_url = attachment.icon_link();
+        formatted_event->attachments.push_back(std::move(formatted_attachment));
+      }
       result.push_back(std::move(formatted_event));
     }
   }

@@ -7,6 +7,16 @@ module ntp.calendar.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+// Attachments associated with an event.
+struct Attachment {
+  // Name of attachment.
+  string title;
+  // Url to attachment.
+  url.mojom.Url resource_url;
+  // Url to attachment icon.
+  url.mojom.Url icon_url;
+};
+
 // An event from the user's Google Calendar.
 struct CalendarEvent {
   // Title of event.
@@ -17,6 +27,8 @@ struct CalendarEvent {
   url.mojom.Url url;
   // Location of the event. Optional.
   string? location;
+  // List of attachments for the event.
+  array<Attachment> attachments;
 };
 
 // Browser-side handler for requests from NTP Module UI.

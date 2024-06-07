@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
+import type {Attachment, CalendarEvent} from '../../../google_calendar.mojom-webui.js';
 
 import {getTemplate} from './calendar_event.html.js';
 
@@ -62,6 +64,14 @@ export class CalendarEventElement extends PolymerElement {
     // Remove extra spacing and make AM/PM lower case.
     timeStr = timeStr.replace(' AM', 'am').replace(' PM', 'pm');
     return timeStr;
+  }
+
+  private openAttachment_(e: DomRepeatEvent<Attachment>) {
+    window.location.href = e.model.item.resourceUrl.url;
+  }
+
+  private showAttachments_(): boolean {
+    return this.event.attachments.length > 0;
   }
 
   private showLocation_(): boolean {
