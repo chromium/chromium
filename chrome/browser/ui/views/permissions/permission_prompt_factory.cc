@@ -144,6 +144,8 @@ bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
         return (request->request_type() ==
                     permissions::RequestType::kCameraStream ||
                 request->request_type() ==
+                    permissions::RequestType::kGeolocation ||
+                request->request_type() ==
                     permissions::RequestType::kMicStream) &&
                request->IsEmbeddedPermissionElementInitiated();
       });

@@ -381,6 +381,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 // the issue. TODO(andypaicu, crbug.com/1462930): Investigate and fix failure.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BasicFlowMicrophone DISABLED_BasicFlowMicrophone
+#define MAYBE_BasicFlowGeolocation DISABLED_BasicFlowGeolocation
 #define MAYBE_BasicFlowCamera DISABLED_BasicFlowCamera
 #define MAYBE_BasicFlowCameraMicrophone DISABLED_BasicFlowCameraMicrophone
 #define MAYBE_TestPartialPermissionsLabels DISABLED_TestPartialPermissionsLabels
@@ -391,6 +392,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestButtonsLabel DISABLED_TestButtonsLabel
 #else
 #define MAYBE_BasicFlowMicrophone BasicFlowMicrophone
+#define MAYBE_BasicFlowGeolocation BasicFlowGeolocation
 #define MAYBE_BasicFlowCamera BasicFlowCamera
 #define MAYBE_BasicFlowCameraMicrophone BasicFlowCameraMicrophone
 #define MAYBE_TestPartialPermissionsLabels TestPartialPermissionsLabels
@@ -422,6 +424,18 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                base::UTF8ToUTF16(GetOrigin().port()),
            u"You previously chose don’t allow for this site"}),
       std::queue<std::u16string>({u"Use your cameras"}));
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+                       MAYBE_BasicFlowGeolocation) {
+  TestAskBlockAllowFlow(
+      "geolocation", {ContentSettingsType::GEOLOCATION},
+      std::queue<std::u16string>(
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+           u"You have allowed location on a.test:" +
+               base::UTF8ToUTF16(GetOrigin().port()),
+           u"You previously chose don’t allow for this site"}),
+      std::queue<std::u16string>({u"Know your location"}));
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,

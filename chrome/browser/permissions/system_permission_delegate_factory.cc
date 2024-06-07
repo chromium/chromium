@@ -9,6 +9,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/permissions/camera_system_permission_delegate_mac.h"
+#include "chrome/browser/permissions/geolocation_system_permission_delegate_mac.h"
 #include "chrome/browser/permissions/microphone_system_permission_delegate_mac.h"
 #endif
 
@@ -19,6 +20,12 @@ SystemPermissionDelegateFactory::CreateSystemPermissionDelegate(
     case ContentSettingsType::MEDIASTREAM_CAMERA:
 #if BUILDFLAG(IS_MAC)
       return std::make_unique<CameraSystemPermissionDelegateMac>();
+#else
+      return std::make_unique<DefaultSystemPermissionDelegate>();
+#endif
+    case ContentSettingsType::GEOLOCATION:
+#if BUILDFLAG(IS_MAC)
+      return std::make_unique<GeolocationSystemPermissionDelegateMac>();
 #else
       return std::make_unique<DefaultSystemPermissionDelegate>();
 #endif

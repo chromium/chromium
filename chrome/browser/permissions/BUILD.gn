@@ -154,6 +154,8 @@ source_set("permissions") {
       sources += [
         "camera_system_permission_delegate_mac.cc",
         "camera_system_permission_delegate_mac.h",
+        "geolocation_system_permission_delegate_mac.cc",
+        "geolocation_system_permission_delegate_mac.h",
         "microphone_system_permission_delegate_mac.cc",
         "microphone_system_permission_delegate_mac.h",
       ]

@@ -420,6 +420,9 @@ std::u16string PermissionRequest::GetPermissionNameTextFragment() const {
     case RequestType::kCameraStream:
       message_id = IDS_CAMERA_PERMISSION_NAME_FRAGMENT;
       break;
+    case RequestType::kGeolocation:
+      message_id = IDS_GEOLOCATION_NAME_FRAGMENT;
+      break;
     case RequestType::kMicStream:
       message_id = IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT;
       break;
