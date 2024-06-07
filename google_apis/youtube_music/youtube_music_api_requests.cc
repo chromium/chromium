@@ -25,32 +25,33 @@ constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
 
 namespace google_apis::youtube_music {
 
-GetPlaylistsRequest::GetPlaylistsRequest(RequestSender* sender,
-                                         Callback callback)
+GetMusicSectionRequest::GetMusicSectionRequest(RequestSender* sender,
+                                               Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
       callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
 }
 
-GetPlaylistsRequest::~GetPlaylistsRequest() = default;
+GetMusicSectionRequest::~GetMusicSectionRequest() = default;
 
-GURL GetPlaylistsRequest::GetURL() const {
+GURL GetMusicSectionRequest::GetURL() const {
   // TODO(b/341324009): Move to an util file or class.
   return GURL(
       "https://youtubemediaconnect.googleapis.com/v1/musicSections/"
       "root:load?intent=focus&category=music&sectionRecommendationLimit=10");
 }
 
-ApiErrorCode GetPlaylistsRequest::MapReasonToError(ApiErrorCode code,
-                                                   const std::string& reason) {
+ApiErrorCode GetMusicSectionRequest::MapReasonToError(
+    ApiErrorCode code,
+    const std::string& reason) {
   return code;
 }
 
-bool GetPlaylistsRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+bool GetMusicSectionRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
 }
 
-void GetPlaylistsRequest::ProcessURLFetchResults(
+void GetMusicSectionRequest::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
@@ -59,8 +60,9 @@ void GetPlaylistsRequest::ProcessURLFetchResults(
     case HTTP_SUCCESS:
       blocking_task_runner()->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&GetPlaylistsRequest::Parse, std::move(response_body)),
-          base::BindOnce(&GetPlaylistsRequest::OnDataParsed,
+          base::BindOnce(&GetMusicSectionRequest::Parse,
+                         std::move(response_body)),
+          base::BindOnce(&GetMusicSectionRequest::OnDataParsed,
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
@@ -70,22 +72,88 @@ void GetPlaylistsRequest::ProcessURLFetchResults(
   }
 }
 
-void GetPlaylistsRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
+void GetMusicSectionRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
   std::move(callback_).Run(base::unexpected(error));
 }
 
-std::unique_ptr<TopLevelMusicRecommendations> GetPlaylistsRequest::Parse(
+std::unique_ptr<TopLevelMusicRecommendations> GetMusicSectionRequest::Parse(
     const std::string& json) {
   std::unique_ptr<base::Value> value = ParseJson(json);
   return value ? TopLevelMusicRecommendations::CreateFrom(*value) : nullptr;
 }
 
-void GetPlaylistsRequest::OnDataParsed(
+void GetMusicSectionRequest::OnDataParsed(
     std::unique_ptr<TopLevelMusicRecommendations> recommendations) {
   if (!recommendations) {
     std::move(callback_).Run(base::unexpected(PARSE_ERROR));
   } else {
     std::move(callback_).Run(std::move(recommendations));
+  }
+  OnProcessURLFetchResultsComplete();
+}
+
+GetPlaylistRequest::GetPlaylistRequest(RequestSender* sender,
+                                       const std::string& playlist_name,
+                                       Callback callback)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      playlist_name_(playlist_name),
+      callback_(std::move(callback)) {
+  CHECK(!callback_.is_null());
+}
+
+GetPlaylistRequest::~GetPlaylistRequest() = default;
+
+GURL GetPlaylistRequest::GetURL() const {
+  // TODO(b/341324009): Move to an util file or class.
+  return GURL(
+      base::StringPrintf("https://youtubemediaconnect.googleapis.com/v1/%s",
+                         playlist_name_.c_str()));
+}
+
+ApiErrorCode GetPlaylistRequest::MapReasonToError(ApiErrorCode code,
+                                                  const std::string& reason) {
+  return code;
+}
+
+bool GetPlaylistRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+  return error == HTTP_SUCCESS;
+}
+
+void GetPlaylistRequest::ProcessURLFetchResults(
+    const network::mojom::URLResponseHead* response_head,
+    base::FilePath response_file,
+    std::string response_body) {
+  ApiErrorCode error = GetErrorCode();
+
+  switch (error) {
+    case HTTP_SUCCESS:
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&GetPlaylistRequest::Parse, std::move(response_body)),
+          base::BindOnce(&GetPlaylistRequest::OnDataParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    default:
+      RunCallbackOnPrematureFailure(error);
+      OnProcessURLFetchResultsComplete();
+      break;
+  }
+}
+
+void GetPlaylistRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
+  std::move(callback_).Run(base::unexpected(error));
+}
+
+std::unique_ptr<Playlist> GetPlaylistRequest::Parse(const std::string& json) {
+  std::unique_ptr<base::Value> value = ParseJson(json);
+  return value ? Playlist::CreateFrom(*value) : nullptr;
+}
+
+void GetPlaylistRequest::OnDataParsed(std::unique_ptr<Playlist> playlist) {
+  if (!playlist) {
+    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(playlist));
   }
   OnProcessURLFetchResultsComplete();
 }
@@ -164,12 +232,11 @@ std::unique_ptr<Queue> PlaybackQueuePrepareRequest::Parse(
   return value ? Queue::CreateFrom(*value) : nullptr;
 }
 
-void PlaybackQueuePrepareRequest::OnDataParsed(
-    std::unique_ptr<Queue> playback_queue) {
-  if (!playback_queue) {
+void PlaybackQueuePrepareRequest::OnDataParsed(std::unique_ptr<Queue> queue) {
+  if (!queue) {
     std::move(callback_).Run(base::unexpected(PARSE_ERROR));
   } else {
-    std::move(callback_).Run(std::move(playback_queue));
+    std::move(callback_).Run(std::move(queue));
   }
   OnProcessURLFetchResultsComplete();
 }
@@ -240,11 +307,11 @@ std::unique_ptr<QueueContainer> PlaybackQueueNextRequest::Parse(
 }
 
 void PlaybackQueueNextRequest::OnDataParsed(
-    std::unique_ptr<QueueContainer> playback_queue) {
-  if (!playback_queue) {
+    std::unique_ptr<QueueContainer> queue_container) {
+  if (!queue_container) {
     std::move(callback_).Run(base::unexpected(PARSE_ERROR));
   } else {
-    std::move(callback_).Run(std::move(playback_queue));
+    std::move(callback_).Run(std::move(queue_container));
   }
   OnProcessURLFetchResultsComplete();
 }

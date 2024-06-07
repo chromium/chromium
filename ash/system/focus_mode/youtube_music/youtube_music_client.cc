@@ -133,6 +133,18 @@ GetPlaylistsFromTopLevelMusicRecommendations(
   return playlists;
 }
 
+// Gets `Playlist` from API playlist.
+std::optional<Playlist> GetPlaylistFromApiPlaylist(
+    google_apis::youtube_music::Playlist* playlist) {
+  if (!playlist) {
+    return std::nullopt;
+  }
+
+  return Playlist(
+      playlist->name(), playlist->title(), playlist->owner().title(),
+      FromApiImage(FindAppropriateImage(playlist->mutable_images())));
+}
+
 // Gets `PlaybackContext` from `queue`.
 std::optional<PlaybackContext> GetPlaybackContextFromPlaybackQueue(
     google_apis::youtube_music::Queue* queue) {
@@ -164,27 +176,42 @@ YouTubeMusicClient::YouTubeMusicClient(
 
 YouTubeMusicClient::~YouTubeMusicClient() = default;
 
-void YouTubeMusicClient::GetPlaylists(GetPlaylistsCallback callback) {
+void YouTubeMusicClient::GetMusicSection(GetMusicSectionCallback callback) {
   CHECK(callback);
-  playlists_callback_ = std::move(callback);
+  music_section_callback_ = std::move(callback);
 
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
-      std::make_unique<google_apis::youtube_music::GetPlaylistsRequest>(
+      std::make_unique<google_apis::youtube_music::GetMusicSectionRequest>(
           request_sender,
-          base::BindOnce(&YouTubeMusicClient::OnGetPlaylistsRequestDone,
+          base::BindOnce(&YouTubeMusicClient::OnGetMusicSectionRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
 
+void YouTubeMusicClient::GetPlaylist(
+    const std::string& playlist_id,
+    youtube_music::GetPlaylistCallback callback) {
+  CHECK(callback);
+  playlist_callback_map_[playlist_id] = std::move(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<google_apis::youtube_music::GetPlaylistRequest>(
+          request_sender, playlist_id,
+          base::BindOnce(&YouTubeMusicClient::OnGetPlaylistRequestDone,
+                         weak_factory_.GetWeakPtr(), playlist_id,
+                         base::Time::Now())));
+}
+
 void YouTubeMusicClient::PlaybackQueuePrepare(
-    const std::string& playlist_name,
+    const std::string& playlist_id,
     GetPlaybackContextCallback callback) {
   CHECK(callback);
   playback_context_prepare_callback_ = std::move(callback);
 
   auto request_payload =
       google_apis::youtube_music::PlaybackQueuePrepareRequestPayload(
-          playlist_name,
+          playlist_id,
           google_apis::youtube_music::PlaybackQueuePrepareRequestPayload::
               ExplicitFilter::kBestEffort,
           google_apis::youtube_music::PlaybackQueuePrepareRequestPayload::
@@ -198,7 +225,7 @@ void YouTubeMusicClient::PlaybackQueuePrepare(
 }
 
 void YouTubeMusicClient::PlaybackQueueNext(
-    const std::string& playback_queue_name,
+    const std::string& playback_queue_id,
     GetPlaybackContextCallback callback) {
   CHECK(callback);
   playback_context_next_callback_ = std::move(callback);
@@ -209,7 +236,7 @@ void YouTubeMusicClient::PlaybackQueueNext(
           request_sender,
           base::BindOnce(&YouTubeMusicClient::OnPlaybackQueueNextRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now()),
-          playback_queue_name));
+          playback_queue_id));
 }
 
 google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
@@ -224,24 +251,52 @@ google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
   return request_sender_.get();
 }
 
-void YouTubeMusicClient::OnGetPlaylistsRequestDone(
+void YouTubeMusicClient::OnGetMusicSectionRequestDone(
     const base::Time& request_start_time,
     base::expected<
         std::unique_ptr<
             google_apis::youtube_music::TopLevelMusicRecommendations>,
         google_apis::ApiErrorCode> result) {
-  if (!playlists_callback_) {
+  if (!music_section_callback_) {
     return;
   }
 
   if (!result.has_value()) {
-    std::move(playlists_callback_).Run(result.error(), std::nullopt);
+    std::move(music_section_callback_).Run(result.error(), std::nullopt);
     return;
   }
 
-  std::move(playlists_callback_)
+  std::move(music_section_callback_)
       .Run(google_apis::HTTP_SUCCESS,
            GetPlaylistsFromTopLevelMusicRecommendations(result.value().get()));
+}
+
+void YouTubeMusicClient::OnGetPlaylistRequestDone(
+    const std::string& playlist_id,
+    const base::Time& request_start_time,
+    base::expected<std::unique_ptr<google_apis::youtube_music::Playlist>,
+                   google_apis::ApiErrorCode> result) {
+  if (playlist_callback_map_.find(playlist_id) ==
+      playlist_callback_map_.end()) {
+    return;
+  }
+
+  GetPlaylistCallback playlist_callback =
+      std::move(playlist_callback_map_[playlist_id]);
+  playlist_callback_map_.erase(playlist_id);
+
+  if (!playlist_callback) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    std::move(playlist_callback).Run(result.error(), std::nullopt);
+    return;
+  }
+
+  std::move(playlist_callback)
+      .Run(google_apis::HTTP_SUCCESS,
+           GetPlaylistFromApiPlaylist(result.value().get()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(

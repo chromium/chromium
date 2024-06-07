@@ -73,6 +73,8 @@ class Playlist {
   static void RegisterJSONConverter(
       base::JSONValueConverter<Playlist>* converter);
 
+  static std::unique_ptr<Playlist> CreateFrom(const base::Value& value);
+
   const std::string name() const { return name_; }
   const std::string title() const { return title_; }
   const std::string description() const { return description_; }

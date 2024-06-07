@@ -4,8 +4,9 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
 
-#include <algorithm>
 #include <cstddef>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,8 @@
 #include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google_apis/common/api_error_codes.h"
 #include "url/gurl.h"
@@ -22,8 +25,11 @@ namespace ash {
 namespace {
 
 constexpr size_t kPlaylistNum = 4;
+constexpr char kFocusSupermixPlaylistId[] =
+    "playlists/RDTMAK5uy_l3TXw3uC_sIHl4m6RMGqCyKKd2D2_pv28";
+constexpr char kYouTubeMusicSourceFormat[] = "YouTube Music ᐧ %s";
 
-youtube_music::YouTubeMusicController* GetYouTubeMusicConTroller() {
+youtube_music::YouTubeMusicController* GetYouTubeMusicController() {
   if (auto* focus_mode_controller = FocusModeController::Get()) {
     return focus_mode_controller->youtube_music_controller();
   }
@@ -37,38 +43,64 @@ FocusModeYouTubeMusicDelegate::~FocusModeYouTubeMusicDelegate() = default;
 bool FocusModeYouTubeMusicDelegate::GetNextTrack(
     const std::string& playlist_id,
     FocusModeSoundsDelegate::TrackCallback callback) {
-  if (auto* youtube_music_controller = GetYouTubeMusicConTroller()) {
-    if (last_playlist_name_ != playlist_id) {
-      get_next_track_callback_ = std::move(callback);
-      last_playlist_name_ = playlist_id;
-      youtube_music_controller->PlaybackQueuePrepare(
-          playlist_id,
-          base::BindOnce(&FocusModeYouTubeMusicDelegate::OnNextTrackDone,
-                         base::Unretained(this)));
-    } else {
-      get_next_track_callback_ = std::move(callback);
-      youtube_music_controller->PlaybackQueueNext(
-          last_queue_name_,
-          base::BindOnce(&FocusModeYouTubeMusicDelegate::OnNextTrackDone,
-                         base::Unretained(this)));
-    }
-    return true;
+  CHECK(callback);
+  next_track_state_.ResetDoneCallback();
+
+  auto* youtube_music_controller = GetYouTubeMusicController();
+  if (!youtube_music_controller) {
+    std::move(callback).Run(std::nullopt);
+    return false;
   }
 
-  return false;
+  if (next_track_state_.last_playlist_id != playlist_id) {
+    next_track_state_.done_callback = std::move(callback);
+    youtube_music_controller->PlaybackQueuePrepare(
+        playlist_id,
+        base::BindOnce(&FocusModeYouTubeMusicDelegate::OnNextTrackDone,
+                       weak_factory_.GetWeakPtr(), playlist_id));
+  } else {
+    next_track_state_.done_callback = std::move(callback);
+    youtube_music_controller->PlaybackQueueNext(
+        next_track_state_.last_queue_id,
+        base::BindOnce(&FocusModeYouTubeMusicDelegate::OnNextTrackDone,
+                       weak_factory_.GetWeakPtr(), playlist_id));
+  }
+
+  return true;
 }
 
 bool FocusModeYouTubeMusicDelegate::GetPlaylists(
     FocusModeSoundsDelegate::PlaylistsCallback callback) {
-  if (auto* youtube_music_controller = GetYouTubeMusicConTroller()) {
-    get_playlists_callback_ = std::move(callback);
-    youtube_music_controller->GetPlaylists(
-        base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistsDone,
-                       base::Unretained(this)));
-    return true;
+  CHECK(callback);
+  get_playlists_state_.Reset();
+
+  auto* youtube_music_controller = GetYouTubeMusicController();
+  if (!youtube_music_controller) {
+    std::move(callback).Run({});
+    return false;
   }
 
-  return false;
+  get_playlists_state_.done_callback = std::move(callback);
+  const bool needs_to_get_last_playlist =
+      !next_track_state_.last_playlist_id.empty() &&
+      next_track_state_.last_playlist_id != kFocusSupermixPlaylistId;
+  get_playlists_state_.target_count = needs_to_get_last_playlist ? 3 : 2;
+
+  youtube_music_controller->GetPlaylist(
+      kFocusSupermixPlaylistId,
+      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
+                     weak_factory_.GetWeakPtr(), /*bucket=*/0));
+  if (needs_to_get_last_playlist) {
+    youtube_music_controller->GetPlaylist(
+        next_track_state_.last_playlist_id,
+        base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
+                       weak_factory_.GetWeakPtr(), /*bucket=*/1));
+  }
+  youtube_music_controller->GetMusicSection(
+      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
+                     weak_factory_.GetWeakPtr(), /*bucket=*/2));
+
+  return true;
 }
 
 void FocusModeYouTubeMusicDelegate::SetFailureCallback(
@@ -77,7 +109,103 @@ void FocusModeYouTubeMusicDelegate::SetFailureCallback(
   failure_callback_ = std::move(callback);
 }
 
-void FocusModeYouTubeMusicDelegate::OnGetPlaylistsDone(
+FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
+    GetPlaylistsRequestState() = default;
+FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
+    ~GetPlaylistsRequestState() = default;
+
+void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::Reset() {
+  for (auto& playlist_bucket : playlist_buckets) {
+    playlist_bucket.clear();
+  }
+  target_count = 0;
+  count = 0;
+  ResetDoneCallback();
+}
+
+void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
+    ResetDoneCallback() {
+  if (done_callback) {
+    std::move(done_callback).Run({});
+  }
+  done_callback = base::NullCallback();
+}
+
+std::vector<FocusModeSoundsDelegate::Playlist>
+FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::GetTopPlaylists() {
+  std::vector<Playlist> results;
+  results.reserve(kPlaylistNum);
+  for (auto& playlist_bucket : playlist_buckets) {
+    for (size_t i = 0;
+         i < playlist_bucket.size() && results.size() < kPlaylistNum; i++) {
+      // Skip the duplicate.
+      if (base::ranges::find(results, playlist_bucket[i].id, &Playlist::id) !=
+          results.end()) {
+        continue;
+      }
+      results.emplace_back(playlist_bucket[i]);
+    }
+  }
+  CHECK_EQ(results.size(), kPlaylistNum);
+  return results;
+}
+
+FocusModeYouTubeMusicDelegate::GetNextTrackRequestState::
+    GetNextTrackRequestState() = default;
+FocusModeYouTubeMusicDelegate::GetNextTrackRequestState::
+    ~GetNextTrackRequestState() = default;
+
+void FocusModeYouTubeMusicDelegate::GetNextTrackRequestState::Reset() {
+  last_playlist_id = std::string();
+  last_queue_id = std::string();
+  ResetDoneCallback();
+}
+
+void FocusModeYouTubeMusicDelegate::GetNextTrackRequestState::
+    ResetDoneCallback() {
+  if (done_callback) {
+    std::move(done_callback).Run(std::nullopt);
+  }
+  done_callback = base::NullCallback();
+}
+
+void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
+    size_t bucket,
+    google_apis::ApiErrorCode http_error_code,
+    std::optional<youtube_music::Playlist> playlist) {
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN &&
+        failure_callback_) {
+      failure_callback_.Run();
+    }
+    get_playlists_state_.Reset();
+    return;
+  }
+
+  if (!get_playlists_state_.done_callback) {
+    return;
+  }
+
+  CHECK_LT(bucket, kYouTubeMusicPlaylistBucketCount);
+
+  if (playlist.has_value()) {
+    get_playlists_state_.playlist_buckets[bucket].emplace_back(
+        playlist.value().name, playlist.value().title,
+        playlist.value().image.url);
+  }
+
+  get_playlists_state_.count++;
+  if (get_playlists_state_.count == get_playlists_state_.target_count) {
+    const std::vector<Playlist>& results =
+        get_playlists_state_.GetTopPlaylists();
+    CHECK_GE(results.size(), kPlaylistNum);
+    std::move(get_playlists_state_.done_callback).Run(results);
+    get_playlists_state_.done_callback = base::NullCallback();
+  }
+}
+
+void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
+    size_t bucket,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::vector<youtube_music::Playlist>> playlists) {
   if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
@@ -85,27 +213,35 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistsDone(
         failure_callback_) {
       failure_callback_.Run();
     }
+    get_playlists_state_.Reset();
     return;
   }
 
-  if (!get_playlists_callback_ || !playlists.has_value()) {
+  if (!get_playlists_state_.done_callback) {
     return;
   }
 
-  CHECK_EQ(http_error_code, google_apis::ApiErrorCode::HTTP_SUCCESS);
-  CHECK(get_playlists_callback_);
-  CHECK(playlists.has_value());
+  CHECK_LT(bucket, kYouTubeMusicPlaylistBucketCount);
 
-  std::vector<Playlist> result;
-  CHECK_GE(playlists.value().size(), kPlaylistNum);
-  for (size_t i = 0; i < kPlaylistNum; i++) {
-    result.emplace_back(playlists.value()[i].name, playlists.value()[i].title,
-                        playlists.value()[i].image.url);
+  if (playlists.has_value()) {
+    for (const auto& playlist : playlists.value()) {
+      get_playlists_state_.playlist_buckets[bucket].emplace_back(
+          playlist.name, playlist.title, playlist.image.url);
+    }
   }
-  std::move(get_playlists_callback_).Run(result);
+
+  get_playlists_state_.count++;
+  if (get_playlists_state_.count == get_playlists_state_.target_count) {
+    const std::vector<Playlist>& results =
+        get_playlists_state_.GetTopPlaylists();
+    CHECK_GE(results.size(), kPlaylistNum);
+    std::move(get_playlists_state_.done_callback).Run(results);
+    get_playlists_state_.done_callback = base::NullCallback();
+  }
 }
 
 void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
+    const std::string& playlist_id,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const youtube_music::PlaybackContext> playback_context) {
   if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
@@ -113,24 +249,30 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
         failure_callback_) {
       failure_callback_.Run();
     }
+    next_track_state_.Reset();
     return;
   }
 
-  if (!get_next_track_callback_ || !playback_context.has_value()) {
+  if (!next_track_state_.done_callback) {
     return;
   }
 
-  CHECK_EQ(http_error_code, google_apis::ApiErrorCode::HTTP_SUCCESS);
-  CHECK(get_next_track_callback_);
-  CHECK(playback_context.has_value());
+  next_track_state_.last_playlist_id = playlist_id;
+  next_track_state_.last_queue_id = playback_context->queue_name;
 
-  last_queue_name_ = playback_context->queue_name;
+  std::optional<Track> result = std::nullopt;
+  if (playback_context.has_value()) {
+    result = Track(
+        /*title=*/playback_context->track_title,
+        /*artist=*/std::string(),
+        /*source=*/
+        base::StringPrintf(kYouTubeMusicSourceFormat, playlist_id.c_str()),
+        /*thumbnail_url=*/playback_context->track_image.url,
+        /*source_url=*/playback_context->stream_url);
+  }
 
-  Track result(/*title=*/playback_context->track_title, /*artist=*/"",
-               /*source=*/"",
-               /*thumbnail_url=*/playback_context->track_image.url,
-               /*source_url=*/playback_context->stream_url);
-  std::move(get_next_track_callback_).Run(result);
+  std::move(next_track_state_.done_callback).Run(result);
+  next_track_state_.done_callback = base::NullCallback();
 }
 
 }  // namespace ash

@@ -110,7 +110,11 @@ struct ASH_EXPORT PlaybackContext {
   std::string queue_name;
 };
 
-using GetPlaylistsCallback = base::OnceCallback<void(
+using GetPlaylistCallback =
+    base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
+                            std::optional<Playlist> playlist)>;
+
+using GetMusicSectionCallback = base::OnceCallback<void(
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::vector<Playlist>> playlists)>;
 

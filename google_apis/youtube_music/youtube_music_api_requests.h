@@ -22,19 +22,19 @@ class RequestSender;
 
 namespace youtube_music {
 
-// Request that gets music recommendations from the API server. For API usage,
-// please check below:
+// Request that gets music sections from the API server. For now this always
+// sets the intent to "focus". For API usage, please check below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/musicSections/load
-class GetPlaylistsRequest : public UrlFetchRequestBase {
+class GetMusicSectionRequest : public UrlFetchRequestBase {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<TopLevelMusicRecommendations>,
                      ApiErrorCode>)>;
 
-  GetPlaylistsRequest(RequestSender* sender, Callback callback);
-  GetPlaylistsRequest(const GetPlaylistsRequest&) = delete;
-  GetPlaylistsRequest& operator=(const GetPlaylistsRequest&) = delete;
-  ~GetPlaylistsRequest() override;
+  GetMusicSectionRequest(RequestSender* sender, Callback callback);
+  GetMusicSectionRequest(const GetMusicSectionRequest&) = delete;
+  GetMusicSectionRequest& operator=(const GetMusicSectionRequest&) = delete;
+  ~GetMusicSectionRequest() override;
 
  protected:
   // UrlFetchRequestBase:
@@ -52,11 +52,52 @@ class GetPlaylistsRequest : public UrlFetchRequestBase {
   static std::unique_ptr<TopLevelMusicRecommendations> Parse(
       const std::string& json);
 
-  void OnDataParsed(std::unique_ptr<TopLevelMusicRecommendations> sections);
+  void OnDataParsed(
+      std::unique_ptr<TopLevelMusicRecommendations> recommendations);
 
   Callback callback_;
 
-  base::WeakPtrFactory<GetPlaylistsRequest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GetMusicSectionRequest> weak_ptr_factory_{this};
+};
+
+// Request that gets playlist with name `playlist_name` from the API server. For
+// API usage, please check below:
+//   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/playlists/get
+class GetPlaylistRequest : public UrlFetchRequestBase {
+ public:
+  using Callback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<Playlist>, ApiErrorCode>)>;
+
+  GetPlaylistRequest(RequestSender* sender,
+                     const std::string& playlist_name,
+                     Callback callback);
+  GetPlaylistRequest(const GetPlaylistRequest&) = delete;
+  GetPlaylistRequest& operator=(const GetPlaylistRequest&) = delete;
+  ~GetPlaylistRequest() override;
+
+ protected:
+  // UrlFetchRequestBase:
+  GURL GetURL() const override;
+  ApiErrorCode MapReasonToError(ApiErrorCode code,
+                                const std::string& reason) override;
+  bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  void ProcessURLFetchResults(
+      const network::mojom::URLResponseHead* response_head,
+      const base::FilePath response_file,
+      std::string response_body) override;
+  void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
+
+ private:
+  static std::unique_ptr<Playlist> Parse(const std::string& json);
+
+  void OnDataParsed(std::unique_ptr<Playlist> playlist);
+
+  // Playlist name. Unique identifier of a playlist.
+  std::string playlist_name_;
+
+  Callback callback_;
+
+  base::WeakPtrFactory<GetPlaylistRequest> weak_ptr_factory_{this};
 };
 
 // Request that prepares the playback queue for the API server. For API usage,
@@ -93,7 +134,7 @@ class PlaybackQueuePrepareRequest : public UrlFetchRequestBase {
  private:
   static std::unique_ptr<Queue> Parse(const std::string& json);
 
-  void OnDataParsed(std::unique_ptr<Queue> sections);
+  void OnDataParsed(std::unique_ptr<Queue> queue);
 
   const PlaybackQueuePrepareRequestPayload payload_;
 
@@ -112,7 +153,7 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
 
   PlaybackQueueNextRequest(RequestSender* sender,
                            Callback callback,
-                           const std::string& playlist_name);
+                           const std::string& playback_queue_name);
   PlaybackQueueNextRequest(const PlaybackQueueNextRequest&) = delete;
   PlaybackQueueNextRequest& operator=(const PlaybackQueueNextRequest&) = delete;
   ~PlaybackQueueNextRequest() override;
@@ -140,9 +181,9 @@ class PlaybackQueueNextRequest : public UrlFetchRequestBase {
  private:
   static std::unique_ptr<QueueContainer> Parse(const std::string& json);
 
-  void OnDataParsed(std::unique_ptr<QueueContainer> sections);
+  void OnDataParsed(std::unique_ptr<QueueContainer> queue_container);
 
-  // Playlist queue name.
+  // Playlist queue name. Unique identifier of a queue.
   std::string playback_queue_name_;
 
   Callback callback_;

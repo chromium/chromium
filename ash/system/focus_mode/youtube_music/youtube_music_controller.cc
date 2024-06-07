@@ -61,38 +61,50 @@ youtube_music::YouTubeMusicClient* YouTubeMusicController::GetActiveClient()
   return it != clients_.end() ? it->second.get() : nullptr;
 }
 
-bool YouTubeMusicController::GetPlaylists(
-    youtube_music::GetPlaylistsCallback callback) {
+bool YouTubeMusicController::GetMusicSection(
+    youtube_music::GetMusicSectionCallback callback) {
   CHECK(callback);
   auto* client = GetActiveClient();
   if (!client) {
     return false;
   }
-  client->GetPlaylists(std::move(callback));
+  client->GetMusicSection(std::move(callback));
+  return true;
+}
+
+bool YouTubeMusicController::GetPlaylist(
+    const std::string& playlist_id,
+    youtube_music::GetPlaylistCallback callback) {
+  CHECK(callback);
+  auto* client = GetActiveClient();
+  if (!client) {
+    return false;
+  }
+  client->GetPlaylist(playlist_id, std::move(callback));
   return true;
 }
 
 bool YouTubeMusicController::PlaybackQueuePrepare(
-    const std::string& playlist_name,
+    const std::string& playlist_id,
     youtube_music::GetPlaybackContextCallback callback) {
   CHECK(callback);
   auto* client = GetActiveClient();
   if (!client) {
     return false;
   }
-  client->PlaybackQueuePrepare(playlist_name, std::move(callback));
+  client->PlaybackQueuePrepare(playlist_id, std::move(callback));
   return true;
 }
 
 bool YouTubeMusicController::PlaybackQueueNext(
-    const std::string& playback_queue_name,
+    const std::string& playback_queue_id,
     youtube_music::GetPlaybackContextCallback callback) {
   CHECK(callback);
   auto* client = GetActiveClient();
   if (!client) {
     return false;
   }
-  client->PlaybackQueueNext(playback_queue_name, std::move(callback));
+  client->PlaybackQueueNext(playback_queue_id, std::move(callback));
   return true;
 }
 

@@ -86,6 +86,17 @@ void Playlist::RegisterJSONConverter(JSONValueConverter<Playlist>* converter) {
   converter->RegisterNestedField(kApiResponseOwnerKey, &Playlist::owner_);
 }
 
+// static
+std::unique_ptr<Playlist> Playlist::CreateFrom(const base::Value& value) {
+  auto playlist = std::make_unique<Playlist>();
+  JSONValueConverter<Playlist> converter;
+  if (!converter.Convert(value, playlist.get())) {
+    DVLOG(1) << "Unable to construct `Playlist` from parsed json.";
+    return nullptr;
+  }
+  return playlist;
+}
+
 std::string Playlist::ToString() const {
   std::string s;
   for (size_t i = 0; i < images_.size(); i++) {

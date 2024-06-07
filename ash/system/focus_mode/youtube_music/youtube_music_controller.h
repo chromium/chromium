@@ -29,18 +29,23 @@ class ASH_EXPORT YouTubeMusicController : public SessionObserver {
   // Returns the client for the active account.
   youtube_music::YouTubeMusicClient* GetActiveClient() const;
 
-  // Triggers request to get playlists through the active client. Returns true
-  // if the request is successfully triggered.
-  bool GetPlaylists(youtube_music::GetPlaylistsCallback callback);
+  // Triggers request to get music sections through the active client. Returns
+  // true if the request is successfully triggered.
+  bool GetMusicSection(youtube_music::GetMusicSectionCallback callback);
+
+  // Triggers request to get specific playlist with name `playlist_id` through
+  // the active client. Returns true if the request is successfully triggered.
+  bool GetPlaylist(const std::string& playlist_id,
+                   youtube_music::GetPlaylistCallback callback);
 
   // Triggers request to prepare the playback queue through the active client.
   // Returns true if the request is successfully triggered.
-  bool PlaybackQueuePrepare(const std::string& playlist_name,
+  bool PlaybackQueuePrepare(const std::string& playlist_id,
                             youtube_music::GetPlaybackContextCallback callback);
 
   // Triggers request to play the next track in the playback queue through the
   // active client. Returns true if the request is successfully triggered.
-  bool PlaybackQueueNext(const std::string& playback_queue_name,
+  bool PlaybackQueueNext(const std::string& playback_queue_id,
                          youtube_music::GetPlaybackContextCallback callback);
 
  private:
