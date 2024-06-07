@@ -97,7 +97,7 @@ public class CommandLineFlagsTest {
     public void testFeatures() {
         String enabledFeatures = CommandLine.getInstance().getSwitchValue("enable-features");
         Assert.assertTrue(enabledFeatures.contains("feature1"));
-        Assert.assertTrue(enabledFeatures.contains("feature2"));
+        Assert.assertFalse(enabledFeatures.contains("feature2"));
         Assert.assertTrue(enabledFeatures.contains("feature3"));
         Assert.assertTrue(
                 CommandLine.getInstance().getSwitchValue("disable-features").contains("feature2"));

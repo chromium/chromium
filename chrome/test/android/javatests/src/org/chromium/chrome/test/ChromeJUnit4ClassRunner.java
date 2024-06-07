@@ -7,8 +7,6 @@ package org.chromium.chrome.test;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.InitializationError;
 
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -34,12 +32,6 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
     @Override
     protected List<TestRule> getDefaultTestRules() {
         List<TestRule> rules = super.getDefaultTestRules();
-        Class<?> clazz = getTestClass().getJavaClass();
-        if (!clazz.isAnnotationPresent(Batch.class)
-                || !clazz.getAnnotation(Batch.class).value().equals(Batch.UNIT_TESTS)) {
-            rules = addToList(rules, new Features.InstrumentationProcessor());
-        }
-
         return addToList(rules, new DisableAnimationsTestRule());
     }
 }

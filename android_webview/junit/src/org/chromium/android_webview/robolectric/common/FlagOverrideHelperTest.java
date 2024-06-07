@@ -31,7 +31,7 @@ public class FlagOverrideHelperTest {
     @Before
     public void setUp() {
         // Create a fresh CommandLine instance for each test.
-        CommandLine.init(null);
+        CommandLine.resetForTesting(true);
     }
 
     private static final Flag[] sMockFlagList = {

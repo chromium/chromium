@@ -87,10 +87,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
     private static boolean sTestListMode;
 
-    static {
-        CommandLineInitUtil.setFilenameOverrideForTesting(CommandLineFlags.getTestCmdLineFile());
-    }
-
     public BaseChromiumAndroidJUnitRunner() {
         sInstance = this;
     }
@@ -98,6 +94,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public Application newApplication(ClassLoader cl, String className, Context context)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        // Must come before super.newApplication(), because Chrome's Application.attachBaseContext()
+        // initializes command-line.
+        CommandLineInitUtil.setFilenameOverrideForTesting(CommandLineFlags.getTestCmdLineFile());
+
         // Wrap |context| here so that calls to getSharedPreferences() from within
         // attachBaseContext() will hit our InMemorySharedPreferencesContext.
         sInMemorySharedPreferencesContext = new InMemorySharedPreferencesContext(context);
@@ -128,8 +128,16 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         return sInMemorySharedPreferencesContext;
     }
 
+    private static boolean isDefaultProcess() {
+        return !ContextUtils.getProcessName().contains(":");
+    }
+
     @Override
     public void onCreate(Bundle arguments) {
+        if (!isDefaultProcess()) {
+            super.onCreate(arguments);
+            return;
+        }
         if (arguments == null) {
             arguments = new Bundle();
         }
@@ -138,6 +146,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         // an activity in @BeforeClass and have it live until @AfterClass.
         arguments.putString("waitForActivitiesToComplete", "false");
         super.onCreate(arguments);
+        if (!sTestListMode) {
+            // Initialize before Application.onCreate() to ensure settings take effect.
+            initTestRunner(arguments);
+        }
     }
 
     /**
@@ -149,6 +161,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
      */
     @Override
     public void onStart() {
+        if (!isDefaultProcess()) {
+            throw new IllegalStateException();
+        }
         Bundle arguments = InstrumentationRegistry.getArguments();
         if (sTestListMode) {
             Log.w(
@@ -159,7 +174,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                             arguments.toString()));
             listTests(); // Intentionally not calling super.onStart() to avoid additional work.
         } else {
-            initTestRunner(arguments);
+            // Full name required because the super class has a nested class of the same name.
+            org.chromium.base.test.ActivityFinisher.finishAll();
             super.onStart();
         }
     }
@@ -169,8 +185,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         if (timeoutScale != null) {
             ScalableTimeout.setScale(Float.valueOf(timeoutScale));
         }
-        // Full name required because the super class has a nested class of the same name.
-        org.chromium.base.test.ActivityFinisher.finishAll();
+        CommandLineFlags.ensureInitialized();
         BaseJUnit4ClassRunner.clearJobSchedulerJobs();
         clearDataDirectory(sInMemorySharedPreferencesContext);
         setInTouchMode(true);

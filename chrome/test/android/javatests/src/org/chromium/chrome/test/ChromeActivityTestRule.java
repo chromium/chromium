@@ -30,7 +30,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -241,7 +240,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         // Avoid relying on explicit intents, bypassing LaunchIntentDispatcher, created by null
         // startIntent launch behavior.
         assertNotNull(startIntent);
-        Features.getInstance().ensureCommandLineIsUpToDate();
         super.launchActivity(startIntent);
     }
 

@@ -25,8 +25,6 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.FeatureParam;
-import org.chromium.base.Flag;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -369,11 +367,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         // TODO: Might be slow to do this before every test.
         SharedPreferencesTestUtil.deleteOnDiskSharedPreferences(getApplication());
 
-        CommandLineFlags.setUpMethod(method.getMethod());
+        Class<?> testClass = getTestClass().getJavaClass();
+        CommandLineFlags.reset(testClass.getAnnotations(), method.getAnnotations());
+
         blockUnitTestsFromStartingBrowser(method);
-        // TODO(agrieve): These should not reset flag values set in @BeforeClass
-        Flag.resetAllInMemoryCachedValuesForTesting();
-        FeatureParam.resetAllInMemoryCachedValuesForTesting();
         UmaRecorderHolder.resetForTesting();
 
         Context targetContext = InstrumentationRegistry.getTargetContext();
@@ -385,7 +382,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private void onBeforeTestClass() {
         Class<?> testClass = getTestClass().getJavaClass();
         ResettersForTesting.beforeClassHooksWillExecute();
-        CommandLineFlags.setUpClass(testClass);
+
+        CommandLineFlags.reset(testClass.getAnnotations(), null);
 
         Context targetContext = InstrumentationRegistry.getTargetContext();
         for (ClassHook hook : getPreClassHooks()) {
@@ -417,7 +415,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
 
         // Do not reset things here for state we may want to persist when set via @BeforeClass.
-        CommandLineFlags.tearDownMethod();
         try {
             // Run resetters on UI thread so as to minimize the number of failed thread check
             // assertions, and to match the semantics of Robolectric's runners.
@@ -443,7 +440,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
         ActivityFinisher.finishAll();
-        CommandLineFlags.tearDownClass();
         if (afterClassPassed) {
             LifetimeAssert.assertAllInstancesDestroyedForTesting();
         } else {

@@ -14,8 +14,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureParam;
-import org.chromium.base.Flag;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ResettersForTesting;
@@ -26,7 +24,6 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner.HelperTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.build.NativeLibraries;
 
 import java.lang.reflect.Method;
@@ -79,22 +76,22 @@ public class BaseRobolectricTestRule implements TestRule {
         // classBlock().
         ResettersForTesting.beforeHooksWillExecute();
         FeatureList.setDisableNativeForTesting(true);
+        CommandLineFlags.ensureInitialized();
         UmaRecorderHolder.setUpNativeUmaRecorder(false);
         UmaRecorderHolder.resetForTesting();
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
+        ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
+
+        Class<?> testClass = method.getDeclaringClass();
+        CommandLineFlags.reset(testClass.getAnnotations(), method.getAnnotations());
+
+        BundleUtils.resetForTesting();
         // Whether or not native is loaded is a global one-way switch, so do it automatically so
         // that it is always in the same state.
         if (NativeLibraries.LIBRARIES.length > 0) {
             LibraryLoader.getInstance().ensureMainDexInitialized();
         }
-        ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
-        CommandLineFlags.setUpClass(method.getDeclaringClass());
-        CommandLineFlags.setUpMethod(method);
-        BundleUtils.resetForTesting();
-        Flag.resetAllInMemoryCachedValuesForTesting();
-        FeatureParam.resetAllInMemoryCachedValuesForTesting();
-        Features.getInstance().applyFeaturesFromTestMethodForRobolectric(method);
     }
 
     static void tearDown(boolean testFailed) {
@@ -105,9 +102,6 @@ public class BaseRobolectricTestRule implements TestRule {
             HelperTestRunner.sTestFailed = true;
             throw new RuntimeException(e);
         } finally {
-            Features.resetAfterRobolectricTest();
-            CommandLineFlags.tearDownMethod();
-            CommandLineFlags.tearDownClass();
             ApplicationStatus.destroyForJUnitTests();
             PathUtils.resetForTesting();
             ThreadUtils.clearUiThreadForTesting();

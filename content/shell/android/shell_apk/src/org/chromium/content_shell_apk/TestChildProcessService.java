@@ -79,7 +79,7 @@ public class TestChildProcessService extends Service {
         @Override
         public void loadNativeLibrary(Context hostContext) {
             // Store the command line before loading the library to avoid an assert in CommandLine.
-            mCommandLine = CommandLine.getJavaSwitches();
+            mCommandLine = CommandLine.getJavaSwitchesForTesting();
 
             LibraryLoader.getInstance().loadNow();
             LibraryLoader.getInstance().ensureInitialized();

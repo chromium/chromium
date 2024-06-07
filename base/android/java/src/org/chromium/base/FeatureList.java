@@ -143,6 +143,13 @@ public class FeatureList {
         ResettersForTesting.register(() -> sTestFeatures = prevValues);
     }
 
+    /** For use by test runners. */
+    public static void setTestFeaturesNoResetForTesting(Map<String, Boolean> testFeatures) {
+        TestValues testValues = new TestValues();
+        testValues.setFeatureFlagsOverride(testFeatures);
+        sTestFeatures = testValues;
+    }
+
     /**
      * Adds overrides to feature flags and field trial parameters in addition to existing ones.
      *

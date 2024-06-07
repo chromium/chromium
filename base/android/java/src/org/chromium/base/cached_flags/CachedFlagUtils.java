@@ -46,7 +46,7 @@ public class CachedFlagUtils {
     /**
      * Do not call this from tests.
      *
-     * <p>Features.JUnitProcessor and Features.InstrumentationProcessor already reset this state.
+     * <p>Test runners already reset this state.
      *
      * <p>Exceptions are tests that test the flags infrastructure.
      */
