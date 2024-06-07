@@ -1079,6 +1079,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="10th Gen"/>
   <int value="11" label="11th Gen"/>
   <int value="12" label="12th Gen"/>
+  <int value="13" label="13th Gen"/>
 </enum>
 
 <enum name="IntelGpuSeriesType">
@@ -1111,6 +1112,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="23" label="Intel AmberLake"/>
   <int value="24" label="Intel RocketLake"/>
   <int value="25" label="Intel DG1"/>
+  <int value="26" label="Intel Alchemist"/>
+  <int value="27" label="Intel Raptorlake"/>
+  <int value="28" label="Intel Meteorlake"/>
+  <int value="29" label="Intel Lunarlake"/>
 </enum>
 
 <enum name="MetalReadWriteTextureSupportTier">

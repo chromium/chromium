@@ -41,7 +41,7 @@ namespace gpu {
 // These values are persistent to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // This should match enum IntelGpuSeriesType in
-//  \tools\metrics\histograms\enums.xml
+//  \tools\metrics\histograms\metadata\gpu\enums.xml
 enum class IntelGpuSeriesType {
   kUnknown = 0,
   // Intel 4th gen
