@@ -45,7 +45,7 @@ content::AudioStreamMonitor::clock_
 remoting::ChromotingHostTest::client1_
 remoting::ChromotingHostTest::client2_
 WTF::ICUConverterWrapper::converter
-(anonymous namespace)::WebAuthnCableSecondFactor::model_
+(anonymous namespace)::WebAuthnCableSecondFactor::controller_
 
 # Populated manually - always holds a pointer to an OilPan-allocated memory.
 blink::PersistentBase::raw_
@@ -287,11 +287,6 @@ gpu::gles2::TextureManager::DoTexImageArguments::pixels
 
 # Populated manually - on-stack pointer + a large number of non-PA pointees
 base::AutoReset::scoped_variable_
-
-# Populated manually - on-stack pointee
-base::StackAllocator::source_
-
-# Populated manually - on-stack pointer + a large number of non-PA pointees
 mojo::core::ports::PortLocker::port_refs_
 
 # Populated manually - static pointee
@@ -299,6 +294,7 @@ mojo::core::RequestContext::tls_context_
 base::sequence_manager::LazyNow::tick_clock_
 
 # Populated manually - on-stack pointee
+base::StackAllocator::source_
 mojo::internal::ContainerValidateParams::key_validate_params
 mojo::internal::ContainerValidateParams::element_validate_params
 mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
@@ -314,7 +310,14 @@ base::internal::LinkNodeBase::previous_
 # Populated manually - on-stack pointer
 base::internal::WeakLinkNode::list_
 
-# Populated manually - using mmap, MapViewOfFile or base::AllocPages directly
+# Populated manually - stack-scoped pointer, but embedding class/struct can't be
+# marked STACK_ALLOCATED (e.g. held in unique_ptr on stack)
+base::internal::BasicMovableAutoLock::lock_
+
+# Populated manually - not allocated by PartitionAlloc (e.g. allocated using
+# mmap, MapViewOfFile, partition_alloc::AllocPages directly, ...)
+base::MemoryMappedFile::bytes_
+base::PersistentMemoryAllocator::mem_base_
 blink::GCInfoTable::table_
 cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
 # TODO(bartekn): This one has a malloc() path, consider rewriting after all.
@@ -462,16 +465,10 @@ viz::(anonymous namespace)::BspTreePerfTest::base_list_
 #######
 
 # Exclusions discovered during the rewrite in crrev.com/c/5232280.
-base::internal::BasicAutoLock::lock_
-base::internal::BasicAutoTryLock::lock_
-base::internal::BasicAutoUnlock::lock_
-base::internal::BasicAutoLockMaybe::lock_
-base::internal::BasicReleasableAutoLock::lock_
 base::CheckedContiguousIterator::start_
 base::CheckedContiguousIterator::current_
 base::CheckedContiguousIterator::end_
 base::internal::flat_tree::KeyValueCompare::comp_
-base::MemoryMappedFile::data_
 base::MadvFreeDiscardableMemoryPosix::data_
 base::i18n::IcuMergeableDataFile::lacros_data_
 base::internal::UnexpectedDeducer::lambda_
@@ -521,7 +518,7 @@ ReadAnythingLineSpacingModel::LineSpacingInfo::icon_asset
 ReadAnythingLetterSpacingModel::LetterSpacingInfo::icon_asset
 ToolbarButton::VectorIcons::icon
 ToolbarButton::VectorIcons::touch_icon
-updater::ScopedLockImpl::mutex_
+named_system_lock::ScopedLockImpl::mutex_
 ash::memory::userspace_swap::(anonymous namespace)::ScopedMemory::ptr_
 pdf::PdfStreamDelegate::StreamInfo::injected_script
 content::responsiveness::JankMonitorImpl::ThreadExecutionState::TaskMetadata::identifier
@@ -586,6 +583,57 @@ base::basic_cstring_view::ptr_
 
 # Excluded in crrev.com/c/5604742.
 viz::DrawQuad::shared_quad_state
+
+# Excluded in crrev.com/c/5546711.
+mahi::WebContentState::top_level_native_window
+
+# Excluded as part of performance investigations in the following CLs:
+# crrev.com/c/5423055
+base::internal::ThreadGroup::BaseScopedCommandsExecutor::outer_
+# crrev.com/c/5444919
+base::sequence_manager::internal::WorkQueueSets::OldestTaskOrder::value
+# crrev.com/c/5456638
+base::SequencedTaskRunner::CurrentDefaultHandle::previous_handle_
+base::SingleThreadTaskRunner::CurrentDefaultHandle::previous_handle_
+base::sequence_manager::internal::DelayedTaskHandleDelegate::outer_
+base::sequence_manager::internal::TaskQueueImpl::GuardedTaskPoster::outer_
+base::sequence_manager::internal::TaskQueueImpl::OnTaskPostedCallbackHandleImpl::task_queue_impl_
+base::sequence_manager::internal::WakeUpQueue::ScheduledWakeUp::queue
+base::sequence_manager::internal::WorkQueue::work_queue_sets_
+base::sequence_manager::internal::WorkQueue::task_queue_
+base::sequence_manager::internal::SyncWorkAuthorization::tracker_
+base::internal::RegisteredTaskSource::task_tracker_
+cc::RTree::Branch::subtree
+cc::PictureLayerImpl::twin_layer_
+cc::TileSizeCalculator::layer_impl_
+viz::(anonymous namespace)::DrawQuadCommon::shared_quad_state
+mojo::test::(anonymous namespace)::ReentrantMessageAccumulator::connector_
+mojo::InterfaceEndpointClient::HandleIncomingMessageThunk::owner_
+mojo::MessageDispatcher::sink_
+mojo::internal::ControlMessageHandler::owner_
+mojo::internal::ControlMessageProxy::owner_
+mojo::internal::MultiplexRouter::InterfaceEndpoint::client_
+mojo::internal::MultiplexRouter::InterfaceEndpoint::router_
+mojo::DrawQuadWithSharedQuadState::quad
+mojo::DrawQuadWithSharedQuadState::shared_quad_state
+mojo::OptSharedQuadState::sqs
+# crrev.com/c/5553525
+cc::PlaybackImageProvider::cache_
+# crrev.com/c/5552926
+cc::(anonymous namespace)::OopPixelTest::RasterOptions::image_cache
+cc::ImageController::cache_
+cc::LayerTreeHostImpl::ImageDecodeCacheHolder::image_decode_cache_ptr_
+blink::FakeWebGraphicsContext3DProvider::image_decode_cache_
+# crrev.com/c/5528378
+blink::MemoryManagedPaintRecorder::current_canvas_
+viz::DisplayResourceProvider::ScopedReadLockSharedImage::resource_
+viz::DisplayResourceProvider::ScopedReadLockSharedImage::resource_provider_
+gpu::ClientSharedImage::ScopedMapping::buffer_
+media::VideoFrame::ScopedMapping::gpu_memory_buffer_  # duplicated in crrev.com/c/5581537
+gpu::SharedImageRepresentation::ScopedAccessBase::representation_
+gpu::SharedImageRepresentation::manager_
+gpu::SharedImageRepresentation::backing_
+gpu::SharedImageRepresentation::tracker_
 
 #######
 # End of recent manual exclusions

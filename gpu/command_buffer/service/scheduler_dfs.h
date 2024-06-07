@@ -263,7 +263,8 @@ class GPU_EXPORT SchedulerDfs {
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
     SchedulingState scheduling_state_;
 
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+    // RAW_PTR_EXCLUSION: SchedulerDfs was added to raw_ptr unsupported type for
+    // performance reasons. See raw_ptr.h for more info.
     RAW_PTR_EXCLUSION SchedulerDfs* const scheduler_ = nullptr;
     const SequenceId sequence_id_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

@@ -27,7 +27,7 @@ struct WebContentState {
 
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   ui::AXTreeUpdate snapshot;
-  // It's not a raw_ptr because we only use its address as identifier and never
+  // RAW_PTR_EXCLUSION: We only use its address as an identifier and never
   // dereference it.
   RAW_PTR_EXCLUSION aura::Window* top_level_native_window = nullptr;
 
