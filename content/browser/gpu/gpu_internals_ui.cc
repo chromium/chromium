@@ -164,6 +164,9 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       "RGB10A2 overlay support",
       gpu::OverlaySupportToString(
           gpu_info.overlay_info.rgb10a2_overlay_support)));
+  basic_info.Append(display::BuildGpuInfoEntry(
+      "P010 overlay support",
+      gpu::OverlaySupportToString(gpu_info.overlay_info.p010_overlay_support)));
 
   std::vector<gfx::PhysicalDisplaySize> display_sizes =
       gfx::GetPhysicalSizeForDisplays();

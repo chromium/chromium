@@ -256,6 +256,11 @@ struct GPU_EXPORT
       const gpu::OverlayInfo& input) {
     return input.rgb10a2_overlay_support;
   }
+
+  static gpu::OverlaySupport p010_overlay_support(
+      const gpu::OverlayInfo& input) {
+    return input.p010_overlay_support;
+  }
 };
 
 #endif

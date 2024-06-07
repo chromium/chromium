@@ -238,7 +238,8 @@ struct GPU_EXPORT OverlayInfo {
            yuy2_overlay_support == other.yuy2_overlay_support &&
            nv12_overlay_support == other.nv12_overlay_support &&
            bgra8_overlay_support == other.bgra8_overlay_support &&
-           rgb10a2_overlay_support == other.rgb10a2_overlay_support;
+           rgb10a2_overlay_support == other.rgb10a2_overlay_support &&
+           p010_overlay_support == other.p010_overlay_support;
   }
   bool operator!=(const OverlayInfo& other) const { return !(*this == other); }
 
@@ -251,6 +252,7 @@ struct GPU_EXPORT OverlayInfo {
   OverlaySupport nv12_overlay_support = OverlaySupport::kNone;
   OverlaySupport bgra8_overlay_support = OverlaySupport::kNone;
   OverlaySupport rgb10a2_overlay_support = OverlaySupport::kNone;
+  OverlaySupport p010_overlay_support = OverlaySupport::kNone;
 };
 
 #endif

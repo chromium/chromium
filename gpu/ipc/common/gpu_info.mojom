@@ -153,6 +153,7 @@ struct OverlayInfo {
   OverlaySupport nv12_overlay_support;
   OverlaySupport bgra8_overlay_support;
   OverlaySupport rgb10a2_overlay_support;
+  OverlaySupport p010_overlay_support;
 };
 
 // Corresponds to |gpu::GPUInfo| in gpu/config/gpu_info.h

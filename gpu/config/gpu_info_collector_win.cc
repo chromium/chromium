@@ -183,6 +183,9 @@ void CollectHardwareOverlayInfo(OverlayInfo* overlay_info) {
         FlagsToOverlaySupport(overlay_info->supports_overlays,
                               gl::GetDirectCompositionOverlaySupportFlags(
                                   DXGI_FORMAT_R10G10B10A2_UNORM));
+    overlay_info->p010_overlay_support = FlagsToOverlaySupport(
+        overlay_info->supports_overlays,
+        gl::GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT_P010));
   }
 }
 

@@ -156,6 +156,9 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const bool supports_overlays = true;
   const OverlaySupport yuy2_overlay_support = OverlaySupport::kScaling;
   const OverlaySupport nv12_overlay_support = OverlaySupport::kNone;
+  const OverlaySupport bgra8_overlay_support = OverlaySupport::kDirect;
+  const OverlaySupport rgb10a2_overlay_support = OverlaySupport::kScaling;
+  const OverlaySupport p010_overlay_support = OverlaySupport::kScaling;
 #endif
   const VideoDecodeAcceleratorSupportedProfiles
       video_decode_accelerator_supported_profiles;
@@ -194,6 +197,9 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.overlay_info.supports_overlays = supports_overlays;
   input.overlay_info.yuy2_overlay_support = yuy2_overlay_support;
   input.overlay_info.nv12_overlay_support = nv12_overlay_support;
+  input.overlay_info.bgra8_overlay_support = bgra8_overlay_support;
+  input.overlay_info.rgb10a2_overlay_support = rgb10a2_overlay_support;
+  input.overlay_info.p010_overlay_support = p010_overlay_support;
 #endif
   input.video_decode_accelerator_supported_profiles =
       video_decode_accelerator_supported_profiles;
@@ -256,6 +262,10 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(supports_overlays, output.overlay_info.supports_overlays);
   EXPECT_EQ(yuy2_overlay_support, output.overlay_info.yuy2_overlay_support);
   EXPECT_EQ(nv12_overlay_support, output.overlay_info.nv12_overlay_support);
+  EXPECT_EQ(bgra8_overlay_support, output.overlay_info.bgra8_overlay_support);
+  EXPECT_EQ(rgb10a2_overlay_support,
+            output.overlay_info.rgb10a2_overlay_support);
+  EXPECT_EQ(p010_overlay_support, output.overlay_info.p010_overlay_support);
 #endif
   for (size_t i = 0; i < video_decode_accelerator_supported_profiles.size();
        i++) {

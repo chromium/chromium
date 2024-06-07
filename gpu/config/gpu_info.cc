@@ -129,6 +129,8 @@ void EnumerateOverlayInfo(const gpu::OverlayInfo& info,
   enumerator->AddString(
       "rgb10a2OverlaySupport",
       gpu::OverlaySupportToString(info.rgb10a2_overlay_support));
+  enumerator->AddString("p010OverlaySupport",
+                        gpu::OverlaySupportToString(info.p010_overlay_support));
   enumerator->EndOverlayInfo();
 }
 #endif
