@@ -48,6 +48,7 @@ _CONFIG = [
             'gfx::SinCosDegrees',
 
             # absl
+            'absl::Cleanup',
             'absl::MakeInt128',
             'absl::MakeUint128',
             'absl::Int128High64',
