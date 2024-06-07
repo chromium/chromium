@@ -81,9 +81,7 @@ class PlusAddressAffiliationMatchHelper {
   std::vector<PSLExtensionCallback> psl_extensions_callbacks_;
 
   const raw_ref<PlusAddressService> plus_address_service_;
-  // TODO(b/340494671): Use raw_ref once the iOS factory starts passing a valid
-  // instance.
-  const raw_ptr<affiliations::AffiliationService> affiliation_service_;
+  const raw_ref<affiliations::AffiliationService> affiliation_service_;
 
   base::WeakPtrFactory<PlusAddressAffiliationMatchHelper> weak_factory_{this};
 };

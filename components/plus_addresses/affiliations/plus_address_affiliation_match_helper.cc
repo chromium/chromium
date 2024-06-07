@@ -23,7 +23,7 @@ PlusAddressAffiliationMatchHelper::PlusAddressAffiliationMatchHelper(
     PlusAddressService* plus_address_service,
     affiliations::AffiliationService* affiliation_service)
     : plus_address_service_(*plus_address_service),
-      affiliation_service_(affiliation_service) {}
+      affiliation_service_(*affiliation_service) {}
 
 PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
     default;
@@ -56,7 +56,6 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
       &PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches,
       weak_factory_.GetWeakPtr(), barrier_callback, facet_uri));
 
-  CHECK(affiliation_service_);
   affiliation_service_->GetGroupingInfo(
       {facet_uri},
       base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
