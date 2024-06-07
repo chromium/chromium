@@ -25,6 +25,11 @@ config("find_bad_constructs") {
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
+      "span-ctor-from-string-literal",
+
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
       "raw-ref-template-as-trivial-member",
 
       "-Xclang",
