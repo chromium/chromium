@@ -235,9 +235,13 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id) {
+  std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts;
+  shared_storage_hosts.push_back(std::move(shared_storage_host_remote));
+
   auto bidder_worklet = std::make_unique<BidderWorklet>(
-      auction_bidder_v8_helper_holder_->V8Helper(),
-      std::move(shared_storage_host_remote), pause_for_debugger_on_start,
+      std::vector{auction_bidder_v8_helper_holder_->V8Helper()},
+      std::move(shared_storage_hosts), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), script_source_url,
       wasm_helper_url, trusted_bidding_signals_url,

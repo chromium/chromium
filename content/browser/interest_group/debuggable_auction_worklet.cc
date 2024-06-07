@@ -33,7 +33,8 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
   if (auction_worklet::mojom::BidderWorklet** bidder_worklet =
           absl::get_if<auction_worklet::mojom::BidderWorklet*>(&worklet_)) {
-    (*bidder_worklet)->ConnectDevToolsAgent(std::move(agent));
+    (*bidder_worklet)
+        ->ConnectDevToolsAgent(std::move(agent), /*thread_index=*/0);
   } else {
     absl::get<auction_worklet::mojom::SellerWorklet*>(worklet_)
         ->ConnectDevToolsAgent(std::move(agent), thread_index_);

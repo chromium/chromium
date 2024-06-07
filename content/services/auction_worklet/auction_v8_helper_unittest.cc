@@ -129,9 +129,9 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
         << "SendPendingSignalsRequests shouldn't be called on DebugConnector";
   }
 
-  void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent>
-          agent_receiver) override {
+  void ConnectDevToolsAgent(mojo::PendingAssociatedReceiver<
+                                blink::mojom::DevToolsAgent> agent_receiver,
+                            uint32_t thread_index) override {
     auction_v8_helper_->ConnectDevToolsAgent(std::move(agent_receiver),
                                              mojo_thread_, *debug_id_);
   }
@@ -277,7 +277,8 @@ class AuctionV8HelperTest : public testing::Test {
                        base::SequencedTaskRunner::GetCurrentDefault(),
                        std::move(debug_id),
                        connector_pipe.BindNewPipeAndPassReceiver()));
-    connector_pipe->ConnectDevToolsAgent(std::move(agent_receiver));
+    connector_pipe->ConnectDevToolsAgent(std::move(agent_receiver),
+                                         /*thread_index=*/0);
     return connector_pipe;
   }
 

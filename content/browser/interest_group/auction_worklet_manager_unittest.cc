@@ -246,8 +246,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockBidderWorklet";
   }

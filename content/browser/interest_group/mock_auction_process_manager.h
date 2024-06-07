@@ -113,8 +113,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override;
 
   // mojom::GenerateBidFinalizer implementation.
   void FinishGenerateBid(
