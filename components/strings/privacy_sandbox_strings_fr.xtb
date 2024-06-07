@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="33479675708419823">Lorsque vous êtes connecté à Chrome, ce paramètre contribue à préserver la confidentialité de votre adresse IP. Si Chrome soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée via des serveurs de confidentialité. Découvrez <ph name="LINK_BEGIN" />comment fonctionne la protection de l'IP<ph name="LINK_END" />.</translation>
+<translation id="3529311220178827364">Découvrez comment masquer votre adresse IP</translation>
 <translation id="4301151630239508244">Les thèmes des annonces ne sont que l'une des nombreuses options qu'un site peut utiliser pour personnaliser les annonces. Même sans ces thèmes d'annonces, les sites peuvent toujours vous présenter des annonces, lesquelles pourraient toutefois être moins personnalisées. Découvrez comment <ph name="BEGIN_LINK_1" />gérer la confidentialité des annonces<ph name="END_LINK_1" />.</translation>
+<translation id="4598427486995631491">Masquer votre adresse IP</translation>
+<translation id="6371812158043974664">Lorsque vous êtes connecté à Chromium, ce paramètre contribue à préserver la confidentialité de votre adresse IP. Si Chromium soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée via des serveurs de confidentialité. Découvrez <ph name="LINK_BEGIN" />comment fonctionne la protection de l'IP<ph name="LINK_END" />.</translation>
 </translationbundle>

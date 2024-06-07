@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="33479675708419823">Kui olete Chrome'i sisse logitud, aitab see seade teie IP-aadressi privaatsena hoida. Kui Chrome kahtlustab, et mõni sait võib teid jälgida, võidakse osa teie liiklusest saata privaatsete serverite kaudu. Lisateave <ph name="LINK_BEGIN" />IP kaitse tööpõhimõtete<ph name="LINK_END" /> kohta</translation>
+<translation id="3529311220178827364">Lisateave oma IP-aadressi peitmise kohta</translation>
 <translation id="4301151630239508244">Reklaamiteemad on vaid üks paljudest asjadest, mida sait võib kasutada reklaamide isikupärastamiseks. Saidid võivad teile reklaame näidata ka ilma reklaamiteemadeta, kuid need ei pruugi olla nii isikupärastatud. Vaadake lisateavet <ph name="BEGIN_LINK_1" />oma reklaamide privaatsuse haldamise kohta<ph name="END_LINK_1" />.</translation>
+<translation id="4598427486995631491">Peida oma IP-aadress</translation>
+<translation id="6371812158043974664">Kui olete Chromiumi sisse logitud, aitab see seade teie IP-aadressi privaatsena hoida. Kui Chromium kahtlustab, et mõni sait võib teid jälgida, võidakse osa teie liiklusest saata privaatsete serverite kaudu. Lisateave <ph name="LINK_BEGIN" />IP kaitse tööpõhimõtete<ph name="LINK_END" /> kohta</translation>
 </translationbundle>
