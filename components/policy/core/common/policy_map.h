@@ -56,9 +56,9 @@ class POLICY_EXPORT PolicyMap {
     PolicySource source = POLICY_SOURCE_ENTERPRISE_DEFAULT;
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher;
     std::vector<EntryConflict> conflicts;
-    // Unsupported raw_ptr: Pointer fields in classes/structs that are used as
-    // global.
-    // PolicyDetails is defined in gen/components/policy/policy_constants.cc
+    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (pointer to a
+    // global), so there is no benefit to using a raw_ptr, only cost.
+    // See kChromePolicyDetails in gen/components/policy/policy_constants.cc
     RAW_PTR_EXCLUSION const PolicyDetails* details = nullptr;
 
     Entry();

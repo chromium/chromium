@@ -317,8 +317,9 @@ base::internal::WeakLinkNode::list_
 # marked STACK_ALLOCATED (e.g. held in unique_ptr on stack)
 base::internal::BasicMovableAutoLock::lock_
 
-# Populated manually - not allocated by PartitionAlloc (e.g. allocated using
-# mmap, MapViewOfFile, partition_alloc::AllocPages directly, ...)
+# Populated manually - pointer to memory not allocated by PartitionAlloc (e.g.
+# a global, or allocated using mmap/MapViewOfFile/partition_alloc::AllocPages
+# directly, ...)
 base::MemoryMappedFile::bytes_
 base::PersistentMemoryAllocator::mem_base_
 blink::GCInfoTable::table_
@@ -327,6 +328,7 @@ cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
 disk_cache::MappedFile::buffer_
 network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
+policy::PolicyMap::Entry::details
 
 # Populated manually - Field initialized with non-nullptr value in constexpr.
 enterprise_connectors::ServiceProvider::analysis
