@@ -19,7 +19,10 @@ const kContextOptionsForVariant = {
   },
   gpu: {
     deviceType: 'gpu',
-  }
+  },
+  npu: {
+    deviceType: 'npu',
+  },
 };
 
 // The maximum index to validate for the output's expected value.

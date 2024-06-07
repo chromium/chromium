@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] constant float32 0D tensor of default float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 1D tensor of default float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 2D tensor of default float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 3D tensor of default float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of default float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of default float32 type step > 0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of default float32 type step = 0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of default float32 type step < 0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 5D tensor of default float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of explict float32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of float16 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of int32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of uint32 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of int64 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of int8 type step > 0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of int8 type step < 0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+[FAIL] constant float32 4D tensor of uint8 type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Failed to read the 'dataType' property from 'MLOperandDescriptor': Required member is undefined."
+Harness: the test ran to completion.
+

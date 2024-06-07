@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] reduceL1 float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceL1 float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceL2 float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceL2 float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceLogSum float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceLogSum float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceLogSumExp float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceLogSumExp float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceMax float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceMax float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceMean float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceMean float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceMin float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceMin float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceProduct float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceProduct float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceSum float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceSum float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceSumSquare float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] reduceSumSquare float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+Harness: the test ran to completion.
+

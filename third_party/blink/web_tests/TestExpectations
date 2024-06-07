@@ -2571,13 +2571,9 @@ crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removin
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/345585682 external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
-crbug.com/345547966 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?gpu [ Skip Timeout ]
-crbug.com/345002381 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?cpu [ Skip Timeout ]
-crbug.com/343991292 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?gpu [ Skip Timeout ]
 crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
 crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
 crbug.com/343515409 external/wpt/focus/focus-event-after-switching-iframes.sub.html [ Timeout ]
-crbug.com/343515409 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/343263984 external/wpt/css/css-masking/mask-image/mask-mode-luminance-with-mask-size.html [ Failure ]
 crbug.com/341151623 [ Win11-arm64 ] external/wpt/fetch/api/basic/request-headers.any.sharedworker.html [ Failure Timeout ]
 external/wpt/notifications/instance.https.window.html [ Timeout ]
@@ -2611,6 +2607,8 @@ crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.
 crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.any.worker.html?cpu [ Crash Failure Pass ]
 crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.any.html?gpu [ Failure Pass ]
 crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.any.worker.html?gpu [ Crash Failure Pass ]
+crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.any.html?npu [ Failure Pass ]
+crbug.com/336588276 external/wpt/webnn/conformance_tests/parallel-compute.https.any.worker.html?npu [ Crash Failure Pass ]
 crbug.com/336346440 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
 crbug.com/335769262 [ Win11-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/335769262 [ Mac14-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
@@ -2676,10 +2674,6 @@ crbug.com/331851044 [ Win11-arm64 ] external/wpt/accname/name/comp_label.html [ 
 crbug.com/331906059 external/wpt/css/css-cascade/at-scope-relative-syntax.html [ Crash ]
 crbug.com/331835714 [ Win11-arm64 ] external/wpt/webaudio/the-audio-api/the-audionode-interface/audionode.html [ Failure Timeout ]
 crbug.com/331915503 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-iframe.https.html [ Skip Timeout ]
-crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?gpu [ Skip Timeout ]
-crbug.com/331851044 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?cpu [ Skip Timeout ]
-crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?gpu [ Skip Timeout ]
-crbug.com/331851044 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv_transpose2d.https.any.worker.html?gpu [ Failure ]
 crbug.com/331711029 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-success.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/chromium-paint-holding-timeout.html [ Timeout ]
@@ -7515,6 +7509,19 @@ crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.h
 crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.py [ Failure ]
 
 crbug.com/331836147 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html [ Failure Pass ]
+
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?cpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?gpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?gpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduction.https.any.html?npu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?npu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?gpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?gpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?cpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?cpu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?npu [ Skip Timeout ]
+crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?npu [ Skip Timeout ]
 
 # Gardener 2024-06-06
 crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]

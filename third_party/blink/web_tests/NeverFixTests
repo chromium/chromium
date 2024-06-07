@@ -2216,11 +2216,16 @@ crbug.com/1500120 [ Win11-arm64 ] external/wpt/webnn/* [ Skip ]
 [ Mac13 ] external/wpt/webnn/* [ Skip ]
 [ Mac13-arm64 ] external/wpt/webnn/* [ Skip ]
 
+# We don't have Windows machines with NPU in CQ right now.
+crbug.com/345367402 [ Win ] virtual/webnn-service-on-npu/* [ Skip ]
+
 # WebNN feature work in-progress.
 crbug.com/40278771 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu [ Skip ]
 crbug.com/40278771 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu [ Skip ]
 crbug.com/40278771 [ Mac ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?cpu [ Skip ]
 crbug.com/40278771 [ Mac ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?cpu [ Skip ]
+crbug.com/40278771 [ Mac ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/buffer.https.any.html?npu [ Skip ]
+crbug.com/40278771 [ Mac ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?npu [ Skip ]
 crbug.com/40278771 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?cpu [ Skip ]
 crbug.com/40278771 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?cpu [ Skip ]
 crbug.com/40278771 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?cpu [ Skip ]

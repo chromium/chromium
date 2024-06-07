@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] batchNormalization float32 2D tensor (mean and variance are non-constant) default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization float32 2D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual -16.828125 should be close enough to expected -16.842504501342773 by the acceptable 6 ULP distance, but they have 7539 ULP distance expected true got false
+[FAIL] batchNormalization float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] batchNormalization float32 4D NCHW tensor options.axis=1
+  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual -16.828125 should be close enough to expected -16.842504501342773 by the acceptable 6 ULP distance, but they have 7539 ULP distance expected true got false
+[FAIL] batchNormalization float32 4D NHWC tensor options.axis=3
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] batchNormalization float32 4D NCHW tensor options.scale
+  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual -1102 should be close enough to expected -1103.212890625 by the acceptable 6 ULP distance, but they have 9936 ULP distance expected true got false
+[FAIL] batchNormalization float32 4D NCHW tensor options.bias
+  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual 47.34375 should be close enough to expected 47.36196517944336 by the acceptable 6 ULP distance, but they have 4775 ULP distance expected true got false
+[FAIL] batchNormalization float32 4D NCHW tensor options.epsilon
+  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual -16.828125 should be close enough to expected -16.842506408691406 by the acceptable 6 ULP distance, but they have 7540 ULP distance expected true got false
+[FAIL] batchNormalization float32 4D NHWC tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+Harness: the test ran to completion.
+
