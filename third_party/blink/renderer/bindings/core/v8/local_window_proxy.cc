@@ -245,14 +245,14 @@ void LocalWindowProxy::Initialize() {
     bool initGlobally = !gRecordReplayStateInitialized;
 
     // Whether this is the relative root frame of this process.
-    bool isMainFrame = GetFrame()->IsMainFrame() && world_->IsMainWorld();
+    bool isMainFrame = GetFrame()->IsLocalRoot() && world_->IsMainWorld();
     if (initGlobally) {
       gRecordReplayStateInitialized = true;
 
       if (!isMainFrame) {
         recordreplay::Warning(
             "LocalWindowProxy::Initialize Called on non-root frame first: %d %d origin=%s url=%s",
-            GetFrame()->IsMainFrame(),
+            GetFrame()->IsLocalRoot(),
             world_->IsMainWorld(),
             origin->ToRawString().Utf8().c_str(),
             GetFrame()->GetDocument()->Url().GetString().Utf8().c_str());
