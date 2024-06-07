@@ -1167,6 +1167,9 @@ class AutofillMetrics {
   static void LogDeleteAddressProfileFromKeyboardAccessory();
 
   static void LogAutocompleteEvent(AutocompleteEvent event);
+
+  static void LogAutofillPopupVisibleDuration(FillingProduct filling_product,
+                                              const base::TimeDelta& duration);
 };
 
 #if defined(UNIT_TEST)

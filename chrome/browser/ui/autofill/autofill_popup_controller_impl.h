@@ -190,6 +190,10 @@ class AutofillPopupControllerImpl
   // `show_threshold` parameter of `AcceptSuggestion`).
   NextIdleTimeTicks time_view_shown_;
 
+  // The time of the latest successful (the view is created and shown) `Show()`
+  // call.
+  std::optional<base::TimeTicks> shown_time_;
+
   // An override to suppress minimum show thresholds. It should only be set
   // during tests that cannot mock time (e.g. the autofill interactive
   // browsertests).

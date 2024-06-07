@@ -3871,6 +3871,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Popup.VisibleDuration" units="ms"
+    expires_after="2025-06-06">
+  <owner>vykochko@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Records the duration that the autofill root popup remains open for all
+    filling products. Emitted by the popup controller on hide. Note that it is
+    not emitted for sub popups.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Popup.VisibleDuration.{FillingProduct}" units="ms"
+    expires_after="2025-06-06">
+  <owner>vykochko@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Records the duration that the autofill root popup remains open. Emitted by
+    the popup controller on hide. Note that it is not emitted for sub popups.
+  </summary>
+  <token key="FillingProduct">
+    <variant name="Address"
+        summary="User chose to fill a form or field with an address profile."/>
+    <variant name="Autocomplete"
+        summary="User chose to fill a field with autocomplete."/>
+    <variant name="Compose"
+        summary="User chose to fill a field with a compose suggestion."/>
+    <variant name="CreditCard"
+        summary="User chose to fill a form or field with a credit card
+                 profile."/>
+    <variant name="Iban" summary="User chose to fill a field with an iban."/>
+    <variant name="MerchantPromoCode"
+        summary="User chose to fill a field with a merchant promo code."/>
+    <variant name="None" summary="No filling product matches."/>
+    <variant name="Password"
+        summary="User chose to fill a form or field with password
+                 credentials."/>
+    <variant name="PlusAddresses"
+        summary="User chose to fill a field with a plus addresses suggestion."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.PopupHidingReason"
     enum="AutofillSuggestionHidingReason" expires_after="2024-09-22">
   <owner>koerber@google.com</owner>

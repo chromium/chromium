@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/aliases.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_active_popup.h"
@@ -226,6 +227,47 @@ TEST_F(AutofillPopupControllerImplTest,
       SuggestionHidingReason::kEndEditing);
 
   Mock::VerifyAndClearExpectations(client().popup_view());
+}
+
+TEST_F(AutofillPopupControllerImplTest, EmitsVisibleDurationMetricsOnHide) {
+  base::HistogramTester histogram_tester;
+  base::TimeDelta hide_delay = base::Milliseconds(500);
+
+  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
+  task_environment()->FastForwardBy(hide_delay);
+  client().popup_controller(manager()).Hide(
+      SuggestionHidingReason::kEndEditing);
+
+  histogram_tester.ExpectTimeBucketCount("Autofill.Popup.VisibleDuration",
+                                         hide_delay, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.Popup.VisibleDuration.Password", hide_delay, 1);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       DoesntEmitsVisibleDurationMetricsOnHideForSubPopups) {
+  base::HistogramTester histogram_tester;
+  base::TimeDelta hide_delay = base::Milliseconds(500);
+
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
+      client().popup_controller(manager()).OpenSubPopup(
+          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
+
+  // Setting a view makes the subsequent `Show()` call successful and stores
+  // the visible duration metric start time.
+  static_cast<AutofillPopupControllerImpl*>(sub_controller.get())
+      ->SetViewForTesting(client().sub_popup_view()->GetWeakPtr());
+  sub_controller->Show({Suggestion(SuggestionType::kPasswordEntry)},
+                       AutofillSuggestionTriggerSource::kPasswordManager,
+                       AutoselectFirstSuggestion(false));
+
+  task_environment()->FastForwardBy(hide_delay);
+  sub_controller->Hide(SuggestionHidingReason::kEndEditing);
+
+  histogram_tester.ExpectTimeBucketCount("Autofill.Popup.VisibleDuration",
+                                         hide_delay, 0);
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.Popup.VisibleDuration.Password", hide_delay, 0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,

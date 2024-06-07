@@ -1884,6 +1884,17 @@ void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event) {
 }
 
 // static
+void AutofillMetrics::LogAutofillPopupVisibleDuration(
+    FillingProduct filling_product,
+    const base::TimeDelta& duration) {
+  base::UmaHistogramTimes("Autofill.Popup.VisibleDuration", duration);
+  base::UmaHistogramTimes(
+      base::StrCat({"Autofill.Popup.VisibleDuration.",
+                    FillingProductToString(filling_product)}),
+      duration);
+}
+
+// static
 const char* AutofillMetrics::SubmissionSourceToUploadEventMetric(
     SubmissionSource source) {
   switch (source) {
