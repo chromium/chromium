@@ -18598,6 +18598,7 @@ from previous Chrome versions.
   <int value="-774940991" label="CrOSLateBootCrasProcessorWavDump:enabled"/>
   <int value="-774513654" label="ShareSheetCustomActionsPolish:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
+  <int value="-772806796" label="AutofillUpstreamUpdatedUi:enabled"/>
   <int value="-772787642" label="MediaAppCustomColors:disabled"/>
   <int value="-772679248" label="MojoVideoEncodeAccelerator:enabled"/>
   <int value="-772608284" label="MyFilesVolume:enabled"/>
@@ -23785,6 +23786,7 @@ from previous Chrome versions.
   <int value="1475987503" label="CrosComponents:enabled"/>
   <int value="1476652203"
       label="AutofillEnableSyncingOfPixBankAccounts:enabled"/>
+  <int value="1476781717" label="AutofillUpstreamUpdatedUi:disabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>

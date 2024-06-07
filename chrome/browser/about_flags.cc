@@ -3904,6 +3904,39 @@ const FeatureEntry::FeatureVariation kWebAuthnEnclaveAuthenticatorVariations[] =
       nullptr}};
 #endif
 
+const FeatureEntry::FeatureParam kAutofillUpstreamUpdatedUi_Security_Static[] =
+    {{"autofill_upstream_updated_ui_treatment", "1"}};
+const FeatureEntry::FeatureParam
+    kAutofillUpstreamUpdatedUi_Security_Animated[] = {
+        {"autofill_upstream_updated_ui_treatment", "2"}};
+const FeatureEntry::FeatureParam
+    kAutofillUpstreamUpdatedUi_Convenience_Static[] = {
+        {"autofill_upstream_updated_ui_treatment", "3"}};
+const FeatureEntry::FeatureParam
+    kAutofillUpstreamUpdatedUi_Convenience_Animated[] = {
+        {"autofill_upstream_updated_ui_treatment", "4"}};
+const FeatureEntry::FeatureParam kAutofillUpstreamUpdatedUi_Education_Static[] =
+    {{"autofill_upstream_updated_ui_treatment", "5"}};
+const FeatureEntry::FeatureParam
+    kAutofillUpstreamUpdatedUi_Education_Animated[] = {
+        {"autofill_upstream_updated_ui_treatment", "6"}};
+
+const FeatureEntry::FeatureVariation kAutofillUpstreamUpdatedUiOptions[] = {
+    {"Security focus", kAutofillUpstreamUpdatedUi_Security_Static,
+     std::size(kAutofillUpstreamUpdatedUi_Security_Static), nullptr},
+    {"Security focus (animated)", kAutofillUpstreamUpdatedUi_Security_Animated,
+     std::size(kAutofillUpstreamUpdatedUi_Security_Animated), nullptr},
+    {"Convenience focus", kAutofillUpstreamUpdatedUi_Convenience_Static,
+     std::size(kAutofillUpstreamUpdatedUi_Convenience_Static), nullptr},
+    {"Convenience focus (animated)",
+     kAutofillUpstreamUpdatedUi_Convenience_Animated,
+     std::size(kAutofillUpstreamUpdatedUi_Convenience_Animated), nullptr},
+    {"Education focus", kAutofillUpstreamUpdatedUi_Education_Static,
+     std::size(kAutofillUpstreamUpdatedUi_Education_Static), nullptr},
+    {"Education focus (animated)",
+     kAutofillUpstreamUpdatedUi_Education_Animated,
+     std::size(kAutofillUpstreamUpdatedUi_Education_Animated), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11509,6 +11542,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
      flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kStorageAccessHeaders)},
+
+    {"autofill-upstream-updated-ui",
+     flag_descriptions::kAutofillUpstreamUpdatedUiName,
+     flag_descriptions::kAutofillUpstreamUpdatedUiDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillUpstreamUpdatedUi,
+         kAutofillUpstreamUpdatedUiOptions,
+         "AutofillUpstreamUpdatedUi")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

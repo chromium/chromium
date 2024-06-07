@@ -385,6 +385,9 @@ extern const char kAutofillSyncEwalletAccountsName[];
 extern const char kAutofillSyncEwalletAccountsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kAutofillUpstreamUpdatedUiName[];
+extern const char kAutofillUpstreamUpdatedUiDescription[];
+
 extern const char kAutofillVirtualViewStructureAndroidName[];
 extern const char kAutofillVirtualViewStructureAndroidDescription[];
 

@@ -646,6 +646,12 @@ const char kAutofillSyncEwalletAccountsDescription[] =
     "servers and displayed on the payment methods settings page.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kAutofillUpstreamUpdatedUiName[] =
+    "Credit card upload save UI treatment";
+const char kAutofillUpstreamUpdatedUiDescription[] =
+    "When enabled, shows different text and images in the UI of the credit "
+    "card upload save bubble.";
+
 const char kAutofillVirtualViewStructureAndroidName[] =
     "Enable the setting to provide a virtual view structure for Autofill";
 const char kAutofillVirtualViewStructureAndroidDescription[] =

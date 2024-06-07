@@ -215,6 +215,14 @@ BASE_FEATURE(kAutofillUpstream,
              "AutofillUpstream",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, shows different text and images in the UI of the credit card
+// upload save bubble.
+BASE_FEATURE(kAutofillUpstreamUpdatedUi,
+             "AutofillUpstreamUpdatedUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
+    &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 0};
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, use two '•' when displaying the last four digits of a credit
 // card number. (E.g., '•• 8888' rather than '•••• 8888').
