@@ -1102,7 +1102,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
   // `enclave_request_callback_` which surfaces in
   // `EnclaveDiscovery::OnUIRequest`.
 
-  if (!token) {
+  if (!token || !enclave_manager_->is_ready()) {
     model_->SetStep(Step::kGPMError);
     return;
   }
