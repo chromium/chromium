@@ -2046,6 +2046,8 @@ source_set("ash") {
     "policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
+    "annotator/untrusted_annotator_ui_config.cc",
+    "annotator/untrusted_annotator_ui_config.h",
     "login/screens/placeholder_screen.cc",
     "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",
@@ -3534,8 +3536,6 @@ source_set("ash") {
     "system_web_apps/apps/print_management_web_app_info.h",
     "system_web_apps/apps/print_preview_cros_system_web_app_info.cc",
     "system_web_apps/apps/print_preview_cros_system_web_app_info.h",
-    "system_web_apps/apps/projector_app/untrusted_projector_annotator_ui_config.cc",
-    "system_web_apps/apps/projector_app/untrusted_projector_annotator_ui_config.h",
     "system_web_apps/apps/projector_app/untrusted_projector_ui_config.cc",
     "system_web_apps/apps/projector_app/untrusted_projector_ui_config.h",
     "system_web_apps/apps/projector_system_web_app_info.cc",

@@ -13,13 +13,13 @@
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/chrome_demo_mode_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/crosh_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
-#include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_annotator_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
@@ -61,8 +61,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<HelpAppKidsMagazineUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<UntrustedAnnotatorUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<file_manager::FileManagerUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
