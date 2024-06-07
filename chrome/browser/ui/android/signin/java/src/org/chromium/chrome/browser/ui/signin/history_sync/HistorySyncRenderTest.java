@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.content.res.Configuration;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -130,7 +133,6 @@ public class HistorySyncRenderTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
         mActivityTestRule.launchActivity(null);
-        mSigninTestRule.addTestAccountThenSignin();
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
     }
 
@@ -140,9 +142,25 @@ public class HistorySyncRenderTest {
     @ParameterAnnotations.UseMethodParameter(
             HistorySyncRenderTest.NightModeAndOrientationParameterProvider.class)
     public void testHistorySyncView(boolean nightModeEnabled, int orientation) throws IOException {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+
         buildHistorySyncCoordinator(orientation);
 
         mRenderTestRule.render(mHistorySyncCoordinator.getView(), "history_sync");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(
+            HistorySyncRenderTest.NightModeAndOrientationParameterProvider.class)
+    public void testHistorySyncViewWithMinorModeRestrictions(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        buildHistorySyncCoordinator(orientation);
+
+        mRenderTestRule.render(
+                mHistorySyncCoordinator.getView(), "history_sync_with_minor_mode_enabled");
     }
 
     private void buildHistorySyncCoordinator(int orientation) {
@@ -163,5 +181,6 @@ public class HistorySyncRenderTest {
                             .setContentView(mHistorySyncCoordinator.getView());
                 });
         ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
+        onViewWaiting(withId(R.id.button_secondary));
     }
 }

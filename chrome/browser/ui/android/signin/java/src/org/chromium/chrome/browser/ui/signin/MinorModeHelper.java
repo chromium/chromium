@@ -54,7 +54,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
     }
 
     /** Controls the actual UI Update. */
-    interface UiUpdater {
+    public interface UiUpdater {
         void onScreenModeReady(@ScreenMode int screenMode);
     }
 
@@ -112,8 +112,13 @@ public class MinorModeHelper implements IdentityManager.Observer {
      *
      * <p>Tracks the availability latency of {@link AccountCapabilities} for the signed-in primary
      * account.
+     *
+     * @param identityManager The {@link IdentityManager} for the profile
+     * @param primaryAccount {@link CoreAccountInfo} for the primary account.
+     * @param uiUpdater Callback method to be run when the {@link CAPABILITY_TIMEOUT_MS} is reached
+     *     or capability is retrieved.
      */
-    static void resolveMinorMode(
+    public static void resolveMinorMode(
             IdentityManager identityManager, CoreAccountInfo primaryAccount, UiUpdater uiUpdater) {
         if (uiUpdater == null) {
             throw new IllegalArgumentException("uiUpdater must not be null.");
