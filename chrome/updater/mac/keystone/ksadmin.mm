@@ -338,7 +338,7 @@ void KSAdminApp::ChooseService(
   } else {
     const std::string app_id = SwitchValue(kCommandProductId);
     if (app_id.empty()) {
-      scope = std::make_optional(UpdaterScope::kSystem);
+      scope = std::make_optional(UpdaterScope::kUser);
     }
   }
 
