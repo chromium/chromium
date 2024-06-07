@@ -291,6 +291,7 @@ export class UpdateRequired extends UpdateRequiredBase {
     const linkElement = this.shadowRoot?.querySelector('#deleteDataLink')!;
     if (linkElement instanceof HTMLAnchorElement) {
       linkElement.setAttribute('is', 'action-link');
+      linkElement.setAttribute('aria-describedby', 'deleteUsersDataMessage');
       linkElement.classList.add('oobe-local-link');
       linkElement.addEventListener(
           'click', () => this.showConfirmationDialog());

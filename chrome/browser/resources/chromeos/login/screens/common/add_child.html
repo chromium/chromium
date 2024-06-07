@@ -23,10 +23,11 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'childSignInTitle')]]
   </h1>
-  <div slot="subtitle">
+  <div slot="subtitle" id="subtitle">
     [[i18nDynamic(locale, 'childSignInSubtitle')]]
     <a id="learnMoreLink" class="oobe-local-link"
-        on-click="onLearnMoreClicked_" is="action-link">
+        on-click="onLearnMoreClicked_" is="action-link"
+        aria-describedby="subtitle">
       [[i18nDynamic(locale, 'childSignInLearnMore')]]
     </a>
   </div>

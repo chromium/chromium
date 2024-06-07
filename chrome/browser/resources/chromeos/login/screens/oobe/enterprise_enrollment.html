@@ -203,11 +203,11 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
   </h1>
   <p slot="subtitle">
-    <span>
+    <span id="subtitle">
       [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
     </span>
     <a id="learnMoreLink" class="oobe-local-link" is="action-link"
-        on-click="onLearnMore">
+        on-click="onLearnMore" aria-describedby="subtitle">
       [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
     </a>
   </p>

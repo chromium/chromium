@@ -17,7 +17,8 @@ found in the LICENSE file.
   <div slot="subtitle" hidden="[[!keyboardHint]]">[[keyboardHint]]</div>
   <div slot="subtitle" hidden="[[!details]]">[[details]]</div>
   <a slot="subtitle" on-click="onHelpLinkClicked"
-      hidden="[[!helpLinkText]]" class="oobe-local-link" is="action-link">
+      hidden="[[!helpLinkText]]" class="oobe-local-link" is="action-link"
+      aria-describedby="subtitle">
     [[helpLinkText]]
   </a>
   <div slot="bottom-buttons">

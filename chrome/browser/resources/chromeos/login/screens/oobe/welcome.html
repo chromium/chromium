@@ -91,13 +91,14 @@ found in the LICENSE file.
 >
   <iron-icon slot="icon" icon="oobe-32:language"></iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'languageSectionTitle')]]</h1>
-  <p slot="subtitle">
+  <p slot="subtitle" id="languageSectionHintSubtitle">
     [[i18nDynamic(locale, 'languageSectionHint')]]
     <a
       id="languagesLearnMore"
       class="oobe-local-link"
       is="action-link"
       on-click="onLanguageLearnMoreLinkClicked"
+      aria-describedby="languageSectionHintSubtitle"
     >
       [[i18nDynamic(locale, 'learnMore')]]
     </a>
