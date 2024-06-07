@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.21](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.20...chromium-bidi-v0.5.21) (2024-06-07)
+
+
+### Features
+
+* restore frame tree when reconnecting to browser ([#2289](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2289)) ([f7a0c75](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f7a0c754b132d1b48bbdaa6f36a41345c3b64598))
+* support creating tab in background ([#2262](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2262)) ([e7c4b42](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e7c4b4224561c3fed6c389ac96df2972aaa10d13))
+
+
+### Bug Fixes
+
+* validate HTTP method ([#2284](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2284)) ([a22694a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a22694aa85de8e24fdae3da64879dad1ca4e48c4))
+* wait for default realm to be created before evaluating script ([#2294](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2294)) ([444e728](https://github.com/GoogleChromeLabs/chromium-bidi/commit/444e728fab1efd684a7dc624f1abbc9444f76905))
+* when reconnecting, save context's url ([#2276](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2276)) ([9585138](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9585138fa75a508bca42b8cc7df42ed6a46aff9f))
+
 ## [0.5.20](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.19...chromium-bidi-v0.5.20) (2024-05-31)
 
 
