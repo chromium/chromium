@@ -563,6 +563,18 @@ void PasswordGenerationAgent::DidEndTextFieldEditing(
   }
 }
 
+void PasswordGenerationAgent::TextFieldCleared(
+    const blink::WebInputElement& element) {
+  if (current_generation_item_ &&
+      current_generation_item_->generation_element_ == element) {
+    if (current_generation_item_->password_is_generated_) {
+      PasswordNoLongerGenerated();
+    }
+    current_generation_item_->generation_element_.SetShouldRevealPassword(
+        false);
+  }
+}
+
 bool PasswordGenerationAgent::TextDidChangeInTextField(
     const WebInputElement& element) {
   if (!(current_generation_item_ &&
@@ -588,11 +600,6 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       }
     }
     return false;
-  }
-
-  if (element.Value().IsEmpty()) {
-    current_generation_item_->generation_element_.SetShouldRevealPassword(
-        false);
   }
 
   if (!current_generation_item_->password_is_generated_ &&

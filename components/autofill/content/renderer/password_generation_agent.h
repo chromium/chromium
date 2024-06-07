@@ -80,6 +80,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // being called.
   void DidEndTextFieldEditing(const blink::WebInputElement& element);
 
+  // Event forwarded by AutofillAgent from WebAutofillClient, informing that the
+  // text field was cleared. For password fields this means that they are no
+  // longer generated and should be masked.
+  void TextFieldCleared(const blink::WebInputElement& element);
+
   // Called right before PasswordAutofillAgent filled |password_element|.
   void OnFieldAutofilled(const blink::WebInputElement& password_element);
 

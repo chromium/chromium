@@ -1293,6 +1293,14 @@ void ChromeClientImpl::DidChangeValueInTextField(
   }
 }
 
+void ChromeClientImpl::DidClearValueInTextField(
+    HTMLFormControlElement& element) {
+  Document& doc = element.GetDocument();
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->TextFieldCleared(WebFormControlElement(&element));
+  }
+}
+
 void ChromeClientImpl::DidUserChangeContentEditableContent(Element& element) {
   Document& doc = element.GetDocument();
   // Selecting the focused element as we are only interested in changes made by

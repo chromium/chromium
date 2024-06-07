@@ -52,6 +52,11 @@ class WebAutofillClient {
   virtual void TextFieldDidChange(const WebFormControlElement&) {}
   virtual void TextFieldDidReceiveKeyDown(const WebInputElement&,
                                           const WebKeyboardEvent&) {}
+  // Called when a text field is cleared either by simply deleting the text or
+  // briefly cleared when the whole text is selected and replaced. The latter
+  // would not be conveyed by `TextFieldDidChange()` and some clients might need
+  // that information.
+  virtual void TextFieldCleared(const WebFormControlElement&) {}
   // This is called once per-character when a user edits a contenteditable
   // element by typing.
   virtual void ContentEditableDidChange(const WebElement&) {}

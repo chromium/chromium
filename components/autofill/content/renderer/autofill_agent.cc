@@ -667,6 +667,14 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
   }
 }
 
+void AutofillAgent::TextFieldCleared(const WebFormControlElement& element) {
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  CHECK(!input_element.IsNull() || form_util::IsTextAreaElement(element));
+  if (password_generation_agent_ && !input_element.IsNull()) {
+    password_generation_agent_->TextFieldCleared(input_element);
+  }
+}
+
 void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 

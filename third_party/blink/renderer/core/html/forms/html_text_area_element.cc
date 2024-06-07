@@ -385,11 +385,14 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
   CalculateAndAdjustAutoDirectionality();
 
   DCHECK(GetDocument().IsActive());
+  if (InnerEditorValue().empty()) {
+    GetDocument().GetPage()->GetChromeClient().DidClearValueInTextField(*this);
+  }
   GetDocument().GetPage()->GetChromeClient().DidChangeValueInTextField(*this);
 }
 
 void HTMLTextAreaElement::HandleBeforeTextInsertedEvent(
-    BeforeTextInsertedEvent* event) const {
+    BeforeTextInsertedEvent* event) {
   DCHECK(event);
   DCHECK(GetLayoutObject());
   int signed_max_length = maxLength();
@@ -422,6 +425,11 @@ void HTMLTextAreaElement::HandleBeforeTextInsertedEvent(
   unsigned appendable_length =
       unsigned_max_length > base_length ? unsigned_max_length - base_length : 0;
   event->SetText(SanitizeUserInputValue(event->GetText(), appendable_length));
+
+  if (selection_length == current_length && selection_length != 0 &&
+      !event->GetText().empty()) {
+    GetDocument().GetPage()->GetChromeClient().DidClearValueInTextField(*this);
+  }
 }
 
 String HTMLTextAreaElement::SanitizeUserInputValue(const String& proposed_value,

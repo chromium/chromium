@@ -322,6 +322,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                             mojom::SubmissionSource source);
 
   // blink::WebAutofillClient:
+  void TextFieldCleared(const blink::WebFormControlElement&) override;
   void TextFieldDidEndEditing(const blink::WebInputElement& element) override;
   void TextFieldDidChange(const blink::WebFormControlElement& element) override;
   void ContentEditableDidChange(const blink::WebElement& element) override;
