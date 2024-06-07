@@ -133,6 +133,26 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   auto handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (handler) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/345275145): remove this block after investigation.
+    std::string purpose_value;
+    // Use purpose instead of the standard header of Sec-Purpose, because it is
+    // possible that some other components are using the out-of-date header.
+    if (tentative_resource_request.headers.GetHeader("purpose",
+                                                     &purpose_value)) {
+      // Check if another prefetch request takes the response away.
+      // If everything works as expected, we will never reach this block
+      // - For prerendering requests, they are handled within the
+      //  `if(is_prerender_main_frame_navigation)` block above.
+      // - For normal navigation requests, they should not contain the purpose
+      //   header.
+      // So, only if we're unexpectedly intercepting another prefetch request,
+      // we'd reach this block.
+      SCOPED_CRASH_KEY_STRING32("Bug_345275145_case2", "purpose",
+                                purpose_value);
+      base::debug::DumpWithoutCrashing();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     return handler;
   }
   if (tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
