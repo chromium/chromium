@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "components/input/fling_scheduler_base.h"
 #include "content/common/content_export.h"
-#include "content/common/input/fling_scheduler_base.h"
 #include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_injector.mojom-shared.h"
 #include "content/common/input/input_router_impl.h"
@@ -50,7 +50,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
 
   RenderInputRouter(InputRouterImplClient* host,
                     InputDispositionHandler* handler,
-                    std::unique_ptr<FlingSchedulerBase> fling_scheduler,
+                    std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
                     RenderInputRouterDelegate* delegate,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -185,7 +185,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
 
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
-  std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
+  std::unique_ptr<input::FlingSchedulerBase> fling_scheduler_;
   std::unique_ptr<InputRouter> input_router_;
 
   // TODO(wjmaclean) Remove the code for supporting resending gesture events

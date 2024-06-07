@@ -94,13 +94,16 @@ class Range;
 class Vector2dF;
 }  // namespace gfx
 
+namespace input {
+class FlingSchedulerBase;
+}  // namespace input
+
 namespace ui {
 enum class DomCode : uint32_t;
 }
 
 namespace content {
 class BrowserAccessibilityManager;
-class FlingSchedulerBase;
 class FrameTree;
 class InputRouter;
 class MockRenderWidgetHost;
@@ -1031,7 +1034,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   bool IsPointerLocked() const;
 
-  std::unique_ptr<FlingSchedulerBase> MakeFlingScheduler();
+  std::unique_ptr<input::FlingSchedulerBase> MakeFlingScheduler();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FullscreenDetectionTest,

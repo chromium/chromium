@@ -3684,7 +3684,8 @@ device::mojom::WakeLock* RenderWidgetHostImpl::GetWakeLock() {
 }
 #endif
 
-std::unique_ptr<FlingSchedulerBase> RenderWidgetHostImpl::MakeFlingScheduler() {
+std::unique_ptr<input::FlingSchedulerBase>
+RenderWidgetHostImpl::MakeFlingScheduler() {
 #if BUILDFLAG(IS_MAC)
   return std::make_unique<FlingSchedulerMac>(this);
 #elif BUILDFLAG(IS_ANDROID)

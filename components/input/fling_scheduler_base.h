@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_FLING_SCHEDULER_BASE_H_
-#define CONTENT_COMMON_INPUT_FLING_SCHEDULER_BASE_H_
+#ifndef COMPONENTS_INPUT_FLING_SCHEDULER_BASE_H_
+#define COMPONENTS_INPUT_FLING_SCHEDULER_BASE_H_
 
 #include "components/input/fling_controller.h"
 
-namespace content {
+namespace input {
 
-class FlingSchedulerBase : public input::FlingControllerSchedulerClient {
+class FlingSchedulerBase : public FlingControllerSchedulerClient {
  public:
   virtual void ProgressFlingOnBeginFrameIfneeded(
       base::TimeTicks current_time) = 0;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_FLING_SCHEDULER_BASE_H_
+#endif  // COMPONENTS_INPUT_FLING_SCHEDULER_BASE_H_

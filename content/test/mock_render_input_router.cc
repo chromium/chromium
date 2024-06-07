@@ -9,7 +9,7 @@ namespace content {
 MockRenderInputRouter::MockRenderInputRouter(
     InputRouterImplClient* host,
     InputDispositionHandler* handler,
-    std::unique_ptr<FlingSchedulerBase> fling_scheduler,
+    std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : RenderInputRouter(host,

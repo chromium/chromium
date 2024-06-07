@@ -117,7 +117,6 @@ source_set("common") {
     "input/cursor_manager.h",
     "input/events_helper.cc",
     "input/events_helper.h",
-    "input/fling_scheduler_base.h",
     "input/gesture_event_queue.cc",
     "input/gesture_event_queue.h",
     "input/gesture_event_stream_validator.cc",

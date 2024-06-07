@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/input/fling_controller.h"
+#include "components/input/fling_scheduler_base.h"
 #include "content/common/content_export.h"
-#include "content/common/input/fling_scheduler_base.h"
 #include "ui/compositor/compositor_animation_observer.h"
 
 namespace ui {
@@ -19,7 +19,7 @@ namespace content {
 
 class RenderWidgetHostImpl;
 
-class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
+class CONTENT_EXPORT FlingScheduler : public input::FlingSchedulerBase,
                                       private ui::CompositorAnimationObserver {
  public:
   FlingScheduler(RenderWidgetHostImpl* host);

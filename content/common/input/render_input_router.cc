@@ -110,7 +110,7 @@ RenderInputRouter::~RenderInputRouter() = default;
 RenderInputRouter::RenderInputRouter(
     InputRouterImplClient* host,
     InputDispositionHandler* handler,
-    std::unique_ptr<FlingSchedulerBase> fling_scheduler,
+    std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fling_scheduler_(std::move(fling_scheduler)),
