@@ -473,16 +473,25 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
   // They should still exist in sync server.
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
+  std::vector<base::Uuid> groups_to_close_locally;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     if (group.created_before_syncing_tab_groups()) {
       continue;
     }
 
+    groups_to_close_locally.emplace_back(group.saved_guid());
+  }
+
+  for (const base::Uuid& group_id : groups_to_close_locally) {
     // This group should be closed locally. Remove it from model and storage and
     // close all the tabs.
-    base::Uuid group_id = group.saved_guid();
-    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
-      base::Uuid tab_id = tab.saved_tab_guid();
+    const SavedTabGroup* group = model_->Get(group_id);
+    std::vector<base::Uuid> tabs_to_close_locally;
+    for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+      tabs_to_close_locally.emplace_back(tab.saved_tab_guid());
+    }
+
+    for (const base::Uuid& tab_id : tabs_to_close_locally) {
       model_->RemoveTabFromGroupFromSync(group_id, tab_id);
       write_batch->DeleteData(tab_id.AsLowercaseString());
     }
