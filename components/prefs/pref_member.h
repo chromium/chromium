@@ -302,7 +302,7 @@ class PrefMember : public subtle::PrefMemberBase {
 //
 // FEATURES="noclean nostrip" USE="-chrome_debug -chrome_remoting
 // -chrome_internal -chrome_pdf component_build"
-// ~/trunk/goma/goma-wrapper cros_chrome_make --board=${BOARD}
+// cros_chrome_make --board=${BOARD}
 // --install --runhooks
 
 template <>
