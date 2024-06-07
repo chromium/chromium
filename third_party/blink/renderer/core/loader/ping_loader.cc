@@ -113,7 +113,7 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
   ResourceRequest request(ping_url);
   request.SetHttpMethod(http_names::kPOST);
   request.SetHTTPContentType(AtomicString("text/ping"));
-  request.SetHttpBody(EncodedFormData::Create("PING"));
+  request.SetHttpBody(EncodedFormData::Create(base::span_from_cstring("PING")));
   request.SetHttpHeaderField(http_names::kCacheControl,
                              AtomicString("max-age=0"));
   request.SetHttpHeaderField(http_names::kPingTo,

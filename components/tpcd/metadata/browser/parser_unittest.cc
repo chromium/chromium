@@ -164,7 +164,8 @@ TEST_F(ParserDeathTest, ParseMetadataFromFeatureParam_InvalidProto) {
   }
 
   std::string compressed;
-  compression::GzipCompress("clearly not a proto", &compressed);
+  compression::GzipCompress(base::span_from_cstring("clearly not a proto"),
+                            &compressed);
   std::string encoded = base::Base64Encode(compressed);
   const base::FieldTrialParams params = {
       {Parser::kMetadataFeatureParamName, encoded}};

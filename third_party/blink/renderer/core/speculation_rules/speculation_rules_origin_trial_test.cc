@@ -137,8 +137,9 @@ void CommitTestNavigation(
     const Vector<std::pair<String, String>>& response_headers) {
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = url;
-  WebNavigationParams::FillStaticResponse(navigation_params.get(), "text/html",
-                                          "UTF-8", "<!DOCTYPE html>");
+  WebNavigationParams::FillStaticResponse(
+      navigation_params.get(), "text/html", "UTF-8",
+      base::span_from_cstring("<!DOCTYPE html>"));
   for (const auto& [header, value] : response_headers)
     navigation_params->response.AddHttpHeaderField(header, value);
   frame.Loader().CommitNavigation(std::move(navigation_params), nullptr);

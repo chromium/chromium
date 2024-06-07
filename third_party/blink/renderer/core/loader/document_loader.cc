@@ -1458,7 +1458,7 @@ void DocumentLoader::ReplaceWithEmptyDocument() {
   url_ = blocked_url;
   params_->url = blocked_url;
   WebNavigationParams::FillStaticResponse(params_.get(), "text/html", "UTF-8",
-                                          "");
+                                          base::span_from_cstring(""));
 }
 
 DocumentPolicy::ParsedDocumentPolicy DocumentLoader::CreateDocumentPolicy() {

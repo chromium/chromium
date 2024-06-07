@@ -77,7 +77,8 @@ class NetMetricsLogUploaderTest : public testing::Test {
     std::string compressed_message;
     // Compress the data since the encryption code expects a compressed log,
     // and tries to decompress it before encrypting it.
-    compression::GzipCompress("dummy_data", &compressed_message);
+    compression::GzipCompress(base::span_from_cstring("dummy_data"),
+                              &compressed_message);
     uploader_->UploadLog(compressed_message, LogMetadata(), "dummy_hash",
                          "dummy_signature", dummy_reporting_info);
   }
