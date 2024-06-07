@@ -72,6 +72,10 @@ ASH_PUBLIC_EXPORT extern const size_t kToggleGameDashboardAcceleratorDataLength;
 ASH_PUBLIC_EXPORT extern const AcceleratorData kTogglePickerAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t kTogglePickerAcceleratorDataLength;
 
+ASH_PUBLIC_EXPORT extern const AcceleratorData
+    kTilingWindowResizeAcceleratorData[];
+ASH_PUBLIC_EXPORT extern const size_t kTilingWindowResizeAcceleratorDataLength;
+
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.
 class ASH_PUBLIC_EXPORT AcceleratorController {

@@ -162,6 +162,13 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
                                       ash::kTogglePickerAcceleratorDataLength));
   }
 
+  if (ash::features::IsTilingWindowResizeEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kTilingWindowResizeAcceleratorData,
+                        ash::kTilingWindowResizeAcceleratorDataLength));
+  }
+
   // Debug accelerators.
   if (ash::debug::DebugAcceleratorsEnabled()) {
     AppendAcceleratorData(accelerators,
