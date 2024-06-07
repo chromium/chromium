@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 class SkBitmap;
@@ -34,7 +35,15 @@ class PickerThumbnailLoader {
             LoadCallback callback);
 
  private:
+  void DecodeDriveThumbnail(LoadCallback callback,
+                            const gfx::Size& size,
+                            const std::optional<std::vector<uint8_t>>& bytes);
+  void OnDriveThumbnailDecoded(LoadCallback callback, const SkBitmap& image);
+
+  raw_ptr<Profile> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
+
+  base::WeakPtrFactory<PickerThumbnailLoader> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PICKER_PICKER_THUMBNAIL_LOADER_H_
