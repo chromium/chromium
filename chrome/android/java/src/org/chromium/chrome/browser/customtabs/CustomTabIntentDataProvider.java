@@ -1208,7 +1208,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 : 0;
     }
 
-    @Deprecated
     @Override
     public boolean isTrustedIntent() {
         return mIsTrustedIntent;

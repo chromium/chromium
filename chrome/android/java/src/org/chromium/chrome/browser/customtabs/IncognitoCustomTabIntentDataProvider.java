@@ -26,7 +26,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -132,21 +131,8 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         return ChromeFeatureList.sCctIncognitoAvailableToThirdParty.isEnabled();
     }
 
-    static boolean isIntentFromFirstParty(Intent intent) {
-        String sendersPackageName = getSendersPackageNameFromIntent(intent);
-        return !TextUtils.isEmpty(sendersPackageName)
-                && ChromeApplicationImpl.getComponent()
-                        .resolveExternalAuthUtils()
-                        .isGoogleSigned(sendersPackageName);
-    }
-
     private static boolean isIntentFromChrome(Intent intent) {
         return IntentHandler.wasIntentSenderChrome(intent);
-    }
-
-    private static boolean isTrustedIntent(Intent intent) {
-        if (isIntentFromChrome(intent)) return true;
-        return isIntentFromFirstParty(intent) || isIntentFromThirdPartyAllowed();
     }
 
     private static boolean isAllowedToAddCustomMenuItem(Intent intent) {
@@ -245,7 +231,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                         IntentHandler.IncognitoCCTCallerId.OTHER_CHROME_FEATURES;
             }
             return incognitoCCTChromeClientId;
-        } else if (isIntentFromFirstParty(mIntent)) {
+        } else if (mIsTrustedIntent) {
             return IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS;
         } else {
             return IntentHandler.IncognitoCCTCallerId.OTHER_APPS;
@@ -255,7 +241,9 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     // TODO(crbug.com/40107157): Remove this function and enable
     // incognito CCT request for all apps.
     public static boolean isValidIncognitoIntent(Intent intent) {
-        return isIncognitoRequested(intent) && isTrustedIntent(intent);
+        var session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        return isIncognitoRequested(intent)
+                && (isTrustedCustomTab(intent, session) || isIntentFromThirdPartyAllowed());
     }
 
     public static boolean isValidEphemeralTabIntent(Intent intent) {
@@ -310,7 +298,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                 : 0;
     }
 
-    @Deprecated
     @Override
     public boolean isTrustedIntent() {
         return mIsTrustedIntent;

@@ -157,12 +157,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return 0;
     }
 
-    /**
-     * Checks whether or not the Intent is from Chrome or other trusted first party.
-     *
-     * @deprecated This method is not reliable, see https://crbug.com/832124
-     */
-    @Deprecated
+    /** Checks whether or not the Intent is from Chrome or other trusted first party. */
     public boolean isTrustedIntent() {
         return false;
     }

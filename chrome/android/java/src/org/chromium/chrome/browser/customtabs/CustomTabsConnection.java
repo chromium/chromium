@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.Googl
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -1227,10 +1226,14 @@ public class CustomTabsConnection {
         return mClientManager.getClientPackageNameForSession(session);
     }
 
-    /** @return Whether the given package name is that of a first-party application. */
+    /**
+     * @return Whether the given package name is that of a first-party application.
+     */
     public boolean isFirstParty(String packageName) {
         if (packageName == null) return false;
-        return ExternalAuthUtils.getInstance().isGoogleSigned(packageName);
+        return ChromeApplicationImpl.getComponent()
+                .resolveExternalAuthUtils()
+                .isGoogleSigned(packageName);
     }
 
     void setIgnoreUrlFragmentsForSession(CustomTabsSessionToken session, boolean value) {
@@ -1446,12 +1449,14 @@ public class CustomTabsConnection {
 
     /**
      * Does setup of dynamic experiment features that can be enabled/disabled via an Intent.
+     *
      * @param intent The {@link Intent} that is active, to be scanned for enable/disable Extras.
      * @return Whether the setup will actually change the active feature set.
      */
     boolean setupDynamicFeatures(Intent intent) {
+        CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         if (!mIsDynamicIntentFeatureOverridesEnabled
-                || (!IncognitoCustomTabIntentDataProvider.isIntentFromFirstParty(intent)
+                || (!CustomTabIntentDataProvider.isTrustedCustomTab(intent, session)
                         && !CommandLine.getInstance()
                                 .hasSwitch("cct-client-firstparty-override"))) {
             return false;
