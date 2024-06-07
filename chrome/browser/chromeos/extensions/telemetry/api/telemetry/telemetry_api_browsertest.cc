@@ -1397,54 +1397,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetThermalInfo_NoFeatureFlagEnabledError) {
-  // If the permission is not enabled, the method isn't defined
-  // on `chrome.os.telemetry`.
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-        function getThermalInfo() {
-            chrome.test.assertThrows(() => {
-                    chrome.os.telemetry.getThermalInfo();
-                }, [],
-                "chrome.os.telemetry.getThermalInfo is not a function");
-            chrome.test.succeed();
-        }
-    ]);
-  )");
-}
-
-class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
-    : public TelemetryExtensionTelemetryApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
-                       GetThermalInfo_Error) {
-  SetUpProbeService();
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function getThermalInfo() {
-        await chrome.test.assertPromiseRejects(
-            chrome.os.telemetry.getThermalInfo(),
-            'Error: API internal error'
-        );
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-  EXPECT_THAT(
-      probe_service_->GetLastRequestedCategories(),
-      UnorderedElementsAreArray({crosapi::ProbeCategoryEnum::kThermal}));
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
                        GetThermalInfo_Success) {
   SetUpProbeService();
   // Configure FakeProbeService.

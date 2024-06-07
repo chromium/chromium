@@ -69,8 +69,5 @@
       "lacros"
     ],
     "channel": "stable"
-  },
-  "os.telemetry.getThermalInfo": {
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   }
 }
