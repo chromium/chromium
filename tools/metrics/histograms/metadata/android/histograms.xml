@@ -4119,17 +4119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Rotation.BeginToRendererFrameActivation" units="ms"
-    expires_after="2024-03-17">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Measures the amount of time from when Android begins notifying the Browser
-    process of a rotation, to when the Renderer successfully submits and
-    activates a frame in the new orientation.
-  </summary>
-</histogram>
-
 <histogram name="Android.SearchEngineChoice.ChosenSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="2023-06-01">
   <owner>fgorski@chromium.org</owner>

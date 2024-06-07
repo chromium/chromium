@@ -1061,11 +1061,6 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
             "viz", "RenderWidgetHostViewAndroid::RotationEmbed",
             TRACE_ID_LOCAL(rotation_target.second.hash()), activation_time,
             "duration(ms)", duration.InMillisecondsF());
-        // Report the total time from the first notification of rotation
-        // beginning, until the Renderer has submitted and activated a
-        // corresponding surface.
-        UMA_HISTOGRAM_TIMES("Android.Rotation.BeginToRendererFrameActivation",
-                            duration);
         rotation_metrics_.pop_front();
       } else {
         // The embedded surface may have updated the
