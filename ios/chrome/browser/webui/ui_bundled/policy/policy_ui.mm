@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -252,9 +254,14 @@ PolicyUI::PolicyUI(web::WebUIIOS* web_ui, const std::string& host)
 
 // static
 bool PolicyUI::ShouldLoadTestPage(ChromeBrowserState* browser_state) {
-  // Test page should only load if testing is enabled.
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  // Test page should only load if testing is enabled and the profile is not
+  // managed.
   return policy::utils::IsPolicyTestingEnabled(browser_state->GetPrefs(),
-                                               GetChannel());
+                                               GetChannel()) &&
+         !auth_service->HasPrimaryIdentityManaged(
+             signin::ConsentLevel::kSignin);
 }
 
 // static
