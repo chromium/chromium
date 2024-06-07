@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "components/input/fling_controller.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
-#include "content/common/input/fling_controller.h"
 #include "content/common/input/input_router_client.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
@@ -20,7 +20,7 @@ namespace content {
 class InputRouter;
 
 class MockInputRouterClient : public InputRouterClient,
-                              public FlingControllerSchedulerClient {
+                              public input::FlingControllerSchedulerClient {
  public:
   MockInputRouterClient();
   ~MockInputRouterClient() override;
@@ -82,9 +82,9 @@ class MockInputRouterClient : public InputRouterClient,
 
   // FlingControllerSchedulerClient
   void ScheduleFlingProgress(
-      base::WeakPtr<FlingController> fling_controller) override {}
+      base::WeakPtr<input::FlingController> fling_controller) override {}
   void DidStopFlingingOnBrowser(
-      base::WeakPtr<FlingController> fling_controller) override {}
+      base::WeakPtr<input::FlingController> fling_controller) override {}
   bool NeedsBeginFrameForFlingProgress() override;
   bool ShouldUseMobileFlingCurve() override;
   gfx::Vector2dF GetPixelsPerInch(

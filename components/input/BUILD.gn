@@ -12,6 +12,8 @@ component("input") {
   defines = [ "IS_INPUT_IMPL" ]
   sources = [
     "event_with_latency_info.h",
+    "fling_controller.cc",
+    "fling_controller.h",
     "native_web_keyboard_event.h",
     "tap_suppression_controller.cc",
     "tap_suppression_controller.h",
@@ -27,6 +29,7 @@ component("input") {
     "//ui/events:events",
     "//ui/events:events_base",
     "//ui/events/blink:blink",
+    "//ui/events/gestures/blink",
   ]
   if (use_aura) {
     sources += [ "native_web_keyboard_event_aura.cc" ]
@@ -63,13 +66,16 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "event_with_latency_info_unittest.cc",
+    "fling_controller_unittest.cc",
     "tap_suppression_controller_unittest.cc",
   ]
   deps = [
     ":input",
     "//base:base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
+    "//ui/base:features",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events",
     "//ui/events:test_support",

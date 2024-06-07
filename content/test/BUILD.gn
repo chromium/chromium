@@ -2818,7 +2818,6 @@ test("content_unittests") {
     "../common/frame_owner_element_type_mojom_traits_unittest.cc",
     "../common/input/actions_parser_test_driver_unittest.cc",
     "../common/input/actions_parser_unittest.cc",
-    "../common/input/fling_controller_unittest.cc",
     "../common/input/gesture_event_queue_unittest.cc",
     "../common/input/gesture_event_stream_validator_unittest.cc",
     "../common/input/mouse_wheel_event_queue_unittest.cc",

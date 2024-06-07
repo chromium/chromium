@@ -63,7 +63,7 @@ class CONTENT_EXPORT InputRouterImplClient : public InputRouterClient {
 class CONTENT_EXPORT InputRouterImpl
     : public InputRouter,
       public GestureEventQueueClient,
-      public FlingControllerEventSenderClient,
+      public input::FlingControllerEventSenderClient,
       public MouseWheelEventQueueClient,
       public PassthroughTouchEventQueueClient,
       public TouchpadPinchEventQueueClient,
@@ -71,7 +71,7 @@ class CONTENT_EXPORT InputRouterImpl
  public:
   InputRouterImpl(InputRouterImplClient* client,
                   InputDispositionHandler* disposition_handler,
-                  FlingControllerSchedulerClient* fling_scheduler_client,
+                  input::FlingControllerSchedulerClient* fling_scheduler_client,
                   const Config& config);
 
   InputRouterImpl(const InputRouterImpl&) = delete;

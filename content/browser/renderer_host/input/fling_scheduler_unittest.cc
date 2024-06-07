@@ -31,13 +31,13 @@ class FakeFlingScheduler : public FlingScheduler {
   FakeFlingScheduler& operator=(const FakeFlingScheduler&) = delete;
 
   void ScheduleFlingProgress(
-      base::WeakPtr<FlingController> fling_controller) override {
+      base::WeakPtr<input::FlingController> fling_controller) override {
     FlingScheduler::ScheduleFlingProgress(fling_controller);
     fling_in_progress_ = true;
   }
 
   void DidStopFlingingOnBrowser(
-      base::WeakPtr<FlingController> fling_controller) override {
+      base::WeakPtr<input::FlingController> fling_controller) override {
     FlingScheduler::DidStopFlingingOnBrowser(fling_controller);
     fling_in_progress_ = false;
   }
@@ -47,7 +47,7 @@ class FakeFlingScheduler : public FlingScheduler {
   ui::Compositor* compositor() { return GetCompositor(); }
   ui::Compositor* observed_compositor() { return observed_compositor_; }
 
-  base::WeakPtr<FlingController> fling_controller() const {
+  base::WeakPtr<input::FlingController> fling_controller() const {
     return fling_controller_;
   }
 
@@ -56,7 +56,7 @@ class FakeFlingScheduler : public FlingScheduler {
 };
 
 class FlingSchedulerTest : public testing::Test,
-                           public FlingControllerEventSenderClient {
+                           public input::FlingControllerEventSenderClient {
  public:
   FlingSchedulerTest() {}
 
@@ -68,8 +68,8 @@ class FlingSchedulerTest : public testing::Test,
     widget_host_->SetView(view_.get());
 
     fling_scheduler_ = std::make_unique<FakeFlingScheduler>(widget_host_.get());
-    fling_controller_ = std::make_unique<FlingController>(
-        this, fling_scheduler_.get(), FlingController::Config());
+    fling_controller_ = std::make_unique<input::FlingController>(
+        this, fling_scheduler_.get(), input::FlingController::Config());
   }
 
   void TearDown() override {
@@ -116,7 +116,7 @@ class FlingSchedulerTest : public testing::Test,
     return gfx::Size(1920, 1080);
   }
 
-  FlingController* fling_controller() { return fling_controller_.get(); }
+  input::FlingController* fling_controller() { return fling_controller_.get(); }
   FakeFlingScheduler* fling_scheduler() { return fling_scheduler_.get(); }
 
  private:
@@ -144,7 +144,7 @@ class FlingSchedulerTest : public testing::Test,
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
   std::unique_ptr<FakeFlingScheduler> fling_scheduler_;
-  std::unique_ptr<FlingController> fling_controller_;
+  std::unique_ptr<input::FlingController> fling_controller_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<TestRenderWidgetHostView> view_;

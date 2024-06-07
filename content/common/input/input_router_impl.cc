@@ -76,7 +76,7 @@ std::unique_ptr<blink::WebCoalescedInputEvent> ScaleEvent(
 InputRouterImpl::InputRouterImpl(
     InputRouterImplClient* client,
     InputDispositionHandler* disposition_handler,
-    FlingControllerSchedulerClient* fling_scheduler_client,
+    input::FlingControllerSchedulerClient* fling_scheduler_client,
     const Config& config)
     : client_(client),
       disposition_handler_(disposition_handler),

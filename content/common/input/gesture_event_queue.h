@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/input/event_with_latency_info.h"
+#include "components/input/fling_controller.h"
 #include "content/common/content_export.h"
-#include "content/common/input/fling_controller.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -64,7 +64,7 @@ class CONTENT_EXPORT GestureEventQueue {
   struct CONTENT_EXPORT Config {
     Config();
 
-    FlingController::Config fling_config;
+    input::FlingController::Config fling_config;
 
     // Determines whether non-scroll gesture events are "debounced" during an
     // active scroll sequence, suppressing brief scroll interruptions.
@@ -73,10 +73,11 @@ class CONTENT_EXPORT GestureEventQueue {
   };
 
   // Both |client| and |touchpad_client| must outlive the GestureEventQueue.
-  GestureEventQueue(GestureEventQueueClient* client,
-                    FlingControllerEventSenderClient* fling_event_sender_client,
-                    FlingControllerSchedulerClient* fling_scheduler_client,
-                    const Config& config);
+  GestureEventQueue(
+      GestureEventQueueClient* client,
+      input::FlingControllerEventSenderClient* fling_event_sender_client,
+      input::FlingControllerSchedulerClient* fling_scheduler_client,
+      const Config& config);
 
   GestureEventQueue(const GestureEventQueue&) = delete;
   GestureEventQueue& operator=(const GestureEventQueue&) = delete;
@@ -218,7 +219,7 @@ class CONTENT_EXPORT GestureEventQueue {
   // An object for filtering unnecessary GFC events, as well as gestureTap/mouse
   // events that happen immediately after touchscreen/touchpad fling canceling
   // taps.
-  FlingController fling_controller_;
+  input::FlingController fling_controller_;
 
   // True when the last GSE event is either in the debouncing_deferral_queue_ or
   // pushed to the queue and dropped from it later on.

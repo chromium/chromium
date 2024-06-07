@@ -31,8 +31,8 @@ namespace content {
 
 class GestureEventQueueTest : public testing::Test,
                               public GestureEventQueueClient,
-                              public FlingControllerEventSenderClient,
-                              public FlingControllerSchedulerClient {
+                              public input::FlingControllerEventSenderClient,
+                              public input::FlingControllerSchedulerClient {
  public:
   GestureEventQueueTest()
       : task_environment_(
@@ -100,9 +100,9 @@ class GestureEventQueueTest : public testing::Test,
 
   // FlingControllerSchedulerClient
   void ScheduleFlingProgress(
-      base::WeakPtr<FlingController> fling_controller) override {}
+      base::WeakPtr<input::FlingController> fling_controller) override {}
   void DidStopFlingingOnBrowser(
-      base::WeakPtr<FlingController> fling_controller) override {}
+      base::WeakPtr<input::FlingController> fling_controller) override {}
   bool NeedsBeginFrameForFlingProgress() override { return false; }
   bool ShouldUseMobileFlingCurve() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -113,7 +113,8 @@ class GestureEventQueueTest : public testing::Test,
   }
   gfx::Vector2dF GetPixelsPerInch(
       const gfx::PointF& position_in_screen) override {
-    return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+    return gfx::Vector2dF(input::kDefaultPixelsPerInch,
+                          input::kDefaultPixelsPerInch);
   }
 
  protected:

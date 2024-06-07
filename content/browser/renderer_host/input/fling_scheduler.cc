@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "ui/compositor/compositor.h"
+#include "ui/display/screen.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -33,7 +34,7 @@ FlingScheduler::~FlingScheduler() {
 }
 
 void FlingScheduler::ScheduleFlingProgress(
-    base::WeakPtr<FlingController> fling_controller) {
+    base::WeakPtr<input::FlingController> fling_controller) {
   DCHECK(fling_controller);
   fling_controller_ = fling_controller;
   // Don't do anything if a ui::Compositor is already being observed.
@@ -48,7 +49,7 @@ void FlingScheduler::ScheduleFlingProgress(
 }
 
 void FlingScheduler::DidStopFlingingOnBrowser(
-    base::WeakPtr<FlingController> fling_controller) {
+    base::WeakPtr<input::FlingController> fling_controller) {
   DCHECK(fling_controller);
   if (observed_compositor_) {
     observed_compositor_->RemoveAnimationObserver(this);
@@ -78,7 +79,8 @@ gfx::Vector2dF FlingScheduler::GetPixelsPerInch(
 #if BUILDFLAG(IS_WIN)
   return display::win::ScreenWin::GetPixelsPerInch(position_in_screen);
 #else
-  return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+  return gfx::Vector2dF(input::kDefaultPixelsPerInch,
+                        input::kDefaultPixelsPerInch);
 #endif
 }
 

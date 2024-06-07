@@ -127,7 +127,8 @@ bool MockInputRouterClient::ShouldUseMobileFlingCurve() {
 
 gfx::Vector2dF MockInputRouterClient::GetPixelsPerInch(
     const gfx::PointF& position_in_screen) {
-  return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+  return gfx::Vector2dF(input::kDefaultPixelsPerInch,
+                        input::kDefaultPixelsPerInch);
 }
 
 }  // namespace content

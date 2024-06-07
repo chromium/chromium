@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/fling_controller.h"
+#include "components/input/fling_controller.h"
 
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "content/public/common/content_client.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -35,7 +34,7 @@ const char* kFlingTraceName = "FlingController::HandlingGestureFling";
 
 }  // namespace
 
-namespace content {
+namespace input {
 
 FlingController::Config::Config() {}
 
@@ -57,7 +56,7 @@ FlingController::FlingController(
 FlingController::~FlingController() = default;
 
 bool FlingController::ObserveAndFilterForTapSuppression(
-    const input::GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event) {
   switch (gesture_event.event.GetType()) {
     case WebInputEvent::Type::kGestureFlingCancel:
       // The controllers' state is affected by the cancel event and assumes
@@ -93,7 +92,7 @@ bool FlingController::ObserveAndFilterForTapSuppression(
 }
 
 bool FlingController::ObserveAndMaybeConsumeGestureEvent(
-    const input::GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event) {
   TRACE_EVENT0("input", "FlingController::ObserveAndMaybeConsumeGestureEvent");
   // FlingCancel events arrive when a finger is touched down regardless of
   // whether there is an ongoing fling. These can affect state so if there's no
@@ -148,7 +147,7 @@ bool FlingController::ObserveAndMaybeConsumeGestureEvent(
 }
 
 void FlingController::ProcessGestureFlingStart(
-    const input::GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event) {
   // Don't start a touchpad gesture fling if the previous scroll events were
   // consumed.
   if (gesture_event.event.SourceDevice() ==
@@ -180,7 +179,7 @@ void FlingController::ScheduleFlingProgress() {
 }
 
 void FlingController::ProcessGestureFlingCancel(
-    const input::GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event) {
   DCHECK(fling_curve_);
 
   // Note: We don't want to reset the fling booster here because a FlingCancel
@@ -263,7 +262,7 @@ void FlingController::GenerateAndSendWheelEvents(
     base::TimeTicks current_time,
     const gfx::Vector2dF& delta,
     blink::WebMouseWheelEvent::Phase phase) {
-  input::MouseWheelEventWithLatencyInfo synthetic_wheel(
+  MouseWheelEventWithLatencyInfo synthetic_wheel(
       WebInputEvent::Type::kMouseWheel, current_fling_parameters_.modifiers,
       current_time, ui::LatencyInfo(ui::SourceEventType::WHEEL));
   synthetic_wheel.event.delta_units =
@@ -286,7 +285,7 @@ void FlingController::GenerateAndSendGestureScrollEvents(
     base::TimeTicks current_time,
     WebInputEvent::Type type,
     const gfx::Vector2dF& delta /* = gfx::Vector2dF() */) {
-  input::GestureEventWithLatencyInfo synthetic_gesture(
+  GestureEventWithLatencyInfo synthetic_gesture(
       type, current_fling_parameters_.modifiers, current_time,
       ui::LatencyInfo(ui::SourceEventType::INERTIAL));
   synthetic_gesture.event.SetPositionInWidget(current_fling_parameters_.point);
@@ -425,15 +424,14 @@ bool FlingController::UpdateCurrentFlingState(
   // fling can travel based on physics based fling curve.
   float boost_multiplier = max_velocity / max_velocity_from_gfs;
 
-  fling_curve_ = std::unique_ptr<blink::WebGestureCurve>(
-      ui::WebGestureCurveImpl::CreateFromDefaultPlatformCurve(
+  fling_curve_ = ui::WebGestureCurveImpl::CreateFromDefaultPlatformCurve(
           current_fling_parameters_.source_device,
           current_fling_parameters_.velocity,
           gfx::Vector2dF() /*initial_offset*/, false /*on_main_thread*/,
           scheduler_client_->ShouldUseMobileFlingCurve(),
           scheduler_client_->GetPixelsPerInch(
               current_fling_parameters_.global_point),
-          boost_multiplier, root_widget_viewport_size));
+          boost_multiplier, root_widget_viewport_size);
   return true;
 }
 
@@ -441,17 +439,17 @@ gfx::Vector2dF FlingController::CurrentFlingVelocity() const {
   return current_fling_parameters_.velocity;
 }
 
-input::TouchpadTapSuppressionController*
+TouchpadTapSuppressionController*
 FlingController::GetTouchpadTapSuppressionController() {
   return &touchpad_tap_suppression_controller_;
 }
 
 void FlingController::OnWheelEventAck(
-    const input::MouseWheelEventWithLatencyInfo& event,
+    const MouseWheelEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   last_wheel_event_consumed_ =
       (ack_result == blink::mojom::InputEventResultState::kConsumed);
 }
 
-}  // namespace content
+}  // namespace input

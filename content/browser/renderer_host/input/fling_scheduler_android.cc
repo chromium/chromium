@@ -23,7 +23,7 @@ FlingSchedulerAndroid::~FlingSchedulerAndroid() {
 }
 
 void FlingSchedulerAndroid::ScheduleFlingProgress(
-    base::WeakPtr<FlingController> fling_controller) {
+    base::WeakPtr<input::FlingController> fling_controller) {
   DCHECK(fling_controller);
   fling_controller_ = fling_controller;
   if (observed_compositor_)
@@ -49,7 +49,7 @@ void FlingSchedulerAndroid::ScheduleFlingProgress(
 }
 
 void FlingSchedulerAndroid::DidStopFlingingOnBrowser(
-    base::WeakPtr<FlingController> fling_controller) {
+    base::WeakPtr<input::FlingController> fling_controller) {
   DCHECK(fling_controller);
   RemoveCompositorTick();
   fling_controller_ = nullptr;
@@ -69,7 +69,8 @@ bool FlingSchedulerAndroid::ShouldUseMobileFlingCurve() {
 }
 gfx::Vector2dF FlingSchedulerAndroid::GetPixelsPerInch(
     const gfx::PointF& position_in_screen) {
-  return gfx::Vector2dF(kDefaultPixelsPerInch, kDefaultPixelsPerInch);
+  return gfx::Vector2dF(input::kDefaultPixelsPerInch,
+                        input::kDefaultPixelsPerInch);
 }
 
 void FlingSchedulerAndroid::ProgressFlingOnBeginFrameIfneeded(

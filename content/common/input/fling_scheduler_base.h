@@ -5,11 +5,11 @@
 #ifndef CONTENT_COMMON_INPUT_FLING_SCHEDULER_BASE_H_
 #define CONTENT_COMMON_INPUT_FLING_SCHEDULER_BASE_H_
 
-#include "content/common/input/fling_controller.h"
+#include "components/input/fling_controller.h"
 
 namespace content {
 
-class FlingSchedulerBase : public FlingControllerSchedulerClient {
+class FlingSchedulerBase : public input::FlingControllerSchedulerClient {
  public:
   virtual void ProgressFlingOnBeginFrameIfneeded(
       base::TimeTicks current_time) = 0;

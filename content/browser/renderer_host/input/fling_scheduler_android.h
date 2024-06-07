@@ -33,9 +33,9 @@ class CONTENT_EXPORT FlingSchedulerAndroid
 
   // FlingControllerSchedulerClient
   void ScheduleFlingProgress(
-      base::WeakPtr<FlingController> fling_controller) override;
+      base::WeakPtr<input::FlingController> fling_controller) override;
   void DidStopFlingingOnBrowser(
-      base::WeakPtr<FlingController> fling_controller) override;
+      base::WeakPtr<input::FlingController> fling_controller) override;
   bool NeedsBeginFrameForFlingProgress() override;
   bool ShouldUseMobileFlingCurve() override;
   gfx::Vector2dF GetPixelsPerInch(
@@ -46,7 +46,7 @@ class CONTENT_EXPORT FlingSchedulerAndroid
 
  protected:
   raw_ptr<RenderWidgetHostImpl> host_;
-  base::WeakPtr<FlingController> fling_controller_;
+  base::WeakPtr<input::FlingController> fling_controller_;
 
  private:
   ui::WindowAndroid* GetRootWindow();

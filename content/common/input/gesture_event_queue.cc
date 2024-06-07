@@ -25,8 +25,8 @@ GestureEventQueue::Config::Config() {}
 
 GestureEventQueue::GestureEventQueue(
     GestureEventQueueClient* client,
-    FlingControllerEventSenderClient* fling_event_sender_client,
-    FlingControllerSchedulerClient* fling_scheduler_client,
+    input::FlingControllerEventSenderClient* fling_event_sender_client,
+    input::FlingControllerSchedulerClient* fling_scheduler_client,
     const Config& config)
     : client_(client),
       scrolling_in_progress_(false),
