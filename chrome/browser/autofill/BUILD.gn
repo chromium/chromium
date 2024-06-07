@@ -57,6 +57,7 @@ static_library("autofill") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
+    "//chrome/browser/sync",
     "//chrome/common:constants",
     "//components/autofill/content/browser",
     "//components/commerce/core:shopping_service",

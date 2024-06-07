@@ -783,6 +783,9 @@ source_set("extensions") {
 
     # TODO(crbug.com/343037853): Remove this circular dependency.
     "//chrome/browser/themes",
+
+    # TODO(crbug.com/344921703): Remove circular dependencies.
+    "//chrome/browser/sync",
   ]
 
   # Since browser and browser_extensions actually depend on each other,
@@ -823,6 +826,7 @@ source_set("extensions") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",
+    "//chrome/browser/sync",
     "//chrome/browser/themes",
 
     # Only for allow_circular_includes_from

@@ -1,0 +1,184 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("sync") {
+  sources = [
+    "account_bookmark_sync_service_factory.cc",
+    "account_bookmark_sync_service_factory.h",
+    "chrome_sync_client.cc",
+    "chrome_sync_client.h",
+    "device_info_sync_client_impl.cc",
+    "device_info_sync_client_impl.h",
+    "device_info_sync_service_factory.cc",
+    "device_info_sync_service_factory.h",
+    "glue/extensions_activity_monitor.cc",
+    "glue/extensions_activity_monitor.h",
+    "glue/sync_start_util.cc",
+    "glue/sync_start_util.h",
+    "local_or_syncable_bookmark_sync_service_factory.cc",
+    "local_or_syncable_bookmark_sync_service_factory.h",
+    "model_type_store_service_factory.cc",
+    "model_type_store_service_factory.h",
+    "prefs/chrome_syncable_prefs_database.cc",
+    "prefs/chrome_syncable_prefs_database.h",
+    "send_tab_to_self_sync_service_factory.cc",
+    "send_tab_to_self_sync_service_factory.h",
+    "session_sync_service_factory.cc",
+    "session_sync_service_factory.h",
+    "sessions/sync_sessions_router_tab_helper.cc",
+    "sessions/sync_sessions_router_tab_helper.h",
+    "sessions/sync_sessions_web_contents_router.cc",
+    "sessions/sync_sessions_web_contents_router.h",
+    "sessions/sync_sessions_web_contents_router_factory.cc",
+    "sessions/sync_sessions_web_contents_router_factory.h",
+    "sync_invalidations_service_factory.cc",
+    "sync_invalidations_service_factory.h",
+    "sync_service_factory.cc",
+    "sync_service_factory.h",
+    "sync_service_util.cc",
+    "sync_service_util.h",
+    "sync_startup_tracker.cc",
+    "sync_startup_tracker.h",
+    "user_event_service_factory.cc",
+    "user_event_service_factory.h",
+  ]
+
+  public_deps = [
+    ":factories",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/browser_sync",
+    "//components/favicon/core",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/sessions:session_id",
+    "//components/sync/model",
+    "//components/sync/service",
+    "//components/sync_device_info",
+    "//components/sync_preferences",
+    "//components/sync_preferences:common_syncable_prefs_database",
+    "//components/sync_sessions",
+    "//components/translate/core/browser",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/favicon",
+    "//chrome/browser/promos:utils",
+    "//chrome/browser/search_engines",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//components/autofill/core/browser",
+    "//components/consent_auditor",
+    "//components/data_sharing/public",
+    "//components/dom_distiller/core",
+    "//components/favicon/content",
+    "//components/history/core/browser",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/live_caption:constants",
+    "//components/metrics/demographics",
+    "//components/password_manager/core/browser/features:utils",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/password_manager/core/browser/sharing",
+    "//components/performance_manager",
+    "//components/plus_addresses/settings",
+    "//components/plus_addresses/webdata",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups:model",
+    "//components/search_engines",
+    "//components/send_tab_to_self",
+    "//components/spellcheck:buildflags",
+    "//components/spellcheck/browser",
+    "//components/strings:components_strings_grit",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/sync_bookmarks",
+    "//components/sync_user_events",
+    "//components/user_manager",
+    "//components/variations/service",
+    "//components/webauthn/core/browser:passkey_model",
+  ]
+
+  if (is_android) {
+    sources += [
+      "glue/synced_tab_delegate_android.cc",
+      "glue/synced_tab_delegate_android.h",
+      "glue/synced_window_delegate_android.cc",
+      "glue/synced_window_delegate_android.h",
+      "glue/synced_window_delegates_getter_android.cc",
+      "glue/synced_window_delegates_getter_android.h",
+      "glue/web_contents_state_synced_tab_delegate.cc",
+      "glue/web_contents_state_synced_tab_delegate.h",
+    ]
+    deps += [
+      "//chrome/browser/sync/android:jni_headers",
+      "//chrome/browser/tab_group_sync:utils",
+    ]
+  } else {
+    sources += [
+      "glue/extension_model_type_controller.cc",
+      "glue/extension_model_type_controller.h",
+      "glue/extension_setting_model_type_controller.cc",
+      "glue/extension_setting_model_type_controller.h",
+      "sessions/browser_list_router_helper.cc",
+      "sessions/browser_list_router_helper.h",
+      "sync_ui_util.cc",
+      "sync_ui_util.h",
+    ]
+    public_deps += [ "//extensions/buildflags" ]
+    deps += [
+      "//chrome/browser/themes",
+      "//chrome/browser/web_applications",
+      "//extensions/browser",
+      "//extensions/browser/api/storage",
+      "//extensions/common",
+    ]
+  }
+  if (is_chromeos_ash) {
+    sources += [
+      "desk_sync_service_factory.cc",
+      "desk_sync_service_factory.h",
+      "wifi_configuration_sync_service_factory.cc",
+      "wifi_configuration_sync_service_factory.h",
+    ]
+    deps += [
+      "//ash/components/arc:arc_base_utils",
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chromeos/ash/components/network",
+      "//chromeos/ash/components/sync_wifi",
+      "//chromeos/ash/components/tether",
+      "//components/desks_storage",
+      "//ui/events/ash",
+    ]
+  }
+}
+
+# Code that depends on this target must be linked into //chrome/browser:browser
+# to pick up the implementations. The reason for this target separation is
+# because KeyedServiceFactories mix the interface and implementation.
+source_set("factories") {
+  sources = [
+    "model_type_store_service_factory.h",
+    "sync_service_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+  ]
+}

@@ -2586,6 +2586,7 @@ if (current_toolchain == default_toolchain) {
       ":test_support_jni_headers",
       "//chrome/browser",
       "//chrome/browser:browser_process",
+      "//chrome/browser/sync",
       "//chrome/browser/thumbnail:test_support",
       "//components/offline_pages/core/background:test_support",
       "//components/query_tiles",

@@ -476,6 +476,7 @@ static_library("ui") {
     "//chrome/browser/search_engines",
     "//chrome/browser/share",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/sync",
     "//chrome/browser/ui/views/side_panel:side_panel_enums",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
@@ -769,6 +770,9 @@ static_library("ui") {
     "//chrome/browser/profiling_host",
 
     "//chrome/browser/permissions",
+
+    # TODO(crbug.com/344921703): Remove circular dependencies.
+    "//chrome/browser/sync",
   ]
 
   if (enable_vr && is_win) {
@@ -5070,6 +5074,13 @@ static_library("ui") {
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_view.h",
+      "toolbar_controller_util.cc",
+      "toolbar_controller_util.h",
+      "views/send_tab_to_self/send_tab_to_self_bubble.cc",
+      "views/send_tab_to_self/send_tab_to_self_bubble_controller.cc",
+      "views/send_tab_to_self/send_tab_to_self_bubble_controller.h",
+      "views/send_tab_to_self/send_tab_to_self_bubble_view.cc",
+      "views/send_tab_to_self/send_tab_to_self_bubble_view.h",
       "views/side_panel/companion/companion_side_panel_controller_utils.h",
       "views/side_panel/companion/companion_tab_helper.cc",
       "views/side_panel/companion/companion_tab_helper.h",
@@ -5089,7 +5100,9 @@ static_library("ui") {
       "views/side_panel/history_clusters/history_clusters_tab_helper.h",
       "views/side_panel/performance_controls/performance_side_panel_model.cc",
       "views/side_panel/performance_controls/performance_side_panel_model.h",
+      "views/side_panel/read_anything/read_anything_side_panel_controller_utils.cc",
       "views/side_panel/read_anything/read_anything_side_panel_controller_utils.h",
+      "views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.cc",
       "views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.h",
       "views/side_panel/read_anything/read_anything_tab_helper.cc",
       "views/side_panel/read_anything/read_anything_tab_helper.h",
@@ -5105,15 +5118,6 @@ static_library("ui") {
       "views/side_panel/side_panel_prefs.h",
       "views/side_panel/side_panel_ui.cc",
       "views/side_panel/side_panel_ui.h",
-      "toolbar_controller_util.cc",
-      "toolbar_controller_util.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_controller.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_controller.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble_view.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_view.h",
-      "views/side_panel/read_anything/read_anything_side_panel_controller_utils.cc",
-      "views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.cc",
 
       # This test header is included because it contains forward declarations
       # needed for "friend" statements for use in tests.

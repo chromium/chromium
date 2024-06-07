@@ -448,6 +448,7 @@ source_set("web_applications") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/shortcuts",
+    "//chrome/browser/sync:factories",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",

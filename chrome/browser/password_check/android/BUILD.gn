@@ -23,6 +23,7 @@ source_set("unit_tests") {
     ":password_check_enums_srcjar",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/sync",
     "//chrome/test:test_support",
     "//components/password_manager/core/browser",
     "//components/signin/public/identity_manager",

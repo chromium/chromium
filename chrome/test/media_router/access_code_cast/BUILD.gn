@@ -20,6 +20,7 @@ static_library("access_code_cast_integration_base") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
     "//chrome/common",

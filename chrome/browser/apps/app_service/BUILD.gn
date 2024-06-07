@@ -53,6 +53,7 @@ source_set("app_service") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",
+    "//chrome/browser/sync",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
@@ -439,6 +440,7 @@ source_set("test_support") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//chrome/browser/sync",
     "//chrome/test:test_support",
     "//components/services/app_service",
     "//skia",
