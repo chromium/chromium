@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/audio/audio_system.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -94,7 +95,8 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
        ExtensionRegistry::Get(browser_context_)->enabled_extensions()) {
     const ExtensionId& extension_id = extension->id();
     if (router->ExtensionHasEventListener(extension_id, kEventName) &&
-        extension->permissions_data()->HasAPIPermission("webrtcAudioPrivate")) {
+        extension->permissions_data()->HasAPIPermission(
+            mojom::APIPermissionID::kWebrtcAudioPrivate)) {
       std::unique_ptr<Event> event =
           std::make_unique<Event>(events::WEBRTC_AUDIO_PRIVATE_ON_SINKS_CHANGED,
                                   kEventName, base::Value::List());
