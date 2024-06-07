@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -63,11 +64,17 @@ public class CentralAccountCardPreference extends Preference implements ProfileD
         ImageView image = (ImageView) holder.findViewById(R.id.central_account_image);
         image.setImageDrawable(profileData.getImage());
 
-        // TODO(b/326574743) Handle when getFullName() returns null.
         TextView name = (TextView) holder.findViewById(R.id.central_account_name);
-        name.setText(profileData.getFullName());
-
         TextView email = (TextView) holder.findViewById(R.id.central_account_email);
+        if (profileData.getFullName() != null) {
+            email.setTextAppearance(R.style.TextAppearance_TextSmall_Secondary);
+            name.setVisibility(View.VISIBLE);
+            name.setText(profileData.getFullName());
+        } else {
+            // TODO(crbug.com/345687670): Add render test for this case.
+            name.setVisibility(View.GONE);
+            email.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+        }
         email.setText(profileData.getAccountEmail());
     }
 
