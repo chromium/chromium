@@ -75,13 +75,18 @@ void AutofillDriverRouter::TriggerFormExtractionExcept(
   ForEachFrame(form_forest_, [&](AutofillDriver& driver_ref) {
     AutofillDriver* driver = &driver_ref;
     do {
+      if (driver == &exception) {
+        continue;
+      }
+      if (!driver->IsInActiveFrame()) {
+        // The `form_forest_` main contain inactive frames because it retains
+        // BFcached frames.
+        continue;
+      }
       if (!already_triggered.insert(driver).second) {
         // An earlier invocation of this lambda has executed the rest of this
         // loop's body for `driver` and hence also for all its ancestors.
         break;
-      }
-      if (driver == &exception) {
-        continue;
       }
       driver->TriggerFormExtractionInDriverFrame();
     } while ((driver = driver->GetParent()) != nullptr);
