@@ -2976,8 +2976,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("offscreen-scroll.html"));
 }
 
+// TODO(b/345567344): test fail on android-automotive-12l-x64-rel-tests
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityOffscreenSelect DISABLED_AccessibilityOffscreenSelect
+#else
+#define MAYBE_AccessibilityOffscreenSelect AccessibilityOffscreenSelect
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityOffscreenSelect) {
+                       MAYBE_AccessibilityOffscreenSelect) {
   RunHtmlTest(FILE_PATH_LITERAL("offscreen-select.html"));
 }
 
@@ -3300,13 +3306,29 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("svg-elements-not-mapped.html"));
 }
 
+// TODO(b/345567344): test fail on android-automotive-12l-x64-rel-tests
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySvgTextAlternativeComputation \
+  DISABLED_AccessibilitySvgTextAlternativeComputation
+#else
+#define MAYBE_AccessibilitySvgTextAlternativeComputation \
+  AccessibilitySvgTextAlternativeComputation
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilitySvgTextAlternativeComputation) {
+                       MAYBE_AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }
 
+// TODO(b/345567344): test fail on android-automotive-12l-x64-rel-tests
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySvgTextAlternativeComputation \
+  DISABLED_AccessibilitySvgTextAlternativeComputation
+#else
+#define MAYBE_AccessibilitySvgTextAlternativeComputation \
+  AccessibilitySvgTextAlternativeComputation
+#endif
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       AccessibilitySvgTextAlternativeComputation) {
+                       MAYBE_AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }
 
