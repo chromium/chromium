@@ -88,6 +88,9 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             if (tabGroupModelFilter.isTabInTabGroup(tab)) return true;
 
             tabGroupModelFilter.createSingleTabGroup(tab, /* notify= */ true);
+            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
+            }
             return true;
         }
 

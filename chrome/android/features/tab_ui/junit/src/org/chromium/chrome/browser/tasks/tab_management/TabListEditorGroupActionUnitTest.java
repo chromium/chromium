@@ -150,6 +150,7 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testSingleTabToGroup() {
         configure(false);
         List<Integer> tabIds = new ArrayList<>();
@@ -170,6 +171,7 @@ public class TabListEditorGroupActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
         verify(mGroupFilter).createSingleTabGroup(tab, true);
+        verify(mTabGroupCreationDialogManager).showDialog(tab.getRootId(), mGroupFilter);
 
         tab.setTabGroupId(new Token(1L, 2L));
         when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);

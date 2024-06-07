@@ -1817,6 +1817,26 @@ public class TabSwitcherLayoutTest {
     @DisableFeatures({
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    public void testTabGroupDialogSingleTab() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 1);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        // Create a tab group.
+        mergeNormalTabsToAGroupWithDialog(cta, 1);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupNoShowSyncDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
