@@ -86,6 +86,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
 
   FetchAndRankFlow(Profile* profile,
                    JNIEnv* env,
+                   jni_zero::ScopedJavaGlobalRef<jobject> jobj,
                    base::Time current_time,
                    bool fetch_local_tabs,
                    jni_zero::ScopedJavaGlobalRef<jobject> j_suggestions,
@@ -94,6 +95,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
             visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance()
                 ->GetForProfile(profile)),
         env_(env),
+        jobj_(jobj),
         j_suggestions_(j_suggestions),
         j_callback_(j_callback),
         fetch_options_(
@@ -153,7 +155,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
             (tab_data->last_active_tab.session_tag == std::nullopt);
 
         Java_VisitedUrlRankingBackend_addSuggestionEntry(
-            env_,
+            env_, jobj_,
             base::android::ConvertUTF8ToJavaString(
                 env_, tab_data->last_active_tab.session_name.value_or("?")),
             url::GURLAndroid::FromNativeGURL(
@@ -179,6 +181,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
  private:
   raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;
   raw_ptr<JNIEnv> env_;
+  jni_zero::ScopedJavaGlobalRef<jobject> jobj_;
   jni_zero::ScopedJavaGlobalRef<jobject> j_suggestions_;
   jni_zero::ScopedJavaGlobalRef<jobject> j_callback_;
   const FetchOptions fetch_options_;
@@ -243,7 +246,8 @@ void VisitedUrlRankingBackend::GetRankedSuggestions(
   auto current_time =
       base::Time::FromMillisecondsSinceUnixEpoch(current_time_ms);
   scoped_refptr<FetchAndRankFlow> flow = base::MakeRefCounted<FetchAndRankFlow>(
-      profile_, env, current_time, fetch_local_tabs, j_suggestions, j_callback);
+      profile_, env, jobj_, current_time, fetch_local_tabs, j_suggestions,
+      j_callback);
 
   flow->RunFlow();
 }

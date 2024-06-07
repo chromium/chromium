@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.Sugg
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.components.visited_url_ranking.ScoredURLUserAction;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -91,6 +92,8 @@ public class TabResumptionModuleMediator {
 
         private long mFirstLoadTime;
         private boolean mIsStable;
+        private SuggestionBundle mBundle;
+        private @ResultStrength int mStrength;
 
         /**
          * @param dataProvider TabResumptionDataProvider instance owned by this class.
@@ -102,21 +105,46 @@ public class TabResumptionModuleMediator {
                 @NonNull Runnable statusChangedCallback) {
             mDataProvider = dataProvider;
             mDataProvider.setStatusChangedCallback(statusChangedCallback);
+            mStrength = ResultStrength.TENTATIVE;
             mIsAlive = true;
         }
 
         void destroy() {
+            if (mBundle != null) { // Do not check `mStrength`.
+                recordSeenActionForEntries(mBundle.entries);
+            }
+
             mDataProvider.setStatusChangedCallback(null);
             mDataProvider.destroy();
             if (mHandler != null) {
                 mHandler.removeCallbacksAndMessages(null);
                 mHandler = null;
             }
-            // Activates if STABLE and FORCED_NULL results isn't seen, and timeout has triggered
-            // yet.
-            // This includes the case where TENTATIVE tiles are quickly clicked by a user.
+
+            // Activates if STABLE and FORCED_NULL results isn't seen, and timeout has not been
+            // triggered yet. This includes the case where TENTATIVE tiles are quickly clicked by a
+            // user.
             ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mModuleShowConfig);
             mIsAlive = false;
+        }
+
+        /** Records the "activated" action for the given `entry`. */
+        void recordActivatedActionForEntry(SuggestionEntry entry) {
+            if (entry.trainingInfo != null) {
+                entry.trainingInfo.record(ScoredURLUserAction.ACTIVATED);
+            }
+        }
+
+        /** Record the "seen" action for the given `entries`. */
+        private void recordSeenActionForEntries(List<SuggestionEntry> entries) {
+            // If needed, we can denoise this by requiring that rendered tiled have been scrolled
+            // onto screen. Another idea is to require suggestions to exist for some time bound.
+            for (SuggestionEntry entry : entries) {
+                if (entry.trainingInfo != null) {
+                    // If an entry has previously recorded() then this would be a no-op.
+                    entry.trainingInfo.record(ScoredURLUserAction.SEEN);
+                }
+            }
         }
 
         /**
@@ -226,18 +254,26 @@ public class TabResumptionModuleMediator {
             // that happens, to prevent interfering with the UI of a succeeding Session.
             if (!mIsAlive) return;
 
+            if (mBundle != null && mStrength != ResultStrength.TENTATIVE) {
+                // Suggestions have already been rendered, and is being overwritten. Record that the
+                // old suggestions were seen if not TENTATIVE, which might not have the chance to
+                // stay on screen long enough before being replaced.
+                recordSeenActionForEntries(mBundle.entries);
+            }
+
             List<SuggestionEntry> suggestions = result.suggestions;
-            SuggestionBundle bundle =
+            mBundle =
                     (suggestions != null && suggestions.size() > 0)
                             ? makeSuggestionBundle(suggestions)
                             : null;
+
             @ModuleShowConfig Integer prevModuleShowConfig = mModuleShowConfig;
             // This directly changes `mShowHideHelper` results.
-            mModuleShowConfig = TabResumptionModuleMetricsUtils.computeModuleShowConfig(bundle);
+            mModuleShowConfig = TabResumptionModuleMetricsUtils.computeModuleShowConfig(mBundle);
 
-            @ResultStrength int strength = result.strength;
-            if (strength == ResultStrength.TENTATIVE) {
-                setPropertiesAndTriggerRender(bundle);
+            mStrength = result.strength;
+            if (mStrength == ResultStrength.TENTATIVE) {
+                setPropertiesAndTriggerRender(mBundle);
                 // On first call, start timeout to transition to STABLE and log.
                 if (mHandler == null) {
                     mHandler = new Handler();
@@ -258,17 +294,17 @@ public class TabResumptionModuleMediator {
                     mShowHideHelper.maybeNotifyModuleDelegate();
                 }
 
-            } else if (strength == ResultStrength.STABLE) {
+            } else if (mStrength == ResultStrength.STABLE) {
                 mShowHideHelper.maybeNotifyModuleDelegate();
-                setPropertiesAndTriggerRender(bundle);
+                setPropertiesAndTriggerRender(mBundle);
                 ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ true, mModuleShowConfig);
 
-            } else if (strength == ResultStrength.FORCED_NULL) {
+            } else if (mStrength == ResultStrength.FORCED_NULL) {
                 assert !mShowHideHelper.shouldShow();
                 mShowHideHelper.maybeNotifyModuleDelegate();
                 // Activates if STABLE was never encountered. In this case, TENTATIVE suggestions
                 // are considered stable (therefore log `prevModuleShowConfig`).
-                setPropertiesAndTriggerRender(bundle);
+                setPropertiesAndTriggerRender(mBundle);
                 ensureStabilityAndLogMetrics(
                         /* recordStabilityDelay= */ false, prevModuleShowConfig);
             }
@@ -303,7 +339,11 @@ public class TabResumptionModuleMediator {
         mModel = model;
         mUrlImageProvider = urlImageProvider;
         mStatusChangedCallback = statusChangedCallback;
-        mSuggestionClickCallback = suggestionClickCallback;
+        mSuggestionClickCallback =
+                (SuggestionEntry entry) -> {
+                    mSession.recordActivatedActionForEntry(entry);
+                    suggestionClickCallback.onSuggestionClicked(entry);
+                };
         mShowHideHelper = new ShowHideHelper();
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
@@ -313,15 +353,18 @@ public class TabResumptionModuleMediator {
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallback);
     }
 
+    /** Starts a new Session with the given `dataProvider`. There should be no existing Session. */
     void startSession(@NonNull TabResumptionDataProvider dataProvider) {
         assert mSession == null;
         mSession = new Session(dataProvider, mStatusChangedCallback);
     }
 
+    /** Ends the Session if one exists. If no Session exists then no-op (i.e., be forgiving). */
     void endSession() {
-        assert mSession != null;
-        mSession.destroy();
-        mSession = null;
+        if (mSession != null) {
+            mSession.destroy();
+            mSession = null;
+        }
     }
 
     void destroy() {

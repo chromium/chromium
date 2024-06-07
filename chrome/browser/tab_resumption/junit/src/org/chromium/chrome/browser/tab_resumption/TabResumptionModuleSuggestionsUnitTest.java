@@ -235,14 +235,16 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
     public void testCompareSuggestionsWithTraingIds() {
         SuggestionEntry entry =
                 new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
-        SuggestionEntry entryWithTrainingIds =
+        SuggestionEntry entryWithTrainingInfo =
                 new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
-        entryWithTrainingIds.trainingIds =
-                new SuggestionEntry.TrainingIds(
-                        /* visitId= */ "www.google.com", /* requestId= */ 123L);
+        entryWithTrainingInfo.trainingInfo =
+                new TrainingInfo(
+                        /* nativeVisitedUrlRankingBackend= */ 0L,
+                        /* visitId= */ "www.google.com",
+                        /* requestId= */ 123L);
 
-        // The presence of `trainingIds` does not affect comparison.
-        Assert.assertEquals(0, entry.compareTo(entryWithTrainingIds));
+        // The presence of `trainingInfo` does not affect comparison.
+        Assert.assertEquals(0, entry.compareTo(entryWithTrainingInfo));
     }
 
     @Test

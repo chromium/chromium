@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.components.visited_url_ranking.ScoredURLUserAction;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -47,6 +48,40 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
 public class TabResumptionModuleMediatorUnitTest extends TestSupport {
+
+    /** Custom mock for TrainingInfo. */
+    class FakeTrainingInfo extends TrainingInfo {
+        // Counter to ensure distinctness of instantiated FakeTrainingInfo. */
+        private static int sRequestIdCounter;
+        public String recordHistory = "";
+
+        FakeTrainingInfo(SuggestionEntry entry) {
+            super(
+                    /* nativeVisitedUrlRankingBackend= */ 0L,
+                    /* visitId= */ entry.url.getSpec(),
+                    /* requestId= */ sRequestIdCounter);
+            ++sRequestIdCounter;
+        }
+
+        @Override
+        void record(@ScoredURLUserAction int scoredUrlUserAction) {
+            switch (scoredUrlUserAction) {
+                case ScoredURLUserAction.SEEN:
+                    recordHistory += "(SEEN)";
+                    break;
+                case ScoredURLUserAction.ACTIVATED:
+                    recordHistory += "(ACTIVATED)";
+                    break;
+                case ScoredURLUserAction.DISMISSED:
+                    recordHistory += "(DISMISSED)";
+                    break;
+                default:
+                    recordHistory += "(?)";
+                    break;
+            }
+        }
+    }
+
     @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     @Mock private ModuleDelegate mModuleDelegate;
@@ -89,10 +124,10 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     @After
     public void tearDown() {
-        mMediator.endSession();
+        mMediator.endSession(); // Okay even if endSession() has already been called.
         mMediator.destroy();
-        Assert.assertNull(mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
         mMediator = null;
+        Assert.assertNull(mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
         mModel = null;
         TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(null);
     }
@@ -430,6 +465,131 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         testMaxTilesNumberImpl(2);
     }
 
+    @Test
+    @SmallTest
+    public void testTrainingInfoUsageTentativeClick() {
+        List<SuggestionEntry> tentativeSuggestions =
+                Arrays.asList(makeSyncDerivedSuggestion(0), makeSyncDerivedSuggestion(1));
+        List<FakeTrainingInfo> tentativeFakeTrainingInfos =
+                addFakeTrainingInfo(tentativeSuggestions);
+
+        // Tentative suggestions = something: Call onDataReady() and show (tentative).
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new SuggestionsResult(ResultStrength.TENTATIVE, tentativeSuggestions));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(0).title);
+        Assert.assertEquals("Google Cat", getSuggestionBundle().entries.get(1).title);
+
+        // No user interactions.
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(0).recordHistory);
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(1).recordHistory);
+
+        // User click on entry 1.
+        mModel.get(TabResumptionModuleProperties.CLICK_CALLBACK)
+                .onSuggestionClicked(tentativeSuggestions.get(1));
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(0).recordHistory);
+        Assert.assertEquals("(ACTIVATED)", tentativeFakeTrainingInfos.get(1).recordHistory);
+
+        // Explicitly end session.
+        mMediator.endSession();
+        Assert.assertEquals("(SEEN)", tentativeFakeTrainingInfos.get(0).recordHistory);
+        Assert.assertEquals("(ACTIVATED)(SEEN)", tentativeFakeTrainingInfos.get(1).recordHistory);
+    }
+
+    @Test
+    @SmallTest
+    public void testTrainingInfoUsageTentativeStableStable() {
+        List<SuggestionEntry> tentativeSuggestions =
+                Arrays.asList(makeSyncDerivedSuggestion(0), makeSyncDerivedSuggestion(1));
+        List<SuggestionEntry> stableSuggestions1 =
+                Arrays.asList(makeSyncDerivedSuggestion(1), makeSyncDerivedSuggestion(0));
+        List<SuggestionEntry> stableSuggestions2 = Arrays.asList(makeSyncDerivedSuggestion(0));
+
+        List<FakeTrainingInfo> tentativeFakeTrainingInfos =
+                addFakeTrainingInfo(tentativeSuggestions);
+        List<FakeTrainingInfo> stableFakeTrainingInfos1 = addFakeTrainingInfo(stableSuggestions1);
+        List<FakeTrainingInfo> stableFakeTrainingInfos2 = addFakeTrainingInfo(stableSuggestions2);
+
+        // Tentative suggestions = something: Call onDataReady() and show (tentative).
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new SuggestionsResult(ResultStrength.TENTATIVE, tentativeSuggestions));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(0).title);
+        Assert.assertEquals("Google Cat", getSuggestionBundle().entries.get(1).title);
+
+        // No user interactions.
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(0).recordHistory);
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(1).recordHistory);
+
+        // Stable suggestions 1 = something: Show stable results.
+        mMediator.loadModule();
+        verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(1)
+                .onResult(new SuggestionsResult(ResultStrength.STABLE, stableSuggestions1));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals("Google Cat", getSuggestionBundle().entries.get(0).title);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(1).title);
+
+        // No user interactions.
+        Assert.assertEquals("", stableFakeTrainingInfos1.get(0).recordHistory);
+        Assert.assertEquals("", stableFakeTrainingInfos1.get(1).recordHistory);
+
+        // The *previous* suggestions don't get training info logging since they're TENTATIVE.
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(0).recordHistory);
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(1).recordHistory);
+
+        // Stable suggestions 2 = something: Update shown stable results.
+        mMediator.loadModule();
+        verify(mDataProvider, times(3)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(2)
+                .onResult(new SuggestionsResult(ResultStrength.STABLE, stableSuggestions2));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(0).title);
+
+        // No user interactions.
+        Assert.assertEquals("", stableFakeTrainingInfos2.get(0).recordHistory);
+
+        // The *previous* suggestions get training info logging since they're STABLE.
+        Assert.assertEquals("(SEEN)", stableFakeTrainingInfos1.get(0).recordHistory);
+        Assert.assertEquals("(SEEN)", stableFakeTrainingInfos1.get(1).recordHistory);
+
+        // Explicitly end session.
+        mMediator.endSession();
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(0).recordHistory);
+        Assert.assertEquals("", tentativeFakeTrainingInfos.get(1).recordHistory);
+        Assert.assertEquals("(SEEN)", stableFakeTrainingInfos1.get(0).recordHistory);
+        Assert.assertEquals("(SEEN)", stableFakeTrainingInfos1.get(1).recordHistory);
+        Assert.assertEquals("(SEEN)", stableFakeTrainingInfos2.get(0).recordHistory);
+    }
+
     private void testMaxTilesNumberImpl(int maxTilesNumber) {
         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.setForTesting(maxTilesNumber);
         List<SuggestionEntry> suggestions =
@@ -462,5 +622,16 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     private SuggestionBundle getSuggestionBundle() {
         return (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
+    }
+
+    private List<FakeTrainingInfo> addFakeTrainingInfo(List<SuggestionEntry> entries) {
+        List<FakeTrainingInfo> fakeTrainingInfos = new ArrayList<FakeTrainingInfo>();
+        for (SuggestionEntry entry : entries) {
+            Assert.assertNull(entry.trainingInfo);
+            FakeTrainingInfo traingInfo = new FakeTrainingInfo(entry);
+            fakeTrainingInfos.add(traingInfo);
+            entry.trainingInfo = traingInfo;
+        }
+        return fakeTrainingInfos;
     }
 }

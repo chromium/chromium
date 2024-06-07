@@ -55,7 +55,7 @@ public class SyncDerivedSuggestionEntrySource
      * @param signinManager To observe signin state changes.
      * @param identityManager To get initial signin state.
      * @param syncService To observe sync state changes.
-     * @param foreignSessionHelper To fetch ForenSession data.
+     * @param suggestionBackend To get suggestions and trigger update.
      * @param servesLocalTabs Whether Local Tabs may be served as results.
      */
     @VisibleForTesting
@@ -97,7 +97,6 @@ public class SyncDerivedSuggestionEntrySource
                 servesLocalTabs);
     }
 
-    /** Implements {@link TabResumptionDataProvider} */
     public void destroy() {
         mSyncService.removeSyncStateChangedListener(this);
         mSigninManager.removeSignInStateObserver(this);
@@ -129,7 +128,6 @@ public class SyncDerivedSuggestionEntrySource
         dispatchSourceDataChangedObservers(true);
     }
 
-    /** Implements {@link SignInStateObserver} */
     @Override
     public void onSignedOut() {
         mIsSignedIn = false;

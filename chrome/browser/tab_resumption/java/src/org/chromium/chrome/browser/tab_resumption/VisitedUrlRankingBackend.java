@@ -78,7 +78,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
 
     /** Helper to add new {@link SuggestionEntry} to list. */
     @CalledByNative
-    private static void addSuggestionEntry(
+    private void addSuggestionEntry(
             @NonNull String sourceName,
             @NonNull GURL url,
             @NonNull String title,
@@ -90,7 +90,8 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
         SuggestionEntry entry =
                 new SuggestionEntry(sourceName, url, title, lastActiveTime, localTabId);
         if (!visitId.isEmpty() && requestId >= 0L) {
-            entry.trainingIds = new SuggestionEntry.TrainingIds(visitId, requestId);
+            entry.trainingInfo =
+                    new TrainingInfo(mNativeVisitedUrlRankingBackend, visitId, requestId);
         }
         suggestions.add(entry);
     }

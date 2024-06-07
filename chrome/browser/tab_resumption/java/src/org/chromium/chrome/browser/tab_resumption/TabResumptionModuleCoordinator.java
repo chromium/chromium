@@ -40,7 +40,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
         mDataProviderFactory = dataProviderFactory;
         mUrlImageProvider = urlImageProvider;
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
-        SuggestionClickCallback wrappedClickCallback =
+        SuggestionClickCallback suggstionClickCallback =
                 (SuggestionEntry entry) -> {
                     if (entry.isLocalTab()) {
                         // TODO(crbug.com/343095625): Add error handling, and use onUrlClicked() as
@@ -58,7 +58,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* statusChangedCallback= */ this::showModule,
                         /* seeMoreLinkClickCallback= */ this::onSeeMoreClicked,
-                        /* suggestionClickCallback= */ wrappedClickCallback);
+                        suggstionClickCallback);
         mMediator.startSession(mDataProviderFactory.make());
     }
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -15,29 +14,12 @@ import org.chromium.url.GURL;
 /** A single suggestion entry in the tab resumption module. */
 public class SuggestionEntry implements Comparable<SuggestionEntry> {
 
-    /** Opaque IDs to identify a suggestion for model training. */
-    static class TrainingIds {
-        public final String visitId;
-        public final long requestId;
-
-        /**
-         * @param visitId Opaque ID to identify the suggestion. Non-empty.
-         * @param requestId Opaque ID to identify the training request. Non-negative.
-         */
-        TrainingIds(@NonNull String visitId, long requestId) {
-            assert !visitId.isEmpty();
-            assert requestId >= 0L;
-            this.visitId = visitId;
-            this.requestId = requestId;
-        }
-    }
-
     public final String sourceName;
     public final GURL url;
     public final String title;
     public final long lastActiveTime;
     public final int localTabId;
-    @Nullable public TrainingIds trainingIds;
+    @Nullable public TrainingInfo trainingInfo;
 
     /**
      * @param sourceName Name of device where the tab originates.
@@ -53,7 +35,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
         this.title = title;
         this.lastActiveTime = lastActiveTime;
         this.localTabId = localTabId;
-        // this.trainingIds defaults to null and gets assigned separately.
+        // this.trainingInfo defaults to null, and gets assigned separately.
     }
 
     /** Instantiates from `sourceName` and individual fields, assuming foreign tab. */
