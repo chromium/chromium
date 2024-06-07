@@ -10,6 +10,9 @@
 
 namespace ash {
 
+DeviceImage::DeviceImage() = default;
+DeviceImage::~DeviceImage() = default;
+
 DeviceImage::DeviceImage(const std::string& device_key,
                          const std::string& data_url)
     : device_key_(device_key), data_url_(data_url) {}
@@ -23,6 +26,10 @@ DeviceImage::DeviceImage(const std::string& device_key,
     // Convert image to a gfx::Image for display in notifications.
     image_ = gfx::Image::CreateFrom1xBitmap(bitmap);
   }
+}
+
+bool DeviceImage::IsValid() const {
+  return !data_url_.empty() || !image_.IsEmpty();
 }
 
 }  // namespace ash

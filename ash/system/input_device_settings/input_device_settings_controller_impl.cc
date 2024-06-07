@@ -2689,6 +2689,7 @@ void InputDeviceSettingsControllerImpl::GetDeviceImage(
   CHECK(active_account_id_.has_value());
   metadata_manager_->GetDeviceImage(
       device_key, active_account_id_.value(),
+      DeviceImageDestination::kNotification,
       base::BindOnce(
           &InputDeviceSettingsControllerImpl::OnDeviceImageDownloaded,
           weak_ptr_factory_.GetWeakPtr(), id));

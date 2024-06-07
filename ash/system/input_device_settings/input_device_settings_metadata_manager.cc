@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metadata_manager.h"
 
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -33,15 +34,25 @@ void InputDeviceSettingsMetadataManager::RegisterLocalStatePrefs(
 void InputDeviceSettingsMetadataManager::GetDeviceImage(
     const std::string& device_key,
     const AccountId& account_id,
+    DeviceImageDestination destination,
     ImageDownloadCallback callback) {
-  GetDeviceImagePreferringCache(device_key, account_id, std::move(callback));
+  GetDeviceImagePreferringCache(device_key, account_id, destination,
+                                std::move(callback));
 }
 
 void InputDeviceSettingsMetadataManager::OnDeviceImageFetched(
+    DeviceImageDestination destination,
     const DeviceImage& device_image) {
   const auto device_key = device_image.device_key();
-  device_image_storage_->PersistDeviceImage(device_key,
-                                            device_image.data_url());
+  // Check if the device image is specifically for settings and is a valid
+  // image.
+  if (destination == DeviceImageDestination::kSettings &&
+      device_image.IsValid()) {
+    // Save the device image data (represented as a data URL) to persistent
+    // storage, using the device_key as a unique identifier.
+    device_image_storage_->PersistDeviceImage(device_key,
+                                              device_image.data_url());
+  }
   auto it = device_callback_map_.find(device_key);
   if (it != device_callback_map_.end()) {
     std::move(it->second).Run(device_image);
@@ -58,6 +69,7 @@ InputDeviceSettingsMetadataManager::GetCachedDeviceImageDataUri(
 void InputDeviceSettingsMetadataManager::GetDeviceImagePreferringCache(
     const std::string& device_key,
     const AccountId& account_id,
+    DeviceImageDestination destination,
     ImageDownloadCallback callback) {
   const auto device_image = device_image_storage_->GetImage(device_key);
   if (device_image.has_value()) {
@@ -68,7 +80,7 @@ void InputDeviceSettingsMetadataManager::GetDeviceImagePreferringCache(
   image_downloader_->DownloadImage(
       device_key, account_id,
       base::BindOnce(&InputDeviceSettingsMetadataManager::OnDeviceImageFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), destination));
 }
 
 }  // namespace ash

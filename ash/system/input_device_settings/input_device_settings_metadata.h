@@ -28,6 +28,11 @@ enum class MetadataTier {
   kMaxValue = kHasButtonConfig,
 };
 
+enum class DeviceImageDestination {
+  kNotification = 0,
+  kSettings = 1,
+};
+
 struct ASH_EXPORT MouseMetadata {
   mojom::CustomizationRestriction customization_restriction;
   mojom::MouseButtonConfig mouse_button_config;

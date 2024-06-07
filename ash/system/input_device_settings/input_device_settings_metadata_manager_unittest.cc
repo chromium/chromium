@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/system/input_device_settings/device_image_downloader.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -23,6 +24,10 @@ constexpr char kExpectedDataUri[] =
     "data:image/"
     "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAF0lEQVQokWNk+M+"
     "ABzDhkxyVHpUmRRoAmpABJ+eiyP8AAAAASUVORK5CYII=";
+
+const AccountId account_1 =
+    AccountId::FromUserEmailGaiaId("user@example.com", "123");
+
 }  // namespace
 
 class InputDeviceSettingsMetadataManagerTest : public AshTestBase {
@@ -55,8 +60,7 @@ class InputDeviceSettingsMetadataManagerTest : public AshTestBase {
 TEST_F(InputDeviceSettingsMetadataManagerTest, GetDeviceImage) {
   base::RunLoop run_loop;
   manager()->GetDeviceImage(
-      test_device_key,
-      AccountId::FromUserEmailGaiaId("user@example.com", "123"),
+      test_device_key, account_1, DeviceImageDestination::kNotification,
       base::BindLambdaForTesting([&](const DeviceImage& device_image) {
         // Confirm that the image was encoded as a base64 data URL.
         EXPECT_TRUE(base::StartsWith(device_image.data_url(),
@@ -67,15 +71,33 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, GetDeviceImage) {
   run_loop.Run();
 }
 
-TEST_F(InputDeviceSettingsMetadataManagerTest, DeviceImageCached) {
-  manager()->GetDeviceImage(
-      test_device_key,
-      AccountId::FromUserEmailGaiaId("user@example.com", "123"),
-      base::DoNothing());
+TEST_F(InputDeviceSettingsMetadataManagerTest, DeviceImageForSettingsIsCached) {
+  manager()->GetDeviceImage(test_device_key, account_1,
+                            DeviceImageDestination::kSettings,
+                            base::DoNothing());
   base::RunLoop().RunUntilIdle();
   const auto data_url = manager()->GetCachedDeviceImageDataUri(test_device_key);
   EXPECT_TRUE(data_url.has_value());
   EXPECT_EQ(kExpectedDataUri, data_url.value());
+}
+
+TEST_F(InputDeviceSettingsMetadataManagerTest, NotificationImageIsNotCached) {
+  manager()->GetDeviceImage(test_device_key, account_1,
+                            DeviceImageDestination::kNotification,
+                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  const auto data_url = manager()->GetCachedDeviceImageDataUri(test_device_key);
+  EXPECT_FALSE(data_url.has_value());
+}
+
+TEST_F(InputDeviceSettingsMetadataManagerTest, InvalidImageNotCached) {
+  image_downloader_.set_should_fail(/*should_fail=*/true);
+  manager()->GetDeviceImage(test_device_key, account_1,
+                            DeviceImageDestination::kSettings,
+                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  const auto data_url = manager()->GetCachedDeviceImageDataUri(test_device_key);
+  EXPECT_FALSE(data_url.has_value());
 }
 
 }  // namespace ash
