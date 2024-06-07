@@ -12,18 +12,13 @@ import {BridgeConstants} from './bridge_constants.js';
 import {PanelNodeMenuItemData} from './panel_menu_data.js';
 
 export class PanelBridge {
-  /**
-   * @param {!PanelNodeMenuItemData} itemData
-   * @return {!Promise}
-   */
-  static addMenuItem(itemData) {
+  static addMenuItem(itemData: PanelNodeMenuItemData): Promise<void> {
     return BridgeHelper.sendMessage(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ADD_MENU_ITEM, itemData);
   }
 
-  /** @return {!Promise} */
-  static async onCurrentRangeChanged() {
+  static async onCurrentRangeChanged(): Promise<void> {
     return BridgeHelper.sendMessage(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED);
