@@ -12,7 +12,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
-#include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
@@ -82,20 +81,24 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
                       /*use_priority_header=*/true);
 
   const uint64_t stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-  MockQuicData socket_data(version_);
-  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
-  socket_data.AddWrite(
-      SYNCHRONOUS, ConstructConnectUdpRequestPacket(
-                       2, stream_id, proxy.host(),
-                       "/.well-known/masque/udp/www.example.org/443/", false));
-  socket_data.AddRead(ASYNC, ConstructServerSettingsPacket(3));
-  socket_data.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
-  socket_data.AddReadPauseForever();
-  socket_data.AddWrite(ASYNC, client_maker_.MakeAckPacket(3, 3, 4, 3));
-  socket_data.AddWrite(ASYNC, ConstructClientH3DatagramPacket(
-                                  4, stream_id, kConnectUdpContextId,
-                                  endpoint_maker.MakeInitialSettingsPacket(1)));
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
+  QuicSocketDataProvider socket_data(version_);
+  socket_data.AddWrite("initial-settings", ConstructInitialSettingsPacket(1))
+      .Sync();
+  socket_data
+      .AddWrite("connect-udp",
+                ConstructConnectUdpRequestPacket(
+                    2, stream_id, proxy.host(),
+                    "/.well-known/masque/udp/www.example.org/443/", false))
+      .Sync();
+  socket_data.AddRead("server-settings", ConstructServerSettingsPacket(3));
+  socket_data.AddRead("ok-response",
+                      ConstructOkResponsePacket(4, stream_id, true));
+  socket_data.AddWrite("ack", client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data.AddWrite("endpoint-initial-settings",
+                       ConstructClientH3DatagramPacket(
+                           4, stream_id, kConnectUdpContextId,
+                           endpoint_maker.MakeInitialSettingsPacket(1)));
+  socket_factory_->AddSocketDataProvider(&socket_data);
 
   auto proxy_chain = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
@@ -145,8 +148,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   // Ensure the session finishes creating before proceeding.
   RunUntilIdle();
 
-  socket_data.ExpectAllReadDataConsumed();
-  socket_data.ExpectAllWriteDataConsumed();
+  EXPECT_TRUE(socket_data.AllDataConsumed());
 }
 
 TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
@@ -387,11 +389,10 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxySessionFails) {
   verify_details.cert_verify_result.is_issued_by_known_root = true;
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  MockQuicData socket_data(version_);
-  socket_data.AddReadPauseForever();
+  QuicSocketDataProvider socket_data(version_);
   // Creation of underlying session fails immediately.
-  socket_data.AddWrite(SYNCHRONOUS, ERR_SOCKET_NOT_CONNECTED);
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
+  socket_data.AddWriteError("creation-fails", ERR_SOCKET_NOT_CONNECTED).Sync();
+  socket_factory_->AddSocketDataProvider(&socket_data);
 
   auto proxy_chain = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
@@ -407,8 +408,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxySessionFails) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
 
-  socket_data.ExpectAllReadDataConsumed();
-  socket_data.ExpectAllWriteDataConsumed();
+  EXPECT_TRUE(socket_data.AllDataConsumed());
 }
 
 TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
@@ -433,11 +433,10 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
   // QUIC proxies do not use priority header.
   client_maker_.set_use_priority_header(false);
 
-  MockQuicData socket_data(version_);
-  socket_data.AddReadPauseForever();  // SYNC/ERR_IO_PENDING
-  socket_data.AddWritePause();
-  socket_data.AddWrite(ASYNC, ConstructInitialSettingsPacket(1));
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
+  // Set up to accept socket creation, but not actually carry any packets.
+  QuicSocketDataProvider socket_data(version_);
+  socket_data.AddPause("nothing-happens");
+  socket_factory_->AddSocketDataProvider(&socket_data);
 
   auto proxy_chain = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
@@ -452,13 +451,13 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
   builder.url = url;
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
+  // Set up the socket, but don't even finish writing initial settings.
   RunUntilIdle();
 
   // Oops, the session went away. This generates an error
   // from `QuicSessionPool::CreateSessionOnProxyStream`.
   factory_->CloseAllSessions(ERR_QUIC_HANDSHAKE_FAILED,
                              quic::QuicErrorCode::QUIC_INTERNAL_ERROR);
-  socket_data.Resume();
 
   ASSERT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
 }
@@ -513,28 +512,31 @@ TEST_P(QuicSessionPoolProxyJobTest,
       /*use_priority_header=*/true);
 
   const uint64_t stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-  MockQuicData socket_data(version_);
-  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
-  socket_data.AddWrite(
-      SYNCHRONOUS, ConstructConnectUdpRequestPacket(
-                       2, stream_id, proxy.host(),
-                       "/.well-known/masque/udp/www.example.org/443/", false));
-  socket_data.AddRead(ASYNC, ConstructServerSettingsPacket(3));
-  socket_data.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
-  socket_data.AddReadPauseForever();
-  socket_data.AddWrite(ASYNC, client_maker_.MakeAckPacket(3, 3, 4, 3));
-  socket_data.AddWrite(ASYNC, ConstructClientH3DatagramPacket(
-                                  4, stream_id, kConnectUdpContextId,
-                                  endpoint_maker.MakeInitialSettingsPacket(1)));
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
+  QuicSocketDataProvider socket_data(version_);
+  socket_data.AddWrite("initial-settings", ConstructInitialSettingsPacket(1))
+      .Sync();
+  socket_data
+      .AddWrite("connect-udp",
+                ConstructConnectUdpRequestPacket(
+                    2, stream_id, proxy.host(),
+                    "/.well-known/masque/udp/www.example.org/443/", false))
+      .Sync();
+  socket_data.AddRead("server-settings", ConstructServerSettingsPacket(3));
+  socket_data.AddRead("ok-response",
+                      ConstructOkResponsePacket(4, stream_id, true));
+  socket_data.AddWrite("ack", client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data.AddWrite("datagram",
+                       ConstructClientH3DatagramPacket(
+                           4, stream_id, kConnectUdpContextId,
+                           endpoint_maker.MakeInitialSettingsPacket(1)));
+  socket_factory_->AddSocketDataProvider(&socket_data);
 
   // Create socket data which should never be consumed. A packet with a
   // PathChallengeFrame written to this socket indicates that the client
   // incorrectly tried to connect directly to the server at its alternate
   // address.
-  MockQuicData socket_data_alt_addr(version_);
-  socket_data_alt_addr.AddReadPauseForever();
-  socket_data_alt_addr.AddSocketDataToFactory(socket_factory_.get());
+  QuicSocketDataProvider socket_data_alt_addr(version_);
+  socket_factory_->AddSocketDataProvider(&socket_data_alt_addr);
 
   auto proxy_chain = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
@@ -563,8 +565,7 @@ TEST_P(QuicSessionPoolProxyJobTest,
   IPEndPoint peer_address = ToIPEndPoint(session->peer_address());
   EXPECT_NE(peer_address, server_preferred_address);
 
-  socket_data.ExpectAllReadDataConsumed();
-  socket_data.ExpectAllWriteDataConsumed();
+  EXPECT_TRUE(socket_data.AllDataConsumed());
 }
 
 }  // namespace net::test
