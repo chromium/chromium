@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.GoogleBottomBar.ButtonClicked"
+<histogram name="CustomTabs.GoogleBottomBar.Button.Clicked"
     enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.GoogleBottomBar.ButtonShown"
+<histogram name="CustomTabs.GoogleBottomBar.Button.Shown"
     enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.GoogleBottomBar.ButtonUpdated"
+<histogram name="CustomTabs.GoogleBottomBar.Button.Updated"
     enum="GoogleBottomBarButtonEvent" expires_after="2025-05-16">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>

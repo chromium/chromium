@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import static org.mockito.Mockito.mock;
@@ -6,6 +10,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SAVE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SHARE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -87,8 +93,7 @@ public class GoogleBottomBarCoordinatorTest {
             testCreateGoogleBottomBarView_evenLayout_logsGoogleBottomBarCreatedWithEvenLayout() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.GoogleBottomBar.Created",
-                        GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
+                        BOTTOM_BAR_CREATED_HISTOGRAM, GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
 
         mGoogleBottomBarCoordinator =
                 createGoogleBottomBarCoordinator(
@@ -104,8 +109,7 @@ public class GoogleBottomBarCoordinatorTest {
             testCreateGoogleBottomBarView_spotlightLayout_logsGoogleBottomBarCreatedWithSpotlightLayout() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.GoogleBottomBar.Created",
-                        GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
+                        BOTTOM_BAR_CREATED_HISTOGRAM, GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
 
         mGoogleBottomBarCoordinator =
                 createGoogleBottomBarCoordinator(
@@ -121,7 +125,7 @@ public class GoogleBottomBarCoordinatorTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                "CustomTabs.GoogleBottomBar.ButtonShown",
+                                BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.UNKNOWN,
                                 GoogleBottomBarButtonEvent.SHARE_CHROME,
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)
@@ -145,7 +149,7 @@ public class GoogleBottomBarCoordinatorTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                "CustomTabs.GoogleBottomBar.ButtonShown",
+                                BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.PIH_CHROME,
                                 GoogleBottomBarButtonEvent.SHARE_CHROME,
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)
@@ -169,7 +173,7 @@ public class GoogleBottomBarCoordinatorTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                "CustomTabs.GoogleBottomBar.ButtonShown",
+                                BUTTON_SHOWN_HISTOGRAM,
                                 GoogleBottomBarButtonEvent.PIH_EMBEDDER,
                                 GoogleBottomBarButtonEvent.SHARE_CHROME,
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)

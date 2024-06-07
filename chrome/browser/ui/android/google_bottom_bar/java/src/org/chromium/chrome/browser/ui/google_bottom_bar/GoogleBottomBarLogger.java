@@ -22,6 +22,12 @@ import java.lang.annotation.RetentionPolicy;
  * the bar, visibility of buttons, and button interactions.
  */
 class GoogleBottomBarLogger {
+
+    static final String BOTTOM_BAR_CREATED_HISTOGRAM = "CustomTabs.GoogleBottomBar.Created";
+    static final String BUTTON_SHOWN_HISTOGRAM = "CustomTabs.GoogleBottomBar.Button.Shown";
+    static final String BUTTON_CLICKED_HISTOGRAM = "CustomTabs.GoogleBottomBar.Button.Clicked";
+    static final String BUTTON_UPDATED_HISTOGRAM = "CustomTabs.GoogleBottomBar.Button.Updated";
+
     private static final String TAG = "GBBLogger";
 
     /**
@@ -84,8 +90,9 @@ class GoogleBottomBarLogger {
      * @param event The layout type (from {@link GoogleBottomBarCreatedEvent}).
      */
     static void logCreatedEvent(@GoogleBottomBarCreatedEvent int event) {
+        assert event < GoogleBottomBarCreatedEvent.COUNT;
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.GoogleBottomBar.Created", event, GoogleBottomBarCreatedEvent.COUNT);
+                BOTTOM_BAR_CREATED_HISTOGRAM, event, GoogleBottomBarCreatedEvent.COUNT);
     }
 
     /**
@@ -94,8 +101,9 @@ class GoogleBottomBarLogger {
      * @param event The button type (from {@link GoogleBottomBarButtonEvent}).
      */
     static void logButtonShown(@GoogleBottomBarButtonEvent int event) {
+        assert event < GoogleBottomBarButtonEvent.COUNT;
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.GoogleBottomBar.ButtonShown", event, GoogleBottomBarButtonEvent.COUNT);
+                BUTTON_SHOWN_HISTOGRAM, event, GoogleBottomBarButtonEvent.COUNT);
     }
 
     /**
@@ -104,10 +112,9 @@ class GoogleBottomBarLogger {
      * @param event The button type (from {@link GoogleBottomBarButtonEvent}).
      */
     static void logButtonUpdated(@GoogleBottomBarButtonEvent int event) {
+        assert event < GoogleBottomBarButtonEvent.COUNT;
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.GoogleBottomBar.ButtonUpdated",
-                event,
-                GoogleBottomBarButtonEvent.COUNT);
+                BUTTON_UPDATED_HISTOGRAM, event, GoogleBottomBarButtonEvent.COUNT);
     }
 
     /**
@@ -116,10 +123,9 @@ class GoogleBottomBarLogger {
      * @param event The button type (from {@link GoogleBottomBarButtonEvent}).
      */
     static void logButtonClicked(@GoogleBottomBarButtonEvent int event) {
+        assert event < GoogleBottomBarButtonEvent.COUNT;
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.GoogleBottomBar.ButtonClicked",
-                event,
-                GoogleBottomBarButtonEvent.COUNT);
+                BUTTON_CLICKED_HISTOGRAM, event, GoogleBottomBarButtonEvent.COUNT);
     }
 
     /**
