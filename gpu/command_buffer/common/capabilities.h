@@ -68,9 +68,6 @@ struct GPU_EXPORT Capabilities {
 
   bool mesa_framebuffer_flip_y = false;
 
-  // Clients should use SharedImageInterface instead.
-  bool disable_legacy_mailbox = false;
-
   int major_version = 2;
   int minor_version = 0;
 

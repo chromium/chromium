@@ -75,7 +75,6 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::Capabilities)
   IPC_STRUCT_TRAITS_MEMBER(context_supports_distance_field_text)
   IPC_STRUCT_TRAITS_MEMBER(using_vulkan_context)
   IPC_STRUCT_TRAITS_MEMBER(mesa_framebuffer_flip_y)
-  IPC_STRUCT_TRAITS_MEMBER(disable_legacy_mailbox)
 
   IPC_STRUCT_TRAITS_MEMBER(major_version)
   IPC_STRUCT_TRAITS_MEMBER(minor_version)

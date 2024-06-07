@@ -823,7 +823,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   static const CommandInfo command_info[kNumCommands - kFirstRasterCommand];
 
   const int raster_decoder_id_;
-  const bool disable_legacy_mailbox_;
+  const bool display_context_on_another_thread_;
 
   // Number of commands remaining to be processed in DoCommands().
   int commands_to_process_ = 0;
@@ -980,7 +980,7 @@ RasterDecoderImpl::RasterDecoderImpl(
     bool is_privileged)
     : RasterDecoder(client, command_buffer_service, outputter),
       raster_decoder_id_(g_raster_decoder_id.GetNext() + 1),
-      disable_legacy_mailbox_(
+      display_context_on_another_thread_(
           shared_image_manager &&
           shared_image_manager->display_context_on_another_thread()),
       use_passthrough_(gles2::PassthroughCommandDecoderSupported() &&
@@ -1162,7 +1162,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   // images.
   caps.disable_one_component_textures =
       workarounds().avoid_one_component_egl_images ||
-      (disable_legacy_mailbox_ && features::IsUsingVulkan());
+      (display_context_on_another_thread_ && features::IsUsingVulkan());
   caps.angle_rgbx_internal_format =
       feature_info()->feature_flags().angle_rgbx_internal_format;
   caps.chromium_gpu_fence = feature_info()->feature_flags().chromium_gpu_fence;
@@ -1195,7 +1195,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.texture_half_float_linear =
         feature_info()->feature_flags().enable_texture_half_float_linear;
   }
-  caps.disable_legacy_mailbox = disable_legacy_mailbox_;
 
   if (graphite_context()) {
     bool supports_multiplanar_rendering = false;
