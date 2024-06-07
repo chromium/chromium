@@ -37,10 +37,10 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
             maybeDispatch();
         }
 
-        void onSyncDerivedResultAvailable(SuggestionsResult foreignSessionResult) {
+        void onSyncDerivedResultAvailable(SuggestionsResult syncDerivedResult) {
             if (!mIsAlive) return;
 
-            mSyncDerivedResult = foreignSessionResult;
+            mSyncDerivedResult = syncDerivedResult;
             maybeDispatch();
         }
 

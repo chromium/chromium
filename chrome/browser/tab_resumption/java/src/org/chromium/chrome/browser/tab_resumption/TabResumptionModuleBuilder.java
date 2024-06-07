@@ -174,22 +174,28 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
     private TabResumptionDataProvider makeDataProvider(
             Profile profile, @NonNull ModuleDelegate moduleDelegate) {
+        SyncDerivedTabResumptionDataProvider syncDerivedProvider = null;
+
+        if (TabResumptionModuleEnablement.SyncDerived.shouldMakeProvider(profile)) {
+            addRefToSuggestionEntrySource();
+            syncDerivedProvider =
+                    new SyncDerivedTabResumptionDataProvider(
+                            mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
+        }
+
+        if (TabResumptionModuleEnablement.SyncDerived.isV2EnabledWithLocalTabs()) {
+            // V2 suggestion does everything: No need for explicit mixing.
+            return syncDerivedProvider;
+        }
+
+        // Prior to V2 we'd need the Local Tab and Mixed providers.
         LocalTabTabResumptionDataProvider localTabProvider =
                 TabResumptionModuleEnablement.LocalTab.shouldMakeProvider(moduleDelegate)
                         ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())
                         : null;
-
-        SyncDerivedTabResumptionDataProvider foreignSessionProvider = null;
-
-        if (TabResumptionModuleEnablement.SyncDerived.shouldMakeProvider(profile)) {
-            addRefToSuggestionEntrySource();
-            foreignSessionProvider =
-                    new SyncDerivedTabResumptionDataProvider(
-                            mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
-        }
         return new MixedTabResumptionDataProvider(
                 localTabProvider,
-                foreignSessionProvider,
+                syncDerivedProvider,
                 TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND.getValue());
     }
 
