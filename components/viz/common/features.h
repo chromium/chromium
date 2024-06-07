@@ -115,6 +115,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawImmediatelyWhenInteractive);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSnapshotEvictedRootSurface);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
     kSnapshotEvictedRootSurfaceScale;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchResourceRelease);
 
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();

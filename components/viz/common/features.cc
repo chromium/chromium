@@ -400,6 +400,16 @@ BASE_FEATURE(kShouldLogFrameQuadInfo,
              "ShouldLogFrameQuadInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ClientResourceProvider will allow for the batching of
+// callbacks. So that the client can perform a series of individual releases,
+// but have ClientResourceProvider coordinate the callbacks. This allows all of
+// the Main-thread callbacks to be batched into a single jump to that thread.
+//
+// When disabled each callback will perform its own separate post task.
+BASE_FEATURE(kBatchResourceRelease,
+             "BatchResourceRelease",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The scale to use for root surface snapshots on eviction. See
 // `kSnapshotEvictedRootSurface`.
 const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{

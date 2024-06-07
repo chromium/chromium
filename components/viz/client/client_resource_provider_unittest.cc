@@ -1091,5 +1091,82 @@ TEST_P(ClientResourceProviderTest, EvictionNotifiesMainAndFlushes) {
   VizTestSuite::RunUntilIdle();
 }
 
+// Tests that when we are using
+// `ClientResourceProvider::ScopedBatchResourcesRelease` that callbacks are not
+// immediately ran when we remove resources. Confirming that they are ran once
+// the scope is exited.
+TEST_P(ClientResourceProviderTest, BatchedCallbacksDoNotFireImmediately) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kBatchResourceRelease}, {});
+  // Mark visible so eviction path is not inadvertently triggered.
+  provider().SetVisible(true);
+
+  // We only import the resource and do not `PrepareSendToParent`. As `exported`
+  // resources are not removed by `RemoveImportedResource`.
+  MockReleaseCallback release;
+  const uint32_t sync_token_value = 1u;
+  TransferableResource resource =
+      MakeTransferableResource(use_gpu(), 'a', sync_token_value);
+  ResourceId id =
+      provider().ImportResource(resource, ReleaseCallback(),
+                                base::BindOnce(&MockReleaseCallback::Released,
+                                               base::Unretained(&release)),
+                                base::BindOnce(&MockReleaseCallback::Evicted,
+                                               base::Unretained(&release)));
+
+  {
+    // We use `ScopedBatchResourcesRelease` to prevent the immediate callbacks.
+    ClientResourceProvider::ScopedBatchResourcesRelease batch =
+        provider().CreateScopedBatchResourcesRelease();
+    // Zero callbacks for the removal, they should run when `batch` leaves
+    // scoped.
+    EXPECT_CALL(release, Released(_, _)).Times(0);
+    provider().RemoveImportedResource(id);
+    // Leaving scope should lead to `batch` triggering the callback
+    EXPECT_CALL(release, Released(_, _));
+  }
+
+  ExpectFlush();
+  VizTestSuite::RunUntilIdle();
+}
+
+// Ensures that while batching callbacks, that `ClientResourceProvider` being
+// destroyed before the `ClientResourceProvider::ScopedBatchResourcesRelease`
+// ensures the callbacks are ran.
+TEST_P(ClientResourceProviderTest,
+       BatchedCallbacksFireUponProviderDestruction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kBatchResourceRelease}, {});
+  // Mark visible so eviction path is not inadvertently triggered.
+  provider().SetVisible(true);
+
+  // We only import the resource and do not `PrepareSendToParent`. As `exported`
+  // resources are not removed by `RemoveImportedResource`.
+  MockReleaseCallback release;
+  const uint32_t sync_token_value = 1u;
+  TransferableResource resource =
+      MakeTransferableResource(use_gpu(), 'a', sync_token_value);
+  ResourceId id =
+      provider().ImportResource(resource, ReleaseCallback(),
+                                base::BindOnce(&MockReleaseCallback::Released,
+                                               base::Unretained(&release)),
+                                base::BindOnce(&MockReleaseCallback::Evicted,
+                                               base::Unretained(&release)));
+
+  // We use `ScopedBatchResourcesRelease` to prevent the immediate callbacks.
+  ClientResourceProvider::ScopedBatchResourcesRelease batch =
+      provider().CreateScopedBatchResourcesRelease();
+  // Zero callbacks for the removal, they should run when `batch` leaves
+  // scoped.
+  EXPECT_CALL(release, Released(_, _)).Times(0);
+  provider().RemoveImportedResource(id);
+
+  // Destroying `provider` should run the callback.
+  EXPECT_CALL(release, Released(_, _));
+  DestroyProvider();
+  ExpectFlush();
+  VizTestSuite::RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace viz

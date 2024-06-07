@@ -662,7 +662,15 @@ void LayerTreeHostImpl::FinishCommit(
     const ThreadUnsafeCommitState& unsafe_state) {
   TRACE_EVENT0("cc,benchmark", "LayerTreeHostImpl::FinishCommit");
   LayerTreeImpl* tree = sync_tree();
-  tree->PullPropertiesFrom(state, unsafe_state);
+  {
+    // Instead of individual `Layer::PushPropertiesTo` triggering separate
+    // thread hops to the main-thread, to complete releasing resources. Batch
+    // all of them together for after `PullPropertiesFrom` completes.
+    viz::ClientResourceProvider::ScopedBatchResourcesRelease
+        scoped_resource_release =
+            resource_provider_->CreateScopedBatchResourcesRelease();
+    tree->PullPropertiesFrom(state, unsafe_state);
+  }
 
   // Check whether the impl scroll animating node was removed by the commit.
   if (ElementId impl_only_scrolling_element =

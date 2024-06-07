@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/client/viz_client_export.h"
@@ -43,6 +44,29 @@ class RasterContextProvider;
 class VIZ_CLIENT_EXPORT ClientResourceProvider {
  public:
   using ResourceFlushCallback = base::RepeatingCallback<void()>;
+
+  // Upon destruction this will call `batch_release_callback_` in order to
+  // signal that all accumulated resource callbacks should be ran.
+  //
+  // See `CreateScopedBatchResourcesRelease`
+  class VIZ_CLIENT_EXPORT ScopedBatchResourcesRelease {
+   public:
+    ScopedBatchResourcesRelease(const ScopedBatchResourcesRelease& other) =
+        delete;
+    ScopedBatchResourcesRelease& operator=(
+        const ScopedBatchResourcesRelease& other) = delete;
+    ScopedBatchResourcesRelease(ScopedBatchResourcesRelease&& other);
+    ScopedBatchResourcesRelease& operator=(
+        ScopedBatchResourcesRelease&& other) = default;
+    ~ScopedBatchResourcesRelease();
+
+   protected:
+    explicit ScopedBatchResourcesRelease(
+        base::OnceClosure batch_release_callback);
+
+   private:
+    base::OnceClosure batch_release_callback_;
+  };
 
   ClientResourceProvider();
   ClientResourceProvider(
@@ -120,6 +144,13 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   void SetEvicted(bool evicted);
   void SetVisible(bool visible);
 
+  // Controls how `RemoveImportedResource` handled callbacks. While
+  // `ScopedBatchResourcesRelease` is alive, we will collect all callbacks of
+  // resources being removed. Upon leaving scope, we will perform a batch
+  // release of all releases. This includes a single thread-hop to the
+  // Main-thread for associated callbacks.
+  ScopedBatchResourcesRelease CreateScopedBatchResourcesRelease();
+
   size_t num_resources_for_testing() const;
 
  private:
@@ -140,6 +171,14 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
 
   void BatchMainReleaseCallbacks(
       std::vector<base::OnceClosure> release_callbacks);
+
+  // Runs all release callbacks accumulated in `batch_main_release_callbacks_`.
+  // Main thread callbacks will be posted to that thread in a single thread hop.
+  void BatchResourceRelease();
+  // If `batch` is true, then this will take the `main_thread_release_callback`
+  // from `imported` to be batched later. Otherwise this runs them immediately.
+  // This will also run all `impl_thread_release_callback` immediately.
+  void TakeOrRunResourceReleases(bool batch, ImportedResource& imported);
 
   THREAD_CHECKER(thread_checker_);
 
@@ -169,6 +208,13 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // have a single thread hop, rather than each callback performing it's own
   // separate hop.
   bool threaded_release_callbacks_supported_ = false;
+
+  // While `true` resources being released will have their callbacks stored in
+  // the vector below. To be released afterwards in `BatchResourceRelease`.
+  bool batch_release_callbacks_ = false;
+  std::vector<base::OnceClosure> batch_main_release_callbacks_;
+
+  base::WeakPtrFactory<ClientResourceProvider> weak_factory_{this};
 };
 
 }  // namespace viz
