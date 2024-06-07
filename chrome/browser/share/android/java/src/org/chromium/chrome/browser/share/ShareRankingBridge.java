@@ -31,7 +31,7 @@ public class ShareRankingBridge {
                 .rank(
                         profile,
                         type,
-                        available.toArray(),
+                        available,
                         fold,
                         length,
                         persist,
@@ -44,8 +44,8 @@ public class ShareRankingBridge {
     public interface Natives {
         void rank(
                 @JniType("Profile*") Profile profile,
-                String type,
-                Object[] available,
+                @JniType("std::string") String type,
+                @JniType("std::vector<std::string>") List<String> available,
                 int fold,
                 int length,
                 boolean persist,

@@ -33,6 +33,8 @@ public class GEN_JNI {
     public static native long org_jni_1zero_SampleForTests_init(Object caller, String param, byte[] bytes, Object convertedType, Object[] nonConvertedArray);
       // Hashed name: Java_J_N_M$SYxQqM
     public static native void org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(long nativeCPPClass, Object caller);
+      // Hashed name: Java_J_N_Ms2JkAg$
+    public static native Object org_jni_1zero_SampleForTests_listTest2(Object items);
       // Hashed name: Java_J_N_MdXzE25W
     public static native int org_jni_1zero_SampleForTests_method(long nativeCPPClass, Object caller, String[] strings);
       // Hashed name: Java_J_N_Mr3loT2C

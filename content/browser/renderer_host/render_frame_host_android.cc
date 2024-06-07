@@ -142,19 +142,13 @@ void RenderFrameHostAndroid::GetCanonicalUrlForSharing(
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
-ScopedJavaLocalRef<jobjectArray> RenderFrameHostAndroid::GetAllRenderFrameHosts(
-    JNIEnv* env) const {
-  std::vector<RenderFrameHostImpl*> frames;
-  render_frame_host_->ForEachRenderFrameHost(
-      [&frames](RenderFrameHostImpl* rfh) { frames.push_back(rfh); });
-  jclass clazz =
-      org_chromium_content_browser_framehost_RenderFrameHostImpl_clazz(env);
-  jobjectArray jframes = env->NewObjectArray(frames.size(), clazz, nullptr);
-  for (size_t i = 0; i < frames.size(); i++) {
-    ScopedJavaLocalRef<jobject> frame = frames[i]->GetJavaRenderFrameHost();
-    env->SetObjectArrayElement(jframes, i, frame.obj());
-  }
-  return ScopedJavaLocalRef<jobjectArray>(env, jframes);
+std::vector<ScopedJavaLocalRef<jobject>>
+RenderFrameHostAndroid::GetAllRenderFrameHosts(JNIEnv* env) const {
+  std::vector<ScopedJavaLocalRef<jobject>> ret;
+  render_frame_host_->ForEachRenderFrameHost([&ret](RenderFrameHostImpl* rfh) {
+    ret.push_back(rfh->GetJavaRenderFrameHost());
+  });
+  return ret;
 }
 
 bool RenderFrameHostAndroid::IsFeatureEnabled(

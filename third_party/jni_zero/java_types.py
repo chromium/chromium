@@ -182,6 +182,9 @@ class JavaType:
     return self.array_dimensions > 1 or (self.primitive_name is None
                                          and self.array_dimensions > 0)
 
+  def is_collection(self):
+    return not self.is_array() and self.java_class in COLLECTION_CLASSES
+
   def is_void(self):
     return self.primitive_name == 'void'
 
@@ -395,8 +398,20 @@ class TypeResolver:
 CLASS_CLASS = JavaClass('java/lang/Class')
 OBJECT_CLASS = JavaClass('java/lang/Object')
 STRING_CLASS = JavaClass('java/lang/String')
-_EMPTY_TYPE_RESOLVER = TypeResolver(OBJECT_CLASS)
+_LIST_CLASS = JavaClass('java/util/List')
+
+# Collection and types that extend it (for use with toArray()).
+# More can be added here if the need arises.
+COLLECTION_CLASSES = (
+    _LIST_CLASS,
+    JavaClass('java/util/Collection'),
+    JavaClass('java/util/Set'),
+)
+
 CLASS = JavaType(java_class=CLASS_CLASS)
+LIST = JavaType(java_class=_LIST_CLASS)
 INT = JavaType(primitive_name='int')
 VOID = JavaType(primitive_name='void')
+
+_EMPTY_TYPE_RESOLVER = TypeResolver(OBJECT_CLASS)
 EMPTY_PARAM_LIST = JavaParamList()

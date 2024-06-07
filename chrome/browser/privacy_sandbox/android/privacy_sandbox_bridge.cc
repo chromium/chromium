@@ -129,13 +129,12 @@ static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
           base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static std::vector<std::string>
 JNI_PrivacySandboxBridge_GetBlockedFledgeJoiningTopFramesForDisplay(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
-  return base::android::ToJavaArrayOfStrings(
-      env, GetPrivacySandboxService(j_profile)
-               ->GetBlockedFledgeJoiningTopFramesForDisplay());
+  return GetPrivacySandboxService(j_profile)
+      ->GetBlockedFledgeJoiningTopFramesForDisplay();
 }
 
 static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(

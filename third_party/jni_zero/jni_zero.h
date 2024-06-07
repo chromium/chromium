@@ -761,6 +761,8 @@ inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, T* value) {
   "exists an #include for jni_zero/default_conversions.h."
 #endif
 
+// Convert from an stl container to a Java array. Uses ToJniType() on each
+// element.
 template <typename T>
 inline ScopedJavaLocalRef<jobjectArray> ToJniArray(JNIEnv* env,
                                                    const T& obj,
@@ -768,16 +770,33 @@ inline ScopedJavaLocalRef<jobjectArray> ToJniArray(JNIEnv* env,
   static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
 }
 
+// Convert from a Java array to an stl container of primitive types.
 template <typename T>
 inline ScopedJavaLocalRef<jarray> ToJniArray(JNIEnv* env, const T& obj) {
   static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
 }
 
+// Convert from a Java array to an stl container. Uses FromJniType() on each
+// element for non-primitive types.
 template <typename T>
 inline T FromJniArray(JNIEnv* env, const JavaRef<jobject>& obj) {
   static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniArray"));
 }
 
+// Convert from an stl container to a Java List<> by using ToJniType() on each
+// element.
+template <typename T>
+inline ScopedJavaLocalRef<jobject> ToJniList(JNIEnv* env, const T& obj) {
+  static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniList"));
+}
+
+// Convert from a Java Collection<> to an stl container by using FromJniType()
+// on each element.
+template <typename T>
+inline T FromJniCollection(JNIEnv* env, const JavaRef<jobject>& obj) {
+  static_assert(sizeof(T) == 0,
+                JNI_ZERO_CONVERSION_FAILED_MSG("FromJniCollection"));
+}
 #undef JNI_ZERO_CONVERSION_FAILED_MSG
 
 // This class is a wrapper for JNIEnv Get(Static)MethodID.

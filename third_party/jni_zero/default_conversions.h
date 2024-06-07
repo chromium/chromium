@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/jni_zero/common_apis.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace jni_zero {
@@ -140,6 +141,29 @@ inline ByteArrayView FromJniArray<ByteArrayView>(
     const JavaRef<jobject>& j_object) {
   jbyteArray j_array = static_cast<jbyteArray>(j_object.obj());
   return ByteArrayView(env, j_array);
+}
+
+// There is a circular dependency between common_apis.cc and here.
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobjectArray>
+CollectionToArray(JNIEnv* env, const JavaRef<jobject>& collection);
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToList(
+    JNIEnv* env,
+    const JavaRef<jobjectArray>& array);
+
+template <internal::IsObjectContainer ContainerType>
+inline ContainerType FromJniCollection(JNIEnv* env,
+                                       const JavaRef<jobject>& j_collection) {
+  ScopedJavaLocalRef<jobjectArray> arr = CollectionToArray(env, j_collection);
+  return FromJniArray<ContainerType>(env, arr);
+}
+
+// Convert container type -> Java array using ToJniType() on each element.
+template <internal::IsObjectContainer ContainerType>
+inline ScopedJavaLocalRef<jobject> ToJniList(JNIEnv* env,
+                                             const ContainerType& collection) {
+  ScopedJavaLocalRef<jobjectArray> arr =
+      ToJniArray(env, collection, g_object_class);
+  return ArrayToList(env, arr);
 }
 
 }  // namespace jni_zero

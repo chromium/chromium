@@ -6,12 +6,14 @@ package org.chromium.components.payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
 
 import java.util.Map;
+import java.util.Set;
 
 /** Checks whether hasEnrolledInstrument() can be queried. */
 @JNINamespace("payments")
@@ -41,12 +43,13 @@ public class HasEnrolledInstrumentQuery {
     }
 
     @CalledByNative
-    private static String[] getMethodIdentifiers(Map<String, PaymentMethodData> query) {
-        return query.keySet().toArray(new String[query.size()]);
+    private static @JniType("std::vector<std::string>") Set<String> getMethodIdentifiers(
+            Map<String, PaymentMethodData> query) {
+        return query.keySet();
     }
 
     @CalledByNative
-    private static String getStringifiedMethodData(
+    private static @JniType("std::string") String getStringifiedMethodData(
             Map<String, PaymentMethodData> query, String methodIdentifier) {
         assert query.containsKey(methodIdentifier);
         return query.get(methodIdentifier).stringifiedData;

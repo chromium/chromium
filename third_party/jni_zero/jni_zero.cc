@@ -330,5 +330,6 @@ jclass LazyGetClass(JNIEnv* env,
   }
   return ret;
 }
+
 }  // namespace internal
 }  // namespace jni_zero

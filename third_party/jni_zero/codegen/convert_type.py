@@ -20,6 +20,11 @@ def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
     sb(f'static_cast<{java_type.to_cpp()}>({rvalue})')
     return
 
+  if java_type == java_types.LIST:
+    sb(f'jni_zero::ToJniList')
+    sb.param_list(['env', rvalue])
+    return
+
   if not java_type.is_array():
     sb(f'jni_zero::ToJniType')
     sb.param_list(['env', rvalue])
@@ -77,6 +82,11 @@ def from_jni_expression(sb, rvalue, java_type, release_ref=False):
     rvalue = f'jni_zero::ScopedJavaLocalRef<{jtype}>(env, {rvalue})'
   else:
     rvalue = f'jni_zero::JavaParamRef<{jtype}>(env, {rvalue})'
+
+  if java_type.is_collection():
+    sb(f'jni_zero::FromJniCollection<{T}>')
+    sb.param_list(['env', rvalue])
+    return
 
   if not java_type.is_array():
     sb(f'jni_zero::FromJniType<{T}>')

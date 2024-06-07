@@ -7,10 +7,13 @@ package org.jni_zero;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class serves as a reference test for the bindings generator, and as example documentation
@@ -148,6 +151,12 @@ class SampleForTests {
             @SomeAnnotation final int baz,
             @SomeAnnotation @JniType("long") final @AnotherAnnotation long bat) {
         return bar;
+    }
+
+    @CalledByNative
+    @JniType("std::vector")
+    Collection<SampleForTests> listTest1(@JniType("std::vector<std::string>") List<String> items) {
+        return Collections.emptyList();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -308,6 +317,9 @@ class SampleForTests {
         // Similar to nativeGetDoubleFunction(), but here the C++ side will receive a jclass rather
         // than jobject param, as the function is declared static.
         float getFloatFunction();
+
+        @JniType("std::vector")
+        List<SampleForTests> listTest2(@JniType("std::vector<std::string>") Set<String> items);
 
         // This function takes a non-POD datatype. We have a list mapping them to their full
         // classpath in jni_generator.py JavaParamToJni. If you require a new datatype, make sure

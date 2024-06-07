@@ -114,12 +114,9 @@ static void JNI_NotificationSuspender_StoreNotificationResources(
 static void JNI_NotificationSuspender_ReDisplayNotifications(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobjectArray>& j_origins) {
+    std::vector<std::string>& origin_strings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile);
-
-  std::vector<std::string> origin_strings;
-  AppendJavaStringArrayToStringVector(env, j_origins, &origin_strings);
 
   // Group origins by context.
   std::map<PlatformNotificationContext*, std::vector<GURL>> origins_by_context;

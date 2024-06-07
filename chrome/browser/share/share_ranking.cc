@@ -538,8 +538,8 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                  Profile* profile,
-                                 const JavaParamRef<jstring>& jtype,
-                                 const JavaParamRef<jobjectArray>& javailable,
+                                 std::string& type,
+                                 std::vector<std::string>& available,
                                  jint jfold,
                                  jint jlength,
                                  jboolean jpersist,
@@ -560,12 +560,6 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
 
   DCHECK(history);
   DCHECK(ranking);
-
-  std::string type = base::android::ConvertJavaStringToUTF8(env, jtype);
-  std::vector<std::string> available;
-
-  base::android::AppendJavaStringArrayToStringVector(env, javailable,
-                                                     &available);
 
   ranking->Rank(
       history, type, available, jfold, jlength, jpersist,

@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Java implementation of PrivacySandboxBridge for testing. */
@@ -117,24 +119,24 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public Topic[] getCurrentTopTopics(Profile profile) {
-        return mCurrentTopTopics.toArray(new Topic[] {});
+    public List<Topic> getCurrentTopTopics(Profile profile) {
+        return new ArrayList<>(mCurrentTopTopics);
     }
 
     @Override
-    public Topic[] getBlockedTopics(Profile profile) {
-        return mBlockedTopics.toArray(new Topic[] {});
+    public List<Topic> getBlockedTopics(Profile profile) {
+        return new ArrayList<>(mBlockedTopics);
     }
 
     @Override
-    public Topic[] getFirstLevelTopics(Profile profile) {
-        return mFirstLevelTopics.toArray(new Topic[] {});
+    public List<Topic> getFirstLevelTopics(Profile profile) {
+        return new ArrayList<>(mFirstLevelTopics);
     }
 
     @Override
-    public Topic[] getChildTopicsCurrentlyAssigned(
+    public List<Topic> getChildTopicsCurrentlyAssigned(
             Profile profile, int topicId, int taxonomyVersion) {
-        return mChildTopics.toArray(new Topic[] {});
+        return new ArrayList<>(mChildTopics);
     }
 
     @Override
@@ -162,8 +164,8 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public String[] getBlockedFledgeJoiningTopFramesForDisplay(Profile profile) {
-        return mBlockedFledgeSites.toArray(new String[0]);
+    public List<String> getBlockedFledgeJoiningTopFramesForDisplay(Profile profile) {
+        return new ArrayList<>(mBlockedFledgeSites);
     }
 
     @Override

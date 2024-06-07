@@ -22,7 +22,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /** JNI wrapper for C++ TouchToFillPaymentMethodViewImpl. Delegates calls from native to Java. */
@@ -80,8 +79,8 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void showSheet(@JniType("std::vector") Object[] ibans) {
-        mComponent.showSheet((List<PersonalDataManager.Iban>) (List<?>) Arrays.asList(ibans));
+    private void showSheet(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
+        mComponent.showSheet(ibans);
     }
 
     @CalledByNative

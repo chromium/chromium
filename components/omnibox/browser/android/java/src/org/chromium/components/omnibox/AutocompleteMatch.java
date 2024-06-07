@@ -181,7 +181,7 @@ public class AutocompleteMatch {
             int groupId,
             byte[] clipboardImageData,
             boolean hasTabMatch,
-            @JniType("std::vector") Object[] actions,
+            @JniType("std::vector") List<OmniboxAction> actions,
             boolean allowedToBeDefaultMatch,
             String inlineAutocompletion,
             String additionalText) {
@@ -221,7 +221,7 @@ public class AutocompleteMatch {
                         groupId,
                         clipboardImageData,
                         hasTabMatch,
-                        (List<OmniboxAction>) (List<?>) Arrays.asList(actions),
+                        actions,
                         allowedToBeDefaultMatch,
                         inlineAutocompletion,
                         additionalText);

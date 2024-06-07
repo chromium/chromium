@@ -104,6 +104,11 @@ static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
   return 0;
 }
 
+static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+JNI_SampleForTests_ListTest2(JNIEnv* env, std::vector<std::string>& items) {
+  return Java_SampleForTests_listTest1(env, nullptr, items);
+}
+
 static void JNI_SampleForTests_SetNonPODDatatype(JNIEnv*,
                                                  const JavaParamRef<jobject>&,
                                                  const JavaParamRef<jobject>&) {

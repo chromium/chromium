@@ -14,7 +14,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** Java interface to the C++ ProfileManager. */
@@ -103,7 +102,7 @@ public class ProfileManager {
 
     /** Return the fully loaded and initialized Profiles (excluding off the record Profiles). */
     public static List<Profile> getLoadedProfiles() {
-        return (List<Profile>) (List<?>) Arrays.asList(ProfileManagerJni.get().getLoadedProfiles());
+        return ProfileManagerJni.get().getLoadedProfiles();
     }
 
     /**
@@ -133,6 +132,6 @@ public class ProfileManager {
         void destroyWhenAppropriate(@JniType("Profile*") Profile caller);
 
         @JniType("std::vector<Profile*>")
-        Object[] getLoadedProfiles();
+        List<Profile> getLoadedProfiles();
     }
 }

@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 /** Unit test for {@link FormData}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -24,10 +24,10 @@ public class FormDataTest {
         int sessionId = 12345;
         String name = "SomeFormName";
         String host = "https://foo.com";
-        FormData form = FormData.createFormData(sessionId, name, host, new FormFieldData[] {});
+        FormData form = FormData.createFormData(sessionId, name, host, Collections.emptyList());
         assertEquals(sessionId, form.mSessionId);
         assertEquals(name, form.mName);
         assertEquals(host, form.mHost);
-        assertEquals(new ArrayList<FormFieldData>(), form.mFields);
+        assertEquals(Collections.emptyList(), form.mFields);
     }
 }

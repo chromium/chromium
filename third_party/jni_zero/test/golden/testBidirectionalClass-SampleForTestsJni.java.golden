@@ -4,7 +4,9 @@
 package org.jni_zero;
 
 import android.graphics.Rect;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniStaticTestMocker;
@@ -90,6 +92,11 @@ public class SampleForTestsJni implements SampleForTests.Natives {
     GEN_JNI.org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(
         nativeCPPClass,
         caller);
+  }
+
+  @Override
+  public List listTest2(Set items) {
+    return (List) GEN_JNI.org_jni_1zero_SampleForTests_listTest2(items);
   }
 
   @Override

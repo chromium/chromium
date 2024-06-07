@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.Topic;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,22 +63,22 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
     }
 
     @Override
-    public Topic[] getCurrentTopTopics(Profile profile) {
+    public List<Topic> getCurrentTopTopics(Profile profile) {
         return null;
     }
 
     @Override
-    public Topic[] getBlockedTopics(Profile profile) {
+    public List<Topic> getBlockedTopics(Profile profile) {
         return null;
     }
 
     @Override
-    public Topic[] getFirstLevelTopics(Profile profile) {
+    public List<Topic> getFirstLevelTopics(Profile profile) {
         return null;
     }
 
     @Override
-    public Topic[] getChildTopicsCurrentlyAssigned(
+    public List<Topic> getChildTopicsCurrentlyAssigned(
             Profile profile, int topicId, int taxonomyVersion) {
         return null;
     }
@@ -91,7 +92,7 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
             Profile profile, Callback<String[]> callback) {}
 
     @Override
-    public String[] getBlockedFledgeJoiningTopFramesForDisplay(Profile profile) {
+    public List<String> getBlockedFledgeJoiningTopFramesForDisplay(Profile profile) {
         return null;
     }
 

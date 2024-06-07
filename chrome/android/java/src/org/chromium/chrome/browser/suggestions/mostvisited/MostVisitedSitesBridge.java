@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** Methods to bridge into native history to provide most recent urls, titles and thumbnails. */
@@ -128,12 +127,11 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * Parameters guaranteed to be non-null.
      */
     @CalledByNative
-    private void onURLsAvailable(@JniType("std::vector") Object[] suggestions) {
+    private void onURLsAvailable(@JniType("std::vector") List<SiteSuggestion> suggestions) {
         // Don't notify observer if we've already been destroyed.
         if (mNativeMostVisitedSitesBridge == 0) return;
 
-        mWrappedObserver.onSiteSuggestionsAvailable(
-                (List<SiteSuggestion>) (List<?>) Arrays.asList(suggestions));
+        mWrappedObserver.onSiteSuggestionsAvailable(suggestions);
     }
 
     /**

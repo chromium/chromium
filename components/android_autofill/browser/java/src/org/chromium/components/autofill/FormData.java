@@ -15,7 +15,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,9 +39,8 @@ public class FormData {
             int sessionId,
             @JniType("std::u16string") String name,
             @JniType("std::string") String origin,
-            @JniType("std::vector") Object[] fields) {
-        return new FormData(
-                sessionId, name, origin, (List<FormFieldData>) (List<?>) Arrays.asList(fields));
+            @JniType("std::vector") List<FormFieldData> fields) {
+        return new FormData(sessionId, name, origin, fields);
     }
 
     public FormData(int sessionId, String name, String host, List<FormFieldData> fields) {

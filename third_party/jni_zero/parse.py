@@ -190,12 +190,12 @@ def _parse_type(type_resolver, value):
     if array_dimensions == 1 and primitive_name:
       # e.g.: std::vector<jint>
       converted_type += f'<j{primitive_name}>'
-    elif array_dimensions > 0:
+    elif array_dimensions > 0 or java_class in java_types.COLLECTION_CLASSES:
       # std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
       converted_type += '<jni_zero::ScopedJavaLocalRef<jobject>>'
     else:
       raise ParseError('Found non-templatized @JniType("std::vector") on '
-                       'non-array type: ' + value)
+                       'non-array, non-List type: ' + value)
 
   return java_types.JavaType(array_dimensions=array_dimensions,
                              primitive_name=primitive_name,

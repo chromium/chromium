@@ -23,7 +23,6 @@ import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** JNI call glue between C++ (AutofillKeyboardAccessoryViewImpl) and Java objects. */
@@ -130,9 +129,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param suggestions Autofill suggestions to be displayed.
      */
     @CalledByNative
-    private void show(@JniType("std::vector") Object[] suggestions) {
-        mChipProvider.notifyObservers(
-                (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions));
+    private void show(@JniType("std::vector") List<AutofillSuggestion> suggestions) {
+        mChipProvider.notifyObservers(suggestions);
     }
 
     @CalledByNative

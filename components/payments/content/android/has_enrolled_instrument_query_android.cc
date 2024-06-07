@@ -31,20 +31,15 @@ jboolean JNI_HasEnrolledInstrumentQuery_CanQuery(
   if (!web_contents)
     return false;
 
-  std::vector<std::string> method_identifiers;
-  base::android::AppendJavaStringArrayToStringVector(
-      env,
-      Java_HasEnrolledInstrumentQuery_getMethodIdentifiers(env, jquery_map),
-      &method_identifiers);
+  std::vector<std::string> method_identifiers =
+      Java_HasEnrolledInstrumentQuery_getMethodIdentifiers(env, jquery_map);
 
   std::map<std::string, std::set<std::string>> query;
   for (const auto& method_identifier : method_identifiers) {
     std::set<std::string> method_specific_parameters = {
-        base::android::ConvertJavaStringToUTF8(
-            Java_HasEnrolledInstrumentQuery_getStringifiedMethodData(
-                env, jquery_map,
-                base::android::ConvertUTF8ToJavaString(env,
-                                                       method_identifier)))};
+        Java_HasEnrolledInstrumentQuery_getStringifiedMethodData(
+            env, jquery_map,
+            base::android::ConvertUTF8ToJavaString(env, method_identifier))};
     query.insert(std::make_pair(method_identifier, method_specific_parameters));
   }
 

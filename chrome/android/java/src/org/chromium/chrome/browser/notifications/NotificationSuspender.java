@@ -146,8 +146,7 @@ public class NotificationSuspender {
                         mProfile,
                         origins.stream()
                                 .map((origin) -> origin.toString())
-                                .collect(Collectors.toList())
-                                .toArray(new String[0]));
+                                .collect(Collectors.toList()));
     }
 
     /**
@@ -249,6 +248,8 @@ public class NotificationSuspender {
                 Bitmap[] resources);
 
         // Displays all suspended notifications for the given |origins|.
-        void reDisplayNotifications(@JniType("Profile*") Profile profile, String[] origins);
+        void reDisplayNotifications(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::vector<std::string>") List<String> origins);
     }
 }

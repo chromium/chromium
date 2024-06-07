@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /** This class allows Java code to get and clear the list of recently closed entries. */
@@ -43,9 +42,9 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             int id,
             long groupTimestamp,
             @JniType("std::u16string") String groupTitle,
-            @JniType("std::vector") Object[] tabsArr) {
+            @JniType("std::vector") List<RecentlyClosedTab> tabs) {
         RecentlyClosedGroup group = new RecentlyClosedGroup(id, groupTimestamp, groupTitle);
-        group.getTabs().addAll((List<RecentlyClosedTab>) (List<?>) Arrays.asList(tabsArr));
+        group.getTabs().addAll(tabs);
         entries.add(group);
     }
 
@@ -56,7 +55,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             long eventTimestamp,
             @JniType("std::vector<std::optional<base::Token>>") Token[] tabGroupIds,
             @JniType("std::vector<const std::u16string*>") String[] groupTitles,
-            @JniType("std::vector") Object[] tabsArr) {
+            @JniType("std::vector") List<RecentlyClosedTab> tabs) {
         RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(id, eventTimestamp);
 
         assert tabGroupIds.length == groupTitles.length;
@@ -64,7 +63,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             event.getTabGroupIdToTitleMap().put(tabGroupIds[i], groupTitles[i]);
         }
 
-        event.getTabs().addAll((List<RecentlyClosedTab>) (List<?>) Arrays.asList(tabsArr));
+        event.getTabs().addAll(tabs);
         entries.add(event);
     }
 

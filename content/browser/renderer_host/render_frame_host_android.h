@@ -45,7 +45,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcallback) const;
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetAllRenderFrameHosts(
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetAllRenderFrameHosts(
       JNIEnv* env) const;
 
   bool IsFeatureEnabled(JNIEnv* env,
