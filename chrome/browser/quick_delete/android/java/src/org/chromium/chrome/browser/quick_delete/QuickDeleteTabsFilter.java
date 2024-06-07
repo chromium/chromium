@@ -90,7 +90,7 @@ class QuickDeleteTabsFilter {
     void closeTabsFilteredForQuickDelete() {
         assert mTabs != null;
         mTabGroupModelFilter.closeMultipleTabs(
-                mTabs, /* canUndo= */ false, /* hideTabGroups= */ true, /* canRestore= */ false);
+                mTabs, /* canUndo= */ false, /* hideTabGroups= */ false, /* canRestore= */ false);
     }
 
     /** Return list of tabs currently filtered for deletion. */

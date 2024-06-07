@@ -959,7 +959,7 @@ public class TabModelImpl extends TabModelJniBridge {
         groupingFilter.closeMultipleTabs(
                 tabsToClose,
                 /* canUndo= */ false,
-                /* hideTabGroups= */ true,
+                /* hideTabGroups= */ false,
                 /* canRestore= */ false);
     }
 

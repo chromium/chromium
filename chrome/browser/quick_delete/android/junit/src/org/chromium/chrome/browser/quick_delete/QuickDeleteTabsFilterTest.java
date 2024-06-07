@@ -184,7 +184,7 @@ public class QuickDeleteTabsFilterTest {
                 .closeMultipleTabs(
                         eq(filteredTabs),
                         /* canUndo= */ eq(false),
-                        /* hideTabGroups= */ eq(true),
+                        /* hideTabGroups= */ eq(false),
                         /* canRestore= */ eq(false));
     }
 
@@ -223,7 +223,7 @@ public class QuickDeleteTabsFilterTest {
                 .closeMultipleTabs(
                         eq(filteredTabs),
                         /* canUndo= */ eq(false),
-                        /* hideTabGroups= */ eq(true),
+                        /* hideTabGroups= */ eq(false),
                         /* canRestore= */ eq(false));
     }
 
@@ -257,7 +257,7 @@ public class QuickDeleteTabsFilterTest {
                 .closeMultipleTabs(
                         eq(filteredTabs),
                         /* canUndo= */ eq(false),
-                        /* hideTabGroups= */ eq(true),
+                        /* hideTabGroups= */ eq(false),
                         /* canRestore= */ eq(false));
     }
 }

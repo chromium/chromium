@@ -450,7 +450,7 @@ public class TabModelImplUnitTest {
                 .closeMultipleTabs(
                         Arrays.asList(tab2, tab3),
                         /* canUndo= */ false,
-                        /* hideTabGroups= */ true,
+                        /* hideTabGroups= */ false,
                         /* canRestore= */ false);
     }
 }
