@@ -22,6 +22,11 @@
     position: absolute;
   }
 
+  :host(:not([initial-flash-animation-has-ended])) #buttonContainer {
+    opacity: 0;
+    visibility: hidden;
+  }
+
   .action-button {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 36px;
@@ -127,6 +132,7 @@
   }
 </style>
 <div class="app-container"
+    on-initial-flash-animation-end="onInitialFlashAnimationEnd"
     on-selection-overlay-clicked="handleSelectionOverlayClicked"
     on-pointer-released="handlePointerReleased"
     on-screenshot-rendered="onScreenshotRendered"

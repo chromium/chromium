@@ -57,6 +57,10 @@ export class LensOverlayAppElement extends PolymerElement {
     return {
       screenshotDataUri: String,
       isImageRendered: Boolean,
+      initialFlashAnimationHasEnded: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       closeButtonHidden: {
         type: Boolean,
         reflectToAttribute: true,
@@ -80,6 +84,8 @@ export class LensOverlayAppElement extends PolymerElement {
   private screenshotDataUri: string = '';
   // Whether the image has finished rendering.
   private isImageRendered: boolean = false;
+  // Whether the initial flash animation has ended on the selection overlay.
+  private initialFlashAnimationHasEnded: boolean = false;
   // Whether the close button should be hidden.
   private closeButtonHidden: boolean = false;
   // Whether the overlay is being shut down.
@@ -232,6 +238,11 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onScreenshotRendered() {
     this.isImageRendered = true;
+  }
+
+  private onInitialFlashAnimationEnd() {
+    this.initialFlashAnimationHasEnded = true;
+    this.$.initialToast.setMessageAndScrimVisible();
   }
 
   private getSelectionOverlayClass(screenshotDataUri: string): string {

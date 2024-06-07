@@ -71,12 +71,9 @@ export class InitialToastElement extends PolymerElement {
   // opacity to 0 does not always completely fade out the toast.
   private shouldHideScrim: boolean;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    requestAnimationFrame(() => {
-      this.messageVisible = true;
-      this.scrimVisible = true;
-    });
+  setMessageAndScrimVisible() {
+    this.messageVisible = true;
+    this.scrimVisible = true;
   }
 
   triggerHideMessageAnimation() {

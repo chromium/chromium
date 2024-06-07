@@ -85,6 +85,7 @@ export interface SelectionOverlayElement {
     copyToast: CrToastElement,
     cursor: HTMLElement,
     detectedTextContextMenu: HTMLElement,
+    initialFlashScrim: HTMLDivElement,
     objectSelectionLayer: ObjectLayerElement,
     overlayShimmerCanvas: OverlayShimmerCanvasElement,
     overlayShimmer: OverlayShimmerElement,
@@ -212,6 +213,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private initialHeight: number = 0;
   private cursorOffsetX: number = 3;
   private cursorOffsetY: number = 6;
+  private hasInitialFlashAnimationEnded = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -270,6 +272,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(document, 'lighten-extra-scrim-opacity', () => {
       this.darkenExtraScrim = false;
     });
+    this.eventTracker_.add(
+        this.$.initialFlashScrim, 'animationend', (event: AnimationEvent) => {
+          // The flash animation is the longest animation.
+          if (event.animationName !== 'initial-inset-animation') {
+            return;
+          }
+
+          this.onInitialFlashAnimationEnd();
+        });
   }
 
   override disconnectedCallback() {
@@ -434,23 +445,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private onImageRendered() {
-    // Tell the browser to blur the background.
-    setTimeout(() => {
-      BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
-    }, 300);
-
     // Let the parent know it is safe to blur the background.
     this.dispatchEvent(new CustomEvent(
         'screenshot-rendered', {bubbles: true, composed: true}));
 
-    if (!this.disableShimmer) {
-      // Don't start the shimmer animation until the image has been rendered.
-      if (this.useShimmerCanvas) {
-        this.$.overlayShimmerCanvas.startInvocationAnimation();
-      } else {
-        this.$.overlayShimmer.startAnimation();
-      }
-    }
+    // Tell the browser to blur the background on next animation frame.
+    requestAnimationFrame(() => {
+      BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
+    });
   }
 
   private onPointerDown(event: PointerEvent) {
@@ -584,6 +586,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         Math.abs(newRect.width - this.initialWidth) >= RESIZE_THRESHOLD;
     if (this.isResized) {
       this.isInitialSize = false;
+      // The flash animation is cut short but animationend is never called if
+      // the overlay is resized before animationend is called. This is because
+      // the flash scrim is hidden on resize.
+      this.onInitialFlashAnimationEnd();
     }
   }
 
@@ -691,6 +697,28 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private handlePointerLeaveContextMenu() {
     this.isPointerInside = true;
     this.isPointerInsideContextMenu = false;
+  }
+
+  private onInitialFlashAnimationEnd() {
+    if (this.hasInitialFlashAnimationEnded) {
+      return;
+    }
+    this.hasInitialFlashAnimationEnded = true;
+    this.eventTracker_.remove(this.$.initialFlashScrim, 'animationend');
+
+    // Let the parent know the initial flash image animation has finished.
+    this.dispatchEvent(new CustomEvent(
+        'initial-flash-animation-end', {bubbles: true, composed: true}));
+
+    // Don't start the shimmer animation until the initial flash animation is
+    // finished.
+    if (!this.disableShimmer) {
+      if (this.useShimmerCanvas) {
+        this.$.overlayShimmerCanvas.startInvocationAnimation();
+      } else {
+        this.$.overlayShimmer.startAnimation();
+      }
+    }
   }
 
   getShowDetectedTextContextMenuForTesting() {

@@ -28,6 +28,17 @@ suite('ManualRegionSelection', function() {
   let selectionOverlayElement: SelectionOverlayElement;
   let metrics: MetricsTracker;
 
+  async function waitForEvent(eventName: string, options = {}) {
+    return new Promise((resolve) => {
+      const listener = (event: Event) => {
+        document.removeEventListener(eventName, listener, options);
+        resolve(event);
+      };
+
+      document.addEventListener(eventName, listener, options);
+    });
+  }
+
   setup(() => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
@@ -350,6 +361,10 @@ suite('ManualRegionSelection', function() {
       });
 
   test('verify canvas resizes', async () => {
+    // Wait for the flash animation to finish to avoid racing against the
+    // selection overlay setting the canvas size.
+    await waitForEvent('initial-flash-animation-end');
+
     selectionOverlayElement.$.regionSelectionLayer.setCanvasSizeTo(50, 50);
     await waitAfterNextRender(selectionOverlayElement.$.regionSelectionLayer);
     assertEquals(
