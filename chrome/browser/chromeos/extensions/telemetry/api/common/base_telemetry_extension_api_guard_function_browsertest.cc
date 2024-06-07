@@ -900,4 +900,55 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
   )");
 }
 
+// Verify that manufacturer will be cached and only one call to probe service
+// will be made.
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
+                       UseCacheForMultipleApiAccess) {
+  SetUpProbeService();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // We can't run this test if Ash doesn't support the crosapi
+  // interface.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+
+  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_current_user_device_owner = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Add a new user and make it owner.
+  auto* const user_manager = GetFakeUserManager();
+  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
+  user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+  user_manager->SwitchActiveUser(account_id);
+  user_manager->SetOwnerId(account_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Make sure PWA UI is open and secure.
+  auto* pwa_page_rfh =
+      ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url()));
+  ASSERT_TRUE(pwa_page_rfh);
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBatteryCapacityRoutine() {
+        let response =
+          await chrome.os.diagnostics.runBatteryCapacityRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        response =
+          await chrome.os.diagnostics.runBatteryCapacityRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+  // Make sure that the manufacturer info is only gathered once on multiple API
+  // access.
+  EXPECT_EQ(fake_probe_service_->GetProbeTelemetryInfoCallCount(), 1);
+}
+
 }  // namespace chromeos

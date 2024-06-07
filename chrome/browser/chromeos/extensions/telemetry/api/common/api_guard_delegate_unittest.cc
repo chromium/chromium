@@ -186,6 +186,7 @@ class ApiGuardDelegateTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetDeviceManufacturer(const std::string& manufacturer) {
+    HardwareInfoDelegate::Get().ClearCacheForTesting();
     auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     telemetry_info->system_result = crosapi::ProbeSystemResult::NewSystemInfo(
         crosapi::ProbeSystemInfo::New(crosapi::ProbeOsInfo::New(manufacturer)));

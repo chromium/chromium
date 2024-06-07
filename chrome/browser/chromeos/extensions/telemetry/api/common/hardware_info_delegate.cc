@@ -50,15 +50,34 @@ HardwareInfoDelegate::~HardwareInfoDelegate() = default;
 // GetManufacturer tries to get the manufacturer (or OEM name) from
 // ProbeServiceAsh, which fetches the OEM name from cros_config.
 void HardwareInfoDelegate::GetManufacturer(ManufacturerCallback done_cb) {
+  if (manufacturer_cache_.has_value()) {
+    std::move(done_cb).Run(manufacturer_cache_.value());
+    return;
+  }
+
+  auto set_cache_cb =
+      base::BindOnce(&HardwareInfoDelegate::SetCacheAndReturnResult,
+                     base::Unretained(this), std::move(done_cb));
   auto* probe_service =
       RemoteProbeServiceStrategy::Get()->GetRemoteProbeService();
   if (probe_service) {
-    auto cb = base::BindOnce(&OnGetSystemInfo).Then(std::move(done_cb));
+    auto cb = base::BindOnce(&OnGetSystemInfo).Then(std::move(set_cache_cb));
     probe_service->ProbeTelemetryInfo(
         {crosapi::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
   } else {
     std::move(done_cb).Run("");
   }
+}
+
+void HardwareInfoDelegate::ClearCacheForTesting() {
+  manufacturer_cache_ = std::nullopt;
+}
+
+void HardwareInfoDelegate::SetCacheAndReturnResult(
+    ManufacturerCallback done_cb,
+    const std::string& manufacturer) {
+  manufacturer_cache_ = manufacturer;
+  std::move(done_cb).Run(manufacturer);
 }
 
 }  // namespace chromeos
