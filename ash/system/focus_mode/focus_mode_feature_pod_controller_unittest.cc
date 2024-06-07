@@ -21,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/user_manager/user_type.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -107,6 +108,32 @@ TEST_F(FocusModeFeaturePodControllerTest, TileVisibility) {
 
   // Verify that the tile should not be visible at the lock screen.
   EXPECT_FALSE(tile_->GetVisible());
+}
+
+// Tests tile visibility for all different user types. This was added for
+// b/344040908 to prevent crashes when ephemeral accounts try to use Focus Mode.
+TEST_F(FocusModeFeaturePodControllerTest, TileVisibilityForUserTypes) {
+  struct {
+    std::string trace;
+    user_manager::UserType user_type;
+    bool is_tile_visible;
+  } kUserTypeTestCases[] = {
+      {"regular user", user_manager::UserType::kRegular, true},
+      {"child", user_manager::UserType::kChild, true},
+      {"guest", user_manager::UserType::kGuest, false},
+      {"public account", user_manager::UserType::kPublicAccount, false},
+      {"kiosk app", user_manager::UserType::kKioskApp, false},
+      {"web kiosk app", user_manager::UserType::kWebKioskApp, false},
+  };
+
+  for (const auto& test_case : kUserTypeTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    ClearLogin();
+    SimulateUserLogin("example@gmail.com", test_case.user_type);
+
+    CreateFakeFocusModeTile();
+    EXPECT_EQ(test_case.is_tile_visible, tile_->GetVisible());
+  }
 }
 
 // Tests that pressing the icon works and toggles a Focus Mode Session.

@@ -40,10 +40,18 @@ std::unique_ptr<FeatureTile> FocusModeFeaturePodController::CreateTile(
                           weak_factory_.GetWeakPtr()));
   tile_ = tile.get();
 
-  const bool target_visibility =
-      !Shell::Get()->session_controller()->IsUserSessionBlocked();
-  tile_->SetVisible(target_visibility);
-  if (target_visibility) {
+  const auto* session_controller = Shell::Get()->session_controller();
+  std::optional<user_manager::UserType> user_type =
+      session_controller->GetUserType();
+  // Only show the focus mode tile if it is a regular user or if the user
+  // session is not blocked (e.g. lock screen).
+  const bool should_show_tile =
+      (user_type && (*user_type == user_manager::UserType::kRegular ||
+                     *user_type == user_manager::UserType::kChild)) &&
+      !session_controller->IsUserSessionBlocked();
+
+  tile_->SetVisible(should_show_tile);
+  if (should_show_tile) {
     TrackVisibilityUMA();
   }
 
