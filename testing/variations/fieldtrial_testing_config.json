@@ -12794,7 +12794,8 @@
                 {
                     "name": "MahiEnabled",
                     "enable_features": [
-                        "Mahi"
+                        "Mahi",
+                        "MediaAppPdfMahi"
                     ]
                 }
             ]
