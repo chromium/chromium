@@ -645,10 +645,16 @@ if (is_win || is_posix) {
   }
 }
 
-# Generate LICENSE file by recursively joining all dependent licenses.
-action("generate_chromedriver_license") {
+copy("copy_license") {
+  sources = [ "//LICENSE" ]
+  outputs = [ "$root_out_dir/LICENSE.chromedriver" ]
+}
+
+# Generate THIRD_PARTY_NOTICES file by recursively joining all dependent
+# licenses.
+action("generate_chromedriver_notices") {
   testonly = true
-  _license_path = "$root_out_dir/LICENSE.chromedriver"
+  _license_path = "$root_out_dir/THIRD_PARTY_NOTICES.chromedriver"
   script = "//tools/licenses/licenses.py"
   outputs = [ _license_path ]
   args = [
@@ -658,6 +664,8 @@ action("generate_chromedriver_license") {
     "//chrome/test/chromedriver:chromedriver_server",
     "--gn-out-dir",
     ".",
+    "--format",
+    "notice",
   ]
   deps = [ ":chromedriver_server" ]
 }
@@ -666,6 +674,7 @@ group("chromedriver") {
   testonly = true
   deps = [
     ":chromedriver_server",
-    ":generate_chromedriver_license",
+    ":copy_license",
+    ":generate_chromedriver_notices",
   ]
 }

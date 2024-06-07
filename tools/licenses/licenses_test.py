@@ -437,6 +437,52 @@ class LicensesTest(unittest.TestCase):
 }'''
     self.assertEqual(license_txt, expected)
 
+  def test_generate_notice_file(self):
+    read_file_vals = [
+        'lib1 license text\n',
+        'lib2-a license text\n',
+        'lib2-b license text\n',
+        'lib3 license text\n',
+        'lib3 license text\n',
+        'lib3-v2 license text\n',
+    ]
+
+    license_txt = licenses.GenerateNoticeFilePlainText(
+        self._get_metadata(), read_file=lambda _: read_file_vals.pop(0))
+
+    expected = '\n'.join([
+        '--------------------',
+        'License notice for lib1',
+        '--------------------',
+        'lib1 license text',
+        '',
+        '--------------------',
+        'License notice for lib2',
+        '--------------------',
+        'lib2-a license text',
+        '',
+        '--------------------',
+        'License notice for lib2',
+        '--------------------',
+        'lib2-b license text',
+        '',
+        '--------------------',
+        'License notice for lib3',
+        '--------------------',
+        'lib3 license text',
+        '',
+        '--------------------',
+        'License notice for lib3-v1',
+        '--------------------',
+        'lib3 license text',
+        '',
+        '--------------------',
+        'License notice for lib3',
+        '--------------------',
+        'lib3-v2 license text',
+    ]) + '\n'  # extra new line to account for join not adding one to the end
+    self.assertEqual(license_txt, expected)
+
 
 if __name__ == '__main__':
   unittest.main()

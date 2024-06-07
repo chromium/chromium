@@ -1069,7 +1069,8 @@ if (use_blink && !is_cronet_build) {
       deps = [
         "//chrome/test/chromedriver:chromedriver_server",
         "//chrome/test/chromedriver:chromedriver_unittests",
-        "//chrome/test/chromedriver:generate_chromedriver_license",
+        "//chrome/test/chromedriver:copy_license",
+        "//chrome/test/chromedriver:generate_chromedriver_notices",
       ]
     }
   }

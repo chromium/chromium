@@ -1184,6 +1184,9 @@ def GenerateLicenseFile(args: argparse.Namespace):
   elif args.format == 'csv':
     license_txt = GenerateLicenseFileCsv(metadatas)
 
+  elif args.format == 'notice':
+    license_txt = GenerateNoticeFilePlainText(metadatas)
+
   else:
     raise ValueError(f'Unknown license format: {args.format}')
 
@@ -1265,6 +1268,39 @@ def GenerateLicenseFileCsv(
     csv_writer.writerow(data_row + static_data)
 
   return csv_content.getvalue()
+
+
+def GenerateNoticeFilePlainText(
+    metadata: Dict[str, List[Dict[str, Any]]],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')
+) -> str:
+  """Generate a plain-text THIRD_PARTY_NOTICE file which can be used when you
+    ship a part of Chromium code (specified by gn_target) as a stand-alone
+    library (e.g., //ios/web_view).
+
+    The THIRD_PARTY_NOTICE file contains licenses of third-party libraries
+    which gn_target depends on. Each notice contains the following information:
+    * The name of the component.
+    * Identification of the component's license.
+    * The complete text of every unique license (at least once)
+      """
+  # Start with Chromium's THIRD_PARTY_NOTICE file.
+  content = []
+  # Add necessary third_party.
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        for license_file in license_files:
+          content.append('-' * 20)
+          content.append('License notice for %s' % dep_metadata["Name"])
+          content.append('-' * 20)
+          content.append(read_file(os.path.join(repo_root, license_file)))
+
+  return '\n'.join(content)
 
 
 def GenerateLicenseFilePlainText(
@@ -1365,7 +1401,7 @@ def main():
   parser.add_argument('--gn-target', help='GN target to scan for dependencies.')
   parser.add_argument('--format',
                       default='txt',
-                      choices=['txt', 'spdx', 'csv'],
+                      choices=['txt', 'spdx', 'csv', 'notice'],
                       help='What format to output in')
   parser.add_argument('--spdx-root',
                       default=_REPOSITORY_ROOT,
