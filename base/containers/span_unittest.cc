@@ -655,6 +655,15 @@ TEST(SpanTest, FromCString) {
     EXPECT_EQ(s[4u], 'o');
     EXPECT_EQ(s[5u], '\0');
   }
+  // Includes the terminating null, size known at compile time.
+  {
+    auto s = base::span_with_nul_from_cstring("hello");
+    static_assert(std::same_as<decltype(s), span<const char, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
+  }
 
   // No terminating null, size known at compile time. Converted to a span of
   // uint8_t bytes.
@@ -664,6 +673,16 @@ TEST(SpanTest, FromCString) {
     EXPECT_EQ(s[0u], 'h');
     EXPECT_EQ(s[1u], 'e');
     EXPECT_EQ(s[4u], 'o');
+  }
+  // Includes the terminating null, size known at compile time. Converted to a
+  // span of uint8_t bytes.
+  {
+    auto s = base::byte_span_with_nul_from_cstring("hello");
+    static_assert(std::same_as<decltype(s), span<const uint8_t, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
   }
 }
 

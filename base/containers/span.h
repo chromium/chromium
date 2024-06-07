@@ -237,7 +237,9 @@ constexpr auto span_cmp(span<T, N> l, span<U, M> r)
 // - span_from_ref() function.
 // - byte_span_from_ref() function.
 // - span_from_cstring() function.
+// - span_with_nul_from_cstring() function.
 // - byte_span_from_cstring() function.
+// - byte_span_with_nul_from_cstring() function.
 // - split_at() method.
 // - operator==() comparator function.
 // - operator<=>() comparator function.
@@ -1370,15 +1372,38 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
 // base::span<char, 5u> s2 = base::span(std::string_view("hello"));
 // ```
 //
-// If you want to include the NUL terminator, then use the span constructor
-// directly, such as:
-// ```
-// base::span<char, 6u> s = base::span("hello");
-// ```
+// If you want to include the NUL terminator in the span, then use
+// `span_with_nul_from_cstring()`.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
 template <size_t N>
 constexpr span<const char, N - 1> span_from_cstring(
-    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
   return span(lit).template first<N - 1>();
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `char` that
+// includes the terminating NUL character. These two are equivalent:
+// ```
+// base::span<char, 6u> s1 = base::span_with_nul_from_cstring("hello");
+// auto h = std::cstring_view("hello");
+// base::span<char, 6u> s2 =
+//     UNSAFE_BUFFERS(base::span(h.data(), h.size() + 1u));
+// ```
+//
+// If you do not want to include the NUL terminator, then use
+// `span_from_cstring()` or use a view type (`base::cstring_view` or
+// `std::string_view`) in place of a string literal.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
+template <size_t N>
+constexpr span<const char, N> span_with_nul_from_cstring(
+    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
+  return span(lit);
 }
 
 // Converts a string literal (such as `"hello"`) to a span of `uint8_t` while
@@ -1388,15 +1413,38 @@ constexpr span<const char, N - 1> span_from_cstring(
 // base::span<uint8_t, 5u> s2 = base::as_byte_span(std::string_view("hello"));
 // ```
 //
-// If you want to include the NUL terminator, then use the span constructor
-// directly, such as:
-// ```
-// base::span<uint8_t, 6u> s = base::as_bytes(base::span("hello"));
-// ```
+// If you want to include the NUL terminator in the span, then use
+// `byte_span_with_nul_from_cstring()`.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
 template <size_t N>
 constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
-    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
   return as_bytes(span(lit).template first<N - 1>());
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `uint8_t` that
+// includes the terminating NUL character. These two are equivalent:
+// ```
+// base::span<uint8_t, 6u> s1 = base::byte_span_with_nul_from_cstring("hello");
+// auto h = base::cstring_view("hello");
+// base::span<uint8_t, 6u> s2 = base::as_bytes(
+//     UNSAFE_BUFFERS(base::span(h.data(), h.size() + 1u)));
+// ```
+//
+// If you do not want to include the NUL terminator, then use
+// `byte_span_from_cstring()` or use a view type (`base::cstring_view` or
+// `std::string_view`) in place of a string literal and `as_byte_span()`.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
+template <size_t N>
+constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
+    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
+  return as_bytes(span(lit));
 }
 
 // Convenience function for converting an object which is itself convertible

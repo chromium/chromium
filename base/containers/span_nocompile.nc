@@ -277,4 +277,17 @@ void AsStringViewNotBytes() {
   as_string_view(base::span(arr));  // expected-error@*:* {{no matching function for call to 'as_string_view'}}
 }
 
+void SpanFromCstrings() {
+  static const char with_null[] = { 'a', 'b', '\0' };
+  base::span_from_cstring(with_null);
+
+  // Can't call span_from_cstring and friends with a non-null-terminated char
+  // array.
+  static const char no_null[] = { 'a', 'b' };
+  base::span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_from_cstring'}}
+  base::span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_with_nul_from_cstring'}}
+  base::byte_span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_from_cstring'}}
+  base::byte_span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_with_nul_from_cstring'}}
+}
+
 }  // namespace base
