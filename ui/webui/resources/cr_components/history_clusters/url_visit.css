@@ -13,10 +13,6 @@
   align-items: center;
   cursor: pointer;
   display: flex;
-  min-height: 64px;
-}
-
-:host([in-side-panel_]) {
   min-height: 48px;
 }
 
@@ -39,20 +35,19 @@
 
 .hide-visit-icon {
   --cr-icon-image: url(chrome://resources/cr_components/history_clusters/hide_source_gm_grey_24dp.svg);
-}
-
-:host([in-side-panel_]) .hide-visit-icon {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
 }
 
 .icon-more-vert {
   --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end: 21px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
 }
 
 :host([in-side-panel_]) .icon-more-vert {
-  --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 24px;
+  --cr-icon-button-margin-end: 8px;
 }
 
 #header {
@@ -101,6 +96,7 @@ a {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 4px;
 }
 
 #title-and-annotations {
@@ -125,9 +121,10 @@ a {
   margin-inline-start: 8px;
 }
 
-#title,
-#url {
-  font-size: .875rem;  /* 14px */
+#title {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
 }
 
 :host([in-side-panel_]) #title {
@@ -137,13 +134,13 @@ a {
 }
 
 #url {
-  color: var(--url-color);
-  line-height: 1.5;  /* 24px */
+  font-size: 11px;
+  color: var(--cr-secondary-text-color);
+  line-height: 14px;
 }
 
 :host([in-side-panel_]) #url {
   color: var(--color-history-clusters-side-panel-card-secondary-foreground);
-  font-size: .6875rem; /* 11px */
   line-height: calc(5/3);  /* 20px */
 }
 

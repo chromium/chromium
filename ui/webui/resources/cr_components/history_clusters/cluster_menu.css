@@ -11,10 +11,11 @@
 
 #actionMenuButton {
   --cr-icon-button-icon-size: 20px;
-  --cr-icon-button-margin-end: 8px;
+  --cr-icon-button-margin-end: 16px;
 }
 
 :host([in-side-panel_]) #actionMenuButton {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
+  --cr-icon-button-margin-end: 8px;
 }

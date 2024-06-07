@@ -17,7 +17,7 @@ html {
   --first-card-padding-top: 24px;
   --history-item-time-color: #646464;
   --interactive-color: var(--google-blue-500);
-  --item-height: 44px;
+  --item-height: 36px;
   --separator-color: rgba(0, 0, 0, 0.08);
   --side-bar-width: 256px;
   --sidebar-footer-text-color: var(--google-grey-700);

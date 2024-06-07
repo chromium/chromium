@@ -23,18 +23,13 @@
 
       :host([is-card-start]) #date-accessed {
         display: block;
-        font-size: 123%;
-        font-weight: 400;
-        letter-spacing: .25px;
-        padding-bottom: 4px;
-        padding-top: 8px;
       }
 
       #item-container {
         align-items: center;
         display: flex;
         min-height: var(--item-height);
-        padding-inline-start: 10px;
+        padding-inline-start: 14px;
         pointer-events: auto;
       }
 
@@ -65,7 +60,7 @@
       }
 
       #checkbox {
-        margin: 12px;
+        margin: 0 10px;
       }
 
       /* Styling the element before cr-checkbox is defined is necessary since
@@ -87,14 +82,17 @@
 
       #domain {
         color: var(--cr-secondary-text-color);
-        margin-inline-start: 16px;
+        font-size: 12px;
+        margin-inline-start: 8px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       #menu-button {
-        --cr-icon-button-margin-end: 12px;
+        --cr-icon-button-margin-end: 20px;
         --cr-icon-button-margin-start: 12px;
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 24px;
       }
 
       #bookmark-star {

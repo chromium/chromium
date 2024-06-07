@@ -39,7 +39,7 @@ html {
   --cluster-max-width: var(--card-max-width);
   --cluster-min-width: var(--card-min-width);
   --cluster-padding-horizontal: var(--card-padding-side);
-  --cluster-padding-vertical: var(--card-padding-between);
+  --cluster-padding-vertical: 24px;
   --favicon-margin: 16px;
   --favicon-size: 16px;
   --first-cluster-padding-top: var(--first-card-padding-top);

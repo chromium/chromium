@@ -13,13 +13,13 @@
   background-color: var(--entity-image-background-color);
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 5px;
+  border-radius: 8px;
   display: flex;
   flex-shrink: 0;
-  height: 36px;
+  height: 40px;
   justify-content: center;
-  margin-inline: 0 12px;
-  width: 36px;
+  margin-inline: 0 16px;
+  width: 40px;
 }
 
 :host([in-side-panel_]) {
