@@ -1078,29 +1078,26 @@ void BoxFragmentPainter::PaintBoxDecorationBackground(
     visual_rect = VisualRect(paint_offset);
   }
 
-  if (!suppress_box_decoration_background) {
+  if (!suppress_box_decoration_background &&
+      !(paint_info.IsPaintingBackgroundInContentsSpace() &&
+        paint_info.ShouldSkipBackground())) {
     PaintBoxDecorationBackgroundWithRect(
         contents_paint_state ? contents_paint_state->GetPaintInfo()
                              : paint_info,
         visual_rect, paint_rect, *background_client);
+
+    Element* element = DynamicTo<Element>(layout_object.GetNode());
+    if (element && element->GetRegionCaptureCropId()) {
+      paint_info.context.GetPaintController().RecordRegionCaptureData(
+          *background_client, *(element->GetRegionCaptureCropId()),
+          ToPixelSnappedRect(paint_rect));
+    }
   }
 
   if (ShouldRecordHitTestData(paint_info)) {
     ObjectPainter(layout_object)
         .RecordHitTestData(paint_info, ToPixelSnappedRect(paint_rect),
                            *background_client);
-  }
-
-  Element* element = DynamicTo<Element>(layout_object.GetNode());
-  if (element && element->GetRegionCaptureCropId() &&
-      // TODO(wangxianzhu): This is to avoid the side-effect of
-      // HitTestOpaqueness on region capture data. Verify if the side-effect
-      // really matters.
-      !(paint_info.IsPaintingBackgroundInContentsSpace() &&
-        paint_info.ShouldSkipBackground())) {
-    paint_info.context.GetPaintController().RecordRegionCaptureData(
-        *background_client, *(element->GetRegionCaptureCropId()),
-        ToPixelSnappedRect(paint_rect));
   }
 
   // Record the scroll hit test after the non-scrolling background so

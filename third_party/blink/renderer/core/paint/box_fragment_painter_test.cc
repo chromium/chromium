@@ -229,4 +229,13 @@ TEST_P(BoxFragmentPainterTest, NodeAtPointWithSvgInline) {
             result.InnerElement());
 }
 
+TEST_P(BoxFragmentPainterTest, TextareaBoxDecorationBackground) {
+  SetBodyInnerHTML("<textarea id=textarea style='resize: none'>");
+
+  auto* textarea = GetLayoutObjectByElementId("textarea");
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(textarea->Id(), kBackgroundType)));
+}
+
 }  // namespace blink
