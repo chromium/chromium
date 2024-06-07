@@ -899,9 +899,15 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
       texsubimage2d_callback_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 void MailboxHoldersReleased(const gpu::SyncToken& sync_token) {}
+#endif
 }  // namespace
 
+// NOTE: The below test tests behavior when PaintCanvasVideoRenderer is used
+// without GPU raster. It is not relevant on Android, where GPU raster is
+// always used.
+#if !BUILDFLAG(IS_ANDROID)
 // Test that PaintCanvasVideoRenderer::Paint doesn't crash when GrContext is
 // unable to wrap a video frame texture (eg due to being abandoned).
 TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
@@ -924,6 +930,7 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
   renderer_.Paint(std::move(video_frame), &canvas, kNaturalRect, flags,
                   kNoTransformation, context_provider.get());
 }
+#endif
 
 void EmptyCallback(const gpu::SyncToken& sync_token) {}
 
