@@ -73,7 +73,7 @@ class GoogleBottomBarLogger {
         int SHARE_EMBEDDER = 6;
         int CUSTOM_EMBEDDER = 7;
 
-        int COUNT = 7;
+        int COUNT = 8;
         // NOTE: This must be kept in sync with the definition |GoogleBottomBarButtonEvent|
         // in tools/metrics/histograms/metadata/custom_tabs/enums.xml.
     }
