@@ -29,6 +29,7 @@ class PrefService;
 class Profile;
 class ChromeSearchResult;
 class PickerFileSuggester;
+class PickerThumbnailLoader;
 
 namespace app_list {
 class SearchEngine;
@@ -36,7 +37,6 @@ class SearchProvider;
 }
 
 namespace ash {
-class ThumbnailLoader;
 class PickerController;
 }
 
@@ -157,7 +157,7 @@ class PickerClientImpl
   std::optional<std::string> current_gif_search_query_;
   std::unique_ptr<EndpointFetcher> current_gif_fetcher_;
 
-  std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
+  std::unique_ptr<PickerThumbnailLoader> thumbnail_loader_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

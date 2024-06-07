@@ -2857,6 +2857,8 @@ static_library("ui") {
       "ash/picker/picker_file_suggester.h",
       "ash/picker/picker_lacros_omnibox_search_provider.cc",
       "ash/picker/picker_lacros_omnibox_search_provider.h",
+      "ash/picker/picker_thumbnail_loader.cc",
+      "ash/picker/picker_thumbnail_loader.h",
       "ash/projector/pending_screencast_manager.cc",
       "ash/projector/pending_screencast_manager.h",
       "ash/projector/projector_app_client_impl.cc",

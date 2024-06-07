@@ -41,6 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
+#include "chrome/browser/ui/ash/picker/picker_thumbnail_loader.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -435,7 +436,7 @@ void PickerClientImpl::FetchFileThumbnail(const base::FilePath& path,
                                           const gfx::Size& size,
                                           FetchFileThumbnailCallback callback) {
   CHECK(thumbnail_loader_);
-  thumbnail_loader_->Load({path, size}, std::move(callback));
+  thumbnail_loader_->Load(path, size, std::move(callback));
 }
 
 PrefService* PickerClientImpl::GetPrefs() {
@@ -475,7 +476,7 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   zero_state_links_search_engine_.reset();
 
   file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
-  thumbnail_loader_ = std::make_unique<ash::ThumbnailLoader>(profile_);
+  thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
 }
 
 std::unique_ptr<app_list::SearchProvider>
