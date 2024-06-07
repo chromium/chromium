@@ -15,7 +15,6 @@
 
 namespace content_settings {
 
-extern const char kCookieSessionOnly[];
 extern const char kCookiePrimarySetting[];
 extern const char kCookieDefaultContentSetting[];
 
@@ -71,15 +70,6 @@ class GeneratedCookiePrimarySettingPref : public GeneratedCookiePrefBase {
       Profile* profile);
 };
 
-class GeneratedCookieSessionOnlyPref : public GeneratedCookiePrefBase {
- public:
-  explicit GeneratedCookieSessionOnlyPref(Profile* profile);
-
-  // Generated Preference Interface.
-  extensions::settings_private::SetPrefResult SetPref(
-      const base::Value* value) override;
-  extensions::api::settings_private::PrefObject GetPrefObject() const override;
-};
 
 // A generated preference that represents cookies content setting and supports
 // three states: allow, session only and block.

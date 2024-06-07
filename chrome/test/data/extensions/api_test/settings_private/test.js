@@ -6,6 +6,10 @@
 // that callbacks are correctly invoked, expected parameters are correct,
 // and failures are detected.
 
+// NOTE: These tests rely on implementation details about specific prefs in
+// order to succeed. Changes to any prefs listed below or their behavior may
+// result in these tests failing.
+
 var kTestPrefName = 'autofill.profile_enabled';
 var kTestPrefValue = true;
 
@@ -13,10 +17,11 @@ var kTestPrefValue = true;
 // settings_private_apitest.cc.
 var kTestEnforcedPrefName = 'homepage_is_newtabpage';
 
-// Content settings are set in setting_private_apitest.cc such that this
+// Command line switch is set in settings_private_apitest.cc such that this
 // preference is disabled.
-var kTestDisabledPrefName = 'generated.cookie_session_only';
-// Device policies are applied in setting_private_apitest.cc such that this
+var kTestDisabledPrefName = 'generated.https_first_mode_enabled';
+
+// Device policies are applied in settings_private_apitest.cc such that this
 // preference is partially managed.
 var kPartiallyManagedPrefName = 'generated.cookie_primary_setting';
 var kUserSelectableValues = [0, 1, 2];

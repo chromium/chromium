@@ -78,7 +78,6 @@ CookiePrimarySetting ToCookiePrimarySetting(
 }  // namespace
 
 const char kCookiePrimarySetting[] = "generated.cookie_primary_setting";
-const char kCookieSessionOnly[] = "generated.cookie_session_only";
 const char kCookieDefaultContentSetting[] =
     "generated.cookie_default_content_setting";
 
@@ -286,65 +285,6 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
         &pref_object,
         static_cast<int>(CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO));
   }
-}
-
-GeneratedCookieSessionOnlyPref::GeneratedCookieSessionOnlyPref(Profile* profile)
-    : GeneratedCookiePrefBase(profile, kCookieSessionOnly) {}
-
-extensions::settings_private::SetPrefResult
-GeneratedCookieSessionOnlyPref::SetPref(const base::Value* value) {
-  if (!value->is_bool())
-    return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
-
-  if (!IsDefaultCookieContentSettingUserControlled(host_content_settings_map_))
-    return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
-
-  if (host_content_settings_map_->GetDefaultContentSetting(
-          ContentSettingsType::COOKIES, nullptr) ==
-      ContentSetting::CONTENT_SETTING_BLOCK)
-    return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
-
-  host_content_settings_map_->SetDefaultContentSetting(
-      ContentSettingsType::COOKIES,
-      value->GetBool() ? ContentSetting::CONTENT_SETTING_SESSION_ONLY
-                       : ContentSetting::CONTENT_SETTING_ALLOW);
-
-  return extensions::settings_private::SetPrefResult::SUCCESS;
-}
-
-settings_api::PrefObject GeneratedCookieSessionOnlyPref::GetPrefObject() const {
-  settings_api::PrefObject pref_object;
-  pref_object.key = pref_name_;
-  pref_object.type = settings_api::PrefType::kBoolean;
-
-  content_settings::ProviderType content_setting_provider;
-  auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
-      ContentSettingsType::COOKIES, &content_setting_provider);
-
-  pref_object.user_control_disabled =
-      content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
-  pref_object.value = base::Value(content_setting ==
-                                  ContentSetting::CONTENT_SETTING_SESSION_ONLY);
-
-  // Content settings can be managed via policy, extension or supervision, but
-  // cannot be recommended.
-  auto content_setting_source =
-      content_settings::GetSettingSourceFromProviderType(
-          content_setting_provider);
-  if (content_setting_source == SettingSource::kPolicy) {
-    pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
-    pref_object.enforcement = settings_api::Enforcement::kEnforced;
-  }
-  if (content_setting_source == SettingSource::kExtension) {
-    pref_object.controlled_by = settings_api::ControlledBy::kExtension;
-    pref_object.enforcement = settings_api::Enforcement::kEnforced;
-  }
-  if (content_setting_source == SettingSource::kSupervised) {
-    pref_object.controlled_by = settings_api::ControlledBy::kChildRestriction;
-    pref_object.enforcement = settings_api::Enforcement::kEnforced;
-  }
-
-  return pref_object;
 }
 
 GeneratedCookieDefaultContentSettingPref::

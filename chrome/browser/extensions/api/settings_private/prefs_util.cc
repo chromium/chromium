@@ -347,8 +347,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[::content_settings::kCookiePrimarySetting] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[::content_settings::kCookieSessionOnly] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kPrivacySandboxRelatedWebsiteSetsEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kBlockAll3pcToggleEnabled] =
