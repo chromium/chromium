@@ -31,6 +31,7 @@ source_set("autofill") {
     ":shared_ui",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/common",
     "//components/password_manager/core/common:features",

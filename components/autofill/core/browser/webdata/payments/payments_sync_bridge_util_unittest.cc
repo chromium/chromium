@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"

@@ -11,8 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

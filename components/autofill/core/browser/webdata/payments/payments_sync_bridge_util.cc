@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/sync/protocol/entity_data.h"
 
 using autofill::data_util::TruncateUTF8;

@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/common/credit_card_network_identifiers.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 

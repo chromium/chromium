@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/core/common/credit_card_network_identifiers.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

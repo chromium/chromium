@@ -194,6 +194,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util:form_util",
     "//components/autofill/ios/form_util:test_support",

@@ -47,7 +47,6 @@ class Autofill_CreditCardFill;
 namespace autofill {
 
 class AutofillField;
-class CreditCard;
 
 namespace autofill_metrics {
 class FormEventLoggerBase;

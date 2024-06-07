@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

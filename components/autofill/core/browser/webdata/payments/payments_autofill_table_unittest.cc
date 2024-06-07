@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"

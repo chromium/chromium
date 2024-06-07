@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_IOS)

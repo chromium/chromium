@@ -24,6 +24,7 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 

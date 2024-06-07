@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/strings/grit/components_strings.h"

@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 
 namespace autofill::autofill_metrics {
 
