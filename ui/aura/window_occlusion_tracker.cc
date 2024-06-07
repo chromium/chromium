@@ -517,7 +517,8 @@ void WindowOcclusionTracker::CleanupAnimatedWindows() {
     if (animator->IsAnimatingOnePropertyOf(
             kOcclusionCanChangeWhenPropertyAnimationEnds))
       return false;
-    animator->RemoveObserver(this);
+
+    RemoveAnimationObservationForLayer(window->layer());
     MarkRootWindowAsDirty(window->GetRootWindow());
     return true;
   });
@@ -535,7 +536,8 @@ bool WindowOcclusionTracker::MaybeObserveAnimatedWindow(Window* window) {
           kOcclusionCanChangeWhenPropertyAnimationEnds)) {
     const auto insert_result = animated_windows_.insert(window);
     if (insert_result.second) {
-      animator->AddObserver(this);
+      layer_animator_observations.AddObservation(animator);
+      animated_layer_observations_.AddObservation(window->layer());
       return true;
     }
   }
@@ -778,7 +780,7 @@ void WindowOcclusionTracker::RemoveObserverFromWindowAndDescendants(
   } else {
     if (window_observations_.IsObservingSource(window))
       window_observations_.RemoveObservation(window);
-    window->layer()->GetAnimator()->RemoveObserver(this);
+    RemoveAnimationObservationForLayer(window->layer());
     animated_windows_.erase(window);
   }
   for (Window* child_window : window->children())
@@ -864,6 +866,27 @@ void WindowOcclusionTracker::OnLayerAnimationAborted(
 
 void WindowOcclusionTracker::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {}
+
+bool WindowOcclusionTracker::RequiresNotificationWhenAnimatorDestroyed() const {
+  // `OnLayerAnimationAborted()` should be called if the `LayerAnimator` is
+  // destroyed while an animation is still active. This gives
+  // `WindowOcclusionTracker` a chance to unregister itself as a
+  // `LayerAnimationObserver`.
+  return true;
+}
+
+void WindowOcclusionTracker::LayerDestroyed(ui::Layer* layer) {
+  // The only known use case here is for the layer recreation. When
+  // `OnWindowLayerRecreated()` is called, the `window` already has a new
+  // `Layer` and `LayerAnimator`. `WindowOcclusionTracker` needs access to the
+  // old layer though so that it can unregister itself as an observer of any
+  // animated properties. This method should be called for the old layer.
+  //
+  // For all other use cases, this method is effectively a no-op because some
+  // other observer event in this class fired already and caused
+  // `RemoveAnimationObservationForLayer()` to be called.
+  RemoveAnimationObservationForLayer(layer);
+}
 
 void WindowOcclusionTracker::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
@@ -977,6 +1000,7 @@ void WindowOcclusionTracker::OnWindowDestroyed(Window* window) {
   // access in CleanupAnimatedWindows() if |window| is being destroyed from a
   // LayerAnimationObserver after an animation has ended but before |this| has
   // been notified.
+  RemoveAnimationObservationForLayer(window->layer());
   animated_windows_.erase(window);
 }
 
@@ -1006,7 +1030,6 @@ void WindowOcclusionTracker::OnWindowLayerRecreated(Window* window) {
   if (num_removed == 0)
     return;
 
-  animator->RemoveObserver(this);
   if (MarkRootWindowAsDirty(window->GetRootWindow()))
     MaybeComputeOcclusion();
 }
@@ -1036,6 +1059,18 @@ void WindowOcclusionTracker::OnOcclusionStateChanged(
 
   MarkRootWindowAsDirty(root_window);
   MaybeComputeOcclusion();
+}
+
+void WindowOcclusionTracker::RemoveAnimationObservationForLayer(
+    ui::Layer* layer) {
+  if (animated_layer_observations_.IsObservingSource(layer)) {
+    animated_layer_observations_.RemoveObservation(layer);
+  }
+
+  ui::LayerAnimator* const animator = layer->GetAnimator();
+  if (layer_animator_observations.IsObservingSource(animator)) {
+    layer_animator_observations.RemoveObservation(animator);
+  }
 }
 
 }  // namespace aura

@@ -18,7 +18,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_observer.h"
 
 struct SkIRect;
 
@@ -47,6 +50,7 @@ class WindowOcclusionChangeBuilder;
 // Note that an occluded window may be drawn on the screen by window switching
 // features such as "Alt-Tab" or "Overview".
 class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
+                                           public ui::LayerObserver,
                                            public WindowObserver,
                                            public WindowTreeHostObserver {
  public:
@@ -351,6 +355,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
+  bool RequiresNotificationWhenAnimatorDestroyed() const override;
+
+  // ui::LayerObserver:
+  void LayerDestroyed(ui::Layer* layer) override;
 
   // WindowObserver:
   void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
@@ -380,6 +388,8 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   void OnOcclusionStateChanged(WindowTreeHost* host,
                                Window::OcclusionState new_state,
                                const SkRegion& occluded_region) override;
+
+  void RemoveAnimationObservationForLayer(ui::Layer* layer);
 
   // Windows whose occlusion data is tracked.
   base::flat_map<Window*, OcclusionData> tracked_windows_;
@@ -419,6 +429,11 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
       window_observations_{this};
   base::ScopedMultiSourceObservation<WindowTreeHost, WindowTreeHostObserver>
       window_tree_host_observations_{this};
+  base::ScopedMultiSourceObservation<ui::LayerAnimator,
+                                     ui::LayerAnimationObserver>
+      layer_animator_observations{this};
+  base::ScopedMultiSourceObservation<ui::Layer, ui::LayerObserver>
+      animated_layer_observations_{this};
 
   // Optional factory to create occlusion change builder.
   OcclusionChangeBuilderFactory occlusion_change_builder_factory_;
