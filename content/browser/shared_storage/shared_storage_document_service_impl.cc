@@ -140,23 +140,15 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     return;
   }
 
-  if (render_frame_host().GetLastCommittedOrigin().opaque()) {
-    receiver_.ReportBadMessage(
-        "Attempted to create a worklet from an opaque origin context.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther);
-    return;
-  }
+  // `CreateWorklet()` cannot differentiate between calls from addModule() and
+  // createWorklet(). Hence, we skip the mojom validation for opaque origin
+  // context for addModule().
 
-  if (!CheckSecureContext(render_frame_host())) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/kSharedStorageMethodFromInsecureContextMessage);
-
-    // TODO(crbug.com/40068897): Invoke receiver_.ReportBadMessage here when
-    // we can be sure honest renderers won't hit this path.
-    return;
-  }
+  // There's no consistent secure context check between the renderer process and
+  // the browser process (see crbug.com/1153336). This is particularly
+  // problematic when the origin is opaque. Hence, we skip the mojom validation
+  // for secure context. Until the issue is addressed, an insecure context (in
+  // a compromised renderer) can create worklets and execute operations.
 
   std::string debug_message;
   bool prefs_failure_is_site_specific = false;

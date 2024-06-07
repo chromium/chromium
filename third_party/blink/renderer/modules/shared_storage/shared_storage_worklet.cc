@@ -116,11 +116,15 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
     return;
   }
 
-  if (execution_context->GetSecurityOrigin()->IsOpaque()) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        kOpaqueOriginCheckErrorMessage));
-    return;
+  // In an opaque origin context, addModule() is not allowed, but
+  // createWorklet() is allowed.
+  if (!cross_origin_script_allowed_) {
+    if (execution_context->GetSecurityOrigin()->IsOpaque()) {
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+          kOpaqueOriginCheckErrorMessage));
+      return;
+    }
   }
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
@@ -309,9 +313,10 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     return promise;
   }
 
-  // The opaque origin should have been checked in addModule() or
-  // createWorklet() already.
-  CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
+  if (!cross_origin_script_allowed_) {
+    // The opaque origin should have been checked in addModule() already.
+    CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
+  }
 
   if (!IsValidSharedStorageURLsArrayLength(urls.size())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
@@ -558,9 +563,10 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
     return promise;
   }
 
-  // The opaque origin should have been checked in addModule() or
-  // createWorklet() already.
-  CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
+  if (!cross_origin_script_allowed_) {
+    // The opaque origin should have been checked in addModule() already.
+    CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
+  }
 
   if (!keep_alive_after_operation_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
