@@ -52,6 +52,7 @@ build_webui("build") {
     "controls/settings_slider.ts",
     "controls/settings_toggle_button.ts",
     "controls/v2/settings_toggle_v2.ts",
+    "controls/v2/settings_dropdown_row.ts",
     "controls/v2/settings_dropdown_v2.ts",
     "controls/v2/settings_row.ts",
     "controls/v2/settings_slider_row.ts",

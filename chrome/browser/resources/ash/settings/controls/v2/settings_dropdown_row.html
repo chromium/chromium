@@ -1,0 +1,23 @@
+<style>
+  :host {
+    box-sizing: border-box;
+    display: block;
+  }
+</style>
+
+<settings-row id="internalRow"
+    label="[[label]]"
+    sublabel="[[sublabel]]"
+    icon="[[icon]]"
+    learn-more-url="[[learnMoreUrl]]">
+  <settings-dropdown-v2 id="dropdown"
+      slot="control"
+      pref="[[pref]]"
+      value="[[value]]"
+      options="[[options]]"
+      disabled="[[disabled]]"
+      aria-label="[[getAriaLabel(ariaLabel, label)]]"
+      aria-description="[[getAriaDescription(ariaDescription, sublabel)]]"
+      on-change="propagateChangeEvent_">
+  </settings-dropdown-v2>
+</settings-row>

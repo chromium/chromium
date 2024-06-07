@@ -184,15 +184,11 @@ suite(SettingsDropdownV2Element.is, () => {
     });
 
     test('Pref value updates the selected option', async () => {
-      assertOptionSelected(1);
-
-      dropdownElement.set('pref.value', 2);
-      await flushTasks();
-      assertOptionSelected(2);
-
-      dropdownElement.set('pref.value', 3);
-      await flushTasks();
-      assertOptionSelected(3);
+      for (const testOption of testOptions) {
+        dropdownElement.set('pref.value', testOption.value);
+        await flushTasks();
+        assertOptionSelected(testOption.value);
+      }
     });
 
     test(
@@ -285,18 +281,12 @@ suite(SettingsDropdownV2Element.is, () => {
   });
 
   suite('without pref', () => {
-    test('Selected option updates according to value property', async () => {
-      dropdownElement.value = 1;
-      await flushTasks();
-      assertOptionSelected(1);
-
-      dropdownElement.value = 2;
-      await flushTasks();
-      assertOptionSelected(2);
-
-      dropdownElement.value = 3;
-      await flushTasks();
-      assertOptionSelected(3);
+    test('Changing value updates the selected option', async () => {
+      for (const testOption of testOptions) {
+        dropdownElement.value = testOption.value;
+        await flushTasks();
+        assertOptionSelected(testOption.value);
+      }
     });
 
     test('No option is selected if no matching option for value', async () => {
@@ -328,6 +318,8 @@ suite(SettingsDropdownV2Element.is, () => {
         assertOptionSelected(value);
         const event = await changeEventPromise;
         assertEquals(value, event.detail);
+        // Event should not pass the shadow DOM boundary.
+        assertFalse(event.composed);
       }
     });
   });

@@ -31,6 +31,7 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../../assert_extras.js';
@@ -43,7 +44,7 @@ import {getTemplate} from './settings_dropdown_v2.html.js';
  * - `value` is the underlying value for the option.
  * - `hidden` specifies whether to hide this option in the UI.
  */
-interface DropdownOption {
+export interface DropdownOption {
   label: string;
   value: number|string;
   hidden?: boolean;
@@ -68,7 +69,11 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
     return getTemplate();
   }
 
-  static get properties() {
+  /**
+   * Properties shared publicly with other elements that may encapsulate this
+   * element internally (e.g. settings-dropdown-row).
+   */
+  static get sharedProperties(): PolymerElementProperties {
     return {
       /**
        * List of options for the dropdown.
@@ -91,13 +96,12 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
         type: String,
         value: undefined,
       },
+    };
+  }
 
-      /**
-       * Label for a11y purposes.
-       */
-      ariaLabel: {
-        type: String,
-      },
+  static get properties() {
+    return {
+      ...this.sharedProperties,
     };
   }
 
