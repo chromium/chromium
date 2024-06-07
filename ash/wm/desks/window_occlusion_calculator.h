@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
@@ -126,6 +127,8 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   // `OnWindowDestroyed()` implementation.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       tracked_window_observations_{this};
+
+  base::WeakPtrFactory<WindowOcclusionCalculator> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

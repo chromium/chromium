@@ -34,15 +34,16 @@ class WindowOcclusionCalculator::WindowOcclusionChangeBuilderImpl
     : public aura::WindowOcclusionChangeBuilder {
  public:
   explicit WindowOcclusionChangeBuilderImpl(
-      WindowOcclusionCalculator* occlusion_reader)
-      : occlusion_reader_(occlusion_reader) {
-    CHECK(occlusion_reader_);
-  }
+      base::WeakPtr<WindowOcclusionCalculator> occlusion_calculator)
+      : occlusion_calculator_(occlusion_calculator) {}
   WindowOcclusionChangeBuilderImpl(const WindowOcclusionChangeBuilderImpl&) =
       delete;
   WindowOcclusionChangeBuilderImpl& operator=(
       const WindowOcclusionChangeBuilderImpl&) = delete;
   ~WindowOcclusionChangeBuilderImpl() override {
+    if (!occlusion_calculator_) {
+      return;
+    }
     // `aura::WindowOcclusionChangeBuilder` is a short-lived class.
     // `aura::WindowOcclusionTracker` creates a new one whenever it recomputes
     // occlusion state, and then destroys it when the computation is done.
@@ -59,7 +60,7 @@ class WindowOcclusionCalculator::WindowOcclusionChangeBuilderImpl
       // Corner case: Window might be destroyed from the time it was `Add()`ed
       // until now. If so, don't set occlusion state for a dead window.
       if (window_tracker_.Contains(window)) {
-        occlusion_reader_->SetOcclusionState(window, occlusion_state);
+        occlusion_calculator_->SetOcclusionState(window, occlusion_state);
       }
     }
   }
@@ -74,7 +75,7 @@ class WindowOcclusionCalculator::WindowOcclusionChangeBuilderImpl
   }
 
  private:
-  const raw_ptr<WindowOcclusionCalculator> occlusion_reader_;
+  const base::WeakPtr<WindowOcclusionCalculator> occlusion_calculator_;
   WindowOcclusionCalculator::WindowOcclusionMap occlusion_changes_;
   aura::WindowTracker window_tracker_;
 };
@@ -105,15 +106,17 @@ class WindowOcclusionCalculator::ObservationState {
 
 WindowOcclusionCalculator::WindowOcclusionCalculator() {
   occlusion_tracker_.set_occlusion_change_builder_factory(base::BindRepeating(
-      [](WindowOcclusionCalculator* occlusion_reader)
+      [](base::WeakPtr<WindowOcclusionCalculator> occlusion_calculator)
           -> std::unique_ptr<aura::WindowOcclusionChangeBuilder> {
         return std::make_unique<WindowOcclusionChangeBuilderImpl>(
-            std::move(occlusion_reader));
+            std::move(occlusion_calculator));
       },
-      // Use-after-free is not a concern in this case because the
-      // `occlusion_tracker_` is owned by `WindowOcclusionCalculator` and
-      // hence, does not outlive `this`.
-      base::Unretained(this)));
+      // Using a `base::WeakPtr` and having the `weak_ptr_factory_` be the
+      // first member destroyed prevents errant `SetOcclusionState()` calls
+      // from happening when members are destroyed in the destructor. This can
+      // cause use-after-free crashes as some members, or portions of members,
+      // have already been destroyed in `SetOcclusionState()`.
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 WindowOcclusionCalculator::~WindowOcclusionCalculator() = default;
