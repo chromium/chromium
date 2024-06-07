@@ -89,6 +89,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -908,6 +909,39 @@ public class ToolbarPhoneTest {
         // Focus the Omnibox.
         mOmnibox.requestFocus();
         assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    public void testFocusAnimation_optionalButtonRestored() {
+        mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        assertEquals(true, mToolbar.isLocationBarShownInNtp());
+
+        ButtonData buttonData =
+                new ButtonDataImpl(
+                        true,
+                        AppCompatResources.getDrawable(
+                                mActivityTestRule.getActivity(),
+                                R.drawable.ic_toolbar_share_offset_24dp),
+                        null,
+                        mActivityTestRule.getActivity().getString(R.string.share),
+                        false,
+                        null,
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        0,
+                        false);
+        mToolbar.updateOptionalButton(buttonData);
+        verify(mOptionalButtonCoordinator).updateButton(buttonData);
+
+        mOmnibox.requestFocus();
+        verify(mOptionalButtonCoordinator).updateButton(null);
+        mOmnibox.clearFocus();
+        verify(mOptionalButtonCoordinator, times(2)).updateButton(buttonData);
     }
 
     private static class TestControlsVisibilityDelegate
