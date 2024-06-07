@@ -655,7 +655,9 @@ class ManualFillingMediator
 
     @Override
     public void onBarFadeInAnimationEnd() {
-        mActivity.getCurrentWebContents().scrollFocusedEditableNodeIntoView();
+        if (mActivity != null && mActivity.getCurrentWebContents() != null) {
+            mActivity.getCurrentWebContents().scrollFocusedEditableNodeIntoView();
+        }
     }
 
     /** Returns the amount that the keyboard will be extended by the accessory bar. */
