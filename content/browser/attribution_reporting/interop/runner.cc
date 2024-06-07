@@ -15,16 +15,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -49,6 +54,7 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
@@ -98,7 +104,9 @@ base::TimeDelta TimeOffset(base::Time time_origin) {
 
 class Adjuster : public ReportBodyAdjuster {
  public:
-  explicit Adjuster(base::Time time_origin) : time_origin_(time_origin) {}
+  Adjuster(base::Time time_origin,
+           const aggregation_service::TestHpkeKey& hpke_key)
+      : time_origin_(time_origin), hpke_key_(hpke_key) {}
 
   ~Adjuster() override = default;
 
@@ -115,16 +123,79 @@ class Adjuster : public ReportBodyAdjuster {
     }
   }
 
+  void AdjustAggregatable(base::Value::Dict& report_body) override {
+    AdjustAggregatableReportSharedInfo(report_body);
+  }
+
+  void AdjustAggregatableDebug(base::Value::Dict& report_body) override {
+    AdjustAggregatableReportSharedInfo(report_body);
+  }
+
+  void AdjustAggregatableReportSharedInfo(base::Value::Dict& report_body) {
+    std::string* shared_info = report_body.FindString("shared_info");
+    CHECK(shared_info);
+
+    std::optional<base::Value> shared_info_value =
+        base::JSONReader::Read(*shared_info, base::JSON_PARSE_RFC);
+    CHECK(shared_info_value);
+
+    std::string* scheduled_report_time =
+        shared_info_value->GetDict().FindString("scheduled_report_time");
+    CHECK(scheduled_report_time);
+
+    int64_t seconds;
+    CHECK(base::StringToInt64(*scheduled_report_time, &seconds));
+
+    *scheduled_report_time =
+        base::NumberToString(seconds - TimeOffset(time_origin_).InSeconds());
+
+    std::string adjusted_shared_info;
+    base::JSONWriter::Write(*shared_info_value, &adjusted_shared_info);
+
+    // The payloads were encrypted with the original shared info, therefore
+    // need to be re-encrypted with the adjusted shared info.
+    base::Value::List* payloads =
+        report_body.FindList("aggregation_service_payloads");
+    CHECK(payloads);
+
+    for (base::Value& payload : *payloads) {
+      std::string* payload_str = payload.GetDict().FindString("payload");
+      CHECK(payload_str);
+
+      std::optional<std::vector<uint8_t>> encrypted_payload =
+          base::Base64Decode(*payload_str);
+      CHECK(encrypted_payload.has_value());
+
+      // Decrypt with the original shared info.
+      std::vector<uint8_t> decrypted_payload =
+          aggregation_service::DecryptPayloadWithHpke(
+              *encrypted_payload, hpke_key_->full_hpke_key(), *shared_info);
+
+      // Re-encrypt with the adjusted shared info.
+      std::string authenticated_info_str = base::StrCat(
+          {AggregatableReport::kDomainSeparationPrefix, adjusted_shared_info});
+      *payload_str =
+          base::Base64Encode(EncryptAggregatableReportPayloadWithHpke(
+              decrypted_payload, hpke_key_->GetPublicKey().key,
+              base::as_bytes(base::make_span(authenticated_info_str))));
+    }
+
+    *shared_info = std::move(adjusted_shared_info);
+  }
+
   const base::Time time_origin_;
+  const base::raw_ref<const aggregation_service::TestHpkeKey> hpke_key_;
 };
 
-AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
-                                            const base::Time time_origin) {
+AttributionInteropOutput::Report MakeReport(
+    const network::ResourceRequest& req,
+    const base::Time time_origin,
+    const aggregation_service::TestHpkeKey& hpke_key) {
   std::optional<base::Value> value =
       base::JSONReader::Read(network::GetUploadData(req), base::JSON_PARSE_RFC);
   CHECK(value.has_value());
 
-  Adjuster adjuster(time_origin);
+  Adjuster adjuster(time_origin, hpke_key);
   MaybeAdjustReportBody(req.url, *value, adjuster);
 
   return AttributionInteropOutput::Report(
@@ -332,8 +403,9 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
 }  // namespace
 
 base::expected<AttributionInteropOutput, std::string>
-RunAttributionInteropSimulation(AttributionInteropRun run,
-                                const PublicKey& hpke_key) {
+RunAttributionInteropSimulation(
+    AttributionInteropRun run,
+    const aggregation_service::TestHpkeKey& hpke_key) {
   if (run.events.empty()) {
     return AttributionInteropOutput();
   }
@@ -416,7 +488,7 @@ RunAttributionInteropSimulation(AttributionInteropRun run,
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
-        output.reports.emplace_back(MakeReport(req, time_origin));
+        output.reports.emplace_back(MakeReport(req, time_origin, hpke_key));
         test_url_loader_factory.AddResponse(req.url.spec(), /*content=*/"");
       }));
 
@@ -447,12 +519,12 @@ RunAttributionInteropSimulation(AttributionInteropRun run,
         storage_partition->GetAggregationService())
         ->SetPublicKeysForTesting(  // IN-TEST
             GetAggregationServiceProcessingUrl(origin),
-            PublicKeyset({hpke_key},
+            PublicKeyset({hpke_key.GetPublicKey()},
                          /*fetch_time=*/base::Time::Now(),
                          /*expiry_time=*/base::Time::Max()));
   }
 
-  aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_aggregation_coordinators(
           std::move(run.config.aggregation_coordinator_origins));
 

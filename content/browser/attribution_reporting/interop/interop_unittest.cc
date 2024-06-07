@@ -42,6 +42,11 @@ using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::UnorderedElementsAreArray;
 
+struct AggregatableReportSharedInfo {
+  std::string as_string;
+  base::Value::Dict as_dict;
+};
+
 constexpr char kDefaultConfigFileName[] = "default_config.json";
 
 const aggregation_service::TestHpkeKey kHpkeKey;
@@ -143,32 +148,26 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
   return list;
 }
 
-void AdjustAggregatableReportBody(base::Value::Dict& report_body) {
-  // These fields normally encode a random GUID or the absolute
-  // time and therefore are sources of nondeterminism in the
-  // output.
+void AdjustAggregatableReportPayloads(base::Value::Dict& report_body,
+                                      const std::string& shared_info) {
+  report_body.Set(
+      "histograms",
+      GetDecryptedPayloads(report_body.Extract("aggregation_service_payloads"),
+                           shared_info));
+}
 
-  // Output attribution_destination from the shared_info field.
-  const std::optional<base::Value> shared_info =
-      report_body.Extract("shared_info");
+AggregatableReportSharedInfo ExtractAggregatableReportSharedInfo(
+    base::Value::Dict& report_body) {
+  std::optional<base::Value> shared_info = report_body.Extract("shared_info");
   CHECK(shared_info.has_value());
-  const std::string& shared_info_str = shared_info->GetString();
+  std::string& shared_info_str = shared_info->GetString();
 
   std::optional<base::Value> shared_info_value =
       base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
   CHECK(shared_info_value.has_value());
-  static constexpr char kKeyAttributionDestination[] =
-      "attribution_destination";
-  std::optional<base::Value> attribution_destination =
-      shared_info_value->GetDict().Extract(kKeyAttributionDestination);
-  CHECK(attribution_destination.has_value());
-  report_body.Set(kKeyAttributionDestination,
-                  *std::move(attribution_destination));
 
-  report_body.Set(
-      "histograms",
-      GetDecryptedPayloads(report_body.Extract("aggregation_service_payloads"),
-                           shared_info_str));
+  return AggregatableReportSharedInfo(std::move(shared_info_str),
+                                      std::move(shared_info_value->GetDict()));
 }
 
 class Adjuster : public ReportBodyAdjuster {
@@ -208,7 +207,23 @@ class Adjuster : public ReportBodyAdjuster {
       return;
     }
 
-    AdjustAggregatableReportBody(report_body);
+    // These fields normally encode a random GUID or the absolute
+    // time and therefore are sources of nondeterminism in the
+    // output.
+    //
+    // Output attribution_destination from the shared_info field.
+    AggregatableReportSharedInfo shared_info =
+        ExtractAggregatableReportSharedInfo(report_body);
+
+    static constexpr char kKeyAttributionDestination[] =
+        "attribution_destination";
+    std::optional<base::Value> attribution_destination =
+        shared_info.as_dict.Extract(kKeyAttributionDestination);
+    CHECK(attribution_destination.has_value());
+    report_body.Set(kKeyAttributionDestination,
+                    *std::move(attribution_destination));
+
+    AdjustAggregatableReportPayloads(report_body, shared_info.as_string);
   }
 
   void AdjustAggregatableDebug(base::Value::Dict& report_body) override {
@@ -216,9 +231,16 @@ class Adjuster : public ReportBodyAdjuster {
       return;
     }
 
-    // TODO(b/343870498): Consider including more fields for validation.
+    AggregatableReportSharedInfo shared_info =
+        ExtractAggregatableReportSharedInfo(report_body);
 
-    AdjustAggregatableReportBody(report_body);
+    // Report IDs are a source of nondeterminism, so remove them.
+    shared_info.as_dict.Remove("report_id");
+
+    // Set shared_info as a dictionary for easier comparison.
+    report_body.Set("shared_info", std::move(shared_info.as_dict));
+
+    AdjustAggregatableReportPayloads(report_body, shared_info.as_string);
   }
 
   const bool actual_;
@@ -266,7 +288,7 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   ASSERT_OK_AND_ASSIGN(
       AttributionInteropOutput actual_output,
-      RunAttributionInteropSimulation(std::move(run), kHpkeKey.GetPublicKey()));
+      RunAttributionInteropSimulation(std::move(run), kHpkeKey));
 
   PreProcessOutput(expected_output, /*actual=*/false);
   PreProcessOutput(actual_output, /*actual=*/true);

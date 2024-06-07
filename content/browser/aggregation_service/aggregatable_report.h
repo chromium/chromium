@@ -398,6 +398,13 @@ class CONTENT_EXPORT AggregatableReportRequest {
 
 CONTENT_EXPORT GURL GetAggregationServiceProcessingUrl(const url::Origin&);
 
+// Encrypts the `report_payload_plaintext` with HPKE using the processing url's
+// `public_key`. Returns empty vector if the encryption fails.
+CONTENT_EXPORT std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(
+    base::span<const uint8_t> report_payload_plaintext,
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> report_authenticated_info);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATABLE_REPORT_H_

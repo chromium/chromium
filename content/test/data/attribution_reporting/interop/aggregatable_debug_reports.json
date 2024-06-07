@@ -410,11 +410,17 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0xd",
             "value": 123
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3",
+            "version": "0.1"
+          }
         },
         "report_time": "3000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
@@ -422,11 +428,17 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0x0",
             "value": 0
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter1.test",
+            "scheduled_report_time": "4",
+            "version": "0.1"
+          }
         },
         "report_time": "4000",
         "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
@@ -434,11 +446,17 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0x1f",
             "value": 65536
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter1.test",
+            "scheduled_report_time": "5",
+            "version": "0.1"
+          }
         },
         "report_time": "5000",
         "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
@@ -446,11 +464,17 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0x7",
             "value": 666
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "6",
+            "version": "0.1"
+          }
         },
         "report_time": "6000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
@@ -458,11 +482,17 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0x133",
             "value": 678
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "7",
+            "version": "0.1"
+          }
         },
         "report_time": "7000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
@@ -470,11 +500,17 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0x0",
             "value": 0
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://a.reporter1.test",
+            "scheduled_report_time": "8",
+            "version": "0.1"
+          }
         },
         "report_time": "8000",
         "report_url": "https://a.reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
@@ -482,23 +518,29 @@
       {
         "payload": {
           "aggregation_coordinator_origin": "https://c2.test",
-          "attribution_destination": "https://destination.test",
           "histograms": [ {
             "key": "0x33f",
             "value": 65536
-          } ]
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter2.test",
+            "scheduled_report_time": "9",
+            "version": "0.1"
+          }
         },
         "report_time": "9000",
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
       },
       {
         "payload": {
-           "aggregation_coordinator_origin": "https://c1.test",
-           "attribution_destination": "https://destination.test",
-           "histograms": [ {
-              "key": "0x9",
-              "value": 65536
-           } ]
+          "aggregation_coordinator_origin": "https://c1.test",
+          "attribution_destination": "https://destination.test",
+          "histograms": [ {
+            "key": "0x9",
+            "value": 65536
+          } ]
         },
         "report_time": "3611000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"

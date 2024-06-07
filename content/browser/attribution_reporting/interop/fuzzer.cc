@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_timeouts.h"
-#include "content/browser/aggregation_service/public_key.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/attribution_reporting/interop/runner.h"
 #include "testing/libfuzzer/proto/json.pb.h"
@@ -67,12 +67,11 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonObject& json_object) {
     return;
   }
 
-  static const PublicKey kMockPublicKey(/*id=*/"", /*key=*/{});
+  static const content::aggregation_service::TestHpkeKey kHpkeKey;
 
   // TODO(crbug.com/332721859) Fuzz the `AttributionInteropConfig()` parameter
   // when we define a custom protobuf input for this fuzzer.
-  std::ignore =
-      RunAttributionInteropSimulation(*std::move(run), kMockPublicKey);
+  std::ignore = RunAttributionInteropSimulation(*std::move(run), kHpkeKey);
 }
 
 }  // namespace

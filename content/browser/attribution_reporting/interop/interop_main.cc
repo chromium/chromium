@@ -112,8 +112,8 @@ int main(int argc, char* argv[]) {
 
   Env env(argc, argv);
 
-  auto output = content::RunAttributionInteropSimulation(
-      *std::move(run), kHpkeKey.GetPublicKey());
+  auto output =
+      content::RunAttributionInteropSimulation(*std::move(run), kHpkeKey);
   if (!output.has_value()) {
     std::cerr << output.error() << std::endl;
     return 1;

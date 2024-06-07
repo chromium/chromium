@@ -17,11 +17,14 @@ namespace content {
 
 struct AttributionInteropRun;
 struct AttributionInteropOutput;
-struct PublicKey;
+
+namespace aggregation_service {
+class TestHpkeKey;
+}  // namespace aggregation_service
 
 base::expected<AttributionInteropOutput, std::string>
 RunAttributionInteropSimulation(AttributionInteropRun,
-                                const PublicKey& hpke_key);
+                                const aggregation_service::TestHpkeKey&);
 
 class ReportBodyAdjuster {
  public:

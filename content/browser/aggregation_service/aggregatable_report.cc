@@ -259,57 +259,6 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   return {std::move(unencrypted_payload.value())};
 }
 
-// Encrypts the `plaintext` with HPKE using the processing url's
-// `public_key`. Returns empty vector if the encryption fails.
-std::vector<uint8_t> EncryptWithHpke(
-    base::span<const uint8_t> plaintext,
-    base::span<const uint8_t> public_key,
-    base::span<const uint8_t> authenticated_info) {
-  bssl::ScopedEVP_HPKE_CTX sender_context;
-
-  // This vector will hold the encapsulated shared secret "enc" followed by the
-  // symmetrically encrypted ciphertext "ct".
-  std::vector<uint8_t> payload(EVP_HPKE_MAX_ENC_LENGTH);
-  size_t encapsulated_shared_secret_len;
-
-  CHECK_EQ(public_key.size(), PublicKey::kKeyByteLength,
-           base::NotFatalUntil::M128);
-
-  if (!EVP_HPKE_CTX_setup_sender(
-          /*ctx=*/sender_context.get(),
-          /*out_enc=*/payload.data(),
-          /*out_enc_len=*/&encapsulated_shared_secret_len,
-          /*max_enc=*/payload.size(),
-          /*kem=*/EVP_hpke_x25519_hkdf_sha256(), /*kdf=*/EVP_hpke_hkdf_sha256(),
-          /*aead=*/EVP_hpke_chacha20_poly1305(),
-          /*peer_public_key=*/public_key.data(),
-          /*peer_public_key_len=*/public_key.size(),
-          /*info=*/authenticated_info.data(),
-          /*info_len=*/authenticated_info.size())) {
-    return {};
-  }
-
-  payload.resize(encapsulated_shared_secret_len + plaintext.size() +
-                 EVP_HPKE_CTX_max_overhead(sender_context.get()));
-
-  base::span<uint8_t> ciphertext =
-      base::make_span(payload).subspan(encapsulated_shared_secret_len);
-  size_t ciphertext_len;
-
-  if (!EVP_HPKE_CTX_seal(
-          /*ctx=*/sender_context.get(), /*out=*/ciphertext.data(),
-          /*out_len=*/&ciphertext_len,
-          /*max_out_len=*/ciphertext.size(), /*in=*/plaintext.data(),
-          /*in_len*/ plaintext.size(),
-          /*ad=*/nullptr,
-          /*ad_len=*/0)) {
-    return {};
-  }
-  payload.resize(encapsulated_shared_secret_len + ciphertext_len);
-
-  return payload;
-}
-
 std::optional<AggregationServicePayloadContents>
 ConvertPayloadContentsFromProto(
     const proto::AggregationServicePayloadContents& proto) {
@@ -968,10 +917,10 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     std::vector<uint8_t> encrypted_payload =
         g_disable_encryption_for_testing_tool_
             ? unencrypted_payloads[i]
-            : EncryptWithHpke(
-                  /*plaintext=*/unencrypted_payloads[i],
+            : EncryptAggregatableReportPayloadWithHpke(
+                  /*report_payload_plaintext=*/unencrypted_payloads[i],
                   /*public_key=*/public_keys[i].key,
-                  /*authenticated_info=*/authenticated_info);
+                  /*report_authenticated_info=*/authenticated_info);
 
     if (encrypted_payload.empty()) {
       return std::nullopt;
@@ -1062,6 +1011,57 @@ bool AggregatableReport::IsNumberOfHistogramContributionsValid(
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       return number == 1u;
   }
+}
+
+std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(
+    base::span<const uint8_t> report_payload_plaintext,
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> report_authenticated_info) {
+  bssl::ScopedEVP_HPKE_CTX sender_context;
+
+  // This vector will hold the encapsulated shared secret "enc" followed by the
+  // symmetrically encrypted ciphertext "ct".
+  std::vector<uint8_t> payload(EVP_HPKE_MAX_ENC_LENGTH);
+  size_t encapsulated_shared_secret_len;
+
+  CHECK_EQ(public_key.size(), PublicKey::kKeyByteLength,
+           base::NotFatalUntil::M128);
+
+  if (!EVP_HPKE_CTX_setup_sender(
+          /*ctx=*/sender_context.get(),
+          /*out_enc=*/payload.data(),
+          /*out_enc_len=*/&encapsulated_shared_secret_len,
+          /*max_enc=*/payload.size(),
+          /*kem=*/EVP_hpke_x25519_hkdf_sha256(), /*kdf=*/EVP_hpke_hkdf_sha256(),
+          /*aead=*/EVP_hpke_chacha20_poly1305(),
+          /*peer_public_key=*/public_key.data(),
+          /*peer_public_key_len=*/public_key.size(),
+          /*info=*/report_authenticated_info.data(),
+          /*info_len=*/report_authenticated_info.size())) {
+    return {};
+  }
+
+  payload.resize(encapsulated_shared_secret_len +
+                 report_payload_plaintext.size() +
+                 EVP_HPKE_CTX_max_overhead(sender_context.get()));
+
+  base::span<uint8_t> ciphertext =
+      base::make_span(payload).subspan(encapsulated_shared_secret_len);
+  size_t ciphertext_len;
+
+  if (!EVP_HPKE_CTX_seal(
+          /*ctx=*/sender_context.get(), /*out=*/ciphertext.data(),
+          /*out_len=*/&ciphertext_len,
+          /*max_out_len=*/ciphertext.size(),
+          /*in=*/report_payload_plaintext.data(),
+          /*in_len*/ report_payload_plaintext.size(),
+          /*ad=*/nullptr,
+          /*ad_len=*/0)) {
+    return {};
+  }
+  payload.resize(encapsulated_shared_secret_len + ciphertext_len);
+
+  return payload;
 }
 
 }  // namespace content
