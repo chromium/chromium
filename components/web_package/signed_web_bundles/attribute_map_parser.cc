@@ -13,9 +13,9 @@
 
 namespace web_package {
 
-AttributeMapParser::AttributeMapParser(mojom::BundleDataSource* data_source,
+AttributeMapParser::AttributeMapParser(mojom::BundleDataSource& data_source,
                                        AttributeMapParsedCallback callback)
-    : data_source_(*data_source), callback_(std::move(callback)) {}
+    : data_source_(data_source), callback_(std::move(callback)) {}
 
 AttributeMapParser::~AttributeMapParser() = default;
 

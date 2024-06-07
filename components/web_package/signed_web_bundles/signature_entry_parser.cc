@@ -49,9 +49,9 @@ std::pair<SignatureType, BinaryData> GetSignatureType(
 }  // namespace
 
 SignatureStackEntryParser::SignatureStackEntryParser(
-    mojom::BundleDataSource* data_source,
+    mojom::BundleDataSource& data_source,
     SignatureEntryParsedCallback callback)
-    : data_source_(*data_source), callback_(std::move(callback)) {}
+    : data_source_(data_source), callback_(std::move(callback)) {}
 
 SignatureStackEntryParser::~SignatureStackEntryParser() = default;
 
@@ -95,7 +95,7 @@ void SignatureStackEntryParser::ReadSignatureStructure(
   offset_in_stream_ += input.CurrentOffset();
 
   attribute_map_parser_ = std::make_unique<AttributeMapParser>(
-      &data_source_.get(),
+      *data_source_,
       base::BindOnce(&SignatureStackEntryParser::GetAttributesMap,
                      weak_factory_.GetWeakPtr()));
 

@@ -31,7 +31,7 @@ class SignatureStackEntryParser {
                     uint64_t>,
           ParserError>)>;
 
-  explicit SignatureStackEntryParser(mojom::BundleDataSource* data_source,
+  explicit SignatureStackEntryParser(mojom::BundleDataSource& data_source,
                                      SignatureEntryParsedCallback callback);
 
   ~SignatureStackEntryParser();

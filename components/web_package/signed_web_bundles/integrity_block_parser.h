@@ -15,8 +15,7 @@ namespace web_package {
 class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
  public:
   explicit IntegrityBlockParser(
-      mojo::Remote<mojom::BundleDataSource>& data_source
-          ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      mojom::BundleDataSource& data_source,
       WebBundleParser::ParseIntegrityBlockCallback callback);
 
   IntegrityBlockParser(const IntegrityBlockParser&) = delete;
@@ -69,7 +68,7 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
                         mojom::BundleParseErrorType error_type =
                             mojom::BundleParseErrorType::kFormatError);
 
-  const raw_ref<mojo::Remote<mojom::BundleDataSource>> data_source_;
+  const raw_ref<mojom::BundleDataSource> data_source_;
   WebBundleParser::ParseIntegrityBlockCallback result_callback_;
   WebBundleParser::WebBundleSectionParser::ParsingCompleteCallback
       complete_callback_;

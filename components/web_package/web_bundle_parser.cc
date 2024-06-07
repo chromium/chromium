@@ -922,7 +922,7 @@ void WebBundleParser::ParseIntegrityBlock(
   }
 
   std::unique_ptr<WebBundleSectionParser> parser =
-      std::make_unique<web_package::IntegrityBlockParser>(data_source_,
+      std::make_unique<web_package::IntegrityBlockParser>(*data_source_,
                                                           std::move(callback));
   ActivateParser(std::move(parser));
 }

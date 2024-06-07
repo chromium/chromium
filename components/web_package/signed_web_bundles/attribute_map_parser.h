@@ -21,7 +21,7 @@ class AttributeMapParser {
       base::expected<std::pair<AttributesMap, uint64_t>,
                      SignatureStackEntryParser::ParserError>)>;
 
-  explicit AttributeMapParser(mojom::BundleDataSource* data_source,
+  explicit AttributeMapParser(mojom::BundleDataSource& data_source,
                               AttributeMapParsedCallback callback);
   ~AttributeMapParser();
 

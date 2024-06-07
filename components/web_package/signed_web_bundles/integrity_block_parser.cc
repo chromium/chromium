@@ -13,8 +13,7 @@
 namespace web_package {
 
 IntegrityBlockParser::IntegrityBlockParser(
-    mojo::Remote<mojom::BundleDataSource>& data_source
-        ABSL_ATTRIBUTE_LIFETIME_BOUND,
+    mojom::BundleDataSource& data_source,
     WebBundleParser::ParseIntegrityBlockCallback callback)
     : data_source_(data_source), result_callback_(std::move(callback)) {}
 
@@ -31,7 +30,7 @@ void IntegrityBlockParser::StartParsing(
   // First, we will parse the `magic` and `version` bytes.
   const uint64_t length = sizeof(kIntegrityBlockMagicBytes) +
                           sizeof(kIntegrityBlockVersionMagicBytes);
-  data_source_->get()->Read(
+  data_source_->Read(
       0, length,
       base::BindOnce(&IntegrityBlockParser::ParseMagicBytesAndVersion,
                      weak_factory_.GetWeakPtr()));
@@ -74,10 +73,9 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
   }
 
   offset_in_stream_ = input.CurrentOffset();
-  data_source_->get()->Read(
-      offset_in_stream_, kMaxCBORItemHeaderSize,
-      base::BindOnce(&IntegrityBlockParser::ParseSignatureStack,
-                     weak_factory_.GetWeakPtr()));
+  data_source_->Read(offset_in_stream_, kMaxCBORItemHeaderSize,
+                     base::BindOnce(&IntegrityBlockParser::ParseSignatureStack,
+                                    weak_factory_.GetWeakPtr()));
 }
 
 void IntegrityBlockParser::ParseSignatureStack(
@@ -109,7 +107,7 @@ void IntegrityBlockParser::ParseSignatureStack(
 void IntegrityBlockParser::ReadSignatureStackEntry() {
   current_signature_stack_entry_parser_ =
       std::make_unique<SignatureStackEntryParser>(
-          data_source_.get().get(),
+          *data_source_,
           base::BindOnce(&IntegrityBlockParser::NextSignatureStackEntry,
                          weak_factory_.GetWeakPtr()));
 
