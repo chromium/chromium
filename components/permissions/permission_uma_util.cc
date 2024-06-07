@@ -1883,6 +1883,12 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
       case OsScreenAction::DISMISSED_SCRIM:
         screen_action = "DismissScrim";
         break;
+      case OsScreenAction::OS_PROMPT_DENIED:
+        screen_action = "OsPromptDenied";
+        break;
+      case OsScreenAction::OS_PROMPT_ALLOWED:
+        screen_action = "OsPromptAllowed";
+        break;
       default:
         NOTREACHED_IN_MIGRATION();
     }

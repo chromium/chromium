@@ -254,6 +254,9 @@ EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
 
 void EmbeddedPermissionPrompt::RecordOsMetrics(
     permissions::OsScreenAction action) {
+  const auto& requests = delegate()->Requests();
+  CHECK_GT(requests.size(), 0U);
+
   permissions::OsScreen screen;
 
   switch (embedded_prompt_variant_) {
@@ -270,7 +273,7 @@ void EmbeddedPermissionPrompt::RecordOsMetrics(
   base::TimeDelta time_to_decision =
       base::Time::Now() - current_variant_first_display_time_;
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
-      delegate()->Requests(), screen, action, time_to_decision);
+      requests, screen, action, time_to_decision);
 }
 
 void EmbeddedPermissionPrompt::RecordPermissionActionUKM(
@@ -471,8 +474,33 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
         !other_system_permission_delegate->CanShowSystemPermissionPrompt();
   }
 
-  // TODO(b/343401163): Record OsScreenAction metric.
   if (permission_determined) {
+#if BUILDFLAG(IS_MAC)
+    system_media_permissions::SystemPermission permission;
+
+    if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
+      permission =
+          system_media_permissions::CheckSystemAudioCapturePermission();
+    }
+    if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+      permission =
+          system_media_permissions::CheckSystemVideoCapturePermission();
+    }
+
+    switch (permission) {
+      case system_media_permissions::SystemPermission::kRestricted:
+        break;
+      case system_media_permissions::SystemPermission::kDenied:
+        RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_DENIED);
+        break;
+      case system_media_permissions::SystemPermission::kAllowed:
+        RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
+        break;
+      case system_media_permissions::SystemPermission::kNotDetermined:
+        NOTREACHED_IN_MIGRATION();
+    }
+#endif  // BUILDFLAG(IS_MAC)
+
     // Do not finalize request until all the necessary system permissions are
     // granted.
     if (other_permission_determined) {
