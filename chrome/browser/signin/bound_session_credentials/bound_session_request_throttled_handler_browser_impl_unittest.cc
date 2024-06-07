@@ -32,7 +32,7 @@ TEST(BoundSessionRequestThrottledHandlerBrowserImplTest, RefreshServiceAlive) {
   base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction,
                          chrome::mojom::ResumeBlockedRequestsTrigger>
       future;
-  handler.HandleRequestBlockedOnCookie(future.GetCallback());
+  handler.HandleRequestBlockedOnCookie(GURL(), future.GetCallback());
 
   EXPECT_TRUE(service.IsRequestBlocked());
   EXPECT_FALSE(future.IsReady());
@@ -58,7 +58,7 @@ TEST(BoundSessionRequestThrottledHandlerBrowserImplTest,
   base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction,
                          chrome::mojom::ResumeBlockedRequestsTrigger>
       future_cancel;
-  handler.HandleRequestBlockedOnCookie(future_cancel.GetCallback());
+  handler.HandleRequestBlockedOnCookie(GURL(), future_cancel.GetCallback());
   EXPECT_TRUE(future_cancel.IsReady());
   EXPECT_THAT(future_cancel.Get(),
               testing::FieldsAre(

@@ -29,6 +29,7 @@ BoundSessionRequestThrottledHandlerRendererImpl::
 
 void BoundSessionRequestThrottledHandlerRendererImpl::
     HandleRequestBlockedOnCookie(
+        const GURL& untrusted_request_url,
         ResumeOrCancelThrottledRequestCallback callback) {
   // Bind the callback to the current sequence to ensure invoking `Run()` will
   // run the callback on the current sequence.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h"
+
 #include <algorithm>
 
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
@@ -98,14 +100,16 @@ TEST(BoundSessionRequestThrottledHandlerRendererImplTest,
   BoundSessionRequestThrottledHandlerRendererImpl listener(manager,
                                                             io_task_runner);
   base::RunLoop run_loop;
-  listener.HandleRequestBlockedOnCookie(base::BindOnce(
-      [](base::SequenceCheckerImpl checker, base::OnceClosure callback,
-         UnblockAction action,
-         chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
-        EXPECT_TRUE(checker.CalledOnValidSequence());
-        std::move(callback).Run();
-      },
-      std::move(sequence_checker), run_loop.QuitClosure()));
+  listener.HandleRequestBlockedOnCookie(
+      GURL(),
+      base::BindOnce(
+          [](base::SequenceCheckerImpl checker, base::OnceClosure callback,
+             UnblockAction action,
+             chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
+            EXPECT_TRUE(checker.CalledOnValidSequence());
+            std::move(callback).Run();
+          },
+          std::move(sequence_checker), run_loop.QuitClosure()));
 
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(manager.get());

@@ -28,6 +28,7 @@ class BoundSessionRequestThrottledHandlerRendererImpl
 
   // BoundSessionRequestThrottledHandler:
   void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       ResumeOrCancelThrottledRequestCallback callback) override;
 
  private:

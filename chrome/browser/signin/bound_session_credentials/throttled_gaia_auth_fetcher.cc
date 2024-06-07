@@ -46,6 +46,7 @@ void ThrottledGaiaAuthFetcher::CreateAndStartGaiaFetcher(
       GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
           gaia_gurl, bound_session_throttler_params_)) {
     bound_session_request_throttled_handler_->HandleRequestBlockedOnCookie(
+        gaia_gurl,
         base::BindOnce(
             &ThrottledGaiaAuthFetcher::OnGaiaFetcherResumedOrCancelled,
             weak_ptr_factory_.GetWeakPtr(), body, body_content_type, headers,

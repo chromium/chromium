@@ -24,6 +24,7 @@ class BoundSessionRequestThrottledHandlerBrowserImpl
       const BoundSessionRequestThrottledHandlerBrowserImpl&) = delete;
 
   void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       ResumeOrCancelThrottledRequestCallback callback) override;
 
  private:

@@ -14,12 +14,16 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::IsTrue;
+using testing::ResultOf;
 using testing::StrictMock;
 using UnblockRequestCallback =
     BoundSessionRequestThrottledHandler::ResumeOrCancelThrottledRequestCallback;
@@ -53,7 +57,7 @@ class MockBoundSessionRequestThrottledHandler
  public:
   MOCK_METHOD(void,
               HandleRequestBlockedOnCookie,
-              (ResumeOrCancelThrottledRequestCallback),
+              (const GURL&, ResumeOrCancelThrottledRequestCallback),
               (override));
 };
 
@@ -126,8 +130,10 @@ class ThrottledGaiaAuthFetcherTest : public testing::Test {
 TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccounts) {
   CreateFetcher(CreateBlockingParams());
   UnblockRequestCallback unblock_callback;
-  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
-      .WillOnce(MoveArg<0>(&unblock_callback));
+  EXPECT_CALL(*request_throttled_handler(),
+              HandleRequestBlockedOnCookie(
+                  ResultOf(gaia::HasGaiaSchemeHostPort, IsTrue()), _))
+      .WillOnce(MoveArg<1>(&unblock_callback));
 
   fetcher()->StartListAccounts();
   ASSERT_TRUE(unblock_callback);
@@ -139,8 +145,10 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccounts) {
 TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccountsCancel) {
   CreateFetcher(CreateBlockingParams());
   UnblockRequestCallback unblock_callback;
-  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
-      .WillOnce(MoveArg<0>(&unblock_callback));
+  EXPECT_CALL(*request_throttled_handler(),
+              HandleRequestBlockedOnCookie(
+                  ResultOf(gaia::HasGaiaSchemeHostPort, IsTrue()), _))
+      .WillOnce(MoveArg<1>(&unblock_callback));
 
   fetcher()->StartListAccounts();
   ASSERT_TRUE(unblock_callback);
@@ -150,7 +158,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccountsCancel) {
 
 TEST_F(ThrottledGaiaAuthFetcherTest, ListAccountsNotThrottledNoBoundSessions) {
   CreateFetcher({});
-  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
+  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_, _))
       .Times(0);
 
   fetcher()->StartListAccounts();
@@ -161,7 +169,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ListAccountsNotThrottledNoBoundSessions) {
 TEST_F(ThrottledGaiaAuthFetcherTest,
        ListAccountsNotThrottledNotCoveredByBoundSession) {
   CreateFetcher(CreateNonBlockingParams());
-  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
+  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_, _))
       .Times(0);
 
   fetcher()->StartListAccounts();
@@ -172,8 +180,10 @@ TEST_F(ThrottledGaiaAuthFetcherTest,
 TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleMultilogin) {
   CreateFetcher(CreateBlockingParams());
   UnblockRequestCallback unblock_callback;
-  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
-      .WillOnce(MoveArg<0>(&unblock_callback));
+  EXPECT_CALL(*request_throttled_handler(),
+              HandleRequestBlockedOnCookie(
+                  ResultOf(gaia::HasGaiaSchemeHostPort, IsTrue()), _))
+      .WillOnce(MoveArg<1>(&unblock_callback));
 
   fetcher()->StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
@@ -186,7 +196,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleMultilogin) {
 
 TEST_F(ThrottledGaiaAuthFetcherTest, OtherRequestNotThrottled) {
   CreateFetcher(CreateBlockingParams());
-  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
+  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_, _))
       .Times(0);
 
   fetcher()->StartLogOut();

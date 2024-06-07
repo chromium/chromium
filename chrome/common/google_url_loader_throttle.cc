@@ -22,6 +22,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
@@ -217,6 +218,7 @@ void GoogleURLLoaderThrottle::WillStartRequest(
       CHECK(!bound_session_request_throttled_start_time_.has_value());
       bound_session_request_throttled_start_time_ = base::TimeTicks::Now();
       bound_session_request_throttled_handler_->HandleRequestBlockedOnCookie(
+          request->url,
           base::BindOnce(
               &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
               weak_factory_.GetWeakPtr()));
@@ -278,6 +280,7 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
       CHECK(!bound_session_request_throttled_start_time_.has_value());
       bound_session_request_throttled_start_time_ = base::TimeTicks::Now();
       bound_session_request_throttled_handler_->HandleRequestBlockedOnCookie(
+          redirect_info->new_url,
           base::BindOnce(
               &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
               weak_factory_.GetWeakPtr()));
