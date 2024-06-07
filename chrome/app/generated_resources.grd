@@ -8429,6 +8429,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT" desc="Text shown on button on the NTP Calendar cards for joining a video conference." meaning="Click here to join your video conference meetings.">
         Join Meeting
       </message>
+      <message name="IDS_NTP_MODULES_CALENDAR_IN_PROGRESS" desc="Text displaying that the meeting is in progress." meaning="The meeting is currently in progress.">
+        In Progress
+      </message>
+      <message name="IDS_NTP_MODULES_CALENDAR_IN_X_MIN" desc="Text displaying that the meeting is in x minutes with shortened version of the word 'minutes'." meaning="The meeting will start in x minutes.">
+        In <ph name="NUM_MIN">$1<ex>5</ex></ph> min
+      </message>
+      <message name="IDS_NTP_MODULES_CALENDAR_IN_X_HR" desc="Text displaying that the meeting is in x hours with shortened version of the word 'hours'." meaning="The meeting will start in x hours.">
+        In <ph name="NUM_HR">$1<ex>5</ex></ph> hr
+      </message>
       <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module.">
         From your Google Photos
       </message>

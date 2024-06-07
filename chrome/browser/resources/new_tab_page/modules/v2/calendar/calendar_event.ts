@@ -10,16 +10,20 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Attachment, CalendarEvent} from '../../../google_calendar.mojom-webui.js';
+import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './calendar_event.html.js';
 
 // Microseconds between windows and unix epoch.
 const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
+const kMillisecondsInMinute: number = 60000;
+const kMinutesInHour: number = 60;
 
 export interface CalendarEventElement {
   $: {
     header: HTMLAnchorElement,
     startTime: HTMLSpanElement,
+    timeStatus: HTMLSpanElement,
     title: HTMLSpanElement,
   };
 }
@@ -27,7 +31,8 @@ export interface CalendarEventElement {
 /**
  * The calendar event element for displaying a single event.
  */
-export class CalendarEventElement extends PolymerElement {
+export class CalendarEventElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-calendar-event';
   }
@@ -47,13 +52,18 @@ export class CalendarEventElement extends PolymerElement {
         type: String,
         computed: 'computeFormattedStartTime_(event.startTime)',
       },
+      timeStatus_: {
+        type: String,
+        computed: 'computeTimeStatus_(event.startTime, expanded)',
+      },
     };
   }
 
-  private formattedStartTime_: string;
-
   event: CalendarEvent;
   expanded: boolean;
+
+  private formattedStartTime_: string;
+  private timeStatus_: string;
 
   private computeFormattedStartTime_(): string {
     const offsetDate =
@@ -65,6 +75,33 @@ export class CalendarEventElement extends PolymerElement {
     // Remove extra spacing and make AM/PM lower case.
     timeStr = timeStr.replace(' AM', 'am').replace(' PM', 'pm');
     return timeStr;
+  }
+
+  private computeTimeStatus_(): string {
+    if (!this.expanded) {
+      return '';
+    }
+
+    // Start time of event in milliseconds since Windows epoch.
+    const startTime = Number(
+        (this.event.startTime.internalValue - kWindowsToUnixEpochOffset) /
+        1000n);
+    // Current time in milliseconds since Windows epoch.
+    const now = Date.now().valueOf();
+
+    const minutesUntilMeeting =
+        Math.round((startTime - now) / kMillisecondsInMinute);
+    if (minutesUntilMeeting <= 0) {
+      return this.i18n('modulesCalendarInProgress');
+    }
+
+    if (minutesUntilMeeting < kMinutesInHour) {
+      return this.i18n('modulesCalendarInXMin', minutesUntilMeeting.toString());
+    }
+
+    const hoursUntilMeeting = minutesUntilMeeting / kMinutesInHour;
+    return this.i18n(
+        'modulesCalendarInXHr', Math.round(hoursUntilMeeting).toString());
   }
 
   private openAttachment_(e: DomRepeatEvent<Attachment>) {

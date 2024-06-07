@@ -71,6 +71,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysSurface1};
   mixer[kColorNewTabPageModuleCalendarEventExpandedBackground] = {
       ui::kColorSysSurface};
+  mixer[kColorNewTabPageModuleCalendarEventTimeStatusBackground] = {
+      ui::kColorSysNeutralContainer};
 
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};

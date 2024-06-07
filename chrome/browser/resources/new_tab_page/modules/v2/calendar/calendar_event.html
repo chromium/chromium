@@ -25,6 +25,27 @@
     width: 56px;
   }
 
+  #title {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #timeStatus {
+    background-color: var(
+        --color-new-tab-page-module-calendar-event-time-status-background);
+    border-radius: 100px;
+    color: var(--color-new-tab-page-secondary-foreground);
+    display: inline-block;
+    flex-basis: content;
+    flex-shrink: 0;
+    font-size: var(--ntp-module-secondary-text-size);
+    font-weight: 400;
+    line-height: var(--ntp-module-secondary-line-height);
+    padding: 2px 8px;
+  }
+
   .cr-icon {
     --cr-icon-color: var(--color-new-tab-page-secondary-foreground);
     --cr-icon-size: 14px;
@@ -91,6 +112,7 @@
 <a id="header" href="[[event.url.url]]">
   <span id="startTime">[[formattedStartTime_]]</span>
   <span id="title">[[event.title]]</span>
+  <span id="timeStatus" hidden$="[[!timeStatus_]]">[[timeStatus_]]</span>
 </a>
 <template is="dom-if" if="[[expanded]]">
   <div id="location" hidden$="[[!showLocation_(event.location)]]">

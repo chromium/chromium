@@ -206,6 +206,9 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageModuleCalendarEventExpandedBackground] =
       SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
                               element_background_color);
+  mixer[kColorNewTabPageModuleCalendarEventTimeStatusBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey300,
+                              element_background_color);
 
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] =
       SelectBasedOnWhiteInput(element_background_color, gfx::kGoogleGrey100,

@@ -19,7 +19,10 @@ suite('NewTabPageModulesCalendaEventTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = new CalendarEventElement();
+    element.event = createEvent(1);
+    element.expanded = false;
     document.body.append(element);
+    await waitAfterNextRender(element);
   });
 
   test('event is visible', async () => {
@@ -42,9 +45,52 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     assertEquals(element.$.header.href, element.event.url.url);
   });
 
+  test('time status hidden if not expanded', async () => {
+    const startTime = Date.now().valueOf();
+    const startTimeFromUnixEpoch =
+        (BigInt(startTime) * 1000n) + kWindowsToUnixEpochOffset;
+
+    element.event =
+        createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
+    await waitAfterNextRender(element);
+
+    // Assert.
+    assertFalse(isVisible(element.$.timeStatus));
+    assertEquals(element.$.timeStatus.innerText, '');
+  });
+
+  test('time status displays correctly', async () => {
+    const startTime = Date.now().valueOf();
+    let startTimeFromUnixEpoch =
+        (BigInt(startTime) * 1000n) + kWindowsToUnixEpochOffset;
+
+    element.event =
+        createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
+    element.expanded = true;
+    await waitAfterNextRender(element);
+
+    assertTrue(isVisible(element.$.timeStatus));
+    assertEquals(element.$.timeStatus.innerText, 'In Progress');
+
+    // Make the event 5 minutes in the future.
+    startTimeFromUnixEpoch += (1000000n * 60n * 5n);
+    element.event =
+        createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
+    await waitAfterNextRender(element);
+
+    assertEquals(element.$.timeStatus.innerText, 'In 5 min');
+
+    // Make the event 1 hour in the future.
+    startTimeFromUnixEpoch += (1000000n * 60n * 60n);
+    element.event =
+        createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
+    await waitAfterNextRender(element);
+
+    assertEquals(element.$.timeStatus.innerText, 'In 1 hr');
+  });
+
   test('Expanded event shows extra info', async () => {
     element.expanded = true;
-    element.event = createEvent(1);
     await waitAfterNextRender(element);
 
     // Assert.
@@ -63,10 +109,6 @@ suite('NewTabPageModulesCalendaEventTest', () => {
   });
 
   test('Non-expanded event hides extra info', async () => {
-    element.expanded = false;
-    element.event = createEvent(1);
-    await waitAfterNextRender(element);
-
     // Assert.
     const locationElement = $$(element, '#location');
     const attachmentsElement = $$(element, '#attachments');
