@@ -26,7 +26,8 @@ enum class OnDeviceControlsBlockAppAction {
   kUninstallBlockedApp = 2,
   kBlockAppError = 3,
   kUnblockAppError = 4,
-  kMaxValue = kUnblockAppError,
+  kUnblockAllApps = 5,
+  kMaxValue = kUnblockAllApps,
 };
 
 }  // namespace ash::on_device_controls

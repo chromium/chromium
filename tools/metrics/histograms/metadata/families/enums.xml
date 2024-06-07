@@ -249,6 +249,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Unblock app error">
     Recorded when attempting to unblock an unblocked app.
   </int>
+  <int value="5" label="Unblock all apps">
+    Recorded when a user has unblocked all apps with on-device controls.
+  </int>
 </enum>
 
 <enum name="OnDeviceControlsBlockedAppDialog">

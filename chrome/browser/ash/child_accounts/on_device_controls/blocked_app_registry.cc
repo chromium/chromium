@@ -115,6 +115,12 @@ void BlockedAppRegistry::RemoveAllApps() {
   app_service_->UnblockApps(blocked_apps);
 
   store_.SaveToPref(registry_);
+
+  base::UmaHistogramCounts1000(kOnDeviceControlsBlockedAppsCountHistogramName,
+                               GetBlockedApps().size());
+  base::UmaHistogramEnumeration(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kUnblockAllApps);
 }
 
 std::set<std::string> BlockedAppRegistry::GetBlockedApps() {

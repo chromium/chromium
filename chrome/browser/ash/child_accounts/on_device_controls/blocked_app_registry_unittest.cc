@@ -117,8 +117,8 @@ TEST_F(BlockedAppRegistryTest, RemoveApp) {
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[1]));
 }
 
-// Tests registry state when removing all apps.
-TEST_F(BlockedAppRegistryTest, RemoveAllApps) {
+// Tests registry state and histograms when removing all apps.
+TEST_F(BlockedAppRegistryTest, RemoveAllAppsAndHistograms) {
   const std::vector<std::string> app_ids = {"abc", "def", "ghi"};
 
   registry()->AddApp(app_ids[0]);
@@ -130,6 +130,13 @@ TEST_F(BlockedAppRegistryTest, RemoveAllApps) {
   EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_ids[2]));
 
   registry()->RemoveAllApps();
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kUnblockAllApps, 1);
+  histogram_tester().ExpectTotalCount(
+      kOnDeviceControlsBlockAppActionHistogramName, 4);
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[0]));
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[1]));
