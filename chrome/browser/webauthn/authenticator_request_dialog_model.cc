@@ -2210,10 +2210,12 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
           device::AuthenticatorAttachment::kCrossPlatform) {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
-    model_->mechanisms.emplace_back(
+    Mechanism mechanism(
         Mechanism::Enclave(), name, name, vector_icons::kPasswordManagerIcon,
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
                             base::Unretained(this)));
+    mechanism.description = base::UTF8ToUTF16(model_->account_name);
+    model_->mechanisms.emplace_back(std::move(mechanism));
   }
   if (enclave_needs_reauth_ && !use_conditional_mediation_) {
     // Show a button that lets the user sign in again to restore sync. This
