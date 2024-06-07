@@ -9,9 +9,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "build/build_config.h"
 #include "build/rust/std/alias.h"
 #include "build/rust/std/immediate_crash.h"
@@ -48,21 +45,20 @@
 // few other symbols.
 //
 // We're not (always) using rustc for final linking. For cases where we're not
-// Rustc as the final linker, we'll define those symbols here instead. This
-// allows us to redirect allocation to PartitionAlloc if clang is doing the
-// link.
+// Rustc as the final linker, we'll define those symbols here instead.
 //
-// We use unchecked allocation paths in PartitionAlloc rather than going through
-// its shims in `malloc()` etc so that we can support fallible allocation paths
-// such as Vec::try_reserve without crashing on allocation failure.
+// The Rust stdlib on Windows uses GetProcessHeap() which will bypass
+// PartitionAlloc, so we do not forward these functions back to the stdlib.
+// Instead, we pass them to PartitionAlloc, while replicating functionality from
+// the unix stdlib to allow them to provide their increased functionality on top
+// of the system functions.
 //
-// In future, we should build a crate with a #[global_allocator] and
+// In future, we may build a crate with a #[global_allocator] and
 // redirect these symbols back to Rust in order to use to that crate instead.
-// This would allow Rust-linked executables to:
-// 1. Use PartitionAlloc on Windows. The stdlib uses Windows heap functions
-//    directly that PartitionAlloc can not intercept.
-// 2. Have `Vec::try_reserve` to fail at runtime on Linux instead of crashing in
-//    malloc() where PartitionAlloc replaces that function.
+//
+// Instead of going through system functions like malloc() we may want to call
+// into PA directly if we wished for Rust allocations to be in a different
+// partition, or similar, in the future.
 //
 // They're weak symbols, because this file will sometimes end up in targets
 // which are linked by rustc, and thus we would otherwise get duplicate
@@ -89,26 +85,25 @@ extern "C" {
 // Marked as weak as when Rust drives linking it includes this symbol itself,
 // and we don't want a collision due to C++ being in the same link target, where
 // C++ causes us to explicitly link in the stdlib and this symbol here.
-[[maybe_unused]]
-__attribute__((weak)) unsigned char __rust_no_alloc_shim_is_unstable;
+[[maybe_unused]] __attribute__((
+    weak)) unsigned char __rust_no_alloc_shim_is_unstable;
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void* __rdl_alloc(size_t size, size_t align);
-  return __rdl_alloc(size, align);
-#else
-  // PartitionAlloc will crash if given an alignment larger than this.
-  if (align > partition_alloc::internal::kMaxSupportedAlignment) {
+  // This mirrors kMaxSupportedAlignment from
+  // base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h.
+  // ParitionAlloc will crash if given an alignment larger than this.
+  constexpr size_t max_align = (1 << 21) / 2;
+  if (align > max_align) {
     return nullptr;
   }
 
   if (align <= alignof(std::max_align_t)) {
-    return allocator_shim::UncheckedAlloc(size);
+    return malloc(size);
   } else {
-    // TODO(b/342251590): We need an Unchecked path for aligned allocations.
-    // Then we should use that instead of all these platform-specific functions
-    // and enable the rest of the RustStaticTest.RustLargeAllocationFailure
-    // test.
+    // Note: PartitionAlloc by default will route aligned allocations back to
+    // malloc() (the fast path) if they are for a small enough alignment. So we
+    // just unconditionally use aligned allocation functions here.
+    // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.cc;l=219-226;drc=31d99ff4aa0cc0b75063325ff243e911516a5a6a
 
 #if defined(COMPILER_MSVC)
     return _aligned_malloc(size, align);
@@ -132,23 +127,17 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
     return ret == 0 ? p : nullptr;
 #endif
   }
-#endif
 }
 
 REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void __rdl_dealloc(void* p, size_t size, size_t align);
-  return __rdl_dealloc(p, size, align);
-#else
-  if (align <= alignof(std::max_align_t)) {
-    allocator_shim::UncheckedFree(p);
-  } else {
 #if defined(COMPILER_MSVC)
-    _aligned_free(p);
-#else
+  if (align <= alignof(std::max_align_t)) {
     free(p);
-#endif
+  } else {
+    _aligned_free(p);
   }
+#else
+  free(p);
 #endif
 }
 
@@ -156,41 +145,23 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,
                                             size_t old_size,
                                             size_t align,
                                             size_t new_size) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void* __rdl_realloc(void* p, size_t old_size, size_t align,
-                             size_t new_size);
-  return __rdl_realloc(p, old_size, align, new_size);
-#else
-  // TODO(b/342251590): We need an Unchecked path for reallocations. Then we
-  // should use that instead of `reallloc()` and enable the rest of the
-  // RustStaticTest.RustLargeAllocationFailure test.
-
   if (align <= alignof(std::max_align_t)) {
     return realloc(p, new_size);
   } else {
     void* out = __rust_alloc(align, new_size);
-    if (out) {
-      memcpy(out, p, std::min(old_size, new_size));
-    }
+    memcpy(out, p, std::min(old_size, new_size));
     return out;
   }
-#endif
 }
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc_zeroed(size_t size, size_t align) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void* __rdl_alloc_zeroed(size_t size, size_t align);
-  return __rdl_alloc_zeroed(size, align);
-#else
-  // TODO(danakj): It's possible that a partition_alloc::UncheckedAllocZeroed()
-  // call would perform better than partition_alloc::UncheckedAlloc() + memset.
-  // But there is no such API today. See b/342251590.
-  void* p = __rust_alloc(size, align);
-  if (p) {
+  if (align <= alignof(std::max_align_t)) {
+    return calloc(size, 1);
+  } else {
+    void* p = __rust_alloc(size, align);
     memset(p, 0, size);
+    return p;
   }
-  return p;
-#endif
 }
 
 REMAP_ALLOC_ATTRIBUTES void __rust_alloc_error_handler(size_t size,
