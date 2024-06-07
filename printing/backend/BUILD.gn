@@ -61,6 +61,7 @@ component("backend") {
     defines += [ "PRINT_BACKEND_AVAILABLE" ]
     sources += [
       "print_backend_win.cc",
+      "print_backend_win.h",
       "printing_info_win.cc",
       "printing_info_win.h",
       "spooler_win.cc",

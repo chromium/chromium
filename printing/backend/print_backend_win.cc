@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "printing/backend/print_backend.h"
+#include "printing/backend/print_backend_win.h"
 
 #include <objidl.h>
 #include <stddef.h>
@@ -140,7 +140,10 @@ gfx::Rect LoadPaperPrintableAreaUm(const wchar_t* printer, DEVMODE* devmode) {
   return printable_area_um;
 }
 
-void LoadPaper(const wchar_t* printer,
+// Load the various papers for the printer.  At most the printable area of one
+// paper size is loaded.  Returns whether `LoadPaperPrintableAreaUm()` was
+// called for the default paper.
+bool LoadPaper(const wchar_t* printer,
                const wchar_t* port,
                DEVMODE* devmode,
                PrinterSemanticCapsAndDefaults* caps) {
@@ -171,6 +174,7 @@ void LoadPaper(const wchar_t* printer,
   if (names.size() != sizes.size())
     names.clear();
 
+  bool loaded_printable_area_from_system = false;
   for (size_t i = 0; i < sizes.size(); ++i) {
     const gfx::Size size_um(sizes[i].x * kToUm, sizes[i].y * kToUm);
     // Skip papers with empty paper sizes.
@@ -210,6 +214,7 @@ void LoadPaper(const wchar_t* printer,
       // now this workaround is only made for in-browser queries.
       if (devmode && (devmode->dmPaperSize == ids[i])) {
         printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
+        loaded_printable_area_from_system = true;
       }
     }
 
@@ -228,7 +233,7 @@ void LoadPaper(const wchar_t* printer,
   }
 
   if (!devmode)
-    return;
+    return loaded_printable_area_from_system;
 
   // Copy paper with the same ID as default paper.
   if (devmode->dmFields & DM_PAPERSIZE) {
@@ -254,6 +259,8 @@ void LoadPaper(const wchar_t* printer,
     caps->default_paper = PrinterSemanticCapsAndDefaults::Paper(
         /*display_name=*/"", /*vendor_id=*/"", default_size);
   }
+
+  return loaded_printable_area_from_system;
 }
 
 void LoadDpi(const wchar_t* printer,
@@ -287,34 +294,9 @@ void LoadDpi(const wchar_t* printer,
 
 }  // namespace
 
-class PrintBackendWin : public PrintBackend {
- public:
-  PrintBackendWin() = default;
+PrintBackendWin::PrintBackendWin() = default;
 
-  // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
-  mojom::ResultCode GetDefaultPrinterName(
-      std::string& default_printer) override;
-  mojom::ResultCode GetPrinterBasicInfo(
-      const std::string& printer_name,
-      PrinterBasicInfo* printer_info) override;
-  mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
-      const std::string& printer_name,
-      PrinterSemanticCapsAndDefaults* printer_info) override;
-  mojom::ResultCode GetPrinterCapsAndDefaults(
-      const std::string& printer_name,
-      PrinterCapsAndDefaults* printer_info) override;
-  std::optional<gfx::Rect> GetPaperPrintableArea(
-      const std::string& printer_name,
-      const std::string& paper_vendor_id,
-      const gfx::Size& paper_size_um) override;
-  std::vector<std::string> GetPrinterDriverInfo(
-      const std::string& printer_name) override;
-  bool IsValidPrinter(const std::string& printer_name) override;
-
- protected:
-  ~PrintBackendWin() override = default;
-};
+PrintBackendWin::~PrintBackendWin() = default;
 
 mojom::ResultCode PrintBackendWin::EnumeratePrinters(
     PrinterList& printer_list) {
@@ -482,8 +464,13 @@ mojom::ResultCode PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
   caps.copies_max =
       std::max(1, DeviceCapabilities(name, port, DC_COPIES, nullptr, nullptr));
 
-  LoadPaper(name, port, user_settings.get(), &caps);
+  bool loaded_printable_area =
+      LoadPaper(name, port, user_settings.get(), &caps);
   LoadDpi(name, port, user_settings.get(), &caps);
+
+  if (printable_area_loaded_callback_for_test_ && loaded_printable_area) {
+    printable_area_loaded_callback_for_test_.Run();
+  }
 
   *printer_info = caps;
   return mojom::ResultCode::kSuccess;
@@ -584,6 +571,10 @@ std::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
         paper_size_um.height(), kMicronsPerInch, kTenthsOfMillimetersPerInch);
   }
 
+  if (printable_area_loaded_callback_for_test_) {
+    printable_area_loaded_callback_for_test_.Run();
+  }
+
   return LoadPaperPrintableAreaUm(base::UTF8ToWide(printer_name).c_str(),
                                   devmode.get());
 }
@@ -599,6 +590,11 @@ std::vector<std::string> PrintBackendWin::GetPrinterDriverInfo(
 bool PrintBackendWin::IsValidPrinter(const std::string& printer_name) {
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
   return printer_handle.IsValid();
+}
+
+void PrintBackendWin::SetPrintableAreaLoadedCallbackForTesting(
+    base::RepeatingClosure callback) {
+  printable_area_loaded_callback_for_test_ = std::move(callback);
 }
 
 // static
