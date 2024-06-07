@@ -127,8 +127,8 @@ class DaemonProcessTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   std::unique_ptr<MockDaemonProcess> daemon_process_;
   int terminal_id_ = 0;

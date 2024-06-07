@@ -104,8 +104,9 @@ void CrashDirectoryWatcher::Watch(base::FilePath crash_directory,
   // FilePathWatcher is an old class and isn't well documented (i.e. some of the
   // comments are contradictory and don't match reality). In our case, we are
   // using kNonRecursive which will trigger the callback for any changes in the
-  // watched path on Linux. If this class is reused on other platforms, we will
-  // need to confirm what the behavior is on the new platform(s).
+  // watched path on Linux and Windows. If this class is reused on other
+  // platforms, we will need to confirm what the behavior is on the new
+  // platform(s).
   file_path_watcher_.Watch(
       std::move(crash_directory), base::FilePathWatcher::Type::kNonRecursive,
       base::BindRepeating(&CrashDirectoryWatcher::OnFileChangeDetected,

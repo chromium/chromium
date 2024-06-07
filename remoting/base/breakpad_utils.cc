@@ -178,8 +178,7 @@ bool BreakpadHelper::Initialize(const base::FilePath& minidump_directory) {
 }
 
 void BreakpadHelper::OnException() {
-  CHECK(initialized_);
-
+  // Shared by in-proc and out-of-proc exception handlers.
   if (handling_exception_.exchange(true)) {
     base::PlatformThread::Sleep(base::TimeDelta::Max());
   }

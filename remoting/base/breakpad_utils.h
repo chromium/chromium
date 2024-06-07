@@ -62,7 +62,7 @@ class BreakpadHelper {
   ~BreakpadHelper();
 
   // Configures the instance for handling minidumps, must be called before
-  // |OnException| or |OnMinidumpGenerated|.
+  // |OnMinidumpGenerated|.
   bool Initialize(const base::FilePath& minidump_directory);
 
   // Called in the Breakpad client's filter callback, this function is used to
