@@ -7533,6 +7533,8 @@ crbug.com/343750870 http/tests/devtools/sources/debugger-ui/copy-stack-trace.js 
 crbug.com/343750870 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
 crbug.com/343750870 http/tests/devtools/sources/debugger/rethrow-error-from-bindings-crash.js [ Failure Pass ]
 
+crbug.com/40226500 http/tests/media/mixed-range-response.html [ Pass Timeout ]
+
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
 
