@@ -491,8 +491,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(
                 TAB_TITLE, ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "Your last tab \u2022 3 hr ago",
-                ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
+                "3 hr ago", ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
 
         View divider = (View) mTileContainerView.getChildAt(1);
         Assert.assertEquals(View.VISIBLE, divider.getVisibility());
