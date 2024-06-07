@@ -73,7 +73,7 @@ public class IdentityErrorCardPreference extends Preference
         if (mIdentityError == SyncError.NO_ERROR) {
             return;
         }
-
+        holder.setDividerAllowedAbove(false);
         setupIdentityErrorCardView(holder.findViewById(R.id.identity_error_card));
     }
 
