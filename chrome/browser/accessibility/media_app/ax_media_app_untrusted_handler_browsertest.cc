@@ -259,6 +259,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
     EXPECT_NE(nullptr, page.get());
     EXPECT_NE(nullptr, page->ax_tree());
   }
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
@@ -350,6 +353,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedWithDeleteAndUndoDelete) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   const std::string kDocumentTree(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
@@ -532,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedPagesRelocated) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
-  const size_t kTestNumPages = 3;
+  const size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
@@ -566,19 +572,6 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
       "name=Testing (0, 20)-(3, 8)\n",
       pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
-  EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
-      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 10)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 20)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n",
-      handler_->GetDocumentTreeToStringForTesting());
 
   // Relocate all the pages 3 units to the left and resize the second page. This
   // is similar to a scenario that might happen if the second page was rotated.
@@ -616,26 +609,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
       "name=Testing (-3, 15)-(3, 8)\n",
       pages2.at(fake_metadata[2]->id)->ax_tree()->ToString());
-  EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
-      "name_from=attribute clips_children child_ids=2,3,4 (-3, 0)-(8, 23) "
-      "text_align=left restriction=readonly scroll_x_min=-3 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (-3, 0)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (-3, 10)-"
-      "(8, 3) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (-3, 15)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n",
-      handler_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageContentsUpdatedEdit) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
-  const size_t kTestNumPages = 3;
+  const size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
@@ -675,6 +655,31 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
   EXPECT_EQ("PageD", fake_media_app_.PageIdsWithBitmap()[3]);
 
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
+      handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages.size());
+  for (const auto& [_, page] : pages) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+  }
+
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(3, 8)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "name=Testing (0, 10)-(3, 8)\n",
+      pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "name=Testing (0, 20)-(3, 8)\n",
+      pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "name=Testing (0, 30)-(3, 8)\n",
+      pages.at(fake_metadata[3]->id)->ax_tree()->ToString());
+
   // 'Rotate' the third page, moving the other pages to fit it.
   fake_metadata[2]->rect = gfx::RectF(
       /*x=*/fake_metadata[2]->rect.x(),
@@ -695,20 +700,21 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[4]);
 
   EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
-      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(8, 33) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(8, 3) restriction=readonly is_page_breaking_object=true\n"
-      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
-      "25)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
-      handler_->GetDocumentTreeToStringForTesting());
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(3, 8)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "name=Testing (0, 10)-(3, 8)\n",
+      pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-6 staticText "
+      "name=Testing (0, 20)-(8, 3)\n",
+      pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "name=Testing (0, 25)-(3, 8)\n",
+      pages.at(fake_metadata[3]->id)->ax_tree()->ToString());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
@@ -726,6 +732,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       handler_->GetPagesForTesting();
   ASSERT_EQ(1u, pages.size());
   EXPECT_TRUE(pages.contains("PageA"));
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(3, 8)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
 
   // 'Rotate' the first page, moving the second page as a result.
   fake_metadata[0]->rect = gfx::RectF(
@@ -741,6 +751,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   ASSERT_EQ(1u, pages.size());
   EXPECT_TRUE(pages.contains("PageA"));
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(8, 3)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
 
   // Rotate the second page as well.
   fake_metadata[1]->rect = gfx::RectF(
@@ -758,18 +772,14 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   ASSERT_EQ(2u, pages.size());
   EXPECT_TRUE(pages.contains("PageA"));
   EXPECT_TRUE(pages.contains("PageB"));
-
   EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
-      "name_from=attribute clips_children child_ids=2,3 (0, 0)-(8, 8) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(8, "
-      "3) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 5)-(8, "
-      "3) restriction=readonly is_page_breaking_object=true\n",
-      handler_->GetDocumentTreeToStringForTesting());
+      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "name=Testing (0, 0)-(8, 3)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "name=Testing (0, 5)-(8, 3)\n",
+      pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
@@ -833,18 +843,17 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   // We'll also use the locations of pages one and three as a proxy to determine
   // if their were in fact skipped.
   EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
-      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly is_page_breaking_object=true\n",
-      handler_->GetDocumentTreeToStringForTesting());
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(3, 8)\n",
+      pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "name=Testing (0, 10)-(3, 8)\n",
+      pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "name=Testing (0, 20)-(3, 8)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
@@ -974,6 +983,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "AXTreeUpdate: root id -4\n"
       "id=-4 staticText name=Testing (0, 20)-(3, 8)\n",
       pending_serialized_updates[2].ToString());
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   EXPECT_EQ(
       "AXTreeUpdate tree data:\nAXTreeUpdate: root id 1\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
@@ -982,10 +994,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[3].ToString());
 
   // Rotate the second page. It should update the location of all pages.
@@ -1027,10 +1039,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(8, 3) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(8, "
+      "3) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[7].ToString());
   EXPECT_EQ(
       "AXTreeUpdate tree data:\n"
@@ -1046,10 +1058,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(8, 3) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(8, "
+      "3) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[9].ToString());
 }
 
@@ -1335,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
-  const size_t kTestNumPages = 2;
+  const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
@@ -1380,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
-  const size_t kTestNumPages = 1;
+  const size_t kTestNumPages = 1u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
@@ -1455,6 +1467,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
   }
 
   // Only two pages should be in the document because the batch is of size two.
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
@@ -1463,8 +1478,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 
   WaitForOcringPages(1u);
@@ -1491,12 +1506,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
-      "30)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 
   fake_metadata.at(1)->rect =
@@ -1519,22 +1534,22 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
   }
-
   EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
-      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(4, 38) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-      "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (1, "
-      "2)-(3, 4) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
-      "30)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
-      handler_->GetDocumentTreeToStringForTesting());
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(3, 8)\n",
+      pages4.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-6 staticText "
+      "name=Testing (1, 2)-(3, 4)\n",
+      pages4.at(fake_metadata[1]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "name=Testing (0, 20)-(3, 8)\n",
+      pages4.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "name=Testing (0, 30)-(3, 8)\n",
+      pages4.at(fake_metadata[3]->id)->ax_tree()->ToString());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
@@ -1548,6 +1563,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
   WaitForOcringPages(1u);
   EXPECT_EQ(kLoadingMessage, handler_->GetDocumentTreeToStringForTesting());
   WaitForOcringPages(1u);
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
@@ -1573,8 +1591,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
       "text_align=left\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
@@ -1592,6 +1610,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   WaitForOcringPages(1u);
   EXPECT_EQ(kLoadingMessage, handler_->GetDocumentTreeToStringForTesting());
   WaitForOcringPages(1u);
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
@@ -1615,8 +1636,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "extracted offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
@@ -1699,6 +1720,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PostamblePage) {
       "(0, 0)-(0, 0) restriction=readonly\n",
       handler_->GetDocumentTreeToStringForTesting());
   WaitForOcringPages(1u);
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
@@ -1708,7 +1732,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PostamblePage) {
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "0)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=10004 region child_ids=10005 (0, 0)-(0, 0) restriction=readonly "
       "is_page_breaking_object=true\n"
       "    id=10005 paragraph child_ids=10006 (0, 0)-(0, 0) "
@@ -1728,9 +1752,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PostamblePage) {
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
       "8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "0)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "0)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

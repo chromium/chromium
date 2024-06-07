@@ -812,8 +812,12 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
     if (pages_.contains(page_id) && pages_.at(page_id)->ax_tree() &&
         pages_.at(page_id)->GetRoot()) {
       page_data.AddChildTreeId(pages_.at(page_id)->GetTreeID());
-      page_data.relative_bounds.bounds =
+      const gfx::RectF& page_bounds =
           pages_.at(page_id)->GetRoot()->data().relative_bounds.bounds;
+      // Set its origin to be (0,0) as the root node in a child tree for each
+      // page will have a correct offset.
+      page_data.relative_bounds.bounds =
+          gfx::RectF(0, 0, page_bounds.width(), page_bounds.height());
     }
     document_update.nodes.push_back(page_data);
     ++page_index;
