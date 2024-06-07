@@ -245,6 +245,8 @@ bool ExtractFormData(const base::Value::Dict& form,
   if (!fields_list) {
     return false;
   }
+  std::vector<FormFieldData> fields;
+  fields.reserve(fields_list->size());
   for (const auto& field_dict : *fields_list) {
     autofill::FormFieldData field_data;
     if (field_dict.is_dict() &&
@@ -257,17 +259,20 @@ bool ExtractFormData(const base::Value::Dict& form,
         field_data.set_host_frame(form_data->host_frame());
         field_data.set_origin(frame_origin_object);
       }
-      form_data->fields.push_back(std::move(field_data));
+      fields.push_back(std::move(field_data));
     } else {
       return false;
     }
   }
+  form_data->set_fields(std::move(fields));
 
   if (include_frame_metadata) {
     FormSignature form_signature = CalculateFormSignature(*form_data);
-    for (FormFieldData& field : form_data->fields) {
+    std::vector<FormFieldData> form_fields = form_data->ExtractFields();
+    for (FormFieldData& field : form_fields) {
       field.set_host_form_signature(form_signature);
     }
+    form_data->set_fields(std::move(form_fields));
   }
   return true;
 }

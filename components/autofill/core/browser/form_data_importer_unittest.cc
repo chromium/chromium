@@ -1880,12 +1880,13 @@ TEST_F(FormDataImporterTest,
   FormData form = CreateFullCreditCardForm("Jim Johansen", "4111111111111111",
                                            "02", "2999");
 
-  FormFieldData* card_number_field = form.FindFieldByName(u"card_number");
+  FormFieldData* card_number_field =
+      form.FindFieldByNameForTest(u"card_number");
   ASSERT_TRUE(card_number_field != nullptr);
   card_number_field->set_user_input(u"4444333322221111");
 
   // FormFieldData::user_input for non-credit card fields should be ignored.
-  ASSERT_EQ(nullptr, form.FindFieldByName(u"cvc"));
+  ASSERT_EQ(nullptr, form.FindFieldByNameForTest(u"cvc"));
   FormFieldData cvc_field =
       CreateTestFormField("CVC", "cvc", "001", FormControlType::kInputText);
   cvc_field.set_user_input(u"002");

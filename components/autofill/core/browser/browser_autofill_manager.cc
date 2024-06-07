@@ -888,14 +888,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   AutofillPlusAddressDelegate* plus_address_delegate =
       client().GetPlusAddressDelegate();
 
-  FormData form_for_autocomplete = submitted_form->ToFormData();
-  for (size_t i = 0; i < submitted_form->field_count(); ++i) {
-    AutofillField* autofill_field = submitted_form->field(i);
+  std::vector<FormFieldData> fields_for_autocomplete;
+  fields_for_autocomplete.reserve(submitted_form->fields().size());
+  for (const auto& autofill_field : submitted_form->fields()) {
+    fields_for_autocomplete.push_back(*autofill_field);
     if (autofill_field->Type().GetStorableType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
       // However, if Autofill has recognized a field as CVC, that shouldn't be
       // saved.
-      form_for_autocomplete.fields[i].set_should_autocomplete(false);
+      fields_for_autocomplete.back().set_should_autocomplete(false);
     }
     if (plus_address_delegate &&
         plus_address_delegate->IsPlusAddress(
@@ -903,7 +904,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
-      form_for_autocomplete.fields[i].set_should_autocomplete(false);
+      fields_for_autocomplete.back().set_should_autocomplete(false);
     }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -928,6 +929,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 #endif
   }
 
+  // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
+  FormData form_for_autocomplete = submitted_form->ToFormData();
+  form_for_autocomplete.fields = std::move(fields_for_autocomplete);
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),
       client().IsAutocompleteEnabled());
@@ -2662,7 +2666,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     size_t num_fields = form_structure ? form_structure->field_count() : 0;
     if (form_structure && form.fields.size() == num_fields) {
       skip_reasons = form_filler_->GetFieldFillingSkipReasons(
-          form, *form_structure, *trigger_autofill_field,
+          form.fields, *form_structure, *trigger_autofill_field,
           GetTargetFieldsForAddressFillingSuggestionType(
               current_suggestion_type, trigger_field_type),
           /*type_groups_originally_filled=*/std::nullopt,

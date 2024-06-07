@@ -82,9 +82,10 @@ void FormForest::EraseReferencesTo(
   for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     for (FormData& some_form : some_frame->child_forms) {
       size_t num_removed =
-          std::erase_if(some_form.fields, [&](const FormFieldData& some_form) {
-            return Match(some_form.renderer_form_id());
-          });
+          std::erase_if(some_form.mutable_fields(/*pass_key=*/{}),
+                        [&](const FormFieldData& some_form) {
+                          return Match(some_form.renderer_form_id());
+                        });
       if (num_removed > 0 && forms_with_removed_fields) {
         CHECK(!some_frame->parent_form);
         forms_with_removed_fields->insert(some_form.global_id());
@@ -380,7 +381,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       std::vector<FormFieldData>& source =
           n.form->global_id() == form->global_id()
               ? form_fields
-              : roots_on_path.top()->fields;
+              : roots_on_path.top()->mutable_fields(/*pass_key=*/{});
       // Moves the next fields from `n.form` to |root_fields|.
       //
       // If `n.next_frame` is in bounds, pushes on the |frontier|
@@ -454,7 +455,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         MoveFields(std::numeric_limits<size_t>::max(), n.form->global_id(),
                    source, root_fields);
         if (n.form == roots_on_path.top()) {
-          roots_on_path.top()->fields.clear();
+          roots_on_path.top()->set_fields({});
           roots_on_path.pop();
         }
       }
@@ -558,7 +559,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
       }
       result.renderer_forms.push_back(*original_form);
       renderer_form = result.renderer_forms.rbegin();
-      renderer_form->fields.clear();  // In case `original_form` is a root form.
+      renderer_form->set_fields({});  // In case `original_form` is a root form.
     }
     DCHECK(renderer_form != result.renderer_forms.rend());
 
@@ -602,9 +603,9 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
               HasSharedAutofillPermission(renderer_form->host_frame()));
     };
 
-    renderer_form->fields.push_back(browser_field);
+    renderer_form->mutable_fields(/*pass_key=*/{}).push_back(browser_field);
     if (!IsSafeToFill(renderer_form->fields.back())) {
-      renderer_form->fields.back().set_value({});
+      renderer_form->mutable_fields(/*pass_key=*/{}).back().set_value({});
     } else {
       result.safe_fields.insert(browser_field.global_id());
     }

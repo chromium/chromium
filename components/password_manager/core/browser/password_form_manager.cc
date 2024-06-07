@@ -1175,13 +1175,15 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
     const std::u16string& password) {
   // Find the generating element to update its value. The parser needs a non
   // empty value.
-  auto it = base::ranges::find(form_data.fields, generation_element_id,
+  std::vector<FormFieldData> fields = form_data.ExtractFields();
+  auto it = base::ranges::find(fields, generation_element_id,
                                &FormFieldData::renderer_id);
   // The parameters are coming from the renderer and can't be trusted.
-  if (it == form_data.fields.end()) {
+  if (it == fields.end()) {
     return;
   }
   it->set_value(password);
+  form_data.set_fields(std::move(fields));
   auto [parsed_form, username_detection_method] =
       ParseFormAndMakeLogging(form_data, FormDataParser::Mode::kSaving);
   if (!parsed_form) {

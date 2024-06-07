@@ -279,13 +279,15 @@ void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
   uint32_t renderer_id_counter_ = 1;
 
   std::map<std::u16string, autofill::FieldRendererId> field_name_to_renderer_id;
-  for (autofill::FormFieldData& field : matched_form.form_data.fields) {
+  std::vector<FormFieldData> fields = matched_form.form_data.ExtractFields();
+  for (autofill::FormFieldData& field : fields) {
     CHECK(field.renderer_id().is_null())
         << "Unexpected non-null renderer_id in a from deserialized form "
            "LoginDatabase.";
     field.set_renderer_id(autofill::FieldRendererId(renderer_id_counter_++));
     field_name_to_renderer_id.insert({field.name(), field.renderer_id()});
   }
+  matched_form.form_data.set_fields(std::move(fields));
 
   FillRendererIdIfNotSet(matched_form.username_element,
                          &matched_form.username_element_renderer_id,

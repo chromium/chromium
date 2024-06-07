@@ -28,7 +28,7 @@ FormDataAndroid::FormDataAndroid(const FormData& form, SessionId session_id)
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
                   .CreateFormDataAndroidBridge()) {
   fields_.reserve(form_.fields.size());
-  for (FormFieldData& field : form_.fields) {
+  for (FormFieldData& field : form_.mutable_fields(/*pass_key=*/{})) {
     fields_.push_back(std::make_unique<FormFieldDataAndroid>(&field));
   }
 }

@@ -77,11 +77,9 @@ std::optional<FormData> DeserializeFormData(
   if (!form_name || !form_url || !form_action || !fields) {
     return std::nullopt;
   }
-  FormData form_data;
-  form_data.set_name(base::UTF8ToUTF16(*form_name));
-  form_data.set_url(GURL(*form_url));
-  form_data.set_action(GURL(*form_action));
 
+  std::vector<FormFieldData> form_fields;
+  form_fields.reserve(fields->size());
   for (auto& serialized_field : *fields) {
     base::Value::Dict* serialized_field_dictionary =
         serialized_field.GetIfDict();
@@ -101,8 +99,14 @@ std::optional<FormData> DeserializeFormData(
     // values.
     field.set_form_control_type(autofill::StringToFormControlTypeDiscouraged(
         *field_type, /*fallback=*/autofill::FormControlType::kInputText));
-    form_data.fields.push_back(field);
+    form_fields.push_back(field);
   }
+
+  FormData form_data;
+  form_data.set_name(base::UTF8ToUTF16(*form_name));
+  form_data.set_url(GURL(*form_url));
+  form_data.set_action(GURL(*form_action));
+  form_data.set_fields(std::move(form_fields));
   return form_data;
 }
 

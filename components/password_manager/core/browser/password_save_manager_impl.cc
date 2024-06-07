@@ -84,12 +84,14 @@ void CopyFieldPropertiesMasks(const FormData& from, FormData* to) {
     return;
   }
 
+  std::vector<FormFieldData> fields = to->ExtractFields();
   for (size_t i = 0; i < from.fields.size(); ++i) {
-    to->fields[i].set_properties_mask(
-        to->fields[i].name() == from.fields[i].name()
+    fields[i].set_properties_mask(
+        fields[i].name() == from.fields[i].name()
             ? from.fields[i].properties_mask()
             : autofill::FieldPropertiesFlags::kErrorOccurred);
   }
+  to->set_fields(std::move(fields));
 }
 
 // Filter sensitive information, duplicates and |username_value| out from

@@ -36,18 +36,18 @@ std::u16string ConsumeU16String(FuzzedDataProvider& provider) {
 FormData GenerateFormData(FuzzedDataProvider& provider) {
   FormData result;
 
-  // Determine how many fields this form will have. Pick a low value because
-  // after the fuzzer's seed is exhausted, all will be 0s anyway.
-  const size_t number_of_fields =
-      provider.ConsumeIntegralInRange<size_t>(0, 15);
-  result.fields.resize(number_of_fields);
-
   result.set_name(ConsumeU16String(provider));
   result.set_action(GURL(provider.ConsumeRandomLengthString()));
   result.set_url(GURL(provider.ConsumeRandomLengthString()));
   result.set_main_frame_origin(
       url::Origin::Create(GURL(provider.ConsumeRandomLengthString())));
 
+  // Determine how many fields this form will have. Pick a low value because
+  // after the fuzzer's seed is exhausted, all will be 0s anyway.
+  const size_t number_of_fields =
+      provider.ConsumeIntegralInRange<size_t>(0, 15);
+  std::vector<FormFieldData> fields;
+  fields.resize(number_of_fields);
   int first_field_with_same_value = -1;
   for (size_t i = 0; i < number_of_fields; ++i) {
     // Batch getting bits from the FuzzedDataProvider, because calling
@@ -59,30 +59,28 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     // Empty values are interesting from the parsing perspective. Ensure that
     // at least half of the cases ends up with an empty value.
     const bool force_empty_value = bools[1];
-    result.fields[i].set_is_focusable(bools[2]);
+    fields[i].set_is_focusable(bools[2]);
 
-    result.fields[i].set_form_control_type(
-        provider.ConsumeEnum<FormControlType>());
-    result.fields[i].set_autocomplete_attribute(
-        provider.ConsumeRandomLengthString());
-    result.fields[i].set_label(ConsumeU16String(provider));
-    result.fields[i].set_name(ConsumeU16String(provider));
-    result.fields[i].set_name_attribute(result.fields[i].name());
-    result.fields[i].set_id_attribute(ConsumeU16String(provider));
-    result.fields[i].set_renderer_id(
+    fields[i].set_form_control_type(provider.ConsumeEnum<FormControlType>());
+    fields[i].set_autocomplete_attribute(provider.ConsumeRandomLengthString());
+    fields[i].set_label(ConsumeU16String(provider));
+    fields[i].set_name(ConsumeU16String(provider));
+    fields[i].set_name_attribute(fields[i].name());
+    fields[i].set_id_attribute(ConsumeU16String(provider));
+    fields[i].set_renderer_id(
         FieldRendererId(provider.ConsumeIntegralInRange(-32, 31)));
 
     if (same_value_field) {
       if (first_field_with_same_value == -1) {
         first_field_with_same_value = static_cast<int>(i);
       } else {
-        result.fields[i].set_value(
-            result.fields[first_field_with_same_value].value());
+        fields[i].set_value(fields[first_field_with_same_value].value());
       }
     } else if (!force_empty_value) {
-      result.fields[i].set_value(ConsumeU16String(provider));
+      fields[i].set_value(ConsumeU16String(provider));
     }
   }
+  result.set_fields(std::move(fields));
 
   return result;
 }

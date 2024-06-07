@@ -127,7 +127,7 @@ class FormFiller {
   // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
   // also a FieldTypeSet.
   base::flat_map<FieldGlobalId, FieldFillingSkipReason>
-  GetFieldFillingSkipReasons(const FormData& form,
+  GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
                              const FormStructure& form_structure,
                              const AutofillField& trigger_field,
                              const FieldTypeSet& field_types_to_fill,

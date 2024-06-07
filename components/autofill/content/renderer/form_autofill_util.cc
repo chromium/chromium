@@ -1331,49 +1331,30 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options) {
-  FormData form = [&form_element]() {
-    FormData form;
-    if (!form_element) {
-      DCHECK(form.renderer_id().is_null());
-      DCHECK(form.main_frame_origin().opaque());
-      form.set_is_action_empty(true);
-      return form;
-    }
-    form.set_name(GetFormIdentifier(form_element));
-    form.set_id_attribute(form_element.GetIdAttribute().Utf16());
-    form.set_name_attribute(GetAttribute<kName>(form_element).Utf16());
-    form.set_renderer_id(GetFormRendererId(form_element));
-    form.set_action(GetCanonicalActionForForm(form_element));
-    if (!form.action().is_valid()) {
-      form.set_action(blink::WebStringToGURL(form_element.Action()));
-    }
-    form.set_is_action_empty(form_element.Action().IsNull() ||
-                             form_element.Action().IsEmpty());
-    return form;
-  }();
-
   std::vector<WebFormControlElement> control_elements =
       GetFormControlElements(document, form_element);
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
 
-  // Extracts fields from |control_elements| into `form->fields` and sets
+  // Extracts fields from |control_elements| into `fields` and sets
   // `child_frames[i].predecessor` to the field index of the last field that
   // precedes the |i|th child frame.
   //
   // If `control_elements[i]` is autofillable, `fields_extracted[i]` is set to
-  // true and the corresponding FormFieldData is appended to `form->fields`.
+  // true and the corresponding FormFieldData is appended to `fields`.
   //
   // After each iteration, `iframe_elements[next_iframe]` is the first iframe
   // that comes after `control_elements[i]`.
   //
   // After the loop,
-  // - `form->fields` is completely populated;
+  // - `fields` is completely populated;
   // - `child_frames` has the correct size and `child_frames[i].predecessor` is
   //   set to the correct value, but `child_frames[i].token` is not initialized
   //   yet.
-  form.fields.reserve(control_elements.size());
-  std::vector<FrameTokenWithPredecessor> child_frames(iframe_elements.size());
+  std::vector<FormFieldData> fields;
+  std::vector<FrameTokenWithPredecessor> child_frames;
+  fields.reserve(control_elements.size());
+  child_frames.resize(iframe_elements.size());
 
   std::vector<bool> fields_extracted(control_elements.size(), false);
   std::vector<ShadowFieldData> shadow_fields;
@@ -1382,11 +1363,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     if (!IsAutofillableElement(control_element)) {
       continue;
     }
-    form.fields.emplace_back();
+    fields.emplace_back();
     shadow_fields.emplace_back();
-    WebFormControlElementToFormField(
-        form_element, control_element, &field_data_manager, extract_options,
-        &form.fields.back(), &shadow_fields.back());
+    WebFormControlElementToFormField(form_element, control_element,
+                                     &field_data_manager, extract_options,
+                                     &fields.back(), &shadow_fields.back());
     fields_extracted[i] = true;
 
     // Finds the last frame that precedes |control_element|.
@@ -1400,12 +1381,12 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     // precede that FormFieldData. If they do not,
     // `child_frames[i].predecessor` will be updated in a later iteration.
     for (size_t k = next_iframe; k < iframe_elements.size(); ++k) {
-      child_frames[k].predecessor = form.fields.size() - 1;
+      child_frames[k].predecessor = fields.size() - 1;
     }
-    if (form.fields.size() > kMaxExtractableFields) {
+    if (fields.size() > kMaxExtractableFields) {
       return std::nullopt;
     }
-    DCHECK_LE(form.fields.size(), control_elements.size());
+    DCHECK_LE(fields.size(), control_elements.size());
   }
 
   // Extracts field labels from the <label for="..."> tags.
@@ -1414,9 +1395,9 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   // Iterating through the fields and looking at their `WebElement::Labels()`
   // unfortunately doesn't scale, as each call corresponds to a DOM traverse.
   std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
-  DCHECK_EQ(form.fields.size(), shadow_fields.size());
-  for (size_t i = 0; i < form.fields.size(); i++) {
-    items.emplace_back(&form.fields[i], std::move(shadow_fields[i]));
+  DCHECK_EQ(fields.size(), shadow_fields.size());
+  for (size_t i = 0; i < fields.size(); i++) {
+    items.emplace_back(&fields[i], std::move(shadow_fields[i]));
   }
   base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                  CompareByRendererId>
@@ -1432,7 +1413,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
 
   // Infers field labels from other tags or <labels> without for="...".
   DCHECK_EQ(control_elements.size(), fields_extracted.size());
-  DCHECK_EQ(form.fields.size(),
+  DCHECK_EQ(fields.size(),
             base::as_unsigned(base::ranges::count(fields_extracted, true)));
   for (size_t element_index = 0, field_index = 0;
        element_index < control_elements.size(); ++element_index) {
@@ -1441,7 +1422,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     }
     const WebFormControlElement& control_element =
         control_elements[element_index];
-    FormFieldData& field = form.fields[field_index++];
+    FormFieldData& field = fields[field_index++];
     if (field.label().empty()) {
       if (auto label = InferLabelForElement(control_element)) {
         field.set_label(std::move(label->label));
@@ -1470,17 +1451,35 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   if (child_frames.size() > kMaxExtractableChildFrames) {
     child_frames.clear();
   }
-  const bool success = (!form.fields.empty() || !child_frames.empty()) &&
-                       form.fields.size() < kMaxExtractableFields;
+  const bool success = (!fields.empty() || !child_frames.empty()) &&
+                       fields.size() < kMaxExtractableFields;
   if (!success) {
     return std::nullopt;
   }
 
-  form.set_child_frames(std::move(child_frames));
   base::UmaHistogramCounts100(!form_element
                                   ? "Autofill.ExtractFormUnowned.FieldCount"
                                   : "Autofill.ExtractFormOwned.FieldCount",
-                              form.fields.size());
+                              fields.size());
+  FormData form;
+  if (!form_element) {
+    DCHECK(form.renderer_id().is_null());
+    DCHECK(form.main_frame_origin().opaque());
+    form.set_is_action_empty(true);
+  } else {
+    form.set_name(GetFormIdentifier(form_element));
+    form.set_id_attribute(form_element.GetIdAttribute().Utf16());
+    form.set_name_attribute(GetAttribute<kName>(form_element).Utf16());
+    form.set_renderer_id(GetFormRendererId(form_element));
+    form.set_action(GetCanonicalActionForForm(form_element));
+    if (!form.action().is_valid()) {
+      form.set_action(blink::WebStringToGURL(form_element.Action()));
+    }
+    form.set_is_action_empty(form_element.Action().IsNull() ||
+                             form_element.Action().IsEmpty());
+  }
+  form.set_fields(std::move(fields));
+  form.set_child_frames(std::move(child_frames));
   return form;
 }
 
@@ -2180,16 +2179,8 @@ std::optional<FormData> FindFormForContentEditable(
     return std::nullopt;
   }
 
-  FormData form;
-  form.set_renderer_id(GetFormRendererId(content_editable));
-  form.set_id_attribute(content_editable.GetIdAttribute().Utf16());
-  form.set_name_attribute(GetAttribute<kName>(content_editable).Utf16());
-  form.set_name(!form.id_attribute().empty() ? form.id_attribute()
-                                             : form.name_attribute());
-  form.set_is_action_empty(true);
-  form.fields.emplace_back();
-
-  FormFieldData& field = form.fields.back();
+  std::vector<FormFieldData> fields(1);
+  FormFieldData& field = fields.back();
   WebDocument document = content_editable.GetDocument();
   field.set_id_attribute(content_editable.GetIdAttribute().Utf16());
   field.set_name_attribute(GetAttribute<kName>(content_editable).Utf16());
@@ -2228,6 +2219,15 @@ std::optional<FormData> FindFormForContentEditable(
   field.set_selected_text(content_editable.SelectedText().Utf16().substr(
       0, kMaxSelectedTextLength));
   field.set_allows_writing_suggestions(content_editable.WritingSuggestions());
+
+  FormData form;
+  form.set_renderer_id(GetFormRendererId(content_editable));
+  form.set_id_attribute(content_editable.GetIdAttribute().Utf16());
+  form.set_name_attribute(GetAttribute<kName>(content_editable).Utf16());
+  form.set_name(!form.id_attribute().empty() ? form.id_attribute()
+                                             : form.name_attribute());
+  form.set_is_action_empty(true);
+  form.set_fields(std::move(fields));
   return form;
 }
 

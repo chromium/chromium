@@ -758,11 +758,12 @@ FormData FormStructure::ToFormData() const {
   data.set_host_frame(host_frame_);
   data.set_version(version_);
   data.set_child_frames(child_frames_);
-
+  std::vector<FormFieldData> fields;
+  fields.reserve(fields_.size());
   for (const auto& field : fields_) {
-    data.fields.push_back(*field);
+    fields.push_back(*field);
   }
-
+  data.set_fields(std::move(fields));
   return data;
 }
 

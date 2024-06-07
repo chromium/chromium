@@ -459,12 +459,13 @@ bool HasDocumentWithValidFrame(const WebInputElement& element) {
 //
 // This helps against websites where submitted fields differ from fields that
 // had previously been autofilled or typed into.
-void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
-                                         const FieldDataManager& manager) {
+[[nodiscard]] std::vector<FormFieldData> FillNonTypedOrFilledPropertiesMasks(
+    std::vector<FormFieldData> fields,
+    const FieldDataManager& manager) {
   static constexpr FieldPropertiesMask kFilledOrTyped =
       FieldPropertiesFlags::kAutofilled | FieldPropertiesFlags::kUserTyped;
 
-  for (auto& field : *fields) {
+  for (auto& field : fields) {
     if (field.properties_mask() & kFilledOrTyped) {
       continue;
     }
@@ -479,6 +480,7 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
       }
     }
   }
+  return fields;
 }
 
 size_t GetIndexOfElement(const FormData& form_data,
@@ -2062,8 +2064,8 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
   submitted_form_data->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
 
-  FillNonTypedOrFilledPropertiesMasks(&submitted_form_data->fields,
-                                      field_data_manager());
+  submitted_form_data->set_fields(FillNonTypedOrFilledPropertiesMasks(
+      submitted_form_data->ExtractFields(), field_data_manager()));
 
   GetPasswordManagerDriver().PasswordFormSubmitted(*submitted_form_data);
 }

@@ -73,7 +73,8 @@ FormData Lift(ContentAutofillDriver& source, FormData form) {
 
   // The form signature must be calculated after setting FormData::url.
   FormSignature signature = CalculateFormSignature(form);
-  for (FormFieldData& field : form.fields) {
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  for (FormFieldData& field : fields) {
     field.set_host_frame(form.host_frame());
     field.set_host_form_id(form.renderer_id());
     field.set_host_form_signature(signature);
@@ -84,6 +85,7 @@ FormData Lift(ContentAutofillDriver& source, FormData form) {
       field.set_bounds(r);
     }
   }
+  form.set_fields(std::move(fields));
   return form;
 }
 

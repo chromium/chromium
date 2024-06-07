@@ -21,6 +21,9 @@
 namespace autofill {
 
 class LogBuffer;
+namespace internal {
+class FormForest;
+}
 
 // Pair of a button title (e.g. "Register") and its type (e.g.
 // INPUT_ELEMENT_SUBMIT_TYPE).
@@ -180,7 +183,8 @@ struct FormData {
 
   // Finds a field in the FormData by its name or id.
   // Returns a pointer to the field if found, otherwise returns nullptr.
-  FormFieldData* FindFieldByName(std::u16string_view name_or_id);
+  // TODO(crbug.com/40100455): Move to FormDataTestApi.
+  FormFieldData* FindFieldByNameForTest(std::u16string_view name_or_id);
 
   // The id attribute of the form.
   const std::u16string& id_attribute() const { return id_attribute_; }
@@ -311,6 +315,21 @@ struct FormData {
   //   contains two representations of F; that is, FormData::fields contains two
   //   fields with the same FormFieldData::global_id().
   std::vector<FormFieldData> fields;
+
+  struct MutableFieldsPassKey {
+    friend class AutofillAgent;
+    friend class FormFiller;
+    friend class internal::FormForest;
+  };
+  std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
+    return fields;
+  }
+  void set_fields(std::vector<FormFieldData> new_fields) {
+    fields = std::move(new_fields);
+  }
+  [[nodiscard]] std::vector<FormFieldData> ExtractFields() {
+    return std::exchange(fields, std::vector<FormFieldData>());
+  }
 
   // Contains unique renderer IDs of text elements which are predicted to be
   // usernames. The order matters: elements are sorted in descending likelihood

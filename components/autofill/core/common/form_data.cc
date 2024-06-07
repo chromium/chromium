@@ -160,7 +160,8 @@ const FormFieldData* FormData::FindFieldByGlobalId(
   return fields_it != fields.end() ? &*fields_it : nullptr;
 }
 
-FormFieldData* FormData::FindFieldByName(std::u16string_view name_or_id) {
+FormFieldData* FormData::FindFieldByNameForTest(
+    std::u16string_view name_or_id) {
   auto fields_it = base::ranges::find(fields, name_or_id, &FormFieldData::name);
 
   // If the field is found, return a pointer to the field, otherwise return
@@ -211,15 +212,17 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   {
     GURL url;
     GURL action;
+    std::vector<FormFieldData> fields;
     if (!ReadGURL(iter, &url) || !ReadGURL(iter, &action) ||
         // user_submitted was removed/no longer serialized in version 4.
         (version < 4 && !iter->ReadBool(&unused_user_submitted)) ||
-        !DeserializeFormFieldDataVector(iter, &temp_form_data.fields)) {
+        !DeserializeFormFieldDataVector(iter, &fields)) {
       LogDeserializationError(version);
       return false;
     }
     temp_form_data.set_url(std::move(url));
     temp_form_data.set_action(std::move(action));
+    temp_form_data.set_fields(std::move(fields));
   }
 
   if (version >= 3 && version <= 7) {

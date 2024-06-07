@@ -305,7 +305,7 @@ std::optional<base::TimeTicks> FormFiller::GetOriginalFillingTime(
 
 base::flat_map<FieldGlobalId, FieldFillingSkipReason>
 FormFiller::GetFieldFillingSkipReasons(
-    const FormData& form,
+    base::span<const FormFieldData> fields,
     const FormStructure& form_structure,
     const AutofillField& trigger_field,
     const FieldTypeSet& field_types_to_fill,
@@ -320,7 +320,7 @@ FormFiller::GetFieldFillingSkipReasons(
   base::flat_map<FieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
 
-  CHECK_EQ(form.fields.size(), form_structure.field_count());
+  CHECK_EQ(fields.size(), form_structure.field_count());
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       base::MakeFlatMap<FieldGlobalId, FieldFillingSkipReason>(
           form_structure, {}, [](const std::unique_ptr<AutofillField>& field) {
@@ -330,7 +330,7 @@ FormFiller::GetFieldFillingSkipReasons(
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     // Log events when the fields on the form are filled by autofill suggestion.
     FieldFillingSkipReason skip_reason = GetFieldFillingSkipReason(
-        form.fields[i], *form_structure.field(i), trigger_field, type_count,
+        fields[i], *form_structure.field(i), trigger_field, type_count,
         type_groups_originally_filled, field_types_to_fill, filling_product,
         skip_unrecognized_autocomplete_fields, is_refill,
         is_expired_credit_card);
@@ -365,6 +365,7 @@ FillingProduct FormFiller::UndoAutofill(
       form_autofill_history_.GetLastFillingOperationForField(
           trigger_field.global_id());
 
+  std::vector<FormFieldData> fields = form.ExtractFields();
   base::flat_map<FieldGlobalId, AutofillField*> cached_fields =
       base::MakeFlatMap<FieldGlobalId, AutofillField*>(
           form_structure.fields(), {},
@@ -373,8 +374,8 @@ FillingProduct FormFiller::UndoAutofill(
           });
   // Remove the fields to be skipped so that we only pass fields to be modified
   // by the renderer.
-  std::erase_if(form.fields, [this, &operation,
-                              &cached_fields](const FormFieldData& field) {
+  std::erase_if(fields, [this, &operation,
+                         &cached_fields](const FormFieldData& field) {
     // Skip not-autofilled fields as undo only acts on autofilled fields.
     return !field.is_autofilled() ||
            // Skip fields whose last autofill operations is different than
@@ -385,7 +386,7 @@ FillingProduct FormFiller::UndoAutofill(
            !cached_fields.contains(field.global_id());
   });
 
-  for (FormFieldData& field : form.fields) {
+  for (FormFieldData& field : fields) {
     AutofillField& autofill_field =
         CHECK_DEREF(cached_fields[field.global_id()]);
     const FormAutofillHistory::FieldFillingEntry& previous_state =
@@ -402,6 +403,7 @@ FillingProduct FormFiller::UndoAutofill(
     autofill_field.set_autofilled_type(previous_state.autofilled_type);
     autofill_field.set_filling_product(previous_state.filling_product);
   }
+  form.set_fields(std::move(fields));
 
   // Do not attempt a refill after an Undo operation.
   if (GetFillingContext(form.global_id())) {
@@ -559,17 +561,16 @@ void FormFiller::FillOrPreviewForm(
     fill_event_id = trigger_fill_field_log_event.fill_event_id;
   }
 
-  // Create a copy of the current form to fill and send to the renderer.
-  FormData result_form = form;
-  CHECK_EQ(result_form.fields.size(), form_structure->field_count());
+  std::vector<FormFieldData> result_fields = form.fields;
+  CHECK_EQ(result_fields.size(), form_structure->field_count());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     // On the renderer, the section is used regardless of the autofill status.
-    result_form.fields[i].set_section(form_structure->field(i)->section());
+    result_fields[i].set_section(form_structure->field(i)->section());
   }
 
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       GetFieldFillingSkipReasons(
-          result_form, *form_structure, *autofill_trigger_field,
+          result_fields, *form_structure, *autofill_trigger_field,
           trigger_details.field_types_to_fill,
           filling_context ? &filling_context->type_groups_originally_filled
                           : nullptr,
@@ -582,13 +583,17 @@ void FormFiller::FillOrPreviewForm(
               absl::get<const CreditCard*>(profile_or_credit_card)
                   ->IsExpired(AutofillClock::Now()));
 
-  constexpr DenseSet<FieldFillingSkipReason> pre_ukm_logging_skips{
-      FieldFillingSkipReason::kNotInFilledSection,
-      FieldFillingSkipReason::kFormChanged,
-      FieldFillingSkipReason::kNotFocused};
-  for (size_t i = 0; i < result_form.fields.size(); ++i) {
+  // This loop sets the values to fill in the `result_fields`. The
+  // `result_fields` are sent to the renderer, whereas the very similar
+  // `form_structure->fields()` remains in the browser process.
+  // The fill value is determined by FillForm().
+  for (size_t i = 0; i < result_fields.size(); ++i) {
     AutofillField* autofill_field = form_structure->field(i);
-    if (!pre_ukm_logging_skips.contains(
+    constexpr DenseSet<FieldFillingSkipReason> kPreUkmLoggingSkips{
+        FieldFillingSkipReason::kNotInFilledSection,
+        FieldFillingSkipReason::kFormChanged,
+        FieldFillingSkipReason::kNotFocused};
+    if (!kPreUkmLoggingSkips.contains(
             skip_reasons[autofill_field->global_id()]) &&
         !autofill_field->IsFocusable()) {
       manager_->form_interactions_ukm_logger()
@@ -596,7 +601,7 @@ void FormFiller::FillOrPreviewForm(
               *form_structure, *autofill_field,
               !autofill_field->IsSelectElement());
     }
-    const bool has_value_before = !result_form.fields[i].value().empty();
+    const bool has_value_before = !result_fields[i].value().empty();
     // Log when the suggestion is selected and log on non-checkable fields that
     // skip filling.
     if (skip_reasons[autofill_field->global_id()] !=
@@ -621,7 +626,7 @@ void FormFiller::FillOrPreviewForm(
                                 : std::map<FieldGlobalId, std::u16string>();
             const FieldFillingData filling_content = GetFieldFillingData(
                 *autofill_field, profile_or_credit_card, forced_fill_values,
-                result_form.fields[i], cvc.has_value() ? *cvc : u"",
+                result_fields[i], cvc.has_value() ? *cvc : u"",
                 action_persistence, &failure_to_fill);
             if (!filling_content.value_to_fill.empty()) {
               return base::FastHash(
@@ -656,9 +661,8 @@ void FormFiller::FillOrPreviewForm(
     // but will still be autofilled).
     const bool should_notify =
         filling_product != FillingProduct::kCreditCard &&
-        (result_form.fields[i].SameFieldAs(trigger_field) ||
-         result_form.fields[i].IsSelectOrSelectListElement() ||
-         !has_value_before);
+        (result_fields[i].SameFieldAs(trigger_field) ||
+         result_fields[i].IsSelectOrSelectListElement() || !has_value_before);
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
         filling_context ? filling_context->forced_fill_values
@@ -669,16 +673,15 @@ void FormFiller::FillOrPreviewForm(
     // FillField() may also fill a field if it had been autofilled or manually
     // filled before, and also returns true in such a case; however, such fields
     // don't reach this code.
-    const bool is_newly_autofilled = FillField(
-        *autofill_field, profile_or_credit_card, forced_fill_values,
-        result_form.fields[i], should_notify, cvc.has_value() ? *cvc : u"",
-        action_persistence, &failure_to_fill);
+    const bool is_newly_autofilled =
+        FillField(*autofill_field, profile_or_credit_card, forced_fill_values,
+                  result_fields[i], should_notify, cvc.has_value() ? *cvc : u"",
+                  action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
-        form.fields[i].is_autofilled() &&
-        result_form.fields[i].is_autofilled() &&
-        form.fields[i].value() == result_form.fields[i].value();
+        form.fields[i].is_autofilled() && result_fields[i].is_autofilled() &&
+        form.fields[i].value() == result_fields[i].value();
     if (is_newly_autofilled && !autofilled_value_did_not_change) {
-      newly_filled_field_ids.insert(result_form.fields[i].global_id());
+      newly_filled_field_ids.insert(result_fields[i].global_id());
     } else if (is_newly_autofilled) {
       skip_reasons[form.fields[i].global_id()] =
           FieldFillingSkipReason::kAutofilledValueDidNotChange;
@@ -687,9 +690,9 @@ void FormFiller::FillOrPreviewForm(
           FieldFillingSkipReason::kNoValueToFill;
     }
 
-    const bool has_value_after = !result_form.fields[i].value().empty();
+    const bool has_value_after = !result_fields[i].value().empty();
     const bool is_autofilled_before = form.fields[i].is_autofilled();
-    const bool is_autofilled_after = result_form.fields[i].is_autofilled();
+    const bool is_autofilled_after = result_fields[i].is_autofilled();
 
     // Log when the suggestion is selected and log on non-checkable fields that
     // have been filled.
@@ -716,21 +719,21 @@ void FormFiller::FillOrPreviewForm(
                is_autofilled_after, failure_to_fill.c_str());
   }
   if (could_attempt_refill) {
-    filling_context->filled_form = result_form;
+    filling_context->filled_form = form;
+    filling_context->filled_form->set_fields(result_fields);
   }
   auto field_types = base::MakeFlatMap<FieldGlobalId, FieldType>(
       *form_structure, {}, [](const auto& field) {
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
       });
-  std::erase_if(result_form.fields,
-                [&skip_reasons](const FormFieldData& field) {
-                  return skip_reasons[field.global_id()] !=
-                         FieldFillingSkipReason::kNotSkipped;
-                });
+  std::erase_if(result_fields, [&skip_reasons](const FormFieldData& field) {
+    return skip_reasons[field.global_id()] !=
+           FieldFillingSkipReason::kNotSkipped;
+  });
   base::flat_set<FieldGlobalId> safe_fields =
       manager_->driver().ApplyFormAction(mojom::FormActionType::kFill,
-                                         action_persistence, result_form.fields,
+                                         action_persistence, result_fields,
                                          trigger_field.origin(), field_types);
 
   // This will hold the fields (and autofill_fields) in the intersection of
@@ -748,8 +751,11 @@ void FormFiller::FillOrPreviewForm(
       // condition.
       safe_newly_filled_fields.old_values.push_back(
           form.FindFieldByGlobalId(newly_filled_field_id));
-      safe_newly_filled_fields.new_values.push_back(
-          result_form.FindFieldByGlobalId(newly_filled_field_id));
+      safe_newly_filled_fields.new_values.push_back([&] {
+        auto fields_it = base::ranges::find(
+            result_fields, newly_filled_field_id, &FormFieldData::global_id);
+        return fields_it != result_fields.end() ? &*fields_it : nullptr;
+      }());
       AutofillField* newly_filled_field =
           form_structure->GetFieldById(newly_filled_field_id);
       CHECK(newly_filled_field);
@@ -773,10 +779,10 @@ void FormFiller::FillOrPreviewForm(
     }
     // Find and report index of fields that were not filled due to the iframe
     // security policy.
-    auto it = base::ranges::find(result_form.fields, newly_filled_field_id,
+    auto it = base::ranges::find(result_fields, newly_filled_field_id,
                                  &FormFieldData::global_id);
-    if (it != result_form.fields.end()) {
-      size_t index = it - result_form.fields.begin();
+    if (it != result_fields.end()) {
+      size_t index = it - result_fields.begin();
       std::string field_number = base::StringPrintf("Field %zu", index);
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "

@@ -1700,10 +1700,12 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
           features::kAutofillReplaceFormElementObserver)) {
     // Ideally, we re-extract the form at this moment, but to avoid performance
     // regression, we just update what JS updated on the Blink side.
-    if (auto it = base::ranges::find(provisionally_saved_form()->fields,
-                                     form_util::GetFieldRendererId(element),
-                                     &FormFieldData::renderer_id);
-        it != provisionally_saved_form()->fields.end()) {
+    std::vector<FormFieldData>& fields =
+        provisionally_saved_form()->mutable_fields(/*pass_key=*/{});
+    if (auto it =
+            base::ranges::find(fields, form_util::GetFieldRendererId(element),
+                               &FormFieldData::renderer_id);
+        it != fields.end()) {
       it->set_value(element.Value().Utf16());
       it->set_is_autofilled(element.IsAutofilled());
     }
