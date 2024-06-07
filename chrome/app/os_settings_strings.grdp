@@ -6262,6 +6262,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL" desc="The sublabel that describes the feature where users can set up on-device parental controls to block or enable apps.">
     Block apps installed on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. To restrict downloading apps or content, go to Google Play Settings. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL_DESCRIPTION" desc="Accessibility aria description for the parental controls subpage button">
+    Block apps installed on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. To restrict downloading apps or content, go to Google Play Settings.
+  </message>
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SET_UP_BUTTON" desc="Text for the button that allows users to set up a PIN for on-device parental controls.">
     Set up
   </message>

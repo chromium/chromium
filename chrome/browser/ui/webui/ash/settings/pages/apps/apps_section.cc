@@ -467,6 +467,11 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL,
                                  ui::GetChromeOSDeviceName(),
                                  chrome::kAppParentalControlsLearnMoreUrl));
+  html_source->AddString(
+      "appParentalControlsSubtitleDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL_DESCRIPTION,
+          ui::GetChromeOSDeviceName()));
 }
 
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
