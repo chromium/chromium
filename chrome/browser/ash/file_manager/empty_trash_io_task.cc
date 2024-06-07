@@ -34,7 +34,11 @@ EmptyTrashIOTask::EmptyTrashIOTask(
   progress_.type = OperationType::kEmptyTrash;
 }
 
-EmptyTrashIOTask::~EmptyTrashIOTask() = default;
+EmptyTrashIOTask::~EmptyTrashIOTask() {
+  LOG_IF(WARNING, in_flight_ > 0)
+      << "An EmptyTrashIOTask is getting deleted although it still has "
+      << in_flight_ << " ongoing deletion operations in progress";
+}
 
 void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
                                IOTask::CompleteCallback complete_callback) {
@@ -94,15 +98,19 @@ void EmptyTrashIOTask::OnRemoved(const size_t i, const bool ok) {
   }
 
   // All the deletion tasks have finished.
-  // If there was no error, then it is a success.
-  progress_.state =
-      std::all_of(progress_.outputs.cbegin(), progress_.outputs.cend(),
-                  [](const EntryStatus& entry) {
-                    return entry.error == base::File::FILE_OK;
-                  })
-          ? State::kSuccess
-          : State::kError;
+  if (progress_.state != State::kCancelled) {
+    // If there was no error, then it is a success.
+    progress_.state =
+        std::all_of(progress_.outputs.cbegin(), progress_.outputs.cend(),
+                    [](const EntryStatus& entry) {
+                      return entry.error == base::File::FILE_OK;
+                    })
+            ? State::kSuccess
+            : State::kError;
+  }
 
+  LOG_IF(ERROR, progress_.state != State::kSuccess)
+      << "Cannot empty the trash bin: " << progress_.state;
   Complete();
 }
 
@@ -114,9 +122,10 @@ void EmptyTrashIOTask::Complete() {
 }
 
 void EmptyTrashIOTask::Cancel() {
-  LOG_IF(WARNING, in_flight_ > 0)
+  LOG_IF(WARNING, progress_.state == State::kInProgress)
       << "Cannot cancel the " << in_flight_
       << " operations that are currently emptying the trash bin";
+  progress_.state = State::kCancelled;
 }
 
 }  // namespace file_manager::io_task

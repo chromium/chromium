@@ -17,6 +17,26 @@
 
 namespace file_manager::io_task {
 
+std::ostream& operator<<(std::ostream& out, const State state) {
+  switch (state) {
+#define PRINT(s)    \
+  case State::k##s: \
+    return out << #s;
+    PRINT(Queued)
+    PRINT(Scanning)
+    PRINT(InProgress)
+    PRINT(Paused)
+    PRINT(Success)
+    PRINT(Error)
+    PRINT(NeedPassword)
+    PRINT(Cancelled)
+#undef PRINT
+  }
+
+  return out << "State(" << static_cast<std::underlying_type_t<State>>(state)
+             << ")";
+}
+
 std::ostream& operator<<(std::ostream& out, OperationType op) {
   switch (op) {
 #define PRINT(s)            \

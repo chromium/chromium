@@ -47,8 +47,9 @@ class EmptyTrashIOTask : public IOTask {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
-  // Does nothing. The ongoing deletion operations cannot be cancelled, and will
-  // continue until they finish.
+  // Marks the whole operation as cancelled. Under the hood, the actual ongoing
+  // deletion operations cannot be cancelled, and will continue until they
+  // finish.
   void Cancel() override;
 
  private:
