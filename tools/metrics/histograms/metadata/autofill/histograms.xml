@@ -377,6 +377,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".CreditCard" summary="Credit card form"/>
   <variant name=".Password" summary="Password form"/>
   <variant name=".Unknown" summary="Unknown form type"/>
+  <variant name=".VirtualCard.StandaloneCvc"
+      summary="Standalone CVC form for a virtual card saved on file"/>
 </variants>
 
 <variants name="AutofillPlusAddressModalCompletionStatus">
@@ -2067,6 +2069,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Address"/>
     <variant name="CreditCard"/>
     <variant name="Password"/>
+    <variant name="VirtualCard.StandaloneCvc"/>
   </token>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
@@ -2090,6 +2093,7 @@ chromium-metrics-reviews@google.com.
   <token key="FillingProduct">
     <variant name="Address"/>
     <variant name="CreditCard"/>
+    <variant name="VirtualCard.StandaloneCvc"/>
   </token>
 </histogram>
 
@@ -2265,6 +2269,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Address"/>
     <variant name="CreditCard"/>
     <variant name="Password"/>
+    <variant name="VirtualCard.StandaloneCvc"/>
   </token>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
@@ -2283,6 +2288,7 @@ chromium-metrics-reviews@google.com.
   <token key="FillingProduct">
     <variant name="Address"/>
     <variant name="CreditCard"/>
+    <variant name="VirtualCard.StandaloneCvc"/>
   </token>
 </histogram>
 
@@ -3886,6 +3892,9 @@ chromium-metrics-reviews@google.com.
     disappears or cannot be displayed.
   </summary>
   <token key="FillingProduct">
+    <variant name=".VirtualCard.StandaloneCvc"
+        summary="User chose to fill a form or field with a CVC for a virtual
+                 card saved on file."/>
     <variant name="Address"
         summary="User chose to fill a form or field with an address profile."/>
     <variant name="Autocomplete"

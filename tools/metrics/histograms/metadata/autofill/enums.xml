@@ -1243,6 +1243,26 @@ Called by update_autofill_enums.py.-->
       label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Mismatch)"/>
   <int value="11785"
       label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Unknown)"/>
+  <int value="12032"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Positive"/>
+  <int value="12033"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Negative (Ambiguous)"/>
+  <int value="12034"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Negative (Unknown)"/>
+  <int value="12035"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Negative (Empty)"/>
+  <int value="12036"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Mismatch)"/>
+  <int value="12037"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Ambiguous)"/>
+  <int value="12038"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Unknown)"/>
+  <int value="12039"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Empty)"/>
+  <int value="12040"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Mismatch)"/>
+  <int value="12041"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFieldType">

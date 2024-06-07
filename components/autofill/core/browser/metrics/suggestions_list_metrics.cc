@@ -26,6 +26,7 @@ ManageSuggestionType ToManageSuggestionType(FillingProduct popup_type) {
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPassword:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
     case FillingProduct::kNone:
       return ManageSuggestionType::kOther;
   }
@@ -51,6 +52,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
       NOTREACHED_NORETURN();
   }
 }
@@ -63,6 +65,7 @@ void LogSuggestionAcceptedIndex(int index,
 
   switch (filling_product) {
     case FillingProduct::kCreditCard:
+    case FillingProduct::kStandaloneCvc:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
                                uma_index);
       break;

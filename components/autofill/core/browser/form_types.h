@@ -13,13 +13,34 @@ namespace autofill {
 
 class FormStructure;
 
-enum class FormType : int {
+// Logged in UKM. Do not change or re-use values.
+enum class FormType {
   kUnknownFormType,
   kAddressForm,
   kCreditCardForm,
   kPasswordForm,
-  kMaxValue = kPasswordForm
+  kStandaloneCvcForm,
+  kMaxValue = kStandaloneCvcForm
 };
+
+// Enum for UMA metrics of the style
+// Autofill.KeyMetrics.FillingAssistance.{FormTypeNameForLogging}
+// TODO(crbug.com/339657029): add support for kEmailOnlyForm and
+// kPostalAddressForm.
+enum class FormTypeNameForLogging {
+  kUnknownFormType,
+  kAddressForm,
+  kCreditCardForm,
+  kPasswordForm,
+  // Standalone CVC forms. These forms only contain one field and are solely
+  // used for standalone CVC fields when cards are saved on file of a merchant
+  // page.
+  kStandaloneCvcForm,
+  kMaxValue = kStandaloneCvcForm
+};
+
+std::string_view FormTypeNameForLoggingToStringView(
+    FormTypeNameForLogging form_type);
 
 // Returns true if the form contains fields that represent the card number and
 // the card expiration date.

@@ -467,6 +467,11 @@ class DenseSet {
     return (bitset_ & xs.bitset_) == xs.bitset_;
   }
 
+  // Returns true if |needle| is in |haystack|
+  static constexpr bool is_one_of(T needle, const DenseSet& haystack) {
+    return haystack.contains(needle);
+  }
+
   // Returns an iterator to the first element not less than the |x|, or end().
   const_iterator lower_bound(T x) const {
     const_iterator it(this, value_to_index(x));

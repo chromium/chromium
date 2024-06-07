@@ -120,6 +120,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK = 44,
   GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 45,
   GROUP_ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 46,
+  GROUP_STANDALONE_CREDIT_CARD_VERIFICATION = 47,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -418,7 +419,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
           group = GROUP_CREDIT_CARD_DATE;
           break;
         case CREDIT_CARD_VERIFICATION_CODE:
-        case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
           group = GROUP_CREDIT_CARD_VERIFICATION;
           break;
         default:
@@ -427,6 +427,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
           group = GROUP_AMBIGUOUS;
           break;
       }
+      break;
+
+    case FieldTypeGroup::kStandaloneCvcField:
+      group = GROUP_STANDALONE_CREDIT_CARD_VERIFICATION;
       break;
 
     case FieldTypeGroup::kPasswordField:

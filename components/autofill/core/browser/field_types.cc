@@ -547,8 +547,10 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
-    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kCreditCard;
+
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+      return FieldTypeGroup::kStandaloneCvcField;
 
     case IBAN_VALUE:
       return FieldTypeGroup::kIban;

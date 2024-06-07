@@ -144,6 +144,8 @@
 
 namespace autofill {
 
+using FillingProductSet = DenseSet<FillingProduct>;
+
 using base::TimeTicks;
 using mojom::SubmissionSource;
 
@@ -178,11 +180,15 @@ bool IsAddressAutofillManuallyTriggeredOnNonAddressField(
 bool IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
     SuggestionType type,
     const AutofillField* autofill_field) {
-  return GetFillingProductFromSuggestionType(type) ==
-             FillingProduct::kCreditCard &&
-         (!autofill_field ||
-          GroupTypeOfFieldType(autofill_field->Type().GetStorableType()) !=
-              FieldTypeGroup::kCreditCard);
+  if (GetFillingProductFromSuggestionType(type) !=
+      FillingProduct::kCreditCard) {
+    return false;
+  }
+
+  return !autofill_field ||
+         !FieldTypeGroupSet::is_one_of(autofill_field->Type().group(),
+                                       {FieldTypeGroup::kCreditCard,
+                                        FieldTypeGroup::kStandaloneCvcField});
 }
 
 // Converts `filling_stats` to a key-value representation, where the key
@@ -259,6 +265,7 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kStandaloneCvc:
       return true;
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kCompose:
@@ -1651,10 +1658,12 @@ void BrowserAutofillManager::FillOrPreviewField(
     const FormFieldData* const_field = &field;
     const AutofillField* const_autofill_field = autofill_field;
     if (type == SuggestionType::kAddressFieldByFieldFilling) {
+      address_form_event_logger_->OnFilledByFieldByFieldFilling(type);
       address_form_event_logger_->RecordFillingOperation(
           form.global_id(), base::make_span(&const_field, 1u),
           base::make_span(&const_autofill_field, 1u));
     } else if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
+      credit_card_form_event_logger_->OnFilledByFieldByFieldFilling(type);
       credit_card_form_event_logger_->RecordFillingOperation(
           form.global_id(), base::make_span(&const_field, 1u),
           base::make_span(&const_autofill_field, 1u));
@@ -2617,6 +2626,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           case FieldTypeGroup::kPhone:
             return SuggestionType::kFillFullPhoneNumber;
           case FieldTypeGroup::kCreditCard:
+          case FieldTypeGroup::kStandaloneCvcField:
           case FieldTypeGroup::kPasswordField:
           case FieldTypeGroup::kTransaction:
           case FieldTypeGroup::kUsernameField:
@@ -2899,7 +2909,9 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
   }
 
   std::vector<Suggestion> suggestions;
-  if (context.filling_product == FillingProduct::kCreditCard) {
+  if (FillingProductSet::is_one_of(
+          context.filling_product,
+          {FillingProduct::kCreditCard, FillingProduct::kStandaloneCvc})) {
     FieldType trigger_field_type =
         context.focused_field ? context.focused_field->Type().GetStorableType()
                               : UNKNOWN_TYPE;
@@ -2985,6 +2997,7 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) const {
     case FormType::kAddressForm:
       return address_form_event_logger_.get();
     case FormType::kCreditCardForm:
+    case FormType::kStandaloneCvcForm:
       return credit_card_form_event_logger_.get();
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
@@ -3211,6 +3224,7 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
       address_form_event_logger_->SetFastCheckoutRunId(run_id);
       return;
     case FormType::kCreditCardForm:
+    case FormType::kStandaloneCvcForm:
       credit_card_form_event_logger_->SetFastCheckoutRunId(run_id);
       break;
     case FormType::kPasswordForm:

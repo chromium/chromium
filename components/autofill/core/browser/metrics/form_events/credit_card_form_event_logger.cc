@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -460,21 +461,27 @@ void CreditCardFormEventLogger::OnDidUndoAutofill() {
 void CreditCardFormEventLogger::Log(FormEvent event,
                                     const FormStructure& form) {
   FormEventLoggerBase::Log(event, form);
-  std::string name = "Autofill.FormEvents.CreditCard";
-  if (server_record_type_count_ == 0 && local_record_type_count_ == 0) {
-    name += ".WithNoData";
-  } else if (server_record_type_count_ > 0 && local_record_type_count_ == 0) {
-    name += ".WithOnlyServerData";
-  } else if (server_record_type_count_ == 0 && local_record_type_count_ > 0) {
-    name += ".WithOnlyLocalData";
-  } else {
-    name += ".WithBothServerAndLocalData";
+  const std::string_view data_suffix = [&]() {
+    if (server_record_type_count_ == 0 && local_record_type_count_ == 0) {
+      return ".WithNoData";
+    } else if (server_record_type_count_ > 0 && local_record_type_count_ == 0) {
+      return ".WithOnlyServerData";
+    } else if (server_record_type_count_ == 0 && local_record_type_count_ > 0) {
+      return ".WithOnlyLocalData";
+    };
+    return ".WithBothServerAndLocalData";
+  }();
+  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
+    FormTypeNameForLoggingToStringView(form_type);
+    std::string name = base::StrCat(
+        {"Autofill.FormEvents.", FormTypeNameForLoggingToStringView(form_type),
+         data_suffix});
+    base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
+    base::UmaHistogramEnumeration(
+        name + AutofillMetrics::GetMetricsSyncStateSuffix(
+                   signin_state_for_metrics_),
+        event, NUM_FORM_EVENTS);
   }
-  base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
-  base::UmaHistogramEnumeration(
-      name +
-          AutofillMetrics::GetMetricsSyncStateSuffix(signin_state_for_metrics_),
-      event, NUM_FORM_EVENTS);
 }
 
 void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptShown(
@@ -664,6 +671,33 @@ void CreditCardFormEventLogger::OnLog(const std::string& name,
 
 bool CreditCardFormEventLogger::HasLoggedDataToFillAvailable() const {
   return server_record_type_count_ + local_record_type_count_ > 0;
+}
+
+DenseSet<FormTypeNameForLogging>
+CreditCardFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
+  return {FormTypeNameForLogging::kCreditCardForm,
+          FormTypeNameForLogging::kStandaloneCvcForm};
+}
+
+DenseSet<FormTypeNameForLogging>
+CreditCardFormEventLogger::GetFormTypesForLogging(
+    const FormStructure& form) const {
+  DenseSet<FormTypeNameForLogging> form_types;
+  for (FormType form_type : form.GetFormTypes()) {
+    switch (form_type) {
+      case FormType::kCreditCardForm:
+        form_types.insert(FormTypeNameForLogging::kCreditCardForm);
+        break;
+      case FormType::kStandaloneCvcForm:
+        form_types.insert(FormTypeNameForLogging::kStandaloneCvcForm);
+        break;
+      case FormType::kAddressForm:
+      case FormType::kPasswordForm:
+      case FormType::kUnknownFormType:
+        break;
+    }
+  }
+  return form_types;
 }
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(

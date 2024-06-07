@@ -82,6 +82,7 @@ void ManualFallbackEventLogger::ContextMenuEntryAccepted(
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
       NOTREACHED();
   }
 }
@@ -143,6 +144,7 @@ void ManualFallbackEventLogger::UpdateSuggestionStateForFillingProduct(
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
       NOTREACHED();
   }
 }

@@ -142,4 +142,29 @@ bool AddressFormEventLogger::HasLoggedDataToFillAvailable() const {
   return record_type_count_ > 0;
 }
 
+DenseSet<FormTypeNameForLogging>
+AddressFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
+  return {FormTypeNameForLogging::kAddressForm};
+}
+
+DenseSet<FormTypeNameForLogging> AddressFormEventLogger::GetFormTypesForLogging(
+    const FormStructure& form) const {
+  DenseSet<FormTypeNameForLogging> form_types;
+  for (FormType form_type : form.GetFormTypes()) {
+    switch (form_type) {
+      case FormType::kAddressForm:
+        form_types.insert(FormTypeNameForLogging::kAddressForm);
+        // TODO(crbug.com/339657029): add support for kEmailOnlyForm and
+        // kPostalAddressForm.
+        break;
+      case FormType::kCreditCardForm:
+      case FormType::kStandaloneCvcForm:
+      case FormType::kPasswordForm:
+      case FormType::kUnknownFormType:
+        break;
+    }
+  }
+  return form_types;
+}
+
 }  // namespace autofill::autofill_metrics

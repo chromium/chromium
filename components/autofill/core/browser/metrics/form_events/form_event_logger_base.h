@@ -86,6 +86,10 @@ class FormEventLoggerBase {
   // impossible to dispatch virtual functions into the derived classes.
   void OnDestroyed();
 
+  // Adds the appropriate form types based on `type` to
+  // `field_by_field_filled_form_types_` after a filling operation.
+  void OnFilledByFieldByFieldFilling(SuggestionType type);
+
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
   void SetAblationStatus(AblationGroup ablation_group,
@@ -186,6 +190,24 @@ class FormEventLoggerBase {
   // This is used to emit the readiness key metric.
   virtual bool HasLoggedDataToFillAvailable() const = 0;
 
+  // Returns the set of all the form types the form event logger should log.
+  // This is to avoid the credit card form event logger from logging address
+  // related form types.
+  virtual DenseSet<FormTypeNameForLogging> GetSupportedFormTypeNamesForLogging()
+      const = 0;
+
+  // Returns the set of all form types the form event logger should log for
+  // `form.`
+  virtual DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+      const FormStructure& form) const = 0;
+
+  // Returns a vector of strings for all parsed form types.
+  std::vector<std::string_view> GetParsedFormTypesAsStringViews() const;
+
+  // Returns a set of all parsed form types and form types of field-by-field
+  // filling operations.
+  DenseSet<FormTypeNameForLogging> GetParsedAndFieldByFieldFormTypes() const;
+
   // Constructor parameters.
   std::string form_type_name_;
   bool is_in_any_main_frame_;
@@ -232,8 +254,14 @@ class FormEventLoggerBase {
   // Unique ID of a Fast Checkout run. Used for metrics.
   std::optional<int64_t> fast_checkout_run_id_;
 
+  // Form types of the parsed forms for logging purposes.
+  DenseSet<FormTypeNameForLogging> parsed_form_types_;
+
   // Form types of the submitted form.
   DenseSet<FormType> submitted_form_types_;
+
+  // Form types of field-by-field filling operations.
+  DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;
 
   // A map of the form's global id and its form events.
   std::map<FormGlobalId, AutofillMetrics::FormEventSet> form_events_set_;

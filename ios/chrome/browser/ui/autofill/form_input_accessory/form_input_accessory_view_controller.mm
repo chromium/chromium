@@ -439,6 +439,7 @@ using manual_fill::ManualFillDataType;
         break;
       case FillingProduct::kCreditCard:
       case FillingProduct::kIban:
+      case FillingProduct::kStandaloneCvc:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
@@ -496,6 +497,7 @@ using manual_fill::ManualFillDataType;
       return ManualFillDataType::kAddress;
     case FillingProduct::kCreditCard:
     case FillingProduct::kIban:
+    case FillingProduct::kStandaloneCvc:
       return ManualFillDataType::kPaymentMethod;
     case FillingProduct::kPassword:
     case FillingProduct::kAutocomplete:

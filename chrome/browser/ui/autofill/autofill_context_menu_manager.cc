@@ -61,6 +61,8 @@
 
 namespace autofill {
 
+using FillingProductSet = DenseSet<FillingProduct>;
+
 namespace {
 
 using ::password_manager::ContentPasswordManagerDriver;
@@ -612,7 +614,11 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
       break;
     }
     case FillingProduct::kCreditCard:
-      if (!(field && field->Type().group() == FieldTypeGroup::kCreditCard)) {
+    case FillingProduct::kStandaloneCvc:
+      if (!field ||
+          !FieldTypeGroupSet::is_one_of(
+              field->Type().group(), {FieldTypeGroup::kCreditCard,
+                                      FieldTypeGroup::kStandaloneCvcField})) {
         // Only log payments manual fallback when triggered from a field that is
         // not classified as payments.
         manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(

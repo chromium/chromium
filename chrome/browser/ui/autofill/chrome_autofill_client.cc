@@ -465,6 +465,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
       ShowAutofillProfileSettings(web_contents());
       return;
     case FillingProduct::kCreditCard:
+    case FillingProduct::kStandaloneCvc:
       ShowAutofillCreditCardSettings(web_contents());
       return;
     case FillingProduct::kAutocomplete:
@@ -494,6 +495,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
         return;
       case FillingProduct::kCreditCard:
       case FillingProduct::kIban:
+      case FillingProduct::kStandaloneCvc:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
       case FillingProduct::kAutocomplete:

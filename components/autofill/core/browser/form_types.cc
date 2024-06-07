@@ -24,6 +24,8 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kPasswordField:
       return FormType::kPasswordForm;
+    case FieldTypeGroup::kStandaloneCvcField:
+      return FormType::kStandaloneCvcForm;
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kTransaction:
@@ -42,10 +44,29 @@ std::string_view FormTypeToStringView(FormType form_type) {
       return "Password";
     case FormType::kUnknownFormType:
       return "Unknown";
+    case FormType::kStandaloneCvcForm:
+      return " VirtualCard.StandaloneCvc";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "UnknownFormType";
+  NOTREACHED_NORETURN();
+}
+
+std::string_view FormTypeNameForLoggingToStringView(
+    FormTypeNameForLogging form_type_name) {
+  switch (form_type_name) {
+    case FormTypeNameForLogging::kAddressForm:
+      return "Address";
+    case FormTypeNameForLogging::kCreditCardForm:
+      return "CreditCard";
+    case FormTypeNameForLogging::kPasswordForm:
+      return "Password";
+    case FormTypeNameForLogging::kUnknownFormType:
+      return "Unknown";
+    case FormTypeNameForLogging::kStandaloneCvcForm:
+      return " VirtualCard.StandaloneCvc";
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 bool FormHasAllCreditCardFields(const FormStructure& form_structure) {

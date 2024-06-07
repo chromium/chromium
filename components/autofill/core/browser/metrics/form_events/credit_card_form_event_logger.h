@@ -153,6 +153,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
              FormEvent event,
              const FormStructure& form) const override;
   bool HasLoggedDataToFillAvailable() const override;
+  DenseSet<FormTypeNameForLogging> GetSupportedFormTypeNamesForLogging()
+      const override;
+  DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+      const FormStructure& form) const override;
 
   // Bringing base class' Log function into scope to allow overloading.
   using FormEventLoggerBase::Log;

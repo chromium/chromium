@@ -482,7 +482,8 @@ enum class FieldTypeGroup {
   kUsernameField,
   kUnfillable,
   kIban,
-  kMaxValue = kIban,
+  kStandaloneCvcField,
+  kMaxValue = kStandaloneCvcField,
 };
 
 template <>
@@ -493,6 +494,8 @@ struct DenseSetTraits<FieldType> {
 };
 
 using FieldTypeSet = DenseSet<FieldType>;
+
+using FieldTypeGroupSet = DenseSet<FieldTypeGroup>;
 
 using HtmlFieldTypeSet = DenseSet<HtmlFieldType>;
 

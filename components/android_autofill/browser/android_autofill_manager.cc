@@ -259,6 +259,7 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     case FormType::kAddressForm:
       return address_logger_.get();
     case FormType::kCreditCardForm:
+    case FormType::kStandaloneCvcForm:
       return payments_logger_.get();
     case FormType::kPasswordForm:
       return password_logger_.get();

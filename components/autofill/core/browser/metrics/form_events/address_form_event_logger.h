@@ -69,6 +69,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   void LogUkmInteractedWithForm(FormSignature form_signature) override;
 
   bool HasLoggedDataToFillAvailable() const override;
+  DenseSet<FormTypeNameForLogging> GetSupportedFormTypeNamesForLogging()
+      const override;
+  DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+      const FormStructure& form) const override;
 
  private:
   // All profile categories for which the user has accepted at least one

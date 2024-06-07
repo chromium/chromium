@@ -92,6 +92,7 @@ bool IsAddressType(FieldType type) {
     case FieldTypeGroup::kPasswordField:
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kIban:
+    case FieldTypeGroup::kStandaloneCvcField:
       return false;
   }
   NOTREACHED_NORETURN();
