@@ -177,6 +177,10 @@ class AutofillClient {
     kFido = 2,
   };
 
+  // Represents the user's possible decisions or outcomes in response to a
+  // prompt related to address saving, updating, or migrating.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AddressPromptUserDecision {
     kUndefined,
     // No prompt is shown and no decision is needed to proceed with the process.

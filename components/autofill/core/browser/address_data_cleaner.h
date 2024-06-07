@@ -63,6 +63,10 @@ class AddressDataCleaner : public AddressDataManager::Observer,
       const AutofillProfile& profile,
       base::span<const AutofillProfile> other_profiles,
       const AutofillProfileComparator& comparator);
+  static std::vector<FieldTypeSet> CalculateMinimalIncompatibleTypeSets(
+      const AutofillProfile& import_candidate,
+      base::span<const AutofillProfile* const> existing_profiles,
+      const AutofillProfileComparator& comparator);
 
   // Decides whether the `ProfileTokenQuality` stored for the `profile` and
   // `type` can be considered low quality for deduplication purposes. This is

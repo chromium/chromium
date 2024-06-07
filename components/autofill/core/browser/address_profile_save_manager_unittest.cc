@@ -47,9 +47,9 @@ constexpr char kProfileMigrationEditsHistogram[] =
 constexpr char kProfileUpdateAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileAffectedType";
 constexpr char kNewProfileDecisionHistogram[] =
-    "Autofill.ProfileImport.NewProfileDecision";
+    "Autofill.ProfileImport.NewProfileDecision2.Aggregate";
 constexpr char kProfileUpdateDecisionHistogram[] =
-    "Autofill.ProfileImport.UpdateProfileDecision";
+    "Autofill.ProfileImport.UpdateProfileDecision2.Aggregate";
 constexpr char kProfileMigrationDecisionHistogram[] =
     "Autofill.ProfileImport.MigrateProfileDecision";
 constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =

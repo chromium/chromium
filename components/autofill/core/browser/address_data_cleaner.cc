@@ -229,6 +229,23 @@ AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
 }
 
 // static
+std::vector<FieldTypeSet>
+AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+    const AutofillProfile& import_candidate,
+    base::span<const AutofillProfile* const> existing_profiles,
+    const AutofillProfileComparator& comparator) {
+  // Unfortunately, a vector of non-pointers is needed for
+  // `CalculateMinimalIncompatibleTypeSets()`.
+  std::vector<AutofillProfile> existing_profiles_copy;
+  existing_profiles_copy.reserve(existing_profiles.size());
+  for (const AutofillProfile* profile : existing_profiles) {
+    existing_profiles_copy.push_back(*profile);
+  }
+  return CalculateMinimalIncompatibleTypeSets(
+      import_candidate, existing_profiles_copy, comparator);
+}
+
+// static
 bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
     const AutofillProfile& profile,
     FieldType type) {

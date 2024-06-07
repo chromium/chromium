@@ -491,4 +491,44 @@ TEST_F(AutofillProfileImportMetricsTest,
           kZipStateCityRequirementViolated);
 }
 
+// Tests that the user decision for importing a new profile is emitted for
+// non-ready users, i.e. for users saving their first profile.
+TEST_F(AutofillProfileImportMetricsTest,
+       EmitsNewProfileImportDecisionNonReady) {
+  const auto kExpectedDecision =
+      AutofillClient::AddressPromptUserDecision::kAccepted;
+  AutofillProfile import_candidate = test::GetFullProfile();
+  base::HistogramTester histogram_tester;
+  LogNewProfileImportDecision(kExpectedDecision, /*existing_profiles=*/{},
+                              import_candidate, "en-US");
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.NewProfileDecision2.NonReady", kExpectedDecision,
+      1);
+}
+
+// Tests that the user decision for importing a new profile is emitted for ready
+// users who already have a similar (quasi-duplicate) profile saved.
+TEST_F(AutofillProfileImportMetricsTest,
+       EmitsNewProfileImportDecisionReadyAndQuasiDuplicate) {
+  const auto kExpectedDecision =
+      AutofillClient::AddressPromptUserDecision::kAccepted;
+  AutofillProfile existing_profile = test::GetFullProfile();
+  existing_profile.SetRawInfo(FieldType::NAME_FULL, u"First Last");
+  AutofillProfile import_candidate = test::GetFullProfile();
+  base::HistogramTester histogram_tester;
+  LogNewProfileImportDecision(kExpectedDecision, {&existing_profile},
+                              import_candidate, "en-US");
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.NewProfileDecision2.Ready", kExpectedDecision, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.NewProfileDecision2.QuasiDuplicate",
+      kExpectedDecision, 1);
+}
+
 }  // namespace autofill::autofill_metrics

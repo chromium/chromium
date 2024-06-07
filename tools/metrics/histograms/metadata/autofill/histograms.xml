@@ -4045,6 +4045,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.NewProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="M126">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Obsolete metric, replaced by Autofill.ProfileImport.NewProfileDecision2.
+    Logs the user's decision for storing a new address profile observed in a
+    form submission. This metric is emitted at the end of an import process once
+    the user-provided import decision is final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.NewProfileDecision2.{UserGroup}"
     enum="AutofillProfileImportDecision" expires_after="2024-11-17">
   <owner>koerber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -4053,6 +4065,19 @@ chromium-metrics-reviews@google.com.
     form submission. This metric is emitted at the end of an import process once
     the user-provided import decision is final.
   </summary>
+  <token key="UserGroup">
+    <variant name="Aggregate" summary="Aggregated data of all users."/>
+    <variant name="NonReady"
+        summary="Metrics are recorded for users who don't have any address
+                 profiles saved."/>
+    <variant name="QuasiDuplicate"
+        summary="Metrics are recorded for users where an existing address
+                 profile matches the import candidate after removing one
+                 field."/>
+    <variant name="Ready"
+        summary="Metrics are recorded for users who have address profiles
+                 saved already."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ProfileImport.NewProfileEditedType"
@@ -4143,6 +4168,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.UpdateProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="M126">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Obsolete metric, replaced by Autofill.ProfileImport.UpdateProfileDecision2.
+    Logs the user's decision for editing an already existing address after a
+    similar profile was observed in a form submission. This metric is emitted at
+    the end of an import process once the user-provided import decision is
+    final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.UpdateProfileDecision2.{UserGroup}"
     enum="AutofillProfileImportDecision" expires_after="2024-11-17">
   <owner>koerber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -4152,6 +4190,14 @@ chromium-metrics-reviews@google.com.
     the end of an import process once the user-provided import decision is
     final.
   </summary>
+  <token key="UserGroup">
+    <variant name="Aggregate" summary="Aggregated data of all users."/>
+    <variant name="QuasiDuplicate"
+        summary="Metrics are recorded for users where an existing address
+                 profile matches the import candidate after removing one
+                 field. The profile to be updated is not considered an
+                 existing profile in the calculation of the duplication rank."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ProfileImport.UpdateProfileEditedType"

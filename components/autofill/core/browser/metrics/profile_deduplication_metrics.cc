@@ -32,14 +32,6 @@ constexpr std::string_view kStartupHistogramPrefix =
 constexpr std::string_view kImportHistogramPrefix =
     "Autofill.Deduplication.NewProfile.";
 
-// Given the result of `CalculateMinimalIncompatibleTypeSets()`, returns the
-// minimum number of fields whose removal makes `profile` a duplicate.
-int GetDuplicationRank(base::span<const FieldTypeSet> min_incompatible_sets) {
-  // All elements of `min_incompatible_sets` have the same size.
-  return min_incompatible_sets.empty() ? std::numeric_limits<int>::max()
-                                       : min_incompatible_sets.back().size();
-}
-
 // Logs the types that prevent a profile from being a duplicate, if its
 // `duplication_rank` is sufficiently low (i.e. not many conflicting types).
 void LogTypeOfQuasiDuplicateTokenMetric(
@@ -74,6 +66,12 @@ void LogDeduplicationStartupMetricsForProfile(
 }
 
 }  // namespace
+
+int GetDuplicationRank(base::span<const FieldTypeSet> min_incompatible_sets) {
+  // All elements of `min_incompatible_sets` have the same size.
+  return min_incompatible_sets.empty() ? std::numeric_limits<int>::max()
+                                       : min_incompatible_sets.back().size();
+}
 
 void LogDeduplicationStartupMetrics(
     base::span<const AutofillProfile* const> profiles,
@@ -117,16 +115,10 @@ void LogDeduplicationImportMetrics(
     return;
   }
 
-  // Calculate the `duplication_rank`. Unfortunately, a vector of non-pointers
-  // is needed for `CalculateMinimalIncompatibleTypeSets()`.
-  std::vector<AutofillProfile> existing_profiles_copy;
-  existing_profiles_copy.reserve(existing_profiles.size());
-  for (const AutofillProfile* profile : existing_profiles) {
-    existing_profiles_copy.push_back(*profile);
-  }
+  // Calculate the `duplication_rank`.
   std::vector<FieldTypeSet> min_incompatible_sets =
       AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-          import_candidate, existing_profiles_copy,
+          import_candidate, existing_profiles,
           AutofillProfileComparator(app_locale));
   const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
 

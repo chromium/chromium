@@ -525,7 +525,10 @@ void ProfileImportProcess::CollectMetrics(
   // For an import process that involves prompting the user, record the
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
-    autofill_metrics::LogNewProfileImportDecision(user_decision_);
+    autofill_metrics::LogNewProfileImportDecision(
+        user_decision_, existing_profiles,
+        UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
+        app_locale_);
     LogUkmMetrics(num_edited_fields);
     if (base::FeatureList::IsEnabled(
             features::kAutofillLogDeduplicationMetrics)) {
@@ -535,7 +538,10 @@ void ProfileImportProcess::CollectMetrics(
           existing_profiles, app_locale_);
     }
   } else if (is_confirmable_update()) {
-    autofill_metrics::LogProfileUpdateImportDecision(user_decision_);
+    autofill_metrics::LogProfileUpdateImportDecision(
+        user_decision_, existing_profiles,
+        UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
+        app_locale_);
 
     DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
     // For all update prompts, log the field types and total number of fields

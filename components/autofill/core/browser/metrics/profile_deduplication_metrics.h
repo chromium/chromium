@@ -12,6 +12,12 @@
 
 namespace autofill::autofill_metrics {
 
+// Given the result of `CalculateMinimalIncompatibleTypeSets()`, returns the
+// minimum number of fields whose removal makes `import_candidate` a duplicate
+// of any entry in `existing_profiles`. Returns
+// `std::numeric_limits<int>::max()` in case `min_incompatible_sets` is empty.
+int GetDuplicationRank(base::span<const FieldTypeSet> min_incompatible_sets);
+
 // Logs various metrics around quasi duplicates (= profiles that are duplicates
 // except for a small number of types) for the `profiles` a user has stored at
 // browser startup.
