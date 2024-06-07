@@ -1862,6 +1862,7 @@ void TabStripModel::ForgetOpener(WebContents* contents) {
 void TabStripModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("active_index", active_index());
+  dict.Add("tab_count", count());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
