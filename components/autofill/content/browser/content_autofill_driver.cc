@@ -204,7 +204,7 @@ R RouteToAgent(AutofillDriverRouter& router,
                ActualArgs&&... args) {
   return (router.*router_fun)(
       [&agent_fun](autofill::AutofillDriver& target, AgentArgs... args) {
-        if (!target.IsInActiveFrame()) {
+        if (!target.IsActive()) {
           // We early-return rather than crashing or killing the renderer
           // because Autofill might want to communicate with a frame that just
           // became inactive due to race conditions. See crbug.com/345195973.
@@ -263,7 +263,7 @@ ContentAutofillDriver::~ContentAutofillDriver() {
 }
 
 void ContentAutofillDriver::TriggerFormExtractionInDriverFrame() {
-  if (!IsInActiveFrame()) {
+  if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     return;
   }
@@ -300,7 +300,7 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
 void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
-  if (!IsInActiveFrame()) {
+  if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     std::move(potential_matches).Run({});
     return;
@@ -361,7 +361,7 @@ std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
   return LocalFrameToken(remote_rfh->GetFrameToken().value());
 }
 
-bool ContentAutofillDriver::IsInActiveFrame() const {
+bool ContentAutofillDriver::IsActive() const {
   return render_frame_host_->IsActive();
 }
 
@@ -409,7 +409,7 @@ void ContentAutofillDriver::ApplyFieldAction(
 
 void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
                                         BrowserFormHandler final_handler) {
-  if (!IsInActiveFrame()) {
+  if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     std::move(final_handler).Run(nullptr, std::nullopt);
     return;

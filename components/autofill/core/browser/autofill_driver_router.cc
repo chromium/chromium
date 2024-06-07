@@ -78,7 +78,7 @@ void AutofillDriverRouter::TriggerFormExtractionExcept(
       if (driver == &exception) {
         continue;
       }
-      if (!driver->IsInActiveFrame()) {
+      if (!driver->IsActive()) {
         // The `form_forest_` main contain inactive frames because it retains
         // BFcached frames.
         continue;

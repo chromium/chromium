@@ -79,7 +79,7 @@ class AutofillDriver {
 
   // Returns whether the AutofillDriver instance is associated with an active
   // frame in the MPArch sense.
-  virtual bool IsInActiveFrame() const = 0;
+  virtual bool IsActive() const = 0;
 
   // Returns whether the AutofillDriver instance is associated with a main
   // frame, in the MPArch sense. This can be a primary or non-primary main

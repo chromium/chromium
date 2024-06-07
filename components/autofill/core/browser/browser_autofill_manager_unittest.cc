@@ -6868,7 +6868,7 @@ class BrowserAutofillManagerTestPageLanguageDetection
         features::kAutofillPageLanguageDetection);
   }
 
-  bool is_in_active_frame() const { return GetParam(); }
+  bool is_active() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_features_;
@@ -6886,7 +6886,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "hu";
-  autofill_driver_->SetIsInActiveFrame(is_in_active_frame());
+  autofill_driver_->SetIsActive(is_active());
   browser_autofill_manager_->OnLanguageDetermined(language_detection_details);
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("hu");
@@ -6895,7 +6895,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   // Language detection is used only for active frames.
   auto expected_language_code =
-      is_in_active_frame() ? LanguageCode("hu") : LanguageCode();
+      is_active() ? LanguageCode("hu") : LanguageCode();
 
   ASSERT_EQ(*expected_language_code, *parsed_form->current_page_language());
 }

@@ -176,7 +176,7 @@ void AutofillManager::OnLanguageDetermined(
   if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection))
     return;
   if (details.adopted_language == translate::kUnknownLanguageCode ||
-      !driver_->IsInActiveFrame()) {
+      !driver_->IsActive()) {
     return;
   }
 

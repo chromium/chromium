@@ -60,7 +60,7 @@ class TestAutofillDriverTemplate : public T {
     }
     return std::nullopt;
   }
-  bool IsInActiveFrame() const override { return is_in_active_frame_; }
+  bool IsActive() const override { return is_active_; }
   bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
@@ -137,9 +137,7 @@ class TestAutofillDriverTemplate : public T {
 
   void SetParent(TestAutofillDriverTemplate* parent) { parent_ = parent; }
 
-  void SetIsInActiveFrame(bool is_in_active_frame) {
-    is_in_active_frame_ = is_in_active_frame;
-  }
+  void SetIsActive(bool is_active) { is_active_ = is_active; }
 
   void SetIsInAnyMainFrame(bool is_in_any_main_frame) {
     is_in_any_main_frame_ = is_in_any_main_frame;
@@ -173,7 +171,7 @@ class TestAutofillDriverTemplate : public T {
   LocalFrameToken frame_token_;
   std::map<RemoteFrameToken, LocalFrameToken> remote_frame_tokens_;
   raw_ptr<TestAutofillDriverTemplate> parent_ = nullptr;
-  bool is_in_active_frame_ = true;
+  bool is_active_ = true;
   bool is_in_any_main_frame_ = true;
   bool shared_autofill_ = false;
   net::IsolationInfo isolation_info_;

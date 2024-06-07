@@ -88,7 +88,7 @@ class AutofillDriverIOS : public AutofillDriver,
   AutofillDriverIOS* GetParent() override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
-  bool IsInActiveFrame() const override;
+  bool IsActive() const override;
   bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;

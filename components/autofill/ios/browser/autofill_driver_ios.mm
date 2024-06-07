@@ -100,7 +100,7 @@ BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
 }
 
 // Return true as iOS has no MPArch.
-bool AutofillDriverIOS::IsInActiveFrame() const {
+bool AutofillDriverIOS::IsActive() const {
   return true;
 }
 
