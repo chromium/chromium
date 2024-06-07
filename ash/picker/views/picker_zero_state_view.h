@@ -77,10 +77,6 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   void ScrollPseudoFocusedViewToVisible();
 
-  // Moves pseudo focus to the top item, or does nothing if this zero state view
-  // is not currently handling pseudo focus.
-  void MovePseudoFocusToTopIfNeeded();
-
   void OnFetchRecentResults(std::vector<PickerSearchResult> result);
 
   void OnFetchZeroStateEditorResults(PickerCategory category,

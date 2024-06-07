@@ -5,8 +5,6 @@
 #include "ash/picker/views/picker_zero_state_view.h"
 
 #include <memory>
-#include <utility>
-#include <vector>
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
@@ -16,7 +14,6 @@
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
-#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -232,70 +229,6 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
                       AsView<PickerListItemView>(Property(
                           &PickerListItemView::GetPrimaryTextForTesting,
                           u"b")))))))));
-}
-
-TEST_F(PickerZeroStateViewTest, UpdatesPseudoFocusToTopRecentItem) {
-  MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateViewDelegate::SearchResultsCallback recent_results_callback;
-  EXPECT_CALL(mock_delegate,
-              GetZeroStateRecentResults(PickerCategory::kDriveFiles, _))
-      .WillOnce([&](PickerCategory category,
-                    MockZeroStateViewDelegate::SearchResultsCallback callback) {
-        recent_results_callback = std::move(callback);
-      });
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  widget->SetFullscreen(true);
-  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories,
-      std::vector<PickerCategory>{PickerCategory::kDriveFiles}, kPickerWidth,
-      &asset_fetcher_));
-  widget->Show();
-
-  view->GainPseudoFocus(
-      PickerPseudoFocusHandler::PseudoFocusDirection::kForward);
-  recent_results_callback.Run({PickerSearchResult::DriveFile(
-      /*title=*/u"test drive file",
-      /*url=*/GURL(), base::FilePath(),
-      /*icon=*/{})});
-
-  EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::DriveFileData>(Field(
-                      "title", &ash::PickerSearchResult::DriveFileData::title,
-                      u"test drive file")))))
-      .Times(1);
-  EXPECT_TRUE(view->DoPseudoFocusedAction());
-}
-
-TEST_F(PickerZeroStateViewTest, NoPseudoFocusActionAfterLosingPseudoFocus) {
-  MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateViewDelegate::SearchResultsCallback recent_results_callback;
-  EXPECT_CALL(mock_delegate,
-              GetZeroStateRecentResults(PickerCategory::kDriveFiles, _))
-      .WillOnce([&](PickerCategory category,
-                    MockZeroStateViewDelegate::SearchResultsCallback callback) {
-        recent_results_callback = std::move(callback);
-      });
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  widget->SetFullscreen(true);
-  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories,
-      std::vector<PickerCategory>{PickerCategory::kDriveFiles}, kPickerWidth,
-      &asset_fetcher_));
-  widget->Show();
-
-  view->GainPseudoFocus(
-      PickerPseudoFocusHandler::PseudoFocusDirection::kForward);
-  view->LosePseudoFocus();
-  recent_results_callback.Run({PickerSearchResult::DriveFile(
-      /*title=*/u"test drive file",
-      /*url=*/GURL(), base::FilePath(),
-      /*icon=*/{})});
-
-  EXPECT_FALSE(view->DoPseudoFocusedAction());
 }
 
 }  // namespace
