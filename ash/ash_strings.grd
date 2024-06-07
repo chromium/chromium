@@ -4088,7 +4088,7 @@ No devices connected.
         Minimize or restore the windows in snap group
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CREATE_SNAP_GROUP" desc="Label for accelerator action - Create Snap Group with two side by side windows.">
-        Put side-by-side windows in split screen
+        Group two side-by-side windows
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle keyboard backlight.">
         Toggle keyboard backlight

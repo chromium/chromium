@@ -15110,7 +15110,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Choose a window for this side
         </message>
         <message name="IDS_A11Y_ALERT_SNAP_GROUP_CREATION" desc="An alert for snap group creation.">
-        Put side-by-side windows in split screen
+        Group two side-by-side windows
         </message>
         <message name="IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_LEFT" desc="An alert for snap group resize.">
         Resized windows to the left
