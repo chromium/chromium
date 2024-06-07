@@ -72,63 +72,6 @@ TEST_F(CompanionUtilsTest, PinnedStateCommandlineOverrideUnpinned) {
   EXPECT_EQ(0u, pref_service->GetList(prefs::kPinnedActions).size());
 }
 
-TEST_F(CompanionUtilsTest, UpdatePinnedStateDefaultUnpinnedLabsOverride) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  PrefService* const pref_service = browser()->profile()->GetPrefs();
-  RegisterPrefs(pref_service);
-
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kSidePanelCompanionDefaultPinned);
-  pref_service->SetBoolean(companion::kExpsOptInStatusGrantedPref, true);
-
-  companion::UpdateCompanionDefaultPinnedToToolbarState(profile());
-  EXPECT_EQ(
-      pref_service
-          ->GetDefaultPrefValue(prefs::kSidePanelCompanionEntryPinnedToToolbar)
-          ->GetBool(),
-      true);
-
-  // Expect the companion state was not added to the pinned actions list.
-  EXPECT_EQ(0u, pref_service->GetList(prefs::kPinnedActions).size());
-}
-
-TEST_F(CompanionUtilsTest, UpdatePinnedStateDefaultPinned) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  PrefService* const pref_service = browser()->profile()->GetPrefs();
-  RegisterPrefs(pref_service);
-
-  scoped_feature_list.InitAndEnableFeature(
-      ::features::kSidePanelCompanionDefaultPinned);
-  pref_service->SetBoolean(companion::kExpsOptInStatusGrantedPref, false);
-
-  companion::UpdateCompanionDefaultPinnedToToolbarState(profile());
-  EXPECT_EQ(
-      pref_service
-          ->GetDefaultPrefValue(prefs::kSidePanelCompanionEntryPinnedToToolbar)
-          ->GetBool(),
-      true);
-
-  // Expect the companion state was not added to the pinned actions list.
-  EXPECT_EQ(0u, pref_service->GetList(prefs::kPinnedActions).size());
-}
-
-TEST_F(CompanionUtilsTest, UpdatePinnedStateDefaultUnPinned) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  PrefService* const pref_service = browser()->profile()->GetPrefs();
-  RegisterPrefs(pref_service);
-
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kSidePanelCompanionDefaultPinned);
-  pref_service->SetBoolean(companion::kExpsOptInStatusGrantedPref, false);
-
-  companion::UpdateCompanionDefaultPinnedToToolbarState(profile());
-  EXPECT_EQ(
-      pref_service->GetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar),
-      false);
-
-  // Expect the companion state was not added to the pinned actions list.
-  EXPECT_EQ(0u, pref_service->GetList(prefs::kPinnedActions).size());
-}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace companion
