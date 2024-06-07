@@ -25,7 +25,9 @@ DirectoryEnumerator::DirectoryEnumerator(
     scoped_refptr<content::FileSelectListener> listener)
     : directory_(std::move(directory)),
       listener_(std::move(listener)),
-      directory_lister_(directory_, this) {}
+      directory_lister_(directory_,
+                        net::DirectoryLister::NO_SORT_RECURSIVE,
+                        this) {}
 
 DirectoryEnumerator::~DirectoryEnumerator() = default;
 

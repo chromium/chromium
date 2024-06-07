@@ -1,5 +1,7 @@
-Tests DOM.setFileInfo method.
-file1.txt: test1
+Tests DOM.setFileInputFiles method.
+name: file1.txt, webkitRelativePath: file-input-directory-upload/file1.txt, content: test1
 ------------------
-file2.txt: test2
+name: file2.txt, webkitRelativePath: file-input-directory-upload/file2.txt, content: test2
+------------------
+name: file3.txt, webkitRelativePath: file-input-directory-upload/subdir/file3.txt, content: test3
 ------------------
