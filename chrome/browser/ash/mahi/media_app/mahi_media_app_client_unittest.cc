@@ -199,4 +199,41 @@ TEST_F(MahiMediaAppClientTest, WindowFocus) {
   focus_client->FocusWindow(window_1.get());
 }
 
+// Tests the client can observe the focus events and notify proxy when the
+// associated media app window gets focus.
+TEST_F(MahiMediaAppClientTest, PdfRename) {
+  aura::test::TestWindowDelegate wd;
+  wd.set_can_focus(true);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithDelegate(&wd, -1, gfx::Rect(10, 10, 50, 50)));
+
+  // `window` has focus.
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(window.get());
+
+  MockFunction<void(std::string check_point_name)> check;
+  {
+    InSequence sequence;
+    EXPECT_CALL(check, Call("PDF loaded"));
+    EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfGetFocus(_)).Times(1);
+    EXPECT_CALL(check, Call("updated with same name"));
+    EXPECT_CALL(check, Call("updated with new name"));
+    EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfGetFocus(_)).Times(1);
+  }
+
+  // Creates a client.
+  auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
+      receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
+
+  check.Call("PDF loaded");
+  mahi_media_app_client_->OnPdfLoaded();
+
+  check.Call("updated with same name");
+  mahi_media_app_client_->OnPdfFileNameUpdated("test_name");
+  check.Call("updated with new name");
+  mahi_media_app_client_->OnPdfFileNameUpdated("new_name");
+
+  EXPECT_EQ(mahi_media_app_client_->file_name(), "new_name");
+}
 }  // namespace ash

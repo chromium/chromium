@@ -98,6 +98,11 @@ interface MahiUntrustedPageHandler {
   // Mahi refresh availability.
   OnPdfLoaded();
 
+  // Notifies when the file name of the loaded PDF file is updated (e.g. after
+  // rename or save as), so that the Mahi UI (e.g. title on the result panel and
+  // the refresh banner) can show the fresh file name.
+  OnPdfFileNameUpdated(string new_name);
+
   // Notifies when the PDF context menu is shown. This may be used to show the
   // Mahi widget card.
   OnPdfContextMenuShow(gfx.mojom.RectF anchor);

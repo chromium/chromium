@@ -99,6 +99,8 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
 
+  // These `Ptr`s should never be null. To invalidate them, assign them a
+  // `New()` instead of calling `reset()`.
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
 

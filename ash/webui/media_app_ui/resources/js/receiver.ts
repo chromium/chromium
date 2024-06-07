@@ -357,6 +357,9 @@ const DELEGATE: ClientApiDelegate = {
       mahiUntrustedPageHandler = connectToMahiHandler(name);
     }
   },
+  notifyFilenameChanged(name: string) {
+    mahiUntrustedPageHandler?.onPdfFileNameUpdated(name);
+  },
   async extractPreview(file: Blob) {
     try {
       const bufferPromise = file.arrayBuffer();

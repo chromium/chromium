@@ -101,6 +101,17 @@ void MahiMediaAppClient::OnPdfLoaded() {
   OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
 }
 
+void MahiMediaAppClient::OnPdfFileNameUpdated(const std::string& new_name) {
+  if (file_name_ == new_name) {
+    return;
+  }
+  file_name_ = new_name;
+  CHECK(focus_observation_.IsObserving());
+
+  // Notifies this change if the media app window has focus.
+  OnWindowFocused(focus_observation_.GetSource()->GetFocusedWindow(), nullptr);
+}
+
 void MahiMediaAppClient::OnPdfContextMenuShow(const ::gfx::RectF& anchor) {
   chromeos::MahiMediaAppEventsProxy::Get()->OnPdfContextMenuShown(
       client_id_, ::gfx::ToEnclosingRect(anchor));

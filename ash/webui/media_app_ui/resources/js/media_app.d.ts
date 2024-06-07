@@ -212,6 +212,11 @@ declare interface ClientApiDelegate {
    */
   notifyFileOpened(name?: string, type?: string): void;
   /**
+   * Notify the app that the current file's name has been changed by "Rename"
+   * or "Saved as".
+   */
+  notifyFilenameChanged(name: string): void;
+  /**
    * Attempts to extract a JPEG "preview" from a RAW image file. Throws on any
    * failure. Note this is typically a full-sized preview, not a thumbnail.
    * @return A Blob-backed File with type: image/jpeg.

@@ -344,6 +344,7 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
 
   bool old_media_app_pdf_focused = media_app_pdf_focused_;
   base::UnguessableToken old_media_app_client_id = media_app_client_id_;
+  const std::u16string old_title = current_page_info_->title;
 
   media_app_client_id_ = media_app_content_manager->active_client_id();
   media_app_pdf_focused_ = true;
@@ -365,7 +366,8 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
   // To avoid refresh banner flicker. This could happen when a new PDF file is
   // opened from file picker dialog in media app.
   if (old_media_app_pdf_focused &&
-      old_media_app_client_id == media_app_client_id_) {
+      old_media_app_client_id == media_app_client_id_ &&
+      current_page_info_->title == old_title) {
     return;
   }
 
@@ -381,7 +383,7 @@ void MahiManagerImpl::MediaAppPDFClosed(
     // In this case if there's a refresh banner, it must be targeted to
     // the destroying media app PDF. Hides it by a false notification.
     NotifyRefreshAvailability(/*available=*/false);
-    current_page_info_.reset();
+    current_page_info_ = crosapi::mojom::MahiPageInfo::New();
   }
 
   media_app_pdf_focused_ = false;

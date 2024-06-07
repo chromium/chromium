@@ -39,6 +39,7 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
 
   // media_app_ui::mojom::MahiUntrustedPageHandler:
   void OnPdfLoaded() override;
+  void OnPdfFileNameUpdated(const std::string& new_name) override;
   void OnPdfContextMenuShow(const ::gfx::RectF& anchor) override;
   void OnPdfContextMenuHide() override;
 
