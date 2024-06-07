@@ -288,7 +288,8 @@
           <button class="dropdown-item" on-click="onRateClick_">
             <cr-icon class$="button-image check-mark
               check-mark-hidden-[[isRateItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></cr-icon>
+                icon="read-anything-20:check-mark"
+                aria-label="$i18n{selected}"></cr-icon>
             [[item]]x
           </button>
         </template>
@@ -337,7 +338,8 @@
           <button class="dropdown-item" on-click="onColorClick_">
             <cr-icon class$="button-image check-mark
                               check-mark-hidden-[[isColorItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></cr-icon>
+                icon="read-anything-20:check-mark"
+                aria-label="$i18n{selected}"></cr-icon>
             <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
             [[item.title]]
           </button>
@@ -355,7 +357,8 @@
           <button class="dropdown-item" on-click="onLineSpacingClick_">
             <cr-icon class$="button-image check-mark
                         check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></cr-icon>
+                icon="read-anything-20:check-mark"
+                aria-label="$i18n{selected}"></cr-icon>
             <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
             [[item.title]]
           </button>
@@ -373,7 +376,8 @@
           <button class="dropdown-item" on-click="onLetterSpacingClick_">
             <cr-icon class$="button-image check-mark
                       check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></cr-icon>
+                icon="read-anything-20:check-mark"
+                aria-label="$i18n{selected}"></cr-icon>
             <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
             [[item.title]]
           </button>
@@ -388,11 +392,12 @@
         <template is="dom-repeat" items="[[fontOptions_]]" index-as="index"
                   initial-count="8">
           <button class="dropdown-item" on-click="onFontClick_"
-              style$="font-family:[[item]]">
+                  style$="font-family:[[item]]">
             <cr-icon
               class$="button-image check-mark
               check-mark-hidden-[[isFontItemSelected_(index)]]"
-              icon="read-anything-20:check-mark"></cr-icon>
+              icon="read-anything-20:check-mark"
+              aria-label="$i18n{selected}"></cr-icon>
             [[getFontItemLabel_(item, areFontsLoaded_)]]
           </button>
         </template>

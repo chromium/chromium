@@ -130,6 +130,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"readingModeVoiceDownloadedMessage",
        IDS_READING_MODE_VOICE_DOWNLOADED_MESSAGE},
       {"menu", IDS_MENU},
+      {"selected", IDS_READING_MODE_ITEM_SELECTED},
       {"allocationError", IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"allocationErrorHighQuality",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},

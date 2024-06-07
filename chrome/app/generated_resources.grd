@@ -9233,6 +9233,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_VOICE_SELECTION" desc="Accessibility label for button that opens a dropdown with options for changing the voice used for Read Aloud.">
         Voice selection
       </message>
+      <message name="IDS_READING_MODE_ITEM_SELECTED" desc="Accessibility label for an icon that indicates a menu item in Reading mode is selected.">
+        Selected.
+      </message>
       <message name="IDS_READING_MODE_LANGUAGE_MENU" desc="Label for a button that opens a dialog with options for managing language preferences for Read Aloud.">
         Languages...
       </message>
