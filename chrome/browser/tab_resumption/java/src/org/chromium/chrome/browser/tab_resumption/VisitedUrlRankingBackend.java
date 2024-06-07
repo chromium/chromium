@@ -58,6 +58,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
 
         // TODO(b/337858147): handles showing local Tabs if returned from
         // VisitedUrlRankingBackendJni.
+        // - Support TAB_RESUMPTION_FETCH_HISTORY_BACKEND.
         VisitedUrlRankingBackendJni.get()
                 .getRankedSuggestions(
                         mNativeVisitedUrlRankingBackend,

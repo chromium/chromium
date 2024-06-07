@@ -90,6 +90,14 @@ public class TabResumptionModuleUtils {
                     TAB_RESUMPTION_DISABLE_BLEND_PARAM,
                     false);
 
+    private static final String TAB_RESUMPTION_FETCH_HISTORY_BACKEND_PARAM =
+            "fetch_history_backend";
+    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_FETCH_HISTORY_BACKEND =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+                    TAB_RESUMPTION_FETCH_HISTORY_BACKEND_PARAM,
+                    false);
+
     private static final String TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND_PARAM =
             "fetch_local_tabs_backend";
     public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND =

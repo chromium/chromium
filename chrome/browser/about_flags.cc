@@ -2502,6 +2502,7 @@ const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm4[] = {
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
     {"enable_v2", "true"},
+    {"fetch_history_backend", "true"},
     {"fetch_local_tabs_backend", "true"},
     {"show_see_more", "true"},
     {"show_tabs_in_one_module", "true"},

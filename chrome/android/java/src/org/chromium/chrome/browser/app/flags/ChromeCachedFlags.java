@@ -124,6 +124,7 @@ public class ChromeCachedFlags {
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
+                        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
                         TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_SEE_MORE,
