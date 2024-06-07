@@ -29,13 +29,18 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests for ManageSpaceActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -100,7 +105,20 @@ public class ManageSpaceActivityTest {
     @Test
     @MediumTest
     @Feature({"SiteEngagement"})
-    public void testClearUnimportantOnly() throws Exception {
+    @EnableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
+    public void testClearUnimportantOnlyWithBDM() throws Exception {
+        shouldClearUnimportantDomainDataOnly();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SiteEngagement"})
+    @DisableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
+    public void testClearUnimportantOnlyWithoutBDM() throws Exception {
+        shouldClearUnimportantDomainDataOnly();
+    }
+
+    private void shouldClearUnimportantDomainDataOnly() throws TimeoutException {
         final String cookiesUrl =
                 mTestServer.getURL("/chrome/test/data/android/storage_persistance.html");
         final String serverOrigin = mTestServer.getURL("/");

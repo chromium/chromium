@@ -805,9 +805,14 @@ public class WebsitePermissionsFetcherTest {
         if (isBDMEnabled) {
             var map = new HashMap<Origin, BrowsingDataInfo>();
             var origin = Origin.create(new GURL(ORIGIN));
-            map.put(origin, new BrowsingDataInfo(origin, 0, storageSize + sharedDictionarySize));
+            map.put(
+                    origin,
+                    new BrowsingDataInfo(origin, 0, storageSize + sharedDictionarySize, false));
 
-            Mockito.doReturn(map).when(mBrowsingDataModel).getBrowsingDataInfo();
+            Mockito.when(
+                            mBrowsingDataModel.getBrowsingDataInfo(
+                                    mSiteSettingsDelegate.getBrowserContextHandle(), false))
+                    .thenReturn(map);
 
             doAnswer(this::mockBDMCallback)
                     .when(mSiteSettingsDelegate)

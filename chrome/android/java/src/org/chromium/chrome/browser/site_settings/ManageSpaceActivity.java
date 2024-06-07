@@ -28,6 +28,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -279,9 +280,15 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             long importantSiteStorageTotal = 0;
             for (Website site : sites) {
                 siteStorageSize += site.getTotalUsage();
-                if (site.getLocalStorageInfo() != null
-                        && site.getLocalStorageInfo().isDomainImportant()) {
-                    importantSiteStorageTotal += site.getTotalUsage();
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.BROWSING_DATA_MODEL)) {
+                    if (site.isDomainImportant()) {
+                        importantSiteStorageTotal += site.getTotalUsage();
+                    }
+                } else {
+                    if (site.getLocalStorageInfo() != null
+                            && site.getLocalStorageInfo().isDomainImportant()) {
+                        importantSiteStorageTotal += site.getTotalUsage();
+                    }
                 }
             }
             onSiteStorageSizeCalculated(
@@ -323,17 +330,25 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
         @Override
         public void onWebsitePermissionsAvailable(Collection<Website> sites) {
             long siteStorageLeft = 0;
+            var siteSettingsDelegate =
+                    new ChromeSiteSettingsDelegate(
+                            getApplicationContext(), ProfileManager.getLastUsedRegularProfile());
             for (Website site : sites) {
-                if (site.getLocalStorageInfo() == null
-                        || !site.getLocalStorageInfo().isDomainImportant()) {
-                    mNumSitesClearing++;
-                    var siteSettingsDelegate =
-                            new ChromeSiteSettingsDelegate(
-                                    getApplicationContext(),
-                                    ProfileManager.getLastUsedRegularProfile());
-                    site.clearAllStoredData(siteSettingsDelegate, this);
+                if (siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+                    if (!site.isDomainImportant()) {
+                        mNumSitesClearing++;
+                        site.clearAllStoredData(siteSettingsDelegate, this);
+                    } else {
+                        siteStorageLeft += site.getTotalUsage();
+                    }
                 } else {
-                    siteStorageLeft += site.getTotalUsage();
+                    if (site.getLocalStorageInfo() == null
+                            || !site.getLocalStorageInfo().isDomainImportant()) {
+                        mNumSitesClearing++;
+                        site.clearAllStoredData(siteSettingsDelegate, this);
+                    } else {
+                        siteStorageLeft += site.getTotalUsage();
+                    }
                 }
             }
             if (mNumSitesClearing == 0) {

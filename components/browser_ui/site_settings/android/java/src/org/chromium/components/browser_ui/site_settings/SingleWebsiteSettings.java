@@ -432,6 +432,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     }
                 }
             }
+
             if (merged.getLocalStorageInfo() == null
                     && other.getLocalStorageInfo() != null
                     && origin.equals(other.getLocalStorageInfo().getOrigin())) {
@@ -468,6 +469,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     }
                 }
             }
+
+            merged.setDomainImportant(merged.isDomainImportant() || other.isDomainImportant());
 
             // TODO(crbug.com/40539464): Deal with this TODO colony.
             // TODO(mvanouwerkerk): Make the various info types share a common interface that

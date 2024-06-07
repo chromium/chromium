@@ -7,6 +7,7 @@ package org.chromium.components.browsing_data.content;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.Origin;
 
 import java.util.HashMap;
@@ -31,9 +32,11 @@ public class BrowsingDataModel {
      *
      * @return Map of origin to info.
      */
-    public Map<Origin, BrowsingDataInfo> getBrowsingDataInfo() {
+    public Map<Origin, BrowsingDataInfo> getBrowsingDataInfo(
+            BrowserContextHandle browserContext, boolean fetchImportant) {
         Map<Origin, BrowsingDataInfo> map = new HashMap();
-        return BrowsingDataModelJni.get().getBrowsingDataInfo(mNativeBrowsingDataModel, map);
+        return BrowsingDataModelJni.get()
+                .getBrowsingDataInfo(mNativeBrowsingDataModel, browserContext, map, fetchImportant);
     }
 
     /**
@@ -52,14 +55,21 @@ public class BrowsingDataModel {
 
     @CalledByNative
     private static void insertBrowsingDataInfoIntoMap(
-            Map<Origin, BrowsingDataInfo> map, Origin origin, int cookieCount, long storageSize) {
-        map.put(origin, new BrowsingDataInfo(origin, cookieCount, storageSize));
+            Map<Origin, BrowsingDataInfo> map,
+            Origin origin,
+            int cookieCount,
+            long storageSize,
+            boolean importantDomain) {
+        map.put(origin, new BrowsingDataInfo(origin, cookieCount, storageSize, importantDomain));
     }
 
     @NativeMethods
     interface Natives {
         Map<Origin, BrowsingDataInfo> getBrowsingDataInfo(
-                long nativeBrowsingDataModelAndroid, Map<Origin, BrowsingDataInfo> map);
+                long nativeBrowsingDataModelAndroid,
+                BrowserContextHandle browserContext,
+                Map<Origin, BrowsingDataInfo> map,
+                boolean fetchImportant);
 
         void removeBrowsingData(
                 long nativeBrowsingDataModelAndroid, String host, Runnable completed);

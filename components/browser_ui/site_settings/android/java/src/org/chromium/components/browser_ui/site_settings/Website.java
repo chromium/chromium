@@ -52,14 +52,14 @@ public final class Website implements WebsiteEntry {
     // built this list could contain multiple types of objects.
     private final List<ChosenObjectInfo> mObjectInfo = new ArrayList<ChosenObjectInfo>();
 
+    private boolean mIsDomainImportant;
+
     private static final String SCHEME_SUFFIX = "://";
 
     /**
      * Removes the scheme in a given URL, if present.
      *
-     * Examples:
-     * - "google.com" -> "google.com"
-     * - "https://google.com" -> "google.com"
+     * <p>Examples: - "google.com" -> "google.com" - "https://google.com" -> "google.com"
      */
     public static String omitProtocolIfPresent(String url) {
         if (url.indexOf(SCHEME_SUFFIX) == -1) return url;
@@ -477,6 +477,14 @@ public final class Website implements WebsiteEntry {
 
     public String getTitleForEmbeddedPreferenceRow() {
         return omitProtocolIfPresent(mEmbedder.getTitle());
+    }
+
+    public void setDomainImportant(boolean isImportant) {
+        mIsDomainImportant = isImportant;
+    }
+
+    public boolean isDomainImportant() {
+        return mIsDomainImportant;
     }
 
     // WebsiteEntry implementation.

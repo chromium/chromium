@@ -15,12 +15,15 @@ public class BrowsingDataInfo implements Serializable {
     private final Origin mOrigin;
     private final int mCookieCount;
     private final long mStorageSize;
+    private final boolean mImportantDomain;
 
     @VisibleForTesting
-    public BrowsingDataInfo(Origin origin, int cookieCount, long storageSize) {
+    public BrowsingDataInfo(
+            Origin origin, int cookieCount, long storageSize, boolean importantDomain) {
         mOrigin = origin;
         mCookieCount = cookieCount;
         mStorageSize = storageSize;
+        mImportantDomain = importantDomain;
     }
 
     public Origin getOrigin() {
@@ -33,5 +36,9 @@ public class BrowsingDataInfo implements Serializable {
 
     public int getCookieCount() {
         return mCookieCount;
+    }
+
+    public boolean isDomainImportant() {
+        return mImportantDomain;
     }
 }

@@ -221,7 +221,9 @@ public class ChromeSiteSettingsDelegateTest {
 
         helper.waitForNext();
 
-        Map<Origin, BrowsingDataInfo> result = browsingDataModel[0].getBrowsingDataInfo();
+        Map<Origin, BrowsingDataInfo> result =
+                browsingDataModel[0].getBrowsingDataInfo(
+                        mSiteSettingsDelegate.getBrowserContextHandle(), false);
         return result;
     }
 }

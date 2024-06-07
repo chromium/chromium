@@ -6,6 +6,8 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -88,7 +90,7 @@ public class SiteDataCleanerUnitTest {
         HashMap<Origin, BrowsingDataInfo> map = buildBrowsingDataModelInfo();
 
         doReturn(true).when(mSiteSettingsDelegate).isBrowsingDataModelFeatureEnabled();
-        doReturn(map).when(mBrowsingDataModel).getBrowsingDataInfo();
+        doReturn(map).when(mBrowsingDataModel).getBrowsingDataInfo(any(), anyBoolean());
 
         doAnswer(this::mockBDMCallback)
                 .when(mSiteSettingsDelegate)
@@ -107,10 +109,10 @@ public class SiteDataCleanerUnitTest {
 
         verify(mBridgeMock, times(1))
                 .clearBannerData(mContextHandle, ORIGIN_1.getAddress().getOrigin());
-
-        // Cookies and media licenses are cleared in the BDM.
-        verify(mBridgeMock, times(0))
+        verify(mBridgeMock, times(1))
                 .clearCookieData(mContextHandle, ORIGIN_1.getAddress().getOrigin());
+
+        // Media licenses are cleared in the BDM.
         verify(mBridgeMock, times(0))
                 .clearMediaLicenses(mContextHandle, ORIGIN_1.getAddress().getOrigin());
     }
@@ -118,7 +120,7 @@ public class SiteDataCleanerUnitTest {
     private static HashMap<Origin, BrowsingDataInfo> buildBrowsingDataModelInfo() {
         var map = new HashMap<Origin, BrowsingDataInfo>();
         var origin = Origin.create(new GURL(ORIGIN_1.getAddress().getOrigin()));
-        map.put(origin, new BrowsingDataInfo(origin, 0, 100));
+        map.put(origin, new BrowsingDataInfo(origin, 0, 100, false));
         return map;
     }
 

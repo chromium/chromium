@@ -24,7 +24,9 @@ class BrowsingDataModelAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetBrowsingDataInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& map);
+      const base::android::JavaParamRef<jobject>& jbrowser_context_handle,
+      const base::android::JavaParamRef<jobject>& map,
+      bool fetch_important);
 
   void RemoveBrowsingData(
       JNIEnv* env,

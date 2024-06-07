@@ -24,9 +24,9 @@ public class SiteDataCleaner {
             SiteSettingsDelegate siteSettingsDelegate, Website site, Runnable finishCallback) {
         String origin = site.getAddress().getOrigin();
         var browserContextHandle = siteSettingsDelegate.getBrowserContextHandle();
+        WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
 
         if (!siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
-            WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
             WebsitePreferenceBridgeJni.get().clearMediaLicenses(browserContextHandle, origin);
         }
 

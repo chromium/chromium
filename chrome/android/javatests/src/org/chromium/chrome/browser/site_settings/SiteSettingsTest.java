@@ -804,7 +804,7 @@ public class SiteSettingsTest {
     /** Tests clearing cookies for a group of websites. */
     @Test
     @SmallTest
-    @Feature({"Preferencds"})
+    @Feature({"Preferences"})
     public void testClearCookiesGroup() throws Exception {
         final String url1 =
                 mPermissionRule.getURLWithHostName(
