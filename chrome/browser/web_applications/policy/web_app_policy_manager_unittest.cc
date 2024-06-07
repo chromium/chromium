@@ -425,7 +425,7 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
               if (app_id) {
                 UnregisterApp(*app_id);
               }
-              return webapps::UninstallResultCode::kSuccess;
+              return webapps::UninstallResultCode::kAppRemoved;
             }));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -578,7 +578,7 @@ void SubAppsServiceImpl::RemoveSubApp(
           [](std::string manifest_id_path,
              webapps::UninstallResultCode result_code) {
             SubAppsServiceResultCode result =
-                result_code == webapps::UninstallResultCode::kSuccess
+                webapps::UninstallSucceeded(result_code)
                     ? SubAppsServiceResultCode::kSuccess
                     : SubAppsServiceResultCode::kFailure;
             return SubAppsServiceRemoveResult::New(manifest_id_path, result);

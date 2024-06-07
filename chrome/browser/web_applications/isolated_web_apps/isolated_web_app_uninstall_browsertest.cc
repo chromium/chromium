@@ -118,7 +118,7 @@ class IsolatedWebAppUninstallBrowserTest
         future.GetCallback());
 
     auto code = future.Get();
-    ASSERT_EQ(code, webapps::UninstallResultCode::kSuccess);
+    ASSERT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
     run_loop.Run();
   }
 

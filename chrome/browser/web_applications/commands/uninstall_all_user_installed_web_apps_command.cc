@@ -98,8 +98,7 @@ void UninstallAllUserInstalledWebAppsCommand::JobComplete(
     webapps::UninstallResultCode code) {
   CHECK(active_job_);
 
-  if (code != webapps::UninstallResultCode::kSuccess &&
-      code != webapps::UninstallResultCode::kNoAppToUninstall) {
+  if (!webapps::UninstallSucceeded(code)) {
     std::string error_message =
         base::StrCat({active_job_->app_id(), "[", TypesToString(types),
                       "]: ", base::ToString(code)});

@@ -97,7 +97,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                 update->DeleteApp(app_id.value());
                 deduped_uninstall_count_++;
               }
-              return webapps::UninstallResultCode::kSuccess;
+              return webapps::UninstallResultCode::kAppRemoved;
             }));
   }
 
@@ -533,9 +533,10 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
                         app_id))));
 
     // One install URL uninstalled.
-    EXPECT_THAT(result.Get<UninstallResults>(),
-                UnorderedElementsAre(std::make_pair(
-                    kInstallUrl2, webapps::UninstallResultCode::kSuccess)));
+    EXPECT_THAT(
+        result.Get<UninstallResults>(),
+        UnorderedElementsAre(std::make_pair(
+            kInstallUrl2, webapps::UninstallResultCode::kInstallUrlRemoved)));
 
     EXPECT_EQ(app_registrar().GetAppIds().size(), 1ul);
     const WebApp* app = app_registrar().GetAppById(app_id);
@@ -563,7 +564,7 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
     // One install URL uninstalled.
     EXPECT_THAT(result.Get<UninstallResults>(),
                 UnorderedElementsAre(std::make_pair(
-                    kInstallUrl1, webapps::UninstallResultCode::kSuccess)));
+                    kInstallUrl1, webapps::UninstallResultCode::kAppRemoved)));
 
     // App should be cleaned up.
     EXPECT_EQ(app_registrar().GetAppIds().size(), 0ul);
@@ -625,7 +626,7 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
 
     ASSERT_THAT(result.Get<UninstallResults>(),
                 testing::UnorderedElementsAre(std::make_pair(
-                    kInstallUrl, webapps::UninstallResultCode::kSuccess)));
+                    kInstallUrl, webapps::UninstallResultCode::kAppRemoved)));
   }
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);

@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
-            webapps::UninstallResultCode::kSuccess);
+            webapps::UninstallResultCode::kAppRemoved);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
@@ -139,5 +139,5 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
-            webapps::UninstallResultCode::kSuccess);
+            webapps::UninstallResultCode::kAppRemoved);
 }

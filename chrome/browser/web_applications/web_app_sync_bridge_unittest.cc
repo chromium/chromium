@@ -643,7 +643,7 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
                 update->DeleteApp(app_to_uninstall);
               }
               callback.Run(app_to_uninstall,
-                           webapps::UninstallResultCode::kSuccess);
+                           webapps::UninstallResultCode::kAppRemoved);
             }
 
             barrier_closure.Run();

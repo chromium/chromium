@@ -869,7 +869,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   }
 
   EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_to_uninstall->url_info.app_id()),
-              Eq(webapps::UninstallResultCode::kSuccess));
+              Eq(webapps::UninstallResultCode::kAppRemoved));
 
   EXPECT_THAT(UpdateDiscoveryTasks(),
               UnorderedElementsAre(IsDict(DictionaryHasValue(
@@ -908,7 +908,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   "app_id", base::Value(iwa_info1_->url_info.app_id())))));
 
   EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_info1_->url_info.app_id()),
-              Eq(webapps::UninstallResultCode::kSuccess));
+              Eq(webapps::UninstallResultCode::kAppRemoved));
 
   EXPECT_THAT(UpdateApplyWaiters(), IsEmpty());
   EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
@@ -984,7 +984,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   }
 
   EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_to_uninstall->url_info.app_id()),
-              Eq(webapps::UninstallResultCode::kSuccess));
+              Eq(webapps::UninstallResultCode::kAppRemoved));
 
   EXPECT_THAT(UpdateApplyTasks(),
               UnorderedElementsAre(IsDict(

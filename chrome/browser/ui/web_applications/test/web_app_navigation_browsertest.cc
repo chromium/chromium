@@ -261,7 +261,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     provider->scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+          EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
           run_loop.Quit();
         }));
     run_loop.Run();

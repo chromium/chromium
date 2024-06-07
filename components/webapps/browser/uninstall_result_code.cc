@@ -10,7 +10,9 @@ namespace webapps {
 
 bool UninstallSucceeded(UninstallResultCode code) {
   switch (code) {
-    case UninstallResultCode::kSuccess:
+    case UninstallResultCode::kAppRemoved:
+    case UninstallResultCode::kInstallSourceRemoved:
+    case UninstallResultCode::kInstallUrlRemoved:
     case UninstallResultCode::kNoAppToUninstall:
       return true;
     case UninstallResultCode::kCancelled:
@@ -22,8 +24,8 @@ bool UninstallSucceeded(UninstallResultCode code) {
 
 std::ostream& operator<<(std::ostream& os, UninstallResultCode code) {
   switch (code) {
-    case UninstallResultCode::kSuccess:
-      return os << "kSuccess";
+    case UninstallResultCode::kAppRemoved:
+      return os << "kAppRemoved";
     case UninstallResultCode::kNoAppToUninstall:
       return os << "kNoAppToUninstall";
     case UninstallResultCode::kCancelled:
@@ -32,6 +34,10 @@ std::ostream& operator<<(std::ostream& os, UninstallResultCode code) {
       return os << "kError";
     case UninstallResultCode::kShutdown:
       return os << "kShutdown";
+    case UninstallResultCode::kInstallSourceRemoved:
+      return os << "kInstallSourceRemoved";
+    case UninstallResultCode::kInstallUrlRemoved:
+      return os << "kInstallUrlRemoved";
   }
 }
 

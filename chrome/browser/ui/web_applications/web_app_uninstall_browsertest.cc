@@ -50,7 +50,7 @@ class WebAppUninstallBrowserTest : public WebAppBrowserTestBase {
     DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
     provider->scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
-    EXPECT_EQ(future.Get(), webapps::UninstallResultCode::kSuccess);
+    EXPECT_EQ(future.Get(), webapps::UninstallResultCode::kAppRemoved);
 
     base::RunLoop().RunUntilIdle();
   }

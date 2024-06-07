@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
             base::BindLambdaForTesting(
                 [&run_loop](const GURL& app_url,
                             webapps::UninstallResultCode code) {
-                  EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+                  EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
                   run_loop.Quit();
                 }));
     run_loop.Run();

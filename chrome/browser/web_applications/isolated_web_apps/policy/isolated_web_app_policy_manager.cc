@@ -747,7 +747,7 @@ void IsolatedWebAppPolicyManager::LogRemoveInstallSourceResult(
     web_package::SignedWebBundleId web_bundle_id,
     WebAppManagement::Type source,
     webapps::UninstallResultCode uninstall_code) {
-  if (uninstall_code != webapps::UninstallResultCode::kSuccess) {
+  if (!webapps::UninstallSucceeded(uninstall_code)) {
     DLOG(WARNING) << "Could not remove install source " << source
                   << " from IWA " << web_bundle_id
                   << ". Error: " << uninstall_code;

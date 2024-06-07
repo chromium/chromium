@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     SyncExternalExtensions();
     SyncExternalWebApps(
         /*expect_install=*/false,
-        /*expect_uninstall=*/webapps::UninstallResultCode::kSuccess);
+        /*expect_uninstall=*/webapps::UninstallResultCode::kAppRemoved);
 
     EXPECT_TRUE(IsExtensionAppInstalled());
     EXPECT_FALSE(IsWebAppInstalled());

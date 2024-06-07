@@ -150,7 +150,7 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
       PublishToAppService(std::move(apps));
     }
 
-    std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
+    std::move(callback).Run(webapps::UninstallResultCode::kAppRemoved);
   }
 
   void MaybeUninstallPackageInArc(const std::string& package_name) override {

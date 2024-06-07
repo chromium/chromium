@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   GetProvider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
         run_loop.Quit();
       }));
 

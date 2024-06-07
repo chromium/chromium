@@ -301,7 +301,7 @@ class IsolatedWebAppBrowsingDataClearingTest
         future.GetCallback());
 
     auto code = future.Get();
-    ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
+    ASSERT_TRUE(code == webapps::UninstallResultCode::kAppRemoved);
     run_loop.Run();
   }
 

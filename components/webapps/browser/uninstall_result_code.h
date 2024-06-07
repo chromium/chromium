@@ -10,11 +10,18 @@
 namespace webapps {
 
 enum class UninstallResultCode {
-  kSuccess,
+  // The app was uninstalled since there is no other install source or url.
+  kAppRemoved,
   kNoAppToUninstall,
   kCancelled,
   kError,
   kShutdown,
+  // The specified install source was removed, but others remain, so the app was
+  // not uninstalled.
+  kInstallSourceRemoved,
+  // The specified install url was removed, but others remain, so the app was
+  // not uninstalled.
+  kInstallUrlRemoved,
 };
 
 bool UninstallSucceeded(UninstallResultCode code);

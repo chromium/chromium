@@ -138,9 +138,10 @@ void RemoveInstallSourceJob::
 
   lock_->install_manager().NotifyWebAppSourceRemoved(app_id_);
   lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(&RemoveInstallSourceJob::CompleteAndSelfDestruct,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              webapps::UninstallResultCode::kSuccess));
+      app_id_,
+      base::BindOnce(&RemoveInstallSourceJob::CompleteAndSelfDestruct,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     webapps::UninstallResultCode::kInstallSourceRemoved));
 }
 
 void RemoveInstallSourceJob::CompleteAndSelfDestruct(

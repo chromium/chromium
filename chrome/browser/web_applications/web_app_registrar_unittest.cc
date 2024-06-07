@@ -188,7 +188,7 @@ class WebAppRegistrarTest : public WebAppTest {
           future.GetCallback());
       EXPECT_TRUE(future.Wait());
       EXPECT_EQ(future.Get<webapps::UninstallResultCode>(),
-                webapps::UninstallResultCode::kSuccess);
+                webapps::UninstallResultCode::kAppRemoved);
     }
   }
 
@@ -201,7 +201,7 @@ class WebAppRegistrarTest : public WebAppTest {
         future.GetCallback());
     EXPECT_TRUE(future.Wait());
     EXPECT_EQ(future.Get<webapps::UninstallResultCode>(),
-              webapps::UninstallResultCode::kSuccess);
+              webapps::UninstallResultCode::kAppRemoved);
   }
 
  private:

@@ -218,7 +218,7 @@ void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
   }
 
   primary_removal_result_ = errors_ ? webapps::UninstallResultCode::kError
-                                    : webapps::UninstallResultCode::kSuccess;
+                                    : webapps::UninstallResultCode::kAppRemoved;
   debug_value_->Set("primary_removal_result",
                     base::ToString(primary_removal_result_.value()));
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);

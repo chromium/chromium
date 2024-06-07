@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
     provider_->scheduler().RemoveUserUninstallableManagements(
         id, webapps::WebappUninstallSource::kShelf,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+          EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
           run_loop.Quit();
         }));
     run_loop.Run();

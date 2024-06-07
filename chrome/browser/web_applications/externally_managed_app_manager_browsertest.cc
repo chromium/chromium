@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
             EXPECT_TRUE(install_results.empty());
             EXPECT_EQ(uninstall_results.size(), 1U);
             EXPECT_EQ(uninstall_results[url],
-                      webapps::UninstallResultCode::kSuccess);
+                      webapps::UninstallResultCode::kInstallSourceRemoved);
             run_loop.Quit();
           }));
   run_loop.Run();

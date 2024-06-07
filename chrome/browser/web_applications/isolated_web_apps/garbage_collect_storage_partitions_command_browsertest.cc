@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
       url_info_2.app_id(), webapps::WebappUninstallSource::kAppsPage,
       future.GetCallback());
   auto code = future.Get();
-  ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
+  ASSERT_TRUE(code == webapps::UninstallResultCode::kAppRemoved);
 
   // Pref value is set.
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(

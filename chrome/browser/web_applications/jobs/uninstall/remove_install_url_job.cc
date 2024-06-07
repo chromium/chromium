@@ -125,7 +125,7 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
     // safety.
     app = nullptr;
   }
-  CompleteAndSelfDestruct(webapps::UninstallResultCode::kSuccess);
+  CompleteAndSelfDestruct(webapps::UninstallResultCode::kInstallUrlRemoved);
 }
 
 webapps::WebappUninstallSource RemoveInstallUrlJob::uninstall_source() const {

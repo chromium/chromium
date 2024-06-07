@@ -140,7 +140,9 @@ void WebAppUninstallCommand::OnCompletion(webapps::UninstallResultCode code) {
   CompleteAndSelfDestruct(
       [code]() {
         switch (code) {
-          case webapps::UninstallResultCode::kSuccess:
+          case webapps::UninstallResultCode::kAppRemoved:
+          case webapps::UninstallResultCode::kInstallSourceRemoved:
+          case webapps::UninstallResultCode::kInstallUrlRemoved:
           case webapps::UninstallResultCode::kNoAppToUninstall:
             return CommandResult::kSuccess;
           case webapps::UninstallResultCode::kCancelled:

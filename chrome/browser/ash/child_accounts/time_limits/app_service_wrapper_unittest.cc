@@ -186,7 +186,7 @@ class AppServiceWrapperTest : public ::testing::Test {
               webapps::WebappUninstallSource::kExternalPreinstalled,
               base::BindLambdaForTesting(
                   [&](webapps::UninstallResultCode code) {
-                    EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+                    EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
                     run_loop.Quit();
                   }));
       run_loop.Run();
