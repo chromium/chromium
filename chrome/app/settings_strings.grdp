@@ -1177,9 +1177,6 @@
   <message name="IDS_SETTINGS_CLEAR_PERIOD_NOT_SELECTED" desc="This is the text that is shown in the clear browsing data time range dropdown until the user selected a time range from this dropdown.">
     Select a time range
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_TIME_PERIOD_REQUIRED_ANNOUNCEMENT" translateable="false" desc="This text is for the Clear Browsing Data dialog but does not show in the dialog UI. If the user is a screen reader user, did not select a time period for deletion, and clicked the 'Clear' button, then this text is read out by the screen reader before the focus is moved to the time period dropdown.">
-    Please select a time range
-  </message>
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
   </message>

@@ -563,10 +563,10 @@ export class SettingsClearBrowsingDataDialogElement extends
     // No time period is selected: the time period dropdown gets highlighted,
     // and no clearing should happen.
     dropdownMenu.classList.add('dropdown-error');
-    // Announce the error to a11y users and move the focus to the dropdown.
-    // TODO(crbug.com/40283307): Make the announcement string translateable.
-    getAnnouncerInstance().announce(loadTimeData.getString(
-        'clearBrowsingDataTimePeriodRequiredAnnouncement'));
+    // Move the focus to the dropdown. This visually indicates the requirement
+    // to select a time period, which the dropdown clarifies via the text of its
+    // current selection. This also allows screen readers to read out this text
+    // to a11y users to indicate this requirement to them.
     dropdownMenu.focus();
     return false;
   }
