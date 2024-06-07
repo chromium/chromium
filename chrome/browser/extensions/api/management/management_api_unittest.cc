@@ -470,13 +470,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
 
     bool did_show = false;
     auto callback = base::BindRepeating(
-        [](bool* did_show, extensions::ExtensionUninstallDialog* dialog) {
-          // The dialog should be shown, only identifying the extension being
-          // removed and not the caller of the function.
-          EXPECT_EQ("Remove \"Test\"?", dialog->GetHeadingText());
-          *did_show = true;
-        },
-        &did_show);
+        [](bool* did_show) { *did_show = true; }, &did_show);
     extensions::ExtensionUninstallDialog::SetOnShownCallbackForTesting(
         &callback);
 
@@ -511,14 +505,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallNewWebstore) {
   function->set_source_url(GURL(extension_urls::GetNewWebstoreLaunchURL()));
 
   bool did_show = false;
-  auto callback = base::BindRepeating(
-      [](bool* did_show, extensions::ExtensionUninstallDialog* dialog) {
-        // The dialog should be shown, only identifying the extension being
-        // removed and not the caller of the function.
-        EXPECT_EQ("Remove \"Test\"?", dialog->GetHeadingText());
-        *did_show = true;
-      },
-      &did_show);
+  auto callback =
+      base::BindRepeating([](bool* did_show) { *did_show = true; }, &did_show);
   extensions::ExtensionUninstallDialog::SetOnShownCallbackForTesting(&callback);
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
@@ -552,14 +540,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
 
     bool did_show = false;
     auto callback = base::BindRepeating(
-        [](bool* did_show, extensions::ExtensionUninstallDialog* dialog) {
-          // The dialog should be shown, identifying the extension that called
-          // the function and the extension being removed.
-          EXPECT_EQ("\"Triggering Extension\" would like to remove \"Test\".",
-                    dialog->GetHeadingText());
-          *did_show = true;
-        },
-        &did_show);
+        [](bool* did_show) { *did_show = true; }, &did_show);
     extensions::ExtensionUninstallDialog::SetOnShownCallbackForTesting(
         &callback);
 

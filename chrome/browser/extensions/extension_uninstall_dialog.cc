@@ -58,11 +58,11 @@ float GetScaleFactor(gfx::NativeWindow window) {
   return screen->GetPrimaryDisplay().device_scale_factor();
 }
 
-ExtensionUninstallDialog::OnWillShowCallback* g_on_will_show_callback = nullptr;
+base::RepeatingClosure* g_on_will_show_callback = nullptr;
 }  // namespace
 
 void ExtensionUninstallDialog::SetOnShownCallbackForTesting(
-    ExtensionUninstallDialog::OnWillShowCallback* callback) {
+    base::RepeatingClosure* callback) {
   g_on_will_show_callback = callback;
 }
 
@@ -136,8 +136,9 @@ void ExtensionUninstallDialog::OnIconUpdated(ChromeAppIcon* icon) {
     return;
   }
 
-  if (g_on_will_show_callback != nullptr)
-    g_on_will_show_callback->Run(this);
+  if (g_on_will_show_callback != nullptr) {
+    g_on_will_show_callback->Run();
+  }
 
   switch (ScopedTestDialogAutoConfirm::GetAutoConfirmValue()) {
     case ScopedTestDialogAutoConfirm::NONE:
@@ -173,17 +174,6 @@ void ExtensionUninstallDialog::OnProfileWillBeDestroyed(Profile* profile) {
   profile_ = nullptr;
   profile_observation_.Reset();
   OnDialogClosed(CLOSE_ACTION_CANCELED);
-}
-
-std::string ExtensionUninstallDialog::GetHeadingText() {
-  if (triggering_extension_) {
-    return l10n_util::GetStringFUTF8(
-        IDS_EXTENSION_PROGRAMMATIC_UNINSTALL_PROMPT_HEADING,
-        base::UTF8ToUTF16(triggering_extension_->name()),
-        base::UTF8ToUTF16(extension_->name()));
-  }
-  return l10n_util::GetStringFUTF8(IDS_EXTENSION_UNINSTALL_PROMPT_HEADING,
-                                   base::UTF8ToUTF16(extension_->name()));
 }
 
 bool ExtensionUninstallDialog::ShouldShowCheckbox() const {
