@@ -473,6 +473,7 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
   // They should still exist in sync server.
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
+  write_batch->TakeMetadataChangesFrom(std::move(delete_metadata_change_list));
   std::vector<base::Uuid> groups_to_close_locally;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     if (group.created_before_syncing_tab_groups()) {
