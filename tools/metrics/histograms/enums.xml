@@ -30670,6 +30670,13 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="SCROLLED_CLICKED"/>
 </enum>
 
+<enum name="ScrollDepthQuartile">
+  <int value="25" label="25%"/>
+  <int value="50" label="50%"/>
+  <int value="75" label="75%"/>
+  <int value="100" label="100%"/>
+</enum>
+
 <enum name="ScrollingThreadStatus">
   <int value="0" label="SCROLLING_ON_COMPOSITOR"/>
   <int value="1" label="SCROLLING_ON_COMPOSITOR_BLOCKED_ON_MAIN"/>

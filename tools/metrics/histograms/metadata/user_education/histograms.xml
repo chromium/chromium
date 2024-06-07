@@ -313,8 +313,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UserEducation.WhatsNew.ExploreMoreExpanded"
+    enum="BooleanSuccess" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the user expands or collapses the &quot;Explore More&quot;
+    section of the What's New page.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ScrollDepth" enum="ScrollDepthQuartile"
+    expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the user scrolls past a quartile threshold of the What's New
+    page.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.TimeOnPage" units="ms"
+    expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the total amount of time the user spent on the What's New page
+    before navigating away.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.TimeToLoadContent" units="ms"
+    expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time it took in milliseconds for the embedded What's New page to
+    load after the WebUI was created.
+  </summary>
+</histogram>
+
 <histogram name="WhatsNew.LoadEvent" enum="WhatsNewLoadEvent"
-    expires_after="2024-11-03">
+    expires_after="2024-12-03">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -329,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.LoadResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-03">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-03">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -340,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.StartupType" enum="WhatsNewStartupType"
-    expires_after="2024-11-03">
+    expires_after="2024-12-03">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

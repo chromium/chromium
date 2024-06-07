@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -65,7 +66,8 @@ class WhatsNewHandlerTest : public testing::Test {
   void SetUp() override {
     handler_ = std::make_unique<WhatsNewHandler>(
         mojo::PendingReceiver<whats_new::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), profile_.get(), web_contents_);
+        mock_page_.BindAndGetRemote(), profile_.get(), web_contents_,
+        base::Time::Now());
     mock_page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
   }
@@ -79,6 +81,8 @@ class WhatsNewHandlerTest : public testing::Test {
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   std::unique_ptr<WhatsNewHandler> handler_;
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
  private:
   raw_ptr<MockHatsService> mock_hats_service_;
@@ -116,4 +120,38 @@ TEST_F(WhatsNewHandlerTest, SurveyIsTriggered) {
 
   handler_->GetServerUrl(callback.Get());
   mock_page_.FlushForTesting();
+}
+
+TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
+  handler_->RecordTimeToLoadContent(101);
+  histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.TimeToLoadContent",
+                                     1);
+
+  handler_->RecordVersionPageLoaded(false);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("UserEducation.WhatsNew.Shown"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.ShownByManualNavigation"));
+
+  handler_->RecordModuleImpression(std::string("MyFeature"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.ModuleShown"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.ModuleShown.MyFeature"));
+
+  handler_->RecordExploreMoreToggled(false);
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.ExploreMoreExpanded", 1);
+
+  handler_->RecordScrollDepth(whats_new::mojom::ScrollDepth::k25);
+  histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.ScrollDepth", 1);
+
+  handler_->RecordTimeOnPage(base::TimeDelta());
+  histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.TimeOnPage", 1);
+
+  handler_->RecordModuleLinkClicked("AnotherFeature");
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.ModuleLinkClicked"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature"));
 }

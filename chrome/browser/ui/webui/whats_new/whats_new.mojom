@@ -5,6 +5,7 @@
 module whats_new.mojom;
 
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
@@ -14,10 +15,45 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// Enum used to depict what quartile of the page the user scrolled to.
+enum ScrollDepth {
+  // 25%
+  k25 = 25,
+  // 50%
+  k50 = 50,
+  // 75%
+  k75 = 75,
+  // 100% (Bottom of the page)
+  k100 = 100
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Returns the URL of the What's New page to show.
   GetServerUrl() => (url.mojom.Url url);
+
+  // Record when the content was loaded.
+  // This function takes a double from JS and converts it to Windows
+  // epoch with `base::Time::FromMillisecondsSinceUnixEpoch()`.
+  RecordTimeToLoadContent(double time_since_unix_epoch);
+
+  // Record metric for which type of page was loaded.
+  RecordVersionPageLoaded(bool is_auto_open);
+
+  // Record metric that a module made an impression.
+  RecordModuleImpression(string module_name);
+
+  // Record metric for expanding/collapsing "Explore More" section.
+  RecordExploreMoreToggled(bool expanded);
+
+  // Record metric that page was scrolled.
+  RecordScrollDepth(ScrollDepth depth);
+
+  // Record metric for how long page was shown.
+  RecordTimeOnPage(mojo_base.mojom.TimeDelta time);
+
+  // Record metric for a click event within a module.
+  RecordModuleLinkClicked(string module_name);
 };
 
 // WebUI-side handler for requests from the browser.

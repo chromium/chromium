@@ -12,12 +12,24 @@ build_webui_tests("build") {
     "test_whats_new_browser_proxy.ts",
     "test_with_legacy_command_3.ts",
     "test_with_command_4.ts",
+    "test_with_metrics_page_loaded.ts",
+    "test_with_metrics_module_impression.ts",
+    "test_with_metrics_explore_more_toggled.ts",
+    "test_with_metrics_scroll_depth.ts",
+    "test_with_metrics_time_on_page.ts",
+    "test_with_metrics_module_click.ts",
   ]
 
   static_files = [
     "test.html",
     "test_with_legacy_command_3.html",
     "test_with_command_4.html",
+    "test_with_metrics_page_loaded.html",
+    "test_with_metrics_module_impression.html",
+    "test_with_metrics_explore_more_toggled.html",
+    "test_with_metrics_scroll_depth.html",
+    "test_with_metrics_time_on_page.html",
+    "test_with_metrics_module_click.html",
   ]
 
   ts_path_mappings =

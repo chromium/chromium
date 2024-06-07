@@ -70,6 +70,8 @@ class WhatsNewUI : public ui::MojoWebUIController,
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   raw_ptr<Profile> profile_;
+  // Time the page started loading. Used for logging performance metrics.
+  base::Time navigation_start_time_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

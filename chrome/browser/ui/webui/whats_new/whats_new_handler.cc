@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,13 +31,61 @@ WhatsNewHandler::WhatsNewHandler(
     mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
     mojo::PendingRemote<whats_new::mojom::Page> page,
     Profile* profile,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    const base::Time& navigation_start_time)
     : profile_(profile),
       web_contents_(web_contents),
+      navigation_start_time_(navigation_start_time),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {}
 
 WhatsNewHandler::~WhatsNewHandler() = default;
+
+void WhatsNewHandler::RecordTimeToLoadContent(double time_since_unix_epoch) {
+  base::UmaHistogramTimes(
+      "UserEducation.WhatsNew.TimeToLoadContent",
+      base::Time::FromMillisecondsSinceUnixEpoch(time_since_unix_epoch) -
+          navigation_start_time_);
+}
+
+void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {
+  base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
+  if (!is_auto_open) {
+    base::RecordAction(base::UserMetricsAction(
+        "UserEducation.WhatsNew.ShownByManualNavigation"));
+  }
+}
+
+void WhatsNewHandler::RecordModuleImpression(const std::string& module_name) {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.ModuleShown"));
+
+  std::string action_name = "UserEducation.WhatsNew.ModuleShown.";
+  action_name.append(module_name);
+  base::RecordComputedAction(action_name);
+}
+
+void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {
+  base::UmaHistogramBoolean("UserEducation.WhatsNew.ExploreMoreExpanded",
+                            expanded);
+}
+
+void WhatsNewHandler::RecordScrollDepth(whats_new::mojom::ScrollDepth depth) {
+  base::UmaHistogramEnumeration("UserEducation.WhatsNew.ScrollDepth", depth);
+}
+
+void WhatsNewHandler::RecordTimeOnPage(base::TimeDelta time) {
+  base::UmaHistogramMediumTimes("UserEducation.WhatsNew.TimeOnPage", time);
+}
+
+void WhatsNewHandler::RecordModuleLinkClicked(const std::string& module_name) {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.ModuleLinkClicked"));
+
+  std::string action_name = "UserEducation.WhatsNew.ModuleLinkClicked.";
+  action_name.append(module_name);
+  base::RecordComputedAction(action_name);
+}
 
 void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {
   GURL result = GURL("");
@@ -51,8 +101,9 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_,
                                         /* create_if_necessary = */ true);
-  if (!hats_service)
+  if (!hats_service) {
     return;
+  }
 
   hats_service->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerWhatsNew, web_contents_,

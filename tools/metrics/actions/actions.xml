@@ -41902,6 +41902,37 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.WhatsNew.ModuleLinkClicked">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    A link in a module on the What's New page was clicked the user.
+  </description>
+</action>
+
+<action name="UserEducation.WhatsNew.ModuleShown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    A module on the What's New page was visible to the user.
+  </description>
+</action>
+
+<action name="UserEducation.WhatsNew.Shown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The What's New page was shown to the user, either by automatically opening
+    on startup or by direct user navigation.
+  </description>
+</action>
+
+<action name="UserEducation.WhatsNew.ShownByManualNavigation">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user manually navigated to the What's New page.</description>
+</action>
+
 <action name="UserManager_Cleared_Legacy_User_Prefs">
   <owner>mahmadi@chromium.org</owner>
   <description>
@@ -43103,6 +43134,11 @@ should be able to be added at any place in this file.
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
+
+<action-suffix separator="." ordering="suffix">
+  <affected-action name="UserEducation.WhatsNew.ModuleLinkClicked"/>
+  <affected-action name="UserEducation.WhatsNew.ModuleShown"/>
+</action-suffix>
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="AccountStorage" label="Bookmark added in account storage."/>

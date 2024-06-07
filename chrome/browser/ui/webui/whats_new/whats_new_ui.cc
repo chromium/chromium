@@ -55,7 +55,8 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
-      profile_(Profile::FromWebUI(web_ui)) {
+      profile_(Profile::FromWebUI(web_ui)),
+      navigation_start_time_(base::Time::Now()) {
   CreateAndAddWhatsNewUIHtmlSource(profile_);
 }
 
@@ -79,9 +80,9 @@ void WhatsNewUI::CreatePageHandler(
     mojo::PendingRemote<whats_new::mojom::Page> page,
     mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver) {
   DCHECK(page);
-  page_handler_ =
-      std::make_unique<WhatsNewHandler>(std::move(receiver), std::move(page),
-                                        profile_, web_ui()->GetWebContents());
+  page_handler_ = std::make_unique<WhatsNewHandler>(
+      std::move(receiver), std::move(page), profile_,
+      web_ui()->GetWebContents(), navigation_start_time_);
 }
 
 void WhatsNewUI::BindInterface(

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://whats-new/whats_new.mojom-webui.js';
@@ -19,6 +20,13 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
   constructor(url: string) {
     super([
       'getServerUrl',
+      'recordTimeToLoadContent',
+      'recordVersionPageLoaded',
+      'recordModuleImpression',
+      'recordExploreMoreToggled',
+      'recordScrollDepth',
+      'recordTimeOnPage',
+      'recordModuleLinkClicked',
     ]);
 
     this.url_ = {url};
@@ -27,6 +35,34 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
   getServerUrl() {
     this.methodCalled('getServerUrl');
     return Promise.resolve({url: this.url_});
+  }
+
+  recordTimeToLoadContent(time: number) {
+    this.methodCalled('recordTimeToLoadContent', time);
+  }
+
+  recordVersionPageLoaded(isAutoOpen: boolean) {
+    this.methodCalled('recordVersionPageLoaded', isAutoOpen);
+  }
+
+  recordModuleImpression(moduleName: string) {
+    this.methodCalled('recordModuleImpression', moduleName);
+  }
+
+  recordExploreMoreToggled(expanded: boolean) {
+    this.methodCalled('recordExploreMoreToggled', expanded);
+  }
+
+  recordScrollDepth(percent: number) {
+    this.methodCalled('recordScrollDepth', percent);
+  }
+
+  recordTimeOnPage(time: TimeDelta) {
+    this.methodCalled('recordTimeOnPage', time);
+  }
+
+  recordModuleLinkClicked(moduleName: string) {
+    this.methodCalled('recordModuleLinkClicked', moduleName);
   }
 }
 
