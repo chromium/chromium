@@ -26,15 +26,33 @@
 
 namespace {
 
+BASE_FEATURE(kDesktopCapturePermissionCheckerRestartMessage,
+             "DesktopCapturePermissionCheckerRestartMessage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+std::u16string WithRestartMessage(int message_id) {
+  return l10n_util::GetStringUTF16(message_id) + u"\n" +
+         l10n_util::GetStringUTF16(
+             IDS_DESKTOP_MEDIA_PICKER_PERMISSION_RESTART_TEXT_MAC);
+}
+
 std::u16string GetLabelText(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
-      return l10n_util::GetStringUTF16(
-          IDS_DESKTOP_MEDIA_PICKER_SCREEN_PERMISSION_TEXT_MAC);
+      return base::FeatureList::IsEnabled(
+                 kDesktopCapturePermissionCheckerRestartMessage)
+                 ? WithRestartMessage(
+                       IDS_DESKTOP_MEDIA_PICKER_SCREEN_PERMISSION_TEXT_PERIOD_MAC)
+                 : l10n_util::GetStringUTF16(
+                       IDS_DESKTOP_MEDIA_PICKER_SCREEN_PERMISSION_TEXT_MAC);
 
     case DesktopMediaList::Type::kWindow:
-      return l10n_util::GetStringUTF16(
-          IDS_DESKTOP_MEDIA_PICKER_WINDOW_PERMISSION_TEXT_MAC);
+      return base::FeatureList::IsEnabled(
+                 kDesktopCapturePermissionCheckerRestartMessage)
+                 ? WithRestartMessage(
+                       IDS_DESKTOP_MEDIA_PICKER_WINDOW_PERMISSION_TEXT_PERIOD_MAC)
+                 : l10n_util::GetStringUTF16(
+                       IDS_DESKTOP_MEDIA_PICKER_WINDOW_PERMISSION_TEXT_MAC);
 
     case DesktopMediaList::Type::kNone:
     case DesktopMediaList::Type::kWebContents:
@@ -60,7 +78,9 @@ DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
               DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
-  AddChildView(std::make_unique<views::Label>(GetLabelText(type_)));
+  views::Label* label =
+      AddChildView(std::make_unique<views::Label>(GetLabelText(type_)));
+  label->SetMultiLine(true);
 
   View* button_container = AddChildView(std::make_unique<views::View>());
   views::BoxLayout* button_layout =
