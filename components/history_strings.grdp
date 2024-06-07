@@ -140,11 +140,20 @@
   <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
     Yesterday
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from 7 days" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 7 days" translateable="false">
     Last 7 days
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from 30 days" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 30 days" translateable="false">
     Last 30 days
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
+    Show results from yesterday
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 7 days" translateable="false">
+    Show results from last 7 days
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 30 days" translateable="false">
+    Show results from last 30 days
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_HEADING" desc="Heading for history embeddings results." translateable="false">
     Results for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"

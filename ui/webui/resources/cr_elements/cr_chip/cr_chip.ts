@@ -33,12 +33,14 @@ export class CrChipElement extends CrChipElementBase {
   static override get properties() {
     return {
       disabled: {type: Boolean},
+      chipAriaLabel: {type: String},
       chipRole: {type: String},
       selected: {type: Boolean},
     };
   }
 
   disabled: boolean = false;
+  chipAriaLabel: string = '';
   chipRole: string = '';
   selected: boolean = false;
 

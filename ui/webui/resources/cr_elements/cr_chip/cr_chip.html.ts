@@ -10,7 +10,7 @@ export function getHtml(this: CrChipElement) {
   return html`
 <button id="button" ?selected="${this.selected}"
     ?disabled="${this.disabled}" aria-pressed="${this.selected}"
-    role="${this.chipRole}">
+    role="${this.chipRole}" aria-label="${this.chipAriaLabel}">
   <div id="hoverLayer"></div>
   <slot></slot>
 </button>`;

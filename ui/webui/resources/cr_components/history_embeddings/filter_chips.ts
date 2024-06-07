@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_chip/cr_chip.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/md_select.css.js';
 
@@ -16,6 +17,7 @@ import {getTemplate} from './filter_chips.html.js';
 export interface Suggestion {
   label: string;
   timeRangeStart: Date;
+  ariaLabel: string;
 }
 
 function generateSuggestions(): Suggestion[] {
@@ -33,14 +35,20 @@ function generateSuggestions(): Suggestion[] {
     {
       label: loadTimeData.getString('historyEmbeddingsSuggestion1'),
       timeRangeStart: yesterday,
+      ariaLabel:
+          loadTimeData.getString('historyEmbeddingsSuggestion1AriaLabel'),
     },
     {
       label: loadTimeData.getString('historyEmbeddingsSuggestion2'),
       timeRangeStart: last7Days,
+      ariaLabel:
+          loadTimeData.getString('historyEmbeddingsSuggestion2AriaLabel'),
     },
     {
       label: loadTimeData.getString('historyEmbeddingsSuggestion3'),
       timeRangeStart: last30Days,
+      ariaLabel:
+          loadTimeData.getString('historyEmbeddingsSuggestion3AriaLabel'),
     },
   ];
 }

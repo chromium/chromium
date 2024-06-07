@@ -41,7 +41,11 @@ hr {
 <div id="suggestions">
   <template is="dom-repeat" items="[[suggestions_]]">
     <cr-chip on-click="onSuggestionClick_"
-        selected$="[[isSuggestionSelected_(item, selectedSuggestion)]]">
+        selected$="[[isSuggestionSelected_(item, selectedSuggestion)]]"
+        chip-aria-label="[[item.ariaLabel]]">
+      <cr-icon icon="cr:check"
+          hidden$="[[!isSuggestionSelected_(item, selectedSuggestion)]]">
+      </cr-icon>
       <span class="suggestion-label">[[item.label]]</span>
     </cr-chip>
   </template>
