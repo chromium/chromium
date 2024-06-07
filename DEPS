@@ -2546,7 +2546,7 @@ deps = {
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
 
-  'src/third_party/libei': {
+  'src/third_party/libei/cipd': {
 
     'packages': [
       {

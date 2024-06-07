@@ -588,7 +588,7 @@ static_library("common") {
       "linux/wayland_seat.cc",
       "linux/wayland_seat.h",
     ]
-    libs += [ "//third_party/libei/lib64/libei.a" ]
+    libs += [ "//third_party/libei/cipd/lib64/libei.a" ]
     public_deps += [
       "//third_party/wayland:wayland_client",
       "//third_party/wayland-protocols:xdg_output_protocol",
