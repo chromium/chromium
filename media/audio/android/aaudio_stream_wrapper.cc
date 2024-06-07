@@ -111,12 +111,14 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
   }
 
+#pragma clang attribute pop
   TRACE_EVENT2("audio", "AAudioStreamWrapper::AAudioStreamWrapper",
                "AAUDIO_PERFORMANCE_MODE_LOW_LATENCY",
                performance_mode_ == AAUDIO_PERFORMANCE_MODE_LOW_LATENCY
                    ? "true"
                    : "false",
                "frames_per_buffer", params_.frames_per_buffer());
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 }
 
 AAudioStreamWrapper::~AAudioStreamWrapper() {
@@ -206,9 +208,11 @@ bool AAudioStreamWrapper::Open() {
   int32_t size_requested = frames_per_burst * (frames_per_burst < 128 ? 3 : 2);
   AAudioStream_setBufferSizeInFrames(aaudio_stream_, size_requested);
 
+#pragma clang attribute pop
   TRACE_EVENT2("audio", "AAudioStreamWrapper::Open", "params",
                params_.AsHumanReadableString(), "requested buffer size",
                size_requested);
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 
   return true;
 }
