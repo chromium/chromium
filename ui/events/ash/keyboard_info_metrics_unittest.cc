@@ -230,6 +230,12 @@ TEST_P(NonCustomLayoutTopRowKeysTest,
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
       0);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.NumberOfTopRowKeys", 1);
+  histogram_tester_->ExpectUniqueSample(
+      "ChromeOS.Inputs.InternalKeyboard.NumberOfTopRowKeys", 10, 1);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent", 10);
 }
 
 TEST_F(KeyboardInfoMetricsTest, CustomLayout_NumberOfTopRowKeys) {
@@ -324,6 +330,38 @@ TEST_F(KeyboardInfoMetricsTest, CustomLayout_SpecificTopRowKeys) {
       ui::TopRowActionKey::kVolumeDown, 1);
   histogram_tester_->ExpectBucketCount(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kVolumeUp, 1);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent", 10);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kBack, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kForward, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kRefresh, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kFullscreen, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kAllApplications, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kScreenBrightnessDown, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kScreenBrightnessUp, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kVolumeMute, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
+      ui::TopRowActionKey::kVolumeDown, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent",
       ui::TopRowActionKey::kVolumeUp, 1);
 }
 

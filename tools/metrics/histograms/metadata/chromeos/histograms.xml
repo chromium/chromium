@@ -1875,6 +1875,26 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.InternalKeyboard.NumberOfTopRowKeys"
+    units="keys" expires_after="2024-10-28">
+  <owner>dpad@google.com</owner>
+  <owner>wangdanny@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of top-row keys on a user's internal keyboard.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent"
+    enum="KeyboardTopRowActionKeys" expires_after="2024-10-28">
+  <owner>dpad@google.com</owner>
+  <owner>wangdanny@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the specific keys present on a user's internal keyboard.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType"
     enum="KeyboardTopRowLayoutWithExtraSublayout" expires_after="2024-07-21">
   <owner>dpad@google.com</owner>

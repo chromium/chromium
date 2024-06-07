@@ -49,6 +49,16 @@ void RecordKeyboardInfoMetrics(
       ConvertTopRowLayoutToMetricEnum(keyboard_info.top_row_layout,
                                       has_assistant_key));
 
+  base::UmaHistogramCounts100(
+      "ChromeOS.Inputs.InternalKeyboard.NumberOfTopRowKeys",
+      keyboard_info.top_row_action_keys.size());
+
+  for (const ui::TopRowActionKey& action_key :
+       keyboard_info.top_row_action_keys) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Inputs.InternalKeyboard.TopRowKeysPresent", action_key);
+  }
+
   if (keyboard_info.top_row_layout !=
       KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom) {
     return;
