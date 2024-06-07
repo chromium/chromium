@@ -250,6 +250,7 @@ void QuicSocketDataProvider::Reset() {
   pending_maybe_consume_expectations_ = false;
   read_pending_ = false;
   write_pending_ = std::nullopt;
+  MaybeConsumeExpectations();
 }
 
 std::optional<size_t> QuicSocketDataProvider::FindReadyExpectations(
@@ -349,20 +350,20 @@ void QuicSocketDataProvider::MaybeConsumeExpectations() {
     }
   }
 
-  // If the test is waiting for either a pause, or all data consumed, check for
-  // those conditions.
-  if (run_until_run_loop_) {
+  if (!paused_at_) {
     std::optional<size_t> ready =
         FindReadyExpectations(Expectation::Type::PAUSE);
     if (ready.has_value()) {
       VLOG(1) << "Pausing at " << expectations_[*ready].name();
       paused_at_ = *ready;
-      run_until_run_loop_->Quit();
+      if (run_until_run_loop_) {
+        run_until_run_loop_->Quit();
+      }
     }
+  }
 
-    if (AllDataConsumed()) {
-      run_until_run_loop_->Quit();
-    }
+  if (run_until_run_loop_ && AllDataConsumed()) {
+    run_until_run_loop_->Quit();
   }
 }
 
