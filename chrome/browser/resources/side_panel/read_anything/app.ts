@@ -926,7 +926,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // Disable the associated language if there are no other Google voices for
       // it.
       const availableVoicesForLang = this.getVoices().filter(
-          v => this.getConvertedLangIfExists_(v.lang) === lang);
+          v => this.getVoicePackConvertedLangIfExists_(v.lang) === lang);
       if (availableVoicesForLang.length === 0 ||
           availableVoicesForLang.every(v => isEspeak(v))) {
         this.enabledLanguagesInPref = this.enabledLanguagesInPref.filter(
@@ -994,11 +994,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           if (oldVoicePackStatus &&
               oldVoicePackStatus.code !==
                   VoicePackServerStatusSuccessCode.INSTALLED) {
-            const possibleLanguageConversion =
-                convertLangToAnAvailableLangIfPresent(
-                    lang, this.availableLangs, true);
             this.lastDownloadedLang_ =
-                possibleLanguageConversion ? possibleLanguageConversion : lang;
+                this.getVoicePackConvertedLangIfExists_(lang);
             this.showToast_();
 
             // Force a refresh of the voices list since we might not get an
@@ -1011,7 +1008,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // voice as AVAILABLE or INSTALLED_AND_UNAVAILABLE
           const naturalVoicesForLangAreAvailable = this.availableVoices.some(
               voice => isNatural(voice) &&
-                  this.getConvertedLangIfExists_(voice.lang) === lang);
+                  this.getVoicePackConvertedLangIfExists_(voice.lang) === lang);
           this.setVoicePackLocalStatus_(
               lang,
               naturalVoicesForLangAreAvailable ?
@@ -2635,19 +2632,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private getVoicePackServerStatus_(lang: string): VoicePackStatus|undefined {
-    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
     return this.voicePackInstallStatusServerResponses[voicePackLanguage];
   }
 
   private getVoicePackLocalStatus_(lang: string): VoiceClientSideStatusCode
       |undefined {
-    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
     return this.voiceStatusLocalState[voicePackLanguage];
   }
 
   private setVoicePackLocalStatus_(
       lang: string, status: VoiceClientSideStatusCode) {
-    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
     this.voiceStatusLocalState = {
       ...this.voiceStatusLocalState,
       [voicePackLanguage]: status,
@@ -2657,14 +2654,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
     // Convert the language string to ensure consistency across
     // languages and locales when setting the status.
-    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
     this.voicePackInstallStatusServerResponses = {
       ...this.voicePackInstallStatusServerResponses,
       [voicePackLanguage]: status,
     };
   }
 
-  private getConvertedLangIfExists_(lang: string): string {
+  private getVoicePackConvertedLangIfExists_(lang: string): string {
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
 
     // If the voice pack language wasn't converted, use the original string.
