@@ -325,7 +325,8 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the context menu has the correct action and correctly hides the
 // tile.
-- (void)testTabResumptionTileLongPressTR2 {
+// TODO(crbug.com/345675681): This test timed out on some configs.
+- (void)DISABLED_testTabResumptionTileLongPressTR2 {
   [self testTabResumptionTileLongPress];
 }
 
