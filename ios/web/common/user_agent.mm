@@ -19,8 +19,10 @@
 
 namespace {
 
+// The Desktop OS version should always remain 10_15_7, to be consisent with
+// Chrome, Firefox, and Safari: https://crbug.com/40167872
 const char kDesktopUserAgentProductPlaceholder[] =
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/605.1.15 (KHTML, like Gecko) %s"
     "Version/11.1.1 "
     "Safari/605.1.15";

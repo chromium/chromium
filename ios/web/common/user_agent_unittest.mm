@@ -14,13 +14,13 @@
 
 namespace {
 const char kDesktopUserAgentWithProduct[] =
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/605.1.15 (KHTML, like Gecko) desktop_product_name "
     "Version/11.1.1 "
     "Safari/605.1.15";
 
 const char kDesktopUserAgent[] =
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/605.1.15 (KHTML, like Gecko) "
     "Version/11.1.1 "
     "Safari/605.1.15";
