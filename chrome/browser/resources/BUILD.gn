@@ -211,6 +211,20 @@ if (!is_android) {
     output_dir = "$root_gen_dir/chrome"
   }
 
+  if (is_chromeos) {
+    grit("office_web_app_resources") {
+      source = "office_web_app/resources.grd"
+      defines = chrome_grit_defines
+      outputs = [
+        "grit/office_web_app_resources.h",
+        "grit/office_web_app_resources_map.cc",
+        "grit/office_web_app_resources_map.h",
+        "office_web_app_resources.pak",
+      ]
+      output_dir = "$root_gen_dir/chrome"
+    }
+  }
+
   if (is_chrome_branded) {
     grit("preinstalled_web_apps_resources") {
       source = "preinstalled_web_apps/resources.grd"

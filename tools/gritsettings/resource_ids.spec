@@ -366,6 +366,9 @@
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
     "includes": [3640],
   },
+  "chrome/browser/resources/office_web_app/resources.grd": {
+    "includes": [3650],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/pdf/resources.grd": {
     "META": {"sizes": {"includes": [200]}},
     "includes": [3660],
