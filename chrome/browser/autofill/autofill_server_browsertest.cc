@@ -120,7 +120,17 @@ class AutofillServerTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
         {features::test::kAutofillServerCommunication,
-         features::kAutofillEnableSupportForApartmentNumbers},
+         features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers,
+         features::kAutofillEnableSupportForAddressOverflow,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillEnableDependentLocalityParsing,
+         features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
+         features::kAutofillUseMXAddressModel},
         // Disabled.
         {});
   }
@@ -278,14 +288,14 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // |EncodeFieldTypes()| in components/autofill/core/browser/form_structure.cc.
   // The resulting bit mask in this test is hard-coded to capture regressions in
   // the calculation of the mask.
-  std::string data_present = "1f7e0003f80000080004000001c420180002";
+  std::string data_present = "1f7e0003780000080004000000042018";
 
   // TODO(crbug.com/40220393): Additional phone number trunk types are present
   // if AutofillEnableSupportForPhoneNumberTrunkTypes is enabled. Clean-up
   // implementation when launched.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
-    data_present.rbegin()[5] = '7';
+    data_present.rbegin()[1] = '7';
   }
   upload->set_data_present(data_present);
   upload->set_submission_event(
