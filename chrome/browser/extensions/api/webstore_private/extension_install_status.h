@@ -31,8 +31,10 @@ enum ExtensionInstallStatus {
   kTerminated,
   // Extension is blocklisted.
   kBlocklisted,
-  // Extension requires custodian approval to enable.
+  // Existing extension requires custodian approval to enable.
   kCustodianApprovalRequired,
+  // New extension requires custodian approval to be installed.
+  kCustodianApprovalRequiredForInstallation,
   // Extension is force installed or recommended by policy.
   kForceInstalled
 };

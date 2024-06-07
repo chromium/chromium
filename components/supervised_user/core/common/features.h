@@ -30,6 +30,10 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+// Returns whether a new installation state for supervised users
+// on new extension installations is offered to the Webstore.
+BASE_DECLARE_FEATURE(kExposedParentalControlNeededForExtensionInstallation);
+
 // Returns whether the new mode for extension approval management is enabled.
 // Under this mode, supervised users may request parent approval on each
 // extension installation or the parent allows and approves by default all

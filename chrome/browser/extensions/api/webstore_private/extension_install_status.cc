@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -12,6 +13,9 @@
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -82,11 +86,6 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     int manifest_version) {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
 
-  if (ExtensionPrefs::Get(profile)->HasDisableReason(
-          extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED)) {
-    return kCustodianApprovalRequired;
-  }
-
   const GURL update_url = extension_urls::GetWebstoreUpdateUrl();
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile);
@@ -103,6 +102,29 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     return kForceInstalled;
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
+
+  // Check if parent approval is needed for a supervised user to install
+  // a new extension.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kExposedParentalControlNeededForExtensionInstallation) &&
+      !registry->GetInstalledExtension(extension_id) &&
+      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) &&
+      !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+          *profile->GetPrefs()) &&
+      !base::Contains(profile->GetPrefs()->GetDict(
+                          prefs::kSupervisedUserApprovedExtensions),
+                      extension_id)) {
+    return kCustodianApprovalRequiredForInstallation;
+  }
+  // Check if parent approval is needed for a supervised user to enable
+  // an existing extension which is missing parental approval.
+  if (registry->GetInstalledExtension(extension_id) &&
+      ExtensionPrefs::Get(profile)->HasDisableReason(
+          extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED)) {
+    return kCustodianApprovalRequired;
+  }
+
   if (registry->enabled_extensions().Contains(extension_id))
     return kEnabled;
 

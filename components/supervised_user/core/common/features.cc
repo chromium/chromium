@@ -66,6 +66,10 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+BASE_FEATURE(kExposedParentalControlNeededForExtensionInstallation,
+             "ExposedParentalControlNeededForExtensionInstallation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(

@@ -10,10 +10,14 @@
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -233,13 +237,18 @@ TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsRejected) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-// If an extension is disabled due to reason
+// If an existing, installed extension is disabled due to reason
 // DISABLE_CUSTODIAN_APPROVAL_REQUIRED, then GetWebstoreExtensionInstallStatus()
 // should return kCustodianApprovalRequired.
-TEST_F(ExtensionInstallStatusTest, ExtensionCustodianApprovalRequired) {
+TEST_F(ExtensionInstallStatusTest,
+       ExistingExtensionWithCustodianApprovalRequired) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   ExtensionPrefs::Get(profile())->AddDisableReason(
       kExtensionId,
       extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  ASSERT_TRUE(
+      ExtensionRegistry::Get(profile())->GetInstalledExtension(kExtensionId));
+
   EXPECT_EQ(ExtensionInstallStatus::kCustodianApprovalRequired,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
@@ -588,6 +597,79 @@ TEST_F(ExtensionInstallStatusTest,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(), /*manifest_version=*/3));
+}
+
+class SupervisedUserExtensionInstallStatusTest
+    : public ExtensionInstallStatusTest {
+ public:
+  SupervisedUserExtensionInstallStatusTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    enabled_features.push_back(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    enabled_features.push_back(
+        supervised_user::
+            kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    enabled_features.push_back(
+        supervised_user::kExposedParentalControlNeededForExtensionInstallation);
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// If a supervised user requires parent approval to install a new extension that
+// has not received parental approval before, then
+// GetWebstoreExtensionInstallStatus() should return
+// kCustodianApprovalRequiredForInstallation.
+TEST_F(SupervisedUserExtensionInstallStatusTest,
+       NewExtensionWithCustodianApprovalRequiredForInstallation) {
+  profile()->SetIsSupervisedProfile(true);
+  // The supervised user requires parent approval to install extensions.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  EXPECT_EQ(ExtensionInstallStatus::kCustodianApprovalRequiredForInstallation,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+// If a supervised user can skip parent permission to install extensions,
+// then for a new (uninstalled) extension GetWebstoreExtensionInstallStatus()
+// should return kInstallable.
+TEST_F(
+    SupervisedUserExtensionInstallStatusTest,
+    NewExtensionOnSkipApprovalModeDoesNotRequireCustodianApprovalForInstallation) {
+  profile()->SetIsSupervisedProfile(true);
+  // The supervised user does not require parent approval to install extensions.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+// If a supervised user wants to install an extension that has been already
+// granted parent approval (e.g. via synced settings from another client),
+// then GetWebstoreExtensionInstallStatus() should return kInstallable.
+TEST_F(
+    SupervisedUserExtensionInstallStatusTest,
+    NewExtensionWithParentApprovalDoesNotRequireCustodianApprovalForInstallation) {
+  profile()->SetIsSupervisedProfile(true);
+  // The supervised user requires parent approval to install extensions.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  // Grant approval to the extension.
+  base::Value::Dict approved_extensions;
+  approved_extensions.Set(kExtensionId, true);
+  profile()->GetPrefs()->SetDict(prefs::kSupervisedUserApprovedExtensions,
+                                 std::move(approved_extensions));
+
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
 }  // namespace extensions
