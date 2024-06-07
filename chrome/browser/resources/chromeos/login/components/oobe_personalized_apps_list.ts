@@ -211,7 +211,7 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
   }
 
   private getAppId(appId: string): string {
-    return 'cr-button-' + appId;
+    return 'cr-checkbox-' + appId;
   }
 
   private getWebViewId(appId: string): string {

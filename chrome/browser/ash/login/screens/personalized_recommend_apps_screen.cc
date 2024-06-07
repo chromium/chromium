@@ -44,10 +44,6 @@ constexpr const char kUserActionBack[] = "back";
 constexpr const char kUserActionLoaded[] = "loaded";
 constexpr const char kNoUseCasesSelectedIDName[] = "oobe_none";
 
-constexpr const base::TimeDelta kDelaySetCategoriesAppsMapTime =
-    base::Seconds(2);
-constexpr const base::TimeDelta kDelayOverviewStepTime = base::Seconds(3);
-
 void WebAppInstallCallback(const std::string& package_id, bool success) {
   if (success) {
     LOG(WARNING) << "Web application '" << package_id
@@ -57,7 +53,6 @@ void WebAppInstallCallback(const std::string& package_id, bool success) {
                  << "' installation failed";
   }
 }
-
 }  // namespace
 
 // static
@@ -301,7 +296,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   delay_set_apps_timer_ = std::make_unique<base::OneShotTimer>();
 
   delay_set_apps_timer_->Start(
-      FROM_HERE, kDelaySetCategoriesAppsMapTime,
+      FROM_HERE, delay_set_apps_step_,
       base::BindOnce(&PersonalizedRecommendAppsScreen::SetAppsAndUseCasesData,
                      weak_factory_.GetWeakPtr(),
                      std::move(apps_by_use_cases_list)));
@@ -384,7 +379,7 @@ void PersonalizedRecommendAppsScreen::OnUserAction(
   if (action_id == kUserActionLoaded) {
     delay_overview_timer_ = std::make_unique<base::OneShotTimer>();
     delay_overview_timer_->Start(
-        FROM_HERE, kDelayOverviewStepTime, this,
+        FROM_HERE, delay_overview_step_, this,
         &PersonalizedRecommendAppsScreen::ShowOverviewStep);
     return;
   }

@@ -47,6 +47,22 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
 
   static std::string GetResultString(Result result);
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
+  void set_delay_for_overview_step_for_testing(base::TimeDelta delay) {
+    delay_overview_step_ = delay;
+  }
+
+  void set_delay_for_set_apps_for_testing(base::TimeDelta delay) {
+    delay_set_apps_step_ = delay;
+  }
+
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -64,8 +80,10 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
   void SetAppsAndUseCasesData(base::Value::List apps_with_use_cases_list);
 
   std::unique_ptr<base::OneShotTimer> delay_set_apps_timer_;
+  base::TimeDelta delay_set_apps_step_ = base::Seconds(2);
 
   std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
+  base::TimeDelta delay_overview_step_ = base::Seconds(3);
 
   base::WeakPtr<PersonalizedRecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;

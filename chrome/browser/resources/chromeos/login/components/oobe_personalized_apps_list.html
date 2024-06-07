@@ -119,8 +119,7 @@
           <template is="dom-repeat"
                 rendered-item-count="{{category.count::dom-change}}"
                 items="{{getApps(category.id)}}">
-            <div id="[[getAppId(item.appId)]]"
-                class="app-item"
+            <div class="app-item"
                 role="checkbox"
                 aria-checked="[[item.selected]]">
               <div class="content flex horizontal layout">
@@ -142,6 +141,7 @@
                   <div class="app-subtitle">[[item.subname]]</div>
                 </div>
                   <cr-checkbox class="app-checkbox no-label"
+                      id="[[getAppId(item.appId)]]""
                       checked="{{item.selected}}"
                       aria-label$="[[item.name]]"
                       aria-description$="[[item.subname]]"
