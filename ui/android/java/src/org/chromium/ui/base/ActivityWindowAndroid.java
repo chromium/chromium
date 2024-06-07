@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
@@ -96,6 +97,9 @@ public class ActivityWindowAndroid extends WindowAndroid
             ApplicationStatus.registerWindowFocusChangedListener(this);
         }
 
+        activityKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(
+                LazyOneshotSupplier.fromSupplier(
+                        () -> getInsetObserver().getSupplierForKeyboardInset()));
         setKeyboardDelegate(activityKeyboardVisibilityDelegate);
         setAndroidPermissionDelegate(activityAndroidPermissionDelegate);
     }

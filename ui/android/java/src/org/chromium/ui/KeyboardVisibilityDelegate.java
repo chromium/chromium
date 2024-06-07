@@ -30,6 +30,10 @@ public class KeyboardVisibilityDelegate {
     private final ObserverList<KeyboardVisibilityListener> mKeyboardVisibilityListeners =
             new ObserverList<>();
 
+    protected boolean hasKeyboardVisibilityListeners() {
+        return !mKeyboardVisibilityListeners.isEmpty();
+    }
+
     protected void registerKeyboardVisibilityCallbacks() {}
 
     protected void unregisterKeyboardVisibilityCallbacks() {}
