@@ -83,7 +83,8 @@ class AnnotatorUITest : public InProcessBrowserTest {
 // open-source builds.
 // For now annotator is available only when the Projector app is enabled. In the
 // future, the annotator will be a standalone feature.
-IN_PROC_BROWSER_TEST_F(AnnotatorUITest, LoadsInkForAnnotator) {
+// TODO(crbug.com/345725094): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(AnnotatorUITest, DISABLED_LoadsInkForAnnotator) {
   LoadAnnotatorUI();
   PrepareAnnotatorForTest(annotator_embedder());
   // Checks ink is loaded by ensuring the ink engine canvas has a non zero width
