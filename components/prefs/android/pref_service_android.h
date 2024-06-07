@@ -46,6 +46,11 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   void SetDouble(JNIEnv* env,
                  const base::android::JavaParamRef<jstring>& j_preference,
                  const jdouble j_value);
+  jlong GetLong(JNIEnv* env,
+                const base::android::JavaParamRef<jstring>& j_preference);
+  void SetLong(JNIEnv* env,
+               const base::android::JavaParamRef<jstring>& j_preference,
+               const jlong j_value);
   base::android::ScopedJavaLocalRef<jstring> GetString(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_preference);

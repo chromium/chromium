@@ -96,6 +96,24 @@ public class PrefServiceTest {
     }
 
     @Test
+    public void testGetLong() {
+        long expected = 123L;
+
+        doReturn(expected).when(mNativeMock).getLong(NATIVE_HANDLE, PREF);
+
+        assertEquals(expected, mPrefService.getLong(PREF));
+    }
+
+    @Test
+    public void testSetLong() {
+        long value = 123L;
+
+        mPrefService.setLong(PREF, value);
+
+        verify(mNativeMock).setLong(eq(NATIVE_HANDLE), eq(PREF), eq(value));
+    }
+
+    @Test
     public void testGetString() {
         String expected = "foo";
 
