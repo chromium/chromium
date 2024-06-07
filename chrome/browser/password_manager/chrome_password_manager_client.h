@@ -399,10 +399,6 @@ class ChromePasswordManagerClient
   // the password manager to be active on it.
   bool IsPasswordManagementEnabledForCurrentPage(const GURL& url) const;
 
-  // Returns true if this profile has metrics reporting and active sync
-  // without custom sync passphrase.
-  static bool ShouldAnnotateNavigationEntries(Profile* profile);
-
   // Called back by the PasswordGenerationAgent when the generation flow is
   // completed. If |ui_data| is non-empty, will create a UI to display the
   // generated password. Otherwise, nothing will happen.

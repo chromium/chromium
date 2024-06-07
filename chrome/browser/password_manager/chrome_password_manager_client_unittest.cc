@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -353,13 +352,6 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
         }));
   }
 
-  // Make a navigation entry that will accept an annotation.
-  void SetupNavigationForAnnotation() {
-    sync_service()->SetIsUsingExplicitPassphrase(false);
-    metrics_enabled_ = true;
-    NavigateAndCommit(GURL("about:blank"));
-  }
-
  protected:
   ChromePasswordManagerClient* GetClient();
   MockPasswordManagerSettingsService& settings_service() {
@@ -378,8 +370,6 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
 
   FakePasswordAutofillAgent fake_agent_;
   ScopedTestingLocalState local_state_;
-
-  bool metrics_enabled_ = false;
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
@@ -412,14 +402,9 @@ void ChromePasswordManagerClientTest::SetUp() {
   ChromePasswordManagerClient::CreateForWebContents(web_contents());
 
   SetupSettingsServiceFactory();
-
-  // Connect our bool for testing.
-  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-      &metrics_enabled_);
 }
 
 void ChromePasswordManagerClientTest::TearDown() {
-  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
@@ -958,65 +943,9 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
   log_router->UnregisterReceiver(&log_receiver);
 }
 
-// Metrics enabled, syncing with non-custom passphrase: Do not annotate.
-TEST_F(ChromePasswordManagerClientTest,
-       AnnotateNavigationEntryWithMetricsNoCustom) {
-  sync_service()->SetIsUsingExplicitPassphrase(false);
-  metrics_enabled_ = true;
-
-  NavigateAndCommit(GURL("about:blank"));
-  GetClient()->AnnotateNavigationEntry(true);
-
-  EXPECT_EQ(
-      SerializedNavigationEntry::HAS_PASSWORD_FIELD,
-      GetPasswordStateFromNavigation(controller().GetLastCommittedEntry()));
-}
-
-// Metrics disabled, syncing with non-custom passphrase: Do not annotate.
-TEST_F(ChromePasswordManagerClientTest,
-       AnnotateNavigationEntryNoMetricsNoCustom) {
-  sync_service()->SetIsUsingExplicitPassphrase(false);
-  metrics_enabled_ = false;
-
-  NavigateAndCommit(GURL("about:blank"));
-  GetClient()->AnnotateNavigationEntry(true);
-
-  EXPECT_EQ(
-      SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN,
-      GetPasswordStateFromNavigation(controller().GetLastCommittedEntry()));
-}
-
-// Metrics enabled, syncing with custom passphrase: Do not annotate.
-TEST_F(ChromePasswordManagerClientTest,
-       AnnotateNavigationEntryWithMetricsWithCustom) {
-  sync_service()->SetIsUsingExplicitPassphrase(true);
-  metrics_enabled_ = true;
-
-  NavigateAndCommit(GURL("about:blank"));
-  GetClient()->AnnotateNavigationEntry(true);
-
-  EXPECT_EQ(
-      SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN,
-      GetPasswordStateFromNavigation(controller().GetLastCommittedEntry()));
-}
-
-// Metrics disabled, syncing with custom passphrase: Do not annotate.
-TEST_F(ChromePasswordManagerClientTest,
-       AnnotateNavigationEntryNoMetricsWithCustom) {
-  sync_service()->SetIsUsingExplicitPassphrase(true);
-  metrics_enabled_ = false;
-
-  NavigateAndCommit(GURL("about:blank"));
-  GetClient()->AnnotateNavigationEntry(true);
-
-  EXPECT_EQ(
-      SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN,
-      GetPasswordStateFromNavigation(controller().GetLastCommittedEntry()));
-}
-
 // State transition: Unannotated
 TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryUnannotated) {
-  SetupNavigationForAnnotation();
+  NavigateAndCommit(GURL("about:blank"));
 
   EXPECT_EQ(
       SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN,
@@ -1025,7 +954,7 @@ TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryUnannotated) {
 
 // State transition: unknown->false
 TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryToFalse) {
-  SetupNavigationForAnnotation();
+  NavigateAndCommit(GURL("about:blank"));
 
   GetClient()->AnnotateNavigationEntry(false);
   EXPECT_EQ(
@@ -1035,7 +964,7 @@ TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryToFalse) {
 
 // State transition: false->true
 TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryToTrue) {
-  SetupNavigationForAnnotation();
+  NavigateAndCommit(GURL("about:blank"));
 
   GetClient()->AnnotateNavigationEntry(false);
   GetClient()->AnnotateNavigationEntry(true);
@@ -1046,7 +975,7 @@ TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryToTrue) {
 
 // State transition: true->false (retains true)
 TEST_F(ChromePasswordManagerClientTest, AnnotateNavigationEntryTrueToFalse) {
-  SetupNavigationForAnnotation();
+  NavigateAndCommit(GURL("about:blank"));
 
   GetClient()->AnnotateNavigationEntry(true);
   GetClient()->AnnotateNavigationEntry(false);

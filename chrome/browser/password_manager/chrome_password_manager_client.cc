@@ -962,10 +962,6 @@ autofill::LogManager* ChromePasswordManagerClient::GetLogManager() {
 
 void ChromePasswordManagerClient::AnnotateNavigationEntry(
     bool has_password_field) {
-  if (!ShouldAnnotateNavigationEntries(profile_)) {
-    return;
-  }
-
   content::NavigationEntry* entry =
       web_contents()->GetController().GetLastCommittedEntry();
   if (!entry) {
@@ -1749,25 +1745,6 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
         is_enabled);
   }
   return is_enabled;
-}
-
-// static
-bool ChromePasswordManagerClient::ShouldAnnotateNavigationEntries(
-    Profile* profile) {
-  // Only annotate PasswordState onto the navigation entry if user is
-  // opted into UMA and they're not syncing w/ a custom passphrase.
-  if (!ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled()) {
-    return false;
-  }
-
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service || !sync_service->IsSyncFeatureActive() ||
-      sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    return false;
-  }
-
-  return true;
 }
 
 void ChromePasswordManagerClient::GenerationResultAvailable(
