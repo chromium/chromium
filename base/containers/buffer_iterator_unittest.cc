@@ -238,7 +238,7 @@ TEST(BufferIteratorTest, CopyObject) {
 
 TEST(BufferIteratorTest, SeekWithSizeConfines) {
   const char buffer[] = "vindicate";
-  BufferIterator<const char> iterator(buffer);
+  BufferIterator<const char> iterator(base::span_from_cstring(buffer));
   iterator.Seek(5);
   iterator.TruncateTo(3);
   EXPECT_TRUE(iterator.Span<char>(4).empty());

@@ -1,0 +1,43 @@
+span_from_string_literal.cpp:12:3: warning: [chromium-style] span construction from string literal is problematic.
+  base::span{s};      // Error.
+  ^
+span_from_string_literal.cpp:12:3: note: To make a span from a string literal, use:
+  * base::span_from_cstring() to make a span without the NUL terminator
+  * base::span_with_nul_from_cstring() to make a span with the NUL terminator
+  * a string view type instead of a string literal
+span_from_string_literal.cpp:14:3: warning: [chromium-style] span construction from string literal is problematic.
+  base::span{"wee"};  // Error.
+  ^
+span_from_string_literal.cpp:14:3: note: To make a span from a string literal, use:
+  * base::span_from_cstring() to make a span without the NUL terminator
+  * base::span_with_nul_from_cstring() to make a span with the NUL terminator
+  * a string view type instead of a string literal
+span_from_string_literal.cpp:20:9: warning: [chromium-style] span construction from string literal is problematic.
+      : field1("hi"),  // Error.
+        ^
+span_from_string_literal.cpp:20:9: note: To make a span from a string literal, use:
+  * base::span_from_cstring() to make a span without the NUL terminator
+  * base::span_with_nul_from_cstring() to make a span with the NUL terminator
+  * a string view type instead of a string literal
+span_from_string_literal.cpp:21:9: warning: [chromium-style] span construction from string literal is problematic.
+        field2(s),     // Error.
+        ^
+span_from_string_literal.cpp:21:9: note: To make a span from a string literal, use:
+  * base::span_from_cstring() to make a span without the NUL terminator
+  * base::span_with_nul_from_cstring() to make a span with the NUL terminator
+  * a string view type instead of a string literal
+span_from_string_literal.cpp:28:32: warning: [chromium-style] span construction from string literal is problematic.
+  base::span<const char> field4{"hi"};  // Error.
+                               ^
+span_from_string_literal.cpp:28:32: note: To make a span from a string literal, use:
+  * base::span_from_cstring() to make a span without the NUL terminator
+  * base::span_with_nul_from_cstring() to make a span with the NUL terminator
+  * a string view type instead of a string literal
+span_from_string_literal.cpp:29:32: warning: [chromium-style] span construction from string literal is problematic.
+  base::span<const char> field5{s};     // Error.
+                               ^
+span_from_string_literal.cpp:29:32: note: To make a span from a string literal, use:
+  * base::span_from_cstring() to make a span without the NUL terminator
+  * base::span_with_nul_from_cstring() to make a span with the NUL terminator
+  * a string view type instead of a string literal
+6 warnings generated.

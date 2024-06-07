@@ -233,6 +233,18 @@ FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
   diag_note_protected_non_virtual_dtor_ = diagnostic().getCustomDiagID(
       DiagnosticsEngine::Note,
       "[chromium-style] Protected non-virtual destructor declared here");
+
+  diag_span_from_string_literal_ = diagnostic().getCustomDiagID(
+      getErrorLevel(),
+      "[chromium-style] span construction from string literal is problematic.");
+  diag_note_span_from_string_literal1_ = diagnostic().getCustomDiagID(
+      DiagnosticsEngine::Note,
+      "To make a span from a string literal, use:\n"
+      "  * base::span_from_cstring() to make a span without the NUL "
+      "terminator\n"
+      "  * base::span_with_nul_from_cstring() to make a span with the NUL "
+      "terminator\n"
+      "  * a string view type instead of a string literal");
 }
 
 void FindBadConstructsConsumer::Traverse(ASTContext& context) {
@@ -275,6 +287,17 @@ bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
     ipc_visitor_->EndDecl();
   }
   return result;
+}
+
+bool FindBadConstructsConsumer::VisitCXXConstructExpr(
+    clang::CXXConstructExpr* expr) {
+  if (options_.span_ctor_from_string_literal) {
+    CheckConstructingSpanFromStringLiteral(
+        expr->getConstructor(),
+        llvm::ArrayRef(expr->getArgs(), expr->getNumArgs()),
+        expr->getExprLoc());
+  }
+  return true;
 }
 
 bool FindBadConstructsConsumer::VisitCXXRecordDecl(
@@ -1304,6 +1327,72 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointer(
              range,
              GetAutoReplacementTypeAsString(var_decl->getType(),
                                             var_decl->getStorageClass(), true));
+}
+
+void FindBadConstructsConsumer::CheckConstructingSpanFromStringLiteral(
+    clang::CXXConstructorDecl* ctor_decl,
+    llvm::ArrayRef<const clang::Expr*> args,
+    clang::SourceLocation loc) {
+  auto* record_decl = clang::cast<clang::RecordDecl>(ctor_decl->getParent());
+
+  bool is_base_span = false;
+  if (record_decl->getName() == "span") {
+    auto* namespace_decl =
+        clang::dyn_cast<clang::NamespaceDecl>(record_decl->getParent());
+    if (namespace_decl && namespace_decl->getName() == "base") {
+      if (clang::isa<clang::TranslationUnitDecl>(namespace_decl->getParent())) {
+        is_base_span = true;
+      }
+    }
+  }
+  if (!is_base_span) {
+    return;
+  }
+
+  // Want the base::span(const char (&arr)[N]) constructor.
+  bool is_const_char_array_ctor = false;
+  if (ctor_decl->getNumParams() == 1u) {
+    clang::ParmVarDecl* param = ctor_decl->getParamDecl(0u);
+    const clang::Type* type = &*param->getType();
+    if (type->isReferenceType()) {
+      type = type->getPointeeType()->getUnqualifiedDesugaredType();
+      if (auto* array_type = clang::dyn_cast<clang::ConstantArrayType>(type)) {
+        const clang::Type* element_type =
+            array_type->getElementType()->getUnqualifiedDesugaredType();
+        if (element_type->isSpecificBuiltinType(
+                clang::BuiltinType::Kind::Char_S)) {
+          is_const_char_array_ctor = true;
+        }
+      }
+    }
+  }
+  if (!is_const_char_array_ctor) {
+    return;
+  }
+
+  if (args.size() != 1u) {
+    return;
+  }
+
+  // Find the expression that defines the argument value.
+  const clang::Expr* value_expr = args[0u];
+
+  if (auto* ref_expr = clang::dyn_cast<clang::DeclRefExpr>(args[0u])) {
+    const clang::VarDecl* var_decl =
+        clang::dyn_cast<clang::VarDecl>(ref_expr->getDecl());
+    if (var_decl) {
+      var_decl = var_decl->getInitializingDeclaration();
+      if (var_decl && var_decl->hasInit()) {
+        value_expr = var_decl->getInit();
+      }
+    }
+  }
+
+  value_expr = value_expr->IgnoreParens();
+  if (auto* lit_expr = clang::dyn_cast<clang::StringLiteral>(value_expr)) {
+    ReportIfSpellingLocNotIgnored(loc, diag_span_from_string_literal_);
+    ReportIfSpellingLocNotIgnored(loc, diag_note_span_from_string_literal1_);
+  }
 }
 
 }  // namespace chrome_checker

@@ -12,6 +12,11 @@ namespace base {
 template <typename T, int Extent = 0, typename InternalPtrType = T*>
 class span {
  public:
+  span() = default;
+
+  template <unsigned long N>
+  span(T (&arr)[N]) {}
+
   InternalPtrType data_;
 };
 

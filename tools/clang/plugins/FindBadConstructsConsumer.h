@@ -53,6 +53,7 @@ class FindBadConstructsConsumer
 
   // RecursiveASTVisitor:
   bool TraverseDecl(clang::Decl* decl);
+  bool VisitCXXConstructExpr(clang::CXXConstructExpr* expr);
   bool VisitCXXRecordDecl(clang::CXXRecordDecl* cxx_record_decl);
   bool VisitEnumDecl(clang::EnumDecl* enum_decl);
   bool VisitTagDecl(clang::TagDecl* tag_decl);
@@ -113,6 +114,10 @@ class FindBadConstructsConsumer
                                   clang::CXXRecordDecl* record);
   void CheckEnumMaxValue(clang::EnumDecl* decl);
   void CheckDeducedAutoPointer(clang::VarDecl* decl);
+  void CheckConstructingSpanFromStringLiteral(
+      clang::CXXConstructorDecl* ctor_decl,
+      llvm::ArrayRef<const clang::Expr*> args,
+      clang::SourceLocation loc);
 
   void ParseFunctionTemplates(clang::TranslationUnitDecl* decl);
 
@@ -137,6 +142,8 @@ class FindBadConstructsConsumer
   unsigned diag_note_implicit_dtor_;
   unsigned diag_note_public_dtor_;
   unsigned diag_note_protected_non_virtual_dtor_;
+  unsigned diag_span_from_string_literal_;
+  unsigned diag_note_span_from_string_literal1_;
 
   std::unique_ptr<BlinkDataMemberTypeChecker> blink_data_member_type_checker_;
   std::unique_ptr<CheckIPCVisitor> ipc_visitor_;
