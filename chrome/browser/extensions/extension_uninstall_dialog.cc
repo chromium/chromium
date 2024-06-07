@@ -28,7 +28,6 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_url_handlers.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
@@ -178,17 +177,6 @@ void ExtensionUninstallDialog::OnProfileWillBeDestroyed(Profile* profile) {
 
 bool ExtensionUninstallDialog::ShouldShowCheckbox() const {
   return show_report_abuse_checkbox_;
-}
-
-std::u16string ExtensionUninstallDialog::GetCheckboxLabel() const {
-  DCHECK(ShouldShowCheckbox());
-
-  return triggering_extension_.get()
-             ? l10n_util::GetStringFUTF16(
-                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
-                   base::UTF8ToUTF16(extension_->name()))
-             : l10n_util::GetStringUTF16(
-                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);
 }
 
 void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {

@@ -100,8 +100,16 @@ void ExtensionUninstallDialogViews::Show() {
   }
 
   if (ShouldShowCheckbox()) {
+    std::u16string checkbox_label =
+        triggering_extension()
+            ? l10n_util::GetStringFUTF16(
+                  IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
+                  base::UTF8ToUTF16(extension()->name()))
+            : l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);
+
     dialog_builder.AddCheckbox(kCheckboxId,
-                               ui::DialogModelLabel(GetCheckboxLabel()));
+                               ui::DialogModelLabel(checkbox_label));
   }
 
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();

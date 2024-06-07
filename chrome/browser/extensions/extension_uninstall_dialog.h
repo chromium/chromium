@@ -87,10 +87,6 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
   // Returns true if a checkbox should be shown in the dialog.
   bool ShouldShowCheckbox() const;
 
-  // Returns the string to be displayed with the checkbox. Must not be called if
-  // ShouldShowCheckbox() returns false.
-  std::u16string GetCheckboxLabel() const;
-
   // Called when the dialog is closing to do any book-keeping.
   void OnDialogClosed(CloseAction action);
 
