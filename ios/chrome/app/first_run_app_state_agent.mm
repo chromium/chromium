@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
@@ -161,13 +162,17 @@
   NSArray<id<SystemIdentity>>* identities =
       accountManagerService->GetAllIdentities();
 
+  const std::vector<std::string>& supportedCapabilities = ios::
+      AccountCapabilitiesFetcherIOS::GetAccountCapabilityNamesForPrefetch();
+  std::set<std::string> supportedCapabilitiesSet(supportedCapabilities.begin(),
+                                                 supportedCapabilities.end());
+
   for (id<SystemIdentity> identity : identities) {
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-            identity, base::BindOnce(^(SystemIdentityCapabilityResult result){
-                          // Ignore the capability result.
-                      }));
+    GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
+        identity, supportedCapabilitiesSet,
+        base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
+            // Ignore the result.
+        }));
   }
 }
 
