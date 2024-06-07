@@ -11,7 +11,7 @@ namespace autofill {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // When adding a value to this enum, please update
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/autofill/enums.xml.
 enum class SuggestionHidingReason {
   // A suggestion was accepted.
   kAcceptSuggestion = 0,
