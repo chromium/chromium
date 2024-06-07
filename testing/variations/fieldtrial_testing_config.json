@@ -15702,43 +15702,6 @@
             ]
         }
     ],
-    "PasswordSharingBackendAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharedPasswordNotificationUI"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PasswordSharingBackendDesktopIOS": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordManagerEnableReceiverService",
-                        "PasswordManagerEnableSenderService",
-                        "SharedPasswordNotificationUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [
