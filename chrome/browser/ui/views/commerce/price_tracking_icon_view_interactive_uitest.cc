@@ -246,13 +246,8 @@ IN_PROC_BROWSER_TEST_F(
       FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (features::IsChromeRefresh2023()) {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingEnabledRefreshIcon.name;
-                  } else {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingEnabledFilledIcon.name;
-                  }
+                  return view->GetVectorIcon().name ==
+                         omnibox::kPriceTrackingEnabledRefreshIcon.name;
                 })),
       PressButton(kPriceTrackingChipElementId), FlushEvents(),
       WaitForShow(kPriceTrackingBubbleDialogId));
