@@ -218,6 +218,16 @@ WifiDirectSocket::WifiDirectSocket(
       input_stream_(stream_socket_.get(), task_runner),
       output_stream_(stream_socket_.get(), task_runner) {}
 
+WifiDirectSocket::WifiDirectSocket(
+    mojo::PlatformHandle handle,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<net::StreamSocket> stream_socket)
+    : handle_(std::move(handle)),
+      task_runner_(task_runner),
+      stream_socket_(std::move(stream_socket)),
+      input_stream_(stream_socket_.get(), task_runner),
+      output_stream_(stream_socket_.get(), task_runner) {}
+
 WifiDirectSocket::~WifiDirectSocket() {
   Close();
 }
@@ -231,6 +241,8 @@ OutputStream& WifiDirectSocket::GetOutputStream() {
 }
 
 Exception WifiDirectSocket::Close() {
+  handle_.reset();
+
   if (!stream_socket_) {
     return {Exception::kFailed};
   }

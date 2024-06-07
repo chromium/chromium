@@ -4,20 +4,32 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_direct_medium.h"
 
+#include <netinet/in.h>
+
+#include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "net/log/net_log_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 constexpr char kTestIPv4Address[] = "127.0.0.1";
-constexpr int kTestPort = 61234;
+constexpr uint16_t kMinPort = 50000;  // Arbitrary port.
+constexpr uint16_t kMaxPort = 65535;
 constexpr char kTestSSID[] = "DIRECT-xx";
 constexpr char kTestPassword[] = "ABCD1234";
+
+// Pick a random port for each test run, otherwise the `Listen` call has a
+// chance to return ADDRESS_IN_USE(-147).
+int RandomPort() {
+  return static_cast<uint16_t>(kMinPort +
+                               base::RandGenerator(kMaxPort - kMinPort + 1));
+}
 
 class FakeWifiDirectConnection
     : public ash::wifi_direct::mojom::WifiDirectConnection {
@@ -56,29 +68,16 @@ class FakeWifiDirectManager
   void CreateWifiDirectGroup(
       ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
       CreateWifiDirectGroupCallback callback) override {
-    if (!connection_) {
-      std::move(callback).Run(
-          ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported,
-          mojo::NullRemote());
-    } else {
-      mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
-          connection_remote;
-      mojo::MakeSelfOwnedReceiver(
-          std::move(connection_),
-          connection_remote.InitWithNewPipeAndPassReceiver());
-      std::move(callback).Run(
-          ash::wifi_direct::mojom::WifiDirectOperationResult::kSuccess,
-          std::move(connection_remote));
-    }
+    ReturnConnection(std::move(callback));
   }
 
   void ConnectToWifiDirectGroup(
       ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
       std::optional<uint32_t> frequency,
       ConnectToWifiDirectGroupCallback callback) override {
-    std::move(callback).Run(
-        ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported,
-        mojo::NullRemote());
+    EXPECT_EQ(credentials->ssid, expected_ssid_);
+    EXPECT_EQ(credentials->passphrase, expected_password_);
+    ReturnConnection(std::move(callback));
   }
 
   void GetWifiP2PCapabilities(
@@ -96,7 +95,32 @@ class FakeWifiDirectManager
 
   void SetIsInterfaceValid(bool is_valid) { is_interface_valid_ = is_valid; }
 
+  void SetExpectedCredentials(const std::string& ssid,
+                              const std::string& password) {
+    expected_ssid_ = ssid;
+    expected_password_ = password;
+  }
+
  private:
+  void ReturnConnection(ConnectToWifiDirectGroupCallback callback) {
+    if (!connection_) {
+      std::move(callback).Run(
+          ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported,
+          mojo::NullRemote());
+    } else {
+      mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
+          connection_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::move(connection_),
+          connection_remote.InitWithNewPipeAndPassReceiver());
+      std::move(callback).Run(
+          ash::wifi_direct::mojom::WifiDirectOperationResult::kSuccess,
+          std::move(connection_remote));
+    }
+  }
+
+  std::string expected_ssid_ = "";
+  std::string expected_password_ = "";
   std::unique_ptr<FakeWifiDirectConnection> connection_;
   bool is_interface_valid_ = true;
 };
@@ -129,6 +153,38 @@ class WifiDirectMediumTest : public ::testing::Test {
                                                  firewall_hole_factory_remote_);
   }
 
+  void AcceptSocket(int port) {
+    auto ip_endpoint = net::IPEndPoint(
+        net::IPAddress::FromIPLiteral(kTestIPv4Address).value(), port);
+    server_socket_ =
+        std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
+
+    auto fd = base::ScopedFD(
+        net::CreatePlatformSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+    CHECK(fd.get() > 0);
+    server_socket_->AdoptSocket(fd.release());
+
+    std::optional<net::IPAddress> address =
+        net::IPAddress::FromIPLiteral(kTestIPv4Address);
+    CHECK(address);
+    int listen_result =
+        server_socket_->Listen(net::IPEndPoint(*address, port), 4,
+                               /*ipv6_only=*/std::nullopt);
+    CHECK(listen_result == net::OK);
+
+    int result = server_socket_->Accept(
+        &accepted_socket_, base::BindOnce(&WifiDirectMediumTest::OnAccept,
+                                          base::Unretained(this)));
+    if (result != net::ERR_IO_PENDING) {
+      OnAccept(result);
+    }
+  }
+
+  void OnAccept(int result) {
+    EXPECT_EQ(result, net::OK);
+    accepted_socket_->Disconnect();
+  }
+
   WifiDirectMedium* medium() { return medium_.get(); }
   FakeWifiDirectManager* manager() { return wifi_direct_manager_; }
   ash::nearby::FakeFirewallHoleFactory* firewall_hole_factory() {
@@ -143,7 +199,8 @@ class WifiDirectMediumTest : public ::testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   raw_ptr<FakeWifiDirectManager> wifi_direct_manager_;
   mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
       wifi_direct_manager_remote_;
@@ -151,6 +208,8 @@ class WifiDirectMediumTest : public ::testing::Test {
   mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_remote_;
   std::unique_ptr<WifiDirectMedium> medium_;
+  std::unique_ptr<net::TCPServerSocket> server_socket_;
+  std::unique_ptr<net::StreamSocket> accepted_socket_;
 };
 
 TEST_F(WifiDirectMediumTest, IsInterfaceValid_Valid) {
@@ -239,6 +298,159 @@ TEST_F(WifiDirectMediumTest, StopWifiDirect_ExistingConnection) {
       medium()));
 }
 
+TEST_F(WifiDirectMediumTest, ConnectWifiDirect_MissingConnection) {
+  manager()->SetWifiDirectConnection(nullptr);
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        EXPECT_FALSE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, ConnectWifiDirect_ValidConnection) {
+  manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, DisconnectWifiDirect_MissingConnection) {
+  manager()->SetWifiDirectConnection(nullptr);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_FALSE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_FALSE(medium->DisconnectWifiDirect());
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, DisconnectWifiDirect_ExistingConnection) {
+  manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_TRUE(medium->DisconnectWifiDirect());
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, ConnectToService_Success) {
+  auto* connection = manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  connection->should_associate = true;
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+
+  int port = RandomPort();
+  AcceptSocket(port);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium, int port) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        CancellationFlag cancellation_flag;
+        EXPECT_TRUE(medium->ConnectToService(kTestIPv4Address, port,
+                                             &cancellation_flag));
+      },
+      medium(), port));
+}
+
+TEST_F(WifiDirectMediumTest, ConnectToService_MissingConnection) {
+  manager()->SetWifiDirectConnection(nullptr);
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        EXPECT_FALSE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+
+  int port = RandomPort();
+  AcceptSocket(port);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium, int port) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        CancellationFlag cancellation_flag;
+        EXPECT_FALSE(medium->ConnectToService(kTestIPv4Address, port,
+                                              &cancellation_flag));
+      },
+      medium(), port));
+}
+
+TEST_F(WifiDirectMediumTest, ConnectToService_FailToAssociatesSocket) {
+  auto* connection = manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  connection->should_associate = false;
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+
+  int port = RandomPort();
+  AcceptSocket(port);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium, int port) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        CancellationFlag cancellation_flag;
+        EXPECT_FALSE(medium->ConnectToService(kTestIPv4Address, port,
+                                              &cancellation_flag));
+      },
+      medium(), port));
+}
+
 TEST_F(WifiDirectMediumTest, ListenForService_Success) {
   auto* connection = manager()->SetWifiDirectConnection(
       std::make_unique<FakeWifiDirectConnection>());
@@ -256,7 +468,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_Success) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_TRUE(medium->ListenForService(kTestPort));
+        EXPECT_TRUE(medium->ListenForService(RandomPort()));
       },
       medium()));
 
@@ -278,7 +490,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_FALSE(medium->ListenForService(kTestPort));
+        EXPECT_FALSE(medium->ListenForService(RandomPort()));
       },
       medium()));
 }
@@ -300,7 +512,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociatesSocket) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_FALSE(medium->ListenForService(kTestPort));
+        EXPECT_FALSE(medium->ListenForService(RandomPort()));
       },
       medium()));
 }
@@ -322,7 +534,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_FALSE(medium->ListenForService(kTestPort));
+        EXPECT_FALSE(medium->ListenForService(RandomPort()));
       },
       medium()));
 }
@@ -345,7 +557,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_InvalidAddress) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_FALSE(medium->ListenForService(kTestPort));
+        EXPECT_FALSE(medium->ListenForService(RandomPort()));
       },
       medium()));
 }

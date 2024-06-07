@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
 #include "third_party/nearby/src/internal/platform/exception.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_direct.h"
@@ -84,6 +85,9 @@ class WifiDirectSocket : public api::WifiDirectSocket {
  public:
   WifiDirectSocket(scoped_refptr<base::SequencedTaskRunner> task_runner,
                    std::unique_ptr<net::StreamSocket> stream_socket);
+  WifiDirectSocket(mojo::PlatformHandle handle,
+                   scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   std::unique_ptr<net::StreamSocket> stream_socket);
   ~WifiDirectSocket() override;
 
   // api::WifiDirectSocket
@@ -96,6 +100,7 @@ class WifiDirectSocket : public api::WifiDirectSocket {
   // originally created on.
   void CloseSocket(base::WaitableEvent* close_waitable_event);
 
+  mojo::PlatformHandle handle_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<net::StreamSocket> stream_socket_;
   SocketInputStream input_stream_;

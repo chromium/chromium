@@ -6,9 +6,11 @@
 
 #include <netinet/in.h>
 
+#include "base/files/scoped_file.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
+#include "chrome/services/sharing/nearby/platform/wifi_direct_socket.h"
 #include "net/base/net_errors.h"
 #include "net/socket/socket_descriptor.h"
 
@@ -61,12 +63,23 @@ bool WifiDirectMedium::StopWifiDirect() {
 }
 
 bool WifiDirectMedium::ConnectWifiDirect(WifiDirectCredentials* credentials) {
-  NOTIMPLEMENTED();
-  return false;
+  // Wrap the async mojo call to make it sync.
+  base::WaitableEvent waitable_event;
+  io_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WifiDirectMedium::ConnectGroup, base::Unretained(this),
+                     credentials, &waitable_event));
+  waitable_event.Wait();
+
+  // An active remote means the group has been connected to.
+  return !!connection_;
 }
 
 bool WifiDirectMedium::DisconnectWifiDirect() {
-  NOTIMPLEMENTED();
+  if (connection_) {
+    connection_.reset();
+    return true;
+  }
   return false;
 }
 
@@ -74,8 +87,67 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
     absl::string_view ip_address,
     int port,
     CancellationFlag* cancellation_flag) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // Ensure that there is a valid WiFi Direct connection.
+  if (!connection_) {
+    return nullptr;
+  }
+
+  // Ensure the connection attempt hasn't been cancelled.
+  if (cancellation_flag && cancellation_flag->Cancelled()) {
+    return nullptr;
+  }
+
+  mojo::PlatformHandle handle = mojo::PlatformHandle(base::ScopedFD(
+      net::CreatePlatformSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP)));
+  if (!handle.is_valid()) {
+    // Failed to get a socket file descriptor.
+    return nullptr;
+  }
+
+  bool did_associate = false;
+  {
+    base::WaitableEvent waitable_event;
+    io_thread_->task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&WifiDirectMedium::AssociateSocket,
+                                  base::Unretained(this), &did_associate,
+                                  &waitable_event, handle.Clone()));
+    waitable_event.Wait();
+  }
+
+  if (!did_associate) {
+    // Socket not associated at the platform layer.
+    return nullptr;
+  }
+
+  // TODO(b/345572726): Unittest this specific cancellation scenario.
+  if (cancellation_flag && cancellation_flag->Cancelled()) {
+    // Cancelled during connection attempt.
+    return nullptr;
+  }
+
+  // Listening on the socket needs to happen on an IO thread.
+  std::unique_ptr<net::TCPClientSocket> socket = nullptr;
+  {
+    base::WaitableEvent waitable_event;
+    io_thread_->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WifiDirectMedium::CreateAndConnectSocket,
+                       base::Unretained(this), ip_address, port,
+                       handle.GetFD().get(), &socket, &waitable_event));
+    waitable_event.Wait();
+  }
+  if (!socket) {
+    return nullptr;
+  }
+
+  // TODO(b/345572726): Unittest this specific cancellation scenario.
+  if (cancellation_flag && cancellation_flag->Cancelled()) {
+    // Cancelled during connection attempt.
+    return nullptr;
+  }
+
+  return std::make_unique<WifiDirectSocket>(
+      std::move(handle), io_thread_->task_runner(), std::move(socket));
 }
 
 std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
@@ -234,6 +306,39 @@ void WifiDirectMedium::OnProperties(
   waitable_event->Signal();
 }
 
+void WifiDirectMedium::ConnectGroup(WifiDirectCredentials* credentials,
+                                    base::WaitableEvent* waitable_event) {
+  CHECK(io_thread_->task_runner()->RunsTasksInCurrentSequence());
+
+  auto credentials_ptr = ash::wifi_direct::mojom::WifiCredentials::New();
+  credentials_ptr->ssid = credentials->GetSSID();
+  credentials_ptr->passphrase = credentials->GetPassword();
+  wifi_direct_manager_->ConnectToWifiDirectGroup(
+      std::move(credentials_ptr), std::nullopt,
+      base::BindOnce(&WifiDirectMedium::OnGroupConnected,
+                     base::Unretained(this), waitable_event));
+}
+
+void WifiDirectMedium::OnGroupConnected(
+    base::WaitableEvent* waitable_event,
+    ash::wifi_direct::mojom::WifiDirectOperationResult result,
+    mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectConnection>
+        connection) {
+  CHECK(io_thread_->task_runner()->RunsTasksInCurrentSequence());
+
+  if (result == ash::wifi_direct::mojom::WifiDirectOperationResult::kSuccess) {
+    // Store the connection so that the group can be destroyed when the remote
+    // is reset.
+    connection_.Bind(std::move(connection), io_thread_->task_runner());
+    connection_.set_disconnect_handler(
+        base::BindOnce(&WifiDirectMedium::OnDisconnect, base::Unretained(this)),
+        io_thread_->task_runner());
+  }
+
+  // Trigger sync signal.
+  waitable_event->Signal();
+}
+
 void WifiDirectMedium::AssociateSocket(bool* did_associate,
                                        base::WaitableEvent* waitable_event,
                                        mojo::PlatformHandle socket_handle) {
@@ -284,6 +389,45 @@ void WifiDirectMedium::CreateAndListenToSocket(
 
   // Return the result.
   *socket = std::move(tcp_socket);
+  waitable_event->Signal();
+}
+
+void WifiDirectMedium::CreateAndConnectSocket(
+    const std::string_view& ip_address,
+    int port,
+    int fd,
+    std::unique_ptr<net::TCPClientSocket>* socket,
+    base::WaitableEvent* waitable_event) {
+  auto ip = net::IPAddress::FromIPLiteral(ip_address);
+  if (!ip) {
+    // Invalid address.
+    waitable_event->Signal();
+    return;
+  }
+  auto ip_endpoint = net::IPEndPoint(*ip, port);
+  auto tcp_socket =
+      std::make_unique<net::TCPSocket>(nullptr, nullptr, net::NetLogSource());
+  tcp_socket->AdoptUnconnectedSocket(fd);
+  tcp_socket->Connect(
+      ip_endpoint,
+      base::BindOnce(&WifiDirectMedium::OnSocketConnected,
+                     base::Unretained(this), socket, waitable_event,
+                     std::move(tcp_socket), ip_endpoint));
+}
+
+void WifiDirectMedium::OnSocketConnected(
+    std::unique_ptr<net::TCPClientSocket>* socket,
+    base::WaitableEvent* waitable_event,
+    std::unique_ptr<net::TCPSocket> tcp_socket,
+    net::IPEndPoint ip_endpoint,
+    int result) {
+  if (result < 0) {
+    waitable_event->Signal();
+    return;
+  }
+
+  *socket = std::make_unique<net::TCPClientSocket>(std::move(tcp_socket),
+                                                   ip_endpoint);
   waitable_event->Signal();
 }
 
