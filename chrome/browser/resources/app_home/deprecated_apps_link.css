@@ -15,7 +15,7 @@
   right: 0;
 }
 
-html[dir='rtl'] #container {
+:host-context(html[dir='rtl']) #container {
   left: 0;
   right: auto;
 }
