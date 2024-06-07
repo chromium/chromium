@@ -1279,16 +1279,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this, getSnackbarManager(), SETTINGS_LAUNCHER);
 
         if (!isWarmOnResume()) {
-            Callback<ProfileProvider> profileProviderCallback =
-                    (profileProvider) -> {
-                        SuggestionsMetrics.recordArticlesListVisible(
-                                profileProvider.getOriginalProfile());
-                    };
-            if (getProfileProviderSupplier().hasValue()) {
-                profileProviderCallback.onResult(getProfileProviderSupplier().get());
-            } else {
-                getProfileProviderSupplier().onAvailable(profileProviderCallback);
-            }
+            getProfileProviderSupplier()
+                    .runSyncOrOnAvailable(
+                            (profileProvider) -> {
+                                SuggestionsMetrics.recordArticlesListVisible(
+                                        profileProvider.getOriginalProfile());
+                            });
         } else {
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }
@@ -1434,7 +1430,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && tabOpenType == TabOpenType.OPEN_NEW_TAB
                 && loadUrlParams.getReferrer() == null
                 && loadUrlParams.getVerbatimHeaders() == null) {
-            handleMhtmlFileOrContentIntent(url, intent);
+            getProfileProviderSupplier()
+                    .runSyncOrOnAvailable(
+                            (profileProvider) -> {
+                                handleMhtmlFileOrContentIntent(
+                                        profileProvider.getOriginalProfile(), url, intent);
+                            });
             return true;
         }
         processUrlViewIntent(
@@ -1446,13 +1447,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return true;
     }
 
-    private void handleMhtmlFileOrContentIntent(final String url, final Intent intent) {
-        if (!getProfileProviderSupplier().hasValue()) {
-            getProfileProviderSupplier()
-                    .onAvailable((unused) -> handleMhtmlFileOrContentIntent(url, intent));
-            return;
-        }
-        Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+    private void handleMhtmlFileOrContentIntent(
+            final Profile profile, final String url, final Intent intent) {
         OfflinePageUtils.getLoadUrlParamsForOpeningMhtmlFileOrContent(
                 url,
                 (loadUrlParams) -> {
