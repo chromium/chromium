@@ -20664,6 +20664,20 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="Submission.SubmissionResult.GeneratedPassword"
+      enum="PasswordFormSubmissionResult">
+    <summary>
+      Records the outcome of a password form submission for forms on which users
+      generated passwords.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Submission.SubmittedFormType2" enum="PasswordFormType2">
     <summary>
       Records the presumed type (e.g. signup, login, change password) of a

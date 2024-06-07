@@ -448,6 +448,10 @@ void PasswordFormMetricsRecorder::LogSubmitPassed() {
   ukm_entry_builder_.SetSubmission_Observed(1 /*true*/);
   ukm_entry_builder_.SetSubmission_SubmissionResult(
       static_cast<int64_t>(SubmitResult::kPassed));
+  if (HasGeneratedPassword(generated_password_status_)) {
+    ukm_entry_builder_.SetSubmission_SubmissionResult_GeneratedPassword(
+        static_cast<int64_t>(SubmitResult::kPassed));
+  }
   submit_result_ = SubmitResult::kPassed;
 }
 
@@ -463,6 +467,10 @@ void PasswordFormMetricsRecorder::LogSubmitFailed() {
   ukm_entry_builder_.SetSubmission_Observed(1 /*true*/);
   ukm_entry_builder_.SetSubmission_SubmissionResult(
       static_cast<int64_t>(SubmitResult::kFailed));
+  if (HasGeneratedPassword(generated_password_status_)) {
+    ukm_entry_builder_.SetSubmission_SubmissionResult_GeneratedPassword(
+        static_cast<int64_t>(SubmitResult::kFailed));
+  }
   submit_result_ = SubmitResult::kFailed;
 }
 

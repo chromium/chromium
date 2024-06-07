@@ -164,6 +164,15 @@ TEST_F(PasswordFormMetricsRecorderTest, Generation) {
                             PasswordFormMetricsRecorder::SubmitResult::kFailed),
                         expected_login_failed);
 
+    int expected_login_failed_after_generation =
+        test.has_generated_password && expected_login_failed ? 1 : 0;
+    ExpectUkmValueCount(
+        &test_ukm_recorder,
+        UkmEntry::kSubmission_SubmissionResult_GeneratedPasswordName,
+        static_cast<int64_t>(
+            PasswordFormMetricsRecorder::SubmitResult::kFailed),
+        expected_login_failed_after_generation);
+
     int expected_login_passed =
         test.submission == PasswordFormMetricsRecorder::SubmitResult::kPassed
             ? 1
@@ -175,6 +184,15 @@ TEST_F(PasswordFormMetricsRecorderTest, Generation) {
                         static_cast<int64_t>(
                             PasswordFormMetricsRecorder::SubmitResult::kPassed),
                         expected_login_passed);
+
+    int expected_login_passed_after_generation =
+        test.has_generated_password && expected_login_passed ? 1 : 0;
+    ExpectUkmValueCount(
+        &test_ukm_recorder,
+        UkmEntry::kSubmission_SubmissionResult_GeneratedPasswordName,
+        static_cast<int64_t>(
+            PasswordFormMetricsRecorder::SubmitResult::kPassed),
+        expected_login_passed_after_generation);
 
     if (test.has_generated_password) {
       switch (test.submission) {
