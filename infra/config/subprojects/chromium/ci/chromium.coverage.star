@@ -433,7 +433,8 @@ coverage_builder(
         ),
     ],
     export_coverage_to_zoss = True,
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    siso_enabled = False,
     use_javascript_coverage = True,
 )
 
