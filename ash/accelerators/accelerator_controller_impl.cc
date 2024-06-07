@@ -15,6 +15,7 @@
 #include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accelerators/suspend_state_machine.h"
+#include "ash/accelerators/top_row_key_usage_recorder.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
@@ -439,6 +440,7 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
               ui::OzonePlatform::GetInstance()->GetInputController())),
       suspend_state_machine_(std::make_unique<SuspendStateMachine>(
           ui::OzonePlatform::GetInstance()->GetInputController())),
+      top_row_key_usage_recorder_(std::make_unique<TopRowKeyUsageRecorder>()),
       accelerator_configuration_(config),
       output_volume_metric_delay_timer_(
           FROM_HERE,
@@ -485,6 +487,9 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
         suspend_state_machine_.get(),
         ui::EventTarget::Priority::kAccessibility);
   }
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      top_row_key_usage_recorder_.get(),
+      ui::EventTarget::Priority::kAccessibility);
 }
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
@@ -515,6 +520,8 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
     aura::Env::GetInstance()->RemovePreTargetHandler(
         suspend_state_machine_.get());
   }
+  aura::Env::GetInstance()->RemovePreTargetHandler(
+      top_row_key_usage_recorder_.get());
 }
 
 void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,

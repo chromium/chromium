@@ -83,6 +83,8 @@ component("ash") {
     "accelerators/suspend_state_machine.h",
     "accelerators/tablet_volume_controller.cc",
     "accelerators/tablet_volume_controller.h",
+    "accelerators/top_row_key_usage_recorder.cc",
+    "accelerators/top_row_key_usage_recorder.h",
     "accelerometer/accel_gyro_samples_observer.cc",
     "accelerometer/accel_gyro_samples_observer.h",
     "accelerometer/accelerometer_constants.h",

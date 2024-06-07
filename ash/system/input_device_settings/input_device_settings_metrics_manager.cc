@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
 #include <cstdint>
+#include <iterator>
 #include <optional>
 #include <string_view>
 
@@ -26,12 +27,15 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_info_metrics.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -156,14 +160,13 @@ ui::mojom::ModifierKey GetModifierRemappingTo(
   return modifier_key;
 }
 
-std::optional<std::string> GetModifierKeyName(
-    ui::mojom::ModifierKey modifier_key) {
-  for (ssize_t i = std::size(kModifierNames) - 1; i >= 0; i--) {
-    if (kModifierNames[i].modifier_key == modifier_key) {
-      return std::make_optional<std::string>(kModifierNames[i].key_name);
+std::string GetModifierKeyName(ui::mojom::ModifierKey modifier_key) {
+  for (const auto& modifier : kModifierNames) {
+    if (modifier.modifier_key == modifier_key) {
+      return modifier.key_name;
     }
   }
-  return std::nullopt;
+  NOTREACHED_NORETURN() << "MODIFIER KEY: " << (int)modifier_key;
 }
 
 int GetNumberOfNonDefaultRemappings(
@@ -539,6 +542,55 @@ void RecordNumberOfTouchpadsUsedInLast28Days() {
   }
 }
 
+void RecordKeyPresenseMetrics(const mojom::Keyboard& keyboard) {
+  // Only record for the internal keyboard.
+  if (keyboard.is_external) {
+    return;
+  }
+
+  // For each modifier key, record only what the key is _remapped_ to. So
+  // iterate through each modifier key and check if the key is remapped to
+  // something else. Then record what the key is remapped to.
+  for (const auto& modifier_key : keyboard.modifier_keys) {
+    auto remapped_modifier_iter =
+        keyboard.settings->modifier_remappings.find(modifier_key);
+    const auto remapped_to_key =
+        (remapped_modifier_iter != keyboard.settings->modifier_remappings.end())
+            ? remapped_modifier_iter->second
+            : modifier_key;
+
+    // Skip keys remapped to void since its as though that key does not exist at
+    // all.
+    if (remapped_to_key == ui::mojom::ModifierKey::kVoid) {
+      continue;
+    }
+
+    // Record what the key is remapped to and note whether it is via a remapping
+    // or the default value for the key.
+    base::UmaHistogramEnumeration(
+        base::StrCat({"ChromeOS.Inputs.KeyUsage.Internal.",
+                      GetModifierKeyName(remapped_to_key)}),
+        (modifier_key == remapped_to_key)
+            ? ui::KeyUsageCategory::kPhysicallyPresent
+            : ui::KeyUsageCategory::kVirtuallyPresent);
+  }
+
+  const auto* top_row_action_keys =
+      Shell::Get()->keyboard_capability()->GetTopRowActionKeys(keyboard.id);
+  if (!top_row_action_keys) {
+    return;
+  }
+
+  for (const auto& top_row_action_key : *top_row_action_keys) {
+    // All top row keys are physically present, no way to virtually remap to
+    // them.
+    base::UmaHistogramEnumeration(
+        base::StrCat({"ChromeOS.Inputs.KeyUsage.Internal.",
+                      GetTopRowActionKeyName(top_row_action_key)}),
+        ui::KeyUsageCategory::kPhysicallyPresent);
+  }
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -581,11 +633,10 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   // Record metrics for modifier remappings.
   for (const auto modifier_key : keyboard.modifier_keys) {
     const auto modifier_name = GetModifierKeyName(modifier_key);
-    CHECK(modifier_name.has_value());
     const auto key_remapped_to =
         GetModifierRemappingTo(*keyboard.settings, modifier_key);
     const std::string modifier_remapping_metrics =
-        base::StrCat({keyboard_metrics_prefix, "Modifiers.", *modifier_name,
+        base::StrCat({keyboard_metrics_prefix, "Modifiers.", modifier_name,
                       "RemappedTo.Initial"});
     base::UmaHistogramEnumeration(modifier_remapping_metrics, key_remapped_to);
   }
@@ -613,6 +664,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     base::UmaHistogramEnumeration(keyboard_metrics_prefix + "F12.Initial",
                                   keyboard.settings->f12.value());
   }
+  RecordKeyPresenseMetrics(keyboard);
 }
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
@@ -638,7 +690,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
   // Record metrics for modifier remappings.
   for (const auto modifier_key : keyboard.modifier_keys) {
     const auto modifier_name = GetModifierKeyName(modifier_key);
-    CHECK(modifier_name.has_value());
     const auto key_remapped_to_before =
         GetModifierRemappingTo(old_settings, modifier_key);
     const auto key_remapped_to =
@@ -646,7 +697,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
     // Only emit the metric if the modifier remapping is changed.
     if (key_remapped_to_before != key_remapped_to) {
       const std::string modifier_remapping_metrics =
-          base::StrCat({keyboard_metrics_prefix, "Modifiers.", *modifier_name,
+          base::StrCat({keyboard_metrics_prefix, "Modifiers.", modifier_name,
                         "RemappedTo.Changed"});
       base::UmaHistogramEnumeration(modifier_remapping_metrics,
                                     key_remapped_to);

@@ -1159,6 +1159,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="EmojiPicker"/>
   <int value="22" label="Dictation"/>
   <int value="23" label="PrivacyScreenToggle"/>
+  <int value="24" label="Accessibility"/>
 </enum>
 
 <enum name="KeyboardTopRowLayoutWithExtraSublayout">
@@ -1182,6 +1183,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kSucceeded"/>
   <int value="2" label="kFailed"/>
   <int value="3" label="kNecessary"/>
+</enum>
+
+<enum name="KeyUsageCategory">
+  <int value="0" label="PhysicallyPresent"/>
+  <int value="1" label="VirtuallyPresent"/>
+  <int value="2" label="PhysicallyPressed"/>
+  <int value="3" label="VirtuallyPressed"/>
 </enum>
 
 <enum name="LanguagePackDlcErrorType">

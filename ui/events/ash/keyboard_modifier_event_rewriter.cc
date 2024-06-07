@@ -93,7 +93,8 @@ EventDispatchDetails KeyboardModifierEventRewriter::RewriteEvent(
         RecordModifierKeyPressedAfterRemapping(
             *keyboard_capability_,
             GetKeyboardDeviceIdProperty(*event_for_record),
-            event_for_record->code(), HasRightAltProperty(*event_for_record));
+            event_for_record->code(), event.AsKeyEvent()->code(),
+            HasRightAltProperty(*event_for_record));
       }
       break;
     }

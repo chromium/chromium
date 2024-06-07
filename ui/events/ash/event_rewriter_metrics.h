@@ -56,6 +56,7 @@ void RecordModifierKeyPressedAfterRemapping(
     const KeyboardCapability& keyboard_capability,
     int device_id,
     DomCode dom_code,
+    DomCode original_dom_code,
     bool is_right_alt_key);
 
 }  // namespace ui

@@ -1965,6 +1965,50 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.KeyUsage.Internal.{KeyboardKey}"
+    enum="KeyUsageCategory" expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when the {KeyboardKey} key is pressed or if it is recognized on the
+    internal keyboard. This is used to get usage statistics on keyboard key
+    usage.
+  </summary>
+  <token key="KeyboardKey">
+    <variant name="Accessibility"/>
+    <variant name="AllApplications"/>
+    <variant name="Alt"/>
+    <variant name="Assistant"/>
+    <variant name="Back"/>
+    <variant name="Backspace"/>
+    <variant name="CapsLock"/>
+    <variant name="Control"/>
+    <variant name="Dictation"/>
+    <variant name="EmojiPicker"/>
+    <variant name="Escape"/>
+    <variant name="Forward"/>
+    <variant name="Fullscreen"/>
+    <variant name="KeyboardBacklightDown"/>
+    <variant name="KeyboardBacklightToggle"/>
+    <variant name="KeyboardBacklightUp"/>
+    <variant name="Meta"/>
+    <variant name="MicrophoneMute"/>
+    <variant name="NextTrack"/>
+    <variant name="Overview"/>
+    <variant name="PlayPause"/>
+    <variant name="PreviousTrack"/>
+    <variant name="PrivacyScreenToggle"/>
+    <variant name="Refresh"/>
+    <variant name="RightAlt"/>
+    <variant name="ScreenBrightnessDown"/>
+    <variant name="ScreenBrightnessUp"/>
+    <variant name="Screenshot"/>
+    <variant name="VolumeDown"/>
+    <variant name="VolumeMute"/>
+    <variant name="VolumeUp"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.ModifierKeyCombo.{KeyboardType}" units="hash"
     expires_after="2024-10-06">
   <owner>dpad@chromium.org</owner>

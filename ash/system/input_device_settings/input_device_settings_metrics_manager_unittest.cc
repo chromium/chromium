@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -1164,6 +1165,46 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
       "NumberOfRemappedKeysOnStart",
       /*expected_count*/ 1u);
+}
+
+TEST_F(InputDeviceSettingsMetricsManagerTest, RecordKeyPresenseMetrics) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kInternalKeyboardDeviceKey;
+  keyboard.is_external = false;
+  keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape,
+      ui::mojom::ModifierKey::kAlt,
+  };
+  keyboard.settings = CreateNewKeyboardSettings();
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kEscape, ui::mojom::ModifierKey::kAssistant},
+  };
+  base::HistogramTester histogram_tester;
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+
+  // Escape remapped so not present at all.
+  histogram_tester.ExpectTotalCount("ChromeOS.Inputs.KeyUsage.Internal.Escape",
+                                    /*expected_count=*/0u);
+
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Inputs.KeyUsage.Internal.Backspace",
+      ui::KeyUsageCategory::kPhysicallyPresent,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Inputs.KeyUsage.Internal.Control",
+      ui::KeyUsageCategory::kPhysicallyPresent,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectUniqueSample("ChromeOS.Inputs.KeyUsage.Internal.Meta",
+                                      ui::KeyUsageCategory::kPhysicallyPresent,
+                                      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectUniqueSample("ChromeOS.Inputs.KeyUsage.Internal.Alt",
+                                      ui::KeyUsageCategory::kPhysicallyPresent,
+                                      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Inputs.KeyUsage.Internal.Assistant",
+      ui::KeyUsageCategory::kVirtuallyPresent,
+      /*expected_bucket_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest,

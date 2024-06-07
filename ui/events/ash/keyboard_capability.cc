@@ -941,13 +941,23 @@ bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
 }
 
 const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
-    const KeyboardDevice& keyboard) {
+    const KeyboardDevice& keyboard) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);
   if (!keyboard_info) {
     return nullptr;
   }
 
   return &keyboard_info->top_row_action_keys;
+}
+
+const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
+    int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return nullptr;
+  }
+
+  return GetTopRowActionKeys(*keyboard);
 }
 
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
@@ -962,6 +972,15 @@ bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
   // Some external keyboards falsely claim to have assistant keys. However, this
   // can be trusted for internal + ChromeOS external keyboards.
   return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard.id);
+}
+
+bool KeyboardCapability::HasAssistantKey(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasAssistantKey(*keyboard);
 }
 
 bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {

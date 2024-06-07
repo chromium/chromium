@@ -1688,7 +1688,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
       if (RewriteModifierKeys(key_event, device_id, &state)) {
         if (should_record_modifier_key_press_metrics) {
           RecordModifierKeyPressedAfterRemapping(
-              *keyboard_capability_, device_id, state.code,
+              *keyboard_capability_, device_id, state.code, key_event.code(),
               state.key_code == VKEY_RIGHT_ALT);
         }
         // Early exit with completed event.
@@ -1701,7 +1701,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
 
   if (should_record_modifier_key_press_metrics) {
     RecordModifierKeyPressedAfterRemapping(*keyboard_capability_, device_id,
-                                           state.code,
+                                           state.code, key_event.code(),
                                            state.key_code == VKEY_RIGHT_ALT);
   }
 

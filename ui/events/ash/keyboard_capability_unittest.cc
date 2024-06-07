@@ -1186,7 +1186,7 @@ TEST_P(KeyboardCapabilityTest, TopRowLayout1) {
   fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout1Tag,
                                           /*has_custom_top_row=*/false);
 
-  for (TopRowActionKey action_key = TopRowActionKey::kMinValue;
+  for (TopRowActionKey action_key = TopRowActionKey::kNone;
        action_key <= TopRowActionKey::kMaxValue;
        action_key =
            static_cast<TopRowActionKey>(static_cast<int>(action_key) + 1)) {
@@ -1214,7 +1214,7 @@ TEST_P(KeyboardCapabilityTest, TopRowLayout2) {
   fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout2Tag,
                                           /*has_custom_top_row=*/false);
 
-  for (TopRowActionKey action_key = TopRowActionKey::kMinValue;
+  for (TopRowActionKey action_key = TopRowActionKey::kNone;
        action_key <= TopRowActionKey::kMaxValue;
        action_key =
            static_cast<TopRowActionKey>(static_cast<int>(action_key) + 1)) {
@@ -1248,7 +1248,7 @@ TEST_P(KeyboardCapabilityTest, TopRowLayoutWilco) {
                                           kKbdTopRowLayoutDrallionTag,
                                           /*has_custom_top_row=*/false);
 
-  for (TopRowActionKey action_key = TopRowActionKey::kMinValue;
+  for (TopRowActionKey action_key = TopRowActionKey::kNone;
        action_key <= TopRowActionKey::kMaxValue;
        action_key =
            static_cast<TopRowActionKey>(static_cast<int>(action_key) + 1)) {
@@ -1427,7 +1427,7 @@ TEST_P(TopRowLayoutCustomTest, TopRowLayout) {
                           "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(keyboard, custom_layout_string_,
                                           /*has_custom_top_row=*/true);
-  for (TopRowActionKey action_key = TopRowActionKey::kMinValue;
+  for (TopRowActionKey action_key = TopRowActionKey::kNone;
        action_key <= TopRowActionKey::kMaxValue;
        action_key =
            static_cast<TopRowActionKey>(static_cast<int>(action_key) + 1)) {
