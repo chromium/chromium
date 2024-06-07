@@ -399,6 +399,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Called when `prefs::kAutofillProfileEnabled` changed.
   void OnAutofillProfilePrefChanged();
 
+  base::ObserverList<Observer> observers_;
+
   std::unique_ptr<ContactInfoPreconditionChecker>
       contact_info_precondition_checker_;
 
@@ -470,8 +472,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // deduplication, disused address removal) at browser startup or when the sync
   // starts.
   std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
-
-  base::ObserverList<Observer> observers_;
 
   // The list of change callbacks. All of them are being triggered in
   // `NotifyObservers()` and then the list is cleared.
