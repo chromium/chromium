@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -47,8 +48,18 @@ class ClientSideDetectionService;
 // class which sends a ping to a server to validate the verdict.
 class ClientSideDetectionHost
     : public content::WebContentsObserver,
-      public permissions::PermissionRequestManager::Observer {
+      public permissions::PermissionRequestManager::Observer,
+      public AsyncCheckTracker::Observer {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AsyncCheckTriggerForceRequestResult {
+    kTriggered = 0,
+    kSkippedTriggerModelsPingNotSkipped = 1,
+    kSkippedNotForced = 2,
+    kMaxValue = kSkippedNotForced,
+  };
+
   // A callback via which the client of this component indicates whether the
   // primary account is signed in.
   using PrimaryAccountSignedIn = base::RepeatingCallback<bool()>;
@@ -109,6 +120,11 @@ class ClientSideDetectionHost
   void OnPermissionRequestManagerDestructed() override;
 
   void RegisterPermissionRequestManager();
+
+  // AsyncCheckTracker::Observer methods:
+  void OnAsyncSafeBrowsingCheckCompleted() override;
+
+  void RegisterAsyncCheckTracker();
 
  protected:
   explicit ClientSideDetectionHost(
@@ -200,6 +216,10 @@ class ClientSideDetectionHost
       bool is_phishing,
       std::optional<net::HttpStatusCode> response_code);
 
+  // Whether request is forced for |current_url_|. This function also checks
+  // whether enhanced protection is enabled.
+  bool HasForceRequestFromRtUrlLookup();
+
   // Used for testing.  This function does not take ownership of the service
   // class.
   void set_client_side_detection_service(
@@ -288,7 +308,14 @@ class ClientSideDetectionHost
 
   base::ScopedObservation<permissions::PermissionRequestManager,
                           permissions::PermissionRequestManager::Observer>
-      observation_{this};
+      permission_request_observation_{this};
+
+  // A boolean indicates whether TRIGGER_MODELS request is skipped. This is
+  // used to decide whether async check is allowed to trigger FORCE_REQUEST.
+  bool trigger_models_request_skipped_ = false;
+
+  base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
+      async_check_observation_{this};
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

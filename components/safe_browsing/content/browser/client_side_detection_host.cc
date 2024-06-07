@@ -157,6 +157,14 @@ PhishingDetectorResult GetPhishingDetectorResult(
   }
 }
 
+void RecordAsyncCheckTriggerForceRequestResult(
+    ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult result) {
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      result);
+}
+
 }  // namespace
 
 typedef base::OnceCallback<void(bool, bool)> ShouldClassifyUrlCallback;
@@ -500,6 +508,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   database_manager_ = delegate_->GetSafeBrowsingDBManager();
 
   RegisterPermissionRequestManager();
+  RegisterAsyncCheckTracker();
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
@@ -511,8 +520,19 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 void ClientSideDetectionHost::RegisterPermissionRequestManager() {
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       base::FeatureList::IsEnabled(kClientSideDetectionNotificationPrompt)) {
-    observation_.Observe(
+    permission_request_observation_.Observe(
         permissions::PermissionRequestManager::FromWebContents(web_contents()));
+  }
+}
+
+void ClientSideDetectionHost::RegisterAsyncCheckTracker() {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck) &&
+      IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    AsyncCheckTracker* tracker =
+        AsyncCheckTracker::FromWebContents(web_contents());
+    CHECK(tracker);
+    async_check_observation_.Observe(tracker);
   }
 }
 
@@ -553,6 +573,8 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  trigger_models_request_skipped_ = false;
   MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
 }
 
@@ -574,7 +596,26 @@ void ClientSideDetectionHost::OnPromptAdded() {
 }
 
 void ClientSideDetectionHost::OnPermissionRequestManagerDestructed() {
-  observation_.Reset();
+  permission_request_observation_.Reset();
+}
+
+void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckCompleted() {
+  // If TRIGGER_MODELS ping is not skipped, do not allow async check to trigger
+  // another request. This is to avoid duplicate pings.
+  if (!trigger_models_request_skipped_) {
+    RecordAsyncCheckTriggerForceRequestResult(
+        AsyncCheckTriggerForceRequestResult::
+            kSkippedTriggerModelsPingNotSkipped);
+    return;
+  }
+  if (!HasForceRequestFromRtUrlLookup()) {
+    RecordAsyncCheckTriggerForceRequestResult(
+        AsyncCheckTriggerForceRequestResult::kSkippedNotForced);
+    return;
+  }
+  RecordAsyncCheckTriggerForceRequestResult(
+      AsyncCheckTriggerForceRequestResult::kTriggered);
+  MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {
@@ -793,24 +834,14 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
                             verdict->is_phishing());
 
-  raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
-
   bool force_request_from_rt_url_lookup = false;
 
   if (verdict->client_side_detection_type() ==
           ClientSideDetectionType::TRIGGER_MODELS &&
-      cache_manager) {
-    safe_browsing::ClientSideDetectionType cached_csd_type =
-        cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
-            current_url_);
-    force_request_from_rt_url_lookup =
-        cached_csd_type ==
-            safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
-        IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
-    if (force_request_from_rt_url_lookup) {
-      verdict->set_client_side_detection_type(
-          safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
-    }
+      HasForceRequestFromRtUrlLookup()) {
+    verdict->set_client_side_detection_type(
+        safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+    force_request_from_rt_url_lookup = true;
   }
 
   base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
@@ -839,16 +870,19 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   // RTLookupResponse for a SBER/ESB user. This can also be changed when the
   // request is made from a notification permission prompt, keyboard & pointer
   // lock API.
-  if (!verdict->is_phishing() &&
+  trigger_models_request_skipped_ =
+      !verdict->is_phishing() &&
       verdict->client_side_detection_type() ==
           ClientSideDetectionType::TRIGGER_MODELS &&
-      verdict->report_type() == ClientPhishingRequest::FULL_REPORT) {
+      verdict->report_type() == ClientPhishingRequest::FULL_REPORT;
+  if (trigger_models_request_skipped_) {
     return;
   }
 
   // Fill in metadata about which model we used.
   *verdict->mutable_population() = delegate_->GetUserPopulation();
 
+  raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
   if (cache_manager) {
     ChromeUserPopulation::PageLoadToken token =
         cache_manager->GetPageLoadToken(current_url_);
@@ -976,6 +1010,20 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
     // consider the malware vedict.
     weak_factory_.InvalidateWeakPtrs();
   }
+}
+
+bool ClientSideDetectionHost::HasForceRequestFromRtUrlLookup() {
+  raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
+
+  if (!cache_manager || !current_url_.is_valid()) {
+    return false;
+  }
+
+  safe_browsing::ClientSideDetectionType cached_csd_type =
+      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(current_url_);
+  return cached_csd_type ==
+             safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
+         IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
 }
 
 void ClientSideDetectionHost::set_client_side_detection_service(
