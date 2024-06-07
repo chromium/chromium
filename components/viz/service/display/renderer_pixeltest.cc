@@ -399,57 +399,6 @@ void CreateTestTextureDrawQuad(
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
-
-void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
-    scoped_refptr<media::VideoFrame> video_frame,
-    uint8_t alpha_value,
-    gfx::Transform transform,
-    gfx::MaskFilterInfo mask_filter_info,
-    int sorting_context_id,
-    CompositorRenderPass* render_pass,
-    media::VideoResourceUpdater* video_resource_updater,
-    const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    DisplayResourceProvider* resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    RasterContextProvider* child_context_provider) {
-  DCHECK(video_frame->ColorSpace().IsValid());
-  bool contents_opaque = false;
-  float draw_opacity = 1.0f;
-  const bool with_alpha = (video_frame->format() == media::PIXEL_FORMAT_I420A);
-  if (with_alpha) {
-    memset(video_frame->writable_data(media::VideoFrame::Plane::kA),
-           alpha_value,
-           video_frame->stride(media::VideoFrame::Plane::kA) *
-               video_frame->rows(media::VideoFrame::Plane::kA));
-  }
-
-  // Obtain frame resources and perform AppendQuads which chooses the correct
-  // quad to append to.
-  video_resource_updater->ObtainFrameResources(video_frame);
-  video_resource_updater->AppendQuads(
-      render_pass, video_frame, transform, rect, visible_rect, mask_filter_info,
-      /*clip_rect=*/std::nullopt, contents_opaque, draw_opacity,
-      sorting_context_id);
-
-  // Get the appended quad and map resource ids for transfer.
-  auto* quad = render_pass->quad_list.back();
-  std::vector<ResourceId> resource_ids_to_transfer;
-  for (uint32_t i = 0; i < quad->resources.count; ++i) {
-    resource_ids_to_transfer.push_back(quad->resources.ids[i]);
-  }
-
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      cc::SendResourceAndGetChildToParentMap(
-          resource_ids_to_transfer, resource_provider, child_resource_provider,
-          child_context_provider);
-  // Set correct resource ids and count.
-  for (size_t i = 0; i < resource_map.size(); ++i) {
-    quad->resources.ids[i] = resource_map[resource_ids_to_transfer[i]];
-  }
-  quad->resources.count = resource_map.size();
-}
-
 void CreateTestY16TextureDrawQuad_FromVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     const gfx::Transform& transform,
@@ -590,6 +539,56 @@ scoped_refptr<media::VideoFrame> CreateHighbitVideoFrame(
     }
   }
   return ret;
+}
+
+void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    uint8_t alpha_value,
+    gfx::Transform transform,
+    gfx::MaskFilterInfo mask_filter_info,
+    int sorting_context_id,
+    CompositorRenderPass* render_pass,
+    media::VideoResourceUpdater* video_resource_updater,
+    const gfx::Rect& rect,
+    const gfx::Rect& visible_rect,
+    DisplayResourceProvider* resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    RasterContextProvider* child_context_provider) {
+  DCHECK(video_frame->ColorSpace().IsValid());
+  bool contents_opaque = false;
+  float draw_opacity = 1.0f;
+  const bool with_alpha = (video_frame->format() == media::PIXEL_FORMAT_I420A);
+  if (with_alpha) {
+    memset(video_frame->writable_data(media::VideoFrame::Plane::kA),
+           alpha_value,
+           video_frame->stride(media::VideoFrame::Plane::kA) *
+               video_frame->rows(media::VideoFrame::Plane::kA));
+  }
+
+  // Obtain frame resources and perform AppendQuads which chooses the correct
+  // quad to append to.
+  video_resource_updater->ObtainFrameResources(video_frame);
+  video_resource_updater->AppendQuads(
+      render_pass, video_frame, transform, rect, visible_rect, mask_filter_info,
+      /*clip_rect=*/std::nullopt, contents_opaque, draw_opacity,
+      sorting_context_id);
+
+  // Get the appended quad and map resource ids for transfer.
+  auto* quad = render_pass->quad_list.back();
+  std::vector<ResourceId> resource_ids_to_transfer;
+  for (uint32_t i = 0; i < quad->resources.count; ++i) {
+    resource_ids_to_transfer.push_back(quad->resources.ids[i]);
+  }
+
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
+      cc::SendResourceAndGetChildToParentMap(
+          resource_ids_to_transfer, resource_provider, child_resource_provider,
+          child_context_provider);
+  // Set correct resource ids and count.
+  for (size_t i = 0; i < resource_map.size(); ++i) {
+    quad->resources.ids[i] = resource_map[resource_ids_to_transfer[i]];
+  }
+  quad->resources.count = resource_map.size();
 }
 
 void CreateTestMultiplanarVideoDrawQuad_Striped(
@@ -768,12 +767,29 @@ void CreateTestMultiplanarVideoDrawQuad_Solid(
   memset(video_frame->writable_data(media::VideoFrame::Plane::kY), y,
          video_frame->stride(media::VideoFrame::Plane::kY) *
              video_frame->rows(media::VideoFrame::Plane::kY));
-  memset(video_frame->writable_data(media::VideoFrame::Plane::kU), u,
-         video_frame->stride(media::VideoFrame::Plane::kU) *
-             video_frame->rows(media::VideoFrame::Plane::kU));
-  memset(video_frame->writable_data(media::VideoFrame::Plane::kV), v,
-         video_frame->stride(media::VideoFrame::Plane::kV) *
-             video_frame->rows(media::VideoFrame::Plane::kV));
+  if (format == media::PIXEL_FORMAT_NV12) {
+    const int stride_uv = video_frame->stride(media::VideoFrame::Plane::kUV);
+    const int half_height = (coded_size.height() + 1) / 2;
+    uint8_t* uv_plane =
+        video_frame->writable_data(media::VideoFrame::Plane::kUV);
+    // Set U and V.
+    for (int row = 0; row < half_height; ++row) {
+      for (int col = 0; col < stride_uv; col++) {
+        *uv_plane = col % 2 == 0 ? u : v;
+        uv_plane++;
+      }
+    }
+  } else {
+    // Only NV12, YV12 and I420 formats are used for testing here.
+    CHECK(format == media::PIXEL_FORMAT_I420 ||
+          format == media::PIXEL_FORMAT_YV12);
+    memset(video_frame->writable_data(media::VideoFrame::Plane::kU), u,
+           video_frame->stride(media::VideoFrame::Plane::kU) *
+               video_frame->rows(media::VideoFrame::Plane::kU));
+    memset(video_frame->writable_data(media::VideoFrame::Plane::kV), v,
+           video_frame->stride(media::VideoFrame::Plane::kV) *
+               video_frame->rows(media::VideoFrame::Plane::kV));
+  }
 
   uint8_t alpha_value = is_transparent ? 0 : 128;
   CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
@@ -781,65 +797,6 @@ void CreateTestMultiplanarVideoDrawQuad_Solid(
       /*sorting_context_id=*/0, render_pass, video_resource_updater, rect,
       visible_rect, resource_provider, child_resource_provider,
       child_context_provider);
-}
-
-void CreateTestYUVVideoDrawQuad_NV12(
-    const SharedQuadState* shared_state,
-    const gfx::ColorSpace& color_space,
-    const gfx::RectF& tex_coord_rect,
-    uint8_t y,
-    uint8_t u,
-    uint8_t v,
-    AggregatedRenderPass* render_pass,
-    media::VideoResourceUpdater* video_resource_updater,
-    const gfx::Rect& rect,
-    const gfx::Rect& visible_rect,
-    DisplayResourceProvider* resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    scoped_refptr<RasterContextProvider> child_context_provider) {
-  bool needs_blending = true;
-  const gfx::Size ya_tex_size = rect.size();
-  const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
-      media::PIXEL_FORMAT_NV12, media::VideoFrame::Plane::kUV, rect.size());
-  const gfx::Size uv_sample_size = media::VideoFrame::SampleSize(
-      media::PIXEL_FORMAT_NV12, media::VideoFrame::Plane::kUV);
-
-  std::vector<uint8_t> y_pixels(ya_tex_size.GetArea(), y);
-  ResourceId resource_y = CreateGpuResource(
-      child_context_provider, child_resource_provider, ya_tex_size,
-      video_resource_updater->YuvSharedImageFormat(8), color_space, y_pixels);
-
-  // U goes in the R component and V goes in the G component.
-  uint32_t rgba_pixel = (u) | (v << 8);
-  std::vector<uint32_t> uv_pixels(uv_tex_size.GetArea(), rgba_pixel);
-  ResourceId resource_u = CreateGpuResource(
-      child_context_provider, child_resource_provider, uv_tex_size,
-      SinglePlaneFormat::kRGBA_8888, color_space, MakePixelSpan(uv_pixels));
-  ResourceId resource_v = resource_u;
-  ResourceId resource_a = kInvalidResourceId;
-
-  // Transfer resources to the parent, and get the resource map.
-  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      cc::SendResourceAndGetChildToParentMap(
-          {resource_y, resource_u, resource_v}, resource_provider,
-          child_resource_provider, child_context_provider.get());
-
-  ResourceId mapped_resource_y = resource_map[resource_y];
-  ResourceId mapped_resource_u = resource_map[resource_u];
-  ResourceId mapped_resource_v = resource_map[resource_v];
-
-  const gfx::Rect video_frame_visible_rect = gfx::ToNearestRect(
-      gfx::RectF(tex_coord_rect.x() * ya_tex_size.width(),
-                 tex_coord_rect.y() * ya_tex_size.height(),
-                 tex_coord_rect.width() * ya_tex_size.width(),
-                 tex_coord_rect.height() * ya_tex_size.height()));
-
-  auto* yuv_quad = render_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-  yuv_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                   ya_tex_size, video_frame_visible_rect, uv_sample_size,
-                   mapped_resource_y, mapped_resource_u, mapped_resource_v,
-                   resource_a, color_space, 8, gfx::ProtectedVideoType::kClear,
-                   std::nullopt);
 }
 
 // Create two quads of specified colors on half-pixel boundaries.
@@ -2746,22 +2703,23 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
 TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
   gfx::Rect rect(this->device_viewport_size_);
 
-  AggregatedRenderPassId id{1};
+  CompositorRenderPassId id{1};
   auto pass = CreateTestRootRenderPass(id, rect);
 
-  SharedQuadState* shared_state = CreateTestSharedQuadState(
-      gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
-
   // YUV of (149,100,50) should be emerald green (39, 214, 99) in RGB.
-  CreateTestYUVVideoDrawQuad_NV12(
-      shared_state, gfx::ColorSpace::CreateJpeg(),
+  CreateTestMultiplanarVideoDrawQuad_Solid(
+      media::PIXEL_FORMAT_NV12, gfx::ColorSpace::CreateJpeg(), false,
       gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), 149, 100, 50, pass.get(),
       this->video_resource_updater_.get(), rect, rect,
       this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->child_context_provider_);
+      this->child_context_provider_.get());
+
+  AggregatedRenderPassId new_id{1};
+  auto copy_pass = cc::CopyToAggregatedRenderPass(
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
 
   AggregatedRenderPassList pass_list;
-  pass_list.push_back(std::move(pass));
+  pass_list.push_back(std::move(copy_pass));
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("emerald_green.png")),
