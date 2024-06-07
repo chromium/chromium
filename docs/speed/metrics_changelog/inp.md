@@ -2,7 +2,7 @@
 
 This is a list of changes to [Interaction to Next Paint](https://web.dev/inp).
 
-* Chrome [Future version placeholder]
+* Chrome 127
   * Launch feature: [Enable EventTimingKeypressAndCompositionInteractionId by default](2024_07_inp.md)
   * Launch feature: [Enable EventTimingFallbackToModalDialogStart by default](2024_07_inp.md)
 * Chrome 122
