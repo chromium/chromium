@@ -96,8 +96,14 @@ public abstract class PageInfoControllerDelegate {
         return false;
     }
 
+    /** Return the type of the pdf page. Return 0 if not a pdf page. */
+    public int getPdfPageType() {
+        return 0;
+    }
+
     /**
      * Initialize viewParams with Offline Page UI info, if any.
+     *
      * @param viewParams The PageInfoView.Params to set state on.
      * @param runAfterDismiss Used to set "open Online" button callback for offline page.
      */
@@ -121,6 +127,15 @@ public abstract class PageInfoControllerDelegate {
      */
     @Nullable
     public String getPaintPreviewPageConnectionMessage() {
+        return null;
+    }
+
+    /**
+     * Return the connection message shown for a pdf page, if appropriate. Returns null if there's
+     * no pdf page.
+     */
+    @Nullable
+    public String getPdfPageConnectionMessage() {
         return null;
     }
 

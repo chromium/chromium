@@ -94,6 +94,7 @@ public class PageInfoConnectionController
         return mContentPublisher == null
                 && !mDelegate.isShowingOfflinePage()
                 && !mDelegate.isShowingPaintPreviewPage()
+                && mDelegate.getPdfPageType() == 0
                 && !mIsInternalPage;
     }
 
@@ -117,6 +118,8 @@ public class PageInfoConnectionController
             messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
         } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
             messageBuilder.append(mDelegate.getOfflinePageConnectionMessage());
+        } else if (mDelegate.getPdfPageType() != 0) {
+            messageBuilder.append(mDelegate.getPdfPageConnectionMessage());
         } else {
             if (!summary.isEmpty()) {
                 title = summary;

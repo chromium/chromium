@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1014,6 +1015,76 @@ public class PageInfoViewTest {
                             ChromePageInfoHighlight.noHighlight());
                 });
         onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
+    }
+
+    /** Tests that page info view is shown correctly for transient pdf pages. */
+    @Test
+    @MediumTest
+    public void testTransientPdfPage() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final Tab tab = activity.getActivityTab();
+                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
+                            new ChromePageInfoControllerDelegate(
+                                    activity,
+                                    tab.getWebContents(),
+                                    activity::getModalDialogManager,
+                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
+                                    null,
+                                    null,
+                                    ChromePageInfoHighlight.noHighlight(),
+                                    null) {
+                                @Override
+                                public @PdfPageType int getPdfPageType() {
+                                    return PdfPageType.TRANSIENT;
+                                }
+                            };
+                    PageInfoController.show(
+                            sActivityTestRule.getActivity(),
+                            tab.getWebContents(),
+                            null,
+                            PageInfoController.OpenedFromSource.MENU,
+                            pageInfoControllerDelegate,
+                            ChromePageInfoHighlight.noHighlight());
+                });
+        onViewWaiting(
+                allOf(withText(R.string.page_info_connection_transient_pdf), isDisplayed()), true);
+    }
+
+    /** Tests that page info view is shown correctly for local pdf pages. */
+    @Test
+    @MediumTest
+    public void testLocalPdfPage() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final Tab tab = activity.getActivityTab();
+                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
+                            new ChromePageInfoControllerDelegate(
+                                    activity,
+                                    tab.getWebContents(),
+                                    activity::getModalDialogManager,
+                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
+                                    null,
+                                    null,
+                                    ChromePageInfoHighlight.noHighlight(),
+                                    null) {
+                                @Override
+                                public @PdfPageType int getPdfPageType() {
+                                    return PdfPageType.LOCAL;
+                                }
+                            };
+                    PageInfoController.show(
+                            sActivityTestRule.getActivity(),
+                            tab.getWebContents(),
+                            null,
+                            PageInfoController.OpenedFromSource.MENU,
+                            pageInfoControllerDelegate,
+                            ChromePageInfoHighlight.noHighlight());
+                });
+        onViewWaiting(
+                allOf(withText(R.string.page_info_connection_local_pdf), isDisplayed()), true);
     }
 
     /** Tests PageInfo on a website with permissions and no particular row highlight. */

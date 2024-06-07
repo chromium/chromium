@@ -30,6 +30,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
   srcjar_deps = [ ":pdf_jni_headers" ]
   resources_package = "org.chromium.chrome.browser.pdf"

@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.OfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
+import org.chromium.chrome.browser.pdf.PdfUtils;
+import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
@@ -210,6 +212,30 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         if (!isShowingPaintPreviewPage()) return null;
 
         return mContext.getString(R.string.page_info_connection_paint_preview);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @PdfPageType int getPdfPageType() {
+        Tab tab = TabUtils.fromWebContents(mWebContents);
+        // TODO(shuyng): move this check to PdfUtils. Currently PdfUtils cannot depends on Tab.
+        if (tab == null || !tab.isNativePage() || !tab.getNativePage().isPdf()) {
+            return PdfPageType.NONE;
+        }
+        return PdfUtils.getPdfPageType(tab.getUrl());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable String getPdfPageConnectionMessage() {
+        switch (getPdfPageType()) {
+            case PdfPageType.TRANSIENT:
+                return mContext.getString(R.string.page_info_connection_transient_pdf);
+            case PdfPageType.LOCAL:
+                return mContext.getString(R.string.page_info_connection_local_pdf);
+            default:
+                return null;
+        }
     }
 
     /** {@inheritDoc} */
