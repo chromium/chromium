@@ -327,7 +327,14 @@ public class SyncPromoController {
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 mTitleStringId = R.string.sync_promo_title_settings;
-                mDescriptionStringId = R.string.sync_promo_description_settings;
+                boolean isAccountStorageEnabled =
+                        ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS);
+                mDescriptionStringId =
+                        isAccountStorageEnabled
+                                ? R.string.sync_promo_description_settings_without_passwords
+                                : R.string.sync_promo_description_settings;
                 mShouldSuppressSecodaryButton = false;
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.

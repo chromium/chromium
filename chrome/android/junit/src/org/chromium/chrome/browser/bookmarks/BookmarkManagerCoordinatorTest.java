@@ -61,6 +61,7 @@ import org.chromium.ui.base.TestActivity;
 @EnableFeatures({
     SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+    ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 public class BookmarkManagerCoordinatorTest {

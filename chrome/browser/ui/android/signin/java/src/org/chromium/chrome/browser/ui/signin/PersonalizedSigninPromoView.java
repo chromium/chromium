@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Container view for personalized signin promos. */
@@ -41,6 +42,10 @@ public class PersonalizedSigninPromoView extends FrameLayout {
         mSecondaryButton = findViewById(R.id.sync_promo_choose_account_button);
         mTitle = findViewById(R.id.sync_promo_title);
         mDescription = findViewById(R.id.sync_promo_description);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)) {
+            mDescription.setText(R.string.sync_promo_description_settings_without_passwords);
+        }
     }
 
     /**

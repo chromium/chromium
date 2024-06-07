@@ -144,11 +144,11 @@ import java.util.HashSet;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
-@DisableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+@EnableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
-    private static final int RENDER_TEST_REVISION = 11;
+    private static final int RENDER_TEST_REVISION = 12;
     private static final String RENDER_TEST_DESCRIPTION =
             "Alert icon on identity error for signed in users";
 
@@ -372,7 +372,7 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.addTestAccount();
         launchSettingsActivity();
 
-        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.recycler_view), isDisplayed()));
         onView(withId(R.id.recycler_view))
                 .perform(scrollTo(hasDescendant(withText(R.string.sync_promo_turn_on_sync))));
         onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
@@ -443,7 +443,7 @@ public class MainSettingsFragmentTest {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
 
-        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.recycler_view), isDisplayed()));
         onView(withId(R.id.recycler_view))
                 .perform(scrollTo(hasDescendant(withText(R.string.sync_category_title))));
         onView(withText(R.string.sync_category_title)).perform(click());
@@ -805,6 +805,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
     public void testSyncPromoNotShownAfterBeingDismissed() throws Exception {
         var dismissedCountHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -826,6 +827,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
     public void testSyncPromoShownIsNotOverCounted() {
         var showCountHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Settings", 1);
