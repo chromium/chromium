@@ -2772,7 +2772,7 @@ class StorageAccessHeadersDisabledBrowserTest
  public:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     return {
-        {net::features::kStorageAccessHeaderRetry},
+        {net::features::kStorageAccessHeaders},
     };
   }
 };
@@ -2799,8 +2799,7 @@ class StorageAccessHeadersBrowserTest : public StorageAccessAPIBrowserTest {
  public:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
-        {net::features::kStorageAccessHeaderRetry, {}},
-        {net::features::kStorageAccessHeaderLoad, {}},
+        {net::features::kStorageAccessHeaders, {}},
     };
   }
 };
@@ -2922,7 +2921,7 @@ class StorageAccessHeadersWithFedCMBrowserTest
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRefAndParams> features =
         StorageAccessAPIAutograntsWithFedCMBrowserTest::GetEnabledFeatures();
-    features.push_back({net::features::kStorageAccessHeaderRetry, {}});
+    features.push_back({net::features::kStorageAccessHeaders, {}});
     return features;
   }
 };

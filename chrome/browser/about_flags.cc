@@ -11506,6 +11506,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCssTextBoxTrimDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSTextBoxTrim)},
 
+    {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
+     flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kStorageAccessHeaders)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

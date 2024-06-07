@@ -13352,7 +13352,7 @@ class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
 class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
  public:
   StorageAccessHeaderURLRequestTest() {
-    features_.InitAndEnableFeature(features::kStorageAccessHeaderRetry);
+    features_.InitAndEnableFeature(features::kStorageAccessHeaders);
   }
 
   ~StorageAccessHeaderURLRequestTest() override {

@@ -4938,7 +4938,7 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
 class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
  public:
   StorageAccessHeaderURLLoaderTest() {
-    features_.InitAndEnableFeature(net::features::kStorageAccessHeaderLoad);
+    features_.InitAndEnableFeature(net::features::kStorageAccessHeaders);
   }
 
  protected:

@@ -1936,6 +1936,9 @@ extern const char kSplitCacheByNetworkIsolationKeyDescription[];
 extern const char kStopAppIndexingReportName[];
 extern const char kStopAppIndexingReportDescription[];
 
+extern const char kStorageAccessHeadersName[];
+extern const char kStorageAccessHeadersDescription[];
+
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 

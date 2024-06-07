@@ -20037,6 +20037,7 @@ from previous Chrome versions.
   <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-149667706" label="CameraAppDigitalZoom:enabled"/>
   <int value="-149365748" label="CbdTimeframeRequired:enabled"/>
+  <int value="-149260874" label="StorageAccessHeaders:disabled"/>
   <int value="-148627978" label="GlanceablesV2CalendarView:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
   <int value="-147560822" label="ArcInputOverlay:enabled"/>
@@ -22038,6 +22039,7 @@ from previous Chrome versions.
   <int value="722313909" label="PriceChangeModule:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
   <int value="722614233" label="TrackingProtectionOnboardingRollback:disabled"/>
+  <int value="722651450" label="StorageAccessHeaders:enabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>
   <int value="723384042" label="RenderDocument:disabled"/>
   <int value="723385329" label="SystemEmojiPickerClipboard:enabled"/>

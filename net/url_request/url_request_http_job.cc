@@ -1522,7 +1522,7 @@ bool URLRequestHttpJob::NeedsAuth() {
 }
 
 bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
-  if (!base::FeatureList::IsEnabled(features::kStorageAccessHeaderRetry)) {
+  if (!base::FeatureList::IsEnabled(features::kStorageAccessHeaders)) {
     return false;
   }
   if (!ShouldAddCookieHeader() ||

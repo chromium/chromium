@@ -9306,7 +9306,7 @@ INSTANTIATE_TEST_SUITE_P(NetworkContextBrowserCookieTestInstance,
 class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
  public:
   StorageAccessHeaderNetworkContextTest() {
-    features_.InitAndEnableFeature(net::features::kStorageAccessHeaderRetry);
+    features_.InitAndEnableFeature(net::features::kStorageAccessHeaders);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(

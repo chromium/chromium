@@ -1304,7 +1304,7 @@ bool URLRequest::ShouldSetLoadWithStorageAccess() const {
   // the Storage-Access state is "inactive" or "active"/allowed. For now, this
   // is fine because this is only used to set the renderer's bool, which is
   // untrusted anyway.
-  return base::FeatureList::IsEnabled(features::kStorageAccessHeaderLoad) &&
+  return base::FeatureList::IsEnabled(features::kStorageAccessHeaders) &&
          response_headers() && response_headers()->HasStorageAccessLoadHeader();
 }
 

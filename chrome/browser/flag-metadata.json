@@ -8060,6 +8060,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "storage-access-headers",
+    "owners": [ "cfredric@chromium.org", "potassium-auth-embeds@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full
