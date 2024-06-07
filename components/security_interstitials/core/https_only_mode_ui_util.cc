@@ -28,7 +28,9 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
   // Multiple interstitial flags might be true here, but we assign higher
   // priority to Site Engagement heuristic because we expect SE interstitials
   // to be rare. Advanced Protection locks the HTTPS-First Mode UI setting so
-  // it's higher priority than the HFM string as well.
+  // it's higher priority than the HFM string as well. The lowest priority is
+  // given to HFM-in-Incognito, where we want to use different strings only if
+  // the user is not opted in to HFM for any other reason.
   if (interstitial_state.enabled_by_engagement_heuristic) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH;
@@ -38,6 +40,9 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
   } else if (interstitial_state.enabled_by_typically_secure_browsing) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
+  } else if (interstitial_state.enabled_by_incognito &&
+             !interstitial_state.enabled_by_pref) {
+    primary_paragraph_id = IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH;
   }
   // TODO(crbug.com/40937027): Customize interstitial strings for
   // HFM-in-Incognito here. (HTTPS-First Mode in Incognito is the least
