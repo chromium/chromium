@@ -829,6 +829,14 @@
       },
     },
   },
+  'mac_13_OR_14_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-13|Mac-14',
+      },
+    },
+  },
   'mac_13_arm64': {
     'swarming': {
       'dimensions': {
