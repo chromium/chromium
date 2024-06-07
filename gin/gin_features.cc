@@ -159,6 +159,11 @@ BASE_FEATURE(kV8TurboFastApiCalls,
 // Enables faster DOM methods for megamorphic ICs
 BASE_FEATURE(kV8MegaDomIC, "V8MegaDomIC", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Faster object cloning
+BASE_FEATURE(kV8SideStepTransitions,
+             "V8SideStepTransitions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Avoids background threads for GC if isolate is in background.
 BASE_FEATURE(kV8SingleThreadedGCInBackground,
              "V8SingleThreadedGCInBackground",

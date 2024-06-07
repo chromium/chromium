@@ -313,6 +313,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-write-protect-code-memory");
   SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
                          "--no-slow-histograms");
+  SetV8FlagsIfOverridden(features::kV8SideStepTransitions,
+                         "--clone_object_sidestep_transitions",
+                         "--noclone_object_sidestep_transitions");
   SetV8FlagsIfOverridden(features::kV8SingleThreadedGCInBackground,
                          "--single-threaded-gc-in-background",
                          "--no-single-threaded-gc-in-background");

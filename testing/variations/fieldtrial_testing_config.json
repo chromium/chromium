@@ -23127,6 +23127,35 @@
             ]
         }
     ],
+    "V8SideStepTransitions": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8SideStepTransitions"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8SideStepTransitions"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8SingleThreadedGCInBackgroundVariants": [
         {
             "platforms": [
