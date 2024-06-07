@@ -120,7 +120,7 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   return grey_allOf(
       // The link is within kPlusAddressModalDescriptionAccessibilityIdentifier.
       grey_ancestor(grey_accessibilityID(
-          kPlusAddressModalDescriptionAccessibilityIdentifier)),
+          kPlusAddressSheetDescriptionAccessibilityIdentifier)),
       // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
       // element in the label with attributed string.
       grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
@@ -132,7 +132,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       // The link is within
       // kPlusAddressModalErrorMessageAccessibilityIdentifier.
       grey_ancestor(grey_accessibilityID(
-          kPlusAddressModalErrorMessageAccessibilityIdentifier)),
+          kPlusAddressSheetErrorMessageAccessibilityIdentifier)),
       // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
       // element in the label with attributed string.
       grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),

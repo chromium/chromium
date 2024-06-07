@@ -88,11 +88,11 @@ UIImageView* BrandingImageView() {
   // Branding icon inside the container with the white background.
   return [[UIImageView alloc]
       initWithImage:MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                        kGoogleIconSymbol, kBrandingIconSize))];
+                        kGoogleIconSymbol, kPlusAddressSheetBrandingIconSize))];
 #else
   return [[UIImageView alloc]
-      initWithImage:DefaultSymbolTemplateWithPointSize(kMailFillSymbol,
-                                                       kBrandingIconSize)];
+      initWithImage:DefaultSymbolTemplateWithPointSize(
+                        kMailFillSymbol, kPlusAddressSheetBrandingIconSize)];
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 }
 
@@ -102,15 +102,16 @@ UIImage* PlusAddressesLogo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   UIImage* icon = NativeImage(IDR_PLUS_ADDRESS_LOGO);
   // Scale down image size to prevent content overflow.
-  if (icon && (icon.size.width > kBrandedImageWidth)) {
-    CGFloat ratio = icon.size.width / kBrandedImageWidth;
+  if (icon && (icon.size.width > kPlusAddressSheetBrandedImageWidth)) {
+    CGFloat ratio = icon.size.width / kPlusAddressSheetBrandedImageWidth;
     return [UIImage imageWithCGImage:[icon CGImage]
                                scale:icon.scale * ratio
                          orientation:icon.imageOrientation];
   }
   return icon;
 #else
-  return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kImageSize);
+  return DefaultSymbolTemplateWithPointSize(kMailFillSymbol,
+                                            kPlusAddressSheetImageSize);
 #endif
 }
 
@@ -185,7 +186,8 @@ UIImage* PlusAddressesLogo() {
   }
 
   self.customScrollViewBottomInsets =
-      _plusAddressUIRedesignEnabled ? 0 : kScrollViewBottomInsets;
+      _plusAddressUIRedesignEnabled ? 0
+                                    : kPlusAddressSheetScrollViewBottomInsets;
   self.titleString = l10n_util::GetNSString(
       _plusAddressUIRedesignEnabled ? IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS
                                     : IDS_PLUS_ADDRESS_MODAL_TITLE);
@@ -202,8 +204,9 @@ UIImage* PlusAddressesLogo() {
   // relevant with larger accessibility text sizes.
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customSpacingBeforeImageIfNoNavigationBar = kBeforeImageTopMargin;
-  self.customSpacingAfterImage = kAfterImageMargin;
+  self.customSpacingBeforeImageIfNoNavigationBar =
+      kPlusAddressSheetBeforeImageTopMargin;
+  self.customSpacingAfterImage = kPlusAddressSheetAfterImageMargin;
   if (_plusAddressUIRedesignEnabled) {
     // Set up the view that will indicate the reserved plus address to the user
     // for confirmation.
@@ -232,7 +235,7 @@ UIImage* PlusAddressesLogo() {
   verticalStack.layoutMarginsRelativeArrangement = YES;
   verticalStack.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
-  [verticalStack setCustomSpacing:kPrimaryAddressBottomMargin
+  [verticalStack setCustomSpacing:kPlusAddressSheetPrimaryAddressBottomMargin
                         afterView:primaryAddressLabel];
   self.underTitleView = verticalStack;
   [super viewDidLoad];
@@ -355,12 +358,13 @@ UIImage* PlusAddressesLogo() {
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  [cell setLeadingIconImage:DefaultSymbolTemplateWithPointSize(kMailFillSymbol,
-                                                               kCellImageSize)
+  [cell setLeadingIconImage:DefaultSymbolTemplateWithPointSize(
+                                kMailFillSymbol, kPlusAddressSheetCellImageSize)
               withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
   if ([_delegate isRefreshEnabled]) {
     [cell setTrailingButtonImage:CustomSymbolTemplateWithPointSize(
-                                     kArrowClockWiseSymbol, kCellImageSize)
+                                     kArrowClockWiseSymbol,
+                                     kPlusAddressSheetCellImageSize)
                    withTintColor:[UIColor colorNamed:kBlueColor]];
   }
   cell.textLabel.text = _reservedPlusAddress;
@@ -406,14 +410,15 @@ UIImage* PlusAddressesLogo() {
   CHECK(_plusAddressUIRedesignEnabled);
   UITableView* tableViewContainer =
       [[UITableView alloc] initWithFrame:CGRectZero];
-  tableViewContainer.rowHeight = kTableViewCellHeight;
+  tableViewContainer.rowHeight = kPlusAddressSheetTableViewCellHeight;
   tableViewContainer.separatorStyle = UITableViewCellSeparatorStyleNone;
-  tableViewContainer.layer.cornerRadius = kTableViewCellCornerRadius;
+  tableViewContainer.layer.cornerRadius =
+      kPlusAddressSheetTableViewCellCornerRadius;
   RegisterTableViewCell<PlusAddressSuggestionLabelCell>(tableViewContainer);
   tableViewContainer.dataSource = self;
   tableViewContainer.delegate = self;
   [tableViewContainer.heightAnchor
-      constraintEqualToConstant:kTableViewCellHeight]
+      constraintEqualToConstant:kPlusAddressSheetTableViewCellHeight]
       .active = YES;
   return tableViewContainer;
 }
@@ -443,7 +448,7 @@ UIImage* PlusAddressesLogo() {
 - (UITextView*)descriptionView:(NSAttributedString*)description {
   UITextView* descriptionView = CreateUITextViewWithTextKit1();
   descriptionView.accessibilityIdentifier =
-      kPlusAddressModalDescriptionAccessibilityIdentifier;
+      kPlusAddressSheetDescriptionAccessibilityIdentifier;
   descriptionView.scrollEnabled = NO;
   descriptionView.editable = NO;
   descriptionView.delegate = self;
@@ -459,7 +464,7 @@ UIImage* PlusAddressesLogo() {
 - (UITextView*)errorMessageViewWithMessage:(NSAttributedString*)message {
   UITextView* errorMessageView = CreateUITextViewWithTextKit1();
   errorMessageView.accessibilityIdentifier =
-      kPlusAddressModalErrorMessageAccessibilityIdentifier;
+      kPlusAddressSheetErrorMessageAccessibilityIdentifier;
   errorMessageView.scrollEnabled = NO;
   errorMessageView.editable = NO;
   errorMessageView.delegate = self;
@@ -510,7 +515,8 @@ UIImage* PlusAddressesLogo() {
   // Container of the trash icon that has the red background.
   UIView* iconContainerView = [[UIView alloc] init];
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  iconContainerView.layer.cornerRadius = kBrandingIconContainerViewCornerRadius;
+  iconContainerView.layer.cornerRadius =
+      kPlusAddressSheetBrandingIconContainerViewCornerRadius;
   // TODO(crbug.com/343153116): Fix the shadow.
   iconContainerView.layer.shadowOpacity = 0.3;
   iconContainerView.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
@@ -522,9 +528,11 @@ UIImage* PlusAddressesLogo() {
 
   [NSLayoutConstraint activateConstraints:@[
     [iconContainerView.widthAnchor
-        constraintEqualToConstant:kBrandingIconContainerViewSize],
+        constraintEqualToConstant:
+            kPlusAddressSheetBrandingIconContainerViewSize],
     [iconContainerView.heightAnchor
-        constraintEqualToConstant:kBrandingIconContainerViewSize],
+        constraintEqualToConstant:
+            kPlusAddressSheetBrandingIconContainerViewSize],
   ]];
   AddSameCenterConstraints(iconContainerView, icon);
 
@@ -534,8 +542,9 @@ UIImage* PlusAddressesLogo() {
   AddSameCenterXConstraint(outerView, iconContainerView);
   AddSameConstraintsToSidesWithInsets(
       iconContainerView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
-      NSDirectionalEdgeInsetsMake(kBrandingIconContainerViewTopPadding, 0,
-                                  kBrandingIconContainerViewBottomPadding, 0));
+      NSDirectionalEdgeInsetsMake(
+          kPlusAddressSheetBrandingIconContainerViewTopPadding, 0,
+          kPlusAddressSheetBrandingIconContainerViewBottomPadding, 0));
 
   return outerView;
 }

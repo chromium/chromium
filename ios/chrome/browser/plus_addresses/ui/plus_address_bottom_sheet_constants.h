@@ -9,60 +9,60 @@
 
 // Accessibility identifier for the bottom sheet's description used to locate
 // the description in automation.
-extern NSString* const kPlusAddressModalDescriptionAccessibilityIdentifier;
+extern NSString* const kPlusAddressSheetDescriptionAccessibilityIdentifier;
 
 // Accessibility identifier for the bottom sheet's error message used to locate
 // the error message in automation.
-extern NSString* const kPlusAddressModalErrorMessageAccessibilityIdentifier;
+extern NSString* const kPlusAddressSheetErrorMessageAccessibilityIdentifier;
 
 // The margin to be shown under the user's primary email address, and above the
 // reserved plus address element in the bottom sheet.
-extern const CGFloat kPrimaryAddressBottomMargin;
+extern const CGFloat kPlusAddressSheetPrimaryAddressBottomMargin;
 
 // The margin to be shown above the image, to prevent the top of the bottom
 // sheet content being too close to the top of the sheet.
-extern const CGFloat kBeforeImageTopMargin;
+extern const CGFloat kPlusAddressSheetBeforeImageTopMargin;
 
 // The margin to be shown below the image, to prevent the extra space which may
 // cause content overflow.
-extern const CGFloat kAfterImageMargin;
+extern const CGFloat kPlusAddressSheetAfterImageMargin;
 
 // The desired size of the image at the top of the bottom sheet content in
 // `PointSize`.
-extern const CGFloat kImageSize;
+extern const CGFloat kPlusAddressSheetImageSize;
 
 // The desired size of the branded image width at the top of the bottom sheet
 // content. `kImageSize` can not be used as branded image size uses different
 // dimensions and unit.
-extern const CGFloat kBrandedImageWidth;
+extern const CGFloat kPlusAddressSheetBrandedImageWidth;
 
 // The margin to be added below the content. This is hidden under action buttons
 // stack and is used to prevent content being hidden under buttons border.
-extern const CGFloat kScrollViewBottomInsets;
+extern const CGFloat kPlusAddressSheetScrollViewBottomInsets;
 
 // The table view corner radius.
-extern const CGFloat kTableViewCellCornerRadius;
+extern const CGFloat kPlusAddressSheetTableViewCellCornerRadius;
 
 // The cell height in the table view.
-extern const CGFloat kTableViewCellHeight;
+extern const CGFloat kPlusAddressSheetTableViewCellHeight;
 
 // The image size for both the plus address and the refresh icon.
-extern const CGFloat kCellImageSize;
+extern const CGFloat kPlusAddressSheetCellImageSize;
 
 // Branding icon view size.
-extern const CGFloat kBrandingIconContainerViewSize;
+extern const CGFloat kPlusAddressSheetBrandingIconContainerViewSize;
 
 // Branding icon view corner radius.
-extern const CGFloat kBrandingIconContainerViewCornerRadius;
+extern const CGFloat kPlusAddressSheetBrandingIconContainerViewCornerRadius;
 
 // Branding icon size that sits inside the entire view.
-extern const CGFloat kBrandingIconSize;
+extern const CGFloat kPlusAddressSheetBrandingIconSize;
 
 // Bottom padding for the branding icon view.
-extern const CGFloat kBrandingIconContainerViewBottomPadding;
+extern const CGFloat kPlusAddressSheetBrandingIconContainerViewBottomPadding;
 
 // Top padding for the branding icon view.
-extern const CGFloat kBrandingIconContainerViewTopPadding;
+extern const CGFloat kPlusAddressSheetBrandingIconContainerViewTopPadding;
 
 // Enum specifying the URL the bottom sheet should open.
 enum class PlusAddressURLType {
