@@ -12,6 +12,7 @@
 NSString* const kGoogleDriveITunesItemIdentifier = @"507874739";
 NSString* const kGoogleDriveAppURLScheme = @"googledrive";
 NSString* const kGoogleDriveAppBundleID = @"com.google.Drive";
+NSString* const kGoogleMapsAppUrlScheme = @"comgooglemaps://";
 
 NSURL* GetGoogleDriveAppUrl() {
   NSURLComponents* google_drive_url = [[NSURLComponents alloc] init];
@@ -19,8 +20,16 @@ NSURL* GetGoogleDriveAppUrl() {
   return google_drive_url.URL;
 }
 
+NSURL* GetGoogleMapsAppUrl() {
+  return [NSURL URLWithString:kGoogleMapsAppUrlScheme];
+}
+
 bool IsGoogleDriveAppInstalled() {
   return [[UIApplication sharedApplication] canOpenURL:GetGoogleDriveAppUrl()];
+}
+
+bool IsGoogleMapsAppInstalled() {
+  return [[UIApplication sharedApplication] canOpenURL:GetGoogleMapsAppUrl()];
 }
 
 NSURL* GetFilesAppUrl() {

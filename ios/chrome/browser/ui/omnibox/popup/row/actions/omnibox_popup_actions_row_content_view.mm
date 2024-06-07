@@ -333,6 +333,8 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
   CHECK([configuration
       isMemberOfClass:OmniboxPopupActionsRowContentConfiguration.class]);
 
+  [_actionsView updateConfiguration:configuration];
+
   // Background.
   _selectedBackgroundView.hidden = !configuration.showSelectedBackgroundView;
 

@@ -14,6 +14,7 @@
 @protocol ImageRetriever;
 @protocol OmniboxIcon;
 @protocol OmniboxPopupRowDelegate;
+@protocol OmniboxPopupActionsRowDelegate;
 
 /// Content configuration of the omnibox popup row, contains the logic of the
 /// row UI.
@@ -23,7 +24,9 @@
 /// Autocomplete suggestion.
 @property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
 /// Delegate for events in OmniboxPopupRow.
-@property(nonatomic, weak) id<OmniboxPopupRowDelegate> delegate;
+@property(nonatomic, weak)
+    id<OmniboxPopupRowDelegate, OmniboxPopupActionsRowDelegate>
+        delegate;
 /// Index path of the row.
 @property(nonatomic, strong) NSIndexPath* indexPath;
 /// Whether the bottom cell separator should be shown.

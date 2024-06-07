@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/actions_view.h"
 
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -27,12 +28,15 @@ const CGFloat kLeadingTrailingPadding = 61;
 @implementation ActionsView {
   UIScrollView* _actionsScrollView;
   UIStackView* _actionsStackView;
+  OmniboxPopupActionsRowContentConfiguration* _configuration;
 }
 
 - (instancetype)initWithConfiguration:
     (OmniboxPopupActionsRowContentConfiguration*)configuration {
   self = [super init];
   if (self) {
+    _configuration = configuration;
+
     _actionsScrollView = [[UIScrollView alloc] init];
     _actionsScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _actionsScrollView.showsHorizontalScrollIndicator = NO;
@@ -43,21 +47,7 @@ const CGFloat kLeadingTrailingPadding = 61;
     _actionsStackView.axis = UILayoutConstraintAxisHorizontal;
     _actionsStackView.spacing = kButtonSpace;
 
-    for (SuggestAction* action in configuration.actions) {
-      UIButton* actionButton =
-          [[self class] actionButtonWithSuggestAction:action];
-      [_actionsStackView addArrangedSubview:actionButton];
-    }
-
-    // add a spacer to the stack view in order to fill the available stack view
-    // width.
-    UIView* spacerView = [[UIView alloc] init];
-    spacerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [spacerView
-        setContentCompressionResistancePriority:0
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    [_actionsStackView addArrangedSubview:spacerView];
+    [self setupActionsStackView:configuration];
 
     [_actionsScrollView addSubview:_actionsStackView];
     [self addSubview:_actionsScrollView];
@@ -111,7 +101,53 @@ const CGFloat kLeadingTrailingPadding = 61;
                                  animated:NO];
 }
 
+- (void)updateConfiguration:
+    (OmniboxPopupActionsRowContentConfiguration*)configuration {
+  _configuration = configuration;
+  [self setupActionsStackView:configuration];
+}
+
 #pragma mark - Private
+
+// Setup the actions buttons with the given configuration actions and adds them
+// to the actions stack view.
+- (void)setupActionsStackView:
+    (OmniboxPopupActionsRowContentConfiguration*)configuration {
+  // Clear out previous arranged buttons.
+  for (UIView* view in _actionsStackView.arrangedSubviews) {
+    [view removeFromSuperview];
+  }
+
+  for (SuggestAction* action in configuration.actions) {
+    UIButton* actionButton =
+        [[self class] actionButtonWithSuggestAction:action];
+
+    [_actionsStackView addArrangedSubview:actionButton];
+
+    if (action.type == omnibox::ActionInfo_ActionType_CALL) {
+      [actionButton addTarget:self
+                       action:@selector(callButtonTapped)
+             forControlEvents:UIControlEventTouchUpInside];
+    } else if (action.type == omnibox::ActionInfo_ActionType_DIRECTIONS) {
+      [actionButton addTarget:self
+                       action:@selector(directionsButtonTapped)
+             forControlEvents:UIControlEventTouchUpInside];
+    } else if (action.type == omnibox::ActionInfo_ActionType_REVIEWS) {
+      [actionButton addTarget:self
+                       action:@selector(reviewsButtonTapped)
+             forControlEvents:UIControlEventTouchUpInside];
+    }
+  }
+
+  // add a spacer to the stack view in order to fill the available stack view
+  // width.
+  UIView* spacerView = [[UIView alloc] init];
+  spacerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [spacerView
+      setContentCompressionResistancePriority:0
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [_actionsStackView addArrangedSubview:spacerView];
+}
 
 // Creates a suggestion action button and setup its configutation attributes
 // (eg. Call action button).
@@ -148,6 +184,43 @@ const CGFloat kLeadingTrailingPadding = 61;
   button.configuration = configuration;
 
   return button;
+}
+
+/// Handles tap on call button
+- (void)callButtonTapped {
+  SuggestAction* callAction =
+      [self actionWithType:omnibox::ActionInfo_ActionType_CALL];
+  [_configuration.delegate
+      omniboxPopupRowActionSelectedWithConfiguration:_configuration
+                                              action:callAction];
+}
+
+/// Handles tap on directions button
+- (void)directionsButtonTapped {
+  SuggestAction* directionsAction =
+      [self actionWithType:omnibox::ActionInfo_ActionType_DIRECTIONS];
+  [_configuration.delegate
+      omniboxPopupRowActionSelectedWithConfiguration:_configuration
+                                              action:directionsAction];
+}
+
+/// Handles tap on reviews button
+- (void)reviewsButtonTapped {
+  SuggestAction* reviewsAction =
+      [self actionWithType:omnibox::ActionInfo_ActionType_REVIEWS];
+  [_configuration.delegate
+      omniboxPopupRowActionSelectedWithConfiguration:_configuration
+                                              action:reviewsAction];
+}
+
+/// Returns the action that corresponds to the given type.
+- (SuggestAction*)actionWithType:(omnibox::ActionInfo::ActionType)actionType {
+  for (SuggestAction* action in _configuration.actions) {
+    if (action.type == actionType) {
+      return action;
+    }
+  }
+  return nil;
 }
 
 @end

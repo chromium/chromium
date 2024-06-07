@@ -15,6 +15,9 @@
 - (instancetype)initWithConfiguration:
     (OmniboxPopupActionsRowContentConfiguration*)configuration;
 
+// Updates the actions view with a new popup action row configuration.
+- (void)updateConfiguration:(OmniboxPopupActionsRowContentConfiguration*)config;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_ACTIONS_ACTIONS_VIEW_H_

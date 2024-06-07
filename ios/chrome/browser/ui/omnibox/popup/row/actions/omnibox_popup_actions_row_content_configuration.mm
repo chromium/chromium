@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_view.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "net/base/apple/url_conversions.h"
 
@@ -46,6 +47,7 @@
 - (instancetype)updatedConfigurationForState:(id<UIConfigurationState>)state {
   OmniboxPopupActionsRowContentConfiguration* configuration =
       [super updatedConfigurationForState:state];
+  configuration.actions = self.actions;
   return configuration;
 }
 

@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_configuration.h"
@@ -71,7 +73,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
 }  // namespace
 
-@interface OmniboxPopupViewController () <OmniboxPopupCarouselCellDelegate,
+@interface OmniboxPopupViewController () <OmniboxPopupActionsRowDelegate,
+                                          OmniboxPopupCarouselCellDelegate,
                                           OmniboxPopupRowCellDelegate,
                                           OmniboxPopupRowDelegate,
                                           UITableViewDataSource,
@@ -685,6 +688,22 @@ BOOL ShouldDismissKeyboardOnScroll() {
   // retaining the old configuration.
   UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   cell.accessibilityCustomActions = configuration.accessibilityCustomActions;
+}
+
+#pragma mark - OmniboxPopupActionsRowDelegate
+
+- (void)omniboxPopupRowActionSelectedWithConfiguration:
+            (OmniboxPopupActionsRowContentConfiguration*)configuration
+                                                action:(SuggestAction*)action {
+  id<AutocompleteSuggestion> suggestion =
+      [self suggestionAtIndexPath:configuration.indexPath];
+
+  CHECK(suggestion == configuration.suggestion);
+
+  [self.delegate autocompleteResultConsumer:self
+                  didSelectSuggestionAction:action
+                                 suggestion:suggestion
+                                      inRow:configuration.indexPath.row];
 }
 
 #pragma mark - OmniboxReturnDelegate

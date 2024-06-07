@@ -26,6 +26,9 @@ NSURL* GetGoogleDriveAppUrl();
 // Returns true if Google Drive app is installed.
 bool IsGoogleDriveAppInstalled();
 
+// Returns true if Google Maps app is installed.
+bool IsGoogleMapsAppInstalled();
+
 // Returns URL which can be used to open Chrome's directory in files.app.
 // Returns nil if it cannot get the directory.
 NSURL* GetFilesAppUrl();

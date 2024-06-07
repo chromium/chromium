@@ -28,6 +28,7 @@
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -309,12 +310,44 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-         didSelectSuggestionAction:(SuggestAction*)action {
-  DCHECK(self.applicationCommandsHandler);
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:action.actionURI
-                                      inIncognito:NO];
-  [self.applicationCommandsHandler openURLInNewTab:command];
+         didSelectSuggestionAction:(SuggestAction*)action
+                        suggestion:(id<AutocompleteSuggestion>)suggestion
+                             inRow:(NSUInteger)row {
+  switch (action.type) {
+    case omnibox::ActionInfo_ActionType_CALL: {
+      NSURL* URL = net::NSURLWithGURL(action.actionURI);
+      __weak __typeof__(self) weakSelf = self;
+      [[UIApplication sharedApplication] openURL:URL
+                                         options:@{}
+                               completionHandler:^(BOOL success) {
+                                 if (success) {
+                                   [weakSelf
+                                       autocompleteResultConsumer:sender
+                                              didSelectSuggestion:suggestion
+                                                            inRow:row];
+                                 }
+                               }];
+      break;
+    }
+    case omnibox::ActionInfo_ActionType_DIRECTIONS: {
+      NSURL* URL = net::NSURLWithGURL(action.actionURI);
+
+      if (IsGoogleMapsAppInstalled() && !self.incognito) {
+        [[UIApplication sharedApplication] openURL:URL
+                                           options:@{}
+                                 completionHandler:nil];
+      } else {
+        [self openNewTabWithSuggestAction:action];
+      }
+      break;
+    }
+    case omnibox::ActionInfo_ActionType_REVIEWS: {
+      [self openNewTabWithSuggestAction:action];
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
@@ -862,6 +895,15 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:carouselItem.URL.gurl
                                       inIncognito:incognito];
+  [self.applicationCommandsHandler openURLInNewTab:command];
+}
+
+/// Opens suggestAction in a new tab.
+- (void)openNewTabWithSuggestAction:(SuggestAction*)suggestAction {
+  DCHECK(self.applicationCommandsHandler);
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:suggestAction.actionURI
+                                      inIncognito:NO];
   [self.applicationCommandsHandler openURLInNewTab:command];
 }
 
