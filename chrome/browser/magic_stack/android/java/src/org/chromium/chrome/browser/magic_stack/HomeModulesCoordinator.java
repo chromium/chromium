@@ -41,10 +41,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
     private final ModelList mModel;
-    private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ModuleRegistry mModuleRegistry;
 
+    private HomeModulesContextMenuManager mHomeModulesContextMenuManager;
     private SimpleRecyclerViewAdapter mAdapter;
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
@@ -384,6 +384,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             mHomeModulesConfigManager.removeListener(mHomeModulesStateListener);
             mHomeModulesConfigManager = null;
         }
+        if (mHomeModulesContextMenuManager != null) {
+            mHomeModulesContextMenuManager.destroy();
+            mHomeModulesContextMenuManager = null;
+        }
     }
 
     public boolean getIsSnapHelperAttachedForTesting() {
@@ -418,5 +422,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     Set<Integer> getFilteredEnabledModuleSetForTesting() {
         return mMediator.getFilteredEnabledModuleSet();
+    }
+
+    public HomeModulesContextMenuManager getHomeModulesContextMenuManagerForTesting() {
+        return mHomeModulesContextMenuManager;
     }
 }
