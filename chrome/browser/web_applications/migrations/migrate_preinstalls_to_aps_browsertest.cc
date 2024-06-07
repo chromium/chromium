@@ -223,9 +223,10 @@ class MigratePreinstallsToApsSkipStartupTest : public InProcessBrowserTest {
   void SyncApps(std::vector<ExternalInstallOptions> apps) {
     ScopedTestingPreinstalledAppData preinstalled_apps;
     preinstalled_apps.apps = apps;
-    base::test::TestFuture<std::map<GURL /*install_url*/,
-                                    ExternallyManagedAppManager::InstallResult>,
-                           std::map<GURL /*install_url*/, bool /*succeeded*/>>
+    base::test::TestFuture<
+        std::map<GURL /*install_url*/,
+                 ExternallyManagedAppManager::InstallResult>,
+        std::map<GURL /*install_url*/, webapps::UninstallResultCode>>
         result;
     WebAppProvider::GetForTest(profile())
         ->preinstalled_web_app_manager()

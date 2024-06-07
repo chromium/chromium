@@ -87,8 +87,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
             }));
     externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
-            [this](const GURL& app_url,
-                   ExternalInstallSource install_source) -> bool {
+            [this](const GURL& app_url, ExternalInstallSource install_source)
+                -> webapps::UninstallResultCode {
               std::optional<webapps::AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id.has_value()) {
@@ -97,7 +97,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                 update->DeleteApp(app_id.value());
                 deduped_uninstall_count_++;
               }
-              return true;
+              return webapps::UninstallResultCode::kSuccess;
             }));
   }
 
@@ -122,7 +122,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
             [&run_loop, urls](
                 std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
-                std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
+                std::map<GURL, webapps::UninstallResultCode>
+                    uninstall_results) { run_loop.Quit(); }));
     // Wait for SynchronizeInstalledApps to finish.
     run_loop.Run();
   }
@@ -203,7 +204,8 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
         base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
-                std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
+                std::map<GURL, webapps::UninstallResultCode>
+                    uninstall_results) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -275,7 +277,8 @@ class ExternallyAppManagerTest : public WebAppTest {
  public:
   using InstallResults = std::map<GURL /*install_url*/,
                                   ExternallyManagedAppManager::InstallResult>;
-  using UninstallResults = std::map<GURL /*install_url*/, bool /*succeeded*/>;
+  using UninstallResults =
+      std::map<GURL /*install_url*/, webapps::UninstallResultCode>;
   using SynchronizeFuture =
       base::test::TestFuture<InstallResults, UninstallResults>;
   using InstallNowFuture =
@@ -531,7 +534,8 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
 
     // One install URL uninstalled.
     EXPECT_THAT(result.Get<UninstallResults>(),
-                UnorderedElementsAre(std::make_pair(kInstallUrl2, true)));
+                UnorderedElementsAre(std::make_pair(
+                    kInstallUrl2, webapps::UninstallResultCode::kSuccess)));
 
     EXPECT_EQ(app_registrar().GetAppIds().size(), 1ul);
     const WebApp* app = app_registrar().GetAppById(app_id);
@@ -558,7 +562,8 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
 
     // One install URL uninstalled.
     EXPECT_THAT(result.Get<UninstallResults>(),
-                UnorderedElementsAre(std::make_pair(kInstallUrl1, true)));
+                UnorderedElementsAre(std::make_pair(
+                    kInstallUrl1, webapps::UninstallResultCode::kSuccess)));
 
     // App should be cleaned up.
     EXPECT_EQ(app_registrar().GetAppIds().size(), 0ul);
@@ -618,9 +623,9 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
             ExternallyManagedAppManager::InstallResult(
                 webapps::InstallResultCode::kSuccessNewInstall, app_id))));
 
-    ASSERT_THAT(
-        result.Get<UninstallResults>(),
-        testing::UnorderedElementsAre(std::make_pair(kInstallUrl, true)));
+    ASSERT_THAT(result.Get<UninstallResults>(),
+                testing::UnorderedElementsAre(std::make_pair(
+                    kInstallUrl, webapps::UninstallResultCode::kSuccess)));
   }
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);

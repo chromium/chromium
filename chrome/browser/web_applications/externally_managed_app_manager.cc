@@ -163,7 +163,7 @@ void ExternallyManagedAppManager::UninstallApps(
         base::BindOnce(
             [](const UninstallCallback& callback, const GURL& app_url,
                webapps::UninstallResultCode code) {
-              callback.Run(app_url, UninstallSucceeded(code));
+              callback.Run(app_url, code);
             },
             callback, url));
   }
@@ -555,7 +555,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::map<GURL, InstallResult>(),
-                       std::map<GURL, bool>()));
+                       std::map<GURL, webapps::UninstallResultCode>()));
     return;
   }
 
@@ -615,11 +615,11 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
 void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
     ExternalInstallSource source,
     const GURL& install_url,
-    bool succeeded) {
+    webapps::UninstallResultCode code) {
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
-  request.uninstall_results[install_url] = succeeded;
+  request.uninstall_results[install_url] = code;
   --request.remaining_uninstall_requests;
   DCHECK_GE(request.remaining_uninstall_requests, 0);
 

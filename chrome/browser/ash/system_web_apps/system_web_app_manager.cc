@@ -703,7 +703,7 @@ void SystemWebAppManager::OnAppsSynchronized(
     const base::TimeTicks& install_start_time,
     std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
         install_results,
-    std::map<GURL, bool> uninstall_results) {
+    std::map<GURL, webapps::UninstallResultCode> uninstall_results) {
   const base::TimeDelta install_duration =
       base::TimeTicks::Now() - install_start_time;
 

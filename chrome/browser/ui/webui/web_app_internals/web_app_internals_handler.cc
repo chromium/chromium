@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -204,11 +205,11 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
 
   base::Value::List& uninstall_results =
       *preinstalled_web_app_configs.EnsureList("UninstallResults");
-  for (std::pair<const GURL&, const bool&> uninstall_result :
+  for (std::pair<const GURL&, webapps::UninstallResultCode> uninstall_result :
        debug_info->uninstall_results) {
     base::Value::Dict entry;
     entry.Set("InstallUrl", uninstall_result.first.spec());
-    entry.Set("Success", uninstall_result.second);
+    entry.Set("Success", base::ToString(uninstall_result.second));
     uninstall_results.Append(std::move(entry));
   }
 

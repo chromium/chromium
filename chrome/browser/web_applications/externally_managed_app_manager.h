@@ -27,6 +27,7 @@ class Value;
 
 namespace webapps {
 enum class InstallResultCode;
+enum class UninstallResultCode;
 class WebAppUrlLoader;
 }
 
@@ -92,10 +93,12 @@ class ExternallyManagedAppManager {
       base::RepeatingCallback<void(const GURL& launch_url,
                                    RegistrationResultCode code)>;
   using UninstallCallback =
-      base::RepeatingCallback<void(const GURL& install_url, bool succeeded)>;
+      base::RepeatingCallback<void(const GURL& install_url,
+                                   webapps::UninstallResultCode)>;
   using SynchronizeCallback = base::OnceCallback<void(
       std::map<GURL /*install_url*/, InstallResult> install_results,
-      std::map<GURL /*install_url*/, bool /*succeeded*/> uninstall_results)>;
+      std::map<GURL /*install_url*/, webapps::UninstallResultCode>
+          uninstall_results)>;
 
   explicit ExternallyManagedAppManager(Profile* profile);
   ExternallyManagedAppManager(const ExternallyManagedAppManager&) = delete;
@@ -211,7 +214,7 @@ class ExternallyManagedAppManager {
     std::vector<ExternalInstallOptions> pending_installs;
     int remaining_uninstall_requests;
     std::map<GURL, InstallResult> install_results;
-    std::map<GURL, bool> uninstall_results;
+    std::map<GURL, webapps::UninstallResultCode> uninstall_results;
   };
 
   void SynchronizeInstalledAppsOnLockAcquired(
@@ -227,7 +230,7 @@ class ExternallyManagedAppManager {
       ExternallyManagedAppManager::InstallResult result);
   void UninstallForSynchronizeCallback(ExternalInstallSource source,
                                        const GURL& install_url,
-                                       bool succeeded);
+                                       webapps::UninstallResultCode code);
   void ContinueSynchronization(ExternalInstallSource source);
   void CompleteSynchronization(ExternalInstallSource source);
 

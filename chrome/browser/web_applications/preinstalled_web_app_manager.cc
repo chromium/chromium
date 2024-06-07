@@ -984,7 +984,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
     std::map<InstallUrl, std::vector<webapps::AppId>> desired_uninstalls,
     std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
         install_results,
-    std::map<InstallUrl, bool> uninstall_results) {
+    std::map<InstallUrl, webapps::UninstallResultCode> uninstall_results) {
   // Note that we are storing the Chrome version (milestone number) instead of a
   // "has synchronised" bool in order to do version update specific logic.
   profile_->GetPrefs()->SetString(
@@ -1088,7 +1088,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 void PreinstalledWebAppManager::OnStartUpTaskCompleted(
     std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
         install_results,
-    std::map<InstallUrl, bool> uninstall_results) {
+    std::map<InstallUrl, webapps::UninstallResultCode> uninstall_results) {
   if (debug_info_) {
     debug_info_->is_start_up_task_complete = true;
     debug_info_->install_results = std::move(install_results);

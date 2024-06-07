@@ -76,9 +76,10 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
     options.user_type_allowlist = {"unmanaged"};
     scope.apps.push_back(std::move(options));
 
-    base::test::TestFuture<std::map<GURL /*install_url*/,
-                                    ExternallyManagedAppManager::InstallResult>,
-                           std::map<GURL /*install_url*/, bool /*succeeded*/>>
+    base::test::TestFuture<
+        std::map<GURL /*install_url*/,
+                 ExternallyManagedAppManager::InstallResult>,
+        std::map<GURL /*install_url*/, webapps::UninstallResultCode>>
         future;
     provider().preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
         future.GetCallback());

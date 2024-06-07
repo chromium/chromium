@@ -2203,7 +2203,7 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
 
   using InstallAppsResults =
       std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>;
-  using UninstallAppsResults = std::map<GURL, bool>;
+  using UninstallAppsResults = std::map<GURL, webapps::UninstallResultCode>;
   base::test::TestFuture<InstallAppsResults, UninstallAppsResults> test_future;
   provider()->preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
       test_future.GetCallback());

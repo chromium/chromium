@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
       base::BindLambdaForTesting(
           [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                   install_results,
-              std::map<GURL, bool> uninstall_results) {
+              std::map<GURL, webapps::UninstallResultCode> uninstall_results) {
             if (GetParam() == test::CrosapiParam::kDisabled) {
               EXPECT_EQ(install_results.size(),
                         kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);

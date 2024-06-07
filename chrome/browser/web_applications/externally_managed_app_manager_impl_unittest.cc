@@ -56,7 +56,8 @@ namespace {
 
 using InstallAppsResults =
     std::vector<std::pair<GURL, webapps::InstallResultCode>>;
-using UninstallAppsResults = std::vector<std::pair<GURL, bool>>;
+using UninstallAppsResults =
+    std::vector<std::pair<GURL, webapps::UninstallResultCode>>;
 
 ExternalInstallOptions GetInstallOptions(
     const GURL& url,
@@ -573,11 +574,12 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     return results;
   }
 
-  std::vector<std::pair<GURL, bool>> UninstallAppsAndWait(
+  std::vector<std::pair<GURL, webapps::UninstallResultCode>>
+  UninstallAppsAndWait(
       ExternallyManagedAppManager* externally_managed_app_manager,
       ExternalInstallSource install_source,
       std::vector<GURL> apps_to_uninstall) {
-    std::vector<std::pair<GURL, bool>> results;
+    std::vector<std::pair<GURL, webapps::UninstallResultCode>> results;
 
     base::RunLoop run_loop;
     auto barrier_closure =
@@ -585,8 +587,8 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     externally_managed_app_manager->UninstallApps(
         std::move(apps_to_uninstall), install_source,
         base::BindLambdaForTesting(
-            [&](const GURL& url, bool successfully_uninstalled) {
-              results.emplace_back(url, successfully_uninstalled);
+            [&](const GURL& url, webapps::UninstallResultCode code) {
+              results.emplace_back(url, code);
               barrier_closure.Run();
             }));
     run_loop.Run();
@@ -1539,7 +1541,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Succeeds) {
       &externally_managed_app_manager_impl(),
       ExternalInstallSource::kExternalPolicy, std::vector<GURL>{kFooWebAppUrl});
 
-  EXPECT_EQ(results, UninstallAppsResults({{kFooWebAppUrl, true}}));
+  EXPECT_EQ(results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kSuccess}}));
 
   EXPECT_EQ(1u, scheduler().uninstall_call_count());
   EXPECT_EQ(kFooWebAppUrl, scheduler().last_uninstalled_app_url());
@@ -1552,7 +1556,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Fails) {
   UninstallAppsResults results = UninstallAppsAndWait(
       &externally_managed_app_manager_impl(),
       ExternalInstallSource::kExternalPolicy, std::vector<GURL>{kFooWebAppUrl});
-  EXPECT_EQ(results, UninstallAppsResults({{kFooWebAppUrl, false}}));
+  EXPECT_EQ(results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kError}}));
 
   EXPECT_EQ(1u, scheduler().uninstall_call_count());
   EXPECT_EQ(kFooWebAppUrl, scheduler().last_uninstalled_app_url());
@@ -1574,8 +1580,10 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Multiple) {
       UninstallAppsAndWait(&externally_managed_app_manager_impl(),
                            ExternalInstallSource::kExternalPolicy,
                            std::vector<GURL>{kFooWebAppUrl, kBarWebAppUrl});
-  EXPECT_EQ(results, UninstallAppsResults(
-                         {{kFooWebAppUrl, true}, {kBarWebAppUrl, true}}));
+  EXPECT_EQ(results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kSuccess},
+                 {kBarWebAppUrl, webapps::UninstallResultCode::kSuccess}}));
 
   EXPECT_EQ(2u, scheduler().uninstall_call_count());
   EXPECT_EQ(std::vector<GURL>({kFooWebAppUrl, kBarWebAppUrl}),
@@ -1606,7 +1614,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_PendingInstall) {
       ExternalInstallSource::kExternalPolicy, std::vector<GURL>{kFooWebAppUrl});
   scheduler().SetNextUninstallExternalWebAppResult(
       kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
-  EXPECT_EQ(uninstall_results, UninstallAppsResults({{kFooWebAppUrl, false}}));
+  EXPECT_EQ(uninstall_results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kError}}));
   EXPECT_EQ(1u, scheduler().uninstall_call_count());
 
   run_loop.Run();

@@ -418,14 +418,14 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
             }));
     fake_externally_managed_app_manager_->SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
-            [this](const GURL& app_url,
-                   ExternalInstallSource install_source) -> bool {
+            [this](const GURL& app_url, ExternalInstallSource install_source)
+                -> webapps::UninstallResultCode {
               std::optional<webapps::AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id) {
                 UnregisterApp(*app_id);
               }
-              return true;
+              return webapps::UninstallResultCode::kSuccess;
             }));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
