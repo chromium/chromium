@@ -28,7 +28,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -307,41 +306,28 @@ TEST_F(DownloadBubbleRowViewInfoTest, InterruptedInfo) {
   } kTestCases[] = {
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
        false,
-       features::IsChromeRefresh2023() ? &views::kInfoChromeRefreshIcon
-                                       : &views::kInfoIcon,
+       &views::kInfoChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,
-       features::IsChromeRefresh2023()
-           ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-           : &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
        false,
-       features::IsChromeRefresh2023()
-           ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-           : &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
        false,
-       features::IsChromeRefresh2023()
-           ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-           : &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {no_retry_interrupt_reasons, false,
-       features::IsChromeRefresh2023()
-           ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-           : &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {retry_interrupt_reasons, false,
-       features::IsChromeRefresh2023()
-           ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-           : &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        DownloadCommands::Command::RETRY},
       {retry_interrupt_reasons, true,
-       features::IsChromeRefresh2023()
-           ? &vector_icons::kFileDownloadOffChromeRefreshIcon
-           : &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        DownloadCommands::Command::RESUME},
   };
 
