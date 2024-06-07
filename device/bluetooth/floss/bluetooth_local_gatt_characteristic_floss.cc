@@ -379,9 +379,14 @@ int32_t BluetoothLocalGattCharacteristicFloss::AddDescriptor(
   return descriptors_.size() - 1;
 }
 
-const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>>&
+std::vector<device::BluetoothLocalGattDescriptor*>
 BluetoothLocalGattCharacteristicFloss::GetDescriptors() const {
-  return descriptors_;
+  std::vector<device::BluetoothLocalGattDescriptor*> descriptors;
+  descriptors.reserve(descriptors_.size());
+  for (const auto& d : descriptors_) {
+    descriptors.push_back(d.get());
+  }
+  return descriptors;
 }
 
 device::BluetoothGattCharacteristic::NotificationType

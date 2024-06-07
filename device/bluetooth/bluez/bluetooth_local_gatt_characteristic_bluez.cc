@@ -90,9 +90,14 @@ void BluetoothLocalGattCharacteristicBlueZ::AddDescriptor(
   descriptors_.push_back(std::move(descriptor));
 }
 
-const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorBlueZ>>&
+std::vector<device::BluetoothLocalGattDescriptor*>
 BluetoothLocalGattCharacteristicBlueZ::GetDescriptors() const {
-  return descriptors_;
+  std::vector<device::BluetoothLocalGattDescriptor*> descriptors;
+  descriptors.reserve(descriptors_.size());
+  for (const auto& d : descriptors_) {
+    descriptors.push_back(d.get());
+  }
+  return descriptors;
 }
 
 }  // namespace bluez
