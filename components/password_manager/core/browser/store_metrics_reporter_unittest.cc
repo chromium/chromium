@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
@@ -324,10 +325,10 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   EXPECT_CALL(done_callback, Run());
   RunUntilIdle();
 
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            0);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 0);
 
   // Add new logins and immediately try to report metrics again, no metrics
   // should be reported since not enough time has passwed, but the done_callback
@@ -346,10 +347,82 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   RunUntilIdle();
 
   // The total passwords count wasn't updated because it's too soon.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            0);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 0);
+
+  profile_store->ShutdownOnUIThread();
+  account_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForAccount) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+
+  // Setting up the previous password counts.
+  pref_service()->SetInteger(prefs::kTotalPasswordsAvailableForAccount, 10);
+  pref_service()->SetInteger(prefs::kTotalPasswordsAvailableForProfile, 0);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> done_callback_future;
+  StoreMetricsReporter reporter(
+      profile_store.get(), account_store.get(), sync_service(), &prefs_,
+      /*password_reuse_manager=*/nullptr, done_callback_future.GetCallback());
+  ASSERT_TRUE(done_callback_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.PasswordLoss", 10, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.ProfileStore.PasswordLoss",
+                                    0);
+
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 0);
+
+  profile_store->ShutdownOnUIThread();
+  account_store->ShutdownOnUIThread();
+  // Make sure the PasswordStore destruction parts on the background sequence
+  // finish, otherwise we get memory leak reports.
+  RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForLocal) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+
+  // Setting up the previous password counts.
+  pref_service()->SetInteger(prefs::kTotalPasswordsAvailableForAccount, 0);
+  pref_service()->SetInteger(prefs::kTotalPasswordsAvailableForProfile, 10);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> done_callback_future;
+  StoreMetricsReporter reporter(
+      profile_store.get(), account_store.get(), sync_service(), &prefs_,
+      /*password_reuse_manager=*/nullptr, done_callback_future.GetCallback());
+  ASSERT_TRUE(done_callback_future.Wait());
+
+  histogram_tester.ExpectTotalCount("PasswordManager.AccountStore.PasswordLoss",
+                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.PasswordLoss", 10, 1);
+
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 0);
 
   profile_store->ShutdownOnUIThread();
   account_store->ShutdownOnUIThread();
@@ -417,10 +490,12 @@ TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
 
   // In this test both profile and account store contained the same 10 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            10);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      10);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -495,10 +570,12 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordProtectedMetricsTest) {
 
   // In this test both profile and account store contained the same 1000 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            1000);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            1000);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      1000);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      1000);
 
   profile_store->ShutdownOnUIThread();
   account_store->ShutdownOnUIThread();
@@ -546,10 +623,10 @@ TEST_F(StoreMetricsReporterTest,
   histogram_tester.ExpectTotalCount("PasswordManager.IsPasswordProtected2", 2);
 
   // In this test profile and account store have 2 credentials each.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            1);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            1);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 1);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 1);
 
   profile_store->ShutdownOnUIThread();
   account_store->ShutdownOnUIThread();
@@ -638,10 +715,12 @@ TEST_F(StoreMetricsReporterTest, ReportTotalAccountsHiResMetricsTest) {
 
   // In this test both profile and account store contained the same 10 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            10);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      10);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -731,10 +810,12 @@ TEST_F(StoreMetricsReporterTest, ReportTimesPasswordUsedMetricsTest) {
 
   // In this test both profile and account store contained the same 10 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            10);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      10);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -813,10 +894,12 @@ TEST_F(StoreMetricsReporterTest,
 
   // In this test both profile and account store contained the same 10 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            10);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      10);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -907,10 +990,12 @@ TEST_F(StoreMetricsReporterTest,
 
   // In this test both profile and account store contained the same 10 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            10);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      10);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -1006,10 +1091,12 @@ TEST_F(StoreMetricsReporterTest,
 
   // In this test both profile and account store contained the same 10 test
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            10);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
+      10);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
+      10);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -1070,8 +1157,8 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
       testing::ElementsAre(base::Bucket(0, 1)));
 
   // In this test only the profile store contains credentials to be counted.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            4);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 4);
 
   profile_store->ShutdownOnUIThread();
   // Make sure the PasswordStore destruction parts on the background sequence
@@ -1126,8 +1213,8 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_ExactDuplicates) {
       testing::ElementsAre(base::Bucket(0, 1)));
 
   // In this test only the profile store contains credentials to be counted.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            5);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 5);
 
   profile_store->ShutdownOnUIThread();
   // Make sure the PasswordStore destruction parts on the background sequence
@@ -1179,8 +1266,8 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
       testing::ElementsAre(base::Bucket(1, 1)));
 
   // In this test only profile store contains credentials to be counted.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            3);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 3);
 
   profile_store->ShutdownOnUIThread();
   // Make sure the PasswordStore destruction parts on the background sequence
@@ -1335,10 +1422,10 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
 
   // In this test the account store contains 5 and the local store contains 7
   // credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            5);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            7);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 5);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 7);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -1369,10 +1456,10 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
                                 /*done_callback*/ base::DoNothing());
 
   // In this test there are no saved credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            0);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 0);
 
   // Wait for the metrics to get reported, which involves queries to the stores,
   // i.e. to background task runners.
@@ -1457,10 +1544,10 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
       1, 1);
 
   // In this test there are 5 local and 3 account credentials.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            5);
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_account"),
-            3);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 5);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 3);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -1506,8 +1593,8 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordInsecureCredentialMetrics) {
       "PasswordManager.CompromisedCredentials3.CountLeaked", 2, 1);
 
   // In this test only the profile store contains credentials to be counted.
-  EXPECT_EQ(pref_service()->GetInteger("total_passwords_available_for_profile"),
-            3);
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile), 3);
 
   profile_store->ShutdownOnUIThread();
   // Make sure the PasswordStore destruction parts on the background sequence

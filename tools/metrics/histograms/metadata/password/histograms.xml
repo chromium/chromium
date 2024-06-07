@@ -4159,6 +4159,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.{Store}PasswordLoss" units="count"
+    expires_after="2024-09-03">
+  <owner>izuzic@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The number of accounts that was stored in the password manager's {Store} and
+    then was deleted by the time of next startup. Recorded during browser
+    start-up, at most once per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram
     name="PasswordManager.{Store}PasswordNotes.CountCredentialsWithNonEmptyNotes2"
     units="count" expires_after="2024-10-06">

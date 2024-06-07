@@ -56,6 +56,9 @@ constexpr char kOverallSuffix[] = ".Overall";
 constexpr char kWithCustomPassphraseSuffix[] = ".WithCustomPassphrase";
 constexpr char kWithoutCustomPassphraseSuffix[] = ".WithoutCustomPassphrase";
 
+// Suffix for the histogram that track password loss.
+constexpr char kPasswordLossSuffix[] = ".PasswordLoss";
+
 bool IsCustomPassphraseEnabled(
     password_manager::sync_util::SyncState sync_state) {
   switch (sync_state) {
@@ -639,7 +642,7 @@ CredentialsCount ReportAllMetrics(
   return credentials_count;
 }
 
-void OnMetricsReportingCompleted(
+void OnBackgroundMetricsReportingCompleted(
     base::WeakPtr<StoreMetricsReporter> reporter_weak_ptr,
     base::OnceClosure done_callback,
     PrefService* prefs,
@@ -653,6 +656,31 @@ void OnMetricsReportingCompleted(
   // destroy the reporter (as in password_store_utils.cc).
   if (reporter_weak_ptr) {
     std::move(done_callback).Run();
+
+    // Check for password loss and record metrics if a loss occurred.
+    // These metrics can't be recorded together with the rest of the metrics on
+    // the background thread because they require reading from Chrome prefs,
+    // which can't happen on the background thread.
+    int old_account_credentials_count =
+        prefs->GetInteger(prefs::kTotalPasswordsAvailableForAccount);
+    if (old_account_credentials_count > 0 &&
+        credentials_count.account_credentials_count == 0) {
+      std::string_view store_suffix =
+          GetMetricsSuffixForStore(/*is_account_store=*/true);
+      base::UmaHistogramCustomCounts(
+          base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
+          old_account_credentials_count, 0, 1000, 100);
+    }
+    int old_profile_credentials_count =
+        prefs->GetInteger(prefs::kTotalPasswordsAvailableForProfile);
+    if (old_profile_credentials_count > 0 &&
+        credentials_count.profile_credentials_count == 0) {
+      std::string_view store_suffix =
+          GetMetricsSuffixForStore(/*is_account_store=*/false);
+      base::UmaHistogramCustomCounts(
+          base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
+          old_profile_credentials_count, 0, 1000, 100);
+    }
 
     // Store the current total count of passwords per store for tracking
     // potential password loss in the future.
@@ -780,7 +808,7 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
                      is_safe_browsing_enabled_,
                      std::exchange(profile_store_results_, std::nullopt),
                      std::exchange(account_store_results_, std::nullopt)),
-      base::BindOnce(&OnMetricsReportingCompleted,
+      base::BindOnce(&OnBackgroundMetricsReportingCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback_),
                      prefs_));
 }
