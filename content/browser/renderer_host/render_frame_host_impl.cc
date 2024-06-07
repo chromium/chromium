@@ -7379,7 +7379,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
 #if defined(AX_FAIL_FAST_BUILD)
   // Don't exercise the accessibility tree when we either had an
   // accessibility failure or if we are not allowed to fire events
-  if (accessibility_error && browser_accessibility_manager_->CanFireEvents()) {
+  if (!accessibility_error && browser_accessibility_manager_->CanFireEvents()) {
     ExerciseAccessibilityForTest();
   }
 #endif
