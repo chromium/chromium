@@ -214,6 +214,11 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x046d, 0x405e},
            {mojom::CustomizationRestriction::kAllowTabEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // Logitech MX Anywhere 2S (USB Dongle)
+          {{0x046d, 0x406a},
+           {mojom::CustomizationRestriction::
+                kAllowHorizontalScrollWheelRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // Logitech MX Ergo Trackball (USB Dongle)
           {{0x046d, 0x406f},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
@@ -375,10 +380,6 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
             mojom::MouseButtonConfig::kNoConfig}},
           // Logitech MX Master
           {{0x046d, 0x4041},
-           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
-          // Logitech MX Anywhere 2S
-          {{0x046d, 0x406a},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
           // Logitech G603
@@ -1408,6 +1409,8 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
           {{0x46d, 0xb027}, {0x46d, 0x4096}},
           // Logitech MX Master 2S (Bluetooth -> USB Dongle)
           {{0x046d, 0xb019}, {0x046d, 0x4069}},
+          // Logitech MX Anywhere 2S (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb01a}, {0x046d, 0x406a}},
           // Logitech MX Ergo Trackball (Bluetooth -> USB Dongle)
           {{0x046d, 0xb01d}, {0x046d, 0x406f}},
           // Logitech MX Vertical (Bluetooth -> USB Dongle)
