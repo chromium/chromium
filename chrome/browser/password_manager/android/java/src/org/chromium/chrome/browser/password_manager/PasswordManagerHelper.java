@@ -24,6 +24,9 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -752,5 +755,10 @@ public class PasswordManagerHelper {
             } catch (ActivityNotFoundException e) {
             }
         }
+    }
+
+    @NativeMethods
+    public interface Natives {
+        boolean hasChosenToSyncPasswords(@JniType("syncer::SyncService*") SyncService syncService);
     }
 }

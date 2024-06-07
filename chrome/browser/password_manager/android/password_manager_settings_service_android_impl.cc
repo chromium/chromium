@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -77,7 +78,7 @@ const PrefService::Preference* GetRegularPrefFromSetting(
 }
 
 bool HasChosenToSyncPreferences(const syncer::SyncService* sync_service) {
-  return sync_service &&
+  return sync_service && sync_service->GetDisableReasons().empty() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPreferences);
 }
@@ -270,8 +271,7 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
   is_password_sync_enabled_ = false;
   if (sync_service_) {
     is_password_sync_enabled_ =
-        sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kPasswords);
+        password_manager::sync_util::HasChosenToSyncPasswords(sync_service_);
     // The `sync_service_` can be null when --disable-sync has been passed in as
     // a command line flag.
     sync_service_->AddObserver(this);
@@ -426,8 +426,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   CHECK(sync);
   // Return early if the setting didn't change and no sync errors were resolved.
   bool is_password_sync_enabled =
-      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords);
+      password_manager::sync_util::HasChosenToSyncPasswords(sync_service_);
   if (is_password_sync_enabled == is_password_sync_enabled_) {
     return;
   }

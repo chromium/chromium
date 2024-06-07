@@ -82,6 +82,12 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
   return false;
 }
 
+bool HasChosenToSyncPasswords(const syncer::SyncService* sync_service) {
+  return sync_service && sync_service->GetDisableReasons().empty() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
+}
+
 bool IsSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service) {
   // TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled()

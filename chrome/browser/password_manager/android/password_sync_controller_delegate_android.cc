@@ -9,10 +9,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
 
@@ -85,9 +84,8 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
 void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
     syncer::SyncService* sync_service) {
   CHECK(sync_service);
-  IsPwdSyncEnabled is_enabled =
-      IsPwdSyncEnabled(sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords));
+  IsPwdSyncEnabled is_enabled = IsPwdSyncEnabled(
+      password_manager::sync_util::HasChosenToSyncPasswords(sync_service));
   if (credential_manager_sync_setting_.has_value() &&
       credential_manager_sync_setting_ == is_enabled) {
     return;

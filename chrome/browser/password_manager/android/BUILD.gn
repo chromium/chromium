@@ -204,6 +204,7 @@ generate_jni("jni_headers") {
     "//chrome/browser",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterDispatcherBridge.java",
@@ -484,6 +485,7 @@ source_set("utils") {
     "password_manager_android_util.h",
     "password_manager_eviction_util.cc",
     "password_manager_eviction_util.h",
+    "password_manager_helper.cc",
     "password_manager_util_bridge.cc",
     "password_manager_util_bridge.h",
     "password_store_android_backend_api_error_codes.h",
