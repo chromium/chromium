@@ -18,6 +18,7 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.widget.ButtonCompat;
 
 public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
@@ -25,6 +26,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
     private static final String PERMISSIONS_LIST_PREFERENCE = "permissions_list";
 
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
+    private LargeIconBridge mLargeIconBridge;
     private PreferenceCategory mPermissionsListCategory;
     private ButtonCompat mBottomButton;
     private boolean mPermissionsRevocationConfirmed;
@@ -72,6 +74,10 @@ public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
     public void onDestroy() {
         super.onDestroy();
         mUnusedSitePermissionsBridge.removeObserver(this);
+
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+        }
 
         if (mPermissionsRevocationConfirmed) {
             PermissionsData[] permissionsDataList =
@@ -122,13 +128,17 @@ public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
     }
 
     private void updatePreferenceList() {
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(getProfile());
+        }
         mPermissionsListCategory.removeAll();
 
         PermissionsData[] permissionsDataList =
                 mUnusedSitePermissionsBridge.getRevokedPermissions();
         for (PermissionsData permissionsData : permissionsDataList) {
             SafetyHubPermissionsPreference preference =
-                    new SafetyHubPermissionsPreference(getContext(), permissionsData);
+                    new SafetyHubPermissionsPreference(
+                            getContext(), permissionsData, mLargeIconBridge);
             preference.setOnPreferenceClickListener(this);
             mPermissionsListCategory.addPreference(preference);
         }

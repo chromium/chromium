@@ -30,13 +30,19 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.test.util.RenderTestRule;
+
+import java.io.IOException;
 
 /** Tests for various Safety Hub settings surfaces. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -74,12 +80,31 @@ public final class SafetyHubTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setRevision(1)
+                    .build();
+
     private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
             new FakeUnusedSitePermissionsBridge();
 
     @Before
     public void setUp() {
         mJniMocker.mock(UnusedSitePermissionsBridgeJni.TEST_HOOKS, mUnusedPermissionsBridge);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testPermissionsSubpageAppearance() throws IOException {
+        mUnusedPermissionsBridge.setPermissionsDataForReview(
+                new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
+        SettingsActivity settingsActivity = mPermissionsFragmentTestRule.startSettingsActivity();
+        mRenderTestRule.render(
+                settingsActivity.findViewById(android.R.id.content).getRootView(),
+                "permissions_subpage");
     }
 
     @Test

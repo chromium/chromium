@@ -49,6 +49,7 @@ android_library("java") {
     "//components/background_task_scheduler:public_java",
     "//components/browser_ui/settings/android:java",
     "//components/content_settings/core/common:content_settings_types_java",
+    "//components/favicon/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/prefs/android:java",
     "//components/sync/android:sync_java",
