@@ -1276,9 +1276,11 @@ public class NotificationPlatformBridge {
 
         // TODO(crbug.com/41494401): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
-                new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
+                new NotificationSuspender(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        ContextUtils.getApplicationContext(),
+                        mNotificationManager);
         mOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
-        displayProvisionallyUnsubscribedNotification(identifyingAttributes);
         suspender.storeNotificationResourcesFromOrigins(
                 Collections.singletonList(Uri.parse(identifyingAttributes.origin)),
                 (notificationIdsToCancel) -> {
@@ -1286,6 +1288,7 @@ public class NotificationPlatformBridge {
                             .recordSuspendedNotificationCountOnUnsubscribe(
                                     notificationIdsToCancel.size());
 
+                    displayProvisionallyUnsubscribedNotification(identifyingAttributes);
                     notificationIdsToCancel.remove(identifyingAttributes.notificationId);
                     suspender.cancelNotificationsWithIds(notificationIdsToCancel);
                 });

@@ -113,6 +113,19 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                 POLLING_INTERVAL_MS);
     }
 
+    /**
+     * Waits until the specified number of notifications are active in the mocked
+     * NotificationManager.
+     */
+    public void waitForNotificationCount(int count) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getNotificationEntries().size(), Matchers.equalTo(count));
+                },
+                MAX_TIME_TO_POLL_MS,
+                POLLING_INTERVAL_MS);
+    }
+
     @Override
     public Statement apply(final Statement base, Description description) {
         return super.apply(

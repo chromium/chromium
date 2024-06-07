@@ -21,8 +21,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -41,17 +42,17 @@ import java.util.stream.Collectors;
 public class NotificationSuspender {
     private final Profile mProfile;
     private final Context mContext;
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
 
     public NotificationSuspender(Profile profile) {
         this(
                 profile,
                 ContextUtils.getApplicationContext(),
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()));
     }
 
     public NotificationSuspender(
-            Profile profile, Context context, NotificationManagerProxy notificationManager) {
+            Profile profile, Context context, BaseNotificationManagerProxy notificationManager) {
         mProfile = profile;
         mContext = context;
         mNotificationManager = notificationManager;

@@ -36,7 +36,10 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -766,6 +769,114 @@ public class NotificationPlatformBridgeTest {
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Notifications.Android.JobStartDelay"));
+    }
+
+    /**
+     * Verifies that activating the PendingIntent associated with the "Unsubscribe" button shows the
+     * `provisionally unsubscribed` notification and suspends all existing notifications, and then,
+     * clicking "Okay" commits this and revokes the notification permission.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationProvisionalUnsubscribeAndCommit() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        Notification notification1 = showAndGetNotification("Notification1", "{}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Click the "Unsubscribe" button.
+        Assert.assertEquals(1, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        unsubscribeIntent.send();
+
+        // Wait for the two notifications to be collapsed and the `provisionally unsubscribed`
+        // notification to appear.
+        mNotificationTestRule.waitForNotificationCount(1);
+
+        // Click the "Okay" button to commit. This is the second button.
+        Notification provisionallyUnsubscribedNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(2, provisionallyUnsubscribedNotification.actions.length);
+        PendingIntent commitIntent = provisionallyUnsubscribedNotification.actions[1].actionIntent;
+        Assert.assertNotNull(commitIntent);
+        commitIntent.send();
+
+        // Wait for the `provisionally unsubscribed` notification to disappear.
+        mNotificationTestRule.waitForNotificationCount(0);
+
+        // This should have caused notifications permission to become reset.
+        Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
+        checkThatShowNotificationIsDenied();
+    }
+
+    /**
+     * Verifies that activating the PendingIntent associated with the "Unsubscribe" button shows the
+     * `provisionally unsubscribed` notification and suspends all existing notifications, and then,
+     * clicking "Undo" reverts this and does not revoke the notification permission.
+     *
+     * <p>This also verifies that the icon image, which is stored and then loaded from the native
+     * `NotificationDatabase`, properly survives this journey.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationProvisionalUnsubscribeAndUndo() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        Notification notification1 = showAndGetNotification("Notification1", "{icon: 'red.png'}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Click the "Unsubscribe" button.
+        Assert.assertEquals(1, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        unsubscribeIntent.send();
+
+        // Wait for the two notifications to be collapsed and the `provisionally unsubscribed`
+        // notification to appear.
+        mNotificationTestRule.waitForNotificationCount(1);
+
+        // Click the "Undo" button to revert. This is the first button.
+        Notification provisionallyUnsubscribedNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(2, provisionallyUnsubscribedNotification.actions.length);
+        PendingIntent undoIntent = provisionallyUnsubscribedNotification.actions[0].actionIntent;
+        Assert.assertNotNull(undoIntent);
+        undoIntent.send();
+
+        // Wait for the `provisionally unsubscribed` notification to disappear and the two
+        // notifications to be restored.
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Verify the icon is restored correctly.
+        Context context = ApplicationProvider.getApplicationContext();
+        Bitmap largeIcon =
+                NotificationTestUtil.getLargeIconFromNotification(
+                        context,
+                        mNotificationTestRule.getNotificationEntries().get(0).getNotification());
+        Assert.assertNotNull(largeIcon);
+        Assert.assertEquals(Color.RED, largeIcon.getPixel(0, 0));
+
+        // This should not have caused notifications permission to become denied.
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+        showNotification("Notification3", "{}");
+        mNotificationTestRule.waitForNotificationCount(3);
     }
 
     /**
