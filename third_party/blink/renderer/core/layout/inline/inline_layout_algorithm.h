@@ -89,7 +89,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
 
   LayoutUnit ApplyTextAlign(LineInfo*);
 
-  void ApplyTextBoxTrim(LineInfo&);
+  void ApplyTextBoxTrim(LineInfo&, bool is_truncated);
 
   // Add any trailing clearance requested by a BR 'clear' attribute on the line.
   // Return true if this was successful (this also includes cases where there is

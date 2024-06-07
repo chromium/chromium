@@ -412,7 +412,9 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // Truncate the line if:
   //  - 'text-overflow: ellipsis' is set and we *aren't* a line-clamp context.
   //  - If we've reached the line-clamp limit.
-  if (UNLIKELY(ShouldLineClamp(line_info, line_box_metrics.LineHeight()))) {
+  const bool should_truncate =
+      ShouldLineClamp(line_info, line_box_metrics.LineHeight());
+  if (UNLIKELY(should_truncate)) {
     DCHECK(!line_info->IsBlockInInline());
     LineTruncator truncator(*line_info);
     auto* input =
@@ -560,7 +562,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   const ConstraintSpace& space = GetConstraintSpace();
   if (UNLIKELY(space.ShouldTextBoxTrimStart() ||
                space.ShouldTextBoxTrimEnd())) {
-    ApplyTextBoxTrim(*line_info);
+    ApplyTextBoxTrim(*line_info, should_truncate);
   }
 
   // |container_builder_| is already set up by |PlaceBlockInInline|.
@@ -598,7 +600,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   container_builder_.SetInlineSize(inline_size);
 }
 
-void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
+void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
+                                             bool is_truncated) {
   const ConstraintSpace& space = GetConstraintSpace();
   if (const LayoutResult* block_in_inline =
           line_info.BlockInInlineLayoutResult()) {
@@ -617,9 +620,9 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
 
   const bool should_apply_start =
       space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine();
-  const bool should_apply_end =
-      space.ShouldTextBoxTrimEnd() &&
-      (!line_info.GetBreakToken() || space.ShouldForceTextBoxTrimEnd());
+  const bool should_apply_end = space.ShouldTextBoxTrimEnd() &&
+                                (is_truncated || !line_info.GetBreakToken() ||
+                                 space.ShouldForceTextBoxTrimEnd());
   if (!should_apply_start && !should_apply_end) {
     return;
   }
