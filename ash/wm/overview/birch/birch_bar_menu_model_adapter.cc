@@ -150,8 +150,11 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
               },
               command_id, close_menu_on_customizing_suggestions_),
           model->GetLabelAt(index)));
-      checkbox->SetSelected(BirchBarController::Get()->GetShowSuggestionType(
-          CommandIdToSuggestionType(command_id)));
+      bool enabled = item_view->GetEnabled();
+      checkbox->SetEnabled(enabled);
+      checkbox->SetSelected(enabled &&
+                            BirchBarController::Get()->GetShowSuggestionType(
+                                CommandIdToSuggestionType(command_id)));
       checkbox->set_delegate(this);
       checkbox->SetAccessibleName(label);
       checkbox->SetLabelStyle(TypographyToken::kCrosButton2);

@@ -4245,6 +4245,7 @@ test("ash_unittests") {
     "wm/multi_display/persistent_window_controller_unittest.cc",
     "wm/native_cursor_manager_ash_unittest.cc",
     "wm/overlay_layout_manager_unittest.cc",
+    "wm/overview/birch/birch_bar_context_menu_model_unittest.cc",
     "wm/overview/birch/birch_bar_unittest.cc",
     "wm/overview/cleanup_animation_observer_unittest.cc",
     "wm/overview/delayed_animation_observer_impl_unittest.cc",

@@ -7,10 +7,21 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 
 namespace ash {
+namespace {
+
+// Returns whether the weather item should be enabled based on the geolocation
+// permission. See BirchWeatherProvider.
+bool IsWeatherAllowedByGeolocation() {
+  return SimpleGeolocationProvider::GetInstance()
+      ->IsGeolocationUsageAllowedForSystem();
+}
+
+}  // namespace
 
 BirchBarContextMenuModel::BirchBarContextMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
@@ -23,7 +34,12 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
   // Expanded menu also has customizing suggestions options.
   if (type == Type::kExpandedBarMenu) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+
     AddItem(base::to_underlying(CommandId::kWeatherSuggestions), u"Weather");
+    auto weather_index = GetIndexOfCommandId(
+        base::to_underlying(CommandId::kWeatherSuggestions));
+    SetEnabledAt(weather_index.value(), IsWeatherAllowedByGeolocation());
+
     AddItem(base::to_underlying(CommandId::kCalendarSuggestions),
             u"Google Calendar");
     AddItem(base::to_underlying(CommandId::kDriveSuggestions), u"Google Drive");

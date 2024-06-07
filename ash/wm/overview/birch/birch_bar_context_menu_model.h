@@ -17,7 +17,7 @@ namespace ash {
 // - Expanded bar menu: the menu will be shown when right clicking in the
 // Overview mode and there is a birch bar displayed. The menu includes
 // customizing suggestion options.
-class BirchBarContextMenuModel : public ui::SimpleMenuModel {
+class ASH_EXPORT BirchBarContextMenuModel : public ui::SimpleMenuModel {
  public:
   // The commands for the birch bar menu items.
   enum class ASH_EXPORT CommandId {
