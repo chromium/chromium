@@ -61,7 +61,7 @@ const char* GetTileTypeSuffix(TileVisualType type) {
       return kTileTypeSuffixIconGray;
     case TileVisualType::ICON_REAL:
       return kTileTypeSuffixIconReal;
-    case TileVisualType::NONE:                     // Fall through.
+    case TileVisualType::NONE:  // Fall through.
     case TileVisualType::UNKNOWN_TILE_TYPE:
       break;
   }

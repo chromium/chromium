@@ -302,8 +302,9 @@ void NTPTilesInternalsMessageHandler::OnFaviconLookupDone(
       result);
 
   --*num_pending_lookups;
-  if (*num_pending_lookups == 0)
+  if (*num_pending_lookups == 0) {
     SendTiles(tiles, *result_map);
+  }
 }
 
 }  // namespace ntp_tiles

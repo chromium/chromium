@@ -93,8 +93,9 @@ std::string GetDefaultSearchEngineCountryCode(
   DCHECK(template_url_service);
 
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (!cmd_line->HasSwitch(switches::kEnableNTPSearchEngineCountryDetection))
+  if (!cmd_line->HasSwitch(switches::kEnableNTPSearchEngineCountryDetection)) {
     return std::string();
+  }
 
   const TemplateURL* default_provider =
       template_url_service->GetDefaultSearchProvider();
@@ -132,25 +133,30 @@ std::string GetVariationDirectory() {
 PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
   PopularSites::SitesVector sites;
   for (const base::Value& item_value : list) {
-    if (!item_value.is_dict())
+    if (!item_value.is_dict()) {
       continue;
+    }
     const base::Value::Dict& item = item_value.GetDict();
     std::u16string title;
-    if (const std::string* ptr = item.FindString("title"))
+    if (const std::string* ptr = item.FindString("title")) {
       title = base::UTF8ToUTF16(*ptr);
-    else
+    } else {
       continue;
+    }
     std::string url;
-    if (const std::string* ptr = item.FindString("url"))
+    if (const std::string* ptr = item.FindString("url")) {
       url = *ptr;
-    else
+    } else {
       continue;
+    }
     std::string favicon_url;
-    if (const std::string* ptr = item.FindString("favicon_url"))
+    if (const std::string* ptr = item.FindString("favicon_url")) {
       favicon_url = *ptr;
+    }
     std::string large_icon_url;
-    if (const std::string* ptr = item.FindString("large_icon_url"))
+    if (const std::string* ptr = item.FindString("large_icon_url")) {
       large_icon_url = *ptr;
+    }
 
     TileTitleSource title_source = TileTitleSource::UNKNOWN;
     std::optional<int> title_source_int = item.FindInt("title_source");
@@ -166,11 +172,13 @@ PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
                        GURL(large_icon_url), title_source);
     std::optional<int> default_icon_resource =
         item.FindInt("default_icon_resource");
-    if (default_icon_resource)
+    if (default_icon_resource) {
       sites.back().default_icon_resource = *default_icon_resource;
+    }
     std::optional<bool> baked_in = item.FindBool("baked_in");
-    if (baked_in.has_value())
+    if (baked_in.has_value()) {
       sites.back().baked_in = baked_in.value();
+    }
   }
   return sites;
 }
@@ -201,11 +209,13 @@ std::map<SectionType, PopularSites::SitesVector> ParseVersion6OrAbove(
     // Non-personalized site exploration tiles are no longer supported, so
     // ignore all other section types.
     SectionType section_type = static_cast<SectionType>(section);
-    if (section_type != SectionType::PERSONALIZED)
+    if (section_type != SectionType::PERSONALIZED) {
       continue;
+    }
     const base::Value::List* sites_list = item_dict->FindList("sites");
-    if (!sites_list)
+    if (!sites_list) {
       continue;
+    }
     sections[section_type] = ParseSiteList(*sites_list);
   }
   return sections;
@@ -214,8 +224,9 @@ std::map<SectionType, PopularSites::SitesVector> ParseVersion6OrAbove(
 std::map<SectionType, PopularSites::SitesVector> ParseSites(
     const base::Value::List& list,
     int version) {
-  if (version >= kSitesExplorationStartVersion)
+  if (version >= kSitesExplorationStartVersion) {
     return ParseVersion6OrAbove(list);
+  }
   return ParseVersion5(list);
 }
 
@@ -224,8 +235,9 @@ std::map<SectionType, PopularSites::SitesVector> ParseSites(
 void SetDefaultResourceForSite(size_t index,
                                int resource_id,
                                base::Value::List& sites) {
-  if (index >= sites.size() || !sites[index].is_dict())
+  if (index >= sites.size() || !sites[index].is_dict()) {
     return;
+  }
 
   sites[index].GetDict().Set("default_icon_resource", resource_id);
 }
@@ -236,8 +248,9 @@ base::Value::List DefaultPopularSites(std::optional<std::string> country) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return base::Value::List();
 #else
-  if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature))
+  if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature)) {
     return base::Value::List();
+  }
 
   int popular_sites_json = IDR_DEFAULT_POPULAR_SITES_JSON;
 
@@ -384,11 +397,13 @@ std::string PopularSitesImpl::GetDirectoryToFetch() {
   std::string directory =
       prefs_->GetString(prefs::kPopularSitesOverrideDirectory);
 
-  if (directory.empty())
+  if (directory.empty()) {
     directory = GetVariationDirectory();
+  }
 
-  if (directory.empty())
+  if (directory.empty()) {
     directory = kPopularSitesDefaultDirectory;
+  }
 
   return directory;
 }
@@ -404,22 +419,27 @@ std::string PopularSitesImpl::GetCountryToFetch() {
   std::string country_code =
       prefs_->GetString(prefs::kPopularSitesOverrideCountry);
 
-  if (country_code.empty())
+  if (country_code.empty()) {
     country_code = GetVariationCountry();
+  }
 
-  if (country_code.empty())
+  if (country_code.empty()) {
     country_code = GetDefaultSearchEngineCountryCode(template_url_service_);
+  }
 
-  if (country_code.empty() && variations_)
+  if (country_code.empty() && variations_) {
     country_code = variations_->GetStoredPermanentCountry();
+  }
 
 #if BUILDFLAG(IS_IOS)
-  if (country_code.empty())
+  if (country_code.empty()) {
     country_code = GetDeviceCountryCode();
+  }
 #endif
 
-  if (country_code.empty())
+  if (country_code.empty()) {
     country_code = kPopularSitesDefaultCountryCode;
+  }
 
   return base::ToUpperASCII(country_code);
 }
@@ -431,11 +451,13 @@ std::string PopularSitesImpl::GetCountryToFetch() {
 std::string PopularSitesImpl::GetVersionToFetch() {
   std::string version = prefs_->GetString(prefs::kPopularSitesOverrideVersion);
 
-  if (version.empty())
+  if (version.empty()) {
     version = GetVariationVersion();
+  }
 
-  if (version.empty())
+  if (version.empty()) {
     version = kPopularSitesDefaultVersion;
+  }
 
   return version;
 }

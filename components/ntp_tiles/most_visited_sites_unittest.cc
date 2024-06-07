@@ -107,8 +107,9 @@ MATCHER_P3(LastTileIs,
            source,
            std::string("last tile ") + PrintTile(title, url, source)) {
   const NTPTilesVector& tiles = arg.at(SectionType::PERSONALIZED);
-  if (tiles.empty())
+  if (tiles.empty()) {
     return false;
+  }
 
   const NTPTile& last = tiles.back();
   return last.title == title && last.url == GURL(url) && last.source == source;
@@ -394,8 +395,9 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
         webapps::kWebAppsMigratedPreinstalledApps, std::move(defaults));
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    if (IsPopularSitesFeatureEnabled())
+    if (IsPopularSitesFeatureEnabled()) {
       popular_sites_factory_.SeedWithSampleData();
+    }
 
     RecreateMostVisitedSites();
   }

@@ -19,7 +19,7 @@
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace user_prefs {
 class PrefRegistrySyncable;

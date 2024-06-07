@@ -132,8 +132,9 @@ void IconCacherImpl::OnGetFaviconImageForPageURLFinished(
                                            kImageFetcherUmaClient);
   // For images with multiple frames, prefer one of size 128x128px.
   params.set_frame_size(gfx::Size(kDesiredFrameSize, kDesiredFrameSize));
-  if (data_decoder_)
+  if (data_decoder_) {
     params.set_data_decoder(data_decoder_.get());
+  }
   image_fetcher_->FetchImage(
       IconURL(site),
       base::BindOnce(&IconCacherImpl::OnPopularSitesFaviconDownloaded,
