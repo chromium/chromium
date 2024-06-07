@@ -5042,8 +5042,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.MantaService.{MantaMetricType}.StatusCode"
+    enum="MantaStatusCode" expires_after="2025-06-01">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <summary>Record the status code of {MantaMetricType} requests.</summary>
+  <token key="MantaMetricType" variants="MantaMetricType"/>
+</histogram>
+
 <histogram name="Ash.MantaService.{MantaMetricType}.TimeCost" units="ms"
-    expires_after="2025-02-01">
+    expires_after="2025-06-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>

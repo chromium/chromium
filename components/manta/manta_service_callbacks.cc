@@ -90,6 +90,36 @@ void LogTimeCost(const MantaMetricType request_type,
       break;
   }
 }
+
+void LogMantaStatusCode(const MantaMetricType request_type,
+                        const MantaStatusCode status_code) {
+  switch (request_type) {
+    case MantaMetricType::kOrca:
+      base::UmaHistogramEnumeration("Ash.MantaService.OrcaProvider.StatusCode",
+                                    status_code);
+      break;
+    case MantaMetricType::kSnapper:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.SnapperProvider.StatusCode", status_code);
+      break;
+    case MantaMetricType::kMahiSummary:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.Summary.StatusCode", status_code);
+      break;
+    case MantaMetricType::kMahiQA:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.QA.StatusCode", status_code);
+      break;
+    case manta::MantaMetricType::kSparky:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.SparkyProvider.StatusCode", status_code);
+      break;
+    case MantaMetricType::kAnchovy:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.AnchovyProvider.StatusCode", status_code);
+      break;
+  }
+}
 }  // namespace
 
 void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
@@ -97,7 +127,6 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
                                const MantaMetricType request_type,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses) {
-  // TODO(b/301185733): Log error code to UMA.
   // Tries to parse the response as a Response proto and return to the
   // `callback` together with a OK status, or capture the errors and return a
   // proper error status.
@@ -107,6 +136,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
   std::string message, locale;
 
   if (!responses) {
+    LogMantaStatusCode(request_type, MantaStatusCode::kBackendFailure);
     std::move(callback).Run(nullptr,
                             {MantaStatusCode::kBackendFailure, message});
     return;
@@ -128,6 +158,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
     if (!rpc_status.ParseFromString(responses->response)) {
       DVLOG(1) << "Got unexpected failed response but failed to parse a "
                   "RpcStatus proto";
+      LogMantaStatusCode(request_type, manta_status_code);
       std::move(callback).Run(nullptr, {manta_status_code, message});
       return;
     }
@@ -160,6 +191,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
       }
     }
 
+    LogMantaStatusCode(request_type, manta_status_code);
     std::move(callback).Run(nullptr, {manta_status_code, message, locale});
 
     return;
@@ -168,12 +200,14 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
   auto manta_response = std::make_unique<proto::Response>();
   if (!manta_response->ParseFromString(responses->response)) {
     DVLOG(1) << "Failed to parse MantaResponse as a Response proto";
+    LogMantaStatusCode(request_type, MantaStatusCode::kMalformedResponse);
     std::move(callback).Run(nullptr,
                             {MantaStatusCode::kMalformedResponse, message});
     return;
   }
 
   LogTimeCost(request_type, time_cost);
+  LogMantaStatusCode(request_type, MantaStatusCode::kOk);
   std::move(callback).Run(std::move(manta_response),
                           {MantaStatusCode::kOk, message});
 }
