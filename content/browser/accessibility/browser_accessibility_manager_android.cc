@@ -18,7 +18,7 @@
 namespace content {
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
     const ui::AXTreeUpdate& initial_tree,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   if (!delegate)
@@ -35,15 +35,10 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 }
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
     ui::AXPlatformTreeManagerDelegate* delegate) {
-  return BrowserAccessibilityManager::Create(
+  return BrowserAccessibilityManagerAndroid::Create(
       BrowserAccessibilityManagerAndroid::GetEmptyDocument(), delegate);
-}
-
-BrowserAccessibilityManagerAndroid*
-BrowserAccessibilityManager::ToBrowserAccessibilityManagerAndroid() {
-  return static_cast<BrowserAccessibilityManagerAndroid*>(this);
 }
 
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
@@ -580,6 +575,12 @@ void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
   }
 
   BrowserAccessibilityManager::OnNodeWillBeDeleted(tree, node);
+}
+
+std::unique_ptr<BrowserAccessibility>
+BrowserAccessibilityManagerAndroid::CreateBrowserAccessibility(
+    ui::AXNode* node) {
+  return BrowserAccessibility::Create(this, node);
 }
 
 void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(

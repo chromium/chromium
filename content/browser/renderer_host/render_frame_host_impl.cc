@@ -291,6 +291,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/android/content_url_loader_factory.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/renderer_host/render_frame_host_android.h"
@@ -11725,8 +11726,13 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
       no_create_browser_accessibility_manager_for_testing_)
     return browser_accessibility_manager_.get();
 
+#if BUILDFLAG(IS_ANDROID)
+  browser_accessibility_manager_.reset(
+      BrowserAccessibilityManagerAndroid::Create(this));
+#else
   browser_accessibility_manager_.reset(
       BrowserAccessibilityManager::Create(this));
+#endif
   return browser_accessibility_manager_.get();
 }
 

@@ -1531,7 +1531,7 @@ void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
   DCHECK(tree->GetFromId(node->id()) || node->IsGenerated())
       << "Node must be in AXTree's map, unless it's an ExtraMacNode.";
 
-  id_wrapper_map_[node->id()] = BrowserAccessibility::Create(this, node);
+  id_wrapper_map_[node->id()] = CreateBrowserAccessibility(node);
 
   if (node->HasIntAttribute(ax::mojom::IntAttribute::kPopupForId)) {
     popup_root_ids_.insert(node->id());
@@ -1894,6 +1894,15 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
     return false;
 
   return true;
+}
+
+std::unique_ptr<BrowserAccessibility>
+BrowserAccessibilityManager::CreateBrowserAccessibility(ui::AXNode* node) {
+#if !BUILDFLAG(IS_ANDROID)
+  return BrowserAccessibility::Create(this, node);
+#else
+  NOTREACHED_NORETURN();
+#endif
 }
 
 BrowserAccessibility*

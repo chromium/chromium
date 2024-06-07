@@ -18,6 +18,13 @@
 
 namespace content {
 
+namespace {
+BrowserAccessibilityManagerAndroid* ToBrowserAccessibilityManagerAndroid(
+    BrowserAccessibilityManager* manager) {
+  return static_cast<BrowserAccessibilityManagerAndroid*>(manager);
+}
+}  // namespace
+
 using RetargetEventType = ui::AXTreeManager::RetargetEventType;
 
 class MockContentClient : public TestContentClient {
@@ -97,7 +104,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
   root.child_ids = {para1.id};
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
@@ -136,7 +143,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
   root.child_ids = {heading1.id};
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, heading1, text1),
           test_browser_accessibility_delegate_.get()));
 
@@ -176,7 +183,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
   root.child_ids = {para1.id};
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
@@ -263,7 +270,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   root.child_ids = {container.id};
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, container, form, label, label_text,
                                      input_time, input_container, input_text,
                                      button, button_text),
@@ -343,7 +350,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   root.child_ids = {container_para.id};
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, container_para, text1, text2, text3),
           test_browser_accessibility_delegate_.get()));
   BrowserAccessibility* container_obj = manager->GetFromID(11);
@@ -402,11 +409,11 @@ TEST_F(BrowserAccessibilityAndroidTest,
       ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityManagerAndroid* android_manager =
-      manager->ToBrowserAccessibilityManagerAndroid();
+      ToBrowserAccessibilityManagerAndroid(manager.get());
   android_manager->set_allow_image_descriptions_for_testing(true);
 
   for (int child_index = 0;
@@ -455,11 +462,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
       ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityManagerAndroid* android_manager =
-      manager->ToBrowserAccessibilityManagerAndroid();
+      ToBrowserAccessibilityManagerAndroid(manager.get());
   android_manager->set_allow_image_descriptions_for_testing(true);
 
   for (int child_index = 0;
@@ -499,11 +506,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
       static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityManagerAndroid* android_manager =
-      manager->ToBrowserAccessibilityManagerAndroid();
+      ToBrowserAccessibilityManagerAndroid(manager.get());
   android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_ltr =
@@ -554,11 +561,11 @@ TEST_F(BrowserAccessibilityAndroidTest,
       ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityManagerAndroid* android_manager =
-      manager->ToBrowserAccessibilityManagerAndroid();
+      ToBrowserAccessibilityManagerAndroid(manager.get());
   android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_pending =
@@ -613,11 +620,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
       ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityManagerAndroid* android_manager =
-      manager->ToBrowserAccessibilityManagerAndroid();
+      ToBrowserAccessibilityManagerAndroid(manager.get());
   android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_none =
@@ -666,11 +673,11 @@ TEST_F(BrowserAccessibilityAndroidTest,
       ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
+      BrowserAccessibilityManagerAndroid::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityManagerAndroid* android_manager =
-      manager->ToBrowserAccessibilityManagerAndroid();
+      ToBrowserAccessibilityManagerAndroid(manager.get());
   android_manager->set_allow_image_descriptions_for_testing(true);
 
   BrowserAccessibilityAndroid* image_succeeded =

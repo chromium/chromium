@@ -45,6 +45,14 @@ class WebContentsAccessibilityAndroid;
 class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
     : public BrowserAccessibilityManager {
  public:
+  // Creates the platform-specific BrowserAccessibilityManager.
+  static BrowserAccessibilityManager* Create(
+      const ui::AXTreeUpdate& initial_tree,
+      ui::AXPlatformTreeManagerDelegate* delegate);
+
+  static BrowserAccessibilityManager* Create(
+      ui::AXPlatformTreeManagerDelegate* delegate);
+
   BrowserAccessibilityManagerAndroid(
       const ui::AXTreeUpdate& initial_tree,
       base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
@@ -134,6 +142,10 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   std::vector<std::string> GetMetadataForTree() const;
+
+ protected:
+  std::unique_ptr<BrowserAccessibility> CreateBrowserAccessibility(
+      ui::AXNode* node) override;
 
  private:
   // AXTreeObserver overrides.
