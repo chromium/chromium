@@ -6075,7 +6075,7 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental integer sourcePort
-      # Cookie partition key. 
+      # Cookie partition key.
       experimental optional CookiePartitionKey partitionKey
       # True if cookie partition key is opaque.
       experimental optional boolean partitionKeyOpaque
@@ -6496,8 +6496,8 @@ domain Network
       optional string domain
       # If specified, deletes only cookies with the exact path.
       optional string path
-      # If specified, deletes only cookies with the the given name and partitionKey where 
-      # where all partition key attributes match the cookie partition key attribute.
+      # If specified, deletes only cookies with the the given name and partitionKey where
+      # all partition key attributes match the cookie partition key attribute.
       experimental optional CookiePartitionKey partitionKey
 
   # Disables network tracking, prevents network events from being sent to the client.
