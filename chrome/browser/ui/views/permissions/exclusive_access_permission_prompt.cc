@@ -50,7 +50,7 @@ void ExclusiveAccessPermissionPrompt::ShowPrompt() {
   content_scrim_widget_ =
       EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
           weak_factory_.GetWeakPtr(),
-          SkColorSetA(SK_ColorBLACK, SK_AlphaOPAQUE * 0.9f));
+          web_contents()->GetColorProvider().GetColor(ui::kColorSysStateScrim));
   prompt_view->UpdateAnchor(content_scrim_widget_.get());
   prompt_view->Show();
 }
