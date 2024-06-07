@@ -147,8 +147,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // function will configure the Shill service that corresponds to the profile
   // that will be installed, and will ensure that we have non-cellular internet
   // connectivity.
-  void PerformInstallESim(const dbus::ObjectPath& euicc_path);
+  void PerformInstallESim(const dbus::ObjectPath& euicc_path,
+                          base::Value::Dict new_shill_properties);
 
+  void OnRefreshProfileList(
+      const dbus::ObjectPath& euicc_path,
+      base::Value::Dict new_shill_properties,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnConfigureESimService(std::optional<dbus::ObjectPath> service_path);
   void OnInhibitedForRefreshSmdxProfiles(
       const dbus::ObjectPath& euicc_path,
@@ -196,6 +201,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       managed_network_configuration_handler_ = nullptr;
 
   bool is_installing_ = false;
+
+  // While Hermes is the source of truth for the EUICC state, Chrome maintains a
+  // cache of the installed eSIM profiles. To ensure we properly detect when a
+  // profile has already been installed for a particular request we force a
+  // refresh of the profile cache before each installation.
+  bool need_refresh_profile_list_ = true;
 
   base::circular_deque<std::unique_ptr<InstallPolicyESimRequest>>
       remaining_install_requests_;

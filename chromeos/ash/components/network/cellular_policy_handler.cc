@@ -177,6 +177,7 @@ void CellularPolicyHandler::ResumeInstallIfNeeded() {
 
 void CellularPolicyHandler::ProcessRequests() {
   if (remaining_install_requests_.empty()) {
+    need_refresh_profile_list_ = true;
     return;
   }
 
@@ -283,11 +284,6 @@ void CellularPolicyHandler::AttemptInstallESim() {
     return;
   }
 
-  PerformInstallESim(*euicc_path);
-}
-
-void CellularPolicyHandler::PerformInstallESim(
-    const dbus::ObjectPath& euicc_path) {
   base::Value::Dict new_shill_properties = GetNewShillProperties();
   // If iccid is found in policy onc, the installation will be skipped because
   // it indicates that the eSIM profile has already been installed before using
@@ -302,7 +298,7 @@ void CellularPolicyHandler::PerformInstallESim(
                      << "service for the profile: "
                      << GetCurrentActivationCode().ToString();
       cellular_esim_installer_->ConfigureESimService(
-          std::move(new_shill_properties), euicc_path, *profile_path,
+          std::move(new_shill_properties), *euicc_path, *profile_path,
           base::BindOnce(&CellularPolicyHandler::OnConfigureESimService,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -328,6 +324,23 @@ void CellularPolicyHandler::PerformInstallESim(
     return;
   }
 
+  if (need_refresh_profile_list_) {
+    // Profile list for current EUICC may not have been refreshed, so explicitly
+    // refresh profile list before processing installation requests.
+    cellular_esim_profile_handler_->RefreshProfileListAndRestoreSlot(
+        *euicc_path,
+        base::BindOnce(&CellularPolicyHandler::OnRefreshProfileList,
+                       weak_ptr_factory_.GetWeakPtr(), *euicc_path,
+                       std::move(new_shill_properties)));
+    return;
+  }
+
+  PerformInstallESim(*euicc_path, std::move(new_shill_properties));
+}
+
+void CellularPolicyHandler::PerformInstallESim(
+    const dbus::ObjectPath& euicc_path,
+    base::Value::Dict new_shill_properties) {
   NET_LOG(EVENT) << "Installing policy eSIM profile ("
                  << GetCurrentActivationCode().ToString() << ") and inhibiting "
                  << "cellular device to request available profiles for SM-DX "
@@ -339,6 +352,24 @@ void CellularPolicyHandler::PerformInstallESim(
       base::BindOnce(&CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
                      std::move(new_shill_properties)));
+}
+
+void CellularPolicyHandler::OnRefreshProfileList(
+    const dbus::ObjectPath& euicc_path,
+    base::Value::Dict new_shill_properties,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Failed to refresh the profile list due to an inhibit "
+                   << "error, path: " << euicc_path.value();
+  } else {
+    need_refresh_profile_list_ = false;
+    // Reset the |inhibit_lock| so that the device will no longer be inhibited
+    // with |kRefreshingProfileList| and can become inhibited with the correct
+    // reason e.g., |kInstallingProfile|.
+    inhibit_lock.reset();
+  }
+
+  PerformInstallESim(euicc_path, std::move(new_shill_properties));
 }
 
 void CellularPolicyHandler::OnConfigureESimService(

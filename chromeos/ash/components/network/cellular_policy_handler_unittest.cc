@@ -214,6 +214,8 @@ class CellularPolicyHandlerTest : public testing::Test {
   void InstallProfile(const base::Value::Dict& onc_config) {
     cellular_policy_handler()->InstallESim(onc_config);
     base::RunLoop().RunUntilIdle();
+
+    FastForwardRefreshDelay();
   }
 
   HermesProfileClient::Properties* FindProfileProperties(
@@ -465,6 +467,8 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_SMDP) {
 
   CompleteShillServiceAutoConnect(*onc_config);
 
+  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
+            cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
             cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kInstallingProfile,
@@ -526,6 +530,8 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_SMDS) {
 
   CompleteShillServiceAutoConnect(*onc_config);
 
+  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
+            cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
             cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kInstallingProfile,
@@ -562,6 +568,10 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_DespiteHermesErrors) {
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
+
+  // Queue a success result for the call to refresh the profile list.
+  HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+      HermesResponseStatus::kSuccess);
 
   // Queue a failure result for the SM-DS scan itself.
   HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
@@ -609,6 +619,8 @@ TEST_F(CellularPolicyHandlerTest, InstalledButFailedToEnable) {
   CellularInhibitorObserver cellular_inhibitor_observer;
   InstallProfile(*onc_config);
 
+  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
+            cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
             cellular_inhibitor_observer.PopInhibitReason());
   EXPECT_EQ(InhibitReason::kInstallingProfile,
