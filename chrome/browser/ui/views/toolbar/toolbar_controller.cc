@@ -165,21 +165,18 @@ ToolbarController::~ToolbarController() = default;
 
 std::vector<ToolbarController::ResponsiveElementInfo>
 ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
-  bool is_refresh = features::IsChromeRefresh2023();
   bool is_incognito = browser->profile()->IsIncognitoProfile();
   // TODO(crbug.com/40912482): Fill in observed identifier.
   // Order matters because it should match overflow menu order top to bottom.
   std::vector<ToolbarController::ResponsiveElementInfo> elements = {
       {ToolbarController::ElementIdInfo{
            kToolbarForwardButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
-           is_refresh ? &vector_icons::kForwardArrowChromeRefreshIcon
-                      : &vector_icons::kForwardArrowIcon,
+           &vector_icons::kForwardArrowChromeRefreshIcon,
            kToolbarForwardButtonElementId},
        /*is_section_end=*/false},
       {ToolbarController::ElementIdInfo{
            kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
-           is_refresh ? &kNavigateHomeChromeRefreshIcon : &kNavigateHomeIcon,
-           kToolbarHomeButtonElementId},
+           &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
        /*is_section_end=*/true}};
 
   // Support actions items.
@@ -206,21 +203,18 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
       elements.end(),
       {{ToolbarController::ElementIdInfo{
             kToolbarChromeLabsButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-            is_refresh ? &kChromeLabsChromeRefreshIcon : &kChromeLabsIcon,
-            kToolbarChromeLabsButtonElementId},
+            &kChromeLabsChromeRefreshIcon, kToolbarChromeLabsButtonElementId},
         /*is_section_end=*/false, kToolbarChromeLabsBubbleElementId},
        {ToolbarController::ElementIdInfo{
             kToolbarMediaButtonElementId,
             IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-            is_refresh ? &kMediaToolbarButtonChromeRefreshIcon
-                       : &kMediaToolbarButtonIcon,
+            &kMediaToolbarButtonChromeRefreshIcon,
             kToolbarMediaButtonElementId},
         /*is_section_end=*/false, kToolbarMediaBubbleElementId},
        {ToolbarController::ElementIdInfo{
             kToolbarDownloadButtonElementId,
             IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
-            is_refresh ? &kDownloadToolbarButtonChromeRefreshIcon
-                       : &kDownloadToolbarButtonIcon,
+            &kDownloadToolbarButtonChromeRefreshIcon,
             kToolbarDownloadButtonElementId},
         /*is_section_end=*/true, kToolbarDownloadBubbleElementId},
        {ToolbarController::ElementIdInfo{kToolbarNewTabButtonElementId,
@@ -234,10 +228,8 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
         /*is_section_end=*/true},
        {ToolbarController::ElementIdInfo{
             kToolbarAvatarButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
-            is_incognito ? (is_refresh ? &kIncognitoRefreshMenuIcon
-                                       : &kIncognitoProfileIcon)
-                         : (is_refresh ? &kUserAccountAvatarRefreshIcon
-                                       : &kUserAccountAvatarIcon),
+            is_incognito ? (&kIncognitoRefreshMenuIcon)
+                         : (&kUserAccountAvatarRefreshIcon),
             kToolbarAvatarButtonElementId},
         /*is_section_end=*/false, kToolbarAvatarBubbleElementId}});
   return elements;

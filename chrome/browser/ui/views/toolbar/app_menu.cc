@@ -249,7 +249,6 @@ class InMenuButtonBackground : public views::Background {
       menu_item.corner_radius = kCircularButtonSize / 2;
     }
     const auto* const color_provider = view->GetColorProvider();
-    if (features::IsChromeRefresh2023()) {
       cc::PaintFlags flags;
       flags.setColor(color_provider->GetColor(
           state == views::Button::STATE_NORMAL
@@ -258,13 +257,6 @@ class InMenuButtonBackground : public views::Background {
       canvas->DrawRoundRect(gfx::RectF(bounds_rect), menu_item.corner_radius,
                             flags);
       return;
-    }
-    if (state != views::Button::STATE_NORMAL) {
-      view->GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
-                                    ui::NativeTheme::kMenuItemBackground,
-                                    ui::NativeTheme::kHovered, bounds_rect,
-                                    ui::NativeTheme::ExtraParams(menu_item));
-    }
   }
 
   const ButtonType type_;
@@ -488,18 +480,10 @@ class AppMenuView : public views::View {
     DCHECK(menu_);
 
     std::unique_ptr<views::Button> menu_button;
-    if (features::IsChromeRefresh2023()) {
       auto button = std::make_unique<InMenuImageButton>(std::move(callback));
       button->Init(type, InMenuButtonBackground::ButtonShape::kCircular,
                    image_model);
       menu_button = std::move(button);
-    } else {
-      auto button = std::make_unique<InMenuButton>(
-          std::move(callback),
-          gfx::RemoveAccelerator(l10n_util::GetStringUTF16(string_id)));
-      button->Init(type);
-      menu_button = std::move(button);
-    }
     menu_button->GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model_, index, accessible_name_id, add_accelerator_text));
     menu_button->set_tag(index);
@@ -549,9 +533,7 @@ class FullscreenButton : public ImageButton {
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(
         InMenuButtonBackground::ButtonType::kLeadingBorder,
-        features::IsChromeRefresh2023()
-            ? InMenuButtonBackground::ButtonShape::kCircular
-            : InMenuButtonBackground::ButtonShape::kRectangular));
+        InMenuButtonBackground::ButtonShape::kCircular));
     const int accname_string_id =
         is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
     SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
@@ -677,7 +659,6 @@ class AppMenu::ZoomView : public AppMenuView {
            size_t increment_index,
            size_t fullscreen_index)
       : AppMenuView(menu, menu_model) {
-    const bool is_chrome_refresh = features::IsChromeRefresh2023();
     browser_zoom_subscription_ =
         zoom::ZoomEventManager::GetForBrowserContext(menu->browser_->profile())
             ->AddZoomLevelChangedCallback(
@@ -687,15 +668,11 @@ class AppMenu::ZoomView : public AppMenuView {
     const auto activate = [](ButtonMenuItemModel* menu_model, size_t index) {
       menu_model->ActivatedAt(index);
     };
-    auto image_model = is_chrome_refresh ? ui::ImageModel::FromVectorIcon(
-                                               kZoomMinusMenuRefreshIcon,
-                                               ui::kColorMenuItemForeground)
-                                         : ui::ImageModel();
+    auto image_model = ui::ImageModel::FromVectorIcon(
+        kZoomMinusMenuRefreshIcon, ui::kColorMenuItemForeground);
     decrement_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, decrement_index),
-        IDS_ZOOM_MINUS2,
-        is_chrome_refresh ? InMenuButtonBackground::ButtonType::kNoBorder
-                          : InMenuButtonBackground::ButtonType::kLeadingBorder,
+        IDS_ZOOM_MINUS2, InMenuButtonBackground::ButtonType::kNoBorder,
         decrement_index, IDS_ACCNAME_ZOOM_MINUS2,
         /*add_accelerator_text=*/false,
         /*use_accessible_name_as_tooltip_text=*/true,
@@ -727,10 +704,8 @@ class AppMenu::ZoomView : public AppMenuView {
 
     zoom_label_ = AddChildView(std::move(zoom_label));
 
-    image_model = is_chrome_refresh ? ui::ImageModel::FromVectorIcon(
-                                          kZoomPlusMenuRefreshIcon,
-                                          ui::kColorMenuItemForeground)
-                                    : ui::ImageModel();
+    image_model = ui::ImageModel::FromVectorIcon(kZoomPlusMenuRefreshIcon,
+                                                 ui::kColorMenuItemForeground);
     increment_button_ = CreateButtonWithAccessibleName(
         base::BindRepeating(activate, menu_model, increment_index),
         IDS_ZOOM_PLUS2, InMenuButtonBackground::ButtonType::kNoBorder,
@@ -746,8 +721,7 @@ class AppMenu::ZoomView : public AppMenuView {
             menu, menu_model, fullscreen_index),
         menu_model, fullscreen_index,
         menu->browser_->window() && menu->browser_->window()->IsFullscreen());
-    const auto& fullscreen_icon =
-        is_chrome_refresh ? kFullscreenRefreshIcon : kFullscreenIcon;
+    const auto& fullscreen_icon = kFullscreenRefreshIcon;
     fullscreen_button->SetImageModel(
         ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(fullscreen_icon,
@@ -1403,16 +1377,6 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
     MenuItemView* item =
         AddMenuItem(parent, menu_index, model, i, model->GetTypeAt(i));
 
-#if BUILDFLAG(IS_CHROMEOS)
-    if (!features::IsChromeRefresh2023() &&
-        (model->GetCommandIdAt(i) == IDC_EDIT_MENU ||
-         model->GetCommandIdAt(i) == IDC_ZOOM_MENU)) {
-      // ChromeOS adds extra vertical space for the menu buttons.
-      const MenuConfig& config = views::MenuConfig::instance();
-      item->set_vertical_margin(config.item_vertical_margin * 2 +
-                                config.separator_height / 2);
-    }
-#endif
     if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
     }
@@ -1429,7 +1393,6 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
 
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
-        if (features::IsChromeRefresh2023()) {
           add_menu_row_background(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
                   DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
@@ -1444,7 +1407,6 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
                 config.arrow_to_edge_padding + config.arrow_size,
                 profile_menu_item_selected_subscription_list_);
           }
-        }
         break;
       }
       case IDC_UPGRADE_DIALOG: {
