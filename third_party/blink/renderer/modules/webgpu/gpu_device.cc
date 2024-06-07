@@ -372,15 +372,10 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason cReason,
 void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     const String& label,
     ScriptPromiseResolver<GPURenderPipeline>* resolver,
-    WGPUCreatePipelineAsyncStatus cStatus,
-    WGPURenderPipeline cPipeline,
+    wgpu::CreatePipelineAsyncStatus status,
+    wgpu::RenderPipeline render_pipeline,
     const char* message) {
   ScriptState* script_state = resolver->GetScriptState();
-  wgpu::CreatePipelineAsyncStatus status =
-      static_cast<wgpu::CreatePipelineAsyncStatus>(cStatus);
-  wgpu::RenderPipeline render_pipeline =
-      wgpu::RenderPipeline::Acquire(cPipeline);
-
   switch (status) {
     case wgpu::CreatePipelineAsyncStatus::Success: {
       GPURenderPipeline* pipeline = MakeGarbageCollected<GPURenderPipeline>(
@@ -412,15 +407,10 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
 void GPUDevice::OnCreateComputePipelineAsyncCallback(
     const String& label,
     ScriptPromiseResolver<GPUComputePipeline>* resolver,
-    WGPUCreatePipelineAsyncStatus cStatus,
-    WGPUComputePipeline cPipeline,
+    wgpu::CreatePipelineAsyncStatus status,
+    wgpu::ComputePipeline compute_pipeline,
     const char* message) {
   ScriptState* script_state = resolver->GetScriptState();
-  wgpu::CreatePipelineAsyncStatus status =
-      static_cast<wgpu::CreatePipelineAsyncStatus>(cStatus);
-  wgpu::ComputePipeline compute_pipeline =
-      wgpu::ComputePipeline::Acquire(cPipeline);
-
   switch (status) {
     case wgpu::CreatePipelineAsyncStatus::Success: {
       GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
@@ -557,9 +547,9 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
         WTF::BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
                       WrapPersistent(this), descriptor->label())));
 
-    GetHandle().CreateRenderPipelineAsync(&dawn_desc_info.dawn_desc,
-                                          callback->UnboundCallback(),
-                                          callback->AsUserdata());
+    GetHandle().CreateRenderPipelineAsync(
+        &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
+        callback->UnboundCallback(), callback->AsUserdata());
   }
 
   // WebGPU guarantees that promises are resolved in finite time so we need to
@@ -595,7 +585,8 @@ ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
                     WrapPersistent(this), descriptor->label())));
 
   GetHandle().CreateComputePipelineAsync(
-      &dawn_desc, callback->UnboundCallback(), callback->AsUserdata());
+      &dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
+      callback->UnboundCallback(), callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we need to
   // ensure commands are flushed.
   EnsureFlush(ToEventLoop(script_state));

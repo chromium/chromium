@@ -513,7 +513,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     static std::unique_ptr<SharedImageRepresentationAndAccessSkiaFallback>
     Create(scoped_refptr<SharedContextState> shared_context_state,
            std::unique_ptr<SkiaImageRepresentation> representation,
-           const wgpu::Device& device,
+           wgpu::Instance instance,
+           wgpu::Device device,
            wgpu::TextureUsage usage,
            wgpu::TextureUsage internal_usage,
            std::vector<wgpu::TextureFormat> view_formats) {
@@ -538,7 +539,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation),
-              device, usage, internal_usage, std::move(view_formats)));
+              std::move(instance), std::move(device), usage, internal_usage,
+              std::move(view_formats)));
       if (is_initialized && !result->PopulateFromSkia()) {
         return nullptr;
       }
@@ -571,13 +573,15 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     SharedImageRepresentationAndAccessSkiaFallback(
         scoped_refptr<SharedContextState> shared_context_state,
         std::unique_ptr<SkiaImageRepresentation> representation,
-        const wgpu::Device& device,
+        wgpu::Instance instance,
+        wgpu::Device device,
         wgpu::TextureUsage usage,
         wgpu::TextureUsage internal_usage,
         std::vector<wgpu::TextureFormat> view_formats)
         : shared_context_state_(std::move(shared_context_state)),
           representation_(std::move(representation)),
-          device_(device),
+          instance_(std::move(instance)),
+          device_(std::move(device)),
           usage_(usage) {
       // Create a wgpu::Texture to hold the image contents.
       // It must be internally copyable as this class itself uses the texture as
@@ -611,7 +615,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
               reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
       };
 
-      texture_ = device.CreateTexture(&texture_desc);
+      texture_ = device_.CreateTexture(&texture_desc);
       DCHECK(texture_);
     }
 
@@ -816,28 +820,22 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       wgpu::Queue queue = device_.GetQueue();
       queue.Submit(1, &commandBuffer);
 
-      struct Userdata {
-        bool map_complete = false;
-        WGPUBufferMapAsyncStatus status;
-      } userdata;
-
       // Map the staging buffer for read.
-      buffer.MapAsync(
+      bool success = false;
+      wgpu::FutureWaitInfo waitInfo{buffer.MapAsync(
           wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
-          [](WGPUBufferMapAsyncStatus status, void* void_userdata) {
-            Userdata* userdata = static_cast<Userdata*>(void_userdata);
-            userdata->status = status;
-            userdata->map_complete = true;
-          },
-          &userdata);
+          wgpu::CallbackMode::WaitAnyOnly,
+          [&](wgpu::MapAsyncStatus status, const char* message) {
+            success = status == wgpu::MapAsyncStatus::Success;
+            if (!success) {
+              DLOG(ERROR) << message;
+            }
+          })};
 
-      // Poll for the map to complete.
-      while (!userdata.map_complete) {
-        base::PlatformThread::Sleep(base::Milliseconds(1));
-        device_.Tick();
-      }
-
-      if (userdata.status != WGPUBufferMapAsyncStatus_Success) {
+      wgpu::WaitStatus status =
+          instance_.WaitAny(1, &waitInfo, std::numeric_limits<uint64_t>::max());
+      DCHECK(status == wgpu::WaitStatus::Success);
+      if (!success) {
         return false;
       }
 
@@ -909,6 +907,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
     scoped_refptr<SharedContextState> shared_context_state_;
     std::unique_ptr<SkiaImageRepresentation> representation_;
+    wgpu::Instance instance_;
     wgpu::Device device_;
     wgpu::Texture texture_;
     wgpu::TextureUsage usage_;
@@ -2073,8 +2072,8 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
   }
 
   return SharedImageRepresentationAndAccessSkiaFallback::Create(
-      shared_context_state_, std::move(shared_image), device, usage,
-      internal_usage, std::move(view_formats));
+      shared_context_state_, std::move(shared_image), dawn_instance_->Get(),
+      device, usage, internal_usage, std::move(view_formats));
 }
 
 error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(

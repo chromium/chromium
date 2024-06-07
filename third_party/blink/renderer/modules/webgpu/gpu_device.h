@@ -191,14 +191,14 @@ class GPUDevice final : public EventTarget,
   void OnCreateRenderPipelineAsyncCallback(
       const String& label,
       ScriptPromiseResolver<GPURenderPipeline>* resolver,
-      WGPUCreatePipelineAsyncStatus status,
-      WGPURenderPipeline render_pipeline,
+      wgpu::CreatePipelineAsyncStatus status,
+      wgpu::RenderPipeline render_pipeline,
       const char* message);
   void OnCreateComputePipelineAsyncCallback(
       const String& label,
       ScriptPromiseResolver<GPUComputePipeline>* resolver,
-      WGPUCreatePipelineAsyncStatus status,
-      WGPUComputePipeline compute_pipeline,
+      wgpu::CreatePipelineAsyncStatus status,
+      wgpu::ComputePipeline compute_pipeline,
       const char* message);
 
   void setLabelImpl(const String& value) override {

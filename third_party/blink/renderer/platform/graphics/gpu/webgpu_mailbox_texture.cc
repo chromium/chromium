@@ -206,7 +206,7 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
 
   // Produce and inject image to WebGPU texture
   gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(
-      device_.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc));
+      device_.Get(), &static_cast<const WGPUTextureDescriptor&>(desc));
   DCHECK(reservation.texture);
 
   wire_device_id_ = reservation.deviceId;

@@ -389,9 +389,7 @@ void GPUQueue::submit(ScriptState* script_state,
 }
 
 void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
-                        WGPUQueueWorkDoneStatus cStatus) {
-  wgpu::QueueWorkDoneStatus status =
-      static_cast<wgpu::QueueWorkDoneStatus>(cStatus);
+                        wgpu::QueueWorkDoneStatus status) {
   switch (status) {
     case wgpu::QueueWorkDoneStatus::Success:
       resolver->Resolve();
@@ -429,7 +427,8 @@ ScriptPromise<IDLUndefined> GPUQueue::onSubmittedWorkDone(
   auto* callback = MakeWGPUOnceCallback(
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(&OnWorkDoneCallback)));
 
-  GetHandle().OnSubmittedWorkDone(callback->UnboundCallback(),
+  GetHandle().OnSubmittedWorkDone(wgpu::CallbackMode::AllowSpontaneous,
+                                  callback->UnboundCallback(),
                                   callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we
   // need to ensure commands are flushed.

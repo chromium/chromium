@@ -98,15 +98,15 @@ void WebGPUTextureAlphaClearer::ClearAlpha(const wgpu::Texture& texture) {
   // when the configured canvas produces an error GPUTexture. Errors from
   // the alpha clear should be hidden from the application.
   device_.PopErrorScope(
-      [](WGPUErrorType type, const char* message, void*) {
-        // There may be other error types like DeviceLost or Unknown if
-        // the device is destroyed before we receive a response from the
-        // GPU service.
-        if (type == WGPUErrorType_Validation) {
+      wgpu::CallbackMode::AllowSpontaneous,
+      [](wgpu::PopErrorScopeStatus, wgpu::ErrorType type, const char* message) {
+        // There may be other error types like DeviceLost or
+        // Unknown if the device is destroyed before we
+        // receive a response from the GPU service.
+        if (type == wgpu::ErrorType::Validation) {
           DLOG(ERROR) << "WebGPUTextureAlphaClearer errored:" << message;
         }
-      },
-      nullptr);
+      });
 }
 
 }  // namespace blink

@@ -271,6 +271,7 @@ ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
       WTF::BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
 
   GetHandle().MapAsync(static_cast<wgpu::MapMode>(mode), map_offset, map_size,
+                       wgpu::CallbackMode::AllowSpontaneous,
                        callback->UnboundCallback(), callback->AsUserdata());
 
   // WebGPU guarantees that promises are resolved in finite time so we
@@ -367,50 +368,25 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
 
 void GPUBuffer::OnMapAsyncCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    WGPUBufferMapAsyncStatus cStatus) {
-  wgpu::BufferMapAsyncStatus status =
-      static_cast<wgpu::BufferMapAsyncStatus>(cStatus);
+    wgpu::MapAsyncStatus status,
+    const char* message) {
   switch (status) {
-    case wgpu::BufferMapAsyncStatus::Success:
+    case wgpu::MapAsyncStatus::Success:
       resolver->Resolve();
       break;
-    case wgpu::BufferMapAsyncStatus::ValidationError:
+    case wgpu::MapAsyncStatus::InstanceDropped:
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
+      break;
+    case wgpu::MapAsyncStatus::Error:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       "Buffer is invalid");
+                                       message);
       break;
-    case wgpu::BufferMapAsyncStatus::Unknown:
+    case wgpu::MapAsyncStatus::Aborted:
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
+      break;
+    case wgpu::MapAsyncStatus::Unknown:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       "Unknown error in mapAsync");
-      break;
-    case wgpu::BufferMapAsyncStatus::DeviceLost:
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                       "Device is lost");
-      break;
-    case wgpu::BufferMapAsyncStatus::InstanceDropped:
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                       "Instance dropped");
-      break;
-    case wgpu::BufferMapAsyncStatus::DestroyedBeforeCallback:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kAbortError,
-          "Buffer is destroyed before the mapping is resolved");
-      break;
-    case wgpu::BufferMapAsyncStatus::UnmappedBeforeCallback:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kAbortError,
-          "Buffer is unmapped before the mapping is resolved");
-      break;
-    case wgpu::BufferMapAsyncStatus::MappingAlreadyPending:
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       "A mapping is already pending");
-      break;
-    case wgpu::BufferMapAsyncStatus::OffsetOutOfRange:
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       "The offset is out of range");
-      break;
-    case wgpu::BufferMapAsyncStatus::SizeOutOfRange:
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       "The size is out of range");
+                                       message);
       break;
   }
 }

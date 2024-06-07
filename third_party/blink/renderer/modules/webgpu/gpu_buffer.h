@@ -77,7 +77,8 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
                                      ExceptionState& exception_state);
 
   void OnMapAsyncCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
-                          WGPUBufferMapAsyncStatus status);
+                          wgpu::MapAsyncStatus status,
+                          const char* message);
 
   DOMArrayBuffer* CreateArrayBufferForMappedData(v8::Isolate* isolate,
                                                  void* data,
