@@ -2171,6 +2171,25 @@
             ]
         }
     ],
+    "AutofillPopupZOrderSecuritySurface_DisabledByDefault": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPopupZOrderSecuritySurface"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillPreFilledFieldsCorrectly": [
         {
             "platforms": [
