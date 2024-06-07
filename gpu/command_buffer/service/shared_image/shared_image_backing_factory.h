@@ -51,7 +51,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe) = 0;
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -61,7 +61,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) = 0;
@@ -72,7 +72,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) = 0;
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -84,7 +84,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label) = 0;
 
   // This new api is introduced for MappableSI work where client code sends
@@ -100,7 +100,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe,
       gfx::BufferUsage buffer_usage);

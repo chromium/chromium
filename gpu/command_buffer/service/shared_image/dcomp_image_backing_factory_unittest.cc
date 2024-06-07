@@ -42,11 +42,11 @@ namespace gpu {
 
 namespace {
 
-constexpr uint32_t kDXGISwapChainUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                         SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                         SHARED_IMAGE_USAGE_SCANOUT;
+constexpr SharedImageUsageSet kDXGISwapChainUsage =
+    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+    SHARED_IMAGE_USAGE_SCANOUT;
 
-constexpr uint32_t kDCompSurfaceUsage =
+constexpr SharedImageUsageSet kDCompSurfaceUsage =
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT |
     SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
 
@@ -548,8 +548,8 @@ class DCompImageBackingFactoryVisualTreeTest
         shared_image_factory_->CreateSharedImage(
             mailbox, format, nullptr, window_size_, color_space,
             kTopLeft_GrSurfaceOrigin,
-            has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType, usage,
-            "TestLabel", false);
+            has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
+            SharedImageUsageSet(usage), "TestLabel", false);
     ASSERT_NE(nullptr, backing);
     std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
         shared_image_manager_.Register(std::move(backing),

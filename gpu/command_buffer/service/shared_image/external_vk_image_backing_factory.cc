@@ -191,7 +191,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
   CHECK(!is_thread_safe);
@@ -209,7 +209,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
@@ -228,7 +228,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK(CanImportGpuMemoryBuffer(handle.type));
@@ -248,7 +248,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label) {
   if (plane != gfx::BufferPlane::DEFAULT) {
     LOG(ERROR) << "Invalid plane";
@@ -269,7 +269,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     gfx::BufferUsage buffer_usage) {

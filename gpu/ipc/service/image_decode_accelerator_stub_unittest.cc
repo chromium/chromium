@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/service/image_decode_accelerator_stub.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -41,6 +43,7 @@
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -64,7 +67,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
-#include "gpu/ipc/service/image_decode_accelerator_stub.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -149,7 +151,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe) override {
     NOTREACHED_IN_MIGRATION();
@@ -162,7 +164,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
@@ -178,7 +180,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label) override {
     auto test_image_backing = std::make_unique<TestImageBacking>(
         mailbox, viz::GetSinglePlaneSharedImageFormat(format), size,
@@ -197,7 +199,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
     auto test_image_backing = std::make_unique<TestImageBacking>(

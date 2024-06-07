@@ -444,7 +444,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   auto backing = factory->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label), IsSharedBetweenThreads(usage));
+      alpha_type, SharedImageUsageSet(usage), std::move(debug_label),
+      IsSharedBetweenThreads(usage));
 
   if (backing) {
     DVLOG(1) << "CreateSharedImage[" << backing->GetName()
@@ -516,8 +517,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
     backing = factory->CreateSharedImage(
         mailbox, format, surface_handle, size, color_space, surface_origin,
-        alpha_type, usage, debug_label, IsSharedBetweenThreads(usage),
-        buffer_usage);
+        alpha_type, SharedImageUsageSet(usage), debug_label,
+        IsSharedBetweenThreads(usage), buffer_usage);
 
     if (backing) {
       DVLOG(1) << "CreateSharedImageBackedByBuffer[" << backing->GetName()
@@ -566,8 +567,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       } else {
         backing = factory->CreateSharedImage(
             mailbox, format, surface_handle, size, color_space, surface_origin,
-            alpha_type, usage, debug_label, IsSharedBetweenThreads(usage),
-            buffer_usage);
+            alpha_type, SharedImageUsageSet(usage), debug_label,
+            IsSharedBetweenThreads(usage), buffer_usage);
       }
 
       if (backing) {
@@ -610,8 +611,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   }
 
   auto backing = factory->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), IsSharedBetweenThreads(usage), data);
+      mailbox, format, size, color_space, surface_origin, alpha_type,
+      SharedImageUsageSet(usage), std::move(debug_label),
+      IsSharedBetweenThreads(usage), data);
   if (backing) {
     DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
              << "] with pixels size=" << size.ToString()
@@ -676,8 +678,9 @@ bool SharedImageFactory::CreateSharedImage(
         std::move(debug_label));
   } else {
     backing = factory->CreateSharedImage(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label), std::move(buffer_handle));
+        mailbox, format, size, color_space, surface_origin, alpha_type,
+        SharedImageUsage(usage), std::move(debug_label),
+        std::move(buffer_handle));
   }
 
   if (backing) {
@@ -747,7 +750,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   } else {
     backing = factory->CreateSharedImage(
         mailbox, std::move(handle), format, plane, size, color_space,
-        surface_origin, alpha_type, usage, std::move(debug_label));
+        surface_origin, alpha_type, SharedImageUsageSet(usage),
+        std::move(debug_label));
   }
 
   if (backing) {
@@ -1007,7 +1011,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
 
   bool share_between_threads = IsSharedBetweenThreads(usage);
   for (auto& factory : factories_) {
-    if (factory->CanCreateSharedImage(usage, format, size,
+    if (factory->CanCreateSharedImage(SharedImageUsageSet(usage), format, size,
                                       share_between_threads, gmb_type,
                                       gr_context_type_, pixel_data)) {
       return factory.get();

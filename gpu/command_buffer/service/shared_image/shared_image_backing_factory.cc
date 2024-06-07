@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
 namespace gpu {
@@ -25,7 +27,7 @@ SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                              const gfx::ColorSpace& color_space,
                                              GrSurfaceOrigin surface_origin,
                                              SkAlphaType alpha_type,
-                                             uint32_t usage,
+                                             SharedImageUsageSet usage,
                                              std::string debug_label,
                                              bool is_thread_safe,
                                              gfx::BufferUsage buffer_usage) {

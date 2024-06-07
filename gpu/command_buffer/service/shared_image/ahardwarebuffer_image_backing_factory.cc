@@ -867,7 +867,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
   return MakeBacking(mailbox, format, size, color_space, surface_origin,
@@ -883,7 +883,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
@@ -953,7 +953,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
@@ -987,7 +987,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label) {
   if (plane != gfx::BufferPlane::DEFAULT) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);

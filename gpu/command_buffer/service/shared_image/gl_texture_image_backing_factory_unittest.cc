@@ -349,7 +349,7 @@ TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   // Note: The specific usage doesn't matter here as long as it's supported by
   // GLTextureImageBacking.
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
 
   bool supported = backing_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
@@ -460,7 +460,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
   bool supported = backing_factory_->CanCreateSharedImage(
@@ -595,7 +595,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
   std::vector<uint8_t> initial_data(
       viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size, format));
 
@@ -699,7 +699,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
   bool supported = backing_factory_->CanCreateSharedImage(
@@ -741,8 +741,8 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ |
-                   SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
   bool supported = backing_factory_->CanCreateSharedImage(

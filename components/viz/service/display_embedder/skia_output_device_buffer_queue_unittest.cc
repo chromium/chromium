@@ -164,7 +164,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe) override {
     size_t estimated_size = format.EstimatedSizeInBytes(size);
@@ -181,7 +181,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
@@ -198,7 +198,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
     NOTREACHED_IN_MIGRATION();
@@ -213,7 +213,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label) override {
     NOTREACHED_IN_MIGRATION();
     return nullptr;

@@ -58,7 +58,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
@@ -79,7 +79,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> data) {
@@ -102,7 +102,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
@@ -126,7 +126,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label) {
   return CreateSharedImage(mailbox,
                            viz::GetSinglePlaneSharedImageFormat(buffer_format),

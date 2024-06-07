@@ -60,7 +60,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
@@ -75,7 +75,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
@@ -91,7 +91,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   NOTREACHED_NORETURN();
@@ -106,7 +106,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;

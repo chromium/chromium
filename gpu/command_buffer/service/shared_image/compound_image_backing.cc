@@ -826,7 +826,8 @@ void CompoundImageBacking::LazyCreateBacking(
 
   backing = factory->CreateSharedImage(
       mailbox(), format(), kNullSurfaceHandle, size(), color_space(),
-      surface_origin(), alpha_type(), usage() | SHARED_IMAGE_USAGE_CPU_UPLOAD,
+      surface_origin(), alpha_type(),
+      SharedImageUsageSet(usage()) | SHARED_IMAGE_USAGE_CPU_UPLOAD,
       std::move(debug_label), /*is_thread_safe=*/false);
   if (!backing) {
     DLOG(ERROR) << "Failed to allocate GPU backing";
