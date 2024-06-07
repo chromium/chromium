@@ -292,9 +292,8 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 #if BUILDFLAG(IS_WIN)
         // For shared memory GMBs on Windows we needed to explicitly request a
         // copy from the shared image GPU texture to the GMB.
-        DCHECK(dst_frame->HasGpuMemoryBuffer());
-        DCHECK_EQ(dst_frame->GetGpuMemoryBuffer()->GetType(),
-                  gfx::SHARED_MEMORY_BUFFER);
+        CHECK(dst_frame->HasMappableGpuBuffer());
+        CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
         gpu::SyncToken blit_done_sync_token;
         ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 

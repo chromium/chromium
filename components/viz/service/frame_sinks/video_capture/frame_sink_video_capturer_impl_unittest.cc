@@ -710,7 +710,7 @@ MATCHER_P3(IsLetterboxedFrame, color, content_rect, pixel_format, "") {
   const VideoFrame& frame = *arg;
 
   // Pretend kUseGpuMemoryBuffer rendered corrected data.
-  if (frame.HasGpuMemoryBuffer()) {
+  if (frame.HasMappableGpuBuffer()) {
     return true;
   }
 

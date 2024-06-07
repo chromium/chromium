@@ -93,7 +93,7 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const = 0;
 
   // Returns true if |this| is backed by a GpuMemoryBuffer.
-  bool HasGpuMemoryBuffer() const { return !!GetGpuMemoryBuffer(); }
+  bool HasMappableGpuBuffer() const { return !!GetGpuMemoryBuffer(); }
 
   // Gets the GpuMemoryBuffer backing |this|.
   virtual gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const = 0;

@@ -153,7 +153,7 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
   const bool is_readable = frame->format() == media::PIXEL_FORMAT_I420 ||
                            frame->format() == media::PIXEL_FORMAT_I420A ||
                            (frame->format() == media::PIXEL_FORMAT_NV12 &&
-                            frame->HasGpuMemoryBuffer());
+                            frame->HasMappableGpuBuffer());
   if (!is_readable) {
     cc::SkiaPaintCanvas canvas(surface->getCanvas());
     cc::PaintFlags paint_flags;

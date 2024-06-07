@@ -134,10 +134,8 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     }
   }
 
-  if (input->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    if (input->HasGpuMemoryBuffer())
-      gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
+  if (input->HasMappableGpuBuffer()) {
+    auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
     // When the input video frame has GpuMemoryBuffer but no shared images,
     // we should default to the GpuMemoryBufferSharedImageVideoFrameData case.

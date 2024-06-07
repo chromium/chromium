@@ -124,7 +124,7 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
     }
 
     // If the frame has a GMB, yank out its IOSurface if possible.
-    if (frame->HasGpuMemoryBuffer()) {
+    if (frame->HasMappableGpuBuffer()) {
       auto handle = frame->GetGpuMemoryBuffer()->CloneHandle();
       if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
         gfx::ScopedIOSurface io_surface = handle.io_surface;
@@ -153,7 +153,7 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
 
   // If the frame is backed by a GPU buffer, but needs cropping, map it and
   // and handle like a software frame. There is no memcpy here.
-  if (frame->HasGpuMemoryBuffer()) {
+  if (frame->HasMappableGpuBuffer()) {
     frame = ConvertToMemoryMappedFrame(std::move(frame));
   }
   if (!frame) {

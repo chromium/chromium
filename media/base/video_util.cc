@@ -553,7 +553,7 @@ gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> video_frame) {
   DCHECK(video_frame);
-  DCHECK(video_frame->HasGpuMemoryBuffer());
+  DCHECK(video_frame->HasMappableGpuBuffer());
 
   auto* gmb = video_frame->GetGpuMemoryBuffer();
   if (!gmb->Map())
@@ -581,7 +581,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   // is unmapped on destruction.
   mapped_frame->AddDestructionObserver(base::BindOnce(
       [](scoped_refptr<VideoFrame> frame) {
-        DCHECK(frame->HasGpuMemoryBuffer());
+        DCHECK(frame->HasMappableGpuBuffer());
         frame->GetGpuMemoryBuffer()->Unmap();
       },
       std::move(video_frame)));

@@ -558,7 +558,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   // Try using a frame with GPU buffer both are true:
   // 1. the frame already has GPU buffer
   // 2. frame doesn't need resizing or can be resized by GPU encoder.
-  bool use_gpu_buffer = frame->HasGpuMemoryBuffer() &&
+  bool use_gpu_buffer = frame->HasMappableGpuBuffer() &&
                         (!frame_needs_resizing || gpu_resize_supported_);
 
   // Currently configured encoder's preference takes precedence overe heuristic
@@ -1069,7 +1069,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     return EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError);
 
   const base::WritableSharedMemoryMapping* mapping = handle->mapping();
-  auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
+  auto mapped_src_frame = src_frame->HasMappableGpuBuffer()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
@@ -1104,7 +1104,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   const auto dest_coded_size = input_coded_size_;
   const auto dest_visible_rect = gfx::Rect(options_.frame_size);
 
-  if (src_frame->HasGpuMemoryBuffer() &&
+  if (src_frame->HasMappableGpuBuffer() &&
       src_frame->format() == PIXEL_FORMAT_NV12 &&
       (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need
@@ -1132,7 +1132,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   // This is true because |gpu_frame| is created with
   // |VEA_READ_CAMERA_AND_CPU_READ_WRITE| usage flag.
   auto mapped_gpu_frame = ConvertToMemoryMappedFrame(gpu_frame);
-  auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
+  auto mapped_src_frame = src_frame->HasMappableGpuBuffer()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   if (!mapped_gpu_frame || !mapped_src_frame)

@@ -438,7 +438,7 @@ const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
 
 std::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {
-  const bool mappable = frame.IsMappable() || frame.HasGpuMemoryBuffer();
+  const bool mappable = frame.IsMappable() || frame.HasMappableGpuBuffer();
   const bool texturable = frame.HasTextures();
   if (!(mappable || texturable))
     return std::nullopt;
@@ -1320,7 +1320,7 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
                         target_color_space);
   } else if (local_frame->IsMappable()) {
     CopyMappablePlanes(*local_frame, src_rect, dest_layout, buffer);
-  } else if (local_frame->HasGpuMemoryBuffer()) {
+  } else if (local_frame->HasMappableGpuBuffer()) {
     auto mapped_frame = media::ConvertToMemoryMappedFrame(local_frame);
     if (!mapped_frame) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

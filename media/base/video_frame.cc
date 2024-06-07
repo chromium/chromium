@@ -1385,14 +1385,13 @@ bool VideoFrame::HasSharedImages() const {
                         : shared_images_[0] != nullptr;
 }
 
-bool VideoFrame::HasGpuMemoryBuffer() const {
-  return wrapped_frame_ ? wrapped_frame_->HasGpuMemoryBuffer()
-                        : !!gpu_memory_buffer_;
+bool VideoFrame::HasMappableGpuBuffer() const {
+  return storage_type_ == STORAGE_GPU_MEMORY_BUFFER;
 }
 
 bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
-    return wrapped_frame_->HasGpuMemoryBuffer();
+    return wrapped_frame_->HasNativeGpuMemoryBuffer();
   } else if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
   }

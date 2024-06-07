@@ -196,9 +196,8 @@ void CopyToGpuMemoryBuffer(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
     media::VideoFrame* dst_frame,
     base::OnceClosure callback) {
-  DCHECK(dst_frame->HasGpuMemoryBuffer());
-  DCHECK_EQ(dst_frame->GetGpuMemoryBuffer()->GetType(),
-            gfx::SHARED_MEMORY_BUFFER);
+  CHECK(dst_frame->HasMappableGpuBuffer());
+  CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
 
   DCHECK(ctx_wrapper);
   auto* context_provider = ctx_wrapper->ContextProvider();

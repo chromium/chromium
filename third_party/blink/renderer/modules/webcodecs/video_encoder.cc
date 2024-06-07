@@ -1044,7 +1044,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
         FrameMetadata{*frame->metadata().frame_duration};
   }
 
-  bool mappable = frame->IsMappable() || frame->HasGpuMemoryBuffer();
+  bool mappable = frame->IsMappable() || frame->HasMappableGpuBuffer();
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.

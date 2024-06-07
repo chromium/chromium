@@ -587,8 +587,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImages() const;
 
-  // Returns true if the video frame is backed with GpuMemoryBuffer.
-  bool HasGpuMemoryBuffer() const;
+  // Returns true if the |storage_type_| is STOAGE_GPU_MEMORY_BUFFER which
+  // indicates that the VideoFrame is backed by GMB or a MappableSharedImage
+  // when its enabled.
+  bool HasMappableGpuBuffer() const;
 
   // Returns true if the GpuMemoruBuffer backing the video frame is native
   // buffer and not shared memory buffer. A native GPU memory buffer is a

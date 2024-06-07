@@ -573,7 +573,7 @@ void WebMediaPlayerMSCompositor::OnContextLost() {
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock auto_lock(current_frame_lock_);
   if (!current_frame_ || (!current_frame_->HasTextures() &&
-                          !current_frame_->HasGpuMemoryBuffer())) {
+                          !current_frame_->HasMappableGpuBuffer())) {
     return;
   }
   scoped_refptr<media::VideoFrame> black_frame =

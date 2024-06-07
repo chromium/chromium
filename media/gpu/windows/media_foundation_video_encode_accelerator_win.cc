@@ -1663,13 +1663,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
   }
 
-  if (frame->storage_type() ==
-      VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
-    if (!frame->HasGpuMemoryBuffer()) {
-      LOG(ERROR) << "Failed to get GMB for input frame";
-      return MF_E_INVALID_STREAM_DATA;
-    }
-
+  if (frame->HasMappableGpuBuffer()) {
     if (frame->HasNativeGpuMemoryBuffer() && dxgi_device_manager_ != nullptr) {
       if (!dxgi_resource_mapping_required_) {
         return PopulateInputSampleBufferGpu(std::move(frame));
