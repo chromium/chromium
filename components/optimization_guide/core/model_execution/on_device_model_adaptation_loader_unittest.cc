@@ -96,8 +96,7 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
     adaptation_loader_->StateChanged(nullptr);
   }
 
-  void SetBaseModelStateChanged(
-      std::optional<OnDeviceBaseModelSpec> model_spec) {
+  void SetBaseModelStateChanged(OnDeviceBaseModelSpec model_spec) {
     OnDeviceModelComponentState component_state;
     component_state.model_spec_ = model_spec;
     adaptation_loader_->StateChanged(&component_state);
@@ -136,16 +135,6 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, BaseModelUnavailable) {
       "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
       "Test",
       OnDeviceModelAdaptationAvailability::kBaseModelUnavailable, 1);
-  EXPECT_FALSE(adaptation_metadata_);
-}
-
-TEST_F(OnDeviceModelAdaptationLoaderTest, BaseModelSpecInvalid) {
-  SetBaseModelStateChanged(std::nullopt);
-  EXPECT_FALSE(model_provider_.optimization_target_);
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
-      "Test",
-      OnDeviceModelAdaptationAvailability::kBaseModelSpecInvalid, 1);
   EXPECT_FALSE(adaptation_metadata_);
 }
 

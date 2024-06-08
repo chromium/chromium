@@ -25,6 +25,7 @@ class OnDeviceModelAdaptationMetadata {
  public:
   static std::unique_ptr<OnDeviceModelAdaptationMetadata> New(
       const on_device_model::AdaptationAssetPaths& asset_paths,
+      int64_t version,
       scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
 
   OnDeviceModelAdaptationMetadata(const OnDeviceModelAdaptationMetadata&);
@@ -38,13 +39,17 @@ class OnDeviceModelAdaptationMetadata {
     return adapter_;
   }
 
+  int64_t version() const { return version_; }
+
  private:
   friend class OnDeviceModelServiceControllerTest;
 
   OnDeviceModelAdaptationMetadata(
       const on_device_model::AdaptationAssetPaths& asset_paths,
+      int64_t version,
       scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
   on_device_model::AdaptationAssetPaths asset_paths_;
+  int64_t version_;
   scoped_refptr<OnDeviceModelFeatureAdapter> adapter_;
 };
 

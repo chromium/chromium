@@ -52,6 +52,8 @@ using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 
 namespace {
 
+constexpr int64_t kModelAdatationVersion = 1;
+
 // Sets a threshold that will rejct text containing "unsafe"  when used with
 // FakeOnDeviceModel::ClassifyTextSafety..
 proto::SafetyCategoryThreshold ForbidUnsafe() {
@@ -421,10 +423,15 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
       log_entry_received_->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
-  EXPECT_EQ(logged_on_device_model_execution_info.model_versions()
-                .on_device_model_service_version()
-                .component_version(),
+  const auto& model_version =
+      logged_on_device_model_execution_info.model_versions()
+          .on_device_model_service_version();
+  EXPECT_EQ(model_version.component_version(), "0.0.1");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
+            "Test");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
             "0.0.1");
+  EXPECT_FALSE(model_version.model_adaptation_version());
   EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
   EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
                 .response()
@@ -457,11 +464,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
       OnDeviceModelAdaptationMetadata::New(
-          on_device_model::AdaptationAssetPaths(), /*adapter=*/nullptr));
+          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
+          /*adapter=*/nullptr));
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kTest,
       OnDeviceModelAdaptationMetadata::New(
-          on_device_model::AdaptationAssetPaths(), /*adapter=*/nullptr));
+          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
+          /*adapter=*/nullptr));
 
   auto session_compose = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),
@@ -486,6 +495,21 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(response_received_);
   EXPECT_EQ(*response_received_, "Adaptation model: 2\nInput: execute:bar\n");
   EXPECT_TRUE(*provided_by_on_device_);
+
+  EXPECT_TRUE(log_entry_received_);
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  const auto& model_version =
+      logged_on_device_model_execution_info.model_versions()
+          .on_device_model_service_version();
+  EXPECT_EQ(model_version.component_version(), "0.0.1");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
+            "Test");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
+            "0.0.1");
+  EXPECT_EQ(model_version.model_adaptation_version(), 1);
 
   session_compose.reset();
   session_test.reset();

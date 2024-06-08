@@ -108,7 +108,10 @@ void TestOnDeviceModelComponentStateManager::SetFreeDiskSpace(
 void TestOnDeviceModelComponentStateManager::SetReady(
     const base::FilePath& install_dir,
     const std::string& version) {
-  get()->SetReady(base::Version(version), install_dir, base::Value::Dict());
+  auto manifest = base::Value::Dict().Set(
+      "BaseModelSpec",
+      base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
+  get()->SetReady(base::Version(version), install_dir, manifest);
 }
 
 }  // namespace optimization_guide

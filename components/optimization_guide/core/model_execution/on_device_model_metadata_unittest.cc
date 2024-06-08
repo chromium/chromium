@@ -20,6 +20,11 @@ namespace optimization_guide {
 
 namespace {
 
+const struct OnDeviceBaseModelSpec kModelSpec = {.model_name = "test",
+                                                 .model_version = "0.0.1"};
+const struct OnDeviceBaseModelSpec kModelSpecNew = {.model_name = "test",
+                                                    .model_version = "0.0.2"};
+
 class OnDeviceModelMetadataTest : public testing::Test {
  public:
   OnDeviceModelMetadataTest() = default;
@@ -63,7 +68,7 @@ class OnDeviceModelMetadataTest : public testing::Test {
 };
 
 TEST_F(OnDeviceModelMetadataTest, EmptyFilePath) {
-  loader().Load(base::FilePath(), "test");
+  loader().Load(base::FilePath(), "test", kModelSpec);
   RunUntilIdle();
 
   EXPECT_EQ(metadata()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
@@ -71,7 +76,7 @@ TEST_F(OnDeviceModelMetadataTest, EmptyFilePath) {
 }
 
 TEST_F(OnDeviceModelMetadataTest, ConfigFileNotInProvidedPath) {
-  loader().Load(temp_dir(), "test");
+  loader().Load(temp_dir(), "test", kModelSpec);
   RunUntilIdle();
 
   EXPECT_EQ(metadata()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
@@ -84,7 +89,7 @@ TEST_F(OnDeviceModelMetadataTest, ValidConfig) {
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   WriteConfigToFile(temp_dir().Append(kOnDeviceModelExecutionConfigFile),
                     config);
-  loader().Load(temp_dir(), "test");
+  loader().Load(temp_dir(), "test", kModelSpec);
   RunUntilIdle();
 
   EXPECT_NE(metadata()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
@@ -112,12 +117,15 @@ TEST_F(OnDeviceModelMetadataTest, ResolvesToLastLoad) {
   WriteConfigToFile(new_config_file_path, new_config);
 
   // Do both loads
-  loader().Load(temp_dir(), "version1");
-  loader().Load(new_temp_dir.GetPath(), "version2");
+  loader().Load(temp_dir(), "version1", kModelSpec);
+  loader().Load(new_temp_dir.GetPath(), "version2", kModelSpecNew);
   RunUntilIdle();
 
   // The final state should match the last Load.
   EXPECT_EQ(metadata()->version(), "version2");
+  EXPECT_EQ(metadata()->model_spec().model_version,
+            kModelSpecNew.model_version);
+  EXPECT_EQ(metadata()->model_spec().model_name, kModelSpecNew.model_name);
   EXPECT_EQ(metadata()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
             nullptr);
   EXPECT_NE(
@@ -131,7 +139,7 @@ TEST_F(OnDeviceModelMetadataTest, NullStateChangeResets) {
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   WriteConfigToFile(temp_dir().Append(kOnDeviceModelExecutionConfigFile),
                     config);
-  loader().Load(temp_dir(), "test");
+  loader().Load(temp_dir(), "test", kModelSpec);
   loader().StateChanged(nullptr);
   RunUntilIdle();
   // Should have reverted to null again after the first load finished.

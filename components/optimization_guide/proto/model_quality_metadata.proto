@@ -12,6 +12,7 @@ option java_outer_classname = "ModelQualityMetadataProto";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/model_execution.proto";
+import "components/optimization_guide/proto/on_device_base_model_metadata.proto";
 import "third_party/metrics_proto/system_profile.proto";
 
 // Contains metadata about a specific feature's AiLoggingData (e.g. training
@@ -86,6 +87,13 @@ message OnDeviceModelVersions {
 message OnDeviceModelServiceVersion {
   // The version of the component used.
   string component_version = 1;
+
+  // The version metadata of the base model used.
+  OnDeviceBaseModelMetadata on_device_base_model_metadata = 2;
+
+  // The version of the model adaptation downloaded from the server, if the
+  // feature requires model adaptation.
+  int64 model_adaptation_version = 3;
 }
 
 // InternalOnDeviceModelExecutionInfo is a request/response pair from a call to

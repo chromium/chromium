@@ -23,6 +23,10 @@
 namespace optimization_guide {
 namespace {
 
+const base::Value::Dict kTestManifest = base::Value::Dict().Set(
+    "BaseModelSpec",
+    base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
+
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
   void StateChanged(const OnDeviceModelComponentState* state) override {
@@ -126,7 +130,7 @@ TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   manager()->InstallerRegistered();
 
@@ -322,7 +326,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   // The model is still available.
   EXPECT_TRUE(manager()->GetState());
@@ -345,7 +349,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   EXPECT_FALSE(manager()->GetState())
       << "state available even though performance class is not supported";
@@ -363,7 +367,7 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
   manager()->AddObserver(&observer);
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   const OnDeviceModelComponentState* state = manager()->GetState();
   ASSERT_TRUE(state);
@@ -394,7 +398,7 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   EXPECT_TRUE(manager()->GetState());
   EXPECT_TRUE(observer.GetState());
@@ -420,7 +424,7 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassChangesAfterInstall) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   // State is not available, because device is not eligible.
   EXPECT_FALSE(manager()->GetState());
@@ -466,7 +470,7 @@ TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   manager()->InstallerRegistered();
 
@@ -500,16 +504,11 @@ TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
 TEST_F(OnDeviceModelComponentTest, SetPrefsWhenManifestContainsBaseModelSpec) {
   manager()->OnStartup();
   WaitForStartup();
-  base::Value::Dict manifest = base::Value::Dict().Set(
-      "BaseModelSpec",
-      base::Value::Dict().Set("version", "0.0.0.0").Set("name", "TestXS"));
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      manifest);  // manifest is populated with test data.
-  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().value().model_name,
-            "TestXS");
-  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().value().model_version,
-            "0.0.0.0");
+                      kTestManifest);  // manifest is populated with test data.
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
 }
 
 }  // namespace

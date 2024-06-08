@@ -24,8 +24,9 @@ namespace optimization_guide {
 OnDeviceModelMetadata::OnDeviceModelMetadata(
     const base::FilePath& model_path,
     const std::string& version,
+    const OnDeviceBaseModelSpec& model_spec,
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> config)
-    : model_path_(model_path), version_(version) {
+    : model_path_(model_path), version_(version), model_spec_(model_spec) {
   if (!config) {
     return;
   }
@@ -45,9 +46,10 @@ OnDeviceModelMetadata::~OnDeviceModelMetadata() = default;
 std::unique_ptr<OnDeviceModelMetadata> OnDeviceModelMetadata::New(
     base::FilePath model_path,
     std::string version,
+    const OnDeviceBaseModelSpec& model_spec,
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> config) {
-  return base::WrapUnique(
-      new OnDeviceModelMetadata(model_path, version, std::move(config)));
+  return base::WrapUnique(new OnDeviceModelMetadata(
+      model_path, version, model_spec, std::move(config)));
 }
 
 scoped_refptr<const OnDeviceModelFeatureAdapter>
@@ -84,13 +86,16 @@ OnDeviceModelMetadataLoader::~OnDeviceModelMetadataLoader() {
   }
 }
 
-void OnDeviceModelMetadataLoader::Load(const base::FilePath& model_path,
-                                       const std::string& version) {
+void OnDeviceModelMetadataLoader::Load(
+    const base::FilePath& model_path,
+    const std::string& version,
+    const OnDeviceBaseModelSpec& model_spec) {
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadOnDeviceModelExecutionConfig,
                      model_path.Append(kOnDeviceModelExecutionConfigFile)),
-      base::BindOnce(&OnDeviceModelMetadata::New, model_path, version)
+      base::BindOnce(&OnDeviceModelMetadata::New, model_path, version,
+                     model_spec)
           .Then(on_load_fn_));
 }
 
@@ -101,7 +106,8 @@ void OnDeviceModelMetadataLoader::StateChanged(
   if (!state) {
     return;
   }
-  Load(state->GetInstallDirectory(), state->GetComponentVersion().GetString());
+  Load(state->GetInstallDirectory(), state->GetComponentVersion().GetString(),
+       state->GetBaseModelSpec());
 }
 
 void OnDeviceModelMetadataLoader::Invalidate() {

@@ -346,14 +346,16 @@ void OnDeviceModelComponentStateManager::SetReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     const base::Value::Dict& manifest) {
-  state_ = base::WrapUnique(new OnDeviceModelComponentState);
-  state_->install_dir_ = install_dir;
-  // This version refers to the component version specifically, not the model
-  // version.
-  state_->component_version_ = version;
-  // Populate the model version and name from the manifest into the Chrome
-  // pref cache. If not present, clears the state and cache.
-  state_->model_spec_ = ReadBaseModelSpecFromManifest(manifest);
+  state_.reset();
+
+  if (auto model_spec = ReadBaseModelSpecFromManifest(manifest)) {
+    state_ = base::WrapUnique(new OnDeviceModelComponentState);
+    state_->install_dir_ = install_dir;
+    // This version refers to the component version specifically, not the model
+    // version.
+    state_->component_version_ = version;
+    state_->model_spec_ = *model_spec;
+  }
   if (is_model_allowed_) {
     NotifyStateChanged();
   }

@@ -39,6 +39,7 @@ base::expected<std::unique_ptr<OnDeviceModelAdaptationMetadata>,
 CreateAdaptatonMetadataFromModelExecutionConfig(
     ModelBasedCapabilityKey feature,
     std::unique_ptr<on_device_model::AdaptationAssetPaths> asset_paths,
+    int64_t version,
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> execution_config) {
   if (!execution_config) {
     return base::unexpected(OnDeviceModelAdaptationAvailability::
@@ -54,7 +55,7 @@ CreateAdaptatonMetadataFromModelExecutionConfig(
                                 kAdaptationModelExecutionConfigInvalid);
   }
   return base::ok(OnDeviceModelAdaptationMetadata::New(
-      *asset_paths,
+      *asset_paths, version,
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config))));
 }
 
@@ -78,15 +79,19 @@ OnDeviceModelAdaptationMetadataCreated(
 std::unique_ptr<OnDeviceModelAdaptationMetadata>
 OnDeviceModelAdaptationMetadata::New(
     const on_device_model::AdaptationAssetPaths& asset_paths,
+    int64_t version,
     scoped_refptr<OnDeviceModelFeatureAdapter> adapter) {
-  return base::WrapUnique(
-      new OnDeviceModelAdaptationMetadata(asset_paths, std::move(adapter)));
+  return base::WrapUnique(new OnDeviceModelAdaptationMetadata(
+      asset_paths, version, std::move(adapter)));
 }
 
 OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     const on_device_model::AdaptationAssetPaths& asset_paths,
+    int64_t version,
     scoped_refptr<OnDeviceModelFeatureAdapter> adapter)
-    : asset_paths_(std::move(asset_paths)), adapter_(std::move(adapter)) {}
+    : asset_paths_(std::move(asset_paths)),
+      version_(version),
+      adapter_(std::move(adapter)) {}
 
 OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     const OnDeviceModelAdaptationMetadata&) = default;
@@ -185,7 +190,7 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
       FROM_HERE,
       base::BindOnce(&ReadOnDeviceModelExecutionConfig, *execution_config_file),
       base::BindOnce(&CreateAdaptatonMetadataFromModelExecutionConfig, feature_,
-                     std::move(result.value()))
+                     std::move(result.value()), model_info->GetVersion())
           .Then(
               base::BindOnce(&OnDeviceModelAdaptationMetadataCreated, feature_))
           .Then(on_load_fn_));

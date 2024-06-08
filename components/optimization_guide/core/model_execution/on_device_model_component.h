@@ -174,9 +174,7 @@ class OnDeviceModelComponentState {
   const base::Version& GetComponentVersion() const {
     return component_version_;
   }
-  const std::optional<OnDeviceBaseModelSpec>& GetBaseModelSpec() const {
-    return model_spec_;
-  }
+  const OnDeviceBaseModelSpec& GetBaseModelSpec() const { return model_spec_; }
 
  private:
   friend class OnDeviceModelAdaptationLoaderTest;
@@ -186,7 +184,7 @@ class OnDeviceModelComponentState {
 
   base::FilePath install_dir_;
   base::Version component_version_;
-  std::optional<OnDeviceBaseModelSpec> model_spec_;
+  OnDeviceBaseModelSpec model_spec_;
 };
 
 }  // namespace optimization_guide

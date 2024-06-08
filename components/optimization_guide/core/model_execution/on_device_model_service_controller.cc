@@ -42,14 +42,25 @@ namespace {
 
 proto::OnDeviceModelVersions GetModelVersions(
     const OnDeviceModelMetadata& model_metadata,
-    const SafetyModelInfo* safety_model_info) {
+    const SafetyModelInfo* safety_model_info,
+    std::optional<int64_t> adaptation_version) {
   proto::OnDeviceModelVersions versions;
-  versions.mutable_on_device_model_service_version()->set_component_version(
-      model_metadata.version());
+  auto* on_device_model_version =
+      versions.mutable_on_device_model_service_version();
+  on_device_model_version->set_component_version(model_metadata.version());
+  on_device_model_version->mutable_on_device_base_model_metadata()
+      ->set_base_model_name(model_metadata.model_spec().model_name);
+  on_device_model_version->mutable_on_device_base_model_metadata()
+      ->set_base_model_version(model_metadata.model_spec().model_version);
 
   if (safety_model_info) {
     versions.set_text_safety_model_version(safety_model_info->GetVersion());
   }
+
+  if (adaptation_version) {
+    on_device_model_version->set_model_adaptation_version(*adaptation_version);
+  }
+
   return versions;
 }
 
@@ -159,17 +170,19 @@ OnDeviceModelServiceController::CreateSession(
   }
 
   std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
+  std::optional<int64_t> adaptation_version;
   if (features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
     auto it = model_adaptation_metadata_.find(feature);
     CHECK(it != model_adaptation_metadata_.end());
     adaptation_assets = it->second.asset_paths();
+    adaptation_version = it->second.version();
   }
 
   SessionImpl::OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
       feature, weak_ptr_factory_.GetWeakPtr(), model_paths, adaptation_assets);
-  opts.model_versions =
-      GetModelVersions(*model_metadata_, safety_model_info_.get());
+  opts.model_versions = GetModelVersions(
+      *model_metadata_, safety_model_info_.get(), adaptation_version);
   opts.adapter = std::move(adapter);
   opts.safety_cfg = SafetyConfig(safety_config);
 
