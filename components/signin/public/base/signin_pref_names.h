@@ -49,6 +49,10 @@ extern const char kGoogleServicesSyncingUsernameMigratedToSignedIn[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesUsernamePattern[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kHistorySyncLastDeclinedTimestamp[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kHistorySyncSuccessiveDeclineCount[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kRestrictAccountsToPatterns[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSignedInWithCredentialProvider[];

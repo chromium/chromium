@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.SignoutButtonPreference;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -541,6 +542,18 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             showAdressesNotEncryptedDialog(preference);
             // Preference state shouldn't be changed until the user chooses to continue.
             return false;
+        }
+        if (shouldReplaceSyncSettingsWithAccountSettings()
+                && preference
+                        .getKey()
+                        .equals(ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE)) {
+            HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(getProfile());
+            if ((Boolean) newValue) {
+                // The user opted into syncing history, wipe prefs storing previous declines.
+                historySyncHelper.clearHistorySyncDeclinedPrefs();
+            } else {
+                historySyncHelper.recordHistorySyncDeclinedPrefs();
+            }
         }
         // A change to Preference state hasn't been applied yet. Defer
         // updateSyncStateFromSelectedTypes so it gets the updated state from

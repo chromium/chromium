@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -19,14 +21,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Set;
@@ -38,14 +47,21 @@ public class HistorySyncHelperTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+
     @Mock private SyncService mSyncServiceMock;
     @Mock private Profile mProfileMock;
+    @Mock private PrefService mPrefServiceMock;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     private HistorySyncHelper mHistorySyncHelper;
 
     @Before
     public void setUp() {
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(any(Profile.class))).thenReturn(mPrefServiceMock);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncHelper = HistorySyncHelper.getForProfile(mProfileMock);
@@ -108,6 +124,29 @@ public class HistorySyncHelperTest {
         when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
 
         Assert.assertFalse(mHistorySyncHelper.shouldSuppressHistorySync());
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordHistorySyncDeclinedPrefs() {
+        final int someIntegerValue =
+                mPrefServiceMock.getInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);
+
+        mHistorySyncHelper.recordHistorySyncDeclinedPrefs();
+
+        verify(mPrefServiceMock)
+                .setInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT, someIntegerValue + 1);
+        verify(mPrefServiceMock)
+                .setLong(Pref.HISTORY_SYNC_LAST_DECLINED_TIMESTAMP, TimeUtils.currentTimeMillis());
+    }
+
+    @Test
+    @SmallTest
+    public void testClearHistorySyncDeclinedPrefs() {
+        mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
+
+        verify(mPrefServiceMock).clearPref(Pref.HISTORY_SYNC_LAST_DECLINED_TIMESTAMP);
+        verify(mPrefServiceMock).clearPref(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);
     }
 
     @Test

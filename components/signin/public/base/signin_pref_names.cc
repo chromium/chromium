@@ -121,6 +121,22 @@ const char kSigninAllowed[] = "signin.allowed";
 const char kGaiaCookieLastListAccountsData[] =
     "gaia_cookie.last_list_accounts_data";
 
+// The timestamp when History Sync was last declined (in the opt-in screen or
+// in the settings).
+// This value is reset when the user opts in to History Sync.
+// TODO(b/344543852): This pref is not used on iOS. Migrate the equivalent iOS
+// pref to this one.
+const char kHistorySyncLastDeclinedTimestamp[] =
+    "signin.history_sync.last_declined_timestamp";
+
+// Number of times the user successively declined History Sync (in the opt-in
+// screen or in the settings).
+// This value is reset to zero when the user accepts History Sync.
+// TODO(b/344543852): This pref is not used on iOS. Migrate the equivalent iOS
+// pref to this one.
+const char kHistorySyncSuccessiveDeclineCount[] =
+    "signin.history_sync.successive_decline_count";
+
 // List of patterns to determine the account visibility.
 const char kRestrictAccountsToPatterns[] =
     "signin.restrict_accounts_to_patterns";

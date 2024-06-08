@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -185,6 +186,7 @@ public class ManageSyncSettingsTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private GoogleActivityController mGoogleActivityController;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+    @Mock private HistorySyncHelper mHistorySyncHelperMock;
 
     @Before
     public void setUp() {
@@ -209,6 +211,8 @@ public class ManageSyncSettingsTest {
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(false);
+
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
 
         mUiDataTypes = new HashMap<>();
         mUiDataTypes.put(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL);
@@ -457,6 +461,28 @@ public class ManageSyncSettingsTest {
         onView(withText(R.string.sync_addresses_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSyncHistoryAndTabsToggle() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        ChromeSwitchPreference historyToggle =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
+
+        // Switching history sync on from settings clears history sync declined prefs.
+        mSyncTestRule.togglePreference(historyToggle);
+        verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
+        // Switching history sync off from settings records history sync declined prefs.
+        mSyncTestRule.togglePreference(historyToggle);
+        verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
 
     @Test

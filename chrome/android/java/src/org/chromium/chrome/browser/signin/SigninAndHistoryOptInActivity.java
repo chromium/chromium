@@ -81,6 +81,10 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
+            setTheme(org.chromium.chrome.R.style.Theme_Chromium_DialogWhenLarge);
+        }
         // Temporarily ensure that the native is initialized before calling super.onCreate().
         // TODO(crbug.com/41493758): Handle the case where the UI is shown before the end of
         // native initialization.
@@ -93,7 +97,6 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
-            setTheme(org.chromium.chrome.R.style.Theme_Chromium_DialogWhenLarge);
             mUpgradePromoCoordinator =
                     new UpgradePromoCoordinator(
                             this,

@@ -12,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/signin_pref_names.h"
 
 namespace {
 // Name of the main pref dictionary holding the account dictionaries of the
@@ -50,6 +51,8 @@ SigninPrefs::~SigninPrefs() = default;
 
 void SigninPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSigninAccountPrefs);
+  registry->RegisterIntegerPref(prefs::kHistorySyncSuccessiveDeclineCount, 0);
+  registry->RegisterInt64Pref(prefs::kHistorySyncLastDeclinedTimestamp, 0);
 }
 
 bool SigninPrefs::HasAccountPrefs(GaiaId gaia_id) const {

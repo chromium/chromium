@@ -32,6 +32,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     private final ProfileDataCache mProfileDataCache;
     private final @SigninAccessPoint int mAccessPoint;
     private final boolean mShouldSignOutOnDecline;
+    private final HistorySyncHelper mHistorySyncHelper;
 
     HistorySyncMediator(
             Context context,
@@ -46,6 +47,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
         mSyncService = SyncServiceFactory.getForProfile(profile);
+        mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
         mAccountEmail =
@@ -100,6 +102,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                 "Signin.HistorySyncOptIn.Completed", mAccessPoint, SigninAccessPoint.MAX);
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
         mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
+        mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
         mDelegate.dismissHistorySync();
     }
 
@@ -110,6 +113,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             mSigninManager.signOut(
                     SignoutReason.USER_DECLINED_HISTORY_SYNC_AFTER_DEDICATED_SIGN_IN);
         }
+        mHistorySyncHelper.recordHistorySyncDeclinedPrefs();
         mDelegate.dismissHistorySync();
     }
 }

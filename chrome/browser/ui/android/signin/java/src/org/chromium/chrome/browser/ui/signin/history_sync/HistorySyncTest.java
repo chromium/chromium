@@ -68,6 +68,7 @@ public class HistorySyncTest {
 
     @Mock private SyncService mSyncServiceMock;
     @Mock private HistorySyncCoordinator.HistorySyncDelegate mHistorySyncDelegateMock;
+    @Mock private HistorySyncHelper mHistorySyncHelperMock;
 
     private HistorySyncCoordinator mHistorySyncCoordinator;
 
@@ -78,6 +79,7 @@ public class HistorySyncTest {
         mSigninTestRule.addTestAccountThenSignin();
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mHistorySyncDelegateMock.isLargeScreen()).thenReturn(false);
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
     }
 
     @After
@@ -139,6 +141,7 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
 
     @Test
@@ -155,6 +158,7 @@ public class HistorySyncTest {
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
 
     @Test
@@ -173,6 +177,7 @@ public class HistorySyncTest {
         verify(mHistorySyncDelegateMock, atLeastOnce()).dismissHistorySync();
         CriteriaHelper.pollUiThread(
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
+        verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
 
     @Test
