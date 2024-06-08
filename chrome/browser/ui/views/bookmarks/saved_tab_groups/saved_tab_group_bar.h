@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "content/public/browser/page.h"
@@ -197,6 +198,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Paints the drop indicator, if one should be shown.
   void MaybePaintDropIndicatorInBar(gfx::Canvas* canvas);
+
+  // Maybe show the promo if a group was closed from the tabstrip.
+  void MaybeShowClosePromo(const base::Uuid& saved_group_id);
 
   // Calculates the index in the saved tab groups bar at which we should show a
   // drop indicator, or nullopt if we should not show an indicator in the bar.

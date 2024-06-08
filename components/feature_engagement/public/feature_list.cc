@@ -198,6 +198,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSideSearchPageActionLabelFeature,
     &kIPHSignoutWebInterceptFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
+    &kIPHTabGroupsSaveV2CloseGroupFeature,
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
     &kIPHTrackingProtectionOffboardingFeature,

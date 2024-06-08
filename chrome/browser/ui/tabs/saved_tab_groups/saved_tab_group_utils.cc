@@ -14,6 +14,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
@@ -30,6 +31,8 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -509,6 +512,32 @@ void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
 // static
 bool SavedTabGroupUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
   return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
+}
+
+// static
+ui::TrackedElement* SavedTabGroupUtils::GetAnchorElementForTabGroupsV2IPH(
+    const ui::ElementTracker::ElementList& elements) {
+  // If there's no AppMenu with an element ID, we cant find a
+  // browser to show the IPH on.
+  if (elements.empty()) {
+    return nullptr;
+  }
+
+  // Get the context from the first element. This is the browser
+  // that the IPH will be displayed in.
+  ui::ElementContext context = elements[0]->context();
+
+  // Get the OverflowButton from the bookmarks bar. If it exists
+  // use it as the anchor.
+  ui::TrackedElement* overflow_button_element =
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+          kSavedTabGroupOverflowButtonElementId, context);
+  if (overflow_button_element) {
+    return overflow_button_element;
+  }
+
+  // Fallback to the AppMenuButton.
+  return elements[0];
 }
 
 }  // namespace tab_groups

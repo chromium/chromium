@@ -43626,6 +43626,8 @@ should be able to be added at any place in this file.
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"
       label="For long press links to create tab groups."/>
+  <suffix name="TabGroupsSaveV2CloseGroup"
+      label="For tab group closing adding them to a new location."/>
   <suffix name="TabGroupsSaveV2Intro"
       label="For the intro of tab groups that default to saved."/>
   <suffix name="TabGroupsTapToSeeAnotherTab" label="For tab strip."/>

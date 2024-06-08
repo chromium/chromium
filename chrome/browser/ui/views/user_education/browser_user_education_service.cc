@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -705,38 +706,30 @@ void MaybeRegisterChromeFeaturePromos(
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature,
+            kToolbarAppMenuButtonElementId,
+            IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_APP_MENU_NOT_SYNCED_BODY,
+            IDS_SAVED_TAB_GROUPS_V2_INTRO_DEFAULT_BODY_A11Y,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+            .SetAnchorElementFilter(
+                base::BindRepeating(&tab_groups::SavedTabGroupUtils::
+                                        GetAnchorElementForTabGroupsV2IPH))
+            .SetMetadata(127, "dpenning@chromium.org",
+                         "triggered on startup when the saved tab groups are "
+                         "defaulted to saved for the first time.")));
+
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForToastPromo(
             feature_engagement::kIPHTabGroupsSaveV2IntroFeature,
             kToolbarAppMenuButtonElementId,
             IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
             IDS_SAVED_TAB_GROUPS_V2_INTRO_DEFAULT_BODY_A11Y,
             FeaturePromoSpecification::AcceleratorInfo())
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-            .SetAnchorElementFilter(base::BindRepeating(
-                [](const ui::ElementTracker::ElementList& elements)
-                    -> ui::TrackedElement* {
-                  // If there's no AppMenu with an element ID, we cant find a
-                  // browser to show the IPH on.
-                  if (elements.empty()) {
-                    return nullptr;
-                  }
-
-                  // Get the context from the first element. This is the browser
-                  // that the IPH will be displayed in.
-                  ui::ElementContext context = elements[0]->context();
-
-                  // Get the OverflowButton from the bookmarks bar. If it exists
-                  // use it as the anchor.
-                  ui::TrackedElement* overflow_button_element =
-                      ui::ElementTracker::GetElementTracker()
-                          ->GetFirstMatchingElement(
-                              kSavedTabGroupOverflowButtonElementId, context);
-                  if (overflow_button_element) {
-                    return overflow_button_element;
-                  }
-
-                  // Fallback to the AppMenuButton.
-                  return elements[0];
-                }))
+            .SetAnchorElementFilter(
+                base::BindRepeating(&tab_groups::SavedTabGroupUtils::
+                                        GetAnchorElementForTabGroupsV2IPH))
             .SetMetadata(127, "dpenning@chromium.org",
                          "triggered on startup when the saved tab groups are "
                          "defaulted to saved for the first time.")));

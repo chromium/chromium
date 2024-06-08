@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -124,6 +126,11 @@ class SavedTabGroupUtils {
   // Returns whether the tab's URL is viable for saving in a saved tab
   // group.
   static bool IsURLValidForSavedTabGroups(const GURL& gurl);
+
+  // Returns the correct element for showing the IPH for Saved Groups V2. Either
+  // the SavedTabGroupBar::EverythingMenuButton or the AppMenuButton.
+  static ui::TrackedElement* GetAnchorElementForTabGroupsV2IPH(
+      const ui::ElementTracker::ElementList& elements);
 };
 
 }  // namespace tab_groups
