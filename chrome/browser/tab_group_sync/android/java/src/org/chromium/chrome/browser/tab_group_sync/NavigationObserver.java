@@ -68,6 +68,14 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
             return;
         }
 
+        // For renderer initiated navigation, in most cases these navigations will be
+        // auto triggered on restoration. And there is no guarantee that different machines
+        // will get the same navigation (e,g, different query params). So there is no need to
+        // save them.
+        if (navigationHandle.isRendererInitiated() && !navigationHandle.hasUserGesture()) {
+            return;
+        }
+
         // Avoid loops if the navigation was initiated from sync.
         if (mNavigationTracker.wasNavigationFromSync(navigationHandle.getUserDataHost())) {
             return;

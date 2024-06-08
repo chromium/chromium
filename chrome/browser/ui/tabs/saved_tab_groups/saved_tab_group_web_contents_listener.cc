@@ -42,6 +42,13 @@ bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
     return false;
   }
 
+  // For renderer initiated navigation, in most cases these navigations will be
+  // auto triggered on restoration. So there is no need to save them.
+  if (navigation_handle->IsRendererInitiated() &&
+      !navigation_handle->HasUserGesture()) {
+    return false;
+  }
+
   return SavedTabGroupUtils::IsURLValidForSavedTabGroups(
       navigation_handle->GetURL());
 }
