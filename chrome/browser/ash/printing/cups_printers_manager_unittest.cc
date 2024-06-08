@@ -1605,6 +1605,9 @@ TEST_F(CupsPrintersManagerTest, PrinterWithHplipPluginLicenseDlcFails) {
 }
 
 TEST_F(CupsPrintersManagerTest, PrinterWithHplipPluginLicenseDlcSucceeds) {
+  feature_list_.InitAndEnableFeature(
+      printing::features::kAddPrinterViaPrintscanmgr);
+
   Printer printer(kPrinterId);
   printer.SetUri("ipp://manual.uri");
   printer.mutable_ppd_reference()->effective_make_and_model = "Make and model";
