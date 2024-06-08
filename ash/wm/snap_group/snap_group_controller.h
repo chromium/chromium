@@ -86,9 +86,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   bool OnSnappingWindow(aura::Window* to_be_snapped_window,
                         WindowSnapActionSource snap_action_source);
 
-  // Minimizes the most recently used and unminimized snap groups.
-  void MinimizeTopMostSnapGroup();
-
   // Returns the topmost fully visible non-occluded snap group on `target_root`.
   SnapGroup* GetTopmostVisibleSnapGroup(const aura::Window* target_root) const;
 
@@ -107,11 +104,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   //  secondary snapped window].
   std::optional<std::pair<aura::Window*, aura::Window*>>
   GetWindowPairForSnapToReplaceWithKeyboardShortcut();
-
-  // Restores the most recent used snap group to be at the default snapped state
-  // i.e. two windows in the most recent snap group are positioned at primary
-  // and secondary snapped location.
-  void RestoreTopmostSnapGroup();
 
   void AddObserver(SnapGroupObserver* observer);
   void RemoveObserver(SnapGroupObserver* observer);

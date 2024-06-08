@@ -80,6 +80,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -610,10 +611,6 @@ void CreateSnapGroup() {
   maybe_create_snap_group(snap_to_replace_window_pair->first,
                           snap_to_replace_window_pair->second,
                           carry_over_creation_time);
-}
-
-bool CanMinimizeSnapGroupWindows() {
-  return SnapGroupController::Get();
 }
 
 bool CanMinimizeTopWindowOnBack() {
@@ -1649,18 +1646,9 @@ bool ToggleMinimized() {
 }
 
 void ToggleSnapGroupsMinimize() {
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  if (!snap_group_controller) {
-    return;
-  }
-
-  SnapGroup* topmost_snap_group = snap_group_controller->GetTopmostSnapGroup();
-  if (!topmost_snap_group) {
-    snap_group_controller->RestoreTopmostSnapGroup();
-    return;
-  }
-
-  snap_group_controller->MinimizeTopMostSnapGroup();
+  // TODO(b/333772909): Remove this workaroound to disable shortcut when the
+  // mojom conversion is disabled for deprecated shortcuts.
+  base::DoNothing();
 }
 
 void ToggleResizeLockMenu() {

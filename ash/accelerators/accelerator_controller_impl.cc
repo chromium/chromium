@@ -922,7 +922,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kCreateSnapGroup:
       return accelerators::CanCreateSnapGroup();
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
-      return accelerators::CanMinimizeSnapGroupWindows();
+      return false;
     case AcceleratorAction::kToggleMultitaskMenu:
       return accelerators::CanToggleMultitaskMenu();
     case AcceleratorAction::kTouchHudClear:
@@ -1521,8 +1521,6 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::CreateSnapGroup();
       break;
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
-      base::RecordAction(base::UserMetricsAction(
-          "Accel_Toggle_Snap_Group_Windows_Minimize_Restore"));
       accelerators::ToggleSnapGroupsMinimize();
       break;
     case AcceleratorAction::kToggleResizeLockMenu:

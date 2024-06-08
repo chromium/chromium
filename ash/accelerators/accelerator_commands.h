@@ -73,8 +73,6 @@ ASH_EXPORT bool CanCreateSnapGroup();
 
 ASH_EXPORT void CreateSnapGroup();
 
-ASH_EXPORT bool CanMinimizeSnapGroupWindows();
-
 ASH_EXPORT bool CanMinimizeTopWindowOnBack();
 
 ASH_EXPORT bool CanPerformMagnifierZoom();
@@ -376,6 +374,8 @@ ASH_EXPORT bool ToggleMinimized();
 
 // Minimizes the topmost unminimized snap groups. If there is no such snap
 // group, restores the most recently used minimized snap group.
+// TODO(b/333772909): Remove this API when the mojom conversion is disabled for
+// deprecated shortcuts.
 ASH_EXPORT void ToggleSnapGroupsMinimize();
 
 // Turns the mirror mode on or off.

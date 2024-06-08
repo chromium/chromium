@@ -4075,26 +4075,6 @@ TEST_F(SnapGroupOverviewTest, CtrlPlusWToCloseFocusedItemInGroupInOverview) {
   EXPECT_FALSE(overview_controller->InOverviewSession());
 }
 
-// Tests that the minimized windows in a snap group will be shown as a single
-// group item in overview.
-// Disabled due to product decision change.
-TEST_F(SnapGroupOverviewTest, DISABLED_MinimizedSnapGroupInOverview) {
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get());
-
-  SnapGroupController::Get()->MinimizeTopMostSnapGroup();
-
-  OverviewController* overview_controller = OverviewController::Get();
-  overview_controller->StartOverview(OverviewStartAction::kTests);
-  ASSERT_TRUE(overview_controller->overview_session());
-
-  const auto* overview_grid =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 1u);
-}
-
 // Tests that the bounds on the overview group item as well as the individual
 // overview item hosted by the group item will be set correctly.
 TEST_F(SnapGroupOverviewTest, OverviewItemBoundsTest) {
@@ -4160,34 +4140,6 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemRoundedCornersInVertical) {
   overview_controller->StartOverview(OverviewStartAction::kTests,
                                      OverviewEnterExitType::kImmediateEnter);
   ASSERT_TRUE(overview_controller->InOverviewSession());
-
-  const auto* overview_grid =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(overview_grid);
-  const auto& window_list = overview_grid->window_list();
-  ASSERT_EQ(window_list.size(), 2u);
-  for (const auto& overview_item : window_list) {
-    EXPECT_EQ(overview_item->GetRoundedCorners(),
-              gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
-  }
-}
-
-// Tests the rounded corners will be applied to the exposed corners of the
-// overview group item if the corresponding snap group is minimized.
-// Disabled due to product decision change.
-TEST_F(SnapGroupOverviewTest,
-       DISABLED_MinimizedSnapGroupRoundedCornersInOverview) {
-  std::unique_ptr<aura::Window> w0(CreateAppWindow());
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(100, 100)));
-  SnapTwoTestWindows(w0.get(), w1.get());
-
-  SnapGroupController::Get()->MinimizeTopMostSnapGroup();
-
-  OverviewController* overview_controller = OverviewController::Get();
-  overview_controller->StartOverview(OverviewStartAction::kTests,
-                                     OverviewEnterExitType::kImmediateEnter);
-  ASSERT_TRUE(overview_controller->overview_session());
 
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());

@@ -287,11 +287,6 @@ bool SnapGroupController::OnSnappingWindow(
   return true;
 }
 
-void SnapGroupController::MinimizeTopMostSnapGroup() {
-  auto* topmost_snap_group = GetTopmostSnapGroup();
-  topmost_snap_group->MinimizeWindows();
-}
-
 SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
     const aura::Window* target_root) const {
   for (const aura::Window* top_window : GetActiveDeskAppWindowsInZOrder(
@@ -397,19 +392,6 @@ SnapGroupController::GetWindowPairForSnapToReplaceWithKeyboardShortcut() {
   }
 
   return std::nullopt;
-}
-
-void SnapGroupController::RestoreTopmostSnapGroup() {
-  auto windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (aura::Window* window : windows) {
-    if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
-      CHECK(WindowState::Get(snap_group->window1())->IsMinimized());
-      CHECK(WindowState::Get(snap_group->window2())->IsMinimized());
-      RestoreSnapState(snap_group);
-      return;
-    }
-  }
 }
 
 void SnapGroupController::AddObserver(SnapGroupObserver* observer) {

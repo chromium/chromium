@@ -1329,15 +1329,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Accel_Toggle_Snap_Group_Windows_Minimize_Restore">
-  <owner>michelefan@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
-  <description>
-    Records how often the snap group windows are minimized or restored from
-    accelerator.
-  </description>
-</action>
-
 <action name="Accel_Toggle_Spoken_Feedback">
   <owner>dtseng@chromium.org</owner>
   <owner>aleventhal@chromium.org</owner>
