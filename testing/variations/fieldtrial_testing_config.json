@@ -6570,6 +6570,28 @@
             ]
         }
     ],
+    "CssRubyAlign": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CssRubyAlign"
+                    ]
+                }
+            ]
+        }
+    ],
     "CursiveManagedStylusPreinstall": [
         {
             "platforms": [
@@ -18446,6 +18468,72 @@
                     },
                     "enable_features": [
                         "OmniboxRichAutocompletion"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RubyLineBreakable": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RubyLineBreakable"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RubyLineEdgeAlignment": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RubyLineEdgeAlignment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RubyShortHeuristics": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RubyShortHeuristics"
                     ]
                 }
             ]
