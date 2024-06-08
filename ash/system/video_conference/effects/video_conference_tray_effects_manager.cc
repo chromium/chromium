@@ -42,6 +42,13 @@ void VideoConferenceTrayEffectsManager::RegisterDelegate(
   DCHECK(delegate);
   DCHECK(!IsDelegateRegistered(delegate));
   effect_delegates_.push_back(delegate);
+  // TODO(b/345831029): Test that a VcTileUiController is reset when an effect
+  // is removed.
+  if (features::IsVcDlcUiEnabled()) {
+    delegate->set_on_effect_will_be_removed_callback(base::BindRepeating(
+        &VideoConferenceTrayEffectsManager::RemoveTileControllers,
+        weak_factory_.GetWeakPtr()));
+  }
 }
 
 void VideoConferenceTrayEffectsManager::UnregisterDelegate(
@@ -201,7 +208,9 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
 
 void VideoConferenceTrayEffectsManager::RemoveTileControllers(
     VcEffectsDelegate* delegate) {
-  CHECK(features::IsVcDlcUiEnabled());
+  if (!features::IsVcDlcUiEnabled()) {
+    return;
+  }
   for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
     if (base::Contains(controller_for_effect_id_, id)) {

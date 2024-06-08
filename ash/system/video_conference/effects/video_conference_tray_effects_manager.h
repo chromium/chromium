@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -132,6 +133,8 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   std::vector<raw_ptr<VcEffectsDelegate, VectorExperimental>> effect_delegates_;
 
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<VideoConferenceTrayEffectsManager> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -84,10 +84,20 @@ class ASH_EXPORT VcEffectsDelegate {
   virtual void RecordMetricsForSetValueEffectOnStartup(VcEffectId effect_id,
                                                        int state_value) const {}
 
+  void set_on_effect_will_be_removed_callback(
+      base::RepeatingCallback<void(VcEffectsDelegate*)> callback) {
+    on_effect_will_be_removed_callback_ = std::move(callback);
+  }
+
  private:
   // Stores the collection of effects that are hosted by this delegate. The keys
   // are the unique ids of the effects.
   std::map<VcEffectId, std::unique_ptr<VcHostedEffect>> effects_;
+
+  // Called when a `VcEffectId` is about to be removed. Used to clear
+  // dependencies.
+  base::RepeatingCallback<void(VcEffectsDelegate*)>
+      on_effect_will_be_removed_callback_;
 };
 
 }  // namespace ash
