@@ -55,7 +55,10 @@ bool ShouldShowParentalControlSettings(const Profile* profile) {
 
 bool IsExternalStorageEnabled(const Profile* profile) {
   return base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature) &&
-         arc::IsArcPlayStoreEnabledForProfile(profile);
+         (arc::IsArcPlayStoreEnabledForProfile(profile) ||
+          // Show external storage if ARC is supposed to always start, which is
+          // used in Tast tests with fake login.
+          arc::ShouldArcAlwaysStart());
 }
 
 bool IsAppRestoreAvailableForProfile(const Profile* profile) {
