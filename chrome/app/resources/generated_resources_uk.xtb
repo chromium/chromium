@@ -3622,7 +3622,7 @@
 <translation id="3659550105763988702">Використайте ключ доступу для додатка <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Ви ввели неправильний код доступу забагато разів. Спробуйте пізніше</translation>
 <translation id="3660234220361471169">Ненадійні</translation>
-<translation id="3661106764436337772">Пишіть швидше й впевненіше</translation>
+<translation id="3661106764436337772">Пишіть швидше й упевненіше</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 пароль уже існує}one{{NUM_PASSWORDS} пароль уже існує}few{{NUM_PASSWORDS} паролі вже існують}many{{NUM_PASSWORDS} паролів уже існують}other{{NUM_PASSWORDS} пароля вже існують}}</translation>
 <translation id="3662207097851752847">Підтвердьте обліковий запис Google на телефоні</translation>
 <translation id="3663417513679360795">Докладніше про те, як увімкнути стандартне попереднє завантаження</translation>
