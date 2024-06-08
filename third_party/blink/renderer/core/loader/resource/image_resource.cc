@@ -199,16 +199,55 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
   }
 };
 
+wtf_size_t ImageResource::FindTransparentPlaceholderIndex(KURL image_url) {
+  CHECK(IsMainThread());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      Vector<String>, known_transparent_urls,
+      ({"data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+        "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
+        "data:image/gif;base64,R0lGODlhAQABAID/"
+        "AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="}));
+  return known_transparent_urls.Find(image_url);
+}
+
+scoped_refptr<SharedBuffer>
+ImageResource::GetDataForTransparentPlaceholderImageIndex(wtf_size_t index) {
+  CHECK(index >= 0 && index < 2);
+  CHECK(IsMainThread());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
+      ({SharedBuffer::Create(
+            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
+            "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
+            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b",
+            static_cast<size_t>(43)),
+        SharedBuffer::Create(
+            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
+            "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
+            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
+            static_cast<size_t>(43))}));
+  return known_transparent_encoded_gifs[index];
+}
+
 ImageResource*
 ImageResource::CreateResourceAndResponseForTransparentPlaceholderImage(
-    scoped_refptr<Image> image,
+    wtf_size_t image_index,
     KURL image_url,
     FetchParameters& fetch_params) {
+  DCHECK_NE(image_index, kNotFound);
+
+  scoped_refptr<BitmapImage> image = BitmapImage::Create();
+  scoped_refptr<SharedBuffer> image_data =
+      GetDataForTransparentPlaceholderImageIndex(image_index);
+  image->SetData(image_data, true);
+
+  // This is similar to the code in
+  // ResourceFetcher::CreateResourceForStaticData.
   ResourceResponse response;
   response.SetHttpStatusCode(200);
   response.SetHttpStatusText(AtomicString("OK"));
   response.SetCurrentRequestUrl(image_url);
-  response.SetExpectedContentLength(image->DataSize());
+  response.SetExpectedContentLength(image_data->size());
   response.SetTextEncodingName(WebString::FromUTF8(""));
   response.SetMimeType(WebString::FromUTF8("image/gif"));
   response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
@@ -220,9 +259,8 @@ ImageResource::CreateResourceAndResponseForTransparentPlaceholderImage(
   // FIXME: We should provide a body stream here.
   resource->ResponseReceived(response);
   resource->SetDataBufferingPolicy(kBufferData);
-  scoped_refptr<SharedBuffer> data = image->Data();
-  if (data->size()) {
-    resource->SetResourceBuffer(data);
+  if (image_data->size()) {
+    resource->SetResourceBuffer(image_data);
   }
   return resource;
 }
@@ -244,14 +282,27 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
   }
 
   ImageResource* resource = nullptr;
-  const KURL& url = params.GetResourceRequest().Url();
+  const KURL& url = params.Url();
   if (base::FeatureList::IsEnabled(
           features::kSimplifyLoadingTransparentPlaceholderImage) &&
       url.ProtocolIsData()) {
-    if (auto transparent_image =
-            BitmapImage::MaybeCreateTransparentPlaceholderImage(url)) {
-      resource = CreateResourceAndResponseForTransparentPlaceholderImage(
-          transparent_image, url, params);
+    wtf_size_t index = FindTransparentPlaceholderIndex(url);
+    // We should create/return the right Resource corresponding to the image
+    // url.
+    if (index != kNotFound) {
+      if (index == 0) {
+        DEFINE_STATIC_LOCAL(
+            Persistent<ImageResource>, cached_resource,
+            (CreateResourceAndResponseForTransparentPlaceholderImage(index, url,
+                                                                     params)));
+        resource = cached_resource.Get();
+      } else if (index == 1) {
+        DEFINE_STATIC_LOCAL(
+            Persistent<ImageResource>, cached_resource,
+            (CreateResourceAndResponseForTransparentPlaceholderImage(index, url,
+                                                                     params)));
+        resource = cached_resource.Get();
+      }
     }
   }
   if (!resource) {

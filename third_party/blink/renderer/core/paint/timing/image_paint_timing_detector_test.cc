@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -244,13 +244,14 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   void SetTransparentPlaceholderImageAndPaint(const char* id) {
     Element* element = GetDocument().getElementById(AtomicString(id));
-    scoped_refptr<Image> transparent_image =
-        BitmapImage::MaybeCreateTransparentPlaceholderImage(
-            url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
-    DCHECK(transparent_image);
-    ImageResourceContent* image_content =
-        ImageResourceContent::CreateLoaded(transparent_image);
-    To<HTMLImageElement>(element)->SetImageForTest(image_content);
+    KURL url = url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE);
+    wtf_size_t index = ImageResource::FindTransparentPlaceholderIndex(url);
+    FetchParameters params =
+        FetchParameters::CreateForTest(ResourceRequest(url));
+    ImageResource* resource =
+        ImageResource::CreateResourceAndResponseForTransparentPlaceholderImage(
+            index, url, params);
+    To<HTMLImageElement>(element)->SetImageForTest(resource->GetContent());
   }
 
   void SetChildFrameImageAndPaint(const char* id, int width, int height) {
