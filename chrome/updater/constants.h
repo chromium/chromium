@@ -136,9 +136,12 @@ extern const char kAppGuidSwitch[];
 // https://bugs.chromium.org/p/crashpad/issues/detail?id=23
 extern const char kNoRateLimitSwitch[];
 
-// Causes crashpad handler to start a second instance, to monitor the first
+// Causes crashpad handler to start a second instance to monitor the first
 // instance for exceptions.
 extern const char kMonitorSelfSwitch[];
+
+// Additional arguments passed to the --monitor-self instance.
+extern const char kMonitorSelfSwitchArgument[];
 
 // The handle of an event to signal when the initialization of the main process
 // is complete.

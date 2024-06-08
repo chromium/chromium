@@ -46,6 +46,7 @@ const char kTestSwitch[] = "test";
 const char kInitDoneNotifierSwitch[] = "init-done-notifier";
 const char kNoRateLimitSwitch[] = "no-rate-limit";
 const char kMonitorSelfSwitch[] = "monitor-self";
+const char kMonitorSelfSwitchArgument[] = "monitor-self-argument";
 const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
 const char kLoggingModuleSwitchValue[] =

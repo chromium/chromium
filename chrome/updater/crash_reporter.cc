@@ -49,6 +49,10 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kMonitorSelfSwitch)) {
     command_line.AppendSwitch(kMonitorSelfSwitch);
+    if (updater_scope == UpdaterScope::kSystem) {
+      command_line.AppendSwitchASCII(kMonitorSelfSwitchArgument,
+                                     base::StrCat({"--", kSystemSwitch}));
+    }
   }
 
   // The first element in the command line arguments is the program name,
