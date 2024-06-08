@@ -5617,11 +5617,8 @@ void AXNodeObject::AddNodeChild(Node* node) {
   if (AXObjectCache().IsAriaOwned(ax_child))
     return;  // Do not add owned children to their natural parent.
 
-#if DCHECK_IS_ON()
   AXObject* ax_cached_parent =
       ax_child ? ax_child->ParentObjectIfPresent() : nullptr;
-  size_t num_children_before_add = children_.size();
-#endif
 
   if (!ax_child) {
     ax_child =
@@ -5634,16 +5631,18 @@ void AXNodeObject::AddNodeChild(Node* node) {
 
   AddChild(ax_child);
 
-#if DCHECK_IS_ON()
-  bool did_add_child = children_.size() == num_children_before_add + 1 &&
-                       children_[0] == ax_child;
-  if (did_add_child) {
-    DCHECK(!ax_cached_parent || ax_cached_parent->AXObjectID() == AXObjectID())
+  // If we are adding an included child, check to see that it didn't have a
+  // different previous parent, because that indicates something strange is
+  // happening -- we shouldn't be stealing AXObjects from other parents here.
+  bool did_add_child_as_included =
+      children_.size() && children_[children_.size() - 1] == ax_child;
+  if (did_add_child_as_included && ax_cached_parent) {
+    CHECK(ax_child->IsIncludedInTree());
+    DUMP_WILL_BE_CHECK(ax_cached_parent->AXObjectID() == AXObjectID())
         << "Newly added child shouldn't have a different preexisting parent:"
         << "\nChild = " << ax_child << "\nNew parent = " << this
         << "\nPreexisting parent = " << ax_cached_parent;
   }
-#endif
 }
 
 #if DCHECK_IS_ON()
