@@ -403,6 +403,10 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kUsbGetDevices, WebDXFeature::kWebusb},
           {WebFeature::kVTTCue, WebDXFeature::kWebvtt},
           {WebFeature::kCSSSelectorPseudoWhere, WebDXFeature::kWhere},
+          {WebFeature::kDataListElement, WebDXFeature::kDatalist},
+          {WebFeature::kCSSSelectorPseudoDir, WebDXFeature::kDirPseudo},
+          {WebFeature::kHiddenUntilFoundAttribute,
+           WebDXFeature::kHiddenUntilFound},
       });
 
   return *kMap;
@@ -444,6 +448,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kTranslate, WebDXFeature::kIndividualTransforms},
           {CSSSampleId::kRotate, WebDXFeature::kIndividualTransforms},
           {CSSSampleId::kScale, WebDXFeature::kIndividualTransforms},
+          {CSSSampleId::kWillChange, WebDXFeature::kWillChange},
       });
 
   return *kMap;

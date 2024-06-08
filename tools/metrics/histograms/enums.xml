@@ -33742,6 +33742,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="81" label="Webusb"/>
   <int value="82" label="Webvtt"/>
   <int value="83" label="Where"/>
+  <int value="84" label="Datalist"/>
+  <int value="85" label="DirPseudo"/>
+  <int value="86" label="HiddenUntilFound"/>
+  <int value="87" label="WillChange"/>
 </enum>
 
 <enum name="WebFontCacheHit">

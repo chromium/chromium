@@ -127,6 +127,10 @@ enum WebDXFeature {
   kWebusb = 81,
   kWebvtt = 82,
   kWhere = 83,
+  kDatalist = 84,
+  kDirPseudo = 85,
+  kHiddenUntilFound = 86,
+  kWillChange = 87,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
