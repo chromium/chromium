@@ -55,6 +55,10 @@
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/common/chrome_features.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 std::string LoadExtension(Profile* profile, const base::FilePath& path) {
@@ -69,8 +73,15 @@ std::string LoadExtension(Profile* profile, const base::FilePath& path) {
 
 namespace web_app {
 
+// TODO(crbug.com/344912771): Remove once ShortcutsNotApps launches to 100%
+// Stable.
 class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
  public:
+  CreateShortcutBrowserTest() {
+#if !BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndDisableFeature(features::kShortcutsNotApps);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  }
   webapps::AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
     SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
     WebAppTestInstallObserver observer(profile());
@@ -101,6 +112,10 @@ class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
     CHECK(provider);
     return provider->sync_bridge_unsafe();
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,

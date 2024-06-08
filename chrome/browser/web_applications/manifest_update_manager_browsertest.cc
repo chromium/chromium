@@ -4472,6 +4472,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
     GTEST_SKIP()
         << "Shortcuts do not manifest update when Shortstand is enabled.";
   }
+#else
+  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
+    GTEST_SKIP()
+        << "Shortcuts are not web apps when ShortcutsNotApps is enabled.";
+  }
 #endif
 
   constexpr char kAppName[] = "Test app";

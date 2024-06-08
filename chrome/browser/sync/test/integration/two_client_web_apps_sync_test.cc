@@ -273,12 +273,22 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser,
         embedded_test_server()->GetURL("/web_apps/favicon_only.html")));
+#if BUILDFLAG(IS_CHROMEOS)
     SetAutoAcceptWebAppDialogForTesting(true, true);
     WebAppTestInstallObserver installObserver(sourceProfile);
     installObserver.BeginListening();
     chrome::ExecuteCommand(browser, IDC_CREATE_SHORTCUT);
     app_id = installObserver.Wait();
     SetAutoAcceptWebAppDialogForTesting(false, false);
+#else
+    // Install as DIY App.
+    SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
+    WebAppTestInstallObserver installObserver(sourceProfile);
+    installObserver.BeginListening();
+    CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
+    app_id = installObserver.Wait();
+    SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     chrome::CloseWindow(browser);
   }
   EXPECT_EQ(GetRegistrar(sourceProfile).GetAppShortName(app_id),

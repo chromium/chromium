@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "web_app_integration_test_driver.h"
@@ -220,6 +221,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
+    GTEST_SKIP()
+        << "Explicit skip to prevent EXPECT_NONFATAL_FAILURE to be triggered";
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kBrowser);
   EXPECT_NONFATAL_FAILURE(helper_.CheckBrowserNavigation(Site::kStandalone),
                           "webapps_integration/standalone/foo/basic.html");
