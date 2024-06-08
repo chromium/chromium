@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Сырсздрдү сакт</translation>
 <translation id="1753905327828125965">Көп көрүлгөн</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} начар сырсөз бар}other{{count} начар сырсөз бар}}</translation>
+<translation id="1764070164487214210">Багыттар</translation>
 <translation id="1766411844240160513">Форманы автотолтуруу</translation>
 <translation id="1767766085187034454">Google Котормочу</translation>
 <translation id="1769106850515800431">Жекелештирилген контент</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">Жашыруун өтмөктөр</translation>
 <translation id="3775743491439407556">Шайкештирүү иштебей жатат</translation>
 <translation id="3779810277399252432">Интернет жок.</translation>
+<translation id="3785672280731998727">Каналдын аталышы</translation>
 <translation id="3789294999358192700">Төмөнкү кадамдарды аткарыңыз:</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
 <translation id="380329542618494757">Ата-жөнү</translation>
 <translation id="3803696231112616155">Бул сайтты которууну сунуштоо</translation>
 <translation id="3808311849069021992">Издөө куралынын чоо-жайын көрсөтүү</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
+<translation id="3812308602011798782">Сын-пикирлер</translation>
 <translation id="3818045793209708987">Бул таңгакка көз салуу токтотулду</translation>
 <translation id="3818293389945649617">Кийинкини табуу</translation>
 <translation id="3819183753496523827">Оффлайн режиминдесиз. Интернет байланышыңызды текшерип, кайталап көрүңүз.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">Сакталган сырсөздөрдү каалаган колдонмодо бир таптоо менен териңиз</translation>
 <translation id="4049507953662678203">Тармакка туташып турганыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="4054572406751135230">Жаңылыктар, спорт жана башка нерселерден кабардар болуп туруңуз.</translation>
+<translation id="4068959193278821990">Мыктылап коргоону күйгүзүү</translation>
 <translation id="4092655288299341041">Жардам бөлүмүн көрсөтүү</translation>
 <translation id="4105841739161771091">{count,plural, =1{Даректи өчүрүү}other{Даректерди өчүрүү}}</translation>
 <translation id="4108998448622696017">Кооптуу нерселер орун алганда аларды аныктап, сизге кабарлап турат.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">Накта экспорт дайындарын жөнөтүү үчүн, электрондук почта аккаунтуңузду Параметрлер колдонмосунан конфигурациялаңыз.</translation>
 <translation id="4124987746317609294">Убакыт аралыгы</translation>
 <translation id="4133265950310064865">Жакшыртылган коргоо</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Бул вебсайт файлды жүктөп алып, жылнаамаңызга кошкону жатат.</translation>
 <translation id="4152011295694446843">Кыстармаларыңызды ушул жерден табасыз</translation>
@@ -1472,6 +1477,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="834783239627985533">Эң көп кирилген сайттар</translation>
 <translation id="8358401059263985056">Билдирмелерди күйгүзүү</translation>
 <translation id="8364841868226993049">Сүрөт <ph name="USER_EMAIL" /> аккаунтундагы Google Фотого сакталууда...</translation>
+<translation id="8369246252708539904">Киргизүүчү ачкычты өчүрүү</translation>
 <translation id="8370406443343902172">Параметрлерге өтүү...</translation>
 <translation id="8374977641764177587">Билдирмелер күйгүзүлсүнбү?</translation>
 <translation id="8378714024927312812">Уюмуңуз тарабынан башкарылат</translation>

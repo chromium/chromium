@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब को बुकमार्क करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}}</translation>
 <translation id="2118649612461486615">स्टोर की जानकारी</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}one{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}other{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेंगे.}}</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टैब को ग्रुप से अलग करें}one{टैब को ग्रुप से अलग करें}other{टैब को ग्रुप से अलग करें}}</translation>
 <translation id="2271452184061378400">आपके टैब ग्रुप यहां सेव किए जाते हैं</translation>

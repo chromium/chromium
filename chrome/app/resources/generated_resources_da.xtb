@@ -3963,7 +3963,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3873915545594852654">Der opstod et problem med ARC++.</translation>
 <translation id="3874164307099183178">Slå Google Assistent til</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> er indstillet til at åbne i en ny browserfane. Understøttede links åbnes også i browseren. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Spørg mig hver gang</translation>
 <translation id="3877075909000773256">Indstillingerne for Deling tæt på for enheden, der tilhører <ph name="USER_NAME" />, deles under kontoen <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Det er ikke tilladt at kopiere fra dette website</translation>
 <translation id="3879748587602334249">Downloadadministrator</translation>
@@ -6217,6 +6216,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5590418976913374224">Afspil lyd ved opstart af enheden</translation>
 <translation id="5591465468509111843">Meget store mellemrum</translation>
 <translation id="5592595402373377407">Der er ikke nok data til rådighed endnu.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofonen er deaktiveret i systemindstillingerne for Mac</translation>
 <translation id="5594899180331219722">Vælg en fil</translation>
 <translation id="5595307023264033512">Samlet lagerplads, der anvendes af websites: <ph name="TOTAL_USAGE" /></translation>
@@ -8891,7 +8891,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7648023614017258011">Chrome verificerer installationspakken</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7650178491875594325">Gendan lokale data</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" vil gerne fjerne "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingeraftryk er konfigureret}one{{COUNT} fingeraftryk er konfigureret}other{{COUNT} fingeraftryk er konfigureret}}</translation>
 <translation id="7650677314924139716">Den aktuelle indstilling for dataforbrug er Kun Wi-Fi</translation>
 <translation id="7650920359639954963">Ikke aktiveret: <ph name="REASON" /></translation>

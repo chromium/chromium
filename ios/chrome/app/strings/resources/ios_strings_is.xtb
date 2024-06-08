@@ -1034,6 +1034,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6232329973559504466">Leit í huliðsstillingu</translation>
 <translation id="6236952928980352967">Endurheimta viðvörun</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
+<translation id="6251835855431997163">Sjálfvirk útfylling fyrir <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Opna tengla í forritinu í stað vafrans.</translation>
 <translation id="6255097610484507482">Breyta kreditkorti</translation>
 <translation id="6266039999629596120">Bregðast þarf við</translation>
@@ -1212,6 +1213,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7022197654033719543">Upplýsingar um vefsvæði</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="704692552158601232">Sjálfgefið vafraforrit</translation>
+<translation id="7055240621761583113">Fylla aðgangsorðið sjálfkrafa út</translation>
 <translation id="7063811929043357292">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Fjarlægja úr þessu tæki</translation>

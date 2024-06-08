@@ -72,6 +72,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1240638468526743569">Une appli</translation>
+<translation id="1242198791279543032">Le son des notifications est coupé</translation>
 <translation id="1242883863226959074">appareil</translation>
 <translation id="1245644940275736236">Accéder à l'Assistant</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
@@ -1663,7 +1664,6 @@ Nouvelle installation</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Paramètres</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7181691792034457084">Bonjour. <ph name="PRODUCT_NAME" /> a un peu changé.</translation>
 <translation id="7188494361780961876">Le menu a été déplacé dans l'angle supérieur gauche de l'écran.</translation>

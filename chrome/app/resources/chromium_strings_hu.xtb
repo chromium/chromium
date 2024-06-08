@@ -125,7 +125,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="3155163173539279776">A Chromium újraindítása</translation>
 <translation id="3179665906251668410">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>
 <translation id="3185330573522821672">Szabja személyre az új Chromium-profilját</translation>
-<translation id="318879170965183683">Használhatja a Google-fiókjában tárolt jelszavait a Chromiumban, amikor be van jelentkezve.</translation>
 <translation id="3190315855212034486">Ó! A Chromium összeomlott. Újraindítja most?</translation>
 <translation id="3224847870593914902">Ha el szeretné távolítani Google-fiókját a Chromiumból, jelentkezzen ki a Chromiumból a Beállítások oldalon</translation>
 <translation id="3258596308407688501">A Chromium nem tudja olvasni és írni az adatkönyvtárát:
@@ -254,7 +253,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5386450000063123300">A Chromium frissítése (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium-bejelentkezés engedélyezése</translation>
 <translation id="5398878173008909840">Elérhető a Chromium új verziója.</translation>
-<translation id="5400757303519321734">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal bejelentkezhet a Chromiumba is</translation>
 <translation id="5405650547142096840">Eltávolítás a Chromiumból</translation>
 <translation id="5427571867875391349">A Chromium beállítása alapértelmezett böngészőként</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Béta</translation>
@@ -378,7 +376,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7045244423563602563">Tegye személyessé a Chromiumot</translation>
 <translation id="705851970750939768">A Chromium frissítése</translation>
 <translation id="7067091210845072982">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chromium igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket.</translation>
-<translation id="7100062358172078145">Nem jelentkezem be a Chromiumba</translation>
 <translation id="7141270731789036260">A Chrome for Testing személyre szabása</translation>
 <translation id="7159538860914681762">Ha azt szeretné, hogy jelszavait és más adatait valamennyi eszközére mentse a rendszer, hogy Ön mindegyiken használhassa őket, jelentkezzen be a Chromiumba</translation>
 <translation id="7173822816570314652">Szervezete törli a Chromium-adatokat, ha nem használja a böngészőt ennyi ideig: <ph name="TIMEOUT_DURATION" />. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltött tartalom is.</translation>
@@ -500,7 +497,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9158494823179993217">Rendszergazdája úgy állította be a Chromiumot, hogy másik böngészőt nyisson meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
 <translation id="9185526690718004400">Indítsa újra a Chromium frissítéshez</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Automatikus bejelentkezés a Chromiumba</translation>
 <translation id="924957577793602335">Tegye sajátjává a Chromiumot</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
 <translation id="942598560705308788">A Chromium által kezelt tanúsítványok</translation>

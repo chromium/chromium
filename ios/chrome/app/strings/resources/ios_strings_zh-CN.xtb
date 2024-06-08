@@ -1034,6 +1034,7 @@
 <translation id="6232329973559504466">无痕搜索</translation>
 <translation id="6236952928980352967">恢复警告</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
+<translation id="6251835855431997163">自动填充<ph name="VALUE" /></translation>
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6266039999629596120">需要注意</translation>
@@ -1212,6 +1213,7 @@
 <translation id="7022197654033719543">网站信息</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="704692552158601232">默认浏览器应用</translation>
+<translation id="7055240621761583113">自动填充密码</translation>
 <translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">从此设备中移除</translation>

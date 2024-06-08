@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Ismert hálózatok</translation>
 <translation id="1239161794459865856">A(z) <ph name="FEATURE_NAME" /> csatlakozik.</translation>
 <translation id="1240638468526743569">Az egyik alkalmazás</translation>
+<translation id="1242198791279543032">Az értesítések némítva vannak</translation>
 <translation id="1242883863226959074">eszközén</translation>
 <translation id="1245644940275736236">Ugrás a Segédhez</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
@@ -1667,7 +1668,6 @@ Frissen telepítve</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Visszaállítás a régi felbontásra <ph name="TIMEOUT_SECONDS" /> mp múlva</translation>
-<translation id="7173114856073700355">Beállítások megnyitása</translation>
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7181691792034457084">Üdvözöljük! A <ph name="PRODUCT_NAME" /> eszközök némileg különböznek más eszközöktől.</translation>
 <translation id="7188494361780961876">A menü a képernyő bal felső sarkába került.</translation>

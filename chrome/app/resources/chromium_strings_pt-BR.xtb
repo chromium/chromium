@@ -125,7 +125,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3179665906251668410">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="3185330573522821672">Personalize seu novo perfil do Chromium</translation>
-<translation id="318879170965183683">Você poderá usar as senhas da sua Conta do Google no Chromium enquanto ela estiver conectada</translation>
 <translation id="3190315855212034486">O Chromium travou. Reiniciar agora?</translation>
 <translation id="3224847870593914902">Para remover sua Conta do Google do Chromium, saia dela na página "Configurações"</translation>
 <translation id="3258596308407688501">O Chromium não pode ler e gravar neste diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -252,7 +251,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5386450000063123300">Atualizando o Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir login no Chromium</translation>
 <translation id="5398878173008909840">Há uma nova versão do Chromium disponível.</translation>
-<translation id="5400757303519321734">Ao fazer login nos Serviços do Google (como o Gmail ou o YouTube) com <ph name="USER_EMAIL" />, você pode se conectar ao Chromium com a mesma conta</translation>
 <translation id="5405650547142096840">Remover do Chromium</translation>
 <translation id="5427571867875391349">Definir o Chromium como seu navegador padrão</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" />: Chromium Beta</translation>
@@ -376,7 +374,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="705851970750939768">Atualizar o Chromium</translation>
 <translation id="7067091210845072982">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
-<translation id="7100062358172078145">Não fazer login no Chromium</translation>
 <translation id="7141270731789036260">Personalizar o Chrome for Testing</translation>
 <translation id="7159538860914681762">Para salvar e usar suas senhas e muito mais em todos seus dispositivos, faça login no Chromium</translation>
 <translation id="7173822816570314652">Sua organização exclui os dados do Chromium se eles não forem usados por <ph name="TIMEOUT_DURATION" />. Isso pode incluir o histórico, o preenchimento automático e os downloads.</translation>
@@ -496,7 +493,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9158494823179993217">O administrador do seu sistema configurou o Chromium para abrir um navegador alternativo ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reinicializar para atualizar o &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Fazer login no Chromium automaticamente</translation>
 <translation id="924957577793602335">Deixe o Chromium do seu jeito</translation>
 <translation id="93478295209880648">É possível que o Chromium não funcione corretamente, porque ele não é mais compatível com o Windows XP ou Windows Vista</translation>
 <translation id="942598560705308788">Certificados gerenciados pelo Chromium</translation>

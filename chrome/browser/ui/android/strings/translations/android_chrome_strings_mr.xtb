@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">गटामधील नवीन टॅबमध्ये उघडा</translation>
 <translation id="1103142993930332957">Chrome मध्ये सुधारणा करण्यात मदत करायची आहे का?</translation>
 <translation id="1105960400813249514">स्‍क्रीन कॅप्‍चर</translation>
+<translation id="1108214977745280468">पेज इनसाइट पहा</translation>
 <translation id="1108938384783527433">इतिहास सिंक करा</translation>
 <translation id="1111673857033749125">आपल्या इतर डिव्हाइसेेसवर सेव्ह केलेले बुकमार्क येथे दिसतील.</translation>
 <translation id="1113597929977215864">सिंप्लिफाइड व्ह्यू दाखवा</translation>
@@ -251,7 +252,6 @@
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
 <translation id="2321086116217818302">पासवर्ड तयार करत आहे…</translation>
 <translation id="2323763861024343754">साइट स्टोरेज</translation>
-<translation id="2328739396024849021">सेव्ह करा बटण बंद करा</translation>
 <translation id="2328985652426384049">साइन इन करू शकत नाही</translation>
 <translation id="233375395665273385">हटवा आणि साइन आउट करा</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इंस्टॉल करता आले नाही.</translation>
@@ -361,7 +361,6 @@
 <translation id="2869430948265924908">तुमचा संवेदनशील आशय कारमध्ये संरक्षित ठेवण्यासाठी, तुम्ही कार प्रोफाइल लॉक तयार करणे आवश्यक आहे.  पिन, कोड किंवा पासवर्ड वापरून तुम्ही हे करू शकता.</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेज प्रीलोड करा</translation>
-<translation id="2871941920508945325">पेज इनसाइट बटण</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> याला तुमच्याकडून या वेबसाइटची मंजुरी हवी आहे:</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
@@ -528,7 +527,6 @@
 <translation id="3699022356773522638">फाइल डाउनलोड करायची आहे का?</translation>
 <translation id="3700759344784597882">सुरू असते, तेव्हा पासवर्ड तुमच्या खात्यामध्ये सेव्ह केले जातात. बंद असल्यास, पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले जातात.</translation>
 <translation id="3701515417135397388">डेटा भंगामध्ये पासवर्ड धोक्यात आला असल्यास, तुम्हाला चेतावणी दिली जावी</translation>
-<translation id="3711001040440486668">शेअर करा बटण</translation>
 <translation id="371230970611282515">धोकादायक घटना घडण्याआधी त्यांचे पूर्वानुमान करतो आणि त्यांबद्दल तुम्हाला चेतावणी देतो.</translation>
 <translation id="3714981814255182093">शोध बार उघडा</translation>
 <translation id="3716182511346448902">हे पेज खूपच जास्त मेमरी वापरत असल्यामुळे Chrome ने ते थांबवून ठेवलेले आहे.</translation>
@@ -912,6 +910,7 @@
 <translation id="5590372121997663538">हा कॉंप्युटर लक्षात ठेवा</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
+<translation id="5601180634394228718">तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
 <translation id="5620163320393916465">सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="5620928963363755975">तुमच्या फाइल आणि पेज अधिक पर्याय बटणावरील डाउनलोडमध्ये शोधा</translation>
 <translation id="562289928968387744">प्रतिक्रिया व्यवस्थापित करा</translation>
@@ -1254,6 +1253,7 @@
 <translation id="71503698506017927">पासफ्रेझ एन्क्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="7161230316646448869">सर्व डिव्हाइसवर तुमचे बुकमार्क, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> म्हणून साइन इन केले. सेटिंग उघडते.</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7177466738963138057">तुम्ही हे नंतर सेटिंग्ज मध्ये बदलू शकता.</translation>

@@ -127,7 +127,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3155163173539279776">Starta om Chromium</translation>
 <translation id="3179665906251668410">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
 <translation id="3185330573522821672">Anpassa din nya Chromium-profil</translation>
-<translation id="318879170965183683">Du kan använda lösenorden från Google-kontot i Chromium när du är inloggad</translation>
 <translation id="3190315855212034486">Hoppsan! Chromium har kraschat. Vill du starta om nu?</translation>
 <translation id="3224847870593914902">Du kan ta bort Google-kontot från Chromium genom att logga ut från Chromium på sidan Inställningar</translation>
 <translation id="3258596308407688501">Chromium kan inte läsa och skriva till datakatalogen:
@@ -256,7 +255,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5386450000063123300">Chromium uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
 <translation id="5398878173008909840">Det finns en ny version av Chromium.</translation>
-<translation id="5400757303519321734">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in i Chromium med samma konto</translation>
 <translation id="5405650547142096840">Ta bort från Chromium</translation>
 <translation id="5427571867875391349">Använd Chromium som standardwebbläsare</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
@@ -382,7 +380,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="705851970750939768">Uppdatera Chromium</translation>
 <translation id="7067091210845072982">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
-<translation id="7100062358172078145">Logga inte in i Chromium</translation>
 <translation id="7141270731789036260">Anpassa Chrome för testning</translation>
 <translation id="7159538860914681762">Logga in i Chromium om du vill spara och använda lösenord med mera på alla dina enheter</translation>
 <translation id="7173822816570314652">Organisationen raderar Chromium-data när den inte har använts på <ph name="TIMEOUT_DURATION" />. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
@@ -504,7 +501,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9158494823179993217">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
 <translation id="9185526690718004400">Starta om för att uppdatera &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Logga in mig automatiskt i Chromium</translation>
 <translation id="924957577793602335">Anpassa Chromium</translation>
 <translation id="93478295209880648">Chromium kanske inte fungerar ordentligt eftersom den inte längre stöds på Windows XP och Windows Vista</translation>
 <translation id="942598560705308788">Certifikat som hanteras av Chromium</translation>

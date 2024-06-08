@@ -795,7 +795,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2456755709261364512">Baterija mora imeti več kot <ph name="REQUIRED_BATTERY_PRECENT" /> % energije</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2462932596748424101">Družbena omrežja</translation>
-<translation id="2463739503403862330">Izpolni</translation>
 <translation id="2465688316154986572">Spenjanje</translation>
 <translation id="2465914000209955735">Upravljanje datotek, ki ste jih prenesli v Chromu</translation>
 <translation id="2466004615675155314">Prikaz informacij iz spleta</translation>
@@ -2485,12 +2484,10 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5784606427469807560">Težava pri potrditvi kartice. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="5785756445106461925">Poleg tega so na tej strani druga sredstva, ki niso varna. Ta sredstva lahko med prenosom pregledujejo drugi, morebitni napadalec pa jih lahko spremeni, tako da se spremeni videz strani.</translation>
-<translation id="5786044859038896871">Ali želite izpolniti podatke kreditne kartice?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">To plačilno sredstvo bo izbrisano iz te naprave.</translation>
 <translation id="5800727402210090597">Popravila in servis mobilnih telefonov</translation>
 <translation id="580241730938216256">Začetek posodobitve</translation>
-<translation id="5803412860119678065">Ali želite izpolniti podatke za kartico <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5806871454498484178">Pomikanje in povečava/pomanjšava sta blokirana</translation>
 <translation id="5808435672482059465">Ogled zgodovine v Chromu</translation>

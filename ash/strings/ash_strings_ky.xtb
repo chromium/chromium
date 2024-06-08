@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">Күйүк</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> чейин өчүк</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
+<translation id="5228195526683428788">Экранды бөлгүч</translation>
 <translation id="5229343007215035173">Купуялык экранын күйгүзүү/өчүрүү</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> сактагыч колдонулуп жатат | Жалпы көлөмү: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Купуялык экраны күйүк</translation>
 <translation id="6622679827379792051">Телефонуңуздагы колдонмолорду көрүү параметрин тууралоо</translation>
+<translation id="662279009180869175">Бөлүнгөн экрандын өлчөмүн өзгөртүү үчүн солго жана оңго жебелерди колдонуңуз</translation>
 <translation id="6624493541160101248">Учурдагы иш такта: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> иш тактанын ичинен <ph name="DESK_INDEX" />-иш такта.</translation>
 <translation id="6625718907317144388">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> жана башка колдонмолордун билдирмелери жашырылды</translation>
 <translation id="6627638273713273709">Издөө+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">3-иш такта</translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6671661918848783005">Chromebook'тун кулпусу ачылган жок</translation>
+<translation id="6676552993057022464">Бөлүнгөн экрандын өлчөмүн өзгөртүү үчүн өйдө жана ылдый жебелерди колдонуңуз</translation>
 <translation id="6682029141988159141">Контентти алмашуу буферинен чаптоо</translation>
 <translation id="6683022854667115063">Гарнитура</translation>
 <translation id="6686023075541098243">Телефонуңуздагы билдирмелерди көрүү параметрин тууралоо</translation>
@@ -1664,7 +1667,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> кийин эски чечилишине кайтарылат</translation>
-<translation id="7173114856073700355">Параметрлерди ачуу</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7181691792034457084">Салам. <ph name="PRODUCT_NAME" /> — бир аз башкача.</translation>
 <translation id="7188494361780961876">Меню экрандын жогорку сол бурчуна жылдырылды.</translation>

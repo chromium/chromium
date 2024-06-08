@@ -3953,7 +3953,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3873915545594852654">Ilmnes ARC++ probleem.</translation>
 <translation id="3874164307099183178">Google'i assistendi sisselülitamine</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> on seadistatud avanema brauseri uuel vahelehel. Toetatud lingid avanevad samuti brauseris. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Küsi iga kord</translation>
 <translation id="3877075909000773256">Läheduses jagamise seaded kasutaja <ph name="USER_NAME" /> seadme jaoks. Jagamine toimub kontol <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Sellelt saidilt kopeerimine ei ole lubatud</translation>
 <translation id="3879748587602334249">Allalaadimishaldur</translation>
@@ -6207,6 +6206,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5590418976913374224">Esita seadme käivitamisel heli</translation>
 <translation id="5591465468509111843">Väga kaugel</translation>
 <translation id="5592595402373377407">Praegu pole veel saadaval piisavalt andmeid.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon on Maci süsteemiseadetes välja lülitatud</translation>
 <translation id="5594899180331219722">Vali fail</translation>
 <translation id="5595307023264033512">Saitide kasutatav salvestusruum kokku: <ph name="TOTAL_USAGE" /></translation>
@@ -8879,7 +8879,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7648023614017258011">Chrome kinnitab installipaketti</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7650178491875594325">Kohalike andmete taastamine</translation>
-<translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />” soovib eemaldada laienduse „<ph name="EXTENSION_NAME" />”.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 sõrmejälg on seadistatud}other{{COUNT} sõrmejälge on seadistatud}}</translation>
 <translation id="7650677314924139716">Praegune andmekasutuse seade on Ainult WiFi</translation>
 <translation id="7650920359639954963">Pole lubatud: <ph name="REASON" /></translation>

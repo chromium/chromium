@@ -795,7 +795,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2456755709261364512">Der Akku muss mindestens zu <ph name="REQUIRED_BATTERY_PRECENT" /> % geladen sein</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2462932596748424101">Soziale Netzwerke</translation>
-<translation id="2463739503403862330">Ausfüllen</translation>
 <translation id="2465688316154986572">Heften</translation>
 <translation id="2465914000209955735">In Chrome heruntergeladene Dateien verwalten</translation>
 <translation id="2466004615675155314">Informationen aus dem Web anzeigen</translation>
@@ -2483,12 +2482,10 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784606427469807560">Beim Bestätigen deiner Karte ist ein Problem aufgetreten. Überprüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="5785756445106461925">Außerdem enthält diese Seite andere, nicht sichere Ressourcen. Diese Ressourcen können während der Übertragung von anderen Nutzern angezeigt und von Angreifern bearbeitet werden, die das Layout der Seite verändern.</translation>
-<translation id="5786044859038896871">Möchtest du deine Kreditkarteninformationen eingeben?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Diese Zahlungsmethode wird von diesem Gerät gelöscht</translation>
 <translation id="5800727402210090597">Reparatur- und Dienstleistungen für Smartphones</translation>
 <translation id="580241730938216256">Update starten</translation>
-<translation id="5803412860119678065">Möchtest du die Daten deiner <ph name="CARD_DETAIL" /> eingeben?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5806871454498484178">Scrollen und Zoomen blockiert</translation>
 <translation id="5808435672482059465">Chrome-Verlauf ansehen</translation>
@@ -2679,6 +2676,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6167577165590485365">Letzter Abrufversuch:</translation>
 <translation id="617256461084925519">Google Chrome versucht, deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst.</translation>
+<translation id="6173208311907792313">Schließe den Kauf mit Windows Hello ab</translation>
 <translation id="6176387967264100435">Dieser Preis ist hoch</translation>
 <translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
 <translation id="6177531123306197852">Umschlag C2</translation>
@@ -3837,6 +3835,7 @@ Weitere Details:
 <translation id="8332188693563227489">Der Zugriff auf <ph name="HOST_NAME" /> wurde verweigert</translation>
 <translation id="833262891116910667">Markieren</translation>
 <translation id="8339163506404995330">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt</translation>
+<translation id="8339275256517065202">Schließe den Kauf mit Touch ID ab</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Ansicht zur Registrierung der virtuellen Karte vollständig geöffnet</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
@@ -4031,6 +4030,7 @@ Weitere Details:
 <translation id="8726549941689275341">Seitengröße:</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>
+<translation id="8731917264694569036">Schließe den Kauf mit deinem Gerät ab</translation>
 <translation id="8733345475331865475">Autoversicherung</translation>
 <translation id="8733764070897080460">Du kannst Themen blockieren, die nicht mit Websites geteilt werden sollen. Themen, die älter als 4 Wochen sind, werden von Chrome automatisch gelöscht. Weitere Informationen</translation>
 <translation id="8734529307927223492">Dein <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet</translation>
@@ -4225,6 +4225,7 @@ Weitere Details:
 <translation id="9116548361133462832">Weitere Informationen zu Werbung in Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, drücke die Tabulatortaste und dann die Eingabetaste, um weiter zu stöbern und relevante Aktivitäten in deinem Chrome-Verlauf anzusehen</translation>
 <translation id="9119042192571987207">Hochgeladen</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> möchte deine Identität überprüfen</translation>
 <translation id="912327514020027767">Röcke</translation>
 <translation id="912414390325846156">Du hast diese Website bisher nicht zugelassen</translation>
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>

@@ -3959,7 +3959,6 @@
 <translation id="3873915545594852654">‏در رابطه با ++ARC مشکلی پیش آمد.</translation>
 <translation id="3874164307099183178">‏روشن کردن «دستیار Google»</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> طوری تنظیم شده که در برگه مرورگر جدید باز شود، پیوندهای پشتیبانی‌شده نیز در مرورگر باز خواهد شد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">هربار از من سؤال شود</translation>
 <translation id="3877075909000773256">تنظیمات «هم‌رسانی با اطراف» برای دستگاه <ph name="USER_NAME" />، بااستفاده از حساب «<ph name="USER_EMAIL" />» هم‌رسانی می‌کند.</translation>
 <translation id="3878445208930547646">کپی کردن از این سایت مجاز نیست</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
@@ -6213,6 +6212,7 @@
 <translation id="5590418976913374224">پخش صدا هنگام راه‌اندازی دستگاه</translation>
 <translation id="5591465468509111843">بسیار عریض</translation>
 <translation id="5592595402373377407">هنوز داده کافی در دسترس نیست.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">‏میکروفون در «تنظیمات سیستم Mac» خاموش است</translation>
 <translation id="5594899180331219722">انتخاب فایل</translation>
 <translation id="5595307023264033512">مجموع فضای ذخیره‌سازی که سایت‌ها استفاده کرده‌اند: <ph name="TOTAL_USAGE" /></translation>
@@ -8887,7 +8887,6 @@
 <translation id="7648023614017258011">‏Chrome درحال تأیید بسته نصب است</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7650178491875594325">بازیابی کردن داده محلی</translation>
-<translation id="7650511557061837441">«<ph name="TRIGGERING_EXTENSION_NAME" />» می‌خواهد «<ph name="EXTENSION_NAME" />» را حذف کند.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{۱ اثر انگشت تنظیم شده است}one{{COUNT} اثر انگشت تنظیم شده است}other{{COUNT} اثر انگشت تنظیم شده است}}</translation>
 <translation id="7650677314924139716">‏تنظیم کنونی مصرف داده روی «فقط هنگام استفاده از Wi-Fi» است</translation>
 <translation id="7650920359639954963">فعال نیست: <ph name="REASON" /></translation>

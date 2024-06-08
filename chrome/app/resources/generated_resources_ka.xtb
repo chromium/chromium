@@ -3957,7 +3957,6 @@
 <translation id="3874164307099183178">Google ასისტენტის ჩართვა</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> გაიხსნება ბრაუზერის ახალ ჩანართში. ბრაუზერშივე გაიხსნება სხვა მხარდაჭერილი ბმულები. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ფანჯრების ზომა შეიცვალა ზემოთ</translation>
-<translation id="3876833929577368454">შემეკითხე ყოველთვის</translation>
 <translation id="3877075909000773256">მახლობლად გაზიარების პარამეტრები <ph name="USER_NAME" />-ის მოწყობილობისთვის, ზიარდება <ph name="USER_EMAIL" />-ის სახელით.</translation>
 <translation id="3878445208930547646">ამ საიტიდან კოპირება დაუშვებელია</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
@@ -6213,6 +6212,7 @@
 <translation id="5590418976913374224">ხმის დაკვრა მოწყობილობის გაშვებისას</translation>
 <translation id="5591465468509111843">ძალიან განიერი</translation>
 <translation id="5592595402373377407">ჯერჯერობით არ არის საკმარისი მონაცემები.</translation>
+<translation id="5592745162308462420">Fn</translation>
 <translation id="5594371836748657471">მიკროფონი გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
 <translation id="5594899180331219722">ფაილის არჩევა</translation>
 <translation id="5595307023264033512">საიტების მიერ გამოყენებული მეხსიერების საერთო მოცულობა: <ph name="TOTAL_USAGE" /></translation>
@@ -8887,7 +8887,6 @@
 <translation id="7648023614017258011">Chrome ადასტურებს საინსტალაციო ნაკრებს</translation>
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7650178491875594325">აღადგინეთ ადგილობრივი მონაცემები</translation>
-<translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />“-ს სურს წაშალოს „<ph name="EXTENSION_NAME" />“.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{დაყენებულია 1 თითის ანაბეჭდი}other{დაყენებულია {COUNT} თითის ანაბეჭდი}}</translation>
 <translation id="7650677314924139716">მონაცემთა გადაცემისთვის ამჟამად არჩეული გაქვთ „მხოლოდ Wi-Fi“</translation>
 <translation id="7650920359639954963">გააქტიურებული არ არის: <ph name="REASON" /></translation>

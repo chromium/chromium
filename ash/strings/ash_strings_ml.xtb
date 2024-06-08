@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">അറിയാവുന്ന നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തു.</translation>
 <translation id="1240638468526743569">ഒരു ആപ്പ്</translation>
+<translation id="1242198791279543032">അറിയിപ്പുകൾ മ്യൂട്ട് ചെയ്‌തു</translation>
 <translation id="1242883863226959074">ഉപകരണം</translation>
 <translation id="1245644940275736236">Assistant-ലേക്ക് പോകുക</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
@@ -1133,6 +1134,7 @@
 <translation id="5208059991603368177">ഓണാണ്</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> വരെ ഓഫാണ്</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="5228195526683428788">സ്‌ക്രീൻ വിഭജന മോഡ് ഡിവൈഡർ</translation>
 <translation id="5229343007215035173">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാക്കുക/ഓഫാക്കുക</translation>
 <translation id="5230516054153933099">വിന്‍‌ഡോ</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
@@ -1519,6 +1521,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> സ്റ്റോറേജ് ഉപയോഗത്തിലാണ് | ആകെ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാണ്</translation>
 <translation id="6622679827379792051">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുക</translation>
+<translation id="662279009180869175">സ്‌ക്രീൻ വിഭജന മോഡിന്റെ വലുപ്പം മാറ്റാൻ ഇടത്, വലത് അമ്പടയാളങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="6624493541160101248">നിലവിലെ ഡെസ്‌ക്: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ഡെസ്‌ക്കുകളിൽ <ph name="DESK_INDEX" />-ാമത്തേത്.</translation>
 <translation id="6625718907317144388">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> എന്നിവയിൽ നിന്നും മറ്റ് ആപ്പുകളിൽ നിന്നുമുള്ള അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="6627638273713273709">തിരയല്‍+Shift+K</translation>
@@ -1537,6 +1540,7 @@
 <translation id="6670153871843998651">ഡെസ്‌ക് 3</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6671661918848783005">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="6676552993057022464">സ്‌ക്രീൻ വിഭജന മോഡിന്റെ വലുപ്പം മാറ്റാൻ മുകളിലേക്കും താഴേക്കുമുള്ള അമ്പടയാളങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="6682029141988159141">ക്ലിപ്പ്ബോർഡിലേക്ക് ഉള്ളടക്കം ഒട്ടിക്കുക</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6686023075541098243">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുക</translation>
@@ -1664,7 +1668,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-ൽ പഴയ റെസല്യൂഷനിലേക്ക് മാറ്റുന്നു</translation>
-<translation id="7173114856073700355">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7181691792034457084">ഹായ്, അവിടെയുണ്ടോ. <ph name="PRODUCT_NAME" /> അൽപ്പം വ്യത്യസ്‌തമാണ്.</translation>
 <translation id="7188494361780961876">സ്‌ക്രീനിന്റെ മുകളിൽ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>

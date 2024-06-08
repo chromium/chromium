@@ -3955,7 +3955,6 @@
 <translation id="3874164307099183178">เปิด Google Assistant</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ได้รับการตั้งค่าให้เปิดในแท็บเบราว์เซอร์ใหม่ ลิงก์ที่รองรับจะเปิดในเบราว์เซอร์นี้เช่นกัน <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ปรับขนาดหน้าต่างไปทางด้านบนแล้ว</translation>
-<translation id="3876833929577368454">ถามฉันทุกครั้ง</translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3878445208930547646">ไม่อนุญาตให้คัดลอกจากเว็บไซต์นี้</translation>
 <translation id="3879748587602334249">Download Manager</translation>
@@ -6210,6 +6209,7 @@
 <translation id="5590418976913374224">เล่นเสียงเมื่อเริ่มต้นใช้งานอุปกรณ์</translation>
 <translation id="5591465468509111843">ห่างมาก</translation>
 <translation id="5592595402373377407">ยังไม่มีข้อมูลเพียงพอ</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">ไมโครโฟนปิดอยู่ในการตั้งค่าระบบ Mac</translation>
 <translation id="5594899180331219722">เลือกไฟล์</translation>
 <translation id="5595307023264033512">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ใช้: <ph name="TOTAL_USAGE" /></translation>
@@ -8882,7 +8882,6 @@
 <translation id="7648023614017258011">Chrome กำลังยืนยันแพ็กเกจการติดตั้ง</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7650178491875594325">กู้คืนข้อมูลในเครื่อง</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" ต้องการลบ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{ตั้งค่าลายนิ้วมือไว้ 1 รายการ}other{ตั้งค่าลายนิ้วมือไว้ {COUNT} รายการ}}</translation>
 <translation id="7650677314924139716">การตั้งค่าการใช้อินเทอร์เน็ตในปัจจุบันคือ "Wi-Fi เท่านั้น"</translation>
 <translation id="7650920359639954963">ไม่ได้เปิดใช้: <ph name="REASON" /></translation>

@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">Таны батарейг <ph name="REQUIRED_BATTERY_PRECENT" />%-иас дээш цэнэглэсэн байх ёстой</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="2462932596748424101">Сошиал сүлжээнүүд</translation>
-<translation id="2463739503403862330">Бөглөх</translation>
 <translation id="2465688316154986572">Үдэх</translation>
 <translation id="2465914000209955735">Chrome-д татсан файлуудаа удирдана уу</translation>
 <translation id="2466004615675155314">Вэбээс мэдээлэл харуулах</translation>
@@ -2486,12 +2485,10 @@
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5784606427469807560">Таны картыг баталгаажуулах үед асуудал гарлаа. Интернэт холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="5785756445106461925">Цаашилбал, энэ хуудас нь аюултай бусад үүсвэрүүдийг агуулж байна. Ийм төрлийн үүсвэрүүдийг дамжуулж байх явцад бусад хүмүүс харах, мөн халдагч нар хуусанд нөлөөлөхүйц байдлаар өөрчилж болдог.</translation>
-<translation id="5786044859038896871">Картын мэдээллээ бөглөх үү?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Энэ төлбөрийн хэрэгслийг энэ төхөөрөмжөөс устгана</translation>
 <translation id="5800727402210090597">Гар утасны засвар, үйлчилгээнүүд</translation>
 <translation id="580241730938216256">Шинэчилж эхлэх</translation>
-<translation id="5803412860119678065">Та <ph name="CARD_DETAIL" />-г бөглөх үү?</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5806871454498484178">Гүйлгэж, томруулахыг блоклосон</translation>
 <translation id="5808435672482059465">Chrome-н түүхээ үзэх</translation>
@@ -2681,6 +2678,7 @@
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6167577165590485365">Сүүлд дуудахаар оролдсон:</translation>
 <translation id="617256461084925519">Google Chrome таны төлбөрийн мэдээллийг бөглөх боломжтой болохын тулд таныг мөн болохыг баталгаажуулахаар оролдож байна.</translation>
+<translation id="6173208311907792313">Windows Hello-г ашиглан худалдан авалтаа дуусгана уу</translation>
 <translation id="6176387967264100435">Энэ нь өндөр үнэ юм</translation>
 <translation id="6177128806592000436">Энэ сайтын холболт аюултай байна</translation>
 <translation id="6177531123306197852">Дугтуй C2</translation>
@@ -3838,6 +3836,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" />-н хандах хүсэлтийг зөвшөөрсөнгүй</translation>
 <translation id="833262891116910667">Тодруулах</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> хэл дээрх хуудсыг орчуулахгүй</translation>
+<translation id="8339275256517065202">Хүрэлтийн ID-г ашиглан худалдан авалтаа дуусгана уу</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуал картын бүртгэлийг бүтэн өндрөөр нь нээсэн</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
@@ -4031,6 +4030,7 @@
 <translation id="8726549941689275341">Хуудасны хэмжээ:</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8731268612289859741">Аюулгүй байдлын код</translation>
+<translation id="8731917264694569036">Төхөөрөмжөө ашиглан худалдан авалтаа дуусгана уу</translation>
 <translation id="8733345475331865475">Автомашины даатгал</translation>
 <translation id="8733764070897080460">Та сайтуудтай хуваалцахыг хүсэхгүй байгаа сэдвээ блоклож болно. Chrome нь мөн жагсаалтад 4 долоо хоногоос дээш удсан сэдвүүдийг автоматаар устгадаг. Нэмэлт мэдээлэл авах</translation>
 <translation id="8734529307927223492">Таны <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
@@ -4224,6 +4224,7 @@
 <translation id="9116548361133462832">Chrome-н зарын тухай дэлгэрэнгүй</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Аяллаа үргэлжлүүлэх болон Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="9119042192571987207">Байршуулсан</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="912327514020027767">Банзалууд</translation>
 <translation id="912414390325846156">Та өмнө нь энэ сайтад зөвшөөрөхгүй байхаар сонгосон</translation>
 <translation id="9128870381267983090">Сүлжээнд холбогдох</translation>

@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">請務必將電池充電至 <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2462932596748424101">社交網絡</translation>
-<translation id="2463739503403862330">填寫</translation>
 <translation id="2465688316154986572">釘書釘</translation>
 <translation id="2465914000209955735">管理您在 Chrome 中下載嘅檔案</translation>
 <translation id="2466004615675155314">顯示來自網絡的資料</translation>
@@ -2484,12 +2483,10 @@
 <translation id="57838592816432529">静音</translation>
 <translation id="5784606427469807560">驗證您的信用卡時發生問題。請檢查互聯網連線，然後再試一次。</translation>
 <translation id="5785756445106461925">而且，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，繼而變更網頁外觀。</translation>
-<translation id="5786044859038896871">要填寫您的信用卡資料嗎？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方法將從此裝置上刪除</translation>
 <translation id="5800727402210090597">手機維修和服務</translation>
 <translation id="580241730938216256">開始更新</translation>
-<translation id="5803412860119678065">要填寫 <ph name="CARD_DETAIL" /> 的資料嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5806871454498484178">已封鎖捲動和縮放</translation>
 <translation id="5808435672482059465">查看 Chrome 記錄</translation>
@@ -4226,7 +4223,7 @@
 <translation id="9116548361133462832">進一步瞭解 Chrome 中的廣告</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以恢復瀏覽過程，同埋睇到 Chrome 記錄入面嘅相關活動</translation>
 <translation id="9119042192571987207">已上載</translation>
-<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證身分</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證你的身分</translation>
 <translation id="912327514020027767">短裙</translation>
 <translation id="912414390325846156">你先前已拒絕將權限授予此網站</translation>
 <translation id="9128870381267983090">連接網絡</translation>

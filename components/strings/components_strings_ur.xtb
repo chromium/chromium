@@ -798,7 +798,6 @@
 <translation id="2456755709261364512">آپ کی بیٹری <ph name="REQUIRED_BATTERY_PRECENT" />فیصد سے زیادہ چارج ہونی چاہیے</translation>
 <translation id="2461822463642141190">حالیہ</translation>
 <translation id="2462932596748424101">سوشل نیٹ ورکس</translation>
-<translation id="2463739503403862330">پُر کریں</translation>
 <translation id="2465688316154986572">سٹیپل</translation>
 <translation id="2465914000209955735">‏Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کریں</translation>
 <translation id="2466004615675155314">ویب سے معلومات دکھائیں</translation>
@@ -2492,12 +2491,10 @@
 <translation id="57838592816432529">آواز بند کریں</translation>
 <translation id="5784606427469807560">آپ کے کارڈ کی توثیق کرنے میں ایک مسئلہ پیش آگیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5785756445106461925">اس کے علاوہ، اس صفحہ میں دیگر ایسے وسائل شامل ہیں جو محفوظ نہیں ہیں۔ ان وسائل کو ٹرانزٹ کے دوران دیگر لوگ دیکھ سکتے ہیں اور صفحہ کی ہیئت تبدیل کرنے کیلئے حملہ آور اس میں ترمیم کر سکتے ہیں۔</translation>
-<translation id="5786044859038896871">کیا آپ اپنے کارڈ کی معلومات پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
 <translation id="5800727402210090597">موبائل فون کی مرمت اور سروسز</translation>
 <translation id="580241730938216256">اپ ڈیٹ شروع کریں</translation>
-<translation id="5803412860119678065">کیا آپ اپنے <ph name="CARD_DETAIL" /> کو پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5806871454498484178">اسکرول اور زوم مسدود ہے</translation>
 <translation id="5808435672482059465">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
@@ -2689,6 +2686,7 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6167577165590485365">بازیافت کی آخری کوشش:</translation>
 <translation id="617256461084925519">‏Google Chrome اس بات کی تصدیق کرنے کی کوشش کر رہا ہے کہ یہ آپ ہی ہیں تاکہ یہ آپ کی ادائیگی کی معلومات کو پُر کر سکے۔</translation>
+<translation id="6173208311907792313">‏‫Windows Hello استعمال کر کے اپنی خریداری مکمل کریں</translation>
 <translation id="6176387967264100435">یہ قیمت زیادہ ہے</translation>
 <translation id="6177128806592000436">اس سائٹ سے آپ کا کنکشن محفوظ نہیں ہے</translation>
 <translation id="6177531123306197852">‏C2 لفافہ</translation>
@@ -3849,6 +3847,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> تک رسائی مسترد کر دی گئی</translation>
 <translation id="833262891116910667">ہائی لائٹ کریں</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> کے صفحات کا ترجمہ نہیں کیا جائے گا</translation>
+<translation id="8339275256517065202">‏‫Touch ID استعمال کر کے اپنی خریداری مکمل کریں</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ورچوئل کارڈ کا اندراج پوری اسکرین پر کھلا ہے</translation>
 <translation id="8349305172487531364">بُک مارکس بار</translation>
@@ -4042,6 +4041,7 @@
 <translation id="8726549941689275341">صفحے کا سائز:</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
+<translation id="8731917264694569036">اپنا آلہ استعمال کر کے اپنی خریداری مکمل کریں</translation>
 <translation id="8733345475331865475">آٹو انشورنس</translation>
 <translation id="8733764070897080460">‏آپ ان موضوعات کو مسدود کر سکتے ہیں جنہیں آپ سائٹس کے ساتھ اشتراک نہیں کرنا چاہتے۔ Chrome آپ کے 4 ہفتوں سے پرانے موضوعات کو بھی خودکار طور پر حذف کر دیتا ہے۔ مزید جانیں</translation>
 <translation id="8734529307927223492">آپ کا <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
@@ -4236,6 +4236,7 @@
 <translation id="9116548361133462832">‏Chrome میں اشتہارات کے بارے میں مزید</translation>
 <translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی سرگزشت میں اپنا سفر دوبارہ شروع کرنے اور متعلقہ سرگرمی دیکھنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="9119042192571987207">اپ لوڈ ہو گیا</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> اس بات کی تصدیق کرنا چاہتا ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="912327514020027767">اسکرٹس</translation>
 <translation id="912414390325846156">آپ نے پہلے اس سائٹ کے لیے اجازت نہ دینے کا انتخاب کیا تھا</translation>
 <translation id="9128870381267983090">نیٹ ورک سے منسلک ہوں</translation>

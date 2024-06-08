@@ -798,7 +798,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2456755709261364512">Baterija se mora napuniti na više od <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2462932596748424101">Društvene mreže</translation>
-<translation id="2463739503403862330">Popuni</translation>
 <translation id="2465688316154986572">Spajanje</translation>
 <translation id="2465914000209955735">Upravljajte fajlovima koje ste preuzeli u Chromeu</translation>
 <translation id="2466004615675155314">Pogledajte informacije s interneta</translation>
@@ -2491,12 +2490,10 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784606427469807560">Došlo je do problema prilikom potvrđivanja vaše kartice. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="5785756445106461925">Dalje, ova stranica obuhvata druge resurse koji nisu sigurni. Te resurse mogu vidjeti drugi dok su u tranzitu, a može ih promijeniti napadač kako bi promijenio izgled stranice.</translation>
-<translation id="5786044859038896871">Želite li popuniti informacije o svojoj kartici?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Ovaj način plaćanja će se izbrisati s uređaja</translation>
 <translation id="5800727402210090597">Popravak i servis mobilnih telefona</translation>
 <translation id="580241730938216256">Pokreni ažuriranje</translation>
-<translation id="5803412860119678065">Želite li popuniti svoju karticu <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5806871454498484178">Klizanje i zumiranje je blokirano</translation>
 <translation id="5808435672482059465">Pregledajte historiju Chromea</translation>

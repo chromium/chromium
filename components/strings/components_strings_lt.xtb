@@ -795,7 +795,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2456755709261364512">Akumuliatorius turi būti įkrautas daugiau nei <ph name="REQUIRED_BATTERY_PRECENT" /> proc.</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2462932596748424101">Socialiniai tinklai</translation>
-<translation id="2463739503403862330">Užpildyti</translation>
 <translation id="2465688316154986572">Susegimas sankabėlėmis</translation>
 <translation id="2465914000209955735">Tvarkykite failus, kuriuos atsisiuntėte naršyklėje „Chrome“</translation>
 <translation id="2466004615675155314">Rodyti informaciją iš žiniatinklio</translation>
@@ -2486,12 +2485,10 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="57838592816432529">Nutildyti</translation>
 <translation id="5784606427469807560">Patvirtinant kortelę kilo problema. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="5785756445106461925">Be to, šiame puslapyje yra kitų nesaugių išteklių. Perduodant duomenis šiuos išteklius gali peržiūrėti kiti asmenys ir keisti atakuojanti programa, siekianti pakeisti puslapio išvaizdą.</translation>
-<translation id="5786044859038896871">Ar norite, kad būtų įvesta jūsų kredito kortelės informacija?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Šis mokėjimo metodas bus ištrintas iš šio įrenginio</translation>
 <translation id="5800727402210090597">Mobiliųjų telefonų taisymo ir kitos paslaugos</translation>
 <translation id="580241730938216256">Pradėti atnaujinimą</translation>
-<translation id="5803412860119678065">Ar norite, kad būtų įvesta <ph name="CARD_DETAIL" /> informacija?</translation>
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5806871454498484178">Slinkimas ir mastelio keitimas užblokuotas</translation>
 <translation id="5808435672482059465">„Chrome“ istorijos peržiūra</translation>
@@ -2682,6 +2679,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6167577165590485365">Paskutinis bandymas gauti:</translation>
 <translation id="617256461084925519">„Google Chrome“ bando patvirtinti jūsų tapatybę, kad galėtų užpildyti mokėjimo informaciją.</translation>
+<translation id="6173208311907792313">Užbaikite pirkimą naudodami „Windows Hello“</translation>
 <translation id="6176387967264100435">Tai yra didelė kaina</translation>
 <translation id="6177128806592000436">Ryšys su šia svetaine nėra saugus</translation>
 <translation id="6177531123306197852">C2 vokas</translation>
@@ -3839,6 +3837,7 @@ Papildoma išsami informacija:
 <translation id="8332188693563227489">Prieiga prie <ph name="HOST_NAME" /> atmesta</translation>
 <translation id="833262891116910667">Paryškinti</translation>
 <translation id="8339163506404995330">Puslapiai, parašyti <ph name="LANGUAGE" />, verčiami nebus</translation>
+<translation id="8339275256517065202">Užbaikite pirkimą naudodami „Touch ID“</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
 <translation id="8344776605855290140">Virtualios kortelės registracijos langas atidarytas per visą ekrano aukštį</translation>
 <translation id="8349305172487531364">Žymių juosta</translation>
@@ -4033,6 +4032,7 @@ Papildoma išsami informacija:
 <translation id="8726549941689275341">Puslapio dydis:</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8731268612289859741">Saugos kodas</translation>
+<translation id="8731917264694569036">Užbaikite pirkimo veiksmą naudodami įrenginį</translation>
 <translation id="8733345475331865475">Automobilių draudimas</translation>
 <translation id="8733764070897080460">Galite blokuoti temas, kurių nenorite bendrinti su svetainėmis. „Chrome“ taip pat automatiškai ištrina senesnes nei keturių savaičių temas. Sužinokite daugiau</translation>
 <translation id="8734529307927223492">Jūsų „<ph name="DEVICE_TYPE" />“ tvarko <ph name="MANAGER" /></translation>
@@ -4226,6 +4226,7 @@ Papildoma išsami informacija:
 <translation id="9116548361133462832">Daugiau apie skelbimus naršyklėje „Chrome“</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad tęstumėte veiksmus ir galėtumėte matyti atitinkamą veiklą „Chrome“ istorijoje</translation>
 <translation id="9119042192571987207">Įkelta</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> nori patvirtinti jūsų tapatybę</translation>
 <translation id="912327514020027767">Sijonai</translation>
 <translation id="912414390325846156">Anksčiau pasirinkote neleisti šioje svetainėje</translation>
 <translation id="9128870381267983090">Prisijungti prie tinklo</translation>

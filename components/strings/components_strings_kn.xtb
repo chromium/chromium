@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">ನಿಮ್ಮ ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್‌ನ ಕಂಟೆಂಟ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮಾಡಿ ಮತ್ತು ಜೂಮ್ ಮಾಡಿ</translation>
 <translation id="1089439967362294234">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1090629319939036170">VR ಮೆನು</translation>
+<translation id="1091779689406092804">ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳು</translation>
 <translation id="1094777233105318927">ನಿಮ್ಮ ಬ್ರೌಸರ್, OS, ಸಾಧನ, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಸಾಫ್ಟ್‌ವೇರ್ ಮತ್ತು ಫೈಲ್‌ಗಳ ಕುರಿತು ಮಾಹಿತಿ</translation>
 <translation id="1096545575934602868">ಈ ಕ್ಷೇತ್ರವು <ph name="MAX_ITEMS_LIMIT" /> ಗಿಂತ ಹೆಚ್ಚು ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ. ಮುಂದಿನ ಎಲ್ಲಾ ನಮೂದುಗಳನ್ನು ತ್ಯಜಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1097803577928227769">ಪ್ರಾದೇಶಿಕ ಉದ್ಯಾನಗಳು ಮತ್ತು ಗಾರ್ಡನ್‌ಗಳು</translation>
@@ -471,6 +472,7 @@
 <translation id="1840009953725035797">ಹೋಮ್ ಥಿಯೇಟರ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="1842969606798536927">ಪಾವತಿಸಿ</translation>
 <translation id="1846432862466000825">ಪ್ಲಾಸ್ಟಿಕ್ (ಆರ್ಕೈವಲ್)</translation>
+<translation id="1848640291751752317">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="1848982255014129637">ಫೋಟೋ (ಹೆಚ್ಚಿನ ಹೊಳಪು)</translation>
 <translation id="1853392626017747777">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನೋಂದಣಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1854180393107901205">ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -753,6 +755,7 @@
 <translation id="2366689192918515749">ಮಾಂಸ ಮತ್ತು ಸಮುದ್ರಾಹಾರ</translation>
 <translation id="2367567093518048410">ಹಂತ</translation>
 <translation id="23703388716193220">ಗಾಲ್ಫ್ ಉಪಕರಣ</translation>
+<translation id="2370368710215137370">ಫೈಲ್‌ಗಳ ಅಪ್‌ಲೋಡ್‌</translation>
 <translation id="2374629208601905275">ನಿಮ್ಮ ಪ್ರದೇಶದ ಕಾನೂನನ್ನು ಆಧರಿಸಿ, ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲು Chrome ನಿಮ್ಮನ್ನು ಕೇಳುತ್ತದೆ. ಈ ಸರ್ಚ್ ಎಂಜಿನ್‌ಗಳು ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಜನಪ್ರಿಯವಾಗಿವೆ ಮತ್ತು ಯಾದೃಚ್ಛಿಕ ಕ್ರಮದಲ್ಲಿ ತೋರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2377241607395428273">ಗ್ರಾಫಿಕ್ಸ್ ಮತ್ತು ಆ್ಯನಿಮೇಷನ್ ಸಾಫ್ಟ್‌ವೇರ್</translation>
 <translation id="2378084239755710604">'ಸೇವ್ ಕಾರ್ಡ್' ಮುಚ್ಚಿದೆ.</translation>
@@ -795,7 +798,6 @@
  % ಗಿಂತ ಹೆಚ್ಚು ಚಾರ್ಜ್ ಆಗಿರಬೇಕು</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
 <translation id="2462932596748424101">ಸಾಮಾಜಿಕ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
-<translation id="2463739503403862330">ಭರ್ತಿ ಮಾಡು</translation>
 <translation id="2465688316154986572">ಸ್ಟೇಪಲ್ ಮಾಡಿ</translation>
 <translation id="2465914000209955735">ನೀವು Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2466004615675155314">ವೆಬ್‌ನಿಂದ ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
@@ -1420,6 +1422,7 @@
 <translation id="3682094733650754138">ವಿಳಾಸ ಭರ್ತಿಮಾಡುವ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಲಾಗಿದೆ</translation>
 <translation id="3687920599421452763">ವ್ಯಾನ್‌ಗಳು ಮತ್ತು ಮಿನಿವ್ಯಾನ್‌ಗಳು</translation>
 <translation id="3693327506115126094">ಯಾವ ರೀತಿಯಲ್ಲಿ ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಲು ನೀವು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ಆರಿಸಿ</translation>
+<translation id="3698353241727597930">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಎಂಟರ್‌ಪ್ರೈಸ್-ನಿರ್ವಹಿಸಿದ <ph name="CLOUD_STORAGE" /> ಸಂಗ್ರಹಣೆಯಲ್ಲಿ <ph name="FILES" /> ಅನ್ನು ಸೇವ್‌ ಮಾಡಲು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ. ಈ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಅಳಿಸಿದಾಗ ಅವುಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು, ಆಡಿಟ್ ಮಾಡಬಹುದು ಮತ್ತು ಇರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="3698629142018988477">ಸೈಟ್ ರಚಿಸಿ ಬಟನ್, ತ್ವರಿತವಾಗಿ Google Sites ನಲ್ಲಿ ಹೊಸ ಸೈಟ್ ರಚಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3701325639446035885">ಈವೆಂಟ್ ಟಿಕೆಟ್ ಮಾರಾಟಗಳು</translation>
 <translation id="3701427423622901115">ಮರುಹೊಂದಿಸುವಿಕೆಯನ್ನು ಅಂಗೀಕರಿಸಲಾಗಿದೆ.</translation>
@@ -1495,6 +1498,7 @@
 <translation id="3826050100957962900">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್</translation>
 <translation id="3827112369919217609">ಪರಿಪೂರ್ಣ</translation>
 <translation id="3828924085048779000">ಖಾಲಿ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="3830139096297532361">ಈ PDF ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪಠ್ಯ ಹೊರತೆಗೆಯುವಿಕೆಯ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3830470485672984938">ಬೇರೆ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="3831065134033923230">ಉಳಿಸಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3831915413245941253">ಹೆಚ್ಚುವರಿ ಕಾರ್ಯವಿಧಾನಗಳಿಗಾಗಿ <ph name="ENROLLMENT_DOMAIN" /> ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದೆ. ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ನಿಮ್ಮ ಕೆಲವು ಡೇಟಾಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತವೆ.</translation>
@@ -1669,6 +1673,7 @@
 <translation id="4202554117186904723">ಐದನೇ ರೋಲ್</translation>
 <translation id="4203769790323223880">ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ಫೈರ್‌ವಾಲ್ ಮತ್ತು ಆಂಟಿವೈರಸ್ ಕಾನ್ಫಿಗರೇಶನ್‌‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">ದೊಡ್ಡದು</translation>
 <translation id="4210602799576081649">ದೃಢೀಕರಣ ಕೋಡ್ ಅವಧಿ ಮೀರಿದೆ, ಹೊಸ ಕೋಡ್‌ಗಾಗಿ ವಿನಂತಿಸಿ</translation>
 <translation id="421066178035138955">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಿ</translation>
@@ -2482,12 +2487,10 @@
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5784606427469807560">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5785756445106461925">ಅಲ್ಲದೇ, ಸುರಕ್ಷಿತವಲ್ಲದ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಈ ಪುಟ ಒಳಗೊಂಡಿದೆ. ಪ್ರಯಾಣದ ಸಂದರ್ಭದಲ್ಲಿ ಈ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಇತರರೂ ವೀಕ್ಷಿಸಬಹುದಾಗಿದೆ ಮತ್ತು ಪುಟದ ನೋಟವೇ ಬದಲಾಗುವಂತೆ ಆಕ್ರಮಣಕಾರರು ಅದನ್ನು ತಿದ್ದಬಹುದಾಗಿದೆ.</translation>
-<translation id="5786044859038896871">ನಿಮ್ಮ ಕಾರ್ಡ್ ಮಾಹಿತಿ ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5800727402210090597">ಮೊಬೈಲ್ ಫೋನ್ ದುರಸ್ತಿ ಮತ್ತು ಸೇವೆಗಳು</translation>
 <translation id="580241730938216256">ಅಪ್‌ಡೇಟ್‌‌ ಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="5803412860119678065">ನಿಮ್ಮ <ph name="CARD_DETAIL" /> ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5806871454498484178">ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5808435672482059465">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -2677,6 +2680,7 @@
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6167577165590485365">ಕೊನೆಯ ಬಾರಿಗೆ ಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ:</translation>
 <translation id="617256461084925519">Google Chrome ನಿಮ್ಮ ಪಾವತಿಯ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸುವ ಸಲುವಾಗಿ ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
+<translation id="6173208311907792313">Windows Hello ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="6176387967264100435">ಇದು ಅಧಿಕ ದರವಾಗಿದೆ</translation>
 <translation id="6177128806592000436">ಈ ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವು ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6177531123306197852">ಎನ್ವಲಪ್ C2</translation>
@@ -2729,6 +2733,7 @@
 <translation id="6270066318535733958">ದೋಣಿ ವಿಹಾರ</translation>
 <translation id="6272088941196661550">ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="6272383483618007430">Google ಅಪ್‍ಡೇಟ್</translation>
+<translation id="6278015583149890680">Google Drive ಮತ್ತು OneDrive</translation>
 <translation id="6280223929691119688">ಈ ವಿಳಾಸಕ್ಕೆ ತಲುಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="6284292079994426700">26 x 38 ಇಂಚು</translation>
 <translation id="6284449872909111707">ಪಠ್ಯ ಮತ್ತು ಇನ್‌ಸ್ಟಂಟ್ ಸಂದೇಶ ಕಳುಹಿಸುವಿಕೆ</translation>
@@ -3168,6 +3173,7 @@
 <translation id="7119063404975271297">TV ನಾಟಕಗಳು</translation>
 <translation id="7119371694555167493">ನಕಲು ಮಾಡುವ ಸಮಯ ಮೀರಿದೆ</translation>
 <translation id="7119414471315195487">ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="7120588595737538743">ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳು</translation>
 <translation id="7124354851782353862">ನಿಮ್ಮ CVC ನಮೂದಿಸಿ</translation>
 <translation id="7129409597930077180">ಈ ವಿಳಾಸಕ್ಕೆ ರವಾನಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3366,6 +3372,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome ಸಲಹೆಯನ್ನು ವಜಾಗೊಳಿಸಲು Tab ಒತ್ತಿ ನಂತರ Enter ಒತ್ತಿ.</translation>
 <translation id="7485085230273446323">ವ್ಯಾಪಾರ ಮತ್ತು ಕೈಗಾರಿಕೆ</translation>
 <translation id="7485870689360869515">ಯಾವುದೇ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">ಶಾಂಪೂಗಳು ಮತ್ತು ಕಂಡೀಷನರ್‌ಗಳು</translation>
 <translation id="7495528107193238112">ಈ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ಸೈಟ್ ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="749865518782565832">ಪ್ಲಂಬಿಂಗ್</translation>
@@ -3834,6 +3841,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="833262891116910667">ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="8339275256517065202">Touch ID ಯನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ಸಂಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನೋಂದಣಿಯನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="8349305172487531364">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಬಾರ್</translation>
@@ -4028,6 +4036,7 @@
 <translation id="8726549941689275341">ಪುಟದ ಗಾತ್ರ:</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8731268612289859741">ಭದ್ರತಾ ಕೋಡ್</translation>
+<translation id="8731917264694569036">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="8733345475331865475">ಆಟೊ ವಿಮೆ</translation>
 <translation id="8733764070897080460">ನೀವು ಸೈಟ್‌ಗಳ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸದ ವಿಷಯಗಳನ್ನು ನೀವು ನಿರ್ಬಂಧಿಸಬಹುದು. 4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯದಾದ ನಿಮ್ಮ ವಿಷಯಗಳನ್ನು Chrome ಸ್ವಯಂ ಅಳಿಸುತ್ತದೆ. ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8734529307927223492">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ</translation>
@@ -4221,6 +4230,7 @@
 <translation id="9116548361133462832">Chrome ನಲ್ಲಿ ಜಾಹೀರಾತುಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಲು ಮತ್ತು ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="9119042192571987207">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> ಗೆ ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="912327514020027767">ಸ್ಕರ್ಟ್‌ಗಳು</translation>
 <translation id="912414390325846156">ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಸಬೇಡಿ ಎಂದು ನೀವು ಈ ಹಿಂದೆ ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="9128870381267983090">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸು</translation>

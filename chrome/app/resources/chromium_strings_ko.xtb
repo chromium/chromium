@@ -127,7 +127,6 @@
 <translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3179665906251668410">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3185330573522821672">새로운 Chromium 프로필 맞춤설정</translation>
-<translation id="318879170965183683">로그인한 상태로 Chromium에서 Google 계정의 비밀번호를 사용할 수 있습니다</translation>
 <translation id="3190315855212034486">Chromium이 다운되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="3224847870593914902">Chromium에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chromium에서 로그아웃하세요</translation>
 <translation id="3258596308407688501">Chromium에서 데이터 디렉터리를 읽고 쓸 수 없습니다.
@@ -256,7 +255,6 @@
 <translation id="5386450000063123300">Chromium 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium 로그인 허용</translation>
 <translation id="5398878173008909840">Chromium의 새 버전이 출시되었습니다.</translation>
-<translation id="5400757303519321734"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chromium에 로그인할 수 있습니다.</translation>
 <translation id="5405650547142096840">Chromium에서 제거</translation>
 <translation id="5427571867875391349">Chromium을 기본 브라우저로 설정</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 베타</translation>
@@ -382,7 +380,6 @@
 <translation id="7045244423563602563">나만의 Chromium 만들기</translation>
 <translation id="705851970750939768">Chromium 업데이트</translation>
 <translation id="7067091210845072982">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
-<translation id="7100062358172078145">Chromium에 로그인하지 않음</translation>
 <translation id="7141270731789036260">Chrome for Testing 맞춤설정</translation>
 <translation id="7159538860914681762">모든 기기에서 비밀번호 등을 저장하고 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium 데이터를 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
@@ -504,7 +501,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9158494823179993217">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 대체 브라우저를 열도록 Chromium을 구성했습니다.</translation>
 <translation id="9185526690718004400">다시 실행하여 Chromium 업데이트</translation>
 <translation id="9190841055450128916">Chromium(mDNS-In)</translation>
-<translation id="9220341227291329091">Chromium에 자동 로그인</translation>
 <translation id="924957577793602335">나만의 Chromium 만들기</translation>
 <translation id="93478295209880648">Windows XP 또는 Windows Vista에서 더 이상 Chromium을 지원하지 않으므로 Chromium이 올바르게 작동하지 않을 수 있습니다</translation>
 <translation id="942598560705308788">Chromium이 관리하는 인증서</translation>

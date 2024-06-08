@@ -127,7 +127,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3155163173539279776">Ail-lansio Chromium</translation>
 <translation id="3179665906251668410">Agor y Ddolen mewn Ffenestr Anhys&amp;bys Chromium</translation>
 <translation id="3185330573522821672">Personoleiddio eich proffil Chromium newydd</translation>
-<translation id="318879170965183683">Gallwch ddefnyddio'ch cyfrineiriau o'ch Cyfrif Google yn Chromium tra byddwch wedi mewngofnodi</translation>
 <translation id="3190315855212034486">Whoa! Mae Chromium wedi torri. Ail-lwytho nawr?</translation>
 <translation id="3224847870593914902">I dynnu'ch Cyfrif Google o Chromium, allgofnodwch o Chromium yn y dudalen Gosodiadau</translation>
 <translation id="3258596308407688501">Ni all Chromium ddarllen nac ysgrifennu i'w gyfeiriadur data:
@@ -256,7 +255,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5386450000063123300">Wrthi'n Diweddaru Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Caniatáu Mewngofnodi drwy Chromium</translation>
 <translation id="5398878173008909840">Mae fersiwn newydd o Chromium ar gael.</translation>
-<translation id="5400757303519321734">Wrth fewngofnodi i wasanaethau Google fel Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi i Chromium gyda'r un cyfrif</translation>
 <translation id="5405650547142096840">Tynnu o Chromium</translation>
 <translation id="5427571867875391349">Gosod Chromium fel eich porwr diofyn</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Beta Chromium</translation>
@@ -382,7 +380,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="7045244423563602563">Personoleiddiwch Chromium</translation>
 <translation id="705851970750939768">Diweddaru Chromium</translation>
 <translation id="7067091210845072982">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
-<translation id="7100062358172078145">Peidiwch â'm mewngofnodi i Chromium</translation>
 <translation id="7141270731789036260">Addasu Chrome for Testing</translation>
 <translation id="7159538860914681762">I gadw a defnyddio'ch cyfrineiriau a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chromium</translation>
 <translation id="7173822816570314652">Mae eich sefydliad yn dileu data Chromium pan na chaiff ei ddefnyddio am <ph name="TIMEOUT_DURATION" />. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
@@ -504,7 +501,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="9158494823179993217">Mae'ch gweinyddwr system wedi ffurfweddu Chromium i agor porwr gwahanol i fynd i mewn i <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ail-lansiwch i ddiweddaru &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Mewngofnodwch fi i Chromium yn awtomatig</translation>
 <translation id="924957577793602335">Personoleiddio Chromium</translation>
 <translation id="93478295209880648">Mae'n bosib na fydd Chromium yn gweithredu'n gywir oherwydd nad yw'n cael ei gefnogi mwyach ar Windows XP na Windows Vista</translation>
 <translation id="942598560705308788">Tystysgrifau a reolir gan Chromium</translation>

@@ -3964,7 +3964,6 @@
 <translation id="3873915545594852654">ARC++에 문제가 발생했습니다.</translation>
 <translation id="3874164307099183178">Google 어시스턴트 사용 설정</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">항상 확인</translation>
 <translation id="3877075909000773256">공유에 <ph name="USER_EMAIL" /> 계정을 사용하는 <ph name="USER_NAME" />님의 기기에 관한 Nearby Share 설정입니다.</translation>
 <translation id="3878445208930547646">이 사이트에서 복사할 수 없습니다</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
@@ -6217,6 +6216,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5590418976913374224">기기 시작 시 소리 재생</translation>
 <translation id="5591465468509111843">매우 넓음</translation>
 <translation id="5592595402373377407">아직 데이터가 충분하지 않습니다.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mac 시스템 설정에서 마이크가 사용 중지됨</translation>
 <translation id="5594899180331219722">파일 선택</translation>
 <translation id="5595307023264033512">사이트에서 사용 중인 총 저장용량: <ph name="TOTAL_USAGE" /></translation>
@@ -8888,7 +8888,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7648023614017258011">Chrome에서 설치 번들을 확인하는 중입니다</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7650178491875594325">로컬 데이터 복원</translation>
-<translation id="7650511557061837441">'<ph name="TRIGGERING_EXTENSION_NAME" />'에서 '<ph name="EXTENSION_NAME" />'을(를) 삭제하려고 합니다.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{지문 1개 설정됨}other{지문 {COUNT}개 설정됨}}</translation>
 <translation id="7650677314924139716">현재 데이터 사용 설정은 Wi-Fi만 사용입니다</translation>
 <translation id="7650920359639954963">사용 설정되지 않음: <ph name="REASON" /></translation>

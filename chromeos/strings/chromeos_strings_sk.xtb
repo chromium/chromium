@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Pozadie</translation>
 <translation id="3027578600144895987">Zavrieť kameru</translation>
 <translation id="3031560714565892478">Zariadenie je videokamera.</translation>
+<translation id="3051968340259309715">Systémovým službám to umožňuje určovať vašu polohu pomocou presnosti určovania polohy. Presnosť určovania polohy odhaduje polohu zariadenia pomocou informácií o bezdrôtových signáloch, ako sú prístupové body Wi-Fi a stanice mobilnej siete, GPS, ale aj dát senzorov zariadení, ako sú akcelerometer a gyroskop. Polohu môžete vypnúť v Nastaveniach &gt; Ochrana súkromia a zabezpečenie &gt; Nastavenia ochrany súkromia &gt; Prístup k polohe. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Konečný bod</translation>
 <translation id="3060579846059757016">Ohraničenie</translation>

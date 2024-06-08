@@ -125,7 +125,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3155163173539279776">Chromiumi taaskäivitamine</translation>
 <translation id="3179665906251668410">Ava link Chromiumi inko&amp;gnito aknas</translation>
 <translation id="3185330573522821672">Kohandage oma uut Chromiumi profiili</translation>
-<translation id="318879170965183683">Kui olete sisse logitud, saate Chromiumis kasutada oma Google'i kontol olevaid paroole</translation>
 <translation id="3190315855212034486">Chromium jooksis kokku. Kas soovite kohe taaskäivitada?</translation>
 <translation id="3224847870593914902">Google'i konto Chromiumist eemaldamiseks logige lehel Seaded Chromiumist välja</translation>
 <translation id="3258596308407688501">Chromium ei saa andmekataloogi lugeda ega sellesse kirjutada:
@@ -254,7 +253,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="5386450000063123300">Chromiumi värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Luba Chromiumisse sisselogimine</translation>
 <translation id="5398878173008909840">Chromiumi uus versioon on saadaval.</translation>
-<translation id="5400757303519321734">E-posti aadressiga <ph name="USER_EMAIL" /> Google'i teenustesse (nt Gmaili või Youtube'i) sisse logides saate Chromiumi sisse logida sama kontoga</translation>
 <translation id="5405650547142096840">Eemalda Chromiumist</translation>
 <translation id="5427571867875391349">Määra Chromium vaikebrauseriks</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromiumi beetaversioon</translation>
@@ -379,7 +377,6 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="7045244423563602563">Isikupärastage Chromiumi</translation>
 <translation id="705851970750939768">Värskenda Chromiumi</translation>
 <translation id="7067091210845072982">Kui pildil puudub kasulik kirjeldus, üritab Chromium selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
-<translation id="7100062358172078145">Ära logi mind Chromiumi sisse</translation>
 <translation id="7141270731789036260">Chrome for Testingu kohandamine</translation>
 <translation id="7159538860914681762">Kõigis oma seadmetes paroolide ja muu salvestamiseks ning kasutamiseks logige Chromiumi sisse</translation>
 <translation id="7173822816570314652">Teie organisatsioon kustutab Chromiumi andmed, kui neid ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
@@ -501,7 +498,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9158494823179993217">Teie süsteemiadministraator on konfigureerinud Chromiumi avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Logi mind automaatselt Chromiumi sisse</translation>
 <translation id="924957577793602335">Isikupärastage Chromium</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
 <translation id="942598560705308788">Chromiumi hallatavad sertifikaadid</translation>

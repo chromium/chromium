@@ -3965,7 +3965,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3873915545594852654">Bu problem gydag ARC++.</translation>
 <translation id="3874164307099183178">Troi Google Assistant ymlaen</translation>
 <translation id="3875815154304214043">Gosodir <ph name="APP_NAME" /> i agor mewn tab porwr newydd, bydd dolenni a gefnogir hefyd yn agor yn y porwr. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Gofyn i mi bob tro</translation>
 <translation id="3877075909000773256">Gosodiadau Rhannu Gerllaw ar gyfer dyfais <ph name="USER_NAME" />, gan rannu o dan y cyfrif <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Ni chaniateir copïo o'r wefan hon</translation>
 <translation id="3879748587602334249">Rheolwr lawrlwythiadau</translation>
@@ -6219,6 +6218,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5590418976913374224">Chwarae sain wrth gychwyn dyfais</translation>
 <translation id="5591465468509111843">Llydan iawn</translation>
 <translation id="5592595402373377407">Dim digon o ddata ar gael eto.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mae'r meicroffon wedi'i ddiffodd yng Ngosodiadau System Mac</translation>
 <translation id="5594899180331219722">Dewis ffeil</translation>
 <translation id="5595307023264033512">Cyfanswm y storfa a ddefnyddir gan wefannau: <ph name="TOTAL_USAGE" /></translation>
@@ -8898,7 +8898,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7648023614017258011">Mae Chrome yn gwirio'r bwndel gosod</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7650178491875594325">Adfer data lleol</translation>
-<translation id="7650511557061837441">Hoffai "<ph name="TRIGGERING_EXTENSION_NAME" />" dynnu "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Mae 1 ôl bys wedi'i osod}zero{Mae {COUNT} ôl bys wedi'i osod}two{Mae {COUNT} ôl bys wedi'i osod}few{Mae {COUNT} ôl bys wedi'i osod}many{Mae {COUNT} ôl bys wedi'i osod}other{Mae {COUNT} ôl bys wedi'i osod}}</translation>
 <translation id="7650677314924139716">Y gosodiad defnyddio data presennol yw Wi-Fi yn unig</translation>
 <translation id="7650920359639954963">Heb ei alluogi: <ph name="REASON" /></translation>

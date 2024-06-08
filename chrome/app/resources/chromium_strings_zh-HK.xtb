@@ -127,7 +127,6 @@
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3179665906251668410">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3185330573522821672">自訂您的新 Chromium 設定檔</translation>
-<translation id="318879170965183683">登入帳戶後，你便可在 Chromium 中使用 Google 帳戶儲存的密碼</translation>
 <translation id="3190315855212034486">Chromium 當機了，要立即重新啟動嗎？</translation>
 <translation id="3224847870593914902">如要從 Chromium 中移除 Google 帳戶，請前往「設定」頁面登出 Chromium</translation>
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
@@ -256,7 +255,6 @@
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
 <translation id="5398878173008909840">新版 Chromium 現已推出。</translation>
-<translation id="5400757303519321734">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，你可使用同一個帳戶登入 Chromium</translation>
 <translation id="5405650547142096840">從 Chromium 中移除</translation>
 <translation id="5427571867875391349">將 Chromium 設為預設瀏覽器</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版本</translation>
@@ -381,7 +379,6 @@
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
-<translation id="7100062358172078145">不要登入 Chromium</translation>
 <translation id="7141270731789036260">自訂 Chrome for Testing</translation>
 <translation id="7159538860914681762">如要在所有裝置上儲存及使用密碼和其他資料，請登入 Chromium</translation>
 <translation id="7173822816570314652">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後刪除 Chromium 資料，當中可能包括記錄、自動填入資料和下載檔案。</translation>
@@ -503,7 +500,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">自動登入 Chromium</translation>
 <translation id="924957577793602335">自訂屬於您的 Chromium</translation>
 <translation id="93478295209880648">由於 Chromium 將不再支援 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="942598560705308788">由 Chromium 管理的憑證</translation>

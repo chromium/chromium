@@ -3962,7 +3962,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3873915545594852654">A problem with ARC++ occurred.</translation>
 <translation id="3874164307099183178">Turn on Google Assistant</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> is set to open in a new browser tab. Supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Ask me every time</translation>
 <translation id="3877075909000773256">Nearby Share settings for <ph name="USER_NAME" />'s device, sharing under the account <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Copying from this site is not allowed</translation>
 <translation id="3879748587602334249">Download manager</translation>
@@ -6216,6 +6215,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5590418976913374224">Play sound on device start-up</translation>
 <translation id="5591465468509111843">Very wide</translation>
 <translation id="5592595402373377407">Not enough data available yet.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Microphone is turned off in Mac system settings</translation>
 <translation id="5594899180331219722">Select file</translation>
 <translation id="5595307023264033512">Total storage used by sites: <ph name="TOTAL_USAGE" /></translation>
@@ -8888,7 +8888,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7648023614017258011">Chrome is verifying the installation bundle</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7650178491875594325">Restore local data</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" would like to remove "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingerprint set up}other{{COUNT} fingerprints set up}}</translation>
 <translation id="7650677314924139716">Current data usage setting is Wi-Fi only</translation>
 <translation id="7650920359639954963">Not enabled: <ph name="REASON" /></translation>

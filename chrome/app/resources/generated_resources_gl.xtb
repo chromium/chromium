@@ -3943,7 +3943,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3873915545594852654">Produciuse un problema con ARC++.</translation>
 <translation id="3874164307099183178">Activar Asistente de Google</translation>
 <translation id="3875815154304214043">Configurouse <ph name="APP_NAME" /> para que se abra nunha nova pestana do navegador. As ligazóns compatibles tamén se abrirán no navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Preguntar sempre</translation>
 <translation id="3877075909000773256">Configuración de Compartir por Nearby para o dispositivo de <ph name="USER_NAME" />, compartindo contido desde a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Non se permite copiar contido deste sitio</translation>
 <translation id="3879748587602334249">Xestor de descargas</translation>
@@ -6184,6 +6183,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5590418976913374224">Reproducir son ao iniciar o dispositivo</translation>
 <translation id="5591465468509111843">Moi amplo</translation>
 <translation id="5592595402373377407">Aínda non hai datos suficientes dispoñibles.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">O micrófono está desactivado na configuración do sistema de Mac</translation>
 <translation id="5594899180331219722">Seleccionar ficheiro</translation>
 <translation id="5595307023264033512">Almacenamento total usado polos sitios: <ph name="TOTAL_USAGE" /></translation>
@@ -8847,7 +8847,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7648023614017258011">Chrome está verificando o paquete de instalación</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7650178491875594325">Restaurar os datos locais</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" quere eliminar "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Hai configurada 1 impresión dixital}other{Hai configuradas {COUNT} impresións dixitais}}</translation>
 <translation id="7650677314924139716">A configuración de uso de datos actual é Só por wifi</translation>
 <translation id="7650920359639954963">Non está habilitada: <ph name="REASON" /></translation>

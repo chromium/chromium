@@ -310,6 +310,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2208323208084708176">Način jedinstvene radne površine</translation>
 <translation id="2220572644011485463">PIN ili zaporka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
+<translation id="2223384056430485343">Na podijeljenom zaslonu</translation>
 <translation id="2224075387478458881">Snimanje zaslona nije dopušteno ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="2248634276911611268">Otvaranje veze u novoj kartici i prebacivanje na tu karticu</translation>
@@ -1667,7 +1668,6 @@ Novo instaliranje</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Vraćanje na staru razlučivost za <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Otvorite Postavke</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7181691792034457084">Pozdrav! Uređaj <ph name="PRODUCT_NAME" /> malo je drugačiji.</translation>
 <translation id="7188494361780961876">Izbornik je premješten u gornji lijevi kut zaslona.</translation>

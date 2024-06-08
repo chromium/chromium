@@ -127,7 +127,6 @@
 <translation id="3155163173539279776">Поново покрени Chromium</translation>
 <translation id="3179665906251668410">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="3185330573522821672">Прилагодите нови Chromium профил</translation>
-<translation id="318879170965183683">Можете да користите лозинке са Google налога у Chromium-у док сте пријављени</translation>
 <translation id="3190315855212034486">Опа! Chromium је отказао. Желите ли да га одмах поново покренете?</translation>
 <translation id="3224847870593914902">Да бисте уклонили Google налог из Chromium-а, одјавите се из Chromium-а на страници Подешавања</translation>
 <translation id="3258596308407688501">Chromium не може да чита податке из директоријума са подацима нити да их уписује у њега:
@@ -256,7 +255,6 @@
 <translation id="5386450000063123300">Ажурирање Chromium-а (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволи пријављивање у Chromium</translation>
 <translation id="5398878173008909840">Доступна је нова верзија Chromium-а.</translation>
-<translation id="5400757303519321734">Када се пријављујете у Google услуге као што су Gmail или YouTube помоћу налога <ph name="USER_EMAIL" />, можете да се пријавите у Chromium помоћу истог налога</translation>
 <translation id="5405650547142096840">Уклони из Chromium-а</translation>
 <translation id="5427571867875391349">Подеси Chromium као подразумевани прегледач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета</translation>
@@ -382,7 +380,6 @@
 <translation id="7045244423563602563">Прилагодите Chromium себи</translation>
 <translation id="705851970750939768">Ажурирај Chromium</translation>
 <translation id="7067091210845072982">Ако слика нема користан опис, Chromium ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
-<translation id="7100062358172078145">Не пријављуј ме у Chromium</translation>
 <translation id="7141270731789036260">Прилагодите Chrome for Testing</translation>
 <translation id="7159538860914681762">Да бисте сачували и користили лозинке и друго на свим уређајима, пријавите се у Chromium</translation>
 <translation id="7173822816570314652">Организација брише Chromium податке када се не користе <ph name="TIMEOUT_DURATION" />. То може да обухвата историју, аутоматско попуњавање и преузимања.</translation>
@@ -504,7 +501,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="9158494823179993217">Администратор система је конфигурисао Chromium да отвара алтернативни прегледач за приступ URL-у <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Поново покрени да би се &amp;Chromium ажурирао</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Аутоматски ме пријави у Chromium</translation>
 <translation id="924957577793602335">Прилагодите Chromium себи</translation>
 <translation id="93478295209880648">Chromium можда неће исправно функционисати зато што више није подржан на Windows XP-у или Windows Vista-и</translation>
 <translation id="942598560705308788">Сертификати којима управља Chromium</translation>

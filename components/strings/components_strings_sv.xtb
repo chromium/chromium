@@ -795,7 +795,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2456755709261364512">Batteriet måste vara laddat över <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2462932596748424101">Sociala nätverk</translation>
-<translation id="2463739503403862330">Fyll i</translation>
 <translation id="2465688316154986572">Häftning</translation>
 <translation id="2465914000209955735">Hantera filer du har laddat ned i Chrome</translation>
 <translation id="2466004615675155314">Visa information från webben</translation>
@@ -2485,12 +2484,10 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5784606427469807560">Det gick inte att bekräfta kortet. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="5785756445106461925">Den här sidan innehåller emellertid andra resurser som inte är säkra. Andra kan se resurserna när de överförs och hackare kan ändra resurserna så att sidan får ett annat utseende.</translation>
-<translation id="5786044859038896871">Vill du att kortuppgifterna ska fyllas i?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Den här betalningsmetoden raderas från enheten</translation>
 <translation id="5800727402210090597">Mobiltelefonreparationer och -tjänster</translation>
 <translation id="580241730938216256">Starta uppdatering</translation>
-<translation id="5803412860119678065">Vill du att uppgifterna om <ph name="CARD_DETAIL" /> ska fyllas i?</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5806871454498484178">Scrollning och zoom har blockerats</translation>
 <translation id="5808435672482059465">Visa Chrome-historiken</translation>

@@ -297,6 +297,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1203942045716040624">Spolupracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Zobrazit náhled odkazu</translation>
 <translation id="1206832039833782423">Váš bezpečnostní kód je na zadní straně karty</translation>
+<translation id="1208392090861059168">Aktuální plán je nastaven na <ph name="SUNRISE" /> – <ph name="SUNSET" />. Pokud chcete plán západu a východu slunce automaticky aktualizovat, <ph name="BEGIN_LINK" />zapněte v systému přístup k poloze<ph name="END_LINK" /></translation>
 <translation id="1210678701920254279">Zobrazení nebo přidání tiskáren a zobrazení aktivních tiskových úloh</translation>
 <translation id="1211769675100312947">Zkratky vybíráte vy sami</translation>
 <translation id="1213254615020057352">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>
@@ -813,6 +814,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1594703455918849716">Přejít na stránku Kontrola</translation>
 <translation id="1594781465361405478">Vypínač hlasitosti</translation>
 <translation id="1594963087419619323">Přehled rozdělené obrazovky</translation>
+<translation id="1595018168143352126">Spravovat oprávnění webů pro přístup ke kameře v Chromu</translation>
 <translation id="1595492813686795610">Linux se upgraduje</translation>
 <translation id="1596286373007273895">Dostupné</translation>
 <translation id="1596709061955594992">Bluetooth je vypnutý. Pokud chcete zobrazit dostupná zařízení, zapněte Bluetooth.</translation>
@@ -1249,6 +1251,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1900305421498694955">Aplikace z Google Play mohou vyžadovat úplný přístup k systému souborů, aby mohly číst a zapisovat soubory na externích úložných zařízeních. Soubory a složky vytvořené na zařízení jsou viditelné pro každého, kdo daný externí disk používá. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Požádejte administrátora, aby tuto aplikaci aktualizoval</translation>
 <translation id="1901303067676059328">&amp;Vybrat vše</translation>
+<translation id="1901760057081700494">Časové pásmo je aktuálně nastaveno na <ph name="TIME_ZONE_ENTRY" />. Pokud ho chcete automaticky aktualizovat, <ph name="BEGIN_LINK" />zapněte systémový přístup k poloze<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="1906181697255754968">Weby obvykle využívají přístup k souborům a složkám v zařízení k funkcím, jako je automatické ukládání práce</translation>
 <translation id="1906488504371069394">Objevte další rozšíření a motivy v <ph name="BEGIN_LINK" />Internetovém obchodě Chrome<ph name="END_LINK" /></translation>
@@ -2200,6 +2203,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2581992808349413349">Používat zabezpečené připojení k vyhledání IP adresy webu v DNS (Domain Name System). Využívá poskytovatele spravovaných služeb v doméně <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Lístek Kerberos se nepodařilo získat. Zkuste to znovu nebo kontaktujte správce zařízení své organizace. (Kód chyby <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Spravovat oprávnění webů pro přístup k mikrofonu v Chromu</translation>
 <translation id="2586561813241011046">Instalace aplikace <ph name="APP_NAME" /> se nezdařila. Zkuste to znovu, nebo kontaktujte administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2586672484245266891">Zadejte prosím kratší adresu URL</translation>
@@ -2389,6 +2393,9 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2727744317940422214">Litujeme, něco se pokazilo. Zašlete nám prosím zpětnou vazbu s hashtagem #bruschetta v popisu. Kód chyby je <ph name="ERROR" />. Vyčištění se nezdařilo, je možné, že ho budete muset provést ručně.</translation>
 <translation id="2729327310379176711">Chrome hledá nové způsoby, jak snížit míru sledování a chránit vás na internetu ještě lépe. Chrome také <ph name="ESTIMATE_INTERESTS_LINK" /> a umožňuje vám je spravovat. Navštívené weby pak mohou Chrome požádat o sdílení vašich zájmů, aby vám mohly zobrazovat reklamy.</translation>
 <translation id="2729577602370119849">Snadný přístup a správa tiskáren</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Když je Přesnost určování polohy zapnutá, informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi a vysílače mobilní sítě, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop, se používají k odhadu přesnější polohy zařízení, na základě které aplikace pro Android a služby poskytují funkce založené na poloze. Google proto pravidelně shromažďuje informace o senzorech zařízení a bezdrátových signálech v okolí a přispívá jimi do crowdsourcované databáze umístění zdrojů bezdrátových signálů.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Informace shromážděné z tohoto zařízení používá Google ke zlepšování přesnosti polohy a služeb založených na poloze a k obecnému zlepšování, poskytování a správě služeb Google. Tyto informace zpracováváme na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů. Tyto informace se nepoužívají k identifikaci žádných osob.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Přesnost polohy můžete kdykoli vypnout. Můžete to provést v nastavení polohy tohoto zařízení v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze &gt; Pokročilé geografické nastavení. Když je Přesnost určování polohy vypnutá, nebudou se pro ni shromažďovat žádná data. K určení polohy zařízení pro aplikace pro Android a služby se používá pouze IP adresa (pokud je k dispozici), což může ovlivnit dostupnost a přesnost polohy pro aplikace a služby pro Android, jako jsou Mapy Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Zálohování aplikací a souborů systému Linux</translation>
 <translation id="2730596696987224099">Vybrat vlastní</translation>
 <translation id="2730647855013151888">Zahrnout všechny osobní údaje</translation>
@@ -3240,6 +3247,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="338323348408199233">Blokovat provoz bez VPN</translation>
 <translation id="3384362484379805487">Jazykové soubory jsou sdíleny mezi uživateli za účelem úspory místa na disku.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
+<translation id="3385172418915595177">Přesnost určování polohy poskytuje přesnější polohu pro aplikace a služby. Za tímto účelem Google pravidelně zpracovává informace o senzorech a bezdrátových signálech z vašeho zařízení, aby prostřednictvím crowdsourcingu určil umístění zdrojů bezdrátových signálů v okolí. Tento proces vás nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a obecné vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.</translation>
 <translation id="338583716107319301">Oddělovač</translation>
 <translation id="3385916046075724800">Skupiny karet se teď automaticky ukládají.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3941,7 +3949,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3873915545594852654">Došlo k problému s ARC++.</translation>
 <translation id="3874164307099183178">Zapnout Asistenta Google</translation>
 <translation id="3875815154304214043">Aplikace <ph name="APP_NAME" /> se bude otevírat na nové kartě prohlížeče. Podporované odkazy se také budou otevírat v prohlížeči. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Vždy se ptát</translation>
 <translation id="3877075909000773256">Nastavení sdílení nablízko pro zařízení uživatele <ph name="USER_EMAIL" />. Sdílení bude probíhat pod e‑mailem <ph name="USER_NAME" />.</translation>
 <translation id="3878445208930547646">Kopírování z tohoto webu není povoleno</translation>
 <translation id="3879748587602334249">Správce stahování</translation>
@@ -4044,6 +4051,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3950841222883198950">Hlasové zadávání</translation>
 <translation id="3953834000574892725">Mé účty</translation>
 <translation id="3954354850384043518">Probíhá</translation>
+<translation id="3954468641195530330">Aplikace nemají povoleno používat váš mikrofon</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz)</translation>
 <translation id="3954953195017194676">Nemáte žádné nedávno zaznamenané protokoly událostí WebRTC.</translation>
 <translation id="3955321697524543127">Nepovolovat webům připojení k zařízením USB</translation>
@@ -4102,6 +4110,10 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3988124842897276887">Tato karta je připojena k zařízení USB</translation>
 <translation id="3988996860813292272">Vyberte časové pásmo</translation>
 <translation id="3991055816270226534">Spravujte soubory cookie třetích stran a ochrany před sledováním</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Když je Přesnost určování polohy zapnutá, informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi a vysílače mobilní sítě, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop, se používají k odhadu přesnější polohy zařízení, na základě které aplikace pro Android a služby poskytují funkce založené na poloze. Google proto pravidelně shromažďuje informace o senzorech zařízení a bezdrátových signálech v okolí a přispívá jimi do crowdsourcované databáze umístění zdrojů bezdrátových signálů.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Informace shromážděné z tohoto zařízení používá Google ke zlepšování přesnosti polohy a služeb založených na poloze a k obecnému zlepšování, poskytování a správě služeb Google. Tyto informace zpracováváme na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů. Tyto informace se nepoužívají k identifikaci žádných osob.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Přesnost polohy můžete kdykoli vypnout. Můžete to provést v nastavení polohy tohoto zařízení v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze &gt; Pokročilé geografické nastavení. Když je Přesnost určování polohy vypnutá, nebudou se pro ni shromažďovat žádná data. K určení polohy zařízení pro aplikace pro Android a služby se používá pouze IP adresa (pokud je k dispozici), což může ovlivnit dostupnost a přesnost polohy pro aplikace a služby pro Android, jako jsou Mapy Google.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Další informace o Přesnosti určování polohy<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importované</translation>
 <translation id="3992008114154328194">Stahování souboru <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Zálohování dat</translation>
@@ -4256,6 +4268,10 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4110485659976215879">Obnovit upozornění</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Heslo souboru</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Když je Přesnost určování polohy zapnutá, informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi a vysílače mobilní sítě, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop, se používají k odhadu přesnější polohy zařízení, na základě které aplikace pro Android a služby poskytují funkce založené na poloze. Google proto pravidelně shromažďuje informace o senzorech zařízení a bezdrátové signály ve vašem okolí a přispívá jimi do crowdsourcované databáze umístění zdrojů bezdrátových signálů.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google vás v rámci tohoto procesu nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a obecné vylepšování, poskytování a správa služeb Google. Tyto informace zpracováváme na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Přesnost polohy můžete kdykoli vypnout. Můžete to provést v nastavení polohy zařízení v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze &gt; Pokročilé geografické nastavení. Když je Přesnost určování polohy vypnutá, nebudou se pro ni shromažďovat žádná data. K určení polohy zařízení pro aplikace pro Android a služby se používá pouze IP adresa (pokud je k dispozici), což může ovlivnit dostupnost a přesnost polohy v aplikacích pro Android a službách, jako jsou Mapy Google.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Další informace o Přesnosti určování polohy<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Zobrazují se vám navrhované soubory, abyste se mohli snadno vrátit k nedávné aktivitě na Disku Google.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5031,6 +5047,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4716483597559580346">Kvůli lepšímu zabezpečení zařízení vyčistěte pomocí funkce Powerwash</translation>
 <translation id="4716715661140829720">Nedostatek místa v úložišti</translation>
 <translation id="471759229191973607">Změnit motiv</translation>
+<translation id="4719276504493791870">Aplikace nemají povoleno používat vaši polohu</translation>
 <translation id="4722735765955348426">Heslo uživatele <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sdílí vaši obrazovku.</translation>
 <translation id="4722989931633062466">Zákaz zobrazovat výzvy třetích stran k přihlášení</translation>
@@ -5244,6 +5261,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4879491255372875719">Automatické (výchozí)</translation>
 <translation id="4880315242806573837">Aktualizace zabezpečení brzy skončí. Upgradujte na nový Chromebook.</translation>
 <translation id="4880827082731008257">Hledat v historii</translation>
+<translation id="4881632956374597321">Aplikace a weby s oprávněním pro přístup k poloze a systémové služby můžou používat vaši polohu. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Příště nepřipomínat</translation>
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="4882312758060467256">Má přístup k tomuto webu</translation>
@@ -5640,6 +5658,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5186788525428341874">Tento přístupový klíč můžete použít k rychlejšímu přihlašování na svých zařízeních. Uloží se do Správce hesel Google pro účet <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Nainstalovat stránku jako aplikaci…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Používat polohu. Povolit aplikacím, webům a službám pro Chrome OS a Android s oprávněním pro přístup k poloze používat polohu vašeho zařízení. Přesnost určování polohy poskytuje aplikacím pro Android a službám přesnější polohu. Za tímto účelem Google pravidelně zpracovává informace o senzorech a bezdrátových signálech z vašeho zařízení, aby prostřednictvím crowdsourcingu určil umístění zdrojů bezdrátových signálů v okolí. Tento proces vás nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů. <ph name="BEGIN_LINK1" />Další informace o používání polohy<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">Používá <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktivovat port</translation>
 <translation id="5190959794678983197">Žádný mikrofon</translation>
@@ -5685,6 +5704,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5225324770654022472">Zobrazit zástupce aplikací</translation>
 <translation id="52254442782792731">Aktuální nastavení viditelnosti ještě není zadáno</translation>
 <translation id="5225463052809312700">Zapnout kameru</translation>
+<translation id="5226731562812684363">Weby nemají povoleno používat vaši kameru</translation>
 <translation id="5227679487546032910">Výchozí šedozelený avatar</translation>
 <translation id="5228245824943774148">Připojená zařízení: <ph name="NUM_DEVICES_CONNECTED" /></translation>
 <translation id="5228579091201413441">Aktivace synchronizace</translation>
@@ -6180,6 +6200,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5590418976913374224">Přehrát zvuk při spuštění zařízení</translation>
 <translation id="5591465468509111843">Velmi široké</translation>
 <translation id="5592595402373377407">Zatím není k dispozici dostatek dat.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon je v nastavení systému MacOS vypnutý</translation>
 <translation id="5594899180331219722">Vybrat soubor</translation>
 <translation id="5595307023264033512">Celkové úložiště využité weby: <ph name="TOTAL_USAGE" /></translation>
@@ -6556,6 +6577,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5885314688092915589">Tento profil bude spravovat vaše organizace</translation>
 <translation id="5885470467814103868">Spustit skenování</translation>
 <translation id="5885631909150054232">Kopírovat token</translation>
+<translation id="5886000783338788034">Poloha je v Nastavení systému ChromeOS vypnutá</translation>
 <translation id="5886009770935151472">Prst 1</translation>
 <translation id="5886112770923972514">Připojte se a rychle nastavte zařízení s Rychlým párováním v okolí</translation>
 <translation id="5886384907280980632">Vypnout</translation>
@@ -7087,6 +7109,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="628352644014831790">4 sekundy</translation>
 <translation id="6285120108426285413">Soubor <ph name="FILE_NAME" /> se běžně nestahuje a může být nebezpečný.</translation>
 <translation id="6285770818046456882">Zařízení, které s vámi sdílí obsah, přenos zrušilo</translation>
+<translation id="628699625505156622">Používat polohu. Povolit aplikacím, webům a službám pro Chrome OS a Android s oprávněním pro přístup k poloze používat polohu tohoto zařízení. Přesnost určování polohy poskytuje aplikacím pro Android a službám přesnější polohu. Google toho dosahuje tím, že ze zařízení pravidelně přijímá informace o senzorech a bezdrátových signálech a metodou crowdsourcování určuje polohy bezdrátových signálů v okolí. Tento proces nikoho nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů. <ph name="BEGIN_LINK1" />Další informace o používání polohy<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Spravujte své tiskárny v nastavení tiskáren</translation>
 <translation id="6287828400772161253">Telefon s Androidem (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">V okolí nejsou dostupná žádná zařízení sdílející obsah. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -7614,6 +7637,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6703613667804166784">Tento soubor může poškodit vaše osobní účty a účty sociálních sítí, včetně účtu <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Spouštět diagnostické testy systému ChromeOS</translation>
 <translation id="6707389671160270963">Klientský certifikát SSL</translation>
+<translation id="6707671917294473995">Weby nemají povoleno používat vaši kameru</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> a 1 další karta}few{<ph name="PAGE_TITLE" /> a # další karty}many{<ph name="PAGE_TITLE" /> a # další karty}other{<ph name="PAGE_TITLE" /> a # dalších karet}}</translation>
 <translation id="6709133671862442373">Zprávy</translation>
 <translation id="6709357832553498500">Připojit pomocí rozšíření <ph name="EXTENSIONNAME" /></translation>
@@ -7623,6 +7647,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6713233729292711163">Přidat pracovní profil</translation>
 <translation id="6713441551032149301">Podržením spouštěcí klávesy můžete přepínat mezi funkčními klávesami a horní řadou systémových kláves</translation>
 <translation id="6713668088933662563">U těchto jazyků překlad nikdy nenabízet</translation>
+<translation id="6715735940363172819">Weby nemají povoleno používat váš mikrofon</translation>
 <translation id="6715803357256707211">Při instalaci aplikace pro Linux došlo k chybě. Podrobnosti zobrazíte kliknutím na oznámení.</translation>
 <translation id="6716798148881908873">Připojení k síti bylo ztraceno. Zkontrolujte připojení k síti nebo zkuste použít jinou síť Wi-Fi.</translation>
 <translation id="6718849325281682232">Barvy motivů Chrome byly aktualizovány, aby lépe fungovaly pro všechny – ať používají tmavý, nebo světlý režim</translation>
@@ -8647,6 +8672,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7489761397368794366">Zavolat ze zařízení</translation>
 <translation id="749028671485790643">Osoba <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Zkontrolovat zbývající hesla</translation>
+<translation id="7490938136316476492">Určování polohy je vypnuté. Zařízení ChromeOS nemá přístup k vaší poloze. Aplikace a weby však přesto můžou dokázat zjistit vaši obecnou oblast podle IP adresy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">karta</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{Jeden soubor cookie}few{{NUM_COOKIES} soubory cookie}many{{NUM_COOKIES} souboru cookie}other{{NUM_COOKIES} soubory cookie}}</translation>
 <translation id="7493386493263658176">Rozšíření <ph name="EXTENSION_NAME" /> může shromažďovat veškerý text, který napíšete, včetně osobních údajů, jako jsou hesla nebo čísla platebních karet. Chcete toto rozšíření použít?</translation>
@@ -8847,7 +8873,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7648023614017258011">Chrome ověřuje instalační balíček</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7650178491875594325">Obnovit místní data</translation>
-<translation id="7650511557061837441">Rozšíření <ph name="TRIGGERING_EXTENSION_NAME" /> by chtělo odebrat rozšíření <ph name="EXTENSION_NAME" />.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Je nastaven 1 otisk prstu}few{Jsou nastaveny {COUNT} otisky prstů}many{Je nastaveno {COUNT} otisku prstu}other{Je nastaveno {COUNT} otisků prstů}}</translation>
 <translation id="7650677314924139716">Využívání dat je aktuálně nastaveno na možnost Pouze Wi-Fi</translation>
 <translation id="7650920359639954963">Nepovoleno: <ph name="REASON" /></translation>
@@ -9008,6 +9033,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7758450972308449809">Úprava ohraničení zobrazení</translation>
 <translation id="7758884017823246335">Přidat vyhledávání na webu</translation>
 <translation id="7759809451544302770">Volitelné</translation>
+<translation id="7760176388948986635">Povolit aplikacím, webům a službám pro Chrome OS a Android s oprávněním pro přístup k poloze používat polohu tohoto zařízení. Přesnost určování polohy poskytuje aplikacím pro Android a službám přesnější polohu. Google toho dosahuje tím, že ze zařízení pravidelně přijímá informace o senzorech a bezdrátových signálech a metodou crowdsourcování určuje polohy bezdrátových signálů v okolí. Tento proces nikoho nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.</translation>
 <translation id="7762024824096060040">Tento účet nelze použít</translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9127,6 +9153,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7839051173341654115">Zobrazit/zálohovat média</translation>
 <translation id="7839192898639727867">ID klíče subjektu certifikátu</translation>
 <translation id="7839696104613959439">Vykreslit výběr sítě</translation>
+<translation id="7840222916565569061">Aplikace nemají povoleno používat vaši kameru</translation>
 <translation id="7842062217214609161">Žádná zkratka</translation>
 <translation id="7842692330619197998">Pokud potřebujete vytvořit nový účet, přejděte na stránku g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Odinstalovat Linux</translation>
@@ -10139,6 +10166,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8584843865238667486">Zařízení HID s využitím <ph name="USAGE" /> ze stránky využití <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Odstranit Crostini</translation>
 <translation id="8585841788766257444">Weby uvedené níže se řídí vlastním nastavením, nikoli výchozím</translation>
+<translation id="8586421813321819377">Povolit aplikacím, webům a službám pro Chrome OS a Android s oprávněním pro přístup k poloze používat polohu vašeho zařízení. Přesnost určování polohy poskytuje aplikacím pro Android a službám přesnější polohu. Za tímto účelem Google pravidelně zpracovává informace o senzorech a bezdrátových signálech z vašeho zařízení, aby prostřednictvím crowdsourcingu určil umístění zdrojů bezdrátových signálů v okolí. Tento proces vás nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.</translation>
 <translation id="8587660243683137365">Nainstalovat tuto stránku jako aplikaci</translation>
 <translation id="8588866096426746242">Zobrazit statistiky profilu</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR obsah odesílaný do náhlavní soupravy</translation>
@@ -10359,6 +10387,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8736288397686080465">Tento web byl na pozadí aktualizován.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Vyberte jazyk, do kterého chcete stránku přeložit</translation>
+<translation id="8737966899544698733">Přesnost určování polohy (pouze Android)</translation>
 <translation id="8738418093147087440">Vyhledat podle zemí, jazyka nebo názvů metod zadávání</translation>
 <translation id="8740086188450289493">Použít heslo k účtu Google</translation>
 <translation id="8740247629089392745">Tento Chromebook můžete předat uživateli <ph name="SUPERVISED_USER_NAME" />. Nastavení je skoro hotové. Pak bude čas prozkoumat obsah.</translation>
@@ -10432,12 +10461,16 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8793390639824829328">Weby tuto funkci používají k posouvání a přibližování sdílených karet</translation>
 <translation id="879413103056696865">Při zapnutém hotspotu váš telefon <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nové okno</translation>
+<translation id="8796907593900732741">Vaši polohu můžou používat pouze systémové služby. Aplikace a weby však přesto můžou dokázat zjistit vaši obecnou oblast podle IP adresy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">&amp;Přizpůsobit Chrome</translation>
 <translation id="8797459392481275117">Tento web nikdy nepřekládat</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8803953437405899238">Otevírejte novou kartu jedním kliknutím</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Když je Přesnost určování polohy zapnutá, informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi a vysílače mobilní sítě, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop, se používají k odhadu přesnější polohy zařízení, na základě které aplikace pro Android a služby poskytují funkce založené na poloze. Google proto pravidelně shromažďuje informace o senzorech zařízení a bezdrátové signály ve vašem okolí a přispívá jimi do crowdsourcované databáze umístění zdrojů bezdrátových signálů.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google vás v rámci tohoto procesu nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a obecné vylepšování, poskytování a správa služeb Google. Tyto informace zpracováváme na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Přesnost polohy můžete kdykoli vypnout. Můžete to provést v nastavení polohy zařízení v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze &gt; Pokročilé geografické nastavení. Když je Přesnost určování polohy vypnutá, nebudou se pro ni shromažďovat žádná data. K určení polohy zařízení pro aplikace pro Android a služby se používá pouze IP adresa (pokud je k dispozici), což může ovlivnit dostupnost a přesnost polohy v aplikacích pro Android a službách, jako jsou Mapy Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Otevře se v</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Přesunout kartu do jiného okna}few{Přesunout karty do jiného okna}many{Přesunout karty do jiného okna}other{Přesunout karty do jiného okna}}</translation>
 <translation id="8805140816472474147">Chcete-li zahájit synchronizaci, potvrďte nastavení synchronizace.</translation>

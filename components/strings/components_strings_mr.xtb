@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">तुमची बॅटरी <ph name="REQUIRED_BATTERY_PRECENT" />% पेक्षा जास्त चार्ज असणे आवश्यक आहे</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2462932596748424101">सोशल नेटवर्क</translation>
-<translation id="2463739503403862330">भरून टाका</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
 <translation id="2465914000209955735">तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करा</translation>
 <translation id="2466004615675155314">वेबवरील माहिती दाखवा</translation>
@@ -2484,12 +2483,10 @@
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784606427469807560">आपल्या कार्डची पुष्टी करताना समस्या आली. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5785756445106461925">पुढे, या पृष्ठात सुरक्षित नसलेली इतर संसाधने समाविष्ट आहेत. ही संसाधने संक्रमणात असताना इतरांद्वारे पाहिली जाऊ शकतात आणि पृष्ठाचे स्वरूप बदलण्यासाठी आक्रमणकर्त्याद्वारे सुधारित केली जाऊ शकतात.</translation>
-<translation id="5786044859038896871">तुम्ही तुमची कार्ड माहिती भरू इच्छित आहात?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">या डिव्हाइसवरून ही पेमेंट पद्धत हटवली जाईल</translation>
 <translation id="5800727402210090597">मोबाइल फोन दुरुस्ती आणि सेवा</translation>
 <translation id="580241730938216256">अपडेट सुरू करा</translation>
-<translation id="5803412860119678065">तुम्ही तुमचे <ph name="CARD_DETAIL" /> भरू इच्छित आहात?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5806871454498484178">स्क्रोल आणि झूम करणे ब्लॉक केले आहे</translation>
 <translation id="5808435672482059465">तुमचा Chrome इतिहास पहा</translation>
@@ -2681,6 +2678,7 @@
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6167577165590485365">शोधण्याचा शेवटचा केलेला प्रयत्न:</translation>
 <translation id="617256461084925519">हे तुम्हीच आहात याची पडताळणी करण्याचा Google Chrome प्रयत्न करत आहे, जेणेकरून त्याला तुमची पेमेंट माहिती भरता येईल.</translation>
+<translation id="6173208311907792313">Windows Hello वापरून तुमची खरेदी पूर्ण करा</translation>
 <translation id="6176387967264100435">ही किंमत जास्त आहे</translation>
 <translation id="6177128806592000436">या साइटवरील तुमचे कनेक्शन सुरक्षित नाही</translation>
 <translation id="6177531123306197852">एन्व्हलप सी२</translation>
@@ -3838,6 +3836,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> चा ॲक्सेस नाकारला</translation>
 <translation id="833262891116910667">हायलाइट</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />मधील पेज भाषांतरीत केले जाणार नाही</translation>
+<translation id="8339275256517065202">टच आयडी वापरून तुमची खरेदी पूर्ण करा</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">व्हर्च्युअल कार्डची नोंदणी पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
@@ -4031,6 +4030,7 @@
 <translation id="8726549941689275341">पेजचा आकार:</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>
+<translation id="8731917264694569036">तुमचे डिव्हाइस वापरून तुमची खरेदी पूर्ण करा</translation>
 <translation id="8733345475331865475">वाहन विमा</translation>
 <translation id="8733764070897080460">तुम्हाला साइटसोबत शेअर करायचे नसलेले विषय तुम्ही ब्लॉक करू शकता. Chrome तुमचे चार आठवड्यांपेक्षा जुने विषयदेखील ऑटो-डिलीट करते. अधिक जाणून घ्या</translation>
 <translation id="8734529307927223492">तुमचे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
@@ -4224,6 +4224,7 @@
 <translation id="9116548361133462832">Chrome मधील जाहिरातींबद्दल अधिक माहिती</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी आणि शोध पुन्हा सुरू करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="9119042192571987207">अपलोड केला</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> ला हे तुम्हीच असल्याची पडताळणी करण्याची आहे</translation>
 <translation id="912327514020027767">स्कर्ट</translation>
 <translation id="912414390325846156">तुम्ही पूर्वी या साइटसाठी अनुमती देऊ नका निवडले आहे</translation>
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>

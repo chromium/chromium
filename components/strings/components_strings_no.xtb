@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Rull gjennom og zoom inn på innholdet på den delte fanen</translation>
 <translation id="1089439967362294234">Endre passord</translation>
 <translation id="1090629319939036170">VR-meny</translation>
+<translation id="1091779689406092804">skjermdumper</translation>
 <translation id="1094777233105318927">Informasjon om nettleser, OS, enhet, installert programvare og filer.</translation>
 <translation id="1096545575934602868">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Oppføringer utover dette blir forkastet.</translation>
 <translation id="1097803577928227769">Regionale parker og hager</translation>
@@ -472,6 +473,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1840009953725035797">Hjemmekinosystemer</translation>
 <translation id="1842969606798536927">Betal</translation>
 <translation id="1846432862466000825">Plast (arkiv)</translation>
+<translation id="1848640291751752317">nedlastinger</translation>
 <translation id="1848982255014129637">Foto (høyglans)</translation>
 <translation id="1853392626017747777">Registrering med virtuelt kort er lukket</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
@@ -754,6 +756,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2366689192918515749">Kjøtt og sjømat</translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="23703388716193220">Golfutstyr</translation>
+<translation id="2370368710215137370">Opplasting av filer</translation>
 <translation id="2374629208601905275">På grunn av en lov som gjelder i regionen din, ber vi deg om å velge en standardsøkemotor for Chrome. Disse søkemotorene er populære i regionen din og vises i tilfeldig rekkefølge.</translation>
 <translation id="2377241607395428273">Programvare for tegning og animasjon</translation>
 <translation id="2378084239755710604">Lagringskortet er lukket.</translation>
@@ -795,7 +798,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2456755709261364512">Batteriet må være ladet til mer enn <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2462932596748424101">Sosiale nettverk</translation>
-<translation id="2463739503403862330">Fyll ut</translation>
 <translation id="2465688316154986572">Stift</translation>
 <translation id="2465914000209955735">Administrer filer du har lastet ned i Chrome</translation>
 <translation id="2466004615675155314">Vis informasjon fra nettet</translation>
@@ -1423,6 +1425,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3682094733650754138">Alternativet for utfylling av adresse er valgt</translation>
 <translation id="3687920599421452763">Varebiler og minivaner</translation>
 <translation id="3693327506115126094">Velg hvordan du vil bekrefte at det er deg</translation>
+<translation id="3698353241727597930">Administratoren din har konfigurert lagring av <ph name="FILES" /> i den bedriftsadministrerte <ph name="CLOUD_STORAGE" />-lagringen din. Disse filene kan bli overvåket, kontrollert og oppbevart når du sletter dem.</translation>
 <translation id="3698629142018988477">Knappen «Opprett nettsted» – aktiver for å opprette et nytt nettsted i Google Nettsteder raskt</translation>
 <translation id="3701325639446035885">Salg av arrangementsbilletter</translation>
 <translation id="3701427423622901115">Tilbakestillingen er godtatt.</translation>
@@ -1498,6 +1501,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3826050100957962900">Tredjepartspålogging</translation>
 <translation id="3827112369919217609">Absolutt</translation>
 <translation id="3828924085048779000">Tom passordfrase er ikke tillatt.</translation>
+<translation id="3830139096297532361">Denne PDF-en er ikke tilgjengelig. Kunne ikke laste ned filer for tekstutdrag. Prøv igjen senere.</translation>
 <translation id="3830470485672984938">Bruk en annen passnøkkel</translation>
 <translation id="3831065134033923230">Sjekk de lagrede passordene dine</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> har installert utvidelser for tilleggsfunksjoner. Utvidelsene har tilgang til noen av dataene dine.</translation>
@@ -1672,6 +1676,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4202554117186904723">Femte rull</translation>
 <translation id="4203769790323223880">Kamera er ikke tillatt</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Sjekk brannmur- og antiviruskonfigurasjonen<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Disk</translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4210602799576081649">Bekreftelseskoden er utløpt – be om en ny kode</translation>
 <translation id="421066178035138955">Bruk virtuell virkelighet-enheter og -data</translation>
@@ -2485,12 +2490,10 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5784606427469807560">Det oppsto et problem under forsøket på å bekrefte kortet ditt. Kontroller Internett-tilkoblingen din, og prøv igjen.</translation>
 <translation id="5785756445106461925">Denne siden inneholder i tillegg andre ressurser som ikke er sikre. Disse ressursene er synlige for andre mens de sendes frem og tilbake, og eventuelle angripere kan modifisere dem for å endre på utseendet til siden.</translation>
-<translation id="5786044859038896871">Vil du fylle ut kortinformasjonen?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Denne betalingsmåten blir slettet fra denne enheten</translation>
 <translation id="5800727402210090597">Mobilreparasjon og -tjenester</translation>
 <translation id="580241730938216256">Start oppdateringen</translation>
-<translation id="5803412860119678065">Vil du fylle ut informasjonen knyttet til <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5806871454498484178">Rulling og zooming er blokkert</translation>
 <translation id="5808435672482059465">Se Chrome-loggen din</translation>
@@ -2734,6 +2737,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6270066318535733958">Båtsport</translation>
 <translation id="6272088941196661550">Fortsett reisen for å se relevant aktivitet i Chrome-loggen</translation>
 <translation id="6272383483618007430">Google Oppdatering</translation>
+<translation id="6278015583149890680">Google Disk og OneDrive</translation>
 <translation id="6280223929691119688">Kan ikke levere til denne adressen. Velg en annen adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284449872909111707">Tekstmeldinger og chat</translation>
@@ -3172,6 +3176,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7119063404975271297">TV-dramaer</translation>
 <translation id="7119371694555167493">Kopieringen ble tidsavbrutt</translation>
 <translation id="7119414471315195487">Lukk andre faner eller programmer</translation>
+<translation id="7120588595737538743">nedlastinger og skjermdumper</translation>
 <translation id="7124354851782353862">Skriv inn verifiseringskoden</translation>
 <translation id="7129409597930077180">Kan ikke sende til denne adressen. Velg en annen adresse.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3370,6 +3375,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7483863401933039889"><ph name="CHROME_TIP" /> – trykk på Tab og deretter på Enter for å lukke Chrome-tipset.</translation>
 <translation id="7485085230273446323">Forretning og industri</translation>
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Sjampo og balsam</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="749865518782565832">Rørlegging</translation>

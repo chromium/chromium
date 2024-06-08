@@ -47,7 +47,6 @@
 <translation id="1640672724030957280">下載中…</translation>
 <translation id="1662146548738125461">關於 ChromeOS Flex</translation>
 <translation id="1674870198290878346">在 Chrome 無痕視窗中開啟連結(&amp;G)</translation>
-<translation id="1679594062619799116">登入帳戶後，就可以在 Chrome 中使用 Google 帳戶儲存的密碼</translation>
 <translation id="1682634494516646069">Google Chrome 無法讀取及寫入資料目錄：<ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome 瀏覽器開啟網頁和執行應用程式的速度奇快無比！除了執行速度迅速、穩定且容易使用之外，內建防護機制還可讓你安心瀏覽網頁，無需擔心受到網路釣魚與惡意軟體的威脅。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 將在 1 小時後重新啟動}other{Chrome 將在 # 小時後重新啟動}}</translation>
@@ -317,7 +316,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設網路瀏覽器</translation>
 <translation id="5727531838415286053">如果 Chrome 隨機讓你加入試用行列，你的瀏覽記錄會影響你所看到的廣告，以及系統推測下列的興趣喜好。為保護個人隱私，Chrome 每個月都會刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="5736850870166430177">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能</translation>
-<translation id="575458254678141039">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶登入 Chrome</translation>
 <translation id="5756509061973259733">這部裝置已有與此帳戶相關聯的 Chrome 設定檔</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary 版</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
@@ -501,7 +499,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8342675569599923794">這個檔案並不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chrome 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
-<translation id="8350273347136316769">自動登入 Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />我們如何使用這項資料：<ph name="END_BOLD" />Chrome 可以推測你的興趣喜好。稍後，你造訪的網站可以要求 Chrome 查看你的興趣喜好，以便向你放送個人化廣告。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
@@ -556,7 +553,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖某些檔案的原因</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>
-<translation id="9127728564687112483">不要登入 Chrome</translation>
 <translation id="9138603949443464873">如要套用變更，請重新啟動 Chrome</translation>
 <translation id="9195993889682885387">Chrome 可以根據過去幾週的瀏覽記錄，推測你的興趣喜好。這項資訊會儲存在你的裝置上。</translation>
 <translation id="919706545465235479">如要開始同步處理，請更新 Chrome</translation>

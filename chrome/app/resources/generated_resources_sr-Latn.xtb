@@ -3955,7 +3955,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3874164307099183178">Uključite Google pomoćnik</translation>
 <translation id="3875815154304214043">Aplikacija <ph name="APP_NAME" /> je podešena da se otvara na novoj kartici pregledača. Podržani linkovi takođe će se otvarati u pregledaču. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Promenjena veličina prozora pri vrhu</translation>
-<translation id="3876833929577368454">Pitaj me svaki put</translation>
 <translation id="3877075909000773256">Podešavanja deljenja u blizini za uređaj korisnika <ph name="USER_NAME" />, koji deli pomoću naloga <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Kopiranje sa ovog sajta nije dozvoljeno</translation>
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
@@ -6209,6 +6208,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5590418976913374224">Pusti zvuk pri pokretanju uređaja</translation>
 <translation id="5591465468509111843">Veoma široko</translation>
 <translation id="5592595402373377407">Još uvek nije dostupna dovoljna količina podataka.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon je isključen u podešavanjima Mac sistema</translation>
 <translation id="5594899180331219722">Izaberi fajl</translation>
 <translation id="5595307023264033512">Ukupan memorijski prostor koji koriste sajtovi: <ph name="TOTAL_USAGE" /></translation>
@@ -8890,7 +8890,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7648023614017258011">Chrome verifikuje paket za instalaciju</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7650178491875594325">Vratite lokalne podatke</translation>
-<translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />“ želi da ukloni „<ph name="EXTENSION_NAME" />“.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Podesili ste 1 otisak prsta}one{Podesili ste {COUNT} otisak prsta}few{Podesili ste {COUNT} otiska prsta}other{Podesili ste {COUNT} otisaka prsta}}</translation>
 <translation id="7650677314924139716">Aktuelno podešavanje potrošnje podataka je „Samo WiFi“</translation>
 <translation id="7650920359639954963">Nije omogućeno: <ph name="REASON" /></translation>

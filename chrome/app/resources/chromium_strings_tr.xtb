@@ -125,7 +125,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="3155163173539279776">Chromium'u Yeniden Başlat</translation>
 <translation id="3179665906251668410">Bağlantıyı Chromium &amp;Gizli Penceresinde Aç</translation>
 <translation id="3185330573522821672">Yeni Chromium profilinizi özelleştirin</translation>
-<translation id="318879170965183683">Oturumunuz açıkken Chromium'da Google Hesabınızdaki şifrelerinizi kullanabilirsiniz.</translation>
 <translation id="3190315855212034486">Hata! Chromium kilitlendi. Yeniden başlatılsın mı?</translation>
 <translation id="3224847870593914902">Google Hesabınızı Chromium'dan kaldırmak için Ayarlar sayfasında Chromium oturumunu kapatın</translation>
 <translation id="3258596308407688501">Chromium veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -252,7 +251,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5386450000063123300">Chromium güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium'da oturum açmaya izin verin</translation>
 <translation id="5398878173008909840">Chromium'un yeni bir sürümü çıktı.</translation>
-<translation id="5400757303519321734"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chromium'da oturum açabilirsiniz</translation>
 <translation id="5405650547142096840">Chromium'dan kaldır</translation>
 <translation id="5427571867875391349">Chromium'u varsayılan tarayıcım olarak ayarla</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
@@ -377,7 +375,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7045244423563602563">Chromium'u Kendinize Uyarlayın</translation>
 <translation id="705851970750939768">Chromium'u güncelle</translation>
 <translation id="7067091210845072982">Bir resmin işe yarar bir açıklaması yoksa, Chromium sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
-<translation id="7100062358172078145">Chromium'da oturum açmak istemiyorum</translation>
 <translation id="7141270731789036260">Chrome for Testing'i özelleştir</translation>
 <translation id="7159538860914681762">Şifreler ve diğer öğelerinizi tüm cihazlarınızda kaydedip kullanmak için Chromium'da oturum açın</translation>
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chromium verileri kuruluşunuz tarafından silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.</translation>
@@ -499,7 +496,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="9158494823179993217">Sistem yöneticiniz, Chromium'u, <ph name="TARGET_URL_HOSTNAME" /> sitesini alternatif bir tarayıcıda açacak şekilde yapılandırmış.</translation>
 <translation id="9185526690718004400">&amp;Chromium'u güncellemek için yeniden başlat</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Chromium'da otomatik olarak oturum açmak istiyorum</translation>
 <translation id="924957577793602335">Chromium'u kendinize uyarlayın</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="942598560705308788">Chromium tarafından yönetilen sertifikalar</translation>

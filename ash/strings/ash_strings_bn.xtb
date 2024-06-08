@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1240638468526743569">একটি অ্যাপ</translation>
+<translation id="1242198791279543032">বিজ্ঞপ্তি মিউট করা আছে</translation>
 <translation id="1242883863226959074">ডিভাইস</translation>
 <translation id="1245644940275736236">Assistant-এ যান</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
@@ -1663,7 +1664,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> -এ পুরনো রেজোলিউশানে ফেরানো হচ্ছে</translation>
-<translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7181691792034457084">হ্যালো। <ph name="PRODUCT_NAME" /> হল একটু আলাদা।</translation>
 <translation id="7188494361780961876">স্ক্রিনের উপরে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>

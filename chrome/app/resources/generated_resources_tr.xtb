@@ -3945,7 +3945,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3873915545594852654">ARC++ ile ilgili bir sorun oluştu.</translation>
 <translation id="3874164307099183178">Google Asistan'ı aç</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />, yeni bir tarayıcı sekmesinde açılacak şekilde ayarlandı. Desteklenen bağlantılar da tarayıcıda açılacak. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Her defasında bana sor</translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> hesabından yaptığı paylaşımlar için <ph name="USER_NAME" /> kullanıcısına ait cihazın Yakındakilerle Paylaş ayarları.</translation>
 <translation id="3878445208930547646">Bu siteden kopyalamaya izin verilmiyor</translation>
 <translation id="3879748587602334249">İndirme yöneticisi</translation>
@@ -6198,6 +6197,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5590418976913374224">Cihaz başlatılırken ses çal</translation>
 <translation id="5591465468509111843">Çok geniş</translation>
 <translation id="5592595402373377407">Henüz yeterli veri yok.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon, Mac Sistem Ayarları'nda kapatıldı</translation>
 <translation id="5594899180331219722">Dosyayı seç</translation>
 <translation id="5595307023264033512">Siteler tarafından kullanılan toplam depolama alanı: <ph name="TOTAL_USAGE" /></translation>
@@ -8870,7 +8870,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7648023614017258011">Chrome, yükleme paketini doğruluyor</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7650178491875594325">Yerel verileri geri yükleyin</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />", "<ph name="EXTENSION_NAME" />" uzantısını kaldırmak istiyor.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 parmak izi ayarlandı}other{{COUNT} parmak izi ayarlandı}}</translation>
 <translation id="7650677314924139716">Mevcut veri kullanımı, yalnızca kablosuz ağ olarak ayarlı</translation>
 <translation id="7650920359639954963">Etkin değil: <ph name="REASON" /></translation>

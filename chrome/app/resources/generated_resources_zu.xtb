@@ -3963,7 +3963,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="3873915545594852654">Inkinga nge-ARC++ ivelile.</translation>
 <translation id="3874164307099183178">Vula Umsizi we-Google</translation>
 <translation id="3875815154304214043">I-<ph name="APP_NAME" /> isethwe ukuvula kuthebhu ye-browser entsha, amalinki asekelwyo nawo azovulwa ku-browser. <ph name="BEGIN_LINK_LEARN_MORE" />Funda kabanzi<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Ngibuze njalo</translation>
 <translation id="3877075909000773256">Amasethingi Okuthumela Eduze wedivayisi ka-<ph name="USER_NAME" />, abiwa ngaphansi kwe-akhawunti ka-<ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Ukukopisha kule sayithi akuvunyelwe</translation>
 <translation id="3879748587602334249">Isiphathi zokulayisha</translation>
@@ -6216,6 +6215,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="5590418976913374224">Dlala umsindo ekuqalisweni kwedivayisi</translation>
 <translation id="5591465468509111843">Ibanzi kakhulu</translation>
 <translation id="5592595402373377407">Ayikho idatha eyanele etholakalayo okwamanje.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Imakrofoni ivaliwe Kumasethingi Esistimu ye-Mac</translation>
 <translation id="5594899180331219722">Khetha ifayela</translation>
 <translation id="5595307023264033512">Ingqikithi yesitoreji esisetshenziswe amasayithi: <ph name="TOTAL_USAGE" /></translation>
@@ -8890,7 +8890,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7648023614017258011">I-Chrome iqinisekisa inqwaba yokufaka</translation>
 <translation id="7649070708921625228">Usizo</translation>
 <translation id="7650178491875594325">Buyisela idatha yendawo</translation>
-<translation id="7650511557061837441">I-"<ph name="TRIGGERING_EXTENSION_NAME" />" ingathanda ukususa i-"<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Ukusethwa kwesigxivizo somunwe o-1}one{Ukusethwa kwezigxivizo zeminwe engu-{COUNT}}other{Ukusethwa kwezigxivizo zeminwe engu-{COUNT}}}</translation>
 <translation id="7650677314924139716">Isethingi lokusetshenziswa kwedatha yamanje yi-Wi-Fi kuphela</translation>
 <translation id="7650920359639954963">Akunikwanga amandla: <ph name="REASON" /></translation>

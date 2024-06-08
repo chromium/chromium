@@ -795,7 +795,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2456755709261364512">Debes cargar a batería máis dun <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462932596748424101">Redes sociais</translation>
-<translation id="2463739503403862330">Completar</translation>
 <translation id="2465688316154986572">Grampa</translation>
 <translation id="2465914000209955735">Xestionar os ficheiros que descargaches en Chrome</translation>
 <translation id="2466004615675155314">Mostrar información da Web</translation>
@@ -2485,12 +2484,10 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784606427469807560">Produciuse un problema ao confirmar a túa tarxeta. Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="5785756445106461925">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode cambiar o aspecto da páxina.</translation>
-<translation id="5786044859038896871">Queres completar a información da tarxeta de crédito?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pago eliminarase do dispositivo</translation>
 <translation id="5800727402210090597">Servizos de reparación de teléfonos móbiles</translation>
 <translation id="580241730938216256">Iniciar actualización</translation>
-<translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5806871454498484178">Desprazamento e zoom bloqueados</translation>
 <translation id="5808435672482059465">Ver historial de Chrome</translation>

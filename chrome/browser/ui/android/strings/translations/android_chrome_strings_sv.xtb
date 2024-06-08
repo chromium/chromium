@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
 <translation id="1103142993930332957">Vill du hjälpa till att förbättra Chrome?</translation>
 <translation id="1105960400813249514">Skärmavbildning</translation>
+<translation id="1108214977745280468">Visa sidinsikter</translation>
 <translation id="1108938384783527433">Synkronisera historiken</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
 <translation id="1113597929977215864">Använd förenklad visning</translation>
@@ -251,7 +252,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2318045970523081853">Tryck för att ringa</translation>
 <translation id="2321086116217818302">Lösenorden förbereds …</translation>
 <translation id="2323763861024343754">Webbplatslagring</translation>
-<translation id="2328739396024849021">Inaktiverad spara-knapp</translation>
 <translation id="2328985652426384049">Det gick inte att logga in</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
 <translation id="2341410551640223969">Det gick inte att installera <ph name="WEBAPK_NAME" />.</translation>
@@ -361,7 +361,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2869430948265924908">Du måste skapa ett profillås för bilen för att skydda känsligt innehåll i bilen.  Det kan du göra med en pinkod, en kod eller ett lösenord.</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
-<translation id="2871941920508945325">Knappen Sidinsikter</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vill att du godkänner följande webbplats:</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Om Chrome</translation>
@@ -528,7 +527,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3699022356773522638">Vill du ladda ned filen?</translation>
 <translation id="3700759344784597882">När funktionen är aktiverad sparas lösenord i kontot. När funktionen är inaktiverad sparas lösenord endast på den här enheten.</translation>
 <translation id="3701515417135397388">Varna dig om ett lösenord har utsatts för dataintrång</translation>
-<translation id="3711001040440486668">Knappen Dela</translation>
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
 <translation id="3714981814255182093">Öppna sökfältet</translation>
 <translation id="3716182511346448902">Den här sidan har pausats i Chrome eftersom den använder för mycket minne.</translation>
@@ -913,6 +911,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5590372121997663538">Kom ihåg den här datorn</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
+<translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Inga sparade lösenord</translation>
 <translation id="5620928963363755975">Du hittar filerna och sidorna i Nedladdningar via knappen Fler alternativ</translation>
 <translation id="562289928968387744">Hantera reaktioner</translation>
@@ -1255,6 +1254,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="71503698506017927">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="7161230316646448869">Synkronisera bokmärken, historik med mera på alla dina enheter</translation>
 <translation id="7168323970702333693">Inloggad som <ph name="USER_NAME" />. Öppnar inställningarna.</translation>
 <translation id="7173114856073700355">Inställningar</translation>
 <translation id="7177466738963138057">Du kan ändra detta senare i inställningarna</translation>

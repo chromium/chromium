@@ -795,7 +795,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2456755709261364512">La batería debe tener una carga superior al <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462932596748424101">Redes sociales</translation>
-<translation id="2463739503403862330">Llenar</translation>
 <translation id="2465688316154986572">Grapa</translation>
 <translation id="2465914000209955735">Administrar los archivos que has descargado en Chrome</translation>
 <translation id="2466004615675155314">Mostrar información de la Web</translation>
@@ -2486,12 +2485,10 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784606427469807560">Se produjo un problema al confirmar tu tarjeta. Comprueba tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="5785756445106461925">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar la apariencia de la página.</translation>
-<translation id="5786044859038896871">¿Deseas llenar los campos con la información de tu tarjeta?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Se borrará esta forma de pago de este dispositivo.</translation>
 <translation id="5800727402210090597">Servicios y reparación de teléfonos celulares</translation>
 <translation id="580241730938216256">Iniciar actualización</translation>
-<translation id="5803412860119678065">¿Deseas llenar los campos con la información de tu tarjeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5806871454498484178">Se bloquearon el desplazamiento y el zoom</translation>
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
@@ -2682,6 +2679,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6167577165590485365">Último intento de recuperación:</translation>
 <translation id="617256461084925519">Google Chrome está intentando verificar tu identidad para poder completar tu información de pago.</translation>
+<translation id="6173208311907792313">Completa tu compra con Windows Hello</translation>
 <translation id="6176387967264100435">Este precio es alto</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>
 <translation id="6177531123306197852">Sobre C2</translation>
@@ -3839,6 +3837,7 @@ Detalles adicionales:
 <translation id="8332188693563227489">Se denegó el acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">No se traducirán las páginas en <ph name="LANGUAGE" /></translation>
+<translation id="8339275256517065202">Completa tu compra con Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">El diálogo de inscripción de tarjeta virtual está totalmente abierto</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
@@ -4033,6 +4032,7 @@ Detalles adicionales:
 <translation id="8726549941689275341">Tamaño de la página:</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>
+<translation id="8731917264694569036">Completa tu compra con tu dispositivo</translation>
 <translation id="8733345475331865475">Seguros de automóvil</translation>
 <translation id="8733764070897080460">Puedes bloquear los temas que no quieres compartir con los sitios. Chrome también borra los temas de forma automática luego de 4 semanas. Más información</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> administra tu dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -4226,6 +4226,7 @@ Detalles adicionales:
 <translation id="9116548361133462832">Obtén más información sobre los anuncios en Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para reanudar la búsqueda y ver la actividad relevante en tu historial de Chrome</translation>
 <translation id="9119042192571987207">Subido</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> quiere verificar tu identidad</translation>
 <translation id="912327514020027767">Faldas</translation>
 <translation id="912414390325846156">Anteriormente, elegiste no otorgar permiso a este sitio</translation>
 <translation id="9128870381267983090">Conectarse a una red</translation>

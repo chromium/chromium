@@ -72,6 +72,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1235458158152011030">Zināmie tīkli</translation>
 <translation id="1239161794459865856">Izveidots savienojums ar funkciju <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Lietotne</translation>
+<translation id="1242198791279543032">Paziņojumi ir izslēgti</translation>
 <translation id="1242883863226959074">ierīcē</translation>
 <translation id="1245644940275736236">Atvērt Asistentu</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
@@ -1663,7 +1664,6 @@ Jauna instalācija</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />.
         <ph name="NETWORK" />.</translation>
 <translation id="7168224885072002358">Iepriekšējā izšķirtspēja tiks atgriezta pēc <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Atvērt iestatījumus</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7181691792034457084">Labdien, <ph name="PRODUCT_NAME" /> nedaudz atšķiras no citām ierīcēm</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>

@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">يجب أن تكون نسبة شحن البطارية أعلى من %<ph name="REQUIRED_BATTERY_PRECENT" />.</translation>
 <translation id="2461822463642141190">حاليًا</translation>
 <translation id="2462932596748424101">شبكات تواصل اجتماعي</translation>
-<translation id="2463739503403862330">ملء</translation>
 <translation id="2465688316154986572">وضع دبوس واحد</translation>
 <translation id="2465914000209955735">‏إدارة الملفات التي تم تنزيلها في Chrome</translation>
 <translation id="2466004615675155314">عرض معلومات من الويب</translation>
@@ -2488,12 +2487,10 @@
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5784606427469807560">حدثت مشكلة أثناء التأكد من بطاقتك. تحقق من اتصالك بالإنترنت وأعد المحاولة.</translation>
 <translation id="5785756445106461925">إضافة إلى ذلك، تتضمن هذه الصفحة موارد أخرى غير آمنة. ويستطيع الآخرون مشاهدة هذه الموارد أثناء نقلها، كما يستطيع أي مهاجم تعديلها لتغيير مظهر الصفحة.</translation>
-<translation id="5786044859038896871">هل تريد ملء معلومات بطاقتك؟</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">سيتم حذف طريقة الدفع هذه من هذا الجهاز.</translation>
 <translation id="5800727402210090597">خدمات الهواتف المحمولة وإصلاحها</translation>
 <translation id="580241730938216256">بدء التحديث</translation>
-<translation id="5803412860119678065">هل تريد ملء <ph name="CARD_DETAIL" />؟</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5806871454498484178">تم حظر الانتقال للأعلى أو للأسفل في المحتوى وتكبيره أو تصغيره</translation>
 <translation id="5808435672482059465">‏عرض سجلّ Chrome</translation>

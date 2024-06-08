@@ -295,6 +295,7 @@
 <translation id="1203942045716040624">Shared Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">预览链接</translation>
 <translation id="1206832039833782423">您的安全码位于银行卡的背面</translation>
+<translation id="1208392090861059168">当前时间表设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。如要自动更新日落和日出时间表，请<ph name="BEGIN_LINK" />开启系统位置信息使用权<ph name="END_LINK" />。</translation>
 <translation id="1210678701920254279">查看或添加打印机，并查看正在执行的打印任务</translation>
 <translation id="1211769675100312947">您自己选择要显示哪些快捷方式</translation>
 <translation id="1213254615020057352">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
@@ -806,6 +807,7 @@
 <translation id="1594703455918849716">前往“检查”页面</translation>
 <translation id="1594781465361405478">音量开/关</translation>
 <translation id="1594963087419619323">分屏概览</translation>
+<translation id="1595018168143352126">在 Chrome 中管理网站的摄像头权限</translation>
 <translation id="1595492813686795610">Linux 正在升级</translation>
 <translation id="1596286373007273895">可用</translation>
 <translation id="1596709061955594992">蓝牙处于关闭状态。若要查看可用的设备，请开启蓝牙。</translation>
@@ -1240,6 +1242,7 @@
 <translation id="1900305421498694955">Google Play 中的应用可能需要获得完整的文件系统访问权限，才能在外部存储设备上读取和写入文件。任何使用外部驱动器的人员都能看到在此设备上创建的文件和文件夹。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">请让您的管理员更新此应用</translation>
 <translation id="1901303067676059328">全选(&amp;A)</translation>
+<translation id="1901760057081700494">时区当前设置为 <ph name="TIME_ZONE_ENTRY" />。如要自动更新时区，请<ph name="BEGIN_LINK" />开启系统位置信息使用权<ph name="END_LINK" />。</translation>
 <translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1906181697255754968">网站通常会访问您设备上的文件和文件夹以实现某些功能（例如自动保存您的工作成果）</translation>
 <translation id="1906488504371069394">在 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中发现更多扩展程序和主题</translation>
@@ -2190,6 +2193,7 @@
 <translation id="2581992808349413349">使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的代管式服务提供商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（平台：<ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">无法获取 Kerberos 票据。请重试或与贵单位的设备管理员联系。（错误代码：<ph name="ERROR_CODE" />）。</translation>
+<translation id="2584974473573720127">在 Chrome 中管理网站的麦克风权限</translation>
 <translation id="2586561813241011046">无法安装 <ph name="APP_NAME" />。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2586672484245266891">请输入一个较短的网址</translation>
@@ -2379,6 +2383,9 @@
 <translation id="2727744317940422214">抱歉，出了点问题。请在说明中提交反馈并附上 #bruschetta。错误代码为 <ph name="ERROR" />。清理失败，您可能需要手动清理。</translation>
 <translation id="2729327310379176711">Chrome 正在寻找新方法来减少跟踪，让您在浏览时更安全。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />，并允许您管理它们。然后，您访问的网站可请求 Chrome 提供您的兴趣以据之向您展示广告。</translation>
 <translation id="2729577602370119849">轻松访问和管理打印机</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集此设备附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google 会将从此设备收集的这些信息用于以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。这些信息不会用于识别任何个人的身份。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />您随时可在此设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”设置处于关闭状态，则系统不会收集任何“位置信息精确度”数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定此设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">正在备份 Linux 应用和文件</translation>
 <translation id="2730596696987224099">自行选择</translation>
 <translation id="2730647855013151888">包含所有个人信息</translation>
@@ -3230,6 +3237,7 @@
 <translation id="338323348408199233">屏蔽未使用 VPN 的流量</translation>
 <translation id="3384362484379805487">为节省磁盘可用空间，系统会让用户共用语言包文件。</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">开启“位置信息精确度”设置可为应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
 <translation id="338583716107319301">分隔符</translation>
 <translation id="3385916046075724800">您的标签页分组现在会自动保存。</translation>
 <translation id="3387023983419383865">、</translation>
@@ -3931,7 +3939,6 @@
 <translation id="3873915545594852654">ARC++ 出问题了。</translation>
 <translation id="3874164307099183178">开启 Google 助理</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />已设为在新的浏览器标签页中打开，所支持的链接也会在浏览器中打开。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">每次都向我询问</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的设备的“附近分享”设置，通过账号 <ph name="USER_EMAIL" /> 进行分享。</translation>
 <translation id="3878445208930547646">不允许从该网站复制</translation>
 <translation id="3879748587602334249">下载管理器</translation>
@@ -4034,6 +4041,7 @@
 <translation id="3950841222883198950">语音输入</translation>
 <translation id="3953834000574892725">我的账号</translation>
 <translation id="3954354850384043518">正在下载</translation>
+<translation id="3954468641195530330">不允许应用使用您的麦克风</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" />x<ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> 赫兹）</translation>
 <translation id="3954953195017194676">您最近未记录 WebRTC 事件日志。</translation>
 <translation id="3955321697524543127">不允许网站连接到 USB 设备</translation>
@@ -4092,6 +4100,10 @@
 <translation id="3988124842897276887">此标签页已连接到 USB 设备</translation>
 <translation id="3988996860813292272">选择时区</translation>
 <translation id="3991055816270226534">管理第三方 Cookie 和跟踪保护</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集此设备附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google 会将从此设备收集的这些信息用于以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。这些信息不会用于识别任何个人的身份。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />您随时可在此设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”设置处于关闭状态，则系统不会收集任何“位置信息精确度”数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定此设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />详细了解“位置信息精确度”<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">已导入</translation>
 <translation id="3992008114154328194">正在下载“<ph name="FILE_NAME" />”，<ph name="STATUS" /></translation>
 <translation id="3993259701827857030">备份数据</translation>
@@ -4246,6 +4258,10 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
 <translation id="4113743276555482284">文件密码</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集您附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google 会在不识别您个人身份的情况下，使用这些信息来满足以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />您随时可在设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”设置处于关闭状态，则系统不会收集任何“位置信息精确度”数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定您设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />详细了解“位置信息精确度”<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">系统会显示推荐的文件，方便您回到最近在 Google 云端硬盘中进行的活动。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5021,6 +5037,7 @@
 <translation id="4716483597559580346">执行 Powerwash 操作以提高安全性</translation>
 <translation id="4716715661140829720">存储空间不足</translation>
 <translation id="471759229191973607">更改主题</translation>
+<translation id="4719276504493791870">不允许应用使用您的位置信息</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />正在共享您的屏幕。</translation>
 <translation id="4722989931633062466">不得显示第三方登录提示</translation>
@@ -5234,6 +5251,7 @@
 <translation id="4879491255372875719">自动（默认）</translation>
 <translation id="4880315242806573837">安全更新即将终止。请升级为新款 Chromebook。</translation>
 <translation id="4880827082731008257">搜索历史记录</translation>
+<translation id="4881632956374597321">系统服务以及具有位置信息权限的应用和网站可以使用您的位置信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">下次不再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4882312758060467256">可以访问此网站</translation>
@@ -5630,6 +5648,7 @@
 <translation id="5186788525428341874">您可以使用此通行密钥在各个设备上更快地登录。系统会将它保存到 <ph name="ACCOUNT_NAME" /> 的 Google 密码管理工具中。</translation>
 <translation id="5187641678926990264">将网页作为应用安装(&amp;I)…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">已使用 <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">启用此端口</translation>
 <translation id="5190959794678983197">没有麦克风</translation>
@@ -5675,6 +5694,7 @@
 <translation id="5225324770654022472">显示应用快捷方式</translation>
 <translation id="52254442782792731">当前尚未设置公开范围</translation>
 <translation id="5225463052809312700">开启摄像头</translation>
+<translation id="5226731562812684363">不允许网站使用您的位置信息</translation>
 <translation id="5227679487546032910">默认的蓝绿色头像</translation>
 <translation id="5228245824943774148">已连接 <ph name="NUM_DEVICES_CONNECTED" /> 部设备</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
@@ -6170,6 +6190,7 @@
 <translation id="5590418976913374224">设备启动时播放声音</translation>
 <translation id="5591465468509111843">非常宽</translation>
 <translation id="5592595402373377407">尚无足够的数据。</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">已在 Mac 系统设置中关闭麦克风</translation>
 <translation id="5594899180331219722">选择文件</translation>
 <translation id="5595307023264033512">网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
@@ -6546,6 +6567,7 @@
 <translation id="5885314688092915589">贵组织将管理这份资料</translation>
 <translation id="5885470467814103868">开始扫描</translation>
 <translation id="5885631909150054232">复制令牌</translation>
+<translation id="5886000783338788034">位置信息使用权已在 ChromeOS 设置中关闭</translation>
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">连接并快速设置附近的快速配对设备</translation>
 <translation id="5886384907280980632">立即关闭</translation>
@@ -7077,6 +7099,7 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 的下载方式实属异常，因此它可能存在危险。</translation>
 <translation id="6285770818046456882">正与您分享内容的设备取消了传输</translation>
+<translation id="628699625505156622">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="6287828400772161253">Android 手机（“<ph name="HOST_DEVICE_NAME" />”）</translation>
 <translation id="6290613030083731160">附近没有正在分享内容的设备。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -7600,6 +7623,7 @@
 <translation id="6703613667804166784">此文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">运行 ChromeOS 诊断测试</translation>
 <translation id="6707389671160270963">SSL 客户端证书</translation>
+<translation id="6707671917294473995">不允许网站使用您的摄像头</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6709357832553498500">使用“<ph name="EXTENSIONNAME" />”连接</translation>
@@ -7609,6 +7633,7 @@
 <translation id="6713233729292711163">添加工作资料</translation>
 <translation id="6713441551032149301">按住启动器键可在功能键和系统顶行按键之间切换</translation>
 <translation id="6713668088933662563">一律不询问是否翻译这些语言</translation>
+<translation id="6715735940363172819">不允许网站使用您的麦克风</translation>
 <translation id="6715803357256707211">安装 Linux 应用时出错。请点击通知以了解详情。</translation>
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
 <translation id="6718849325281682232">Chrome 主题颜色已焕然一新，可更好地满足每个用户的需求，无论是处于深色模式还是浅色模式</translation>
@@ -8634,6 +8659,7 @@
 <translation id="7489761397368794366">通过您的设备拨打电话</translation>
 <translation id="749028671485790643">用户<ph name="VALUE" /></translation>
 <translation id="7490683549040131791">检查其余的密码</translation>
+<translation id="7490938136316476492">位置信息使用权已关闭。ChromeOS 设备不会访问您的位置信息。不过，应用和网站或许仍可通过 IP 地址等信息获取您的大致区域信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">标签</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 个 Cookie}other{{NUM_COOKIES} 个 Cookie}}</translation>
 <translation id="7493386493263658176">扩展程序“<ph name="EXTENSION_NAME" />”可能会收集您输入的所有内容（包括密码和信用卡号等个人数据）。要使用此扩展程序吗？</translation>
@@ -8834,7 +8860,6 @@
 <translation id="7648023614017258011">Chrome 正在验证安装包</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7650178491875594325">恢复本地数据</translation>
-<translation id="7650511557061837441">“<ph name="TRIGGERING_EXTENSION_NAME" />”想要移除“<ph name="EXTENSION_NAME" />”。</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{已设置 1 个指纹}other{已设置 {COUNT} 个指纹}}</translation>
 <translation id="7650677314924139716">当前的流量使用设置是“仅限 WLAN”</translation>
 <translation id="7650920359639954963">未启用原因：<ph name="REASON" /></translation>
@@ -8995,6 +9020,7 @@
 <translation id="7758450972308449809">调整显示屏的边界</translation>
 <translation id="7758884017823246335">添加网站搜索引擎</translation>
 <translation id="7759809451544302770">可选</translation>
+<translation id="7760176388948986635">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
 <translation id="7762024824096060040">无法使用此账号</translation>
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />，来自 <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9114,6 +9140,7 @@
 <translation id="7839051173341654115">查看/备份媒体</translation>
 <translation id="7839192898639727867">证书主题背景密钥 ID</translation>
 <translation id="7839696104613959439">渲染选择的网络</translation>
+<translation id="7840222916565569061">不允许应用使用您的摄像头</translation>
 <translation id="7842062217214609161">无快捷键</translation>
 <translation id="7842692330619197998">如果您需要创建新账号，请访问 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="784273751836026224">卸载 Linux</translation>
@@ -10126,6 +10153,7 @@
 <translation id="8584843865238667486">具有用法页面 <ph name="USAGE_PAGE" /> 中的用法 <ph name="USAGE" /> 的 HID 设备</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列网站采用的是自定义设置（而非默认设置）</translation>
+<translation id="8586421813321819377">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
 <translation id="8587660243683137365">将此页面作为应用安装</translation>
 <translation id="8588866096426746242">显示个人资料统计信息</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 正在向头戴设备显示 VR</translation>
@@ -10347,6 +10375,7 @@
 <translation id="8736288397686080465">此网站已在后台更新。</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">选择要将网页翻译成哪种语言</translation>
+<translation id="8737966899544698733">位置信息精确度（仅限 Android）</translation>
 <translation id="8738418093147087440">按国家/地区、语言或输入法名称搜索</translation>
 <translation id="8740086188450289493">使用 Google 账号密码</translation>
 <translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
@@ -10418,12 +10447,16 @@
 <translation id="8793390639824829328">网站使用此功能来滚动和缩放分享的标签页</translation>
 <translation id="879413103056696865">开启热点后，您的 <ph name="PHONE_NAME" /> 将会：</translation>
 <translation id="8795916974678578410">打开新的窗口</translation>
+<translation id="8796907593900732741">只有系统服务才能使用您的位置信息。不过，应用和网站或许仍可通过 IP 地址等信息获取您的大致区域信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">自定义您的 Chrome(&amp;U)</translation>
 <translation id="8797459392481275117">一律不翻译此网站</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8803526663383843427">处于开启状态时</translation>
 <translation id="8803953437405899238">只需点击一下，即可打开一个新标签页</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集您附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google 会在不识别您个人身份的情况下，使用这些信息来满足以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />您随时可在设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”设置处于关闭状态，则系统不会收集任何“位置信息精确度”数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定您设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">会在…中打开</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
 <translation id="8805140816472474147">请确认同步设置以开始同步。</translation>

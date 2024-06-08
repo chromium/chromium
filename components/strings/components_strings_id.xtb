@@ -796,7 +796,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2456755709261364512">Baterai Anda harus diisi dayanya di atas <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">Arus</translation>
 <translation id="2462932596748424101">Jejaring Sosial</translation>
-<translation id="2463739503403862330">Isi</translation>
 <translation id="2465688316154986572">Jepretan</translation>
 <translation id="2465914000209955735">Kelola file yang telah Anda download di Chrome</translation>
 <translation id="2466004615675155314">Tampilkan informasi dari web</translation>
@@ -2484,12 +2483,10 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784606427469807560">Terjadi error saat mengonfirmasi kartu. Periksa koneksi internet Anda dan coba lagi.</translation>
 <translation id="5785756445106461925">Selain itu, halaman ini berisi sumber daya lainnya yang tidak aman. Sumber daya ini dapat dilihat oleh orang lain saat transit dan dapat dimodifikasi oleh penyerang untuk mengubah tampilan perangkat.</translation>
-<translation id="5786044859038896871">Ingin mengisi informasi kartu?</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Metode pembayaran ini akan dihapus dari perangkat ini</translation>
 <translation id="5800727402210090597">Layanan &amp; Perbaikan Ponsel</translation>
 <translation id="580241730938216256">Mulai update</translation>
-<translation id="5803412860119678065">Ingin mengisi <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Izin</translation>
 <translation id="5806871454498484178">Scroll &amp; zoom diblokir</translation>
 <translation id="5808435672482059465">Lihat Histori Chrome Anda</translation>
@@ -2680,6 +2677,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6167577165590485365">Upaya pengambilan terakhir:</translation>
 <translation id="617256461084925519">Google Chrome mencoba memverifikasi diri Anda agar dapat mengisi info pembayaran.</translation>
+<translation id="6173208311907792313">Selesaikan pembelian menggunakan Windows Hello</translation>
 <translation id="6176387967264100435">Harganya tinggi</translation>
 <translation id="6177128806592000436">Sambungan Anda ke situs ini tidak aman</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
@@ -3835,6 +3833,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8332188693563227489">Akses ke <ph name="HOST_NAME" /> ditolak</translation>
 <translation id="833262891116910667">Sorotan</translation>
 <translation id="8339163506404995330">Halaman dalam bahasa <ph name="LANGUAGE" /> tidak akan diterjemahkan</translation>
+<translation id="8339275256517065202">Selesaikan pembelian menggunakan Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Pendaftaran kartu virtual terbuka sepenuhnya</translation>
 <translation id="8349305172487531364">Bilah bookmark</translation>
@@ -4026,6 +4025,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8726549941689275341">Ukuran halaman:</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731268612289859741">Kode keamanan</translation>
+<translation id="8731917264694569036">Selesaikan pembelian menggunakan perangkat Anda</translation>
 <translation id="8733345475331865475">Asuransi Otomotif</translation>
 <translation id="8733764070897080460">Anda dapat memblokir topik yang tidak ingin dibagikan ke situs. Chrome juga otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Pelajari lebih lanjut</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> Anda dikelola oleh <ph name="MANAGER" /></translation>
@@ -4219,6 +4219,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9116548361133462832">Selengkapnya tentang iklan di Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab, lalu Enter untuk melanjutkan penelusuran dan melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="9119042192571987207">Diupload</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> ingin memverifikasi diri Anda</translation>
 <translation id="912327514020027767">Rok</translation>
 <translation id="912414390325846156">Anda sebelumnya memilih untuk tidak mengizinkan situs ini</translation>
 <translation id="9128870381267983090">Sambungkan ke jaringan</translation>

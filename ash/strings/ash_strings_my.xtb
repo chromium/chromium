@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">သိထားသည့် ကွန်ရက်များ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ချိတ်ဆက်ထားသည်။</translation>
 <translation id="1240638468526743569">အက်ပ်တစ်ခု</translation>
+<translation id="1242198791279543032">အကြောင်းကြားချက်များ ပိတ်ထားသည်</translation>
 <translation id="1242883863226959074">စက်</translation>
 <translation id="1245644940275736236">Assistant သို့ သွားပါ</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5208059991603368177">ဖွင့်</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> အထိ ပိတ်ထားသည်</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
+<translation id="5228195526683428788">မျက်နှာပြင် ခွဲ၍ပြသခြင်း ပိုင်းခြားစနစ်</translation>
 <translation id="5229343007215035173">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင် ဖွင့်/ပိတ် လုပ်ရန်</translation>
 <translation id="5230516054153933099">ဝင်းဒိုး</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
@@ -1518,6 +1520,7 @@
 <translation id="6613765291890844037">သိုလှောင်ခန်း <ph name="STORAGE_IN_USE_SIZE" /> သုံးနေသည် | စုစုပေါင်း <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို ဖွင့်ထားသည်</translation>
 <translation id="6622679827379792051">သင့်ဖုန်းရှိ အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
+<translation id="662279009180869175">မျက်နှာပြင် ခွဲ၍ပြသခြင်းကို အရွယ်ပြင်ရန် ဘယ်နှင့် ညာညွှန်မြား သုံးပါ</translation>
 <translation id="6624493541160101248">လက်ရှိမျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>
 <translation id="6625718907317144388">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_1_TITLE" />၊ <ph name="APP_2_TITLE" /> စသည်တို့၏ အကြောင်းကြားချက်များကို ဖျောက်ထားသည်</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1536,6 +1539,7 @@
 <translation id="6670153871843998651">စာရေးခုံ ၃</translation>
 <translation id="6671495933530132209">ပုံကို ကူးယူရန်</translation>
 <translation id="6671661918848783005">သင့် Chromebook ကို လော့ခ်ဖွင့်မရပါ</translation>
+<translation id="6676552993057022464">မျက်နှာပြင် ခွဲ၍ပြသခြင်းကို အရွယ်ပြင်ရန် အပေါ်နှင့် အောက်ညွှန်မြား သုံးပါ</translation>
 <translation id="6682029141988159141">ကလစ်ဘုတ်ရှိ အကြောင်းအရာကို ကူးထည့်ရန်</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
 <translation id="6686023075541098243">သင့်ဖုန်းရှိ အကြောင်းကြားချက်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
@@ -1663,7 +1667,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />၊
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">စက္ကန့် <ph name="TIMEOUT_SECONDS" /> အတွင်းမှာ ပြတ်သားမှု အဟောင်းဆီကို ပြန်ပြောင်းမည်</translation>
-<translation id="7173114856073700355">ဆက်တင်များ ဖွင့်ရန်</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7181691792034457084">မင်္ဂလာပါ။ <ph name="PRODUCT_NAME" /> သည် အနည်းငယ်ကွဲပြားသည်။</translation>
 <translation id="7188494361780961876">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်ထိပ်ထောင့်သို့ ရွှေ့လိုက်သည်။</translation>

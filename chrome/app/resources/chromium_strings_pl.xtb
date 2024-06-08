@@ -125,7 +125,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
 <translation id="3179665906251668410">Otwórz link w oknie inco&amp;gnito Chromium</translation>
 <translation id="3185330573522821672">Dostosuj swój nowy profil Chromium</translation>
-<translation id="318879170965183683">Po zalogowaniu się w Chromium możesz używać haseł z konta Google</translation>
 <translation id="3190315855212034486">O kurczę! Chromium uległ awarii. Uruchomić go teraz ponownie?</translation>
 <translation id="3224847870593914902">Aby usunąć konto Google z Chromium, wyloguj się z Chromium na stronie Ustawienia</translation>
 <translation id="3258596308407688501">Chromium nie może odczytać ani zapisać danych w katalogu <ph name="USER_DATA_DIRECTORY" />.</translation>
@@ -252,7 +251,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5386450000063123300">Aktualizuję Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Zezwalaj na logowanie w Chromium</translation>
 <translation id="5398878173008909840">Pojawiła się nowa wersja Chromium.</translation>
-<translation id="5400757303519321734">Gdy logujesz się w usługach Google takich jak Gmail czy YouTube, używając konta <ph name="USER_EMAIL" />, możesz za pomocą tego samego konta logować się w Chromium</translation>
 <translation id="5405650547142096840">Usuń z Chromium</translation>
 <translation id="5427571867875391349">Ustaw Chromium jako domyślną przeglądarkę</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
@@ -377,7 +375,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="7045244423563602563">Dostosuj Chromium do swoich potrzeb</translation>
 <translation id="705851970750939768">Zaktualizuj Chromium</translation>
 <translation id="7067091210845072982">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google.</translation>
-<translation id="7100062358172078145">Nie loguj mnie w Chromium</translation>
 <translation id="7141270731789036260">Dostosuj Chrome for Testing</translation>
 <translation id="7159538860914681762">Aby zapisywać hasła i inne dane oraz używać ich na wszystkich urządzeniach, zaloguj się w Chromium</translation>
 <translation id="7173822816570314652">Twoja organizacja usuwa dane Chromium, gdy nie są one używane przez <ph name="TIMEOUT_DURATION" />. Może to obejmować historię, autouzupełnianie i pobrane pliki.</translation>
@@ -499,7 +496,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9158494823179993217">Administrator systemu skonfigurował Chromium w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>
 <translation id="9185526690718004400">Uruchom ponownie, aby zaktualizować &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Automatycznie loguj mnie w Chromium</translation>
 <translation id="924957577793602335">Dostosuj Chromium do swoich potrzeb</translation>
 <translation id="93478295209880648">Chromium może działać nieprawidłowo, bo nie jest już zgodny z Windows XP ani Windows Vista</translation>
 <translation id="942598560705308788">Certyfikaty zarządzane przez Chromium</translation>

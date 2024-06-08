@@ -3970,7 +3970,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3874164307099183178">Hidupkan Google Assistant</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ditetapkan untuk dibuka dalam tab penyemak imbas baharu, pautan yang disokong juga akan dibuka dalam penyemak imbas. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Ubah saiz tetingkap pada bahagian atas</translation>
-<translation id="3876833929577368454">Tanya saya setiap kali</translation>
 <translation id="3877075909000773256">Tetapan Kongsi Berdekatan untuk peranti <ph name="USER_NAME" />, berkongsi menggunakan akaun <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Penyalinan daripada laman ini tidak dibenarkan</translation>
 <translation id="3879748587602334249">Pengurus muat turun</translation>
@@ -6226,6 +6225,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5590418976913374224">Mainkan bunyi pada permulaan peranti</translation>
 <translation id="5591465468509111843">Sangat lebar</translation>
 <translation id="5592595402373377407">Data yang mencukupi belum tersedia lagi.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon dimatikan dalam Tetapan Sistem Mac</translation>
 <translation id="5594899180331219722">Pilih fail</translation>
 <translation id="5595307023264033512">Jumlah storan yang digunakan oleh laman: <ph name="TOTAL_USAGE" /></translation>
@@ -8902,7 +8902,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7648023614017258011">Chrome mengesahkan himpunan pemasangan</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7650178491875594325">Pulihkan data setempat</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" ingin mengalih keluar "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 cap jari telah disediakan}other{{COUNT} cap jari telah disediakan}}</translation>
 <translation id="7650677314924139716">Tetapan penggunaan data semasa ialah Wi-Fi sahaja</translation>
 <translation id="7650920359639954963">Tidak didayakan: <ph name="REASON" /></translation>

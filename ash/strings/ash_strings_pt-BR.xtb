@@ -72,6 +72,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
 <translation id="1240638468526743569">Um app</translation>
+<translation id="1242198791279543032">As notificações estão desativadas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="1245644940275736236">Ir para o Assistente</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
@@ -1663,7 +1664,6 @@ Nova instalação</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Revertendo para resolução anterior em <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Configurações</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7181691792034457084">Olá! O <ph name="PRODUCT_NAME" /> é um pouco diferente.</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo da tela.</translation>

@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Bakgrunn</translation>
 <translation id="3027578600144895987">Lukk kameraet</translation>
 <translation id="3031560714565892478">Enheten er et videokamera.</translation>
+<translation id="3051968340259309715">Dette gjør at systemtjenester kan bruke Posisjonsnøyaktighet til å fastslå posisjonen din. Posisjonsnøyaktighet bruker informasjon om trådløse signaler, for eksempel wifi-tilgangspunkter, mobilnettverk og GPS, i tillegg til sensordata for enhet, for eksempel akselerometer og gyroskop, for å anslå enhetens posisjon. Du kan slå av posisjonen i Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Sluttpunkt</translation>
 <translation id="3060579846059757016">Omriss</translation>

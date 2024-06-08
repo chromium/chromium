@@ -795,7 +795,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2456755709261364512">Pin phải được sạc trên <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2462932596748424101">Mạng xã hội</translation>
-<translation id="2463739503403862330">Điền</translation>
 <translation id="2465688316154986572">Dập ghim</translation>
 <translation id="2465914000209955735">Quản lý các tệp bạn đã tải xuống trong Chrome</translation>
 <translation id="2466004615675155314">Hiện thông tin trên web</translation>
@@ -2485,12 +2484,10 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784606427469807560">Đã xảy ra sự cố khi xác nhận thẻ của bạn. Hãy kiểm tra kết nối Internet của bạn và thử lại.</translation>
 <translation id="5785756445106461925">Ngoài ra, trang này bao gồm các tài nguyên khác không an toàn. Những tài nguyên này có thể bị người khác xem khi đang gửi và có thể bị kẻ tấn công sửa đổi nhằm thay đổi giao diện của trang.</translation>
-<translation id="5786044859038896871">Bạn có muốn điền thông tin thẻ của mình không?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Phương thức thanh toán này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="5800727402210090597">Dịch vụ sửa chữa và bảo dưỡng điện thoại di động</translation>
 <translation id="580241730938216256">Bắt đầu cập nhật</translation>
-<translation id="5803412860119678065">Bạn có muốn điền <ph name="CARD_DETAIL" /> của mình không?</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5806871454498484178">Đã chặn cuộn và thu phóng</translation>
 <translation id="5808435672482059465">Xem nhật ký duyệt web trên Chrome</translation>
@@ -2681,6 +2678,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6167577165590485365">Lần tìm nạp mới nhất:</translation>
 <translation id="617256461084925519">Google Chrome đang cố gắng xác minh danh tính của bạn để có thể điền thông tin thanh toán cho bạn.</translation>
+<translation id="6173208311907792313">Hoàn tất giao dịch mua bằng Windows Hello</translation>
 <translation id="6176387967264100435">Đây là mức giá cao</translation>
 <translation id="6177128806592000436">Kết nối của bạn tới trang web này không an toàn</translation>
 <translation id="6177531123306197852">Phong bì C2</translation>
@@ -3838,6 +3836,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8332188693563227489">Quyền truy cập <ph name="HOST_NAME" /> bị từ chối</translation>
 <translation id="833262891116910667">Đánh dấu</translation>
 <translation id="8339163506404995330">Các trang viết bằng <ph name="LANGUAGE" /> sẽ không được dịch</translation>
+<translation id="8339275256517065202">Hoàn tất giao dịch mua bằng Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Đã mở hộp thoại đăng ký thẻ ảo với độ cao chiếm toàn bộ chiều dọc màn hình</translation>
 <translation id="8349305172487531364">Thanh dấu trang</translation>
@@ -4032,6 +4031,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8726549941689275341">Kích thước trang:</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8731268612289859741">Mã bảo mật</translation>
+<translation id="8731917264694569036">Hoàn tất giao dịch mua bằng thiết bị của bạn</translation>
 <translation id="8733345475331865475">Bảo hiểm ô tô</translation>
 <translation id="8733764070897080460">Bạn có thể chặn những chủ đề bạn không muốn chia sẻ với trang web. Chrome cũng tự động xoá xoá khỏi danh sách những chủ đề đã hơn 4 tuần bạn không truy cập. Tìm hiểu thêm</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> của bạn do <ph name="MANAGER" /> quản lý</translation>
@@ -4225,6 +4225,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9116548361133462832">Tìm hiểu thêm về quảng cáo trong Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để tiếp tục hành trình và xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
 <translation id="9119042192571987207">Đã tải lên</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> muốn xác minh danh tính của bạn</translation>
 <translation id="912327514020027767">Váy</translation>
 <translation id="912414390325846156">Trước đây, bạn đã chọn không cho phép trang web này</translation>
 <translation id="9128870381267983090">Kết nối đến mạng</translation>

@@ -3948,7 +3948,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3873915545594852654">ARC++ ilə bağlı problem yarandı.</translation>
 <translation id="3874164307099183178">Google Assistenti aktiv edin</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> yeni brauzer tabında açıq olaraq ayarlanıb, dəstəklənən keçidlər də brauzerdə açılacaq. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Hər dəfə soruşulsun</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> adlı istifadəçinin cihazı üçün Yaxındakılarla Paylaşma ayarları, <ph name="USER_EMAIL" /> hesabında paylaşılır.</translation>
 <translation id="3878445208930547646">Bu saytdan kopyalamağa icazə verilmir</translation>
 <translation id="3879748587602334249">Endirmə meneceri</translation>
@@ -6200,6 +6199,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5590418976913374224">Cihaz işə salındıqda səs oxudulsun</translation>
 <translation id="5591465468509111843">Çox geniş</translation>
 <translation id="5592595402373377407">Kifayət qədər əlçatan məlumat hələ yoxdur.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon Mac Sistem Ayarlarında deaktivdir</translation>
 <translation id="5594899180331219722">Fayl seçin</translation>
 <translation id="5595307023264033512">Saytlar tərəfindən istifadə olunan cəmi yaddaş: <ph name="TOTAL_USAGE" /></translation>
@@ -8869,7 +8869,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7648023614017258011">Chrome quraşdırma paketini doğrulayır</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7650178491875594325">Lokal datanı bərpa edin</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" "<ph name="EXTENSION_NAME" />" artırmasını silmək istəyir.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 barmaq izi quraşdırması}other{{COUNT} barmaq izi quraşdırması}}</translation>
 <translation id="7650677314924139716">Cari data istifadəsi ayarı: yalnız Wi-Fi</translation>
 <translation id="7650920359639954963">Aktiv edilməyib: <ph name="REASON" /></translation>

@@ -3969,7 +3969,6 @@
 <translation id="3874164307099183178">ເປີດຜູ້ຊ່ວຍ Google</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ຖືກຕັ້ງຄ່າໃຫ້ເປີດໃນແຖບໂປຣແກຣມທ່ອງເວັບໃໝ່, ລິ້ງທີ່ຮອງຮັບຈະເປີດໃນໂປຣແກຣມທ່ອງເວັບເຊັ່ນກັນ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ປັບຂະໜາດໜ້າຈໍໄປທາງເທິງແລ້ວ</translation>
-<translation id="3876833929577368454">ຖາມຂ້ອຍທຸກເທື່ອ</translation>
 <translation id="3877075909000773256">ການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງສຳລັບອຸປະກອນຂອງ <ph name="USER_NAME" />, ທີ່ແບ່ງປັນພາຍໃຕ້ບັນຊີ <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">ບໍ່ອະນຸຍາດໃຫ້ມີການສຳເນົາຈາກເວັບໄຊນີ້</translation>
 <translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
@@ -6224,6 +6223,7 @@
 <translation id="5590418976913374224">ເປີດສຽງຢູ່ອຸປະກອນສະຕາດອັບ</translation>
 <translation id="5591465468509111843">ກວ້າງຫຼາຍ</translation>
 <translation id="5592595402373377407">ບໍ່ມີຂໍ້​ມູນພຽງ​ພໍ​ເທື່ອ​.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">ໄມໂຄຣໂຟນປິດຢູ່ໃນການຕັ້ງຄ່າລະບົບ Mac</translation>
 <translation id="5594899180331219722">ເລືອກໄຟລ໌</translation>
 <translation id="5595307023264033512">ການໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນທັງໝົດຕາມເວັບໄຊ: <ph name="TOTAL_USAGE" /></translation>
@@ -8898,7 +8898,6 @@
 <translation id="7648023614017258011">Chrome ກຳລັງຢັ້ງຢືນການຕິດຕັ້ງເປັນຊຸດ</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7650178491875594325">ກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງ</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" ຢາກຈະເອົາ "<ph name="EXTENSION_NAME" />" ອອກໄປ.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{ຕັ້ງຄ່າ​ລາຍ​ນີ້ວ​ມືໄວ້ 1 ລາຍການ}other{ຕັ້ງຄ່າ​ລາຍ​ນີ້ວ​ມືໄວ້ {COUNT} ລາຍການ}}</translation>
 <translation id="7650677314924139716">ການຕັ້ງຄ່າການນຳໃຊ້ອິນເຕີເນັດປັດຈຸບັນແມ່ນ Wi-Fi ເທົ່ານັ້ນ</translation>
 <translation id="7650920359639954963">ບໍ່ໄດ້ເປີດການນຳໃຊ້: <ph name="REASON" /></translation>

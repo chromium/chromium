@@ -794,7 +794,6 @@
 <translation id="2456755709261364512">請務必將電池充到 <ph name="REQUIRED_BATTERY_PRECENT" />% 以上</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2462932596748424101">社群網路</translation>
-<translation id="2463739503403862330">填入</translation>
 <translation id="2465688316154986572">釘裝</translation>
 <translation id="2465914000209955735">管理在 Chrome 中下載的檔案</translation>
 <translation id="2466004615675155314">顯示來自網路的資訊</translation>
@@ -2483,12 +2482,10 @@
 <translation id="57838592816432529">靜音</translation>
 <translation id="5784606427469807560">驗證您的信用卡時發生問題。請檢查網際網路連線，然後再試一次。</translation>
 <translation id="5785756445106461925">此外，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，進而變更網頁外觀。</translation>
-<translation id="5786044859038896871">要填入你的信用卡資訊嗎？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
 <translation id="5800727402210090597">手機維修與服務</translation>
 <translation id="580241730938216256">開始更新</translation>
-<translation id="5803412860119678065">要填入你的 <ph name="CARD_DETAIL" /> 資訊嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5806871454498484178">已禁止捲動及縮放</translation>
 <translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>

@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="33479675708419823">Når du er logget på Chrome, bidrar denne innstillingen til å holde IP-adressen din privat. Hvis Chrome mistenker at et nettsted sporer deg, kan noe av trafikken din sendes gjennom personverntjenere. Finn ut mer om <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
+<translation id="3529311220178827364">Finn ut mer om å skjule IP-adressen din</translation>
 <translation id="4301151630239508244">Annonseemner er bare én av mange måter nettsteder kan levere personlig tilpassede annonser på. Selv uten annonseemner kan nettsteder vise deg annonser, men de er kanskje mindre personlig tilpasset. Finn ut mer om hvordan du <ph name="BEGIN_LINK_1" />administrerer annonsepersonvernet ditt<ph name="END_LINK_1" />.</translation>
+<translation id="4598427486995631491">Skjul IP-adressen din</translation>
+<translation id="6371812158043974664">Når du er logget på Chromium, bidrar denne innstillingen til å holde IP-adressen din privat. Hvis Chromium mistenker at et nettsted sporer deg, kan noe av trafikken din sendes gjennom personverntjenere. Finn ut mer om <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
 </translationbundle>

@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट हो गया है.</translation>
 <translation id="1240638468526743569">कोई ऐप्लिकेशन</translation>
+<translation id="1242198791279543032">सूचनाएं म्यूट की गई हैं</translation>
 <translation id="1242883863226959074">डिवाइस</translation>
 <translation id="1245644940275736236">Assistant पर जाएं</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
@@ -309,6 +310,7 @@
 <translation id="2208323208084708176">संयुक्त डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्क 7</translation>
+<translation id="2223384056430485343">स्प्लिट स्क्रीन मोड में</translation>
 <translation id="2224075387478458881">जब सुरक्षित कॉन्टेंट दिख रहा हो, तो स्क्रीन रिकॉर्डिंग की सुविधा काम नहीं करती</translation>
 <translation id="2227179592712503583">सुझाव हटाएं</translation>
 <translation id="2248634276911611268">लिंक को नए टैब में खोलें और इस नए टैब पर स्विच करें</translation>
@@ -1664,7 +1666,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> में पुराने रिज़ॉल्यूशन में वापस लौट रहा है</translation>
-<translation id="7173114856073700355">सेटिंग खोलें</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7181691792034457084">नमस्ते. <ph name="PRODUCT_NAME" />, अन्य प्रॉडक्ट के मुकाबले थोड़ा अलग है.</translation>
 <translation id="7188494361780961876">मेन्यू, स्क्रीन के सबसे ऊपर बाएं कोने में चला गया है.</translation>

@@ -1133,6 +1133,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5208059991603368177">På</translation>
 <translation id="5216991270656129561">Avslått til <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Logg av</translation>
+<translation id="5228195526683428788">Skilleelement for delt skjerm</translation>
 <translation id="5229343007215035173">Slå personvernskjermen av eller på</translation>
 <translation id="5230516054153933099">Vindu</translation>
 <translation id="5234764350956374838">Lukk</translation>
@@ -1519,6 +1520,7 @@ Nylig installert</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> lagringsplass er i bruk | <ph name="STORAGE_TOTAL_SIZE" /> totalt</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
 <translation id="6622679827379792051">Konfigurer visning av apper fra telefonen din</translation>
+<translation id="662279009180869175">Bruk venstre- og høyrepilene til å endre størrelsen på den delte skjermen.</translation>
 <translation id="6624493541160101248">Gjeldende skrivebord: <ph name="DESK_NAME" />. Skrivebord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Varsler fra <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og andre steder er skjult fordi visningsbeskyttelse er på</translation>
 <translation id="6627638273713273709">Søk + Shift + K</translation>
@@ -1537,6 +1539,7 @@ Nylig installert</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
 <translation id="6671495933530132209">Kopiér bildet</translation>
 <translation id="6671661918848783005">Kan ikke låse opp Chromebooken</translation>
+<translation id="6676552993057022464">Bruk opp- og nedoverpilene for å endre størrelsen på den delte skjermen.</translation>
 <translation id="6682029141988159141">Lim inn innhold fra utklippstavlen</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6686023075541098243">Konfigurer visning av varsler fra telefonen din</translation>
@@ -1664,7 +1667,6 @@ Nylig installert</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Går tilbake til den gamle oppløsningen om <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7181691792034457084">Hei. <ph name="PRODUCT_NAME" /> er litt annerledes.</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>

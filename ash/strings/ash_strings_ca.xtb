@@ -72,6 +72,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1235458158152011030">Xarxes conegudes</translation>
 <translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
 <translation id="1240638468526743569">Una aplicació</translation>
+<translation id="1242198791279543032">Les notificacions estan silenciades</translation>
 <translation id="1242883863226959074">dispositiu</translation>
 <translation id="1245644940275736236">Ves a l'Assistent</translation>
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
@@ -1663,7 +1664,6 @@ Instal·lació nova</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7181691792034457084">Hola. <ph name="PRODUCT_NAME" /> és una mica diferent.</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>

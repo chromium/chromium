@@ -795,7 +795,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2456755709261364512">Akun varauksen on oltava yli <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
 <translation id="2462932596748424101">Sosiaaliset verkostot</translation>
-<translation id="2463739503403862330">Täytä</translation>
 <translation id="2465688316154986572">Niitti</translation>
 <translation id="2465914000209955735">Ylläpidä Chromessa lataamiasi tiedostoja</translation>
 <translation id="2466004615675155314">Näytä tietoa verkosta</translation>
@@ -2486,12 +2485,10 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="57838592816432529">Mykistä</translation>
 <translation id="5784606427469807560">Korttia vahvistettaessa tapahtui virhe. Tarkista internetyhteys ja yritä uudelleen.</translation>
 <translation id="5785756445106461925">Tällä sivulla on kuitenkin muita osia, jotka eivät ole suojattuja. Muut voivat tarkastella näitä osia siirron aikana, ja hyökkääjä voi muuttaa sivun ulkoasua muokkaamalla näitä osia.</translation>
-<translation id="5786044859038896871">Täytetäänkö kortin tiedot?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tämä maksutapa poistetaan tältä laitteelta</translation>
 <translation id="5800727402210090597">Matkapuhelimien korjauspalvelut</translation>
 <translation id="580241730938216256">Aloita päivitys</translation>
-<translation id="5803412860119678065">Täytetäänkö kortin <ph name="CARD_DETAIL" /> tiedot?</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5806871454498484178">Vieritys ja zoomaus estetty</translation>
 <translation id="5808435672482059465">Tarkista Chrome-historiasi</translation>
@@ -2682,6 +2679,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6167577165590485365">Hakua yritetty viimeksi:</translation>
 <translation id="617256461084925519">Google Chrome yrittää vahvistaa henkilöllisyytesi, jotta se voi täyttää maksutietosi.</translation>
+<translation id="6173208311907792313">Suorita ostos loppuun Windows Hellon avulla</translation>
 <translation id="6176387967264100435">Tämä hinta on korkea</translation>
 <translation id="6177128806592000436">Sivustoon ei ole muodostettu turvallista yhteyttä.</translation>
 <translation id="6177531123306197852">Kirjekuori C2</translation>
@@ -3839,6 +3837,7 @@ Lisätietoja:
 <translation id="8332188693563227489">Sivuston <ph name="HOST_NAME" /> käyttöoikeus evättiin</translation>
 <translation id="833262891116910667">Korosta</translation>
 <translation id="8339163506404995330">Kielellä <ph name="LANGUAGE" /> kirjoitettuja sivuja ei käännetä.</translation>
+<translation id="8339275256517065202">Suorita ostos loppuun Touch ID:n avulla</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuaalikortin rekisteröinti avattu koko näytön kokoisena</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
@@ -4033,6 +4032,7 @@ Lisätietoja:
 <translation id="8726549941689275341">Sivun koko:</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731268612289859741">Turvakoodi</translation>
+<translation id="8731917264694569036">Suorita ostos loppuun laitteellasi</translation>
 <translation id="8733345475331865475">Autovakuutukset</translation>
 <translation id="8733764070897080460">Voit estää aiheet, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat aiheet automaattisesti. Lue lisää</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> ylläpitää laitetta (<ph name="DEVICE_TYPE" />)</translation>
@@ -4226,6 +4226,7 @@ Lisätietoja:
 <translation id="9116548361133462832">Lue lisää mainoksista Chromessa</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit jatkaa toimintoa ja nähdä oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="9119042192571987207">Lähetetty</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="912327514020027767">Hameet</translation>
 <translation id="912414390325846156">Valitsit aiemmin luvan estämisen tällä sivustolla</translation>
 <translation id="9128870381267983090">Yhdistä verkkoon</translation>

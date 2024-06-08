@@ -72,6 +72,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856">Se conectó <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">Una app</translation>
+<translation id="1242198791279543032">Las notificaciones están silenciadas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="1245644940275736236">Ve a Asistente</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
@@ -1114,7 +1115,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
 <translation id="5144005092084035179">¿Quieres cambiar la entrada de audio?</translation>
-<translation id="5147567197700016471">Desbloqueada</translation>
+<translation id="5147567197700016471">Desactivado</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
 <translation id="5163434717504750796">Estado de la batería <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Conteo de ciclos <ph name="CYCLE_COUNT" /></translation>
@@ -1664,7 +1665,6 @@ Nueva instalación</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Se revertirá a la resolución anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="7173114856073700355">Abrir la configuración</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7181691792034457084">Hola. <ph name="PRODUCT_NAME" /> es algo diferente.</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>

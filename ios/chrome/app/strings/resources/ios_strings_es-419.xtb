@@ -1034,6 +1034,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6232329973559504466">Búsqueda en el modo Incógnito</translation>
 <translation id="6236952928980352967">Restablecer advertencia</translation>
 <translation id="6247557882553405851">Administrador de contraseñas de Google</translation>
+<translation id="6251835855431997163">Autocompletar <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Abre vínculos en la app en lugar de hacerlo en el navegador.</translation>
 <translation id="6255097610484507482">Editar tarjeta de crédito</translation>
 <translation id="6266039999629596120">Requiere atención</translation>
@@ -1212,6 +1213,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7022197654033719543">Información del sitio</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="704692552158601232">App del navegador predeterminado</translation>
+<translation id="7055240621761583113">Autocompletar la contraseña</translation>
 <translation id="7063811929043357292">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Quitar de este dispositivo</translation>

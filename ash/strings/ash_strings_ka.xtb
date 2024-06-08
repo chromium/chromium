@@ -310,6 +310,7 @@
 <translation id="2208323208084708176">ერთიანი დესკტოპის რეჟიმი</translation>
 <translation id="2220572644011485463">PIN-კოდი ან პაროლი</translation>
 <translation id="2222841058024245321">სამუშაო მაგიდა 7</translation>
+<translation id="2223384056430485343">გაყოფილ ეკრანზე</translation>
 <translation id="2224075387478458881">ეკრანის ჩაწერა დაუშვებელია, როცა ხილულია დაცული კონტენტი</translation>
 <translation id="2227179592712503583">შემოთავაზების ამოშლა</translation>
 <translation id="2248634276911611268">ბმულის გახსნა ახალ ჩანართზე და აღნიშნულ ახალ ჩანართზე გადართვა</translation>
@@ -1667,7 +1668,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">დრო ძველ გარჩევადობაზე დაბრუნებამდე: <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">პარამეტრების გახსნა</translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7181691792034457084">გამარჯობა! <ph name="PRODUCT_NAME" /> ოდნავ განსხვავებულია.</translation>
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>

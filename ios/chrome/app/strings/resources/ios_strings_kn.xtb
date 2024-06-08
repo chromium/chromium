@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="1753905327828125965">ಅತಿಹೆಚ್ಚು ಬಾರಿ ಸಂದರ್ಶಿಸಿರುವುದು</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್}one{{count} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{count} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
+<translation id="1764070164487214210">ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು</translation>
 <translation id="1766411844240160513">ಆಟೋಫಿಲ್ ಫಾರ್ಮ್</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">ವೈಯಕ್ತೀಕರಣಗೊಳಿಸಲಾದ ಕಂಟೆಂಟ್‍</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="3775743491439407556">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="3779810277399252432">ಇಂಟರ್ನೆಟ್‌ ಸಂಪರ್ಕ ಇಲ್ಲ.</translation>
+<translation id="3785672280731998727">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರು</translation>
 <translation id="3789294999358192700">ಕೆಳಗಿನ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ:</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="380329542618494757">ಹೆಸರು</translation>
 <translation id="3803696231112616155">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸುವ ಕೊಡುಗೆ</translation>
 <translation id="3808311849069021992">ಸರ್ಚ್ ಎಂಜಿನ್ ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3812308602011798782">ವಿಮರ್ಶೆಗಳು</translation>
 <translation id="3818045793209708987">ಈ ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3818293389945649617">ಮುಂದಿನದು ಹುಡುಕಿ</translation>
 <translation id="3819183753496523827">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">ಒಂದೇ ಟ್ಯಾಪ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಯಾವುದೇ ಆ್ಯಪ್‌ನಲ್ಲಿ ಪಡೆಯಿರಿ</translation>
 <translation id="4049507953662678203">ನೀವು ನೆಟ್‌‌ವರ್ಕ್ ಸಂಪರ್ಕ ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4054572406751135230">ಸುದ್ದಿ, ಕ್ರೀಡೆ ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳೊಂದಿಗೆ ಮುಂದುವರಿಯಿರಿ.</translation>
+<translation id="4068959193278821990">ವರ್ಧಿತ ಸುರಕ್ಷತೆಯನ್ನು ಆನ್ ಮಾಡಿ...</translation>
 <translation id="4092655288299341041">ಸಹಾಯವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4105841739161771091">{count,plural, =1{ವಿಳಾಸವನ್ನು ಅಳಿಸಿ}one{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}other{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}}</translation>
 <translation id="4108998448622696017">ಅಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸಿದಾಗ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">ಒಟ್ಟು ರಫ್ತು ಡೇಟಾ ಕಳುಹಿಸಲು, ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ಖಾತೆಯನ್ನು ಸೆಟ್ಟಿಂಗ್‌‌ಗಳ ಅಪ್ಲಿಕೇಶನ್‌‌ನಲ್ಲಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಿ.</translation>
 <translation id="4124987746317609294">ಸಮಯ ವ್ಯಾಪ್ತಿ</translation>
 <translation id="4133265950310064865">ವರ್ಧಿತ ಸುರಕ್ಷತೆ</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">ಈ ವೆಬ್‌ಸೈಟ್ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="4152011295694446843">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
@@ -1034,6 +1039,7 @@
 <translation id="6232329973559504466">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
 <translation id="6236952928980352967">ಎಚ್ಚರಿಕೆಯನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6247557882553405851">Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
+<translation id="6251835855431997163"><ph name="VALUE" /> ಆಟೋಫಿಲ್</translation>
 <translation id="6254066287920239840">ಬ್ರೌಸರ್ ಬದಲಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="6255097610484507482">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6266039999629596120">ಗಮನ ಹರಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
@@ -1212,6 +1218,7 @@
 <translation id="7022197654033719543">ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="704692552158601232">ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್</translation>
+<translation id="7055240621761583113">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="7063811929043357292">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
@@ -1470,6 +1477,7 @@
 <translation id="834783239627985533">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
 <translation id="8358401059263985056">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> ಗೆ ಸಂಬಂಧಿಸಿದ Google Photos ನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="8369246252708539904">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8370406443343902172">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ...</translation>
 <translation id="8374977641764177587">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>

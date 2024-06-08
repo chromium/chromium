@@ -3968,7 +3968,6 @@
 <translation id="3874164307099183178">Google Assistantను ఆన్ చేయండి</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> కొత్త బ్రౌజర్ ట్యాబ్‌లో తెరవడానికి సెట్ చేయబడింది, అదే బ్రౌజర్‌లో సపోర్ట్ చేసే లింక్‌లు కూడా తెరవబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">సైజ్ మార్చిన విండోలు పైకి</translation>
-<translation id="3876833929577368454">ప్రతిసారీ నన్ను అడుగు</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> పరికరం కోసం సమీప షేర్ సెట్టింగ్‌లు, <ph name="USER_EMAIL" /> ఖాతా ద్వారా షేర్ చేయబడుతున్నాయి.</translation>
 <translation id="3878445208930547646">ఈ సైట్ నుండి కాపీ చేయడం అనుమతించబడదు</translation>
 <translation id="3879748587602334249">డౌన్‌లోడ్ మేనేజ‌ర్‌</translation>
@@ -6223,6 +6222,7 @@
 <translation id="5590418976913374224">పరికరం ప్రారంభమయినప్పుడు సౌండ్ ప్లే చేయి</translation>
 <translation id="5591465468509111843">అక్షరాల మధ్య చాలా దూరం ఉంది</translation>
 <translation id="5592595402373377407">ఇంకా తగినంత డేటా అందుబాటులో లేదు.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mac సిస్టమ్ సెట్టింగ్‌లలో మైక్రోఫోన్ ఆఫ్ చేయబడింది</translation>
 <translation id="5594899180331219722">ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="5595307023264033512">సైట్‌లు ఉపయోగించిన మొత్తం స్టోరేజ్: <ph name="TOTAL_USAGE" /></translation>
@@ -8899,7 +8899,6 @@
 <translation id="7648023614017258011">Chrome ఇన్‌స్టాలేషన్ బండిల్‌ను వెరిఫై చేస్తోంది</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7650178491875594325">స్థానిక డేటాను రీస్టోర్ చేయండి</translation>
-<translation id="7650511557061837441">"<ph name="EXTENSION_NAME" />"ని "<ph name="TRIGGERING_EXTENSION_NAME" />" తీసివేయాలనుకుంటోంది.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 వేలిముద్ర సెటప్ చేయబడింది}other{{COUNT} వేలిముద్రలు సెటప్ చేయబడ్డాయి}}</translation>
 <translation id="7650677314924139716">ప్రస్తుతం డేటా వినియోగం Wi-Fi ద్వారా మాత్రమే జరిగేలా సెట్ చేయబడి ఉంది</translation>
 <translation id="7650920359639954963">ఎనేబుల్ చేయబడలేదు: <ph name="REASON" /></translation>

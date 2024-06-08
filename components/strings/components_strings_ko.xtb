@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">배터리가 <ph name="REQUIRED_BATTERY_PRECENT" />% 이상 충전되어 있어야 합니다.</translation>
 <translation id="2461822463642141190">현재</translation>
 <translation id="2462932596748424101">소셜 네트워크</translation>
-<translation id="2463739503403862330">입력</translation>
 <translation id="2465688316154986572">스테이플</translation>
 <translation id="2465914000209955735">Chrome에서 다운로드한 파일 관리</translation>
 <translation id="2466004615675155314">웹에서 찾은 정보 표시</translation>
@@ -2485,12 +2484,10 @@
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784606427469807560">카드 확인 중에 문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.</translation>
 <translation id="5785756445106461925">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 모양을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
-<translation id="5786044859038896871">카드 정보를 입력하시겠습니까?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
 <translation id="580241730938216256">업데이트 시작</translation>
-<translation id="5803412860119678065"><ph name="CARD_DETAIL" />을(를) 입력하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5806871454498484178">스크롤 및 확대/축소 차단됨</translation>
 <translation id="5808435672482059465">Chrome 방문 기록 보기</translation>

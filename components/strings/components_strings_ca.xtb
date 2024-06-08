@@ -795,7 +795,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2456755709261364512">La bateria ha d'estar carregada per sobre del <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462932596748424101">Xarxes socials</translation>
-<translation id="2463739503403862330">Emplena</translation>
 <translation id="2465688316154986572">Grapat</translation>
 <translation id="2465914000209955735">Gestiona els fitxers que has baixat a Chrome</translation>
 <translation id="2466004615675155314">Mostra informació del web</translation>
@@ -2485,12 +2484,10 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="57838592816432529">Silencia</translation>
 <translation id="5784606427469807560">S'ha produït un problema en confirmar la targeta. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="5785756445106461925">A més, aquesta pàgina conté altres recursos que no són segurs. La resta d'usuaris poden visualitzar-los mentre estan en trànsit, i algun atacant podria modificar-los per canviar l'aparença de la pàgina.</translation>
-<translation id="5786044859038896871">Vols emplenar la informació de la teva targeta?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Aquesta forma de pagament se suprimirà del dispositiu</translation>
 <translation id="5800727402210090597">Serveis i reparació de telèfons mòbils</translation>
 <translation id="580241730938216256">Inicia l'actualització</translation>
-<translation id="5803412860119678065">Vols emplenar la informació de la teva targeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5806871454498484178">El desplaçament i el zoom s'han bloquejat</translation>
 <translation id="5808435672482059465">Mostra l'historial de Chrome</translation>
@@ -2681,6 +2678,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6167577165590485365">Darrer intent de recollida:</translation>
 <translation id="617256461084925519">Google Chrome està provant de verificar la teva identitat per poder emplenar la informació de pagament.</translation>
+<translation id="6173208311907792313">Completa la compra amb Windows Hello</translation>
 <translation id="6176387967264100435">Aquest preu és alt</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
 <translation id="6177531123306197852">Sobre C2</translation>
@@ -3838,6 +3836,7 @@ Detalls addicionals:
 <translation id="8332188693563227489">S'ha rebutjat l'accés a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacat</translation>
 <translation id="8339163506404995330">Les pàgines en <ph name="LANGUAGE" /> no es traduiran</translation>
+<translation id="8339275256517065202">Completa la compra amb Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">S'ha obert la inscripció de targetes virtuals a alçada completa</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
@@ -4031,6 +4030,7 @@ Detalls addicionals:
 <translation id="8726549941689275341">Mida de la pàgina:</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8731268612289859741">Codi de seguretat</translation>
+<translation id="8731917264694569036">Completa la compra fent servir el teu dispositiu</translation>
 <translation id="8733345475331865475">Assegurança d'automòbils</translation>
 <translation id="8733764070897080460">Pots bloquejar els temes que no vulguis que es comparteixin amb els llocs web. Chrome també suprimeix automàticament els temes que tenen més de 4 setmanes. Més informació</translation>
 <translation id="8734529307927223492">El teu dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" /></translation>
@@ -4224,6 +4224,7 @@ Detalls addicionals:
 <translation id="9116548361133462832">Més informació sobre els anuncis a Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per reprendre el recorregut i veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="9119042192571987207">Penjat</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vol verificar la teva identitat</translation>
 <translation id="912327514020027767">Faldilles</translation>
 <translation id="912414390325846156">Anteriorment has triat No permetis per a aquest lloc web</translation>
 <translation id="9128870381267983090">Connecta't a la xarxa</translation>

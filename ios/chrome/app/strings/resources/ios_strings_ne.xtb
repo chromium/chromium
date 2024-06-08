@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">पासवर्डहरू सेभ गर्नुहोस्</translation>
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} वटा कमजोर पासवर्ड भेटियो}other{{count} वटा कमजोर पासवर्ड भेटिए}}</translation>
+<translation id="1764070164487214210">जाने बाटाहरू</translation>
 <translation id="1766411844240160513">अटोफिल फारम</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">पर्सनलाइज गरिएको सामग्री</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
 <translation id="3775743491439407556">सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
 <translation id="3779810277399252432">इन्टरनेट छैन</translation>
+<translation id="3785672280731998727">देखाइने नाम</translation>
 <translation id="3789294999358192700">तलका चरणहरू पालना गर्नुहोस्:</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803696231112616155">यो साइट अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="3808311849069021992">सर्च इन्जिनसम्बन्धी विवरणहरू देखाउनुहोस्</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
+<translation id="3812308602011798782">समीक्षाहरू</translation>
 <translation id="3818045793209708987">यो प्याकेज ट्र्याक गर्न छाडिएको छ</translation>
 <translation id="3818293389945649617">अर्को भेट्टाउनुहोस्</translation>
 <translation id="3819183753496523827">तपाईं अफलाइन हुनुहुन्छ। आफ्नो इन्टरनेट कनेक्सनको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">एक पटक ट्याप गरेकै भरमा सेभ गरिएका पासवर्डहरू जुनसुकै एपमा प्रयोग गर्नुहोस्</translation>
 <translation id="4049507953662678203">तपाईँसँग नेटवर्क जडान छ भनी निश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4054572406751135230">समाचार, खेलकुद र अन्य कुरासम्बन्धी सूचना प्राप्त गर्नुहोस्।</translation>
+<translation id="4068959193278821990">उन्नत सुरक्षा अन गर्नुहोस्...</translation>
 <translation id="4092655288299341041">मद्दत केन्द्र देखाउनुहोस्</translation>
 <translation id="4105841739161771091">{count,plural, =1{ठेगाना मेटाउनुहोस्}other{ठेगानाहरू मेटाउनुहोस्}}</translation>
 <translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको एपमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
 <translation id="4124987746317609294">समय दायरा</translation>
 <translation id="4133265950310064865">उन्नत सुरक्षा</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">यो वेबसाइट कुनै फाइल डाउनलोड गर्न र उक्त फाइल तपाईंको पात्रोमा हाल्न चाहन्छ।</translation>
 <translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">सबैभन्दा बढी हेरिएका साइटहरू</translation>
 <translation id="8358401059263985056">सूचना प्राप्त गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="8364841868226993049">यो फोटो <ph name="USER_EMAIL" /> को Google Photos मा सेभ गरिँदैन छ...</translation>
+<translation id="8369246252708539904">पासकी मेटाउनुहोस्</translation>
 <translation id="8370406443343902172">सेटिङमा जानुहोस्...</translation>
 <translation id="8374977641764177587">सूचना प्राप्त गर्ने सुविधा अन गर्ने हो?</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>

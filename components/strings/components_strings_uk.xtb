@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">Зараз</translation>
 <translation id="2462932596748424101">Соціальні мережі</translation>
-<translation id="2463739503403862330">Заповнити</translation>
 <translation id="2465688316154986572">Скріпити</translation>
 <translation id="2465914000209955735">Керувати завантаженими файлами в Chrome</translation>
 <translation id="2466004615675155314">Показати інформацію з Інтернету</translation>
@@ -2485,12 +2484,10 @@
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784606427469807560">Не вдалося підтвердити дані картки. Перевірте з’єднання з Інтернетом і повторіть спробу.</translation>
 <translation id="5785756445106461925">Окрім цього, сторінка містить незахищені ресурси. Інші особи можуть переглядати їх під час передавання даних, а зловмисники можуть змінювати вигляд сторінки.</translation>
-<translation id="5786044859038896871">Ввести дані кредитної картки?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Цей спосіб оплати буде видалено з поточного пристрою</translation>
 <translation id="5800727402210090597">Ремонт і обслуговування мобільних телефонів</translation>
 <translation id="580241730938216256">Почати оновлення</translation>
-<translation id="5803412860119678065">Ввести дані кредитної картки <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5806871454498484178">Зміну масштабу й прокручування заблоковано</translation>
 <translation id="5808435672482059465">Переглянути історію Chrome</translation>
@@ -2681,6 +2678,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6167577165590485365">Остання спроба отримання:</translation>
 <translation id="617256461084925519">Google Chrome намагається підтвердити вашу особу, щоб автоматично заповнити платіжну інформацію.</translation>
+<translation id="6173208311907792313">Завершіть покупку за допомогою Windows Hello</translation>
 <translation id="6176387967264100435">Це висока ціна</translation>
 <translation id="6177128806592000436">Ваше з’єднання з цим сайтом не захищене</translation>
 <translation id="6177531123306197852">Конверт C2</translation>
@@ -3838,6 +3836,7 @@
 <translation id="8332188693563227489">Відмовлено в доступі до хосту <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Виділити</translation>
 <translation id="8339163506404995330">Сторінки цією мовою (<ph name="LANGUAGE" />) не перекладатимуться</translation>
+<translation id="8339275256517065202">Завершіть покупку за допомогою Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Вікно реєстрації віртуальної картки відкрито на всю висоту</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
@@ -4032,6 +4031,7 @@
 <translation id="8726549941689275341">Розмір сторінки:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Код безпеки</translation>
+<translation id="8731917264694569036">Завершіть покупку на своєму пристрої</translation>
 <translation id="8733345475331865475">Автострахування</translation>
 <translation id="8733764070897080460">Ви можете блокувати теми, до яких не хочете надавати сайтам доступ. Chrome також автоматично видаляє теми через 4 тижні. Докладніше</translation>
 <translation id="8734529307927223492">Вашим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
@@ -4225,6 +4225,7 @@
 <translation id="9116548361133462832">Докладніше про рекламу в Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відновити пошук і переглянути релевантні дії в історії Chrome</translation>
 <translation id="9119042192571987207">Завантажено</translation>
+<translation id="9119308212838450857">Банк <ph name="PROVIDER_ORIGIN" /> хоче підтвердити вашу особу</translation>
 <translation id="912327514020027767">Спідниці</translation>
 <translation id="912414390325846156">Раніше ви не надали дозвіл для цього сайту</translation>
 <translation id="9128870381267983090">З'єднатися з мережею</translation>

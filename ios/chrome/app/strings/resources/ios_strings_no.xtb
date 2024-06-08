@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Lagre passord</translation>
 <translation id="1753905327828125965">Mest besøkt</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} svakt passord}other{{count} svake passord}}</translation>
+<translation id="1764070164487214210">Veibeskrivelser</translation>
 <translation id="1766411844240160513">Autofyll skjema</translation>
 <translation id="1767766085187034454">Google Oversetter</translation>
 <translation id="1769106850515800431">Tilpasset innhold</translation>
@@ -541,12 +542,14 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
+<translation id="3785672280731998727">Visningsnavn</translation>
 <translation id="3789294999358192700">Gjør dette:</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilby å oversette dette nettstedet</translation>
 <translation id="3808311849069021992">Vis søkemotordetaljer</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3812308602011798782">Anmeldelser</translation>
 <translation id="3818045793209708987">Sluttet å spore denne pakken</translation>
 <translation id="3818293389945649617">Finn neste</translation>
 <translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
@@ -594,6 +597,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4045648459118332842">Se de lagrede passordene dine i hvilken som helst app med ett trykk</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="4054572406751135230">Hold deg oppdatert om nyheter, sport med mer.</translation>
+<translation id="4068959193278821990">Slå på økt beskyttelse …</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slett adresse}other{Slett adresser}}</translation>
 <translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
@@ -605,6 +609,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4121993058175073134">For å sende data for netteksport må du konfigurere e-postkontoen din i Innstillinger-appen.</translation>
 <translation id="4124987746317609294">Tidsperiode</translation>
 <translation id="4133265950310064865">Økt beskyttelse</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Dette nettstedet vil laste ned en fil og legge den til på kalenderen din.</translation>
 <translation id="4152011295694446843">Her finner du bokmerkene dine</translation>
@@ -1472,6 +1477,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="834783239627985533">Mest besøkte nettsteder</translation>
 <translation id="8358401059263985056">Slå på varsler</translation>
 <translation id="8364841868226993049">Lagrer bildet i Google Foto for <ph name="USER_EMAIL" /> …</translation>
+<translation id="8369246252708539904">Slett passnøkkel</translation>
 <translation id="8370406443343902172">Gå til Innstillinger…</translation>
 <translation id="8374977641764177587">Vil du slå på varsler?</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>

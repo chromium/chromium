@@ -127,7 +127,6 @@
 <translation id="3155163173539279776">Chromiumን ዳግም አስጀምር</translation>
 <translation id="3179665906251668410">አገናኙን በChromium ማን&amp;ነትን በማያሳውቅ መስኮት ውስጥ ክፈት</translation>
 <translation id="3185330573522821672">አዲሱን የChromium መገለጫዎን ያብጁ</translation>
-<translation id="318879170965183683">በመለያዎ ውስጥ ሲገቡ ከGoogle መለያዎ ውስጥ የይለፍ ቃላትዎን በChromium ውስጥ መጠቀም ይችላሉ</translation>
 <translation id="3190315855212034486">ኧረ ገዳይ! Chromium ብልሽት አጋጥሞታል። አሁን ዳግም ይጀምር?</translation>
 <translation id="3224847870593914902">የGoogle መለያዎን ከChromium ለማስወገድ በቅንብሮች ገጽ ውስጥ ከChromium ዘግተው ይውጡ</translation>
 <translation id="3258596308407688501">Chromium የውሂብ አቃፊው ላይ ማንበብ እና መጻፍ አይችልም፦
@@ -256,7 +255,6 @@
 <translation id="5386450000063123300">Chromiumን በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">የChromium በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="5398878173008909840">አዲስ የChromium ስሪት አለ።</translation>
-<translation id="5400757303519321734">እንደ Gmail ወይም YouTube በ<ph name="USER_EMAIL" /> ወደ Google አገልግሎቶች ሲገቡ፣ በተመሳሳይ መለያ ወደ Chromium መግባት ይችላሉ</translation>
 <translation id="5405650547142096840">ከChromium አስወግድ</translation>
 <translation id="5427571867875391349">Chromium እንደ ነባሪ አሳሽዎ አድርገው ያዋቅሩት</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium ቅድመ-ይሁንታ</translation>
@@ -381,7 +379,6 @@
 <translation id="7045244423563602563">Chromiumን የራስዎ ያድርጉት</translation>
 <translation id="705851970750939768">Chromiumን አዘምን</translation>
 <translation id="7067091210845072982">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chromium ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ።</translation>
-<translation id="7100062358172078145">ወደ Chromium አታስገባኝ</translation>
 <translation id="7141270731789036260">Chromeን ለሙከራ አብጅ</translation>
 <translation id="7159538860914681762">የይለፍ ቃላትዎን ለማስቀመጥ እና ለመጠቀም እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማድረግ ወደ Chromium ይግቡ</translation>
 <translation id="7173822816570314652">ድርጅትዎ የChromium ውሂብን ለ<ph name="TIMEOUT_DURATION" /> ያህል ሥራ ላይ ሳይውል ይሰርዘዋል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።</translation>
@@ -503,7 +500,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="9158494823179993217">የእርስዎ የስርዓት አስተዳዳሪ <ph name="TARGET_URL_HOSTNAME" />ን ለመድረስ Chromium ተለዋጭ አሳሽን እንዲከፍት አዋቅረውታል።</translation>
 <translation id="9185526690718004400">&amp;Chromiumን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">በራስ-ሰር ወደ Chromium አስገባኝ</translation>
 <translation id="924957577793602335">Chromiumን የራስዎ ያድርጉት</translation>
 <translation id="93478295209880648">Chromium በWindows XP ወይም Windows Vista ላይ ከእንግዲህ ስለማይደገፍ በአግባቡ ላይሰራ ይችላል</translation>
 <translation id="942598560705308788">በChromium የሚተዳደሩ የእውቅና ማረጋገጫዎች</translation>

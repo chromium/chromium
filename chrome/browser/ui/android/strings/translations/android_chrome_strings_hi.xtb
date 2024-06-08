@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">समूह में नए टैब में खोलें</translation>
 <translation id="1103142993930332957">क्या आप Chrome को बेहतर बनाना चाहते हैं?</translation>
 <translation id="1105960400813249514">स्‍क्रीन कैप्‍चर</translation>
+<translation id="1108214977745280468">पेज इनसाइट देखें</translation>
 <translation id="1108938384783527433">इतिहास सिंक करें</translation>
 <translation id="1111673857033749125">आपके अन्‍य डिवाइस पर सहेजे गए बुकमार्क यहां दिखाई देंगे.</translation>
 <translation id="1113597929977215864">सरल बनाया गया व्यू दिखाएं</translation>
@@ -251,7 +252,6 @@
 <translation id="2318045970523081853">कॉल करने के लिए टैप करें</translation>
 <translation id="2321086116217818302">पासवर्ड तैयार हो रहे हैं…</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
-<translation id="2328739396024849021">'सेव करें' बटन बंद है</translation>
 <translation id="2328985652426384049">साइन इन नहीं कर सकते</translation>
 <translation id="233375395665273385">मिटाएं और साइन आउट करें</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> को इंस्टॉल नहीं किया जा सका.</translation>
@@ -361,7 +361,6 @@
 <translation id="2869430948265924908">कार में अपने संवेदनशील कॉन्टेंट को सुरक्षित रखने के लिए, आपको कार का प्रोफ़ाइल लॉक सेट अप करना होगा.  इसके लिए, पिन, कोड या पासवर्ड का इस्तेमाल किया जा सकता है.</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजों को पहले से लोड करना</translation>
-<translation id="2871941920508945325">'पेज की अहम जानकारी' बटन</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ने आपसे इस वेबसाइट का ऐक्सेस देने का अनुरोध किया है:</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome आपके डेटा को निजी कैसे रखता है<ph name="END_LINK" />, इसके बारे में ज़्यादा जानें</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
@@ -528,7 +527,6 @@
 <translation id="3699022356773522638">फ़ाइल डाउनलोड करें?</translation>
 <translation id="3700759344784597882">इस सुविधा के चालू होने पर, पासवर्ड आपके खाते में सेव किए जाते हैं. इस सुविधा के बंद होने पर, पासवर्ड सिर्फ़ इस डिवाइस में सेव किए जाते हैं.</translation>
 <translation id="3701515417135397388">अगर डेटा के गलत इस्तेमाल की वजह से, आपके पासवर्ड को हैक किया गया है, तो आपको चेतावनी दी जाए</translation>
-<translation id="3711001040440486668">'शेयर करें' बटन</translation>
 <translation id="371230970611282515">नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाता है. साथ ही, उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="3714981814255182093">ढूंढें बार खोलें</translation>
 <translation id="3716182511346448902">यह पेज बहुत ज़्यादा स्टोरेज का इस्तेमाल करता है, इसलिए Chrome ने इसे रोक दिया है.</translation>
@@ -912,6 +910,7 @@
 <translation id="5590372121997663538">इस कंप्यूटर को याद रखें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
+<translation id="5601180634394228718">Chrome के अनुभव को बेहतर बनाने के लिए, डेटा का इस्तेमाल करने वाली अन्य सेटिंग के लिए, <ph name="BEGIN_LINK" />Google की सेवाएं<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="5620163320393916465">पासवर्ड सेव नहीं किए गए हैं</translation>
 <translation id="5620928963363755975">ज़्यादा विकल्प बटन से डाउनलोड में जाकर अपनी फ़ाइलें और पेज पाएं</translation>
 <translation id="562289928968387744">प्रतिक्रियाओं को मैनेज करें</translation>
@@ -1254,6 +1253,7 @@
 <translation id="71503698506017927">लंबे पासवर्ड से एन्क्रिप्ट (सुरक्षित) करने की सुविधा में, Google Pay पर जोड़े गए पेमेंट के तरीके और पते शामिल नहीं होते.
 
 इस सेटिंग को बदलने के लिए, <ph name="BEGIN_LINK" />अपने खाते से Chrome का डेटा मिटाएं<ph name="END_LINK" />.</translation>
+<translation id="7161230316646448869">सभी डिवाइसों पर, अपने बुकमार्क, इतिहास, और दूसरी कई चीज़ें सिंक करें</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. इस बटन से सेटिंग खुलती है.</translation>
 <translation id="7173114856073700355">सेटिंग खोलें</translation>
 <translation id="7177466738963138057">आप इसे बाद में सेटिंग में जाकर बदल सकते हैं</translation>

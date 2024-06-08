@@ -795,7 +795,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2456755709261364512">Jou battery moet meer as <ph name="REQUIRED_BATTERY_PRECENT" />% gelaai wees</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2462932596748424101">Sosiale netwerke</translation>
-<translation id="2463739503403862330">Vul in</translation>
 <translation id="2465688316154986572">Kram</translation>
 <translation id="2465914000209955735">Bestuur lêers wat jy in Chrome afgelaai het</translation>
 <translation id="2466004615675155314">Wys inligting van die web af</translation>
@@ -2485,12 +2484,10 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="57838592816432529">Demp</translation>
 <translation id="5784606427469807560">Kon nie jou kaart bevestig nie. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="5785756445106461925">Hierdie bladsy sluit verder ander hulpbronne in wat nie veilig is nie. Hierdie hulpbronne kan deur ander mense bekyk word terwyl hulle op pad is, en kan deur 'n aanvaller aangepas word om die bladsy se voorkoms te verander.</translation>
-<translation id="5786044859038896871">Wil jy jou kaartinligting invul?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Hierdie betaalmetode sal van hierdie toestel af uitgevee word</translation>
 <translation id="5800727402210090597">Selfoonherstelwerk en -dienste</translation>
 <translation id="580241730938216256">Begin opdatering</translation>
-<translation id="5803412860119678065">Wil jy jou <ph name="CARD_DETAIL" /> invul?</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="5806871454498484178">Rollees en zoem is geblokkeer</translation>
 <translation id="5808435672482059465">Bekyk jou Chrome-geskiedenis</translation>
@@ -2681,6 +2678,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6167577165590485365">Laaste haalpoging:</translation>
 <translation id="617256461084925519">Google Chrome probeer verifieer dat dit jy is sodat dit jou betaalinligting kan invul.</translation>
+<translation id="6173208311907792313">Voltooi jou aankoop met Windows Hello</translation>
 <translation id="6176387967264100435">Hierdie prys is hoog</translation>
 <translation id="6177128806592000436">Jou verbinding aan hierdie werf is nie veilig nie</translation>
 <translation id="6177531123306197852">Koevert C2</translation>
@@ -3838,6 +3836,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8332188693563227489">Toegang tot <ph name="HOST_NAME" /> is geweier</translation>
 <translation id="833262891116910667">Merk</translation>
 <translation id="8339163506404995330">Bladsye in <ph name="LANGUAGE" /> sal nie vertaal word nie</translation>
+<translation id="8339275256517065202">Voltooi jou aankoop met Aanraak-ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuele kaartinskrywing is teen volle hoogte oopgemaak</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
@@ -4031,6 +4030,7 @@ Bykomende besonderhede:
 <translation id="8726549941689275341">Bladsygrootte:</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>
+<translation id="8731917264694569036">Voltooi jou aankoop met jou toestel</translation>
 <translation id="8733345475331865475">Motorversekering</translation>
 <translation id="8733764070897080460">Jy kan onderwerpe blokkeer wat jy nie wil hê met werwe gedeel moet word nie. Chrome vee ook jou onderwerpe wat ouer as 4 weke is, outomaties uit. Kom meer te wete</translation>
 <translation id="8734529307927223492">Jou <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" /></translation>
@@ -4224,6 +4224,7 @@ Bykomende besonderhede:
 <translation id="9116548361133462832">Meer oor advertensies in Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou reis te hervat en relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
 <translation id="9119042192571987207">Opgelaai</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> wil verifieer dat dit jy is</translation>
 <translation id="912327514020027767">Rompe</translation>
 <translation id="912414390325846156">Jy het voorheen “moenie toelaat nie” vir hierdie werf gekies</translation>
 <translation id="9128870381267983090">Koppel aan netwerk</translation>

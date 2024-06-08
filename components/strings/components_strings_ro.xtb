@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">Nivelul bateriei trebuie să fie peste <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462932596748424101">Rețele sociale</translation>
-<translation id="2463739503403862330">Completează</translation>
 <translation id="2465688316154986572">Capsare</translation>
 <translation id="2465914000209955735">Gestionează fișierele pe care le-ai descărcat în Chrome</translation>
 <translation id="2466004615675155314">Afișează informații de pe web</translation>
@@ -2485,12 +2484,10 @@
 <translation id="57838592816432529">Dezactivează sunetul</translation>
 <translation id="5784606427469807560">A apărut o eroare la confirmarea cardului. Verifică conexiunea la internet și încearcă din nou.</translation>
 <translation id="5785756445106461925">În plus, această pagină include alte resurse care nu sunt securizate. Aceste resurse sunt vizibile pentru alți utilizatori în cursul transferului și pot fi modificate de un atacator pentru a schimba aspectul paginii.</translation>
-<translation id="5786044859038896871">Dorești să completezi datele cardului de credit?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Metoda de plată se va șterge de pe acest dispozitiv</translation>
 <translation id="5800727402210090597">Service și reparații pentru telefoane mobile</translation>
 <translation id="580241730938216256">Începe actualizarea</translation>
-<translation id="5803412860119678065">Dorești să completezi datele <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5806871454498484178">Derularea și zoomul sunt blocate</translation>
 <translation id="5808435672482059465">Vezi istoricul Chrome</translation>

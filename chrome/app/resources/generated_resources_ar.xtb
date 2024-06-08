@@ -3955,7 +3955,6 @@
 <translation id="3873915545594852654">‏حدثت مشكلة في "وقت تشغيل التطبيقات في Chrome (ARC++)".</translation>
 <translation id="3874164307099183178">‏تفعيل خدمة "مساعد Google"</translation>
 <translation id="3875815154304214043">تم ضبط تطبيق <ph name="APP_NAME" /> بحيث يُفتَح في علامة تبويب متصفّح جديدة، وستُفتَح الروابط المتوافقة في المتصفّح أيضًا. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">الطلب في كل مرة</translation>
 <translation id="3877075909000773256">إعدادات ميزة "المشاركة عن قرب" لجهاز <ph name="USER_NAME" /> الذي يشارك البيانات عبر حساب <ph name="USER_EMAIL" /></translation>
 <translation id="3878445208930547646">لا يُسمح بالنسخ من هذا الموقع الإلكتروني.</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
@@ -6206,6 +6205,7 @@
 <translation id="5590418976913374224">تشغيل صوت عند بدء تشغيل الجهاز</translation>
 <translation id="5591465468509111843">أحرف متباعدة جدًا</translation>
 <translation id="5592595402373377407">لم تتوفر بيانات كافية بعد.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">‏تم إيقاف الميكروفون في إعدادات نظام Mac</translation>
 <translation id="5594899180331219722">اختيار ملف</translation>
 <translation id="5595307023264033512">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية: <ph name="TOTAL_USAGE" /></translation>
@@ -8886,7 +8886,6 @@
 <translation id="7648023614017258011">‏‫Chrome يتحقّق حاليًا من حزمة التثبيت</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7650178491875594325">استعادة البيانات المحليّة</translation>
-<translation id="7650511557061837441">تريد الإضافة "<ph name="TRIGGERING_EXTENSION_NAME" />" إزالة "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{تم إعداد بصمة إصبع واحدة.}zero{تم إعداد {COUNT} بصمة إصبع.}two{تم إعداد بصمتَي إصبع ({COUNT}).}few{تم إعداد {COUNT} بصمات إصبع.}many{تم إعداد {COUNT} بصمة إصبع.}other{تم إعداد {COUNT} بصمة إصبع.}}</translation>
 <translation id="7650677314924139716">‏إعداد استخدام البيانات الحالي هو "Wi-Fi فقط"</translation>
 <translation id="7650920359639954963">‏الجهاز الافتراضي (VM) غير مفعّل: <ph name="REASON" /></translation>

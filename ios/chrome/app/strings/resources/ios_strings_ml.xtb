@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1753905327828125965">കൂടുതൽ‍ സന്ദര്‍ശിച്ചത്</translation>
 <translation id="1757699834933698436">{count,plural, =1{ദുർബലമായ {count} പാസ്‌വേഡ്}other{ദുർബലമായ {count} പാസ്‌വേഡുകൾ}}</translation>
+<translation id="1764070164487214210">വഴികൾ</translation>
 <translation id="1766411844240160513">ഫോം സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">വ്യക്തിപരമാക്കിയ ഉള്ളടക്കം</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="3775743491439407556">സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
+<translation id="3785672280731998727">പ്രദർശിപ്പിക്കുന്ന പേര്</translation>
 <translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക:</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3808311849069021992">തിരയൽ എഞ്ചിൻ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
+<translation id="3812308602011798782">റിവ്യൂകൾ</translation>
 <translation id="3818045793209708987">ഈ പാക്കേജ് ട്രാക്ക് ചെയ്യുന്നത് നിർത്തി</translation>
 <translation id="3818293389945649617">അടുത്തത് കണ്ടെത്തുക</translation>
 <translation id="3819183753496523827">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">ഒരൊറ്റ ടാപ്പിലൂടെ നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഏത് ആപ്പിലും നേടൂ</translation>
 <translation id="4049507953662678203">നിങ്ങൾക്ക് നെറ്റ്‌വർക്ക് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കി, വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4054572406751135230">വാർത്തയും സ്പോർട്സും മറ്റും അറിഞ്ഞുകൊണ്ടിരിക്കൂ.</translation>
+<translation id="4068959193278821990">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കൂ...</translation>
 <translation id="4092655288299341041">സഹായം കാണിക്കുക</translation>
 <translation id="4105841739161771091">{count,plural, =1{വിലാസം ഇല്ലാതാക്കുക}other{വിലാസങ്ങൾ ഇല്ലാതാക്കുക}}</translation>
 <translation id="4108998448622696017">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">നെറ്റ്-എക്‌സ്‌പോർട്ട് ഡാറ്റ അയയ്‌ക്കുന്നതിന്, ക്രമീകരണ ആപ്പിൽ നിങ്ങളുടെ ഇമെയിൽ അക്കൗണ്ട് കോൺഫിഗർ ചെയ്യുക.</translation>
 <translation id="4124987746317609294">സമയ ശ്രേണി</translation>
 <translation id="4133265950310064865">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">വെബ്സൈറ്റിന് ഒരു ഫയൽ ഡൗൺലോഡ് ചെയ്ത് അത് നിങ്ങളുടെ കലണ്ടറിലേക്ക് ചേർക്കേണ്ടതുണ്ട്.</translation>
 <translation id="4152011295694446843">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ ഇവിടെ കാണാം</translation>
@@ -1034,6 +1039,7 @@
 <translation id="6232329973559504466">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
 <translation id="6236952928980352967">മുന്നറിയിപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6251835855431997163">സ്വയമേവ പൂരിപ്പിക്കൽ <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">ബ്രൗസറിന് പകരം ആപ്പിൽ ലിങ്കുകൾ തുറക്കുക.</translation>
 <translation id="6255097610484507482">ക്രെഡിറ്റ് കാര്‍ഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6266039999629596120">ശ്രദ്ധ ആവശ്യമാണ്</translation>
@@ -1212,6 +1218,7 @@
 <translation id="7022197654033719543">സൈറ്റ് വിവരങ്ങൾ</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="704692552158601232">ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ്</translation>
+<translation id="7055240621761583113">പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="7063811929043357292">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാവാണ്.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
@@ -1470,6 +1477,7 @@
 <translation id="834783239627985533">ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
 <translation id="8358401059263985056">അറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> എന്ന വിലാസത്തിൽ നിന്ന് Google Photos-ൽ ചിത്രം സംരക്ഷിക്കുന്നു...</translation>
+<translation id="8369246252708539904">പാസ്‌കീ ഇല്ലാതാക്കുക</translation>
 <translation id="8370406443343902172">ക്രമീകരണത്തിലേക്ക് പോകുക…</translation>
 <translation id="8374977641764177587">അറിയിപ്പുകൾ ഓണാക്കണോ?</translation>
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>

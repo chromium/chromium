@@ -1039,6 +1039,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6232329973559504466">Pesquisa na Navegação anónima</translation>
 <translation id="6236952928980352967">Restaurar aviso</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
+<translation id="6251835855431997163">Preencher automaticamente <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Abrir links na aplicação em vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6266039999629596120">Requer atenção</translation>
@@ -1217,6 +1218,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7022197654033719543">Informações do site</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="704692552158601232">App de navegador predefinida</translation>
+<translation id="7055240621761583113">Preencher automaticamente a palavra-passe</translation>
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Remover deste dispositivo</translation>

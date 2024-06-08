@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">अन छ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> सम्म अफ रहने छ</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
+<translation id="5228195526683428788">स्प्लिट स्क्रिन डिभाइडर</translation>
 <translation id="5229343007215035173">प्राइभेसी स्क्रिन अन/अफ गर्नुहोस्</translation>
 <translation id="5230516054153933099">विन्डो</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037">कुल भण्डारण <ph name="STORAGE_TOTAL_SIZE" /> मध्ये <ph name="STORAGE_IN_USE_SIZE" /> प्रयोग भइरहेको छ</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
 <translation id="6622679827379792051">आफ्नो फोनमा भएका एपहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
+<translation id="662279009180869175">स्प्लिट स्क्रिनको आकार बदल्न लेफ्ट तथा राइट एरो प्रयोग गर्नुहोस्</translation>
 <translation id="6624493541160101248">हालको डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
 <translation id="6625718907317144388">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> र अन्य एपसम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">डेस्क ३</translation>
 <translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6671661918848783005">तपाईंको Chromebook अनलक गर्न सकिएन</translation>
+<translation id="6676552993057022464">स्प्लिट स्क्रिनको आकार बदल्न अप तथा डाउन एरो प्रयोग गर्नुहोस्</translation>
 <translation id="6682029141988159141">क्लिपबोर्डमा भएको सामग्री पेस्ट गर्नुहोस्</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6686023075541098243">आफ्नो फोनमा भएका सूचनाहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
@@ -1664,7 +1667,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
-<translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7181691792034457084">नमस्ते। <ph name="PRODUCT_NAME" /> अरू उत्पादनभन्दा थोरै फरक छ।</translation>
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>

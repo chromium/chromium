@@ -3952,7 +3952,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="3873915545594852654">Un problème avec ARC++ s'est produit.</translation>
 <translation id="3874164307099183178">Activer l'Assistant Google</translation>
 <translation id="3875815154304214043">L'application <ph name="APP_NAME" /> est configurée pour s'ouvrir dans un nouvel onglet du navigateur, les liens pris en charge s'ouvriront aussi dans le navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Toujours me demander</translation>
 <translation id="3877075909000773256">Paramètres de partage à proximité pour l'appareil de <ph name="USER_NAME" />. Partage sous le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Copier du contenu de ce site n'est pas autorisé</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
@@ -6205,6 +6204,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5590418976913374224">Faire jouer un son au démarrage de l'appareil</translation>
 <translation id="5591465468509111843">Lettres très espacées</translation>
 <translation id="5592595402373377407">Données insuffisantes pour l'instant.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Le microphone est désactivé dans les paramètres système du Mac</translation>
 <translation id="5594899180331219722">Sélectionner un fichier</translation>
 <translation id="5595307023264033512">Espace de stockage total utilisé par les sites : <ph name="TOTAL_USAGE" /></translation>
@@ -8878,7 +8878,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7648023614017258011">Chrome vérifie l'ensemble d'installation</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7650178491875594325">Restaurez les données locales</translation>
-<translation id="7650511557061837441">« <ph name="TRIGGERING_EXTENSION_NAME" /> » souhaite désinstaller « <ph name="EXTENSION_NAME" /> ».</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 empreinte digitale configurée}one{{COUNT} empreinte digitale configurée}other{{COUNT} empreintes digitales configurées}}</translation>
 <translation id="7650677314924139716">Le paramètre actuel d'utilisation de données est Wi-Fi seulement</translation>
 <translation id="7650920359639954963">Non activée : <ph name="REASON" /></translation>

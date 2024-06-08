@@ -795,7 +795,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2456755709261364512">Baterie musí být nabitá na více než <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Aktuální</translation>
 <translation id="2462932596748424101">Sociální sítě</translation>
-<translation id="2463739503403862330">Vyplnit</translation>
 <translation id="2465688316154986572">Sponka</translation>
 <translation id="2465914000209955735">Spravovat soubory, které jste v Chromu stáhli</translation>
 <translation id="2466004615675155314">Zobrazit informace z webu</translation>
@@ -2481,12 +2480,10 @@ Kontaktujte administrátora systému.</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784606427469807560">Při ověřování vaší karty došlo k problému. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="5785756445106461925">Tato stránka obsahuje ještě další nezabezpečené zdroje. Tyto zdroje budou během přenosu moci zobrazit jiní uživatelé a případní útočníci je mohou upravit a změnit tak vzhled stránky.</translation>
-<translation id="5786044859038896871">Chcete vyplnit informace o kartě?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tato platební metoda bude z tohoto zařízení smazána</translation>
 <translation id="5800727402210090597">Opravy a služby pro mobilní telefony</translation>
 <translation id="580241730938216256">Spustit aktualizaci</translation>
-<translation id="5803412860119678065">Chcete vyplnit informace o kartě <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5806871454498484178">Posouvání a přibližování je blokováno</translation>
 <translation id="5808435672482059465">Zobrazit historii Chromu</translation>
@@ -2676,6 +2673,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6167577165590485365">Poslední pokus o načtení:</translation>
 <translation id="617256461084925519">Google Chrome se pokouší ověřit vaši totožnost, aby mohl vyplnit vaše platební údaje.</translation>
+<translation id="6173208311907792313">Dokončete nákup pomocí Windows Hello</translation>
 <translation id="6176387967264100435">Tato cena je vysoká</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
 <translation id="6177531123306197852">Obálka C2</translation>
@@ -3832,6 +3830,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8332188693563227489">Přístup k webu <ph name="HOST_NAME" /> byl odepřen</translation>
 <translation id="833262891116910667">Zvýraznit</translation>
 <translation id="8339163506404995330">Stránky v jazyce <ph name="LANGUAGE" /> nebudou překládány</translation>
+<translation id="8339275256517065202">Dokončete nákup pomocí Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registrace virtuální karty je otevřena na celou výšku</translation>
 <translation id="8349305172487531364">Lišta záložek</translation>
@@ -4026,6 +4025,7 @@ Další podrobnosti:
 <translation id="8726549941689275341">Velikost stránky:</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731268612289859741">Bezpečnostní kód</translation>
+<translation id="8731917264694569036">Dokončete nákup pomocí svého zařízení</translation>
 <translation id="8733345475331865475">Pojištění automobilů</translation>
 <translation id="8733764070897080460">Témata, která nechcete sdílet s weby, můžete zablokovat. Chrome také automaticky maže témata starší než 4 týdny. Další informace</translation>
 <translation id="8734529307927223492">Váš <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" /></translation>
@@ -4219,6 +4219,7 @@ Další podrobnosti:
 <translation id="9116548361133462832">Další informace o reklamách v Chromu</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter obnovíte svou cestu a zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="9119042192571987207">Nahráno</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> chce ověřit vaši totožnost</translation>
 <translation id="912327514020027767">Sukně</translation>
 <translation id="912414390325846156">Toto oprávnění jste pro tento web dříve zakázali</translation>
 <translation id="9128870381267983090">Připojit k síti</translation>

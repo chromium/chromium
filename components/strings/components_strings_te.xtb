@@ -793,7 +793,6 @@
 <translation id="2456755709261364512">మీ బ్యాటరీ తప్పనిసరిగా <ph name="REQUIRED_BATTERY_PRECENT" />% కంటే ఎక్కువ ఛార్జ్ అయి ఉండాలి</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
 <translation id="2462932596748424101">సోషల్ నెట్‌వర్క్‌లు</translation>
-<translation id="2463739503403862330">పూరించు</translation>
 <translation id="2465688316154986572">స్టేపుల్</translation>
 <translation id="2465914000209955735">Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లను మేనేజ్ చేయండి</translation>
 <translation id="2466004615675155314">వెబ్ నుండి సమాచారాన్ని చూపించు</translation>
@@ -2486,12 +2485,10 @@
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5784606427469807560">మీ కార్డ్‌ను నిర్ధారించడంలో సమస్య ఏర్పడింది. మీ ఇంటర్నెట్ కనెక్షన్‌ని చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5785756445106461925">అలాగే, ఈ పేజీలో సురక్షితం కాని ఇతర వనరులు ఉన్నాయి. ఈ వనరులను బదిలీ చేస్తున్నప్పుడు ఇతరులు చూడగలరు మరియు దాడికి పాల్పడేవారు పేజీ రూపాన్ని మార్చేలా వీటిని ఎడిట్ చేయగలరు.</translation>
-<translation id="5786044859038896871">మీరు మీ కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ఈ పరికరం నుండి ఈ పేమెంట్ ఆప్షన్ తొలగించబడుతుంది</translation>
 <translation id="5800727402210090597">మొబైల్ ఫోన్ రిపేర్ &amp; సర్వీస్‌లు</translation>
 <translation id="580241730938216256">అప్‌డేట్‌ను ప్రారంభించండి</translation>
-<translation id="5803412860119678065">మీరు మీ <ph name="CARD_DETAIL" /> కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5806871454498484178">స్క్రోల్ చేయడం, జూమ్ చేయడం బ్లాక్ చేయబడింది</translation>
 <translation id="5808435672482059465">మీ Chrome హిస్టరీని చూడండి</translation>

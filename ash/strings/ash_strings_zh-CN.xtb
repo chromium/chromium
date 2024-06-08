@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1240638468526743569">某个应用</translation>
+<translation id="1242198791279543032">通知已静音</translation>
 <translation id="1242883863226959074">设备</translation>
 <translation id="1245644940275736236">开启 Google 助理</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
@@ -1661,7 +1662,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />秒后恢复到原分辨率</translation>
-<translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7181691792034457084">您好！<ph name="PRODUCT_NAME" /> 有一些变化。</translation>
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>

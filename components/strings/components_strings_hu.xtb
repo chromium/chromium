@@ -798,7 +798,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2456755709261364512">Az akkumulátor töltöttségi szintjének <ph name="REQUIRED_BATTERY_PRECENT" />% felett kell lennie.</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2462932596748424101">Közösségi hálózatok</translation>
-<translation id="2463739503403862330">Kitöltés</translation>
 <translation id="2465688316154986572">Kapocs</translation>
 <translation id="2465914000209955735">Kezelheti a Chrome-ban letöltött fájlokat.</translation>
 <translation id="2466004615675155314">Az internetről származó információk megjelenítése</translation>
@@ -2489,12 +2488,10 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5784606427469807560">A kártya ellenőrzése során hiba történt. Ellenőrizze az internetkapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="5785756445106461925">Emellett az oldal azonban más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
-<translation id="5786044859038896871">Ki szeretné tölteni a kártyaadatait?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ez a fizetési mód törölve lesz erről az eszközről.</translation>
 <translation id="5800727402210090597">Mobiltelefon-javítás és kapcsolódó szolgáltatások</translation>
 <translation id="580241730938216256">Frissítés indítása</translation>
-<translation id="5803412860119678065">Ki szeretné tölteni <ph name="CARD_DETAIL" /> kártyájának adataival?</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5806871454498484178">Görgetés és nagyítás letiltva</translation>
 <translation id="5808435672482059465">Chrome-előzmények megtekintése</translation>
@@ -2685,6 +2682,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6167577165590485365">Legutóbbi lekérési próbálkozás:</translation>
 <translation id="617256461084925519">A Google Chrome megpróbálja ellenőrizni az Ön személyazonosságát, hogy kitölthesse a fizetési adatokat.</translation>
+<translation id="6173208311907792313">Vásárlás befejezése a Windows Hello használatával</translation>
 <translation id="6176387967264100435">Ez az ár magas</translation>
 <translation id="6177128806592000436">Kapcsolata a webhellyel nem biztonságos</translation>
 <translation id="6177531123306197852">C2 boríték</translation>
@@ -3846,6 +3844,7 @@ További részletek:
 <translation id="8332188693563227489">A hozzáférés megtagadva a következőhöz: <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Kiemelés</translation>
 <translation id="8339163506404995330">A(z) <ph name="LANGUAGE" /> nyelvű oldalak nem lesznek lefordítva</translation>
+<translation id="8339275256517065202">Vásárlás befejezése a Touch ID használatával</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">A Virtuális kártya regisztrációja párbeszédpanel teljes magasságban van megnyitva</translation>
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
@@ -4040,6 +4039,7 @@ További részletek:
 <translation id="8726549941689275341">Oldalméret:</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8731268612289859741">Biztonsági kód</translation>
+<translation id="8731917264694569036">Vásárlás befejezése az eszköz használatával</translation>
 <translation id="8733345475331865475">Gépjármű-biztosítás</translation>
 <translation id="8733764070897080460">Letilthatja azokat a témákat, amelyeket nem szeretne a webhelyekkel megosztani. A Chrome a négy hétnél régebbi témákat is automatikusan törli. További információ.</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> eszközét a(z) <ph name="MANAGER" /> kezeli</translation>
@@ -4233,6 +4233,7 @@ További részletek:
 <translation id="9116548361133462832">További információ a Chrome hirdetésbeállításairól</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt, ha folytatni szeretné a keresést, és meg szeretné tekinteni a releváns tevékenységet Chrome-előzményei között</translation>
 <translation id="9119042192571987207">Feltöltve</translation>
+<translation id="9119308212838450857">A(z) <ph name="PROVIDER_ORIGIN" /> ellenőrizni akarja az Ön személyazonosságát</translation>
 <translation id="912327514020027767">Szoknyák</translation>
 <translation id="912414390325846156">Korábban úgy döntött, hogy nem engedélyezi ezen a webhelyen</translation>
 <translation id="9128870381267983090">Csatlakozás hálózathoz</translation>

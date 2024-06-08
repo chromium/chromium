@@ -799,7 +799,6 @@
 <translation id="2456755709261364512">Ձեր մարտկոցի լիցքը պետք է <ph name="REQUIRED_BATTERY_PRECENT" />%-ից բարձր լինի</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2462932596748424101">Սոցիալական ցանցեր</translation>
-<translation id="2463739503403862330">Լրացնել</translation>
 <translation id="2465688316154986572">Ամրակ</translation>
 <translation id="2465914000209955735">Կառավարել Chrome-ում ձեր ներբեռնած ֆայլերը</translation>
 <translation id="2466004615675155314">Ցույց տալ տեղեկություններ համացանցից</translation>
@@ -2496,12 +2495,10 @@
 <translation id="57838592816432529">Անջատել ձայնը</translation>
 <translation id="5784606427469807560">Չհաջողվեց հաստատել ձեր քարտը: Ստուգեք ձեր ինտերնետ կապը և նորից փորձեք:</translation>
 <translation id="5785756445106461925">Բացի այդ, այս էջը պարունակում է այլ ռեսուրսներ, որոնք ապահով չեն: Այս ռեսուրսները տարանցման ժամանակ կարող են դիտվել ուրիշների կողմից և փոփոխվել հարձակվողի կողմից, ինչը կփոխի էջի տեսքը:</translation>
-<translation id="5786044859038896871">Ուզո՞ւմ եք լրացնել ձեր քարտի տվյալները:</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Վճարման այս եղանակը կջնջվի այս սարքից</translation>
 <translation id="5800727402210090597">Բջջային հեռախոսների վերանորոգում և սպասարկում</translation>
 <translation id="580241730938216256">Թարմացնել</translation>
-<translation id="5803412860119678065">Ուզո՞ւմ եք լրացնել ձեր <ph name="CARD_DETAIL" /> քարտի տվյալները:</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5806871454498484178">Ոլորումով մասշտաբի փոփոխումն արգելափակված է</translation>
 <translation id="5808435672482059465">Դիտել Chrome-ի պատմությունը</translation>
@@ -2692,6 +2689,7 @@
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6167577165590485365">Բեռնման վերջին փորձը՝</translation>
 <translation id="617256461084925519">Google Chrome-ը փորձում է հաստատել ձեր ինքնությունը, որպեսզի կարողանա լրացնել ձեր վճարային տվյալները։</translation>
+<translation id="6173208311907792313">Ավարտեք գնումը Windows Hello-ի միջոցով</translation>
 <translation id="6176387967264100435">Սա բարձր գին է</translation>
 <translation id="6177128806592000436">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
@@ -3849,6 +3847,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> մուտքը մերժվել է</translation>
 <translation id="833262891116910667">Նշել</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> էջերը չեն թարգմանվի</translation>
+<translation id="8339275256517065202">Ավարտեք գնումը Touch ID-ի միջոցով</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Վիրտուալ քարտի գրանցման պատուհանը բացված է ամբողջությամբ</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
@@ -4042,6 +4041,7 @@
 <translation id="8726549941689275341">Էջի չափսը`</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
+<translation id="8731917264694569036">Ավարտեք գնումը ձեր հեռախոսով</translation>
 <translation id="8733345475331865475">Ավտոապահովագրություն</translation>
 <translation id="8733764070897080460">Դուք կարող եք արգելափակել թեմաները, որոնցով չեք ցանկանում կիսվել կայքերի հետ։ Chrome-ը նաև ավտոմատ կերպով ջնջում է 4 շաբաթից հին ձեր թեմաները։ Իմանալ ավելին</translation>
 <translation id="8734529307927223492">Ձեր <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
@@ -4235,6 +4235,7 @@
 <translation id="9116548361133462832">Իմանալ ավելին Chrome-ում ցուցադրվող գովազդի մասին</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="9119042192571987207">Վերբեռնված է</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> կայքն ուզում է հաստատել ձեր ինքնությունը</translation>
 <translation id="912327514020027767">Կիսաշրջազգեստներ</translation>
 <translation id="912414390325846156">Դուք նախկինում մերժել եք թույլտվությունն այս կայքի համար</translation>
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>

@@ -3946,7 +3946,6 @@
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟 Google 助理</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設為會在新的瀏覽器分頁中開啟，支援的連結也會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">每次都詢問我</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
 <translation id="3878445208930547646">不允許複製這個網站的內容</translation>
 <translation id="3879748587602334249">下載管理員</translation>
@@ -6198,6 +6197,7 @@
 <translation id="5590418976913374224">裝置開啟時播放音效</translation>
 <translation id="5591465468509111843">字距很寬</translation>
 <translation id="5592595402373377407">目前還沒有足夠的資料。</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mac 系統設定中已關閉麥克風</translation>
 <translation id="5594899180331219722">選取檔案</translation>
 <translation id="5595307023264033512">網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
@@ -8866,7 +8866,6 @@
 <translation id="7648023614017258011">Chrome 正在驗證安裝套件</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7650178491875594325">還原本機資料</translation>
-<translation id="7650511557061837441">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除「<ph name="EXTENSION_NAME" />」。</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{已設定 1 枚指紋}other{已設定 {COUNT} 枚指紋}}</translation>
 <translation id="7650677314924139716">目前的數據用量設定是僅限 Wi-Fi</translation>
 <translation id="7650920359639954963">未啟用：<ph name="REASON" /></translation>

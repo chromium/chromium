@@ -125,7 +125,6 @@
 <translation id="3155163173539279776">क्रोमियम फिर से लॉन्च करें</translation>
 <translation id="3179665906251668410">क्रोमियम गु&amp;प्त विंडो में लिंक खोलें</translation>
 <translation id="3185330573522821672">अपनी नई Chromium प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
-<translation id="318879170965183683">साइन इन रहने के दौरान, Chromium में Google खाते से अपने पासवर्ड इस्तेमाल किए जा सकते हैं</translation>
 <translation id="3190315855212034486">ओह! क्रोमियम क्रैश हुआ. अभी फिर से लॉन्‍च करें?</translation>
 <translation id="3224847870593914902">Chromium से अपना Google खाता हटाने के लिए, सेटिंग पेज पर जाकर Chromium से साइन आउट करें</translation>
 <translation id="3258596308407688501">क्रोमियम इसकी डेटा निर्देशिका में पढ़ या लिख नहीं सकता:
@@ -254,7 +253,6 @@
 <translation id="5386450000063123300">क्रोमियम अपडेट हो रहा है (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">क्रोमियम में साइन-इन करने दें</translation>
 <translation id="5398878173008909840">क्रोमियम का एक नया वर्शन उपलब्ध है.</translation>
-<translation id="5400757303519321734">Gmail या YouTube जैसी Google की सेवाओं में <ph name="USER_EMAIL" /> से साइन इन करने पर, Chromium में इसी खाते से साइन इन किया जा सकता है</translation>
 <translation id="5405650547142096840">क्रोमियम से निकालें</translation>
 <translation id="5427571867875391349">क्रोमियम को अपने डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - क्रोमियम बीटा</translation>
@@ -380,7 +378,6 @@
 <translation id="7045244423563602563">Chromium को पसंद के मुताबिक बनाएं</translation>
 <translation id="705851970750939768">क्रोमियम अपडेट करें</translation>
 <translation id="7067091210845072982">अगर किसी इमेज के बारे में मददगार जानकारी मौजूद नहीं है, तो 'क्रोमियम' उसके बारे में जानकारी देने की कोशिश करेगा. जानकारी तैयार करने के लिए, इमेज Google को भेजी जाती हैं.</translation>
-<translation id="7100062358172078145">मुझे Chromium में साइन इन न करें</translation>
 <translation id="7141270731789036260">Chrome for Testing को पसंद के मुताबिक बनाएं</translation>
 <translation id="7159538860914681762">अपने सभी डिवाइसों पर पासवर्ड वगैरह सेव और इस्तेमाल करने के लिए, Chromium में साइन इन करें</translation>
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> तक Chromium का इस्तेमाल न करने पर, आपका संगठन इसका डेटा मिटा देता है. इसमें ब्राउज़िंग का इतिहास, ऑटोमैटिक भरी जाने वाली जानकारी, और डाउनलोड की गई फ़ाइलें शामिल हो सकती हैं.</translation>
@@ -502,7 +499,6 @@
 <translation id="9158494823179993217">आपके सिस्टम एडमिन ने 'क्रोमियम' को इस तरह कॉन्फ़िगर किया है कि वह <ph name="TARGET_URL_HOSTNAME" /> को ऐक्सेस करने के लिए कोई दूसरा ब्राउज़र खोले.</translation>
 <translation id="9185526690718004400">&amp;Chromium को अपडेट करने के लिए फिर से लॉन्च करें</translation>
 <translation id="9190841055450128916">क्रोमियम (mDNS-In)</translation>
-<translation id="9220341227291329091">मुझे Chromium में अपने-आप साइन इन करें</translation>
 <translation id="924957577793602335">Chromium को पसंद के मुताबिक बनाएं</translation>
 <translation id="93478295209880648">हो सकता है क्रोमियम सही तरीके से काम ना करें क्‍योंकि अब वह Windows XP या Windows Vista पर काम नहीं करता है</translation>
 <translation id="942598560705308788">वे सर्टिफ़िकेट जिन्हें Chromium मैनेज करता है</translation>

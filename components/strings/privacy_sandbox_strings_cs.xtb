@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="33479675708419823">Když jste do prohlížeče Chrome přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chrome podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí. <ph name="LINK_BEGIN" />Jak ochrana IP adresy funguje<ph name="LINK_END" /></translation>
+<translation id="3529311220178827364">Další informace o skrytí IP adresy</translation>
 <translation id="4301151630239508244">Témata reklam jsou jen jednou z mnoha věcí, které web může použít k personalizaci reklam. Weby vám mohou reklamy zobrazovat i bez témat reklam, ale mohou být méně přizpůsobené. <ph name="BEGIN_LINK_1" />Další informace o správě ochrany soukromí v reklamách<ph name="END_LINK_1" /></translation>
+<translation id="4598427486995631491">Skrýt IP adresu</translation>
+<translation id="6371812158043974664">Když jste do prohlížeče Chromium přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chromium podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí. <ph name="LINK_BEGIN" />Jak ochrana IP adresy funguje<ph name="LINK_END" /></translation>
 </translationbundle>

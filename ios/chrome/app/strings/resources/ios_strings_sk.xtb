@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Ukladať heslá</translation>
 <translation id="1753905327828125965">Najviac navšt.</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} slabé heslo}few{{count} slabé heslá}many{{count} Weak Passwords}other{{count} slabých hesiel}}</translation>
+<translation id="1764070164487214210">Trasa</translation>
 <translation id="1766411844240160513">Automaticky doplniť formulár</translation>
 <translation id="1767766085187034454">Prekladač Google</translation>
 <translation id="1769106850515800431">Prispôsobený obsah</translation>
@@ -541,12 +542,14 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3771033907050503522">Karty inkognito</translation>
 <translation id="3775743491439407556">Synchronizácia nefunguje</translation>
 <translation id="3779810277399252432">Internetové pripojenie nie je k dispozícii.</translation>
+<translation id="3785672280731998727">Zobrazované meno</translation>
 <translation id="3789294999358192700">Postupujte takto:</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="380329542618494757">Meno</translation>
 <translation id="3803696231112616155">Ponúkať preklad tohto webu</translation>
 <translation id="3808311849069021992">Zobraziť podrobnosti o vyhľadávači</translation>
 <translation id="3810973564298564668">Spravovať</translation>
+<translation id="3812308602011798782">Recenzie</translation>
 <translation id="3818045793209708987">Sledovanie tejto zásielky bolo zastavené</translation>
 <translation id="3818293389945649617">Vyhľadať ďalšie</translation>
 <translation id="3819183753496523827">Ste offline. Skontrolujte internetové pripojenie a skúste to znova.</translation>
@@ -594,6 +597,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4045648459118332842">Získajte svoje uložené heslá v ľubovoľnej aplikácii jedným klepnutím</translation>
 <translation id="4049507953662678203">Uistite sa, že máte pripojenie k sieti, a skúste to znova.</translation>
 <translation id="4054572406751135230">Udržte si prehľad o správach, športe a ďalších témach.</translation>
+<translation id="4068959193278821990">Zapnúť rozšírenú ochranu…</translation>
 <translation id="4092655288299341041">Zobraziť pomocníka</translation>
 <translation id="4105841739161771091">{count,plural, =1{Odstrániť adresu}few{Odstrániť adresy}many{Odstrániť adresy}other{Odstrániť adresy}}</translation>
 <translation id="4108998448622696017">Zisťuje škodlivé udalosti a upozorní vás, keď k nim dôjde.</translation>
@@ -605,6 +609,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4121993058175073134">Ak chcete odoslať údaje čistého exportu, v aplikácii Nastavenia nakonfigurujte svoj e-mailový účet.</translation>
 <translation id="4124987746317609294">Obdobie</translation>
 <translation id="4133265950310064865">Rozšírená ochrana</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4148023517926189160">Tento web chce stiahnuť súbor a pridať ho do vášho kalendára.</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
@@ -1472,6 +1477,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="834783239627985533">Najnavštevovanejšie weby</translation>
 <translation id="8358401059263985056">Zapnúť upozornenia</translation>
 <translation id="8364841868226993049">Obrázok používateľa <ph name="USER_EMAIL" /> sa ukladá vo Fotkách Google…</translation>
+<translation id="8369246252708539904">Odstrániť prístupový kľúč</translation>
 <translation id="8370406443343902172">Prejsť do Nastavení…</translation>
 <translation id="8374977641764177587">Chcete zapnúť upozornenia?</translation>
 <translation id="8378714024927312812">Spravované vašou organizáciou</translation>

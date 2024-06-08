@@ -1034,6 +1034,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6232329973559504466">Ricerca in incognito</translation>
 <translation id="6236952928980352967">Ripristina avviso</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
+<translation id="6251835855431997163">Compilazione automatica <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Apri i link all'interno dell'app invece che nel browser.</translation>
 <translation id="6255097610484507482">Modifica carta di credito</translation>
 <translation id="6266039999629596120">Richiede attenzione</translation>
@@ -1212,6 +1213,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7022197654033719543">Informazioni sito</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="704692552158601232">App browser predefinita</translation>
+<translation id="7055240621761583113">Compila automaticamente la password</translation>
 <translation id="7063811929043357292">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Rimuovi l'account da questo dispositivo</translation>

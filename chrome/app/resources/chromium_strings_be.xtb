@@ -127,7 +127,6 @@
 <translation id="3155163173539279776">Перазапусціць Chromium</translation>
 <translation id="3179665906251668410">Адкрыць спасылку ў акне інко&amp;гніта ў Chromium</translation>
 <translation id="3185330573522821672">Наладзьце новы профіль Chromium</translation>
-<translation id="318879170965183683">Калі вы ўвайшлі ва Уліковы запіс Google, вы можаце выкарыстоўваць паролі з яго ў Chromium</translation>
 <translation id="3190315855212034486">Памылка! Збой Chromium. Перазапусціць?</translation>
 <translation id="3224847870593914902">Каб выдаліць свой Уліковы Google з Chromium, выйдзіце з Chromium на старонцы налад</translation>
 <translation id="3258596308407688501">Chromium не можа чытаць з каталога даных і запісваць у яго:
@@ -256,7 +255,6 @@
 <translation id="5386450000063123300">Chromium абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дазволіць уваход у Chromium</translation>
 <translation id="5398878173008909840">Даступная новая версія Chromium.</translation>
-<translation id="5400757303519321734">Калі вы ўваходзіце ў сэрвісы Google, напрыклад Gmail ці YouTube, праз уліковы запіс <ph name="USER_EMAIL" />, вы можаце таксама выкарыстоўваць яго і для ўваходу ў Chromium</translation>
 <translation id="5405650547142096840">Выдаліць з Chromium</translation>
 <translation id="5427571867875391349">Зрабіць Chromium стандартным браўзерам</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бэта-версія)</translation>
@@ -381,7 +379,6 @@
 <translation id="7045244423563602563">Дастасуйце Chromium да сваіх мэт</translation>
 <translation id="705851970750939768">Абнавіць Chromium</translation>
 <translation id="7067091210845072982">Калі відарыс не мае прыдатнага апісання, Chromium паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google.</translation>
-<translation id="7100062358172078145">Не ўваходзіць у Chromium</translation>
 <translation id="7141270731789036260">Наладзіць Chrome for Testing</translation>
 <translation id="7159538860914681762">Каб захоўваць і выкарыстоўваць паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chromium</translation>
 <translation id="7173822816570314652">Ваша арганізацыя выдаляе даныя Chromium, калі імі не карысталіся на працягу <ph name="TIMEOUT_DURATION" />. Даныя могуць уключаць у сябе гісторыю, спампоўкі і звесткі для аўтазапаўнення.</translation>
@@ -503,7 +500,6 @@
 <translation id="9158494823179993217">Ваш сістэмны адміністратар наладзіў Chromium, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Перазапусціць, каб абнавіць &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Аўтаматычна ўваходзіць у Chromium</translation>
 <translation id="924957577793602335">Дастасуйце Chromium да сваіх мэт</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
 <translation id="942598560705308788">Сертыфікаты, якімі кіруе Chromium</translation>

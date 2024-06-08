@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1240638468526743569">Հավելված</translation>
+<translation id="1242198791279543032">Ծանուցումների ձայնն անջատված է</translation>
 <translation id="1242883863226959074">սարք</translation>
 <translation id="1245644940275736236">Բացել Օգնականը</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
@@ -1663,7 +1664,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Վերադարձ նախորդ լուծաչափին <ph name="TIMEOUT_SECONDS" /> վայրկյանից</translation>
-<translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7181691792034457084">Ողջո՛ւյն։ <ph name="PRODUCT_NAME" />-ը մի քիչ փոխվել է։</translation>
 <translation id="7188494361780961876">Ընտրացանկը տեղափոխվեց էկրանի վերևի ձախ անկյուն։</translation>

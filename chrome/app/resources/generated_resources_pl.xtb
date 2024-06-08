@@ -3937,7 +3937,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3874164307099183178">Włącz Asystenta Google</translation>
 <translation id="3875815154304214043">Aplikacja <ph name="APP_NAME" /> jest skonfigurowana do otwierania się w nowej karcie przeglądarki. W przeglądarce będą się też otwierać obsługiwane linki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Zmieniono rozmiar okien w górę</translation>
-<translation id="3876833929577368454">Pytaj mnie za każdym razem</translation>
 <translation id="3877075909000773256">Ustawienia Udostępniania w pobliżu dotyczące urządzenia, którego używa <ph name="USER_NAME" />, przypisane do konta <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Kopiowanie z tej witryny jest niedozwolone</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
@@ -6191,6 +6190,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5590418976913374224">Odtwarzaj dźwięk podczas uruchamiania urządzenia</translation>
 <translation id="5591465468509111843">Bardzo szeroko</translation>
 <translation id="5592595402373377407">Brak wystarczającej ilości danych.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon jest wyłączony w ustawieniach systemowych Maca</translation>
 <translation id="5594899180331219722">Wybierz plik</translation>
 <translation id="5595307023264033512">Całkowita pamięć używana przez strony: <ph name="TOTAL_USAGE" /></translation>
@@ -8868,7 +8868,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7648023614017258011">Chrome weryfikuje pakiet instalacyjny</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7650178491875594325">Przywróć dane lokalne</translation>
-<translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />” chce usunąć „<ph name="EXTENSION_NAME" />”.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Skonfigurowany jest 1 odcisk palca}few{Skonfigurowane są {COUNT} odciski palca}many{Skonfigurowanych jest {COUNT} odcisków palca}other{Skonfigurowane jest {COUNT} odcisku palca}}</translation>
 <translation id="7650677314924139716">Bieżące ustawienie transmisji danych: Tylko Wi-Fi</translation>
 <translation id="7650920359639954963">Niewłączone: <ph name="REASON" /></translation>

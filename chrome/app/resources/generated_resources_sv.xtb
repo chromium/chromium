@@ -3962,7 +3962,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3873915545594852654">Ett problem med ARC++ uppstod.</translation>
 <translation id="3874164307099183178">Aktivera Google Assistent</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> har ställts in på att öppnas på en ny webbläsarflik. Länkar som stöds öppnas också i webbläsaren. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Fråga mig varje gång</translation>
 <translation id="3877075909000773256">Närdelningsinställningar för enheten som tillhör <ph name="USER_NAME" /> och som delar under kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Det är inte tillåtet att kopiera från den här webbplatsen</translation>
 <translation id="3879748587602334249">Nedladdningshanterare</translation>
@@ -6216,6 +6215,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5590418976913374224">Spela upp ljud vid start av enheten</translation>
 <translation id="5591465468509111843">Mycket brett</translation>
 <translation id="5592595402373377407">Det finns inte tillräckligt mycket data ännu.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon har inaktiverats i systeminställningarna för Mac.</translation>
 <translation id="5594899180331219722">Välj fil</translation>
 <translation id="5595307023264033512">Totalt lagringsutrymme som används av webbplatser: <ph name="TOTAL_USAGE" /></translation>
@@ -8888,7 +8888,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7648023614017258011">Chrome verifierar installationspaketet</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7650178491875594325">Återställ lokal data</translation>
-<translation id="7650511557061837441"><ph name="TRIGGERING_EXTENSION_NAME" /> vill ta bort <ph name="EXTENSION_NAME" />.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingeravtryck har konfigurerats}other{{COUNT} fingeravtryck har konfigurerats}}</translation>
 <translation id="7650677314924139716">Den aktuella inställningen för dataanvändning är Endast wifi</translation>
 <translation id="7650920359639954963">Inte aktiverad: <ph name="REASON" /></translation>

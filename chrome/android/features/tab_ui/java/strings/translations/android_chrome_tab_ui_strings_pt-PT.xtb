@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>
 <translation id="2118649612461486615">Informações da loja</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. O separador de navegação anónima não vai estar disponível.}other{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. Os # separadores de navegação anónima não vão estar disponíveis.}}</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar separador}other{Desagrupar separadores}}</translation>
 <translation id="2271452184061378400">Os seus grupos de separadores são guardados aqui</translation>

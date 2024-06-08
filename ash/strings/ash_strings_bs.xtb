@@ -310,6 +310,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
+<translation id="2223384056430485343">Na podijeljenom zaslonu</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je prisutan zaštićeni sadržaj</translation>
 <translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="2248634276911611268">Otvaranje linka u novoj kartici i prelazak na tu novu karticu</translation>
@@ -1667,7 +1668,6 @@ Nova instalacija</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Vraćanje na staru rezoluciju za <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Otvori postavke</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7181691792034457084">Zdravo. <ph name="PRODUCT_NAME" /> je malo drugačiji.</translation>
 <translation id="7188494361780961876">Meni je pomjeren u gornji lijevi ugao ekrana.</translation>

@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">ባትሪዎ ከ<ph name="REQUIRED_BATTERY_PRECENT" />% በላይ ኃይል መሙላት አለበት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="2462932596748424101">ማኅበራዊ አውታረ መረቦች</translation>
-<translation id="2463739503403862330">ሙላ</translation>
 <translation id="2465688316154986572">ስቴፕለር ምታ</translation>
 <translation id="2465914000209955735">በChrome ውስጥ ያወረዷቸውን ፋይሎች ያቀናብሩ</translation>
 <translation id="2466004615675155314">ከድሩ መረጃ አሳይ</translation>
@@ -2484,12 +2483,10 @@
 <translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5784606427469807560">የእርስዎን ካርድ ማረጋገጥ ላይ አንድ ችግር ነበር። የበይነመረብ ግንኙነትዎን ይፈትሹት እና እንደገና ይሞክሩ።</translation>
 <translation id="5785756445106461925">በተጨማሪ፣ ይህ ገፅ ደህንነታቸው ያልተጠበቀ ሌሎች ንብረቶችን አካትቷል። እነዚህ ንብረቶች በሽግግር ወቅት በሌሎች ሊታዩ ይችላሉ፣ እናም የገጹን መልክ ለመለወጥ በአጥቂዎች ሊቀየሩ ይችላሉ።</translation>
-<translation id="5786044859038896871">የካርድዎን መረጃ መሙላት ይፈልጋሉ?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ይህ የመክፈያ ዘዴ ከዚህ መሣሪያ ላይ ይሰረዛል</translation>
 <translation id="5800727402210090597">የተንቀሳቃሽ ስልክ ጥገና እና አገልግሎቶች</translation>
 <translation id="580241730938216256">ዝማኔውን ጀምር</translation>
-<translation id="5803412860119678065">የእርስዎን <ph name="CARD_DETAIL" /> መሙላት ይፈልጋሉ?</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5806871454498484178">ማሸብለል እና ማጉላት ታግዷል</translation>
 <translation id="5808435672482059465">የChrome ታሪክዎን ይመልከቱ</translation>
@@ -2680,6 +2677,7 @@
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6167577165590485365">ለመጨረሻ ጊዜ ለማምጣት የተሞከረው፡-</translation>
 <translation id="617256461084925519">Google Chrome የክፍያ መረጃዎን መሙላት እንዲችል እርስዎ መሆንዎን ለማረጋገጥ እየሞከረ ነው።</translation>
+<translation id="6173208311907792313">Windows Helloን በመጠቀም ግዢዎን ያጠናቅቁ</translation>
 <translation id="6176387967264100435">ይህ ዋጋ ከፍተኛ ነው</translation>
 <translation id="6177128806592000436">ወደዚህ ጣቢያ ያልዎት ግንኙነት ደህንነቱ አስተማማኝ አይደለም</translation>
 <translation id="6177531123306197852">ሲ2 ፖስታ</translation>
@@ -3837,6 +3835,7 @@
 <translation id="8332188693563227489">የ<ph name="HOST_NAME" /> መዳረሻ ተከልክሏል</translation>
 <translation id="833262891116910667">አድምቅ</translation>
 <translation id="8339163506404995330">በ<ph name="LANGUAGE" /> ያሉ ገጾች አይተረጎሙም</translation>
+<translation id="8339275256517065202">Touch IDን በመጠቀም ግዢዎን ያጠናቅቁ</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">የምናባዊ ካርድ ምዝገባ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
@@ -4031,6 +4030,7 @@
 <translation id="8726549941689275341">የገጽ መጠን፦</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731268612289859741">የደህንነት ኮድ</translation>
+<translation id="8731917264694569036">መሣሪያዎን በመጠቀም ግዢዎን ያጠናቅቁ</translation>
 <translation id="8733345475331865475">የመኪና መድህን</translation>
 <translation id="8733764070897080460">ከጣቢያዎች ጋር እንዲጋሩ የማይፈልጓቸውን ርዕሶች ማገድ ይችላሉ። እንዲሁም Chrome ከ4 ሳምንታት በላይ የቆዩ ርዕሶችዎን በራስ-ሰር ሰርዝ ይሰርዛል። የበለጠ ለመረዳት</translation>
 <translation id="8734529307927223492">የእርስዎ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው</translation>
@@ -4224,6 +4224,7 @@
 <translation id="9116548361133462832">በChrome ውስጥ ስላሉ ማስታወቂያዎች ተጨማሪ</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ጠቅ ያድርጉ ከዚያ ጉዞዎን ከቆመበት ለመቀጠል ያስገቡ እና በChrome ታሪክዎ ውስጥ አግባብነት ያለው እንቅስቃሴን ይመልከቱ</translation>
 <translation id="9119042192571987207">ተሰቅሏል</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="912327514020027767">ቀሚሶች</translation>
 <translation id="912414390325846156">ከዚህ በፊት ለዚህ ጣቢያ አይፈቀድ የሚለውን መርጠዋል</translation>
 <translation id="9128870381267983090">ከአውታረ መረብ ጋር ይገናኙ</translation>

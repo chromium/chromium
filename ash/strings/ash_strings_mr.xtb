@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
 <translation id="1240638468526743569">ॲप</translation>
+<translation id="1242198791279543032">नोटिफिकेशन म्यूट केली आहेत</translation>
 <translation id="1242883863226959074">डिव्हाइस</translation>
 <translation id="1245644940275736236">Assistant वर जा</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
@@ -1663,7 +1664,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> मध्ये जुन्या रिझोल्युशनवर परत करत आहे</translation>
-<translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7181691792034457084">हॅलो. <ph name="PRODUCT_NAME" /> थोडे वेगळे आहे.</translation>
 <translation id="7188494361780961876">मेनू स्क्रीनच्या वरच्या डाव्या कोपर्‍यात हलवला.</translation>

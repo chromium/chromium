@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">רמת הטעינה של הסוללה צריכה להיות גבוהה מ-<ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2462932596748424101">רשתות חברתיות</translation>
-<translation id="2463739503403862330">מילוי</translation>
 <translation id="2465688316154986572">סיכת הידוק</translation>
 <translation id="2465914000209955735">‏ניהול הקבצים שהורדת ב-Chrome</translation>
 <translation id="2466004615675155314">הצגת מידע מהאינטרנט</translation>
@@ -2490,12 +2489,10 @@ Del</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784606427469807560">הייתה בעיה באישור הכרטיס. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="5785756445106461925">כמו כן, דף זה כולל משאבים נוספים שאינם מאובטחים. גורמים אחרים עלולים לראות את המשאבים האלה במהלך העברתם, ותוקף עלול לשנות אותם באופן שישנה את מראה הדף.</translation>
-<translation id="5786044859038896871">האם ברצונך למלא את פרטי הכרטיס שלך?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">אמצעי התשלום הזה יימחק מהמכשיר הזה</translation>
 <translation id="5800727402210090597">שירותים ותיקונים לטלפונים ניידים</translation>
 <translation id="580241730938216256">התחלת העדכון</translation>
-<translation id="5803412860119678065">האם ברצונך למלא את פרטי הכרטיס <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5806871454498484178">אי אפשר לגלול ולשנות את מרחק התצוגה</translation>
 <translation id="5808435672482059465">‏הצגת ההיסטוריה ב‑Chrome</translation>
@@ -2686,6 +2683,7 @@ Del</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6167577165590485365">ניסיון האחזור האחרון:</translation>
 <translation id="617256461084925519">‏Google Chrome מנסה לאמת את זהותך לצורך מילוי פרטי התשלום שלך.</translation>
+<translation id="6173208311907792313">‏השלמת הרכישה באמצעות Windows Hello</translation>
 <translation id="6176387967264100435">המחיר הזה גבוה</translation>
 <translation id="6177128806592000436">החיבור שלך לאתר הזה לא מאובטח</translation>
 <translation id="6177531123306197852">‏מעטפה – C2</translation>
@@ -3843,6 +3841,7 @@ Del</translation>
 <translation id="8332188693563227489">אין גישה אל <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">הדגשה</translation>
 <translation id="8339163506404995330">דפים ב<ph name="LANGUAGE" /> לא יתורגמו</translation>
+<translation id="8339275256517065202">‏השלמת הרכישה באמצעות Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">רישום הכרטיס הווירטואלי נפתח בגובה מלא</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
@@ -4036,6 +4035,7 @@ Del</translation>
 <translation id="8726549941689275341">גודל דף:</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8731268612289859741">קוד האבטחה</translation>
+<translation id="8731917264694569036">השלמת הרכישה באמצעות המכשיר</translation>
 <translation id="8733345475331865475">ביטוח לרכב</translation>
 <translation id="8733764070897080460">‏ניתן לחסום נושאים כדי שלא ישותפו עם אתרים. בנוסף, Chrome מוחק באופן אוטומטי נושאים שנוספו לפני יותר מ-4 שבועות. מידע נוסף</translation>
 <translation id="8734529307927223492">ה-<ph name="DEVICE_TYPE" /> מנוהל על-ידי <ph name="MANAGER" /></translation>
@@ -4229,6 +4229,7 @@ Del</translation>
 <translation id="9116548361133462832">‏מידע נוסף על מודעות ב-Chrome</translation>
 <translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter להמשך התהליך ולהצגת פעילות רלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="9119042192571987207">הועלה</translation>
+<translation id="9119308212838450857">האתר <ph name="PROVIDER_ORIGIN" /> רוצה לאמת את זהותך</translation>
 <translation id="912327514020027767">חצאיות</translation>
 <translation id="912414390325846156">בחרת בעבר לא לתת הרשאה לאתר הזה</translation>
 <translation id="9128870381267983090">התחברות לרשת</translation>

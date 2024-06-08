@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">شارژ باتری باید بیشتر از <ph name="REQUIRED_BATTERY_PRECENT" />٪ باشد</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2462932596748424101">شبکه‌های اجتماعی</translation>
-<translation id="2463739503403862330">تکمیل</translation>
 <translation id="2465688316154986572">منگنه</translation>
 <translation id="2465914000209955735">‏مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید</translation>
 <translation id="2466004615675155314">نمایش اطلاعات برگرفته از وب</translation>
@@ -2485,12 +2484,10 @@
 <translation id="57838592816432529">بی‌صدا کردن</translation>
 <translation id="5784606427469807560">هنگام تأیید کارت مشکلی پیش آمد. اتصال اینترنتتان را بررسی و دوباره امتحان کنید.</translation>
 <translation id="5785756445106461925">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر قفل صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
-<translation id="5786044859038896871">می‌خواهید اطلاعات کارتتان را وارد کنید؟</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
 <translation id="5800727402210090597">تعمیرات و خدمات تلفن همراه</translation>
 <translation id="580241730938216256">شروع به‌روزرسانی</translation>
-<translation id="5803412860119678065">می‌خواهید <ph name="CARD_DETAIL" /> خود را وارد کنید؟</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5806871454498484178">پیمایش و بزرگ‌نمایی مسدود شده است</translation>
 <translation id="5808435672482059465">‏مشاهده «سابقه Chrome»</translation>

@@ -3955,7 +3955,6 @@
 <translation id="3874164307099183178">Google Assistant ચાલુ કરો</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />ને બ્રાઉઝરની નવી ટૅબમાં ખૂલવા માટે સેટ કરવામાં આવી છે, સંબંધિત લિંક પણ બ્રાઉઝરમાં ખૂલશે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">વિન્ડોનું કદ ઉપરની બાજુએ બદલ્યું</translation>
-<translation id="3876833929577368454">દર વખતે મને કહો </translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ના ડિવાઇસ માટે નજીકના શેર સેટિંગ, <ph name="USER_EMAIL" /> એકાઉન્ટ હેઠળ શેર કરવામાં આવી રહ્યાં છે.</translation>
 <translation id="3878445208930547646">આ સાઇટ પરથી કૉપિ કરવાની મંજૂરી નથી</translation>
 <translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
@@ -6211,6 +6210,7 @@
 <translation id="5590418976913374224">ડિવાઇસ શરૂ થવા પર સાઉન્ડ વગાડો</translation>
 <translation id="5591465468509111843">અક્ષરો વચ્ચે વધુ સ્પેસ</translation>
 <translation id="5592595402373377407">હજુ સુધી પર્યાપ્ત ડેટા ઉપલબ્ધ નથી.</translation>
+<translation id="5592745162308462420">Fn કી</translation>
 <translation id="5594371836748657471">Mac સિસ્ટમ સેટિંગમાં માઇક્રોફોન બંધ કરેલું છે</translation>
 <translation id="5594899180331219722">ફાઇલ પસંદ કરો</translation>
 <translation id="5595307023264033512">સાઇટ દ્વારા કરવામાં આવેલો સ્ટોરેજનો કુલ વપરાશ: <ph name="TOTAL_USAGE" /></translation>
@@ -8891,7 +8891,6 @@ USB ડિવાઇસ</translation>
 <translation id="7648023614017258011">Chrome ઇન્સ્ટૉલેશન બંડલની ચકાસણી કરી રહ્યું છે</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7650178491875594325">સ્થાનિક ડેટા રિસ્ટોર કરો</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />", "<ph name="EXTENSION_NAME" />"ને દૂર કરવા માગે છે.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}one{{COUNT} ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}other{{COUNT} ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}}</translation>
 <translation id="7650677314924139716">ડેટા વપરાશના હાલના સેટિંગ માત્ર વાઇ-ફાઇ માટે જ સેટ છે</translation>
 <translation id="7650920359639954963">ચાલુ કરવામાં આવ્યું નથી: <ph name="REASON" /></translation>

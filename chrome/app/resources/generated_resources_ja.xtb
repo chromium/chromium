@@ -3940,7 +3940,6 @@
 <translation id="3873915545594852654">ARC++ で問題が発生しました。</translation>
 <translation id="3874164307099183178">Google アシスタントをオンにする</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> は新しいブラウザタブで開くよう設定されています。サポートされているリンクもブラウザで開かれます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">毎回確認する</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> さんのデバイスのニアバイシェア設定（<ph name="USER_EMAIL" /> アカウントでの共有）</translation>
 <translation id="3878445208930547646">このサイトからのコピーは許可されていません</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
@@ -6189,6 +6188,7 @@
 <translation id="5590418976913374224">デバイスの起動時に音を鳴らす</translation>
 <translation id="5591465468509111843">かなり広くする</translation>
 <translation id="5592595402373377407">利用可能なデータがまだ十分にありません。</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mac のシステム設定でマイクがオフになっています</translation>
 <translation id="5594899180331219722">ファイルを選択</translation>
 <translation id="5595307023264033512">サイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
@@ -8858,7 +8858,6 @@
 <translation id="7648023614017258011">Chrome がインストールするバンドルを確認しています</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7650178491875594325">ローカルデータを復元</translation>
-<translation id="7650511557061837441">「<ph name="TRIGGERING_EXTENSION_NAME" />」が「<ph name="EXTENSION_NAME" />」の削除をリクエストしています。</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 件の指紋が設定されています}other{{COUNT} 件の指紋が設定されています}}</translation>
 <translation id="7650677314924139716">現在のデータ使用設定は「Wi-Fi のみ」です</translation>
 <translation id="7650920359639954963">無効: <ph name="REASON" /></translation>

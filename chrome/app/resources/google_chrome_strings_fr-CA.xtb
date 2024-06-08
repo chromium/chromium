@@ -48,7 +48,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
 <translation id="1662146548738125461">À propos de ChromeOS Flex</translation>
 <translation id="1674870198290878346">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
-<translation id="1679594062619799116">Vous pouvez utiliser les mots de passe de votre compte Google dans Chrome lorsque vous êtes connecté</translation>
 <translation id="1682634494516646069">Google Chrome ne peut pas lire et écrire dans son répertoire de données :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -322,7 +321,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
 <translation id="5727531838415286053">Si Chrome vous ajoute au hasard dans un essai en cours, votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime vos centres d'intérêt de façon continue chaque mois. Les centres d'intérêt sont actualisés à moins que vous ne les retiriez.</translation>
 <translation id="5736850870166430177">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée</translation>
-<translation id="575458254678141039">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter à Chrome avec le même compte</translation>
 <translation id="5756509061973259733">Il existe déjà un profil Chrome associé à ce compte sur cet appareil</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
@@ -506,7 +504,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8336463659890584292">Lorsqu'un site demande de précharger des liens en privé sur sa page, Chrome utilise les serveurs de Google. Ceci permet de masquer votre identité au site préchargé et permet à Google de savoir quels sites sont préchargés.</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car il est dangereux.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chrome. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
-<translation id="8350273347136316769">Me connecter automatiquement à Chrome</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> Chrome peut estimer vos centres d'intérêt. Ultérieurement, un site que vous visitez peut demander à Chrome de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez.</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
@@ -561,7 +558,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9053892488859122171">Système Chrome OS Flex</translation>
 <translation id="9090566250983691233">Découvrir pourquoi Chrome bloque certains fichiers</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation?</translation>
-<translation id="9127728564687112483">Ne pas me connecter à Chrome</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Google Chrome</translation>
 <translation id="9195993889682885387">Chrome peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>
 <translation id="919706545465235479">Mettez Chrome à jour pour commencer la synchronisation</translation>

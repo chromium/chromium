@@ -3937,7 +3937,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3873915545594852654">Ndodhi një problem me ARC++.</translation>
 <translation id="3874164307099183178">Aktivizo "Asistentin e Google"</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> është caktuar të hapet në një skedë të re shfletuesi. Lidhjet e mbështetura do të hapen gjithashtu në shfletues. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Më pyet çdo herë</translation>
 <translation id="3877075909000773256">Cilësimet e "Ndarjes në afërsi" për pajisjen e <ph name="USER_NAME" />, e cila ndan nën llogarinë <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Kopjimi nga ky sajt nuk lejohet</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
@@ -6177,6 +6176,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5590418976913374224">Luaj tingullin në momentin e nisjes së pajisjes</translation>
 <translation id="5591465468509111843">Shumë e gjerë</translation>
 <translation id="5592595402373377407">Nuk ofrohen ende të dhëna të mjaftueshme.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofoni është çaktivizuar te Mac System Settings</translation>
 <translation id="5594899180331219722">Zgjidh skedarin</translation>
 <translation id="5595307023264033512">Hapësira ruajtëse në total e përdorur nga sajtet: <ph name="TOTAL_USAGE" /></translation>
@@ -8843,7 +8843,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7648023614017258011">Chrome po verifikon paketën e instalimit</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7650178491875594325">Restauro të dhënat lokale</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" dëshiron që të heqë "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 gjurmë gishti u konfigurua}other{{COUNT} gjurmë gishti u konfiguruan}}</translation>
 <translation id="7650677314924139716">Cilësimi aktual i përdorimit të të dhënave është "Vetëm Wi-Fi"</translation>
 <translation id="7650920359639954963">E çaktivizuar: <ph name="REASON" /></translation>

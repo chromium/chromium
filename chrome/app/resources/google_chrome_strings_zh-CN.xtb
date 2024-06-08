@@ -46,7 +46,6 @@
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1662146548738125461">ChromeOS Flex 简介</translation>
 <translation id="1674870198290878346">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
-<translation id="1679594062619799116">登录 Chrome 后，您可以在其中使用您 Google 账号中的密码</translation>
 <translation id="1682634494516646069">Google Chrome 无法对其数据目录 <ph name="USER_DATA_DIRECTORY" /> 执行读写操作</translation>
 <translation id="1698376642261615901">Google Chrome 浏览器是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Google Chrome 浏览器内置的恶意软件和网上诱骗防护功能可让您更安全地浏览网页。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 将在 1 小时后重新启动}other{Chrome 将在 # 小时后重新启动}}</translation>
@@ -314,7 +313,6 @@
 <translation id="5709557627224531708">将 Chrome 设为您的默认浏览器</translation>
 <translation id="5727531838415286053">如果 Chrome 随机将您加入到了某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。兴趣会刷新，除非您将其移除。</translation>
 <translation id="5736850870166430177">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
-<translation id="575458254678141039">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号登录 Chrome</translation>
 <translation id="5756509061973259733">此设备上已有一份使用该账号创建的 Chrome 个人资料</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">无法启动 Chrome。请重试。</translation>
@@ -498,7 +496,6 @@
 <translation id="8336463659890584292">当某个网站请求以私密方式预加载其网页上的链接时，Chrome 会使用 Google 服务器。这样既可以知道会预加载哪些网站，又能避免这些网站得知您的身份。</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
-<translation id="8350273347136316769">自动登录 Chrome</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：Chrome 可以推测出您的兴趣。日后，您访问的网站可向 Chrome 请求查看您的兴趣以向您展示个性化广告。</translation>
 <translation id="8387459386171870978">继续使用 Chrome</translation>
@@ -553,7 +550,6 @@
 <translation id="9053892488859122171">ChromeOS Flex 系统</translation>
 <translation id="9090566250983691233">了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>
-<translation id="9127728564687112483">不登录 Chrome</translation>
 <translation id="9138603949443464873">要想应用您的更改，请重新启动 Chrome</translation>
 <translation id="9195993889682885387">Chrome 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>
 <translation id="919706545465235479">更新 Chrome 以开始同步</translation>

@@ -123,7 +123,6 @@
 <translation id="3155163173539279776">‏إعادة تشغيل Chromium</translation>
 <translation id="3179665906251668410">‏فتح الرابط في نافذة تصفح متخفٍ في Chromium</translation>
 <translation id="3185330573522821672">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chromium.</translation>
-<translation id="318879170965183683">‏يمكنك استخدام كلمات المرور من حسابك على Google بعد تسجيل دخولك إليه في Chromium</translation>
 <translation id="3190315855212034486">‏للأسف! تعطل Chromium. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="3224847870593914902">‏لإزالة حسابك على Google من Chromium، يجب تسجيل الخروج من Chromium في صفحة "الإعدادات"</translation>
 <translation id="3258596308407688501">‏يتعذر على Chromium القراءة والكتابة في دليل البيانات الخاص به:
@@ -252,7 +251,6 @@
 <translation id="5386450000063123300">‏جارٍ تحديث Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏السماح بتسجيل الدخول إلى Chromium</translation>
 <translation id="5398878173008909840">‏يتوفر إصدار جديد من Chromium.</translation>
-<translation id="5400757303519321734">‏عند تسجيل الدخول إلى خدمات Google، مثل Gmail أو YouTube باستخدام <ph name="USER_EMAIL" />، يمكنك تسجيل الدخول إلى Chromium باستخدام الحساب نفسه</translation>
 <translation id="5405650547142096840">‏إزالة من Chromium</translation>
 <translation id="5427571867875391349">‏تعيين Chromium المتصفح التلقائي</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Chromium</translation>
@@ -378,7 +376,6 @@
 <translation id="7045244423563602563">‏اجعل Chromium متصفِّحك الدائم</translation>
 <translation id="705851970750939768">‏تحديث Chromium</translation>
 <translation id="7067091210845072982">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chromium توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
-<translation id="7100062358172078145">‏عدم تسجيل الدخول إلى Chromium</translation>
 <translation id="7141270731789036260">‏تخصيص Chrome for Testing</translation>
 <translation id="7159538860914681762">‏لحفظ كلمات مرورك واستخدامها وتنفيذ إجراءات أخرى على جميع أجهزتك، عليك تسجيل الدخول إلى Chromium</translation>
 <translation id="7173822816570314652">‏تحذف مؤسستك بيانات Chromium في حال عدم استخدامها لمدّة <ph name="TIMEOUT_DURATION" />. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
@@ -500,7 +497,6 @@
 <translation id="9158494823179993217">‏ضَبَط مشرف النظام Chromium لفتح متصفِّح بديل للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">‏إعادة تشغيل متصفِّح Chromium لتحديثه</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">‏تسجيل الدخول إلى Chromium تلقائيًا</translation>
 <translation id="924957577793602335">‏إضافة لمستك الخاصة إلى Chromium</translation>
 <translation id="93478295209880648">‏قد لا يعمل Chromium بشكل صحيح لأنه لم يعد مدعومًا على أنظمة التشغيل Windows XP أو Windows Vista.</translation>
 <translation id="942598560705308788">‏الشهادات التي يديرها متصفّح Chromium</translation>

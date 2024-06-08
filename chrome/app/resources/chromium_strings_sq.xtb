@@ -127,7 +127,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3155163173539279776">Rinis Chromium</translation>
 <translation id="3179665906251668410">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
 <translation id="3185330573522821672">Personalizo profilin tënd të ri të Chromium</translation>
-<translation id="318879170965183683">Mund të përdorësh fjalëkalimet e tua nga "Llogaria jote e Google" në Chromium ndërkohë që je identifikuar</translation>
 <translation id="3190315855212034486">Chromium pësoi një ndërprerje aksidentale. Dëshiron ta rinisësh tani?</translation>
 <translation id="3224847870593914902">Për ta hequr "Llogarinë tënde të Google" nga Chromium, dil nga llogaria në Chromium te faqja e "Cilësimeve"</translation>
 <translation id="3258596308407688501">Chromium nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
@@ -256,7 +255,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5386450000063123300">Po përditëson Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Lejo identifikimin në Chromium</translation>
 <translation id="5398878173008909840">Ofrohet një version i ri i Chromium.</translation>
-<translation id="5400757303519321734">Kur identifikohesh në shërbimet e Google, si p.sh. Gmail ose YouTube, me <ph name="USER_EMAIL" />, mund të identifikohesh në Chromium me të njëjtën llogari</translation>
 <translation id="5405650547142096840">Hiq nga Chromium</translation>
 <translation id="5427571867875391349">Caktoje Chromium si shfletuesin tënd të parazgjedhur</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
@@ -381,7 +379,6 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="7045244423563602563">Bëje Chromium tëndin</translation>
 <translation id="705851970750939768">Përditëso Chromium</translation>
 <translation id="7067091210845072982">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
-<translation id="7100062358172078145">Mos më identifiko në Chromium</translation>
 <translation id="7141270731789036260">Personalizo Chrome for Testing</translation>
 <translation id="7159538860914681762">Për të ruajtur dhe përdorur fjalëkalimet e tua etj. në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
 <translation id="7173822816570314652">Organizata jote i fshin të dhënat e Chromium kur ato nuk përdoren për <ph name="TIMEOUT_DURATION" />. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
@@ -503,7 +500,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="9158494823179993217">Administratori i sistemit ka konfiguruar Chromium që të hapë një shfletues alternativ për të pasur qasje te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Nise përsëri për të përditësuar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Më identifiko automatikisht në Chromium</translation>
 <translation id="924957577793602335">Personalizoje Chromium</translation>
 <translation id="93478295209880648">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në Windows XP ose Windows Vista</translation>
 <translation id="942598560705308788">Certifikatat e menaxhuara nga Chromium</translation>

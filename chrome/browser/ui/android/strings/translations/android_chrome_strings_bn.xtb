@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">গ্রুপে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="1103142993930332957">Chrome উন্নত করতে সাহায্য করবেন?</translation>
 <translation id="1105960400813249514">স্ক্রিন ক্যাপচার</translation>
+<translation id="1108214977745280468">পৃষ্ঠার ইনসাইট দেখুন</translation>
 <translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1111673857033749125">আপনার অন্যান্য ডিভাইসে সেভ করা বুকমার্কগুলি এখানে দেখা যাবে।</translation>
 <translation id="1113597929977215864">সরলীকৃত ভিউ দেখান</translation>
@@ -251,7 +252,6 @@
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
 <translation id="2323763861024343754">সাইটের স্টোরেজ</translation>
-<translation id="2328739396024849021">সেভ করার বোতাম বন্ধ করা আছে</translation>
 <translation id="2328985652426384049">সাইন ইন করতে পারছেন না</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ইনস্টল করা যায়নি।</translation>
@@ -361,7 +361,6 @@
 <translation id="2869430948265924908">গাড়িতে থাকা সংবেদনশীল কন্টেন্টের সুরক্ষা করতে, আপনাকে গাড়ির জন্য প্রোফাইল লক তৈরি করতে হবে।  এর জন্য আপনি পিন, কোড বা পাসওয়ার্ড ব্যবহার করতে পারেন।</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা প্রিলোড করা</translation>
-<translation id="2871941920508945325">পৃষ্ঠা ইনসাইট সংক্রান্ত বোতাম</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> চায় যে আপনি এই ওয়েবসাইট অনুমোদন করুন:</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
@@ -528,7 +527,6 @@
 <translation id="3699022356773522638">ফাইল ডাউনলোড করবেন?</translation>
 <translation id="3700759344784597882">চালু থাকলে, পাসওয়ার্ড আপনার অ্যাকাউন্টে সেভ হয়। বন্ধ থাকলে, শুধুমাত্র এই ডিভাইসে পাসওয়ার্ড সেভ হয়।</translation>
 <translation id="3701515417135397388">ডেটার নিরাপত্তা লঙ্ঘনের কারণে কোনও পাসওয়ার্ড হ্যাক হয়ে থাকলে আপনাকে সেই সম্পর্কে সতর্ক করে।</translation>
-<translation id="3711001040440486668">শেয়ার করার বোতাম</translation>
 <translation id="371230970611282515">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি অনুমান করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="3714981814255182093">খুঁজুন দণ্ডটি খুলুন</translation>
 <translation id="3716182511346448902">এই পৃষ্ঠাটি খুব বেশি মেমরি ব্যবহার করছে তাই Chrome এটি বিরত রেখেছে।</translation>
@@ -912,6 +910,7 @@
 <translation id="5590372121997663538">এই কম্পিউটারে মনে রাখুন</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5599455543593328020">ছদ্মবেশী মোড</translation>
+<translation id="5601180634394228718">আপনার Chrome ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="5620163320393916465">কোনও পাসওয়ার্ড সেভ করা নেই</translation>
 <translation id="5620928963363755975">আরও বিকল্প বোতামের ডাউনলোড বিকল্প থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে পান</translation>
 <translation id="562289928968387744">প্রতিক্রিয়া ম্যানেজ করুন</translation>
@@ -1254,6 +1253,7 @@
 <translation id="71503698506017927">পাসফ্রেজ এনক্রিপশনে Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।
 
 এই সেটিং পরিবর্তন করতে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
+<translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। সেটিংস খোলে।</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7177466738963138057">আপনি পরে সেটিংসে এই পরিবর্তন করতে পারবেন</translation>

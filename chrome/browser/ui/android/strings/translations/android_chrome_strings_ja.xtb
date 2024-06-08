@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
 <translation id="1103142993930332957">Chrome の改善にご協力ください</translation>
 <translation id="1105960400813249514">スクリーン キャプチャ</translation>
+<translation id="1108214977745280468">ページの関連情報を表示</translation>
 <translation id="1108938384783527433">履歴の同期</translation>
 <translation id="1111673857033749125">他のデバイスに保存されているブックマークがここに表示されます。</translation>
 <translation id="1113597929977215864">簡易表示する</translation>
@@ -252,7 +253,6 @@
 <translation id="2318045970523081853">タップして電話をかける</translation>
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
 <translation id="2323763861024343754">サイトのストレージ</translation>
-<translation id="2328739396024849021">無効になった保存ボタン</translation>
 <translation id="2328985652426384049">ログインできません</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> をインストールできませんでした。</translation>
@@ -362,7 +362,6 @@
 <translation id="2869430948265924908">車内で機密性の高いコンテンツを保護するには、車のプロフィールのロックを作成する必要があります。ロックには PIN、コード、パスワードを使用できます。</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2871733351037274014">ページをプリロードする</translation>
-<translation id="2871941920508945325">ページの関連情報ボタン</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> さんが次のウェブサイトの承認を求めています。</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
 <translation id="2888126860611144412">Chrome について</translation>
@@ -529,7 +528,6 @@
 <translation id="3699022356773522638">ファイルをダウンロードしますか？</translation>
 <translation id="3700759344784597882">オンにすると、パスワードはアカウントに保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="3701515417135397388">データ侵害によりパスワードが漏洩した場合に警告する</translation>
-<translation id="3711001040440486668">共有ボタン</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
 <translation id="3714981814255182093">検索バーを開く</translation>
 <translation id="3716182511346448902">このページは大量のメモリを使用しているため、Chrome により一時停止されました。</translation>
@@ -913,6 +911,7 @@
 <translation id="5590372121997663538">このパソコンの情報を保持する</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5599455543593328020">シークレット モード</translation>
+<translation id="5601180634394228718">Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5620163320393916465">保存されているパスワードはありません</translation>
 <translation id="5620928963363755975">[その他のオプション] から [ダウンロード] を開いて自分のファイルやページを探すことができます</translation>
 <translation id="562289928968387744">リアクションを管理</translation>
@@ -1255,6 +1254,7 @@
 <translation id="71503698506017927">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
 
 この設定を変更するには、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />します。</translation>
+<translation id="7161230316646448869">すべてのデバイスでブックマーク、履歴、その他の設定を同期する</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> としてログインしています。設定を開きます。</translation>
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7177466738963138057">これは後から [設定] で変更できます</translation>

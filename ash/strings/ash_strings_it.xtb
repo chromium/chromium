@@ -72,6 +72,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1240638468526743569">Un'app</translation>
+<translation id="1242198791279543032">Le notifiche sono disattivate</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="1245644940275736236">Vai all'Assistente</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
@@ -1660,7 +1661,6 @@ Nuova installazione</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7181691792034457084">Un saluto da Google. Il <ph name="PRODUCT_NAME" /> è un po' diverso.</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>

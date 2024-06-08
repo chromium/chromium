@@ -1134,6 +1134,7 @@
 <translation id="5208059991603368177">ਚਾਲੂ ਹੈ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> ਤੱਕ ਬੰਦ ਰਹੇਗੀ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
+<translation id="5228195526683428788">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਵਿਭਾਜਕ</translation>
 <translation id="5229343007215035173">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
 <translation id="5230516054153933099">ਵਿੰਡੋ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
@@ -1520,6 +1521,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> ਦੀ ਸਟੋਰੇਜ ਵਰਤੋਂ ਵਿੱਚ ਹੈ | ਕੁੱਲ<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਚਾਲੂ ਹੈ</translation>
 <translation id="6622679827379792051">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="662279009180869175">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਖੱਬੇ ਅਤੇ ਸੱਜੇ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="6624493541160101248">ਮੌਜੂਦਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ਅਤੇ ਹੋਰ ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1538,6 +1540,7 @@
 <translation id="6670153871843998651">ਡੈਸਕ 3</translation>
 <translation id="6671495933530132209">ਚਿੱਤਰ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6671661918848783005">ਤੁਹਾਡੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="6676552993057022464">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="6682029141988159141">ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਸਮੱਗਰੀ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>
 <translation id="6686023075541098243">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
@@ -1665,7 +1668,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">ਪੁਰਾਣੇ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ</translation>
-<translation id="7173114856073700355">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7181691792034457084">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ। <ph name="PRODUCT_NAME" /> ਥੋੜ੍ਹਾ ਵੱਖਰਾ ਹੈ।</translation>
 <translation id="7188494361780961876">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>

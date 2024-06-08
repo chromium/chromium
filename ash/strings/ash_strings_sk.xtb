@@ -310,6 +310,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2208323208084708176">Režim zjednotenej pracovnej plochy</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2222841058024245321">7. plocha</translation>
+<translation id="2223384056430485343">Na rozdelenej obrazovke</translation>
 <translation id="2224075387478458881">Nahrávanie obrazovky nie je povolené, keď je viditeľný chránený obsah</translation>
 <translation id="2227179592712503583">Odstrániť návrh</translation>
 <translation id="2248634276911611268">Otvorenie odkazu na novej karte a prechod na túto novú kartu</translation>
@@ -1133,6 +1134,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5208059991603368177">Zapnutý</translation>
 <translation id="5216991270656129561">Vypnutý do <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
+<translation id="5228195526683428788">Rozdeľovač obrazovky</translation>
 <translation id="5229343007215035173">Zapnutie alebo vypnutie zámky na ochranu súkromia</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
@@ -1519,6 +1521,7 @@ Nová inštalácia</translation>
 <translation id="6613765291890844037">Využitý priestor: <ph name="STORAGE_IN_USE_SIZE" /> | Celkový priestor: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Obrazovka ochrany súkromia je zapnutá</translation>
 <translation id="6622679827379792051">Nastaviť zobrazovanie aplikácií z telefónu</translation>
+<translation id="662279009180869175">Veľkosť rozdelenej obrazovky zmeníte šípkami doľava a doprava</translation>
 <translation id="6624493541160101248">Aktuálna plocha: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. plocha z <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Upozornenia z aplikácií <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a ďalších sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6627638273713273709">Hľadať+Shift+K</translation>
@@ -1537,6 +1540,7 @@ Nová inštalácia</translation>
 <translation id="6670153871843998651">3. plocha</translation>
 <translation id="6671495933530132209">Kopírovať obrázok</translation>
 <translation id="6671661918848783005">Chromebook sa nedá odomknúť</translation>
+<translation id="6676552993057022464">Veľkosť rozdelenej obrazovky zmeníte šípkami nahor a nadol</translation>
 <translation id="6682029141988159141">Prilepenie obsahu zo schránky</translation>
 <translation id="6683022854667115063">Slúchadlá</translation>
 <translation id="6686023075541098243">Nastaviť zobrazovanie upozornení z telefónu</translation>
@@ -1664,7 +1668,6 @@ Nová inštalácia</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Vrátenie starého rozlíšenia prebehne o <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7181691792034457084">Dobrý deň, zariadenie <ph name="PRODUCT_NAME" /> je trocha iné.</translation>
 <translation id="7188494361780961876">Ponuka bola presunutá do ľavého horného rohu obrazovky.</translation>

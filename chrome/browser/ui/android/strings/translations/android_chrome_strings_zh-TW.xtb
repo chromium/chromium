@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
 <translation id="1105960400813249514">螢幕擷取</translation>
+<translation id="1108214977745280468">查看網頁深入分析資訊</translation>
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
 <translation id="1111673857033749125">儲存在您其他裝置上的書籤會顯示在這裡。</translation>
 <translation id="1113597929977215864">顯示「簡易檢視」模式</translation>
@@ -251,7 +252,6 @@
 <translation id="2318045970523081853">輕觸即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備匯出密碼…</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
-<translation id="2328739396024849021">停用「儲存」按鈕</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
@@ -361,7 +361,6 @@
 <translation id="2869430948265924908">為保護車上的私密內容，請建立汽車設定檔鎖定方式。你可以設定 PIN 碼或密碼。</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871733351037274014">預先載入網頁</translation>
-<translation id="2871941920508945325">「網頁深入分析」按鈕</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />想請你核准這個網站：</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
@@ -528,7 +527,6 @@
 <translation id="3699022356773522638">要下載檔案嗎？</translation>
 <translation id="3700759344784597882">開啟時，密碼會儲存到帳戶中；關閉時，密碼只會儲存在這部裝置上。</translation>
 <translation id="3701515417135397388">在密碼因資料侵害事件而外洩時發出警告</translation>
-<translation id="3711001040440486668">「分享」按鈕</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
 <translation id="3714981814255182093">開啟搜尋列</translation>
 <translation id="3716182511346448902">這個網頁使用了過多記憶體，因此遭到 Chrome 暫停。</translation>
@@ -912,6 +910,7 @@
 <translation id="5590372121997663538">記住這部電腦</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599455543593328020">無痕模式</translation>
+<translation id="5601180634394228718">如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="5620163320393916465">未儲存任何密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕前往「下載」主畫面尋找你的檔案和網頁</translation>
 <translation id="562289928968387744">管理回應</translation>
@@ -1254,6 +1253,7 @@
 <translation id="71503698506017927">通關密語加密資料不包括 Google Pay 中的付款方式和地址。
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="7161230316646448869">同步你在所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="7168323970702333693">目前登入的帳戶是<ph name="USER_NAME" />。開啟設定。</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7177466738963138057">日後可前往設定頁面進行變更</translation>

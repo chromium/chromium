@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">পাছৱর্ডসমূহ ছেভ কৰক</translation>
 <translation id="1753905327828125965">সকলোতকৈ বেছিকৈ চোৱা</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} টা অবিশ্বস্ত পাছৱৰ্ড}one{{count} টা অবিশ্বস্ত পাছৱৰ্ড}other{{count} টা অবিশ্বস্ত পাছৱৰ্ড}}</translation>
+<translation id="1764070164487214210">দিক্-নিৰ্দেশনা</translation>
 <translation id="1766411844240160513">ফৰ্মখন স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">ব্যক্তিগতকৃত সমল</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">ইনক’গনিট’ টেব</translation>
 <translation id="3775743491439407556">ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই</translation>
 <translation id="3779810277399252432">ইণ্টাৰনেট সংযোগ নাই।</translation>
+<translation id="3785672280731998727">প্ৰদৰ্শিত নাম</translation>
 <translation id="3789294999358192700">তলৰ এই পদক্ষেপসমূহ অনুসৰণ কৰক:</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই ছাইটটো অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="3808311849069021992">সন্ধান ইঞ্জিনৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
+<translation id="3812308602011798782">পৰ্যালোচনা</translation>
 <translation id="3818045793209708987">এই পেকেজটো ট্ৰেক কৰাটো বন্ধ কৰা হৈছে</translation>
 <translation id="3818293389945649617">পৰৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
 <translation id="3819183753496523827">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">এবাৰ টিপিয়েই যিকোনো এপত আপোনাৰ ছেভ কৰা পাছৱৰ্ডসমূহ লাভ কৰক</translation>
 <translation id="4049507953662678203">আপোনাৰ নেটৱৰ্ক সংযোগ থকাটো নিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="4054572406751135230">বাতৰি, ক্ৰীড়া আৰু বহুতো কথাৰ বিষয়ে অৱগত হৈ থাকক।</translation>
+<translation id="4068959193278821990">বৰ্ধিত সুৰক্ষাৰ সুবিধাটো অন কৰক...</translation>
 <translation id="4092655288299341041">সহায় দেখুৱাওক</translation>
 <translation id="4105841739161771091">{count,plural, =1{ঠিকনাটো মচক}one{ঠিকনাসমূহ মচক}other{ঠিকনাসমূহ মচক}}</translation>
 <translation id="4108998448622696017">বিপজ্জনক ঘটনাবোৰৰ চিনাক্ত কৰে আৰু সেইবোৰ ঘটাৰ সময়ত আপোনাক সকীয়নি দিয়ে।</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">মুঠ ৰপ্তানি ডেটা পঠিয়াবলৈ, অনুগ্ৰহ কৰি ছেটিংসমূহৰ এপত আপোনাৰ ইমেইল একাউণ্ট কনফিগাৰ কৰক৷</translation>
 <translation id="4124987746317609294">সময় অৱধি</translation>
 <translation id="4133265950310064865">বৰ্ধিত সুৰক্ষা</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">এই ৱেবছাইটটোৱে এটা ফাইল ডাউনল’ড কৰি সেইটো আপোনাৰ কেলেণ্ডাৰত যোগ দিবলৈ বিচাৰিছে।</translation>
 <translation id="4152011295694446843">ইয়াত আপুনি নিজৰ বুকমাৰ্কসমূহ বিচাৰি পাব</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">আটাইতকৈ বেছিকৈ চোৱা ছাইটসমূহ</translation>
 <translation id="8358401059263985056">জাননী অন কৰক</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" />ৰ বাবে Google Photosত প্ৰতিচ্ছবি ছেভ কৰি থকা হৈছে...</translation>
+<translation id="8369246252708539904">পাছকী মচক</translation>
 <translation id="8370406443343902172">ছেটিঙলৈ যাওক...</translation>
 <translation id="8374977641764177587">জাননী অন কৰিবনে?</translation>
 <translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>

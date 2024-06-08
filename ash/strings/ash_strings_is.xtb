@@ -72,6 +72,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1235458158152011030">Þekkt netkerfi</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tengt.</translation>
 <translation id="1240638468526743569">Forrit</translation>
+<translation id="1242198791279543032">Tilkynningar eru þaggaðar</translation>
 <translation id="1242883863226959074">tæki</translation>
 <translation id="1245644940275736236">Opnaðu Hjálparann</translation>
 <translation id="124678866338384709">Loka núverandi flipa</translation>
@@ -309,6 +310,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
+<translation id="2223384056430485343">Í skjáskiptingu</translation>
 <translation id="2224075387478458881">Skjáupptaka er óheimil á meðan varið efni er sýnilegt</translation>
 <translation id="2227179592712503583">Fjarlægja tillögu</translation>
 <translation id="2248634276911611268">Opna tengil í nýjum flipa og skipta yfir á þennan nýja flipa</translation>
@@ -1663,7 +1665,6 @@ Ný uppsetning</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Skiptir aftur yfir í fyrri upplausn eftir <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Opna stillingar</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7181691792034457084">Hæ. <ph name="PRODUCT_NAME" /> virkar aðeins öðruvísi.</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>

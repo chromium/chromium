@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">Votre pile doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2462932596748424101">Réseaux sociaux</translation>
-<translation id="2463739503403862330">Remplir</translation>
 <translation id="2465688316154986572">Agrafe</translation>
 <translation id="2465914000209955735">Gérez les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="2466004615675155314">Afficher les informations provenant du Web</translation>
@@ -2485,12 +2484,10 @@
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5784606427469807560">Un problème est survenu lors de la confirmation de votre carte. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="5785756445106461925">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer l’apparence de cette page.</translation>
-<translation id="5786044859038896871">Voulez-vous fournir les renseignements concernant votre carte de crédit?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Ce mode de paiement sera supprimé de cet appareil</translation>
 <translation id="5800727402210090597">Réparation et services de téléphones cellulaires</translation>
 <translation id="580241730938216256">Démarrer la mise à jour</translation>
-<translation id="5803412860119678065">Voulez-vous fournir les renseignements concernant votre carte <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5806871454498484178">Défilement et zoom bloqués</translation>
 <translation id="5808435672482059465">Afficher votre historique de Chrome</translation>

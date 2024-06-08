@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Posúvať a približovať či odďaľovať obsah vašej zdieľanej karty</translation>
 <translation id="1089439967362294234">Zmeniť heslo</translation>
 <translation id="1090629319939036170">Ponuka VR</translation>
+<translation id="1091779689406092804">snímky obrazovky</translation>
 <translation id="1094777233105318927">Informácie o prehliadači, operačnom systéme, zariadení, nainštalovanom softvéri a súboroch</translation>
 <translation id="1096545575934602868">Toto pole by nemalo mať viac ako <ph name="MAX_ITEMS_LIMIT" /> vstupov. Všetky ďalšie vstupy budú zahodené.</translation>
 <translation id="1097803577928227769">Regionálne parky a záhrady</translation>
@@ -472,6 +473,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1840009953725035797">Systémy domáceho kina</translation>
 <translation id="1842969606798536927">Zaplatiť</translation>
 <translation id="1846432862466000825">Plast (archivačný)</translation>
+<translation id="1848640291751752317">stiahnuté súbory</translation>
 <translation id="1848982255014129637">Fotka (vysoký lesk)</translation>
 <translation id="1853392626017747777">Registrácia virtuálnej karty bola zatvorená</translation>
 <translation id="1854180393107901205">Zastaviť prenášanie</translation>
@@ -754,6 +756,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2366689192918515749">Mäso a morské plody</translation>
 <translation id="2367567093518048410">Úroveň</translation>
 <translation id="23703388716193220">Vybavenie na golf</translation>
+<translation id="2370368710215137370">Nahrávanie súborov</translation>
 <translation id="2374629208601905275">Na základe právneho predpisu vo vašej oblasti vás Chrome žiada, aby ste si vybrali predvolený vyhľadávač. Tieto vyhľadávače sú vo vašej oblasti populárne. Zobrazujú sa v náhodnom poradí.</translation>
 <translation id="2377241607395428273">Softvér na grafiku a animácie</translation>
 <translation id="2378084239755710604">Uložená karta bola zavretá.</translation>
@@ -795,7 +798,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2456755709261364512">Batéria musí byť nabitá aspoň na <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
 <translation id="2462932596748424101">Sociálne siete</translation>
-<translation id="2463739503403862330">Vyplniť</translation>
 <translation id="2465688316154986572">Zošiť spinkou</translation>
 <translation id="2465914000209955735">Spravovať súbory stiahnuté v Chrome</translation>
 <translation id="2466004615675155314">Zobraziť informácie z webu</translation>
@@ -1419,6 +1421,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3682094733650754138">Bola vybraná možnosť Vyplniť adresu.</translation>
 <translation id="3687920599421452763">Dodávky a minivany</translation>
 <translation id="3693327506115126094">Vyberte spôsob overenia svojej totožnosti</translation>
+<translation id="3698353241727597930">Váš správca nakonfiguroval, aby sa súbory <ph name="FILES" /> ukladali vo vašom priestore <ph name="CLOUD_STORAGE" /> spravovanom podnikom. Keď ich odstránite, môžu byť sledované, kontrolované a uchovávané.</translation>
 <translation id="3698629142018988477">Tlačidlo Vytvoriť web, ktorého aktivovaním rýchlo vytvoríte nový web vo Weboch Google</translation>
 <translation id="3701325639446035885">Predaj vstupeniek na podujatia</translation>
 <translation id="3701427423622901115">Resetovanie bolo potvrdené.</translation>
@@ -1494,6 +1497,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3826050100957962900">Prihlasovanie tretími stranami</translation>
 <translation id="3827112369919217609">Absolútne</translation>
 <translation id="3828924085048779000">Prístupová fráza nemôže byť prázdna.</translation>
+<translation id="3830139096297532361">Tento súbor PDF je nedostupný. Súbory na extrakciu textu sa nepodarilo stiahnuť. Skúste to znova neskôr.</translation>
 <translation id="3830470485672984938">Použiť iný prístupový kľúč</translation>
 <translation id="3831065134033923230">Kontrola uložených hesiel</translation>
 <translation id="3831915413245941253">Doména <ph name="ENROLLMENT_DOMAIN" /> nainštalovala rozšírenia pre ďalšie funkcie. Rozšírenia majú prístup k niektorým vašim údajom.</translation>
@@ -1668,6 +1672,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4202554117186904723">Piaty kotúč</translation>
 <translation id="4203769790323223880">Kamera nie je povolená</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Skontrolovať konfiguráciu brány firewall a antivírusového softvéru<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Disk Google</translation>
 <translation id="4209092469652827314">Veľké</translation>
 <translation id="4210602799576081649">Overovací kód vypršal, požiadajte o nový</translation>
 <translation id="421066178035138955">Používať zariadenia a údaje virtuálnej reality</translation>
@@ -2481,12 +2486,10 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784606427469807560">Pri overovaní karty sa vyskytol problém. Skontrolujte pripojenie k internetu a skúste to znova.</translation>
 <translation id="5785756445106461925">Táto stránka obsahuje aj iné zdroje, ktoré nie sú zabezpečené. Tieto zdroje môžu pri prenose vidieť ostatní používatelia a útočník ich môže upraviť tak, aby zmenil vzhľad stránky.</translation>
-<translation id="5786044859038896871">Chcete vyplniť informácie o karte?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Tento spôsob platby bude odstránený z tohto zariadenia</translation>
 <translation id="5800727402210090597">Opravy a servis mobilných telefónov</translation>
 <translation id="580241730938216256">Spustiť aktualizáciu</translation>
-<translation id="5803412860119678065">Chcete vyplniť informácie o karte <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5806871454498484178">Posúvanie a priblíženie sú blokované</translation>
 <translation id="5808435672482059465">Zobraziť históriu Chromu</translation>
@@ -2729,6 +2732,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6270066318535733958">Plavba loďou</translation>
 <translation id="6272088941196661550">Pokračujte v ceste a zobrazte si relevantnú aktivitu v histórii Chromu</translation>
 <translation id="6272383483618007430">Aktualizácie Google</translation>
+<translation id="6278015583149890680">Disk Google a OneDrive</translation>
 <translation id="6280223929691119688">Doručenie na túto adresu nie je možné. Vyberte inú adresu.</translation>
 <translation id="6284292079994426700">26 × 38 palcov</translation>
 <translation id="6284449872909111707">Textové a četové správy</translation>
@@ -3167,6 +3171,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7119063404975271297">Televízne drámy</translation>
 <translation id="7119371694555167493">Vypršal čas kopírovania</translation>
 <translation id="7119414471315195487">Zavrite ostatné karty alebo programy</translation>
+<translation id="7120588595737538743">stiahnuté súbory a snímky obrazovky</translation>
 <translation id="7124354851782353862">Zadajte overovací kód karty</translation>
 <translation id="7129409597930077180">Dodanie na túto adresu nie je možné. Vyberte inú adresu.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3366,6 +3371,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, stlačením klávesov Tab a potom Enter zavrite tip pre Chrome.</translation>
 <translation id="7485085230273446323">Obchod a priemysel</translation>
 <translation id="7485870689360869515">Nenašli sa žiadne údaje.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Šampóny a kondicionéry</translation>
 <translation id="7495528107193238112">Tento obsah je blokovaný. Kontaktujte vlastníka webu a požiadajte ho odstránenie daného problému.</translation>
 <translation id="749865518782565832">Inštalatérstvo</translation>

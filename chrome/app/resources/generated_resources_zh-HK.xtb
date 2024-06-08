@@ -295,7 +295,7 @@
 <translation id="1203942045716040624">共用工作程式：<ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">預覽連結</translation>
 <translation id="1206832039833782423">安全碼在付款卡背面</translation>
-<translation id="1208392090861059168">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟系統位置存取權<ph name="END_LINK" /></translation>
+<translation id="1208392090861059168">目前的時間表已設定為<ph name="SUNRISE" />至<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟系統位置存取權<ph name="END_LINK" />。</translation>
 <translation id="1210678701920254279">查看或新增打印機，並查看進行中的列印工作</translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。擁有者可選擇是否將此裝置的診斷和使用情況資料傳送給 Google。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
@@ -813,7 +813,7 @@
 <translation id="1594703455918849716">去檢查頁面</translation>
 <translation id="1594781465361405478">開啟/關閉音量</translation>
 <translation id="1594963087419619323">分割螢幕概覽</translation>
-<translation id="1595018168143352126">使用 Chrome 管理網站的攝影機權限</translation>
+<translation id="1595018168143352126">在 Chrome 中管理網站相機存取權</translation>
 <translation id="1595492813686795610">正在升級 Linux</translation>
 <translation id="1596286373007273895">可用</translation>
 <translation id="1596709061955594992">藍牙已關閉。如要查看可用的裝置，請開啟藍牙。</translation>
@@ -1259,7 +1259,7 @@
 <translation id="1900305421498694955">Google Play 應用程式可能會要求取得檔案系統的完整存取權，以讀取和寫入外部儲存裝置上的檔案。外置磁碟的任何使用者都能見到在此裝置上建立的檔案和資料夾。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">要求管理員更新此應用程式</translation>
 <translation id="1901303067676059328">全部選取(&amp;A)</translation>
-<translation id="1901760057081700494">目前時區設為 <ph name="TIME_ZONE_ENTRY" />。如要自動更新時區，請<ph name="BEGIN_LINK" />開啟系統位置資訊存取權<ph name="END_LINK" />。</translation>
+<translation id="1901760057081700494">時區目前設定為 <ph name="TIME_ZONE_ENTRY" />。如要自動更新時區，請<ph name="BEGIN_LINK" />開啟系統位置資料存取權<ph name="END_LINK" />。</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存作業等功能</translation>
 <translation id="1906488504371069394">在「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」探索更多擴充程式和主題</translation>
@@ -2214,7 +2214,7 @@
 <translation id="2581992808349413349">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">無法取得 Kerberos 票證。請再試一次，或與您機構的裝置管理員聯絡。(錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
-<translation id="2584974473573720127">使用 Chrome 管理網站的麥克風權限</translation>
+<translation id="2584974473573720127">在 Chrome 中管理網站麥克風權限</translation>
 <translation id="2586561813241011046">無法安裝 <ph name="APP_NAME" />。請再試一次，或聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2586672484245266891">請輸入較短的網址</translation>
@@ -2404,9 +2404,8 @@
 <translation id="2727744317940422214">抱歉，發生錯誤。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。清理失敗，您可能需要手動清理。</translation>
 <translation id="2729327310379176711">Chrome 正在尋找新方法，以減少追蹤，並進一步提高瀏覽時的安全性。Chrome 亦會<ph name="ESTIMATE_INTERESTS_LINK" />，並讓您管理這些興趣。然後，您瀏覽的網站便可要求 Chrome 提供您的興趣，以向您展示廣告。</translation>
 <translation id="2729577602370119849">輕鬆存取和管理打印機</translation>
-<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集裝置感應器相關資訊和這部裝置附近的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Google 會使用從這部裝置收集到的資訊提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求，但不會將這些資訊用於識別任何人的身分。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往這部裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。「定位精確度」關閉時，系統不會收集任何「定位精確度」資料，如果 Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷這部裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集此裝置附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 會將從此裝置收集的資料用於改善定位精確度和適地性服務，並改善、提供和維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。這些資料不會用於識別任何人士。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷此裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">正在備份 Linux 應用程式和檔案</translation>
 <translation id="2730596696987224099">自行選擇</translation>
 <translation id="2730647855013151888">包含所有個人資料</translation>
@@ -3258,7 +3257,7 @@
 <translation id="338323348408199233">封鎖沒有使用 VPN 連線的流量</translation>
 <translation id="3384362484379805487">為節省磁碟空間，語言檔案會由裝置的所有使用者共用。</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385172418915595177">「定位精確度」可為各種應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 整體的服務，以滿足使用者需求。</translation>
+<translation id="3385172418915595177">「定位精確度」為應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，協助尋找無線訊號位置。這些資料不會識別你的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 整體的服務，以滿足使用者的需要。</translation>
 <translation id="338583716107319301">分隔符號</translation>
 <translation id="3385916046075724800">系統現在會自動儲存分頁群組。</translation>
 <translation id="3387023983419383865">、</translation>
@@ -3958,7 +3957,6 @@
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟「Google 助理」</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">每次都詢問我</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的裝置的「咫尺共享」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="3878445208930547646">不允許複製此網站的內容</translation>
 <translation id="3879748587602334249">下載管理員</translation>
@@ -4121,9 +4119,8 @@
 <translation id="3988124842897276887">此分頁已連接至 USB 裝置</translation>
 <translation id="3988996860813292272">選取時區</translation>
 <translation id="3991055816270226534">管理第三方 Cookie 和追蹤保護功能</translation>
-<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集裝置感應器相關資訊和這部裝置附近的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Google 會使用從這部裝置收集到的資訊提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求，但不會將這些資訊用於識別任何人的身分。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往這部裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。「定位精確度」關閉時，系統不會收集任何「定位精確度」資料，如果 Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷這部裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" />
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集此裝置附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 會將從此裝置收集的資料用於改善定位精確度和適地性服務，並改善、提供和維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。這些資料不會用於識別任何人士。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷此裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">已匯入</translation>
 <translation id="3992008114154328194">下載緊 <ph name="FILE_NAME" />，<ph name="STATUS" /></translation>
@@ -4277,9 +4274,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
-<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集裝置感應器相關資訊和你附近的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資訊識別你的身分，只會用於提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。「定位精確度」關閉時，系統不會收集任何「定位精確度」資料，如果 Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" />
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集你附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資料識別你的身分，而是用於改善定位精確度和適地性服務，並改善、提供及維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />你可隨時在裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷你裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
         <ph name="BREAK" />
@@ -5056,7 +5051,7 @@
 <translation id="4716483597559580346">執行 Powerwash 操作以提高安全性</translation>
 <translation id="4716715661140829720">儲存空間不足</translation>
 <translation id="471759229191973607">變更主題</translation>
-<translation id="4719276504493791870">未授權應用程式使用位置資訊</translation>
+<translation id="4719276504493791870">未授權應用程式使用位置資料</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用您的螢幕。</translation>
 <translation id="4722989931633062466">不允許顯示第三方登入提示</translation>
@@ -5270,7 +5265,7 @@
 <translation id="4879491255372875719">自動 (預設)</translation>
 <translation id="4880315242806573837">安全更新即將終止，請改用新 Chromebook。</translation>
 <translation id="4880827082731008257">搜尋記錄</translation>
-<translation id="4881632956374597321">系統服務和具有位置存取權的應用程式與網站可使用位置資訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4881632956374597321">系統服務與具備位置權限的應用程式和網站可使用位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">下次不要提醒我</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4882312758060467256">可以在此網站上執行</translation>
@@ -5667,7 +5662,7 @@
 <translation id="5186788525428341874">你可在所有裝置上使用此密鑰快速登入。系統會將密碼儲存至 <ph name="ACCOUNT_NAME" /> 的「Google 密碼管理工具」。</translation>
 <translation id="5187641678926990264">將網頁作為應用程式安裝…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
-<translation id="5188648870018555788">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
+<translation id="5188648870018555788">使用位置資料。允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用裝置位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，協助尋找無線訊號位置。這些資料不會識別你的身分，會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，滿足使用者的需要。<ph name="BEGIN_LINK1" />進一步瞭解如何使用位置設定<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="5190959794678983197">沒有麥克風</translation>
@@ -5713,7 +5708,7 @@
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
 <translation id="52254442782792731">目前嘅分享設定仲未設定</translation>
 <translation id="5225463052809312700">開啟攝錄機</translation>
-<translation id="5226731562812684363">未授權網站使用位置資訊</translation>
+<translation id="5226731562812684363">未授權網站使用位置資料</translation>
 <translation id="5227679487546032910">預設藍綠色圖片</translation>
 <translation id="5228245824943774148">已連接 <ph name="NUM_DEVICES_CONNECTED" /> 部裝置</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
@@ -6209,6 +6204,7 @@
 <translation id="5590418976913374224">在裝置啟動時播放音效</translation>
 <translation id="5591465468509111843">字間距很寬</translation>
 <translation id="5592595402373377407">目前還沒有足夠的數據。</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">已關閉 Mac 系統設定中的麥克風</translation>
 <translation id="5594899180331219722">選取檔案</translation>
 <translation id="5595307023264033512">網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
@@ -6585,7 +6581,7 @@
 <translation id="5885314688092915589">您的機構將管理此設定檔</translation>
 <translation id="5885470467814103868">開始掃瞄</translation>
 <translation id="5885631909150054232">複製憑證</translation>
-<translation id="5886000783338788034">ChromeOS 設定中的位置存取權為關閉狀態</translation>
+<translation id="5886000783338788034">在「ChromeOS 設定」的位置資料已關閉</translation>
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">連接並快速設定附近的「快速配對」裝置</translation>
 <translation id="5886384907280980632">立即關閉</translation>
@@ -7118,7 +7114,7 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 不常下載，代表此檔案可能不安全。</translation>
 <translation id="6285770818046456882">正在與您分享的裝置現已取消傳輸</translation>
-<translation id="628699625505156622">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用這部裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自這部裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含任何身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
+<translation id="628699625505156622">使用位置資料。允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用此裝置的位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理你裝置的感應器資料和無線訊號，協助尋找無線訊號位置。這些資料不會識別任何人士的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，以滿足使用者的需要。<ph name="BEGIN_LINK1" />進一步瞭解如何使用位置設定<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -7642,7 +7638,7 @@
 <translation id="6703613667804166784">此檔案可能會損害你的個人和社交網絡帳戶，包括 <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">執行 ChromeOS 診斷測試</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
-<translation id="6707671917294473995">未授權網站使用攝影機</translation>
+<translation id="6707671917294473995">未授權網站使用相機</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6709133671862442373">新聞</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
@@ -8677,7 +8673,7 @@
 <translation id="7489761397368794366">透過您的裝置撥打電話</translation>
 <translation id="749028671485790643">人員 <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">檢查餘下的密碼</translation>
-<translation id="7490938136316476492">定位服務已關閉。ChromeOS 裝置無法存取位置資訊，但應用程式和網站仍可根據 IP 位址等資訊得知你所在的大概區域。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="7490938136316476492">位置功能已關閉。ChromeOS 裝置無法存取位置資料，但應用程式和網站仍可根據 IP 位址等資料得知你所在的大約區域。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">分頁</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 個 Cookie}other{{NUM_COOKIES} 個 Cookie}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 擴充程式可能會收集所有您輸入的文字，包括密碼和信用卡號碼等個人資料。您要使用這個擴充程式嗎？</translation>
@@ -8878,7 +8874,6 @@
 <translation id="7648023614017258011">Chrome 正在驗證安裝套件</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7650178491875594325">還原本機資料</translation>
-<translation id="7650511557061837441">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除「<ph name="EXTENSION_NAME" />」。</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{已設定 1 個指紋}other{已設定 {COUNT} 個指紋}}</translation>
 <translation id="7650677314924139716">目前嘅數據用量設定係「只限 Wi-Fi」</translation>
 <translation id="7650920359639954963">未啟用：<ph name="REASON" /></translation>
@@ -9039,7 +9034,7 @@
 <translation id="7758450972308449809">調整顯示屏的邊界</translation>
 <translation id="7758884017823246335">新增站內搜尋</translation>
 <translation id="7759809451544302770">選用</translation>
-<translation id="7760176388948986635">允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用這部裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自這部裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含任何身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。</translation>
+<translation id="7760176388948986635">允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用此裝置的位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理你裝置的感應器資料和無線訊號，協助尋找無線訊號位置。這些資料不會識別任何人士的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，以滿足使用者的需要。</translation>
 <translation id="7762024824096060040">無法使用此帳戶</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
@@ -9159,7 +9154,7 @@
 <translation id="7839051173341654115">查看/備份媒體</translation>
 <translation id="7839192898639727867">憑證主體金鑰識別碼</translation>
 <translation id="7839696104613959439">輸出網絡選項</translation>
-<translation id="7840222916565569061">未授權應用程式使用攝影機</translation>
+<translation id="7840222916565569061">未授權應用程式使用相機</translation>
 <translation id="7842062217214609161">沒有快速鍵</translation>
 <translation id="7842692330619197998">如需建立新帳戶，請前往 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="784273751836026224">解除安裝 Linux</translation>
@@ -10172,7 +10167,7 @@
 <translation id="8584843865238667486">使用量為 <ph name="USAGE" /> (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列網站採用的是自訂設定，而非預設設定</translation>
-<translation id="8586421813321819377">允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。</translation>
+<translation id="8586421813321819377">允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用裝置位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，協助尋找無線訊號位置。這些資料不會識別你的身分，會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，滿足使用者的需要。</translation>
 <translation id="8587660243683137365">將此網頁安裝為應用程式</translation>
 <translation id="8588866096426746242">顯示設定檔統計資料</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 將 VR 內容投放緊去眼罩度</translation>
@@ -10394,7 +10389,7 @@
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">揀要將網頁翻譯成邊種語言</translation>
-<translation id="8737966899544698733">定位精確度 (僅限 Android)</translation>
+<translation id="8737966899544698733">定位精確度 (只適用於 Android)</translation>
 <translation id="8738418093147087440">按國家/地區、語言或輸入名稱搜尋</translation>
 <translation id="8740086188450289493">使用 Google 帳戶密碼</translation>
 <translation id="8740247629089392745">您可將此 Chromebook 交還給<ph name="SUPERVISED_USER_NAME" />。設定即將完成，現在可開始探索。</translation>
@@ -10466,16 +10461,14 @@
 <translation id="8793390639824829328">網站會使用此功能捲動及縮放已分享的分頁</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>
-<translation id="8796907593900732741">只有系統服務可以使用你的位置資訊，但應用程式和網站仍可根據 IP 位址等資訊得知你所在的大概區域。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="8796907593900732741">只有系統服務可使用你的位置，但應用程式和網站仍可根據 IP 位址等資料得知你所在的大約區域。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">自訂 Chrome(&amp;U)</translation>
 <translation id="8797459392481275117">永不翻譯此網站的內容</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8803953437405899238">按一下即可開啟新分頁</translation>
-<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集裝置感應器相關資訊和你附近的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資訊識別你的身分，只會用於提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。「定位精確度」關閉時，系統不會收集任何「定位精確度」資料，如果 Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集你附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資料識別你的身分，而是用於改善定位精確度和適地性服務，並改善、提供及維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />你可隨時在裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷你裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">選擇開啟工具</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{將分頁移至其他視窗}other{將分頁移至其他視窗}}</translation>
 <translation id="8805140816472474147">如要開始同步處理，請確認同步處理設定。</translation>

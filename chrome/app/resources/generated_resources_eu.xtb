@@ -3939,7 +3939,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3873915545594852654">Arazo bat izan da ARC++ eginbidearekin.</translation>
 <translation id="3874164307099183178">Aktibatu Google-ren Laguntzailea</translation>
 <translation id="3875815154304214043">Arakatzaileko beste fitxa batean irekitzeko konfiguratuta dago <ph name="APP_NAME" />. Onartzen diren estekak ere irekiko dira arakatzailean. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Galdetu beti</translation>
 <translation id="3877075909000773256">Nearby Share-ren ezarpenak <ph name="USER_NAME" /> erabiltzailearen gailurako; <ph name="USER_EMAIL" /> kontuaren bidez partekatzen dira.</translation>
 <translation id="3878445208930547646">Webgune honetatik ezin da ezer kopiatu</translation>
 <translation id="3879748587602334249">Deskargen kudeatzailea</translation>
@@ -6179,6 +6178,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5590418976913374224">Erreproduzitu soinua gailua piztean</translation>
 <translation id="5591465468509111843">Oso zabala</translation>
 <translation id="5592595402373377407">Ez dago behar adina datu erabilgarri oraindik.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofonoa erabiltzeko baimena desaktibatuta dago Mac sistemaren ezarpenetan</translation>
 <translation id="5594899180331219722">Hautatu fitxategi bat</translation>
 <translation id="5595307023264033512">Webguneek erabilitako memoria, guztira: <ph name="TOTAL_USAGE" /></translation>
@@ -8841,7 +8841,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7648023614017258011">Chrome instalazio-paketea egiaztatzen ari da</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7650178491875594325">Leheneratu gailuko datuak</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" luzapenak "<ph name="EXTENSION_NAME" />" kendu nahi du.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 hatz-marka dago konfiguratuta}other{{COUNT} hatz-marka daude konfiguratuta}}</translation>
 <translation id="7650677314924139716">Oraingo datu-erabileraren ezarpena "Wifi bidez soilik" da</translation>
 <translation id="7650920359639954963">Ez dago gaituta: <ph name="REASON" /></translation>

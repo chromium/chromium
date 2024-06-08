@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">电池电量必须在 <ph name="REQUIRED_BATTERY_PRECENT" />% 以上</translation>
 <translation id="2461822463642141190">当前</translation>
 <translation id="2462932596748424101">社交网络</translation>
-<translation id="2463739503403862330">填充</translation>
 <translation id="2465688316154986572">订书钉</translation>
 <translation id="2465914000209955735">管理您已在 Chrome 中下载的文件</translation>
 <translation id="2466004615675155314">显示来自网络的信息</translation>
@@ -2481,12 +2480,10 @@
 <translation id="57838592816432529">静音</translation>
 <translation id="5784606427469807560">确认您的信用卡时出现问题。请检查您的互联网连接，然后重试。</translation>
 <translation id="5785756445106461925">而且，此页中包含其他不安全的资源。他人能在这些资源传输过程中进行查看，攻击者也可以修改这些资源，从而改变此页的外观。</translation>
-<translation id="5786044859038896871">要填充您的信用卡信息吗？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方式将被从该设备中删除</translation>
 <translation id="5800727402210090597">手机维修和服务</translation>
 <translation id="580241730938216256">开始更新</translation>
-<translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5806871454498484178">禁止滚动和缩放</translation>
 <translation id="5808435672482059465">查看您的 Chrome 历史记录</translation>
@@ -2676,6 +2673,7 @@
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
 <translation id="617256461084925519">Google Chrome 正在尝试验证您的身份，以便填写您的付款信息。</translation>
+<translation id="6173208311907792313">请使用 Windows Hello 完成购买交易</translation>
 <translation id="6176387967264100435">此价格较高</translation>
 <translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
 <translation id="6177531123306197852">C2 信封</translation>
@@ -3833,6 +3831,7 @@
 <translation id="8332188693563227489">访问 <ph name="HOST_NAME" /> 的请求遭到拒绝</translation>
 <translation id="833262891116910667">突出显示</translation>
 <translation id="8339163506404995330">系统不会自动翻译源语言为<ph name="LANGUAGE" />的网页</translation>
+<translation id="8339275256517065202">请使用触控 ID 完成购买交易</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虚拟卡注册对话框已全屏打开</translation>
 <translation id="8349305172487531364">书签栏</translation>
@@ -4027,6 +4026,7 @@
 <translation id="8726549941689275341">页面尺寸：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全码</translation>
+<translation id="8731917264694569036">请使用您的设备完成购买交易</translation>
 <translation id="8733345475331865475">汽车保险</translation>
 <translation id="8733764070897080460">您可以屏蔽不想与网站分享的主题。Chrome 还会自动删除保留时长超过 4 周的主题。了解详情</translation>
 <translation id="8734529307927223492">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
@@ -4220,6 +4220,7 @@
 <translation id="9116548361133462832">详细了解 Chrome 中的广告</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="9119042192571987207">已上传</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想验证您的身份</translation>
 <translation id="912327514020027767">裙子</translation>
 <translation id="912414390325846156">您先前已选择拒绝针对此网站授予权限</translation>
 <translation id="9128870381267983090">连接到网络</translation>

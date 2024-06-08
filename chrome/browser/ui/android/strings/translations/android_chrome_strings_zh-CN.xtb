@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">在群组内的新标签页中打开</translation>
 <translation id="1103142993930332957">帮助改进 Chrome？</translation>
 <translation id="1105960400813249514">屏幕截图</translation>
+<translation id="1108214977745280468">查看网页数据洞见</translation>
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
 <translation id="1113597929977215864">显示简化版视图</translation>
@@ -251,7 +252,6 @@
 <translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
-<translation id="2328739396024849021">已停用“保存”按钮</translation>
 <translation id="2328985652426384049">无法登录</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="2341410551640223969">无法安装 <ph name="WEBAPK_NAME" />。</translation>
@@ -361,7 +361,6 @@
 <translation id="2869430948265924908">为了保护您在车载系统上存放的敏感内容，您必须设置一种车载系统个人资料锁定方式。为此，您可以使用 PIN 码、验证码或密码。</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2871733351037274014">预加载网页</translation>
-<translation id="2871941920508945325">“网页数据洞见”按钮</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />请求您批准访问此网站：</translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
@@ -528,7 +527,6 @@
 <translation id="3699022356773522638">下载文件？</translation>
 <translation id="3700759344784597882">当此设置处于开启状态时，密码会保存到您的账号中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
-<translation id="3711001040440486668">“分享”按钮</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="3714981814255182093">打开查找栏</translation>
 <translation id="3716182511346448902">此网页占用的内存过多，因此 Chrome 已将其暂停。</translation>
@@ -912,6 +910,7 @@
 <translation id="5590372121997663538">记住这台计算机</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599455543593328020">无痕模式</translation>
+<translation id="5601180634394228718">如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
 <translation id="562289928968387744">管理回应</translation>
@@ -1252,6 +1251,7 @@
 <translation id="7148400116894863598">从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="71503698506017927">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
+<translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7177466738963138057">以后，您可以在“设置”中更改此设置。</translation>

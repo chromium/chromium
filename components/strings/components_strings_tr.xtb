@@ -795,7 +795,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2456755709261364512">Piliniz %<ph name="REQUIRED_BATTERY_PRECENT" /> üzerinde şarj olmalıdır</translation>
 <translation id="2461822463642141190">Şu an</translation>
 <translation id="2462932596748424101">Sosyal Ağlar</translation>
-<translation id="2463739503403862330">Doldur</translation>
 <translation id="2465688316154986572">Tel zımba</translation>
 <translation id="2465914000209955735">Chrome'da indirdiğiniz dosyaları yönetin</translation>
 <translation id="2466004615675155314">Web'den alınan bilgileri göster</translation>
@@ -2485,12 +2484,10 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784606427469807560">Kartınız onaylanırken bir sorun oluştu. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="5785756445106461925">Ayrıca, bu sayfa güvenli olmayan başka kaynaklar içeriyor. Bu kaynaklar, aktarım sırasında başkaları tarafından görülebilir ve bir saldırgan tarafından sayfanın görünüşünü değiştirmek üzere kullanılabilir.</translation>
-<translation id="5786044859038896871">Kart bilgilerinizin doldurulmasını istiyor musunuz?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bu ödeme yöntemi bu cihazdan silinecek</translation>
 <translation id="5800727402210090597">Cep Telefonu Onarım ve Servis Hizmetleri</translation>
 <translation id="580241730938216256">Güncellemeyi başlat</translation>
-<translation id="5803412860119678065"><ph name="CARD_DETAIL" /> kartınıza ait bilgilerin doldurulmasını istiyor musunuz?</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5806871454498484178">Kaydırma ve yakınlaştırma engellendi</translation>
 <translation id="5808435672482059465">Chrome Geçmişimi Göster</translation>

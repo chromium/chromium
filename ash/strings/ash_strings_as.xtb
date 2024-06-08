@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">অন আছে</translation>
 <translation id="5216991270656129561"><ph name="TIME" />লৈকে অফ হৈ থাকিব</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
+<translation id="5228195526683428788">স্প্লিট স্ক্ৰীনৰ বিভাজক</translation>
 <translation id="5229343007215035173">গোপনীয়তাৰ স্ক্ৰীন অন/অফ কৰক</translation>
 <translation id="5230516054153933099">ৱিণ্ড’</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> ষ্ট’ৰেজ ব্যৱহাৰ হৈ আছে | মুঠ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">গোপনীয়তাৰ স্ক্ৰীনখন অন আছে</translation>
 <translation id="6622679827379792051">আপোনাৰ ফ’নৰ এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
+<translation id="662279009180869175">বিভাজিত স্ক্ৰীনৰ আকাৰ সলনি কৰিবলৈ লেফ্ট আৰু ৰাইট এৰ’ কী দুটা ব্যৱহাৰ কৰক</translation>
 <translation id="6624493541160101248">বৰ্তমানৰ ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ৰ ভিতৰত <ph name="DESK_INDEX" /> তম ডেস্ক।</translation>
 <translation id="6625718907317144388">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> আৰু অন্য জাননীসমূহ লুকুওৱা হৈছে</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">ডেস্ক ৩</translation>
 <translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
 <translation id="6671661918848783005">আপোনাৰ Chromebook আনলক কৰিব পৰা নাই</translation>
+<translation id="6676552993057022464">বিভাজিত স্ক্ৰীনৰ আকাৰ সলনি কৰিবলৈ আপ আৰু ডাউন এৰ’ কী দুটা ব্যৱহাৰ কৰক</translation>
 <translation id="6682029141988159141">ক্লিপব’ৰ্ডৰ পৰা সমল পে’ষ্ট কৰক</translation>
 <translation id="6683022854667115063">হেডফ’ন</translation>
 <translation id="6686023075541098243">আপোনাৰ ফ’নৰ জাননী চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
@@ -1664,7 +1667,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />ত আগৰ ৰিজলিউশ্বনটোলৈ উভতি যোৱা হ’ব</translation>
-<translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7181691792034457084">নমস্কাৰ। <ph name="PRODUCT_NAME" /> অলপ বেলেগ।</translation>
 <translation id="7188494361780961876">স্ক্ৰীনখনৰ ওপৰৰ বাওঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>

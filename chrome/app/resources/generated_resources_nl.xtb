@@ -3955,7 +3955,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3874164307099183178">De Google Assistent aanzetten</translation>
 <translation id="3875815154304214043">Er is ingesteld dat <ph name="APP_NAME" /> wordt geopend in een nieuw browsertabblad. Ondersteunde links worden ook geopend in de browser. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Vensters met gewijzigd formaat naar boven verplaatsen</translation>
-<translation id="3876833929577368454">Mij altijd vragen</translation>
 <translation id="3877075909000773256">Instellingen voor Dichtbij delen voor het apparaat van <ph name="USER_NAME" />, delen via het account <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Kopiëren vanaf deze site is niet toegestaan</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
@@ -6208,6 +6207,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5590418976913374224">Geluid afspelen bij opstarten apparaat</translation>
 <translation id="5591465468509111843">Erg wijd</translation>
 <translation id="5592595402373377407">Nog niet voldoende gegevens beschikbaar.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Microfoon staat uit in Systeeminstellingen van je Mac</translation>
 <translation id="5594899180331219722">Bestand selecteren</translation>
 <translation id="5595307023264033512">Totale opslagruimte gebruikt door sites: <ph name="TOTAL_USAGE" /></translation>
@@ -8878,7 +8878,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7648023614017258011">Chrome verifieert de installatiebundel</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7650178491875594325">Lokale gegevens herstellen</translation>
-<translation id="7650511557061837441">'<ph name="TRIGGERING_EXTENSION_NAME" />' wil '<ph name="EXTENSION_NAME" />' verwijderen.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 vingerafdruk ingesteld}other{{COUNT} vingerafdrukken ingesteld}}</translation>
 <translation id="7650677314924139716">Huidige instelling voor datagebruik is 'Alleen wifi'</translation>
 <translation id="7650920359639954963">Niet ingesteld: <ph name="REASON" /></translation>

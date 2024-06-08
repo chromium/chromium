@@ -3963,7 +3963,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3873915545594852654">Nagkaproblema sa ARC++.</translation>
 <translation id="3874164307099183178">I-on ang Google Assistant</translation>
 <translation id="3875815154304214043">Nakatakdang magbukas ang <ph name="APP_NAME" /> sa isang bagong tab ng browser, magbubukas din ang mga sinusuportahang link sa browser. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Tanungin ako sa tuwina</translation>
 <translation id="3877075909000773256">Mga setting ng Nearby Share para sa device ni <ph name="USER_NAME" />, ibinabahagi sa ilalim ng account na <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Hindi pinapayagan ang pagkopya mula sa site na ito</translation>
 <translation id="3879748587602334249">Download manager</translation>
@@ -6217,6 +6216,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5590418976913374224">I-play ang tunog sa pagsisimula ng device</translation>
 <translation id="5591465468509111843">Napakalapad</translation>
 <translation id="5592595402373377407">Wala pang available na sapat na data.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Naka-off ang mikropono sa Mga Setting ng System ng Mac</translation>
 <translation id="5594899180331219722">Pumili ng file</translation>
 <translation id="5595307023264033512">Kabuuang storage na ginagamit ng mga site: <ph name="TOTAL_USAGE" /></translation>
@@ -8891,7 +8891,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7648023614017258011">Vine-verify ng Chrome ang bundle ng pag-install</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7650178491875594325">I-restore ang lokal na data</translation>
-<translation id="7650511557061837441">Gustong alisin ng "<ph name="TRIGGERING_EXTENSION_NAME" />" ang "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingerprint ang na-set up}one{{COUNT} fingerprint ang na-set up}other{{COUNT} na fingerprint ang na-set up}}</translation>
 <translation id="7650677314924139716">Wi-Fi lang ang kasalukuyang setting ng paggamit ng data</translation>
 <translation id="7650920359639954963">Hindi naka-enable: <ph name="REASON" /></translation>

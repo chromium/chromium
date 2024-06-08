@@ -127,7 +127,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3155163173539279776">Relancer Chromium</translation>
 <translation id="3179665906251668410">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="3185330573522821672">Personnaliser votre nouveau profil Chromium</translation>
-<translation id="318879170965183683">Vous pouvez utiliser les mots de passe de votre compte Google dans Chromium lorsque vous êtes connecté</translation>
 <translation id="3190315855212034486">Google Chrome a planté. Voulez-vous le relancer maintenant?</translation>
 <translation id="3224847870593914902">Pour retirer votre compte Google de Chromium, déconnectez-vous de Chromium sur la page Paramètres</translation>
 <translation id="3258596308407688501">Chromium ne peut pas lire et écrire dans son répertoire de données :
@@ -256,7 +255,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5386450000063123300">Mise à jour de Chromium en cours (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="538767207339317086">Autoriser la connexion à Chromium</translation>
 <translation id="5398878173008909840">Une nouvelle version de Chromium est maintenant offerte.</translation>
-<translation id="5400757303519321734">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter à Chromium avec le même compte</translation>
 <translation id="5405650547142096840">Supprimer de Chromium</translation>
 <translation id="5427571867875391349">Faire de Chromium le navigateur par défaut</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium bêta</translation>
@@ -381,7 +379,6 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
 <translation id="7067091210845072982">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google.</translation>
-<translation id="7100062358172078145">Ne pas me connecter à Chromium</translation>
 <translation id="7141270731789036260">Personnaliser Chrome for Testing</translation>
 <translation id="7159538860914681762">Pour enregistrer et utiliser vos mots de passe et d'autres données sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="7173822816570314652">Votre organisation supprime les données Chromium lorsqu'elles ne sont pas utilisées pour <ph name="TIMEOUT_DURATION" />. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.</translation>
@@ -503,7 +500,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour ouvrir un autre navigateur afin d'accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Relancer &amp;Chromium pour le mettre à jour</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Me connecter automatiquement à Chromium</translation>
 <translation id="924957577793602335">Personnalisez Chromium</translation>
 <translation id="93478295209880648">Il se peut que Chromium ne fonctionne pas correctement, car il n'est plus compatible avec Windows XP ni Windows Vista</translation>
 <translation id="942598560705308788">Certificats gérés par Chromium</translation>

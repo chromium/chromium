@@ -798,7 +798,6 @@
 <translation id="2456755709261364512">ต้องชาร์จแบตเตอรี่ให้มากกว่า <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="2462932596748424101">โซเชียลเน็ตเวิร์ก</translation>
-<translation id="2463739503403862330">กรอกข้อมูล</translation>
 <translation id="2465688316154986572">เย็บด้วยลวดเย็บกระดาษ</translation>
 <translation id="2465914000209955735">จัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="2466004615675155314">แสดงข้อมูลจากเว็บ</translation>
@@ -2490,12 +2489,10 @@
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5784606427469807560">เกิดปัญหาในการยืนยันบัตรของคุณ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="5785756445106461925">นอกจากนี้ หน้านี้ประกอบด้วยทรัพยากรอื่นๆ ซึ่งไม่ปลอดภัย ผู้อื่นสามารถดูทรัพยากรเหล่านี้ขณะถ่ายโอน และผู้บุกรุกสามารถแก้ไขเพื่อเปลี่ยนรูปลักษณ์ของหน้าได้</translation>
-<translation id="5786044859038896871">คุณต้องการกรอกข้อมูลบัตรไหม</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ระบบจะลบวิธีการชำระเงินนี้ออกจากอุปกรณ์</translation>
 <translation id="5800727402210090597">บริการรับซ่อมโทรศัพท์มือถือ</translation>
 <translation id="580241730938216256">เริ่มอัปเดต</translation>
-<translation id="5803412860119678065">คุณต้องการกรอกข้อมูล <ph name="CARD_DETAIL" /> ไหม</translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5806871454498484178">การเลื่อนและซูมถูกบล็อก</translation>
 <translation id="5808435672482059465">ดูประวัติการเข้าชมใน Chrome</translation>

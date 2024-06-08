@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Познати мрежи</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
 <translation id="1240638468526743569">Некоја апликација</translation>
+<translation id="1242198791279543032">Звукот на известувањата е исклучен</translation>
 <translation id="1242883863226959074">уред</translation>
 <translation id="1245644940275736236">Одете на „Помошникот“</translation>
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
@@ -1664,7 +1665,6 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Се навраќа на стара резолуција за <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7181691792034457084">Здраво. Уредот <ph name="PRODUCT_NAME" /> е малку поинаков.</translation>
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>

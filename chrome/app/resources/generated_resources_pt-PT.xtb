@@ -295,6 +295,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1203942045716040624">Trabalhador partilhado: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Pré-visualizar link</translation>
 <translation id="1206832039833782423">O código de segurança encontra-se no verso do cartão</translation>
+<translation id="1208392090861059168">O horário atual está definido para <ph name="SUNRISE" /> - <ph name="SUNSET" />. Para atualizar automaticamente o horário do pôr e do nascer do sol, <ph name="BEGIN_LINK" />ative o acesso à localização do sistema<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Veja ou adicione impressoras e veja as tarefas de impressão ativas</translation>
 <translation id="1211769675100312947">Os atalhos são organizados por si</translation>
 <translation id="1213254615020057352">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android da criança ao enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Estes dados não serão utilizados para identificar a criança e ajudarão a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnóstico e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google.</translation>
@@ -812,6 +813,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1594703455918849716">Aceda à página Verificação</translation>
 <translation id="1594781465361405478">Ativar/desativar volume</translation>
 <translation id="1594963087419619323">Vista geral do ecrã dividido</translation>
+<translation id="1595018168143352126">Gerir as autorizações de acesso à câmara dos Websites no Chrome</translation>
 <translation id="1595492813686795610">O Linux está a ser atualizado</translation>
 <translation id="1596286373007273895">Disponível</translation>
 <translation id="1596709061955594992">O Bluetooth está desativado. Para ver os dispositivos disponíveis, ative o Bluetooth.</translation>
@@ -1249,6 +1251,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1900305421498694955">As aplicações do Google Play podem necessitar de acesso completo ao sistema de ficheiros para ler e gravar ficheiros em dispositivos de armazenamento externos. Os ficheiros e as pastas criados no dispositivo são visíveis para qualquer pessoa que utilize a unidade externa. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Peça ao administrador para atualizar esta app</translation>
 <translation id="1901303067676059328">Seleccion&amp;ar tudo</translation>
+<translation id="1901760057081700494">O fuso horário está atualmente definido como <ph name="TIME_ZONE_ENTRY" />. Para atualizar automaticamente o fuso horário, <ph name="BEGIN_LINK" />ative o acesso à localização do sistema<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="1906181697255754968">Normalmente, os sites acedem a ficheiros e pastas no seu dispositivo para funcionalidades como guardar automaticamente o seu trabalho.</translation>
 <translation id="1906488504371069394">Descubra mais extensões e temas na <ph name="BEGIN_LINK" />Web Store do Chrome<ph name="END_LINK" /></translation>
@@ -2201,6 +2204,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2581992808349413349">Use uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio). Esta opção usa um fornecedor de serviços geridos em <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Não foi possível obter a permissão Kerberos. Tente novamente ou contacte o administrador do dispositivo da entidade. (Código de erro <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Gerir as autorizações de acesso ao microfone dos Websites no Chrome</translation>
 <translation id="2586561813241011046">Não foi possível instalar a app <ph name="APP_NAME" />. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2586672484245266891">Introduza um URL mais curto.</translation>
@@ -2390,6 +2394,9 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2727744317940422214">Desculpe, mas algo correu mal. Envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />. A limpeza falhou. Pode ter de a fazer manualmente.</translation>
 <translation id="2729327310379176711">O Chrome está a encontrar novas formas de reduzir a monitorização e dar-lhe ainda mais segurança enquanto navega. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> e permite-lhe geri-los. Em seguida, os sites que visita podem pedir ao Chrome os seus interesses para lhe mostrar anúncios.</translation>
 <translation id="2729577602370119849">Aceda e faça a gestão das impressoras facilmente</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google trata periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos deste dispositivo para contribuir para a recolha de localizações de sinais sem fios.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações recolhidas deste dispositivo para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores. Estas informações não são usadas para identificar nenhum indivíduo.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização deste dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização deste dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">A fazer uma cópia de segurança das aplicações e dos ficheiros do Linux…</translation>
 <translation id="2730596696987224099">Escolher a sua</translation>
 <translation id="2730647855013151888">Incluir todas as informações pessoais</translation>
@@ -3246,6 +3253,7 @@ Quer pará-lo?</translation>
 <translation id="338323348408199233">Bloquear tráfego sem VPN</translation>
 <translation id="3384362484379805487">Os ficheiros de idioma são partilhados entre utilizadores para poupar espaço em disco.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">A Precisão da localização oferece uma localização mais precisa para apps e serviços. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios do dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar o utilizador para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter, de forma geral, os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores.</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3385916046075724800">Os seus grupos de separadores agora são guardados automaticamente.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3950,7 +3958,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3874164307099183178">Ativar Assistente Google</translation>
 <translation id="3875815154304214043">A app <ph name="APP_NAME" /> está definida para abrir num novo separador do navegador e os links suportados também serão abertos no navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Janelas redimensionadas para a parte superior</translation>
-<translation id="3876833929577368454">Perguntar-me sempre</translation>
 <translation id="3877075909000773256">Definições da funcionalidade Partilhar na proximidade para o dispositivo de <ph name="USER_NAME" />, a partilhar na conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Não é permitido copiar deste site</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
@@ -4054,6 +4061,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3950841222883198950">Digitação por voz</translation>
 <translation id="3953834000574892725">As minhas contas</translation>
 <translation id="3954354850384043518">Em curso</translation>
+<translation id="3954468641195530330">As apps não têm autorização para usar o microfone</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Não existem registos de eventos WebRTC capturados recentemente.</translation>
 <translation id="3955321697524543127">Não permitir que os sites estabeleçam ligação a dispositivos USB</translation>
@@ -4112,6 +4120,10 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3988124842897276887">Este separador está associado a um dispositivo USB</translation>
 <translation id="3988996860813292272">Selecionar fuso horário</translation>
 <translation id="3991055816270226534">Gerir cookies de terceiros e proteções contra acompanhamento</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google trata periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos deste dispositivo para contribuir para a recolha de localizações de sinais sem fios.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações recolhidas deste dispositivo para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores. Estas informações não são usadas para identificar nenhum indivíduo.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização deste dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização deste dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saiba mais sobre a Precisão da localização<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importado</translation>
 <translation id="3992008114154328194">A transferir <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Faça uma cópia de segurança dos dados</translation>
@@ -4267,6 +4279,10 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google trata periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos de si para contribuir para a recolha de localizações de sinais sem fios.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações sem identificar o utilizador para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização do seu dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização do seu dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saiba mais sobre a Precisão da localização<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Está a ver ficheiros sugeridos que ajudam a voltar facilmente para a sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5042,6 +5058,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4716483597559580346">Efetuar Powerwash para maior segurança</translation>
 <translation id="4716715661140829720">Não existe espaço de armazenamento suficiente</translation>
 <translation id="471759229191973607">Alterar tema</translation>
+<translation id="4719276504493791870">As apps não têm autorização para usar a sua localização</translation>
 <translation id="4722735765955348426">Palavra-passe de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está a partilhar o seu ecrã.</translation>
 <translation id="4722989931633062466">Sem autorização para apresentar pedidos de início de sessão de terceiros</translation>
@@ -5255,6 +5272,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4879491255372875719">Automático (predefinição)</translation>
 <translation id="4880315242806573837">As atualizações de segurança terminam em breve. Atualize para um novo Chromebook.</translation>
 <translation id="4880827082731008257">Pesquisar histórico</translation>
+<translation id="4881632956374597321">As apps e os Websites com a autorização de acesso à localização, bem como os serviços do sistema, podem usar a sua localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Não lembrar novamente</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Tem acesso a este site</translation>
@@ -5651,6 +5669,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5186788525428341874">Pode usar esta chave de acesso para iniciar sessão mais rapidamente nos seus dispositivos. Vai ser guardada no Gestor de Palavras-passe da Google de <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios do dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar o utilizador para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores. <ph name="BEGIN_LINK1" />Saiba mais acerca da utilização da localização<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">A usar <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Ativar porta</translation>
 <translation id="5190959794678983197">Nenhum microfone</translation>
@@ -5696,6 +5715,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5225324770654022472">Mostrar atalho das aplicações</translation>
 <translation id="52254442782792731">A definição de visibilidade atual ainda não está configurada.</translation>
 <translation id="5225463052809312700">Ativar câmara</translation>
+<translation id="5226731562812684363">Os Websites não têm autorização para usar a sua localização</translation>
 <translation id="5227679487546032910">Avatar azul esverdeado predefinido</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> dispositivos ligados</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
@@ -6193,6 +6213,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5590418976913374224">Reproduzir som no arranque do dispositivo</translation>
 <translation id="5591465468509111843">Muito largo</translation>
 <translation id="5592595402373377407">Ainda não estão disponíveis dados suficientes.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">O microfone está desativado nas Definições do sistema no Mac</translation>
 <translation id="5594899180331219722">Selecionar ficheiro</translation>
 <translation id="5595307023264033512">Armazenamento total usado pelos sites: <ph name="TOTAL_USAGE" /></translation>
@@ -6572,6 +6593,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5885314688092915589">A sua organização irá gerir este perfil</translation>
 <translation id="5885470467814103868">Iniciar digitalização</translation>
 <translation id="5885631909150054232">Copiar token</translation>
+<translation id="5886000783338788034">A localização está desativada nas Definições do ChromeOS</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Ligue e configure rapidamente dispositivos com o Fast Pair nas proximidades</translation>
 <translation id="5886384907280980632">Desativar agora</translation>
@@ -7104,6 +7126,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> não é habitualmente transferido e pode ser perigoso.</translation>
 <translation id="6285770818046456882">O dispositivo que estava a partilhar consigo cancelou a transferência.</translation>
+<translation id="628699625505156622">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização deste dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios deste dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar nenhum indivíduo para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores. <ph name="BEGIN_LINK1" />Saiba mais acerca da utilização da localização<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6287828400772161253">Telemóvel Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nenhum dispositivo disponível a partilhar nas proximidades. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -7628,6 +7651,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6703613667804166784">Este ficheiro pode prejudicar as suas contas pessoais e de redes sociais, incluindo <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Executar testes de diagnóstico do ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
+<translation id="6707671917294473995">Os Websites não têm autorização para usar a câmara</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e mais 1 separador}other{<ph name="PAGE_TITLE" /> e mais # separadores}}</translation>
 <translation id="6709133671862442373">Notícias</translation>
 <translation id="6709357832553498500">Ligar através de <ph name="EXTENSIONNAME" /></translation>
@@ -7637,6 +7661,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6713233729292711163">Adicionar perfil de trabalho</translation>
 <translation id="6713441551032149301">Toque sem soltar na tecla do Launcher para alternar entre teclas de função e teclas da linha superior do sistema</translation>
 <translation id="6713668088933662563">Nunca se disponibilizar para traduzir estes idiomas</translation>
+<translation id="6715735940363172819">Os Websites não têm autorização para usar o microfone</translation>
 <translation id="6715803357256707211">Ocorreu um erro durante a instalação da sua aplicação para Linux. Clique na notificação para obter detalhes.</translation>
 <translation id="6716798148881908873">A ligação de rede falhou. Verifique-a ou experimente outra rede Wi-Fi.</translation>
 <translation id="6718849325281682232">As cores do tema do Chrome foram atualizadas para funcionar melhor para todos, quer esteja no modo escuro ou claro</translation>
@@ -8665,6 +8690,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7489761397368794366">Ligar a partir do seu dispositivo</translation>
 <translation id="749028671485790643">Pessoa <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Rever palavras-passe restantes</translation>
+<translation id="7490938136316476492">A localização está desativada. O seu dispositivo com ChromeOS não acede à sua localização. No entanto, a sua área geral pode continuar visível para as apps e os Websites através de informações como o seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">A extensão <ph name="EXTENSION_NAME" /> pode recolher todo o texto que escrever, incluindo dados pessoais como palavras-passe e números de cartões de crédito. Quer utilizar esta extensão?</translation>
@@ -8865,7 +8891,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7648023614017258011">O Chrome está a validar o pacote de instalação</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7650178491875594325">Restaure os dados locais</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" quer remover "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 impressão digital configurada}other{{COUNT} impressões digitais configuradas}}</translation>
 <translation id="7650677314924139716">A definição de utilização de dados atual é Apenas Wi-Fi.</translation>
 <translation id="7650920359639954963">Não ativada: <ph name="REASON" /></translation>
@@ -9026,6 +9051,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7758450972308449809">Ajustar os limites do ecrã</translation>
 <translation id="7758884017823246335">Adicione a pesquisa no site</translation>
 <translation id="7759809451544302770">Opcional</translation>
+<translation id="7760176388948986635">Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização deste dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios deste dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar nenhum indivíduo para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores.</translation>
 <translation id="7762024824096060040">Não é possível usar esta conta</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9145,6 +9171,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7839051173341654115">Ver/fazer cópia de segurança de multimédia</translation>
 <translation id="7839192898639727867">ID da chave de requerente do certificado</translation>
 <translation id="7839696104613959439">Seleção da rede de renderização</translation>
+<translation id="7840222916565569061">As apps não têm autorização para usar a câmara</translation>
 <translation id="7842062217214609161">Nenhum atalho</translation>
 <translation id="7842692330619197998">Visite g.co/ChromeEnterpriseAccount se precisar de criar uma nova conta.</translation>
 <translation id="784273751836026224">Desinstalar Linux</translation>
@@ -10159,6 +10186,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8584843865238667486">Dispositivos HID com a utilização <ph name="USAGE" /> da página de utilização <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Remover Crostini</translation>
 <translation id="8585841788766257444">Os sites indicados abaixo seguem uma definição personalizada em vez da predefinição</translation>
+<translation id="8586421813321819377">Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios do dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar o utilizador para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores.</translation>
 <translation id="8587660243683137365">Instale esta página como uma app</translation>
 <translation id="8588866096426746242">Mostrar estatísticas do perfil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – a apresentar RV no capacete de realidade virtual</translation>
@@ -10380,6 +10408,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8736288397686080465">Este site foi atualizado em segundo plano.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Escolha o idioma para o qual quer traduzir a página</translation>
+<translation id="8737966899544698733">Precisão da localização (só no Android)</translation>
 <translation id="8738418093147087440">Pesquise por países, idioma ou nomes de introdução</translation>
 <translation id="8740086188450289493">Usar palavra-passe da Conta Google</translation>
 <translation id="8740247629089392745">Pode entregar este Chromebook a <ph name="SUPERVISED_USER_NAME" />. A configuração está quase concluída. Depois, pode começar a explorar.</translation>
@@ -10451,12 +10480,16 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8793390639824829328">Os sites usam esta funcionalidade para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="879413103056696865">Enquanto a zona Wi-Fi estiver ativada, o <ph name="PHONE_NAME" /> irá:</translation>
 <translation id="8795916974678578410">Nova janela</translation>
+<translation id="8796907593900732741">Apenas os serviços do sistema podem usar a sua localização. No entanto, a sua área geral pode continuar visível para as apps e os Websites através de informações como o seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">P&amp;ersonalizar o seu Chrome</translation>
 <translation id="8797459392481275117">Nunca traduzir este site</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8800034312320686233">O site não funciona?</translation>
 <translation id="8803526663383843427">Quando está ativada</translation>
 <translation id="8803953437405899238">Abra um novo separador com um clique.</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google trata periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos de si para contribuir para a recolha de localizações de sinais sem fios.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações sem identificar o utilizador para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização do seu dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização do seu dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Abre em</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover separador para outra janela}other{Mover separadores para outra janela}}</translation>
 <translation id="8805140816472474147">Confirme as definições de sincronização para iniciar a sincronização.</translation>

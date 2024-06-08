@@ -127,7 +127,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="3155163173539279776">Iš naujo paleisti „Chromium“</translation>
 <translation id="3179665906251668410">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>
 <translation id="3185330573522821672">Tinkinkite naująjį „Chromium“ profilį</translation>
-<translation id="318879170965183683">Galite naudoti slaptažodžius iš „Google“ paskyros naršyklėje „Chromium“, kol esate prisijungę</translation>
 <translation id="3190315855212034486">Oi! „Chromium“ užstrigo. Paleisti iš naujo dabar?</translation>
 <translation id="3224847870593914902">Jei norite pašalinti „Google“ paskyrą iš „Chromium“, atsijunkite nuo „Chromium“ puslapyje „Nustatymai“</translation>
 <translation id="3258596308407688501">„Chromium“ negali skaityti ir rašyti į duomenų katalogą:
@@ -256,7 +255,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5386450000063123300">Atnaujinama „Chromium“ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Leisti „Chromium“ prisijungti</translation>
 <translation id="5398878173008909840">Pasiekiama nauja „Chromium“ versija.</translation>
-<translation id="5400757303519321734">Prisijungdami prie „Google“ paslaugų, pvz., „Gmail“ ar „YouTube“, naudodami <ph name="USER_EMAIL" />, galite prisijungti prie „Chromium“ naudodami tą pačią paskyrą</translation>
 <translation id="5405650547142096840">Pašalinti iš „Chromium“</translation>
 <translation id="5427571867875391349">Nustatyti „Chromium“ kaip numatytąją naršyklę</translation>
 <translation id="5438241569118040789">„<ph name="PAGE_TITLE" />“ – „Chromium Beta“</translation>
@@ -382,7 +380,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7045244423563602563">Suasmeninkite „Chromium“</translation>
 <translation id="705851970750939768">Atnaujinti „Chromium“</translation>
 <translation id="7067091210845072982">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
-<translation id="7100062358172078145">Neprijungti manęs prie „Chromium“</translation>
 <translation id="7141270731789036260">Tinkinti „Chrome for Testing“</translation>
 <translation id="7159538860914681762">Jei norite išsaugoti ir naudoti slaptažodžius ir kt. visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
 <translation id="7173822816570314652">Organizacija ištrina „Chromium“ duomenis, kai jie nenaudojami <ph name="TIMEOUT_DURATION" />. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.</translation>
@@ -504,7 +501,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="9158494823179993217">Sistemos administratorius sukonfigūravo „Chromium“ atidaryti alternatyvią naršyklę, kad būtų galima pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Paleisti iš naujo atnaujinant „&amp;Chromium“</translation>
 <translation id="9190841055450128916">„Chromium“ (mDNS-In)</translation>
-<translation id="9220341227291329091">Automatiškai prijungti mane prie „Chromium“</translation>
 <translation id="924957577793602335">Suasmeninkite „Chromium“</translation>
 <translation id="93478295209880648">„Chromium“ gali tinkamai neveikti, nes ji nebepalaikoma naudojant „Windows XP“ arba „Windows Vista“</translation>
 <translation id="942598560705308788">Sertifikatai, kuriuos tvarko „Chromium“</translation>

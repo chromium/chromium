@@ -796,7 +796,6 @@
 <translation id="2456755709261364512">আপনার ডিভাইসের ব্যাটারিতে <ph name="REQUIRED_BATTERY_PRECENT" />%-এর বেশি চার্জ থাকতে হবে</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2462932596748424101">সোশ্যাল নেটওয়ার্ক</translation>
-<translation id="2463739503403862330">পূরণ করুন</translation>
 <translation id="2465688316154986572">স্টেপল করুন</translation>
 <translation id="2465914000209955735">Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করুন</translation>
 <translation id="2466004615675155314">ওয়েব থেকে তথ্য দেখুন</translation>
@@ -2486,12 +2485,10 @@
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5784606427469807560">আপনার কার্ডটি নিশ্চিত করতে একটি সমস্যা হয়েছিল৷ আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
 <translation id="5785756445106461925">উপরন্তু, এই পৃষ্ঠাতে অন্যান্য সংস্থান অন্তর্ভুক্ত রয়েছে যা নিরাপদ নয়৷ এই সংস্থানগুলি ট্রানজিটের সময় অন্যরা দেখতে পাবে এবং পৃষ্ঠাটির চেহারাটি পরিবর্তন করতে কোনও আক্রমণকারী এর পরিবর্তন করতে পারেন৷</translation>
-<translation id="5786044859038896871">আপনি কি আপনার কার্ডের তথ্য পূরণ করতে চান?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">এই ডিভাইস থেকে এই পেমেন্ট পদ্ধতি মুছে ফেলা হবে</translation>
 <translation id="5800727402210090597">মোবাইল ফোন মেরামত ও পরিষেবা</translation>
 <translation id="580241730938216256">আপডেট শুরু করুন</translation>
-<translation id="5803412860119678065">আপনি কি আপনার <ph name="CARD_DETAIL" /> এর তথ্য পূরণ করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5806871454498484178">স্ক্রল ও জুম করার সুবিধা ব্লক করা আছে</translation>
 <translation id="5808435672482059465">আপনার Chrome ইতিহাস দেখুন</translation>
@@ -2681,6 +2678,7 @@
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6167577165590485365">শেষবার যখন ফেচ করার চেষ্টা করা হয়েছিল:</translation>
 <translation id="617256461084925519">Google Chrome আপনার পরিচয় যাচাই করার চেষ্টা করছে যাতে আপনার পেমেন্ট সংক্রান্ত তথ্য পূরণ করা যায়।</translation>
+<translation id="6173208311907792313">Windows Hello ব্যবহার করে আপনার কেনাকাটা সম্পূর্ণ করুন</translation>
 <translation id="6176387967264100435">দাম বেশি আছে</translation>
 <translation id="6177128806592000436">এই সাইটে আপনার সংযোগ নিরাপদ নয়</translation>
 <translation id="6177531123306197852">এনভেলপ C2</translation>
@@ -3838,6 +3836,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> এ অ্যাক্সেস অস্বীকার করা হয়েছে</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ করা হবে না</translation>
+<translation id="8339275256517065202">Touch ID ব্যবহার করে আপনার কেনাকাটা সম্পূর্ণ করুন</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ভার্চুয়াল কার্ড এনরোলমেন্ট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
@@ -4031,6 +4030,7 @@
 <translation id="8726549941689275341">পৃষ্ঠার সাইজ:</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8731268612289859741">সিকিউরিটি কোড</translation>
+<translation id="8731917264694569036">আপনার ডিভাইস ব্যবহার করে কেনাকাটা সম্পূর্ণ করুন</translation>
 <translation id="8733345475331865475">অটো ইন্স্যুরেন্স</translation>
 <translation id="8733764070897080460">আপনি যেসব বিষয় সাইটের সাথে শেয়ার করতে চান না সেগুলি ব্লক করতে পারবেন। এছাড়া, Chrome ৪ সপ্তাহের বেশি পুরনো বিষয়গুলি অটোমেটিক মুছে দেয়। আরও জানুন</translation>
 <translation id="8734529307927223492">আপনার <ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
@@ -4224,6 +4224,7 @@
 <translation id="9116548361133462832">Chrome-এ বিজ্ঞাপন সম্পর্কে আরও অনেক কিছু</translation>
 <translation id="9118692854637641831">সার্চ করা আবার চালু করতে <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ও তারপরে Enter প্রেস করুন এবং আপনার Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখুন</translation>
 <translation id="9119042192571987207">আপলোড করা হয়েছে</translation>
+<translation id="9119308212838450857">ব্যবহারকারী আপনিই কিনা তা <ph name="PROVIDER_ORIGIN" /> যাচাই করতে চায়</translation>
 <translation id="912327514020027767">স্কার্ট</translation>
 <translation id="912414390325846156">আপনি আগে এই সাইটের জন্য অনুমতি দেননি</translation>
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>

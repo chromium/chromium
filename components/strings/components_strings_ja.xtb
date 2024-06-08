@@ -795,7 +795,6 @@
 <translation id="2456755709261364512">バッテリーの残量が <ph name="REQUIRED_BATTERY_PRECENT" />% 以上である必要があります</translation>
 <translation id="2461822463642141190">現在</translation>
 <translation id="2462932596748424101">ソーシャル ネットワーク</translation>
-<translation id="2463739503403862330">入力する</translation>
 <translation id="2465688316154986572">ステープル</translation>
 <translation id="2465914000209955735">Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="2466004615675155314">ウェブの情報を表示します</translation>
@@ -2485,12 +2484,10 @@
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784606427469807560">カードの確認中に問題が発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="5785756445106461925">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの見た目が変わる可能性もあります。</translation>
-<translation id="5786044859038896871">カード情報を入力しますか？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
 <translation id="5800727402210090597">携帯電話の修理、サービス</translation>
 <translation id="580241730938216256">更新を開始</translation>
-<translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5806871454498484178">スクロールとズームはブロックされました</translation>
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>

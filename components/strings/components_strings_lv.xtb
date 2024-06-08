@@ -795,7 +795,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2456755709261364512">Akumulatora uzlādes līmenim ir jāpārsniedz <ph name="REQUIRED_BATTERY_PRECENT" />%.</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2462932596748424101">Sociālie tīkli</translation>
-<translation id="2463739503403862330">Aizpildīt</translation>
 <translation id="2465688316154986572">Skavojums</translation>
 <translation id="2465914000209955735">Pārvaldīt pārlūkā Chrome lejupielādētos failus</translation>
 <translation id="2466004615675155314">Rādīt informāciju no tīmekļa</translation>
@@ -2484,12 +2483,10 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="57838592816432529">Izslēgt skaņu</translation>
 <translation id="5784606427469807560">Apstiprinot karti, radās problēma. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="5785756445106461925">Turklāt šajā lapā ir citi resursi, kas nav droši. Kamēr šie resursi tiek pārsūtīti, tos var aplūkot citi, kā arī uzbrucējs var tos pārveidot, lai mainītu lapas izskatu.</translation>
-<translation id="5786044859038896871">Vai vēlaties aizpildīt laukus ar kartes informāciju?</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Šis maksājuma veids tiks dzēsts no šīs ierīces.</translation>
 <translation id="5800727402210090597">Mobilo tālruņu remonts un pakalpojumi</translation>
 <translation id="580241730938216256">Sākt atjaunināšanu</translation>
-<translation id="5803412860119678065">Vai vēlaties aizpildīt lauku ar informāciju “<ph name="CARD_DETAIL" />”?</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5806871454498484178">Ritināšana un tālummaiņa bloķēta</translation>
 <translation id="5808435672482059465">Skatīt Chrome vēsturi</translation>
@@ -2680,6 +2677,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6167577165590485365">Pēdējais ienešanas mēģinājums:</translation>
 <translation id="617256461084925519">Pārlūkā Google Chrome tiek mēģināts verificēt jūsu identitāti, lai varētu ievadīt jūsu maksājumu informāciju.</translation>
+<translation id="6173208311907792313">Pabeidziet pirkumu, izmantojot Windows Hello.</translation>
 <translation id="6176387967264100435">Šī cena ir augsta</translation>
 <translation id="6177128806592000436">Savienojums ar šo vietni nav drošs.</translation>
 <translation id="6177531123306197852">Aploksne C2</translation>
@@ -3837,6 +3835,7 @@ Papildu informācija:
 <translation id="8332188693563227489">Piekļuve vietnei <ph name="HOST_NAME" /> tika noraidīta</translation>
 <translation id="833262891116910667">Atzīmēt</translation>
 <translation id="8339163506404995330">Lapas šādā valodā: <ph name="LANGUAGE" /> netiks tulkotas.</translation>
+<translation id="8339275256517065202">Pabeidziet pirkumu, izmantojot Touch ID.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuālās kartes reģistrācijas dialoglodziņš ir atvērts pilnā augstumā</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
@@ -4031,6 +4030,7 @@ Papildu informācija:
 <translation id="8726549941689275341">Lapas lielums:</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8731268612289859741">Drošības kods</translation>
+<translation id="8731917264694569036">Pabeidziet pirkumu, izmantojot ierīci.</translation>
 <translation id="8733345475331865475">Automašīnu apdrošināšana</translation>
 <translation id="8733764070897080460">Varat bloķēt tēmas, kuras nevēlaties kopīgot ar vietnēm. Pārlūkā Chrome tiek arī automātiski dzēstas tēmas, kas ir vecākas par četrām nedēļām. Uzzināt vairāk</translation>
 <translation id="8734529307927223492">Jūsu <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
@@ -4224,6 +4224,7 @@ Papildu informācija:
 <translation id="9116548361133462832">Vairāk par reklāmām pārlūkā Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai atsāktu meklēšanu un skatītu atbilstošās darbības savā Chrome vēsturē.</translation>
 <translation id="9119042192571987207">Augšupielādēts</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vēlas pārliecināties par jūsu identitāti</translation>
 <translation id="912327514020027767">Svārki</translation>
 <translation id="912414390325846156">Jūs iepriekš izvēlējāties nesniegt atļauju šajā vietnē.</translation>
 <translation id="9128870381267983090">Izveidot savienojumu ar tīklu</translation>

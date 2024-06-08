@@ -125,7 +125,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3155163173539279776">Ponovo pokreni Chromium</translation>
 <translation id="3179665906251668410">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="3185330573522821672">Prilagodba novog profila u Chromiumu</translation>
-<translation id="318879170965183683">Dok ste prijavljeni, možete upotrebljavati svoje zaporke s Google računa u Chromiumu</translation>
 <translation id="3190315855212034486">Hopa! Chromium je pao. Pokrenuti ponovo sada?</translation>
 <translation id="3224847870593914902">Da biste uklonili svoj Google račun iz Chromiuma, odjavite se iz Chromiuma na stranici Postavke</translation>
 <translation id="3258596308407688501">Chromium ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati:
@@ -254,7 +253,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5386450000063123300">Ažuriranje Chromiuma (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Dopusti prijavu u Chromium</translation>
 <translation id="5398878173008909840">Dostupna je nova verzija preglednika Chromium.</translation>
-<translation id="5400757303519321734">Kad se na Googleove usluge kao što su Gmail ili YouTube prijavljujete pomoću računa <ph name="USER_EMAIL" />, možete se prijaviti u Chromium istim računom</translation>
 <translation id="5405650547142096840">Uklanjanje iz Chromiuma</translation>
 <translation id="5427571867875391349">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
@@ -380,7 +378,6 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>
 <translation id="705851970750939768">Ažuriraj Chromium</translation>
 <translation id="7067091210845072982">Ako slika nema koristan opis, Chromium će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
-<translation id="7100062358172078145">Ne prijavljuj me u Chromium</translation>
 <translation id="7141270731789036260">Prilagodite Chrome for Testing</translation>
 <translation id="7159538860914681762">Da biste spremili i upotrebljavali zaporke i drugo na svim svojim uređajima, prijavite se u Chromium</translation>
 <translation id="7173822816570314652">Vaša organizacija briše podatke iz Chromiuma kada se ne upotrebljavaju <ph name="TIMEOUT_DURATION" />. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
@@ -502,7 +499,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="9158494823179993217">Vaš administrator sustava konfigurirao je Chromium tako da otvara zamjenski preglednik radi pristupa URL-u<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ponovo pokrenite da biste ažurirali &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9220341227291329091">Automatski me prijavi u Chromium</translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno raditi jer više nije podržan na sustavima Windows XP i Windows Vista</translation>
 <translation id="942598560705308788">Certifikati kojima upravlja Chromium</translation>

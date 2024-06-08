@@ -72,6 +72,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">A funcionalidade <ph name="FEATURE_NAME" /> está ligada.</translation>
 <translation id="1240638468526743569">Uma app</translation>
+<translation id="1242198791279543032">O som das notificações está desativado</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="1245644940275736236">Aceder ao Assistente</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
@@ -309,6 +310,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
+<translation id="2223384056430485343">Num ecrã dividido</translation>
 <translation id="2224075387478458881">A gravação de ecrã não é permitida quando existe conteúdo protegido visível.</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2248634276911611268">Abrir o link num novo separador e mudar para este novo separador</translation>
@@ -1666,7 +1668,6 @@ Nova instalação</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">A reverter para a resolução antiga dentro de <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7181691792034457084">Olá. O <ph name="PRODUCT_NAME" /> está um pouco diferente.</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>

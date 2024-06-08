@@ -48,7 +48,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1662146548738125461">About Chrome OS Flex</translation>
 <translation id="1674870198290878346">Open Link in Chrome Inco&amp;gnito Window</translation>
-<translation id="1679594062619799116">You can use your passwords from your Google Account in Chrome while you're signed in</translation>
 <translation id="1682634494516646069">Google Chrome cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -322,7 +321,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
 <translation id="5727531838415286053">If Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month. Interests refresh unless you remove them.</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
-<translation id="575458254678141039">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can sign in to Chrome with the same account</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
@@ -506,7 +504,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8336463659890584292">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
-<translation id="8350273347136316769">Automatically sign me in to Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome can estimate your interests. Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
@@ -561,7 +558,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9053892488859122171">Chrome OS Flex system</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
-<translation id="9127728564687112483">Don't sign me in to Chrome</translation>
 <translation id="9138603949443464873">To apply your changes, relaunch Chrome</translation>
 <translation id="9195993889682885387">Chrome can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.</translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>

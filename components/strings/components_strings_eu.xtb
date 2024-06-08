@@ -795,7 +795,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2456755709261364512">Bateria-maila % <ph name="REQUIRED_BATTERY_PRECENT" /> baino gehiagokoa izan behar da</translation>
 <translation id="2461822463642141190">Oraingoa</translation>
 <translation id="2462932596748424101">Sare sozialak</translation>
-<translation id="2463739503403862330">Bete</translation>
 <translation id="2465688316154986572">Grapatu</translation>
 <translation id="2465914000209955735">Kudeatu Chrome-ren bidez deskargatu dituzun fitxategiak</translation>
 <translation id="2466004615675155314">Erakutsi saretik lortutako informazioa</translation>
@@ -2481,12 +2480,10 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5784606427469807560">Arazo bat izan da txartela berrestean. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="5785756445106461925">Gainera, orri honetan seguruak ez diren beste baliabide batzuk daude. Bidean dauden bitartean, beste pertsonek baliabide horiek ikus ditzakete eta erasotzaileek aldatu egin ditzakete orriaren portaera aldatzeko.</translation>
-<translation id="5786044859038896871">Txartelaren datuak betetzea nahi duzu?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ordainketa-metodoa gailutik ezabatuko da</translation>
 <translation id="5800727402210090597">Telefono mugikorren konponketa- eta mantentze-zerbitzuak</translation>
 <translation id="580241730938216256">Hasi eguneratzen</translation>
-<translation id="5803412860119678065"><ph name="CARD_DETAIL" /> txartelaren datuak betetzea nahi duzu?</translation>
 <translation id="5804241973901381774">Baimenak</translation>
 <translation id="5806871454498484178">Gora/Behera egiteko eta zooma erabiltzeko aukera blokeatuta dago</translation>
 <translation id="5808435672482059465">Ikusi Chrome-ko historia</translation>

@@ -312,6 +312,7 @@
 <translation id="2618015542787108131">піщана дюна</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2637303424821734920">ВИМКНЕНО. Щоб бачити інформацію про погоду у своїй місцевості, <ph name="BEGIN_LINK" />увімкніть доступ до геоданих системи<ph name="END_LINK" />.</translation>
 <translation id="2638662041295312666">Зображення облікового запису</translation>
 <translation id="2640549051766135490">Вибрано альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="2645380101799517405">Елементи керування</translation>
@@ -467,7 +468,7 @@
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3644695927181369554">Невдала підказка</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
-<translation id="3661106764436337772">Пишіть швидше й впевненіше</translation>
+<translation id="3661106764436337772">Пишіть швидше й упевненіше</translation>
 <translation id="3662461537616691585">бордового й темно-бордового</translation>
 <translation id="3668449597372804501">Фоновий малюнок "Плин хмар"</translation>
 <translation id="3675132884790542448">свині</translation>

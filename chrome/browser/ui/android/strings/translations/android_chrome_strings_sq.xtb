@@ -23,6 +23,7 @@
 <translation id="1100066534610197918">Hap në skedë të re në grup</translation>
 <translation id="1103142993930332957">Do të ndihmosh për përmirësimin e Chrome?</translation>
 <translation id="1105960400813249514">Regjistrimi i ekranit</translation>
+<translation id="1108214977745280468">Shiko statistikat e faqes</translation>
 <translation id="1108938384783527433">Sinkronizimi i historikut</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
 <translation id="1113597929977215864">Shfaq pamjen e thjeshtuar</translation>
@@ -251,7 +252,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2318045970523081853">Trokit për të bërë një telefonatë</translation>
 <translation id="2321086116217818302">Po përgatit fjalëkalimet…</translation>
 <translation id="2323763861024343754">Hapësira ruajtëse e sajtit</translation>
-<translation id="2328739396024849021">Butoni "Ruaj" është çaktivizuar</translation>
 <translation id="2328985652426384049">Nuk mund të identifikohet</translation>
 <translation id="233375395665273385">Fshi dhe dil</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> nuk mund të instalohej.</translation>
@@ -361,7 +361,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2869430948265924908">Për të mbrojtur përmbajtjet e tua delikate në makinë, duhet të krijosh një kyçje të profilit të makinës.  Këtë mund ta bësh me një kod, fjalëkalim ose kod PIN.</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2871733351037274014">Ngarkimi paraprak i faqeve</translation>
-<translation id="2871941920508945325">Butoni "Statistikat e faqes"</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> dëshiron që të miratosh këtë uebsajt:</translation>
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
@@ -528,7 +527,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3699022356773522638">Të shkarkohet skedari?</translation>
 <translation id="3700759344784597882">Kur kjo është joaktive, fjalëkalimet ruhen në llogarinë tënde. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
 <translation id="3701515417135397388">Të paralajmëron nëse një fjalëkalim është komprometuar në një nxjerrje të paautorizuar të të dhënave</translation>
-<translation id="3711001040440486668">Butoni "Ndaj"</translation>
 <translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
 <translation id="3714981814255182093">Hap shiritin e gjetjes</translation>
 <translation id="3716182511346448902">Kjo faqe përdor shumë memorie, prandaj Chrome e ka vendosur atë në pauzë.</translation>
@@ -912,6 +910,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5590372121997663538">Kujtoje këtë kompjuter</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5599455543593328020">Modaliteti "i fshehtë"</translation>
+<translation id="5601180634394228718">Për më shumë cilësime që përdorin të dhënat për të përmirësuar përvojën tënde me Chrome, shko te <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Nuk ka asnjë fjalëkalim të ruajtur</translation>
 <translation id="5620928963363755975">Gjej skedarët dhe faqet e tua te "Shkarkimet" nga butoni "Më shumë opsione"</translation>
 <translation id="562289928968387744">Menaxho reagimet</translation>
@@ -1254,6 +1253,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="71503698506017927">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
 
 Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
+<translation id="7161230316646448869">Sinkronizo faqeshënuesit, historikun etj. në të gjitha pajisjet</translation>
 <translation id="7168323970702333693">Identifikuar si <ph name="USER_NAME" />. Hap cilësimet.</translation>
 <translation id="7173114856073700355">Hap cilësimet</translation>
 <translation id="7177466738963138057">Këtë mund ta ndryshosh më vonë te "Cilësimet"</translation>

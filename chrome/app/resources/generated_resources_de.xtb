@@ -295,6 +295,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Zur Link-Vorschau</translation>
 <translation id="1206832039833782423">Der Sicherheitscode befindet sich auf der Rückseite deiner Karte</translation>
+<translation id="1208392090861059168">Aktueller Zeitplan: <ph name="SUNRISE" />–<ph name="SUNSET" />. Wenn der Zeitplan für Sonnenuntergang und Sonnenaufgang automatisch aktualisiert werden soll, <ph name="BEGIN_LINK" />aktiviere den Standortzugriff für das System<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Drucker ansehen oder hinzufügen und aktive Druckaufträge abrufen</translation>
 <translation id="1211769675100312947">Du kannst die Verknüpfungen personalisieren</translation>
 <translation id="1213254615020057352">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese Einstellung wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
@@ -808,6 +809,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1594703455918849716">Zur Seite „Passwortcheck“</translation>
 <translation id="1594781465361405478">Ton ein/aus</translation>
 <translation id="1594963087419619323">Splitscreen-Übersicht</translation>
+<translation id="1595018168143352126">Kameraberechtigungen für Websites in Chrome verwalten</translation>
 <translation id="1595492813686795610">Linux wird aktualisiert</translation>
 <translation id="1596286373007273895">Verfügbar</translation>
 <translation id="1596709061955594992">Bluetooth ist deaktiviert. Schalte es ein, um verfügbare Geräte zu sehen.</translation>
@@ -1244,6 +1246,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1900305421498694955">Google Play-Apps benötigen möglicherweise vollständigen Zugriff auf dein Dateisystem, um auf externen Speichergeräten Dateien lesen und schreiben zu können. Dateien und Ordner, die auf dem Gerät erstellt werden, sind für alle Nutzer des externen Speichergeräts sichtbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Administrator um Aktualisierung dieser App bitten</translation>
 <translation id="1901303067676059328">&amp;Alles auswählen</translation>
+<translation id="1901760057081700494">Die Zeitzone ist derzeit auf <ph name="TIME_ZONE_ENTRY" /> eingestellt. Wenn die Zeitzone automatisch aktualisiert werden soll, <ph name="BEGIN_LINK" />aktiviere den Standortzugriff für das System<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1906181697255754968">Websites greifen normalerweise auf Dateien und Ordner auf deinem Gerät zu, um Funktionen wie die automatische Speicherung deiner Arbeit umsetzen zu können</translation>
 <translation id="1906488504371069394">Weitere Erweiterungen und Designs entdecken im <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
@@ -2195,6 +2198,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2581992808349413349">Verwende eine sichere Verbindung zum Suchen der IP-Adresse einer Website im DNS (Domain Name System). Dazu wird für <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ein Anbieter verwalteter Dienste verwendet.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos-Ticket konnte nicht abgerufen werden (Fehlercode: <ph name="ERROR_CODE" />). Versuche es noch einmal oder wende dich an den Geräteadministrator deiner Organisation.</translation>
+<translation id="2584974473573720127">Mikrofonberechtigungen für Websites in Chrome verwalten</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> konnte nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
 <translation id="2586672484245266891">Gib eine kürzere URL ein</translation>
@@ -2384,6 +2388,9 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2727744317940422214">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" /> Die Bereinigung ist fehlgeschlagen. Du musst sie gegebenenfalls manuell vornehmen.</translation>
 <translation id="2729327310379176711">Chrome entwickelt neue Möglichkeiten, das Tracking zu reduzieren und beim Surfen zu deinem Schutz beizutragen. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> und ermöglicht es dir, sie zu verwalten Anschließend können Websites, die du besuchst, Chrome nach deinen Interessen fragen, um dir Werbung anzuzeigen.</translation>
 <translation id="2729577602370119849">Einfach auf deine Drucker zugreifen und diese verwalten</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Wenn die Standortgenauigkeit aktiviert ist, werden Informationen über Funksignale, wie WLAN‑Zugangspunkte und Mobilfunkmasten zusammen mit den Daten der Gerätesensoren, wie Beschleunigungsmesser und Gyroskop, verwendet, um den Gerätestandort genauer zu bestimmen. Android-Apps und ‑Dienste nutzen diese Daten, um standortbezogene Funktionen bereitzustellen. Dafür erhebt Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale in der Nähe dieses Geräts, die zum Bestimmen der Standorte von Funksignalen per Crowdsourcing verwendet werden.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google nutzt diese von diesem Gerät erhobenen Informationen dafür, die Standortgenauigkeit und standortbezogene Dienste zu verbessern sowie die Dienste von Google allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden. Diese Informationen werden nicht zur Identifizierung von Personen verwendet.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kannst die Standortgenauigkeit jederzeit in den Standorteinstellungen dieses Geräts unter den Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff &gt; Erweiterte Standorteinstellungen deaktivieren. Wenn die Standortgenauigkeit deaktiviert ist, werden keine Daten zur Standortgenauigkeit erhoben. Für Android-Apps und ‑Dienste wird zur Bestimmung des Standorts dieses Geräts nur die IP‑Adresse verwendet, sofern verfügbar. Dies kann die Verfügbarkeit und Genauigkeit des Standorts für Android-Apps und ‑Dienste, etwa Google Maps, beeinträchtigen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux-Apps und -Dateien werden gesichert</translation>
 <translation id="2730596696987224099">Eigenes wählen</translation>
 <translation id="2730647855013151888">Alle personenbezogenen Daten einbeziehen</translation>
@@ -3235,6 +3242,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="338323348408199233">Traffic ohne VPN blockieren</translation>
 <translation id="3384362484379805487">Sprachendateien werden von Nutzern gemeinsam verwendet, um Speicherplatz zu sparen.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
+<translation id="3385172418915595177">Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Apps und Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer allgemein zu optimieren, bereitzustellen und zu verwalten.</translation>
 <translation id="338583716107319301">Trennzeichen</translation>
 <translation id="3385916046075724800">Deine Tabgruppen werden jetzt automatisch gespeichert.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3936,7 +3944,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3873915545594852654">Ein Problem mit ARC++ ist aufgetreten.</translation>
 <translation id="3874164307099183178">Google Assistant einschalten</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> wird in einem neuen Browsertab geöffnet. Unterstützte Links werden ebenfalls im Browser geöffnet. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Jedesmal fragen</translation>
 <translation id="3877075909000773256">Nearby Share-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Das Kopieren von dieser Website ist nicht zulässig</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
@@ -4040,6 +4047,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3950841222883198950">Spracheingabe</translation>
 <translation id="3953834000574892725">Meine Konten</translation>
 <translation id="3954354850384043518">In Arbeit</translation>
+<translation id="3954468641195530330">Apps dürfen dein Mikrofon nicht verwenden</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Es sind keine kürzlich erfassten WebRTC-Ereignisprotokolle vorhanden.</translation>
 <translation id="3955321697524543127">Websites dürfen keine Verbindung mit USB-Geräten herstellen</translation>
@@ -4098,6 +4106,10 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3988124842897276887">Dieser Tab ist mit einem USB-Gerät verbunden</translation>
 <translation id="3988996860813292272">Zeitzone auswählen</translation>
 <translation id="3991055816270226534">Drittanbieter-Cookies und Tracking-Schutzmaßnahmen verwalten</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Wenn die Standortgenauigkeit aktiviert ist, werden Informationen über Funksignale, wie WLAN‑Zugangspunkte und Mobilfunkmasten zusammen mit den Daten der Gerätesensoren, wie Beschleunigungsmesser und Gyroskop, verwendet, um den Gerätestandort genauer zu bestimmen. Android-Apps und ‑Dienste nutzen diese Daten, um standortbezogene Funktionen bereitzustellen. Dafür erhebt Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale in der Nähe dieses Geräts, die zum Bestimmen der Standorte von Funksignalen per Crowdsourcing verwendet werden.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google nutzt diese von diesem Gerät erhobenen Informationen dafür, die Standortgenauigkeit und standortbezogene Dienste zu verbessern sowie die Dienste von Google allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden. Diese Informationen werden nicht zur Identifizierung von Personen verwendet.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kannst die Standortgenauigkeit jederzeit in den Standorteinstellungen dieses Geräts unter den Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff &gt; Erweiterte Standorteinstellungen deaktivieren. Wenn die Standortgenauigkeit deaktiviert ist, werden keine Daten zur Standortgenauigkeit erhoben. Für Android-Apps und ‑Dienste wird zur Bestimmung des Standorts dieses Geräts nur die IP‑Adresse verwendet, sofern verfügbar. Dies kann die Verfügbarkeit und Genauigkeit des Standorts für Android-Apps und ‑Dienste, etwa Google Maps, beeinträchtigen.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Weitere Informationen zur Standortgenauigkeit<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importiert</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> wird heruntergeladen, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Daten sichern</translation>
@@ -4252,6 +4264,10 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Wenn die Standortgenauigkeit aktiviert ist, werden Informationen über Funksignale, wie WLAN‑Zugangspunkte und Mobilfunkmasten zusammen mit den Daten der Gerätesensoren, wie Beschleunigungsmesser und Gyroskop, verwendet, um den Gerätestandort genauer zu bestimmen. Android-Apps und ‑Dienste nutzen diese Daten, um standortbezogene Funktionen bereitzustellen. Dafür erhebt Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale in deiner Nähe, die zum Bestimmen der Standorte von Funksignalen per Crowdsourcing verwendet werden.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google verwendet diese Informationen, ohne dich persönlich zu identifizieren, um die Standortgenauigkeit und standortbezogene Dienste zu verbessern und um Google-Dienste allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kannst die Standortgenauigkeit jederzeit in den Standorteinstellungen deines Geräts unter den Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff &gt; Erweiterte Standorteinstellungen deaktivieren. Wenn die Standortgenauigkeit deaktiviert ist, werden keine Daten zur Standortgenauigkeit erhoben. Für Android-Apps und ‑Dienste wird zur Bestimmung des Standorts deines Geräts nur die IP‑Adresse verwendet, sofern verfügbar. Dies kann die Verfügbarkeit und Genauigkeit des Standorts für Android-Apps und ‑Dienste, etwa Google Maps, beeinträchtigen.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Weitere Informationen zur Standortgenauigkeit<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5027,6 +5043,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4716483597559580346">Powerwash für mehr Sicherheit</translation>
 <translation id="4716715661140829720">Nicht genügend Speicherplatz</translation>
 <translation id="471759229191973607">Design ändern</translation>
+<translation id="4719276504493791870">Apps dürfen deinen Standort nicht verwenden</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat deinen Bildschirm freigegeben.</translation>
 <translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
@@ -5240,6 +5257,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4879491255372875719">Automatisch (Standard)</translation>
 <translation id="4880315242806573837">Dieses Chromebook erhält bald keine Sicherheitsupdates mehr. Wir empfehlen, auf ein neues umzusteigen.</translation>
 <translation id="4880827082731008257">Im Verlauf suchen</translation>
+<translation id="4881632956374597321">Apps und Websites mit Berechtigung zur Standortermittlung sowie Systemdienste können deinen Standort verwenden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Nicht mehr erinnern</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4882312758060467256">Hat Zugriff auf diese Website</translation>
@@ -5636,6 +5654,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5186788525428341874">Du kannst diesen Passkey verwenden, um dich auf deinen Geräten schneller anzumelden. Er wird im Google Passwortmanager für <ph name="ACCOUNT_NAME" /> gespeichert.</translation>
 <translation id="5187641678926990264">Seite als App &amp;installieren…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf der Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zur Standortnutzung<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> werden verwendet</translation>
 <translation id="5190926251776387065">Port aktivieren</translation>
 <translation id="5190959794678983197">Kein Mikrofon</translation>
@@ -5681,6 +5700,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5225324770654022472">Verknüpfung "Apps" anzeigen</translation>
 <translation id="52254442782792731">Aktuell ist keine Sichtbarkeitseinstellung festgelegt</translation>
 <translation id="5225463052809312700">Kamera einschalten</translation>
+<translation id="5226731562812684363">Websites dürfen deinen Standort nicht verwenden</translation>
 <translation id="5227679487546032910">Blaugrüner Standardavatar</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> Geräte verbunden</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
@@ -6176,6 +6196,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5590418976913374224">Ton beim Gerätestart abspielen</translation>
 <translation id="5591465468509111843">Sehr breit</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Mikrofon wurde in den Mac-Systemeinstellungen deaktiviert</translation>
 <translation id="5594899180331219722">Datei auswählen</translation>
 <translation id="5595307023264033512">Von Websites belegter Speicherplatz insgesamt: <ph name="TOTAL_USAGE" /></translation>
@@ -6552,6 +6573,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5885314688092915589">Dieses Profil wird von deiner Organisation verwaltet</translation>
 <translation id="5885470467814103868">Scan starten</translation>
 <translation id="5885631909150054232">Token kopieren</translation>
+<translation id="5886000783338788034">Standortzugriff in den ChromeOS-Einstellungen deaktiviert</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Geräte in der Nähe mit der Funktion „Schnelles Pairing“ ganz leicht verbinden und einrichten</translation>
 <translation id="5886384907280980632">Jetzt deaktivieren</translation>
@@ -7083,6 +7105,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="628352644014831790">4 Sekunden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ist ein ungewöhnlicher Download und könnte schädlich sein.</translation>
 <translation id="6285770818046456882">Das Gerät, das Daten mit dir geteilt hat, hat die Übertragung abgebrochen</translation>
+<translation id="628699625505156622">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von diesem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zur Standortnutzung<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Du kannst deine Drucker in den Druckereinstellungen verwalten</translation>
 <translation id="6287828400772161253">Android-Smartphone (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Keine Geräte in der Nähe verfügbar, die Daten teilen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -7606,6 +7629,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6703613667804166784">Diese Datei kann deinen privaten Konten und Konten in sozialen Netzwerken schaden, einschließlich <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">ChromeOS-Diagnose durchführen</translation>
 <translation id="6707389671160270963">SSL-Clientzertifikat</translation>
+<translation id="6707671917294473995">Websites dürfen deine Kamera nicht verwenden</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> und 1 weiterer Tab}other{<ph name="PAGE_TITLE" /> und # weitere Tabs}}</translation>
 <translation id="6709133671862442373">Nachrichten</translation>
 <translation id="6709357832553498500">Über <ph name="EXTENSIONNAME" /> verbinden</translation>
@@ -7615,6 +7639,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>
 <translation id="6713441551032149301">Launcher-Taste gedrückt halten, um zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln</translation>
 <translation id="6713668088933662563">Für diese Sprachen nie eine Übersetzung anbieten</translation>
+<translation id="6715735940363172819">Websites dürfen dein Mikrofon nicht verwenden</translation>
 <translation id="6715803357256707211">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten. Klicke auf die Benachrichtigung, um Details zu sehen.</translation>
 <translation id="6716798148881908873">Die Netzwerkverbindung wurde unterbrochen. Prüfe deine Netzwerkverbindung oder stelle eine Verbindung zu einem anderen WLAN her.</translation>
 <translation id="6718849325281682232">Die Farben des Chrome-Designs wurden geändert und funktionieren jetzt noch besser – ganz gleich, ob du den dunklen oder den hellen Modus nutzt</translation>
@@ -8640,6 +8665,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7489761397368794366">Über mein Gerät anrufen</translation>
 <translation id="749028671485790643">Profil <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Restliche Passwörter prüfen</translation>
+<translation id="7490938136316476492">Die Standortermittlung ist deaktiviert. Dein ChromeOS-Gerät greift nicht auf deinen Standort zu. Apps und Websites können deinen ungefähren Ort aber möglicherweise anhand von Informationen wie deiner IP‑Adresse sehen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 Cookie}other{{NUM_COOKIES} Cookies}}</translation>
 <translation id="7493386493263658176">Die Erweiterung <ph name="EXTENSION_NAME" /> erfasst unter Umständen alle von dir eingegebenen Textinhalte, einschließlich personenbezogener Daten wie Passwörter und Kreditkartennummern. Möchtest du diese Erweiterung verwenden?</translation>
@@ -8840,7 +8866,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7648023614017258011">Chrome prüft das Installationspaket</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7650178491875594325">Lokale Daten wiederherstellen</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" möchte "<ph name="EXTENSION_NAME" />" entfernen.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 Fingerabdruck registriert}other{{COUNT} Fingerabdrücke registriert}}</translation>
 <translation id="7650677314924139716">Aktuelle Einstellung für Datennutzung ist "Nur WLAN"</translation>
 <translation id="7650920359639954963">Nicht aktiviert: <ph name="REASON" /></translation>
@@ -9001,6 +9026,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7758450972308449809">Bildschirmränder anpassen</translation>
 <translation id="7758884017823246335">Website-Suchmaschine hinzufügen</translation>
 <translation id="7759809451544302770">Optional</translation>
+<translation id="7760176388948986635">ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von diesem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten.</translation>
 <translation id="7762024824096060040">Dieses Konto kann nicht verwendet werden</translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> von <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9120,6 +9146,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7839051173341654115">Medien anzeigen/sichern</translation>
 <translation id="7839192898639727867">Schlüssel-ID des Zertifikatsinhabers</translation>
 <translation id="7839696104613959439">Netzwerkauswahl rendern</translation>
+<translation id="7840222916565569061">Apps dürfen deine Kamera nicht verwenden</translation>
 <translation id="7842062217214609161">Keine Tastenkombination</translation>
 <translation id="7842692330619197998">Rufe g.co/ChromeEnterpriseAccount auf, wenn du ein neues Konto erstellen musst.</translation>
 <translation id="784273751836026224">Linux deinstallieren</translation>
@@ -10132,6 +10159,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8584843865238667486">HID-Geräte mit der Nutzung „<ph name="USAGE" />“ von der Nutzungsseite „<ph name="USAGE_PAGE" />“</translation>
 <translation id="8585480574870650651">Crostini entfernen</translation>
 <translation id="8585841788766257444">Für die unten aufgeführten Websites wird eine benutzerdefinierte Einstellung statt der Standardeinstellung verwendet</translation>
+<translation id="8586421813321819377">ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf der Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten.</translation>
 <translation id="8587660243683137365">Diese Seite als App installieren</translation>
 <translation id="8588866096426746242">Profilstatistiken anzeigen</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR wird auf Headset abgespielt</translation>
@@ -10353,6 +10381,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8736288397686080465">Diese Website wurde im Hintergrund aktualisiert.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Wähle die Sprache aus, in die die Seite übersetzt werden soll</translation>
+<translation id="8737966899544698733">Standortgenauigkeit (nur Android)</translation>
 <translation id="8738418093147087440">Nach Ländern, Sprache oder Eingabenamen suchen</translation>
 <translation id="8740086188450289493">Google-Kontopasswort verwenden</translation>
 <translation id="8740247629089392745">Du kannst dieses Chromebook nun <ph name="SUPERVISED_USER_NAME" /> geben. Die Einrichtung ist fast abgeschlossen, jetzt ist es an der Zeit, auf Entdeckungstour zu gehen.</translation>
@@ -10424,12 +10453,16 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8793390639824829328">Websites nutzen diese Funktion zum Scrollen und Zoomen auf geteilten Tabs</translation>
 <translation id="879413103056696865">Während der Hotspot aktiviert ist, wird dein <ph name="PHONE_NAME" /> Folgendes tun:</translation>
 <translation id="8795916974678578410">Neues Fenster</translation>
+<translation id="8796907593900732741">Nur Systemdienste können deinen Standort verwenden. Apps und Websites können deinen ungefähren Ort aber möglicherweise anhand von Informationen wie deiner IP‑Adresse sehen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Chrome a&amp;npassen</translation>
 <translation id="8797459392481275117">Diese Website nie übersetzen</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8800034312320686233">Website funktioniert nicht?</translation>
 <translation id="8803526663383843427">Wenn aktiviert</translation>
 <translation id="8803953437405899238">Neuen Tab mit nur einem Klick öffnen</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Wenn die Standortgenauigkeit aktiviert ist, werden Informationen über Funksignale, wie WLAN‑Zugangspunkte und Mobilfunkmasten zusammen mit den Daten der Gerätesensoren, wie Beschleunigungsmesser und Gyroskop, verwendet, um den Gerätestandort genauer zu bestimmen. Android-Apps und ‑Dienste nutzen diese Daten, um standortbezogene Funktionen bereitzustellen. Dafür erhebt Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale in deiner Nähe, die zum Bestimmen der Standorte von Funksignalen per Crowdsourcing verwendet werden.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google verwendet diese Informationen, ohne dich persönlich zu identifizieren, um die Standortgenauigkeit und standortbezogene Dienste zu verbessern und um Google-Dienste allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kannst die Standortgenauigkeit jederzeit in den Standorteinstellungen deines Geräts unter den Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff &gt; Erweiterte Standorteinstellungen deaktivieren. Wenn die Standortgenauigkeit deaktiviert ist, werden keine Daten zur Standortgenauigkeit erhoben. Für Android-Apps und ‑Dienste wird zur Bestimmung des Standorts deines Geräts nur die IP‑Adresse verwendet, sofern verfügbar. Dies kann die Verfügbarkeit und Genauigkeit des Standorts für Android-Apps und ‑Dienste, etwa Google Maps, beeinträchtigen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Wird geöffnet in</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tab in ein anderes Fenster verschieben}other{Tabs in ein anderes Fenster verschieben}}</translation>
 <translation id="8805140816472474147">Synchronisierungseinstellungen bestätigen, um die Synchronisierung zu starten.</translation>

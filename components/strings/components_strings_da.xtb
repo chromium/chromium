@@ -795,7 +795,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2456755709261364512">Dit batteri skal være opladet til mere end <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="2462932596748424101">Sociale netværk</translation>
-<translation id="2463739503403862330">Udfyld</translation>
 <translation id="2465688316154986572">Hæftning</translation>
 <translation id="2465914000209955735">Administrer de filer, du har downloadet i Chrome</translation>
 <translation id="2466004615675155314">Se oplysninger fra nettet</translation>
@@ -2485,12 +2484,10 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784606427469807560">Der opstod et problem under verificeringen af dit kort. Kontrollér, at du har forbindelse til internettet, og prøv igen.</translation>
 <translation id="5785756445106461925">Desuden indeholder denne side andre ressourcer, som ikke er sikre. Disse ressourcer kan ses af andre under overførslen og kan ændres af en hacker, så siden ser anderledes ud.</translation>
-<translation id="5786044859038896871">Skal dine kortoplysninger udfyldes?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Betalingsmetoden slettes fra denne enhed</translation>
 <translation id="5800727402210090597">Reparation og servicering af mobiltelefoner</translation>
 <translation id="580241730938216256">Start opdatering</translation>
-<translation id="5803412860119678065">Skal <ph name="CARD_DETAIL" /> udfyldes?</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5806871454498484178">Rulning og zoom er blokeret</translation>
 <translation id="5808435672482059465">Se din Chrome-historik</translation>

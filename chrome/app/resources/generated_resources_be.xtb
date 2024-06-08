@@ -3948,7 +3948,6 @@
 <translation id="3873915545594852654">Узнікла праблема з ARC++.</translation>
 <translation id="3874164307099183178">Уключыць Памочніка Google</translation>
 <translation id="3875815154304214043">У адпаведнасці з наладамі праграмы "<ph name="APP_NAME" />" яна будзе адкрывацца ў новай укладцы браўзера. Спасылкі, якія падтрымліваюцца, таксама будуць адкрывацца ў браўзеры. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="3876833929577368454">Заўсёды запытваць</translation>
 <translation id="3877075909000773256">Налады "Абагульвання паблізу" для прылады карыстальніка <ph name="USER_NAME" />; абагульванне ажыццяўляецца ад імені ўліковага запісу <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Капіраванне змесціва з гэтага сайта забаронена</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
@@ -6201,6 +6200,7 @@
 <translation id="5590418976913374224">Прайграваць гук пры запуску прылады</translation>
 <translation id="5591465468509111843">Вельмі шырока</translation>
 <translation id="5592595402373377407">Пакуль што недастаткова даных.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5594371836748657471">Мікрафон выключаны ў наладах System Settings сістэмы Mac</translation>
 <translation id="5594899180331219722">Выбраць файл</translation>
 <translation id="5595307023264033512">Агульны аб'ём сховішча, які выкарыстоўваецца сайтамі: <ph name="TOTAL_USAGE" /></translation>
@@ -8878,7 +8878,6 @@
 <translation id="7648023614017258011">Chrome спраўджвае пакет усталявання</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7650178491875594325">Аднаўленне лакальных даных</translation>
-<translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" прапануе выдаліць пашырэнне "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Зарэгістраваны 1 адбітак пальца}one{Зарэгістраваны {COUNT} адбітак пальцаў}few{Зарэгістравана {COUNT} адбіткі пальцаў}many{Зарэгістравана {COUNT} адбіткаў пальцаў}other{Зарэгістравана {COUNT} адбітка пальцаў}}</translation>
 <translation id="7650677314924139716">Бягучая налада выкарыстання трафіка: толькі па Wi-Fi</translation>
 <translation id="7650920359639954963">Не ўключана: <ph name="REASON" /></translation>
