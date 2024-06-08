@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_config.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -269,6 +271,9 @@ bool NetworkState::PropertyChanged(const std::string& key,
       return false;
     }
     max_downlink_speed_kbps_ = max_downlink_speed_kbps;
+    return true;
+  } else if (key == shill::kNetworkConfigProperty) {
+    network_config_ = NetworkConfig::ParseFromServicePropertyValue(value);
     return true;
   }
   return false;

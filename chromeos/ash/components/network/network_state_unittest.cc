@@ -538,4 +538,20 @@ TEST_F(NetworkStateTest, UpdateCaptivePortalState) {
   EXPECT_EQ(GetShillPortalState(), NetworkState::PortalState::kOnline);
 }
 
+TEST_F(NetworkStateTest, UpdateNetworkConfig) {
+  // This test only verifies that update of NetworkConfig can be reflected on
+  // NetworkState. The parsing of the NetworkConfig dict is tested in
+  // network_config_unittest.cc.
+  base::Value::Dict properties;
+  properties.Set(shill::kNetworkConfigIPv4AddressProperty, "1.2.3.4/24");
+
+  network_state_->PropertyChanged(shill::kNetworkConfigProperty,
+                                  base::Value(std::move(properties)));
+
+  const std::optional<NetworkConfig>& config = network_state_->network_config();
+  ASSERT_TRUE(config.has_value());
+  EXPECT_EQ(config->ipv4_address->addr.ToString(), "1.2.3.4");
+  EXPECT_EQ(config->ipv4_address->prefix_len, 24);
+}
+
 }  // namespace ash

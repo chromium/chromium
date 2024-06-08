@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/managed_state.h"
+#include "chromeos/ash/components/network/network_config.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -120,10 +121,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   const std::optional<base::Value::Dict>& proxy_config() const {
     return proxy_config_;
   }
+  // TODO(b/340974631): Deprecate this getter and use network_config() instead.
   const std::optional<base::Value::Dict>& ipv4_config() const {
     return ipv4_config_;
   }
+  // TODO(b/340974631): Deprecate this getter and use network_config() instead.
   std::string GetIpAddress() const;
+  // TODO(b/340974631): Deprecate this getter and use network_config() instead.
   std::string GetGateway() const;
   GURL GetWebProxyAutoDiscoveryUrl() const;
 
@@ -136,6 +140,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   }
   const std::optional<uint32_t> max_downlink_speed_kbps() const {
     return max_downlink_speed_kbps_;
+  }
+
+  const std::optional<NetworkConfig>& network_config() const {
+    return network_config_;
   }
 
   // Wireless property accessors
@@ -347,6 +355,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_UNKNOWN;
   std::optional<uint32_t> max_uplink_speed_kbps_;
   std::optional<uint32_t> max_downlink_speed_kbps_;
+  std::optional<NetworkConfig> network_config_;
 
   // Last non empty Service.Error property. Expected to be cleared via
   // ClearError() when a connection attempt is initiated and when an associated
