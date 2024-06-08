@@ -38,7 +38,14 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddItem(base::to_underlying(CommandId::kWeatherSuggestions), u"Weather");
     auto weather_index = GetIndexOfCommandId(
         base::to_underlying(CommandId::kWeatherSuggestions));
-    SetEnabledAt(weather_index.value(), IsWeatherAllowedByGeolocation());
+    bool enabled = IsWeatherAllowedByGeolocation();
+    SetEnabledAt(weather_index.value(), enabled);
+    if (!enabled) {
+      // TODO(b/328486578): Localize string once it is finalized.
+      SetMinorText(weather_index.value(),
+                   u"Weather is not available because location access is "
+                   u"turned off in settings");
+    }
 
     AddItem(base::to_underlying(CommandId::kCalendarSuggestions),
             u"Google Calendar");

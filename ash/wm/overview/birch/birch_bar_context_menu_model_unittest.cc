@@ -29,6 +29,9 @@ TEST_F(BirchBarContextMenuModelTest, WeatherDisabledWhenGeolocationDisabled) {
 
   // The weather item is disabled.
   EXPECT_FALSE(model.IsEnabledAt(weather_index.value()));
+
+  // The item has minor text (which will become a tooltip).
+  EXPECT_FALSE(model.GetMinorTextAt(weather_index.value()).empty());
 }
 
 TEST_F(BirchBarContextMenuModelTest, WeatherEnabledWhenGeolocationEnabled) {
@@ -46,6 +49,9 @@ TEST_F(BirchBarContextMenuModelTest, WeatherEnabledWhenGeolocationEnabled) {
 
   // The weather item is enabled.
   EXPECT_TRUE(model.IsEnabledAt(weather_index.value()));
+
+  // The item does not have minor text.
+  EXPECT_TRUE(model.GetMinorTextAt(weather_index.value()).empty());
 }
 
 }  // namespace ash

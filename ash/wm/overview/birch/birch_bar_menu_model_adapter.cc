@@ -159,6 +159,9 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       checkbox->SetAccessibleName(label);
       checkbox->SetLabelStyle(TypographyToken::kCrosButton2);
       checkbox->SetLabelColorId(cros_tokens::kCrosSysOnSurface);
+      // Checkboxes don't support minor text, so we use minor text for tooltip.
+      // Note that most commands do not have minor text / tooltips.
+      checkbox->SetTooltipText(model->GetMinorTextAt(index));
       return item_view;
     }
     default:
