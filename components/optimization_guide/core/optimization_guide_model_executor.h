@@ -113,12 +113,16 @@ enum class OnDeviceModelEligibilityReason {
   kFeatureExecutionNotEnabled = 11,
   // On-device model adaptation was required but not available.
   kModelAdaptationNotAvailable = 12,
+  // Validation has not completed for the model yet.
+  kValidationPending = 13,
+  // Validation failed for the model.
+  kValidationFailed = 14,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kModelAdaptationNotAvailable,
+  kMaxValue = kValidationFailed,
 };
 
 // Interface for model execution.

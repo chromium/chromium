@@ -106,8 +106,9 @@ void TestOnDeviceModelComponentStateManager::SetFreeDiskSpace(
 }
 
 void TestOnDeviceModelComponentStateManager::SetReady(
-    const base::FilePath& install_dir) {
-  get()->SetReady(base::Version("0.0.1"), install_dir, base::Value::Dict());
+    const base::FilePath& install_dir,
+    const std::string& version) {
+  get()->SetReady(base::Version(version), install_dir, base::Value::Dict());
 }
 
 }  // namespace optimization_guide

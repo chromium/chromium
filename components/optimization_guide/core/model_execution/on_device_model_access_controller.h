@@ -6,6 +6,8 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ACCESS_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/values.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 
 class PrefService;
 
@@ -37,7 +39,19 @@ class OnDeviceModelAccessController {
   // Called if the session times out.
   void OnSessionTimedOut();
 
+  bool ShouldValidateModel(std::string_view model_version);
+  void OnValidationFinished(OnDeviceModelValidationResult result);
+
  private:
+  struct ValidationState {
+    std::string component_version;
+    OnDeviceModelValidationResult result =
+        OnDeviceModelValidationResult::kUnknown;
+    int attempt_count = 0;
+  };
+  ValidationState GetValidationState() const;
+  void SetValidationState(const ValidationState& state);
+
   raw_ref<PrefService, LeakedDanglingUntriaged> pref_service_;
   bool is_gpu_blocked_ = false;
 };

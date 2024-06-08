@@ -168,6 +168,10 @@ std::string ConvertOnDeviceModelEligibilityReasonToString(
     case optimization_guide::OnDeviceModelEligibilityReason::
         kModelAdaptationNotAvailable:
       return "Model adaptation was required but not available.";
+    case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
+      return "Model validation is still pending.";
+    case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
+      return "Model validation failed.";
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
       NOTREACHED_IN_MIGRATION();
   }

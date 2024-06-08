@@ -37,6 +37,9 @@ class OnDeviceModelMetadata final {
 
   const base::FilePath& model_path() const { return model_path_; }
   const std::string& version() const { return version_; }
+  const proto::OnDeviceModelValidationConfig& validation_config() const {
+    return validation_config_;
+  }
 
  private:
   OnDeviceModelMetadata(
@@ -46,6 +49,7 @@ class OnDeviceModelMetadata final {
 
   base::FilePath model_path_;
   std::string version_;
+  proto::OnDeviceModelValidationConfig validation_config_;
 
   // Map from feature to associated state.
   base::flat_map<proto::ModelExecutionFeature,

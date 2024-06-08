@@ -72,6 +72,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kTextSafetyClassifier);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kTextSafetyRemoteFallback);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceModelValidation);
 
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
@@ -485,6 +487,29 @@ double GetOnDeviceModelDefaultTemperature();
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
+
+// Whether the on-device model will be validated when updated using a set of
+// prompts with expected output.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsOnDeviceModelValidationEnabled();
+
+// Whether on-device sessions should be blocked on validation failures.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldOnDeviceModelBlockOnValidationFailure();
+
+// Whether the validation result for a model should be cleared if Chrome's
+// version changes.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldOnDeviceModelClearValidationOnVersionChange();
+
+// The delay from when a new model is received (or startup if validation has not
+// completed) until the validation is run.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelValidationDelay();
+
+// The maximum number of attempts model validation will be retried.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetOnDeviceModelValidationAttemptCount();
 
 }  // namespace features
 }  // namespace optimization_guide

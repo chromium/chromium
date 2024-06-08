@@ -11,6 +11,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
@@ -22,6 +23,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -203,6 +205,14 @@ class OnDeviceModelServiceController
   scoped_refptr<const OnDeviceModelFeatureAdapter> GetFeatureAdapter(
       ModelBasedCapabilityKey feature);
 
+  // Begins the on-device model validation flow.
+  void StartValidation();
+
+  // Called when validation has finished or failed.
+  void FinishValidation(OnDeviceModelValidationResult result);
+
+  on_device_model::ModelAssetPaths PopulateModelPaths();
+
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
@@ -230,6 +240,15 @@ class OnDeviceModelServiceController
   // model adaptation, but they have not been loaded yet.
   base::flat_map<ModelBasedCapabilityKey, OnDeviceModelAdaptationMetadata>
       model_adaptation_metadata_;
+
+  // Whether a session has been started for the most recently updated model.
+  bool has_started_session_ = false;
+
+  // How many calls to the performance estimator are active.
+  int active_performance_estimator_count_ = 0;
+
+  std::unique_ptr<OnDeviceModelValidator> model_validator_;
+  base::CancelableOnceCallback<void()> validation_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

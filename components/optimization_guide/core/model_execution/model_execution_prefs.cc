@@ -63,6 +63,9 @@ const char kOnDeviceModelCrashCount[] =
 const char kOnDeviceModelTimeoutCount[] =
     "optimization_guide.on_device.timeout_count";
 
+const char kOnDeviceModelValidationResult[] =
+    "optimization_guide.on_device.model_validation_result";
+
 // Stores the last computed `OnDeviceModelPerformanceClass` of the device.
 const char kOnDevicePerformanceClass[] =
     "optimization_guide.on_device.performance_class";
@@ -94,6 +97,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
+  registry->RegisterDictionaryPref(localstate::kOnDeviceModelValidationResult);
   registry->RegisterTimePref(
       localstate::kLastTimeOnDeviceEligibleFeatureWasUsed, base::Time::Min());
   registry->RegisterTimePref(

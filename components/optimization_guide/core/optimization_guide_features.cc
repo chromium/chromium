@@ -169,6 +169,11 @@ BASE_FEATURE(kTextSafetyRemoteFallback,
              "TextSafetyRemoteFallback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether the on-device model validation checks are enabled.
+BASE_FEATURE(kOnDeviceModelValidation,
+             "OnDeviceModelValidation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -827,6 +832,37 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
     }
   }
   return ranks;
+}
+
+bool IsOnDeviceModelValidationEnabled() {
+  return base::FeatureList::IsEnabled(kOnDeviceModelValidation);
+}
+
+bool ShouldOnDeviceModelBlockOnValidationFailure() {
+  static const base::FeatureParam<bool> kParam{
+      &kOnDeviceModelValidation, "on_device_model_block_on_validation_failure",
+      false};
+  return kParam.Get();
+}
+
+bool ShouldOnDeviceModelClearValidationOnVersionChange() {
+  static const base::FeatureParam<bool> kParam{
+      &kOnDeviceModelValidation,
+      "on_device_model_clear_validation_on_version_change", false};
+  return kParam.Get();
+}
+
+base::TimeDelta GetOnDeviceModelValidationDelay() {
+  static const base::FeatureParam<base::TimeDelta> kParam{
+      &kOnDeviceModelValidation, "on_device_model_validation_delay",
+      base::Seconds(30)};
+  return kParam.Get();
+}
+
+int GetOnDeviceModelValidationAttemptCount() {
+  static const base::FeatureParam<int> kParam{
+      &kOnDeviceModelValidation, "on_device_model_validation_attempt_count", 3};
+  return kParam.Get();
 }
 
 }  // namespace features

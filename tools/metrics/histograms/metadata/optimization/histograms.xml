@@ -783,6 +783,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResult"
+    enum="OnDeviceModelValidationResult" expires_after="2025-06-05">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of running the on-device model validation prompts.
+    Recorded each time validation is run.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResultOnValidationStarted"
+    enum="OnDeviceModelValidationResult" expires_after="2025-06-05">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the current validation status of the on-device model. Recorded each
+    time the model is updated, or on startup with an existing model if
+    validation has not completed for that model.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.{ModelExecutionFeature}"
     units="ms" expires_after="2024-10-06">
   <owner>cduvall@chromium.org</owner>

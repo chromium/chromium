@@ -35,7 +35,8 @@ class TestOnDeviceModelComponentStateManager {
 
   void SetFreeDiskSpace(int64_t free_space_bytes);
 
-  void SetReady(const base::FilePath& install_dir);
+  void SetReady(const base::FilePath& install_dir,
+                const std::string& version = "0.0.1");
 
   struct State;
 

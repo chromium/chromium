@@ -400,6 +400,27 @@ enum class OnDeviceModelAdaptationAvailability {
   kMaxValue = kAdaptationModelExecutionConfigInvalid,
 };
 
+// The result of running validation prompts for the on-device model.
+//
+// Keep in sync with OnDeviceModelValidationResult in enums.xml.
+enum class OnDeviceModelValidationResult {
+  kUnknown = 0,
+  // The validation is currently running or was interrupted.
+  kPending = 1,
+  // The validation test succeeded.
+  kSuccess = 2,
+  // The validation test produced non-matching output.
+  kNonMatchingOutput = 3,
+  // The service crashed while running the validation test.
+  kServiceCrash = 4,
+  // The validation test was interrupted by another session.
+  kInterrupted = 5,
+
+  // This must be kept in sync with OnDeviceModelValidationResult in
+  // optimization/enums.xml.
+  kMaxValue = kInterrupted,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

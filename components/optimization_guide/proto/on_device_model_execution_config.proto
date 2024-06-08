@@ -19,6 +19,9 @@ message OnDeviceModelExecutionConfig {
   //
   // It is expected that there is only one feature config per feature.
   repeated OnDeviceModelExecutionFeatureConfig feature_configs = 1;
+
+  // A config used for validating the model and device after download.
+  optional OnDeviceModelValidationConfig validation_config = 2;
 }
 
 message OnDeviceModelExecutionFeatureConfig {
@@ -76,4 +79,18 @@ message TextSafetyFallbackConfig {
   // The proto field in the input request that contains the URL this request was
   // activated on, if any.
   optional ProtoField input_url_proto_field = 1;
+}
+
+message OnDeviceModelValidationConfig {
+  // Prompts and responses used for basic model validation.
+  repeated ValidationPrompt validation_prompts = 1;
+}
+
+message ValidationPrompt {
+  // The input prompt to send.
+  optional string prompt = 1;
+
+  // A string that the output is expected to contain. This is not case
+  // sensitive.
+  optional string expected_output = 2;
 }

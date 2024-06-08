@@ -97,7 +97,9 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_context_token_chunk_size", "4"},
            {"on_device_model_topk", "1"},
            {"on_device_model_temperature", "0"}}},
-         {features::kTextSafetyClassifier, {}}},
+         {features::kTextSafetyClassifier, {}},
+         {features::kOnDeviceModelValidation,
+          {{"on_device_model_validation_delay", "0"}}}},
         {features::internal::kModelAdaptationCompose});
     model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
@@ -123,18 +125,22 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     // Whether to make the downloaded model available prior to initialization of
     // the service controller.
     bool model_component_ready = true;
+
+    std::optional<proto::OnDeviceModelValidationConfig> validation_config;
   };
 
   void Initialize() { Initialize({}); }
 
   void Initialize(const InitializeParams& params) {
     if (params.config) {
-      WriteFeatureConfig(*params.config, params.config2);
+      WriteFeatureConfig(*params.config, params.config2,
+                         params.validation_config);
     } else {
       proto::OnDeviceModelExecutionFeatureConfig default_config;
       default_config.set_can_skip_text_safety(true);
       PopulateConfigForFeature(kFeature, default_config);
-      WriteFeatureConfig(default_config);
+      WriteFeatureConfig(default_config, std::nullopt,
+                         params.validation_config);
     }
 
     if (params.model_component_ready) {
@@ -279,11 +285,16 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void WriteFeatureConfig(
       const proto::OnDeviceModelExecutionFeatureConfig& config,
       std::optional<proto::OnDeviceModelExecutionFeatureConfig> config2 =
+          std::nullopt,
+      std::optional<proto::OnDeviceModelValidationConfig> validation_config =
           std::nullopt) {
     proto::OnDeviceModelExecutionConfig execution_config;
     *execution_config.add_feature_configs() = config;
     if (config2) {
       *execution_config.add_feature_configs() = *config2;
+    }
+    if (validation_config) {
+      *execution_config.mutable_validation_config() = *validation_config;
     }
     WriteExecutionConfig(execution_config);
   }
@@ -3361,5 +3372,375 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
 INSTANTIATE_TEST_SUITE_P(OnDeviceModelServiceControllerTsIntervalTests,
                          OnDeviceModelServiceControllerTsIntervalTest,
                          testing::ValuesIn<int>({1, 2, 3, 4, 10}));
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationSucceeds) {
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("HELLO");
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = validation_config});
+  task_environment_.RunUntilIdle();
+  // Service should be immediately shut down.
+  EXPECT_FALSE(test_controller_->IsServiceConnected());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kSuccess, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelValidationSucceedsImmediatelyWithNoPrompts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "30s"},
+         {"on_device_model_block_on_validation_failure", "true"}}}},
+      {});
+  proto::OnDeviceModelValidationConfig validation_config;
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = validation_config});
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+
+  // Full validation did not need to run.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "0"},
+         {"on_device_model_block_on_validation_failure", "true"}}}},
+      {});
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("goodbye");
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize({.validation_config = validation_config});
+    task_environment_.RunUntilIdle();
+
+    EXPECT_FALSE(test_controller_->CreateSession(
+        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kValidationFailed, 1);
+  }
+
+  {
+    fake_settings_.set_execute_result({"goodbye"});
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kSuccess, 1);
+  }
+
+  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelValidationBlocksSessionPendingCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "30s"},
+         {"on_device_model_block_on_validation_failure", "true"}}}},
+      {});
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("hello");
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize({.validation_config = validation_config});
+    task_environment_.RunUntilIdle();
+
+    EXPECT_FALSE(test_controller_->CreateSession(
+        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt));
+
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kValidationPending, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    task_environment_.FastForwardBy(base::Seconds(30) + base::Milliseconds(1));
+    task_environment_.RunUntilIdle();
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kSuccess, 1);
+  }
+
+  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "0"},
+         {"on_device_model_block_on_validation_failure", "true"}}}},
+      {});
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("hello");
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize({.validation_config = validation_config});
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kSuccess, 1);
+  }
+
+  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+
+  fake_settings_.set_execute_result({"goodbye"});
+  {
+    base::HistogramTester histogram_tester;
+
+    on_device_component_state_manager_.get()->OnStartup();
+    task_environment_.RunUntilIdle();
+    on_device_component_state_manager_.SetReady(temp_dir(), "0.0.2");
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+  }
+
+  EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                               logger_.GetWeakPtr(), nullptr,
+                                               /*config_params=*/std::nullopt));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("hello");
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize({.validation_config = validation_config});
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationRepeatsOnFailure) {
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("goodbye");
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize({.validation_config = validation_config});
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+  }
+
+  {
+    fake_settings_.set_execute_result({"goodbye"});
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kSuccess, 1);
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationMaximumRetry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "0"},
+         {"on_device_model_validation_attempt_count", "2"}}}},
+      {});
+  proto::OnDeviceModelValidationConfig validation_config;
+  auto* prompt = validation_config.add_validation_prompts();
+  prompt->set_prompt("hello");
+  prompt->set_expected_output("goodbye");
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize({.validation_config = validation_config});
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+        OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    RecreateServiceController();
+    task_environment_.RunUntilIdle();
+
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kOnDeviceModelValidation);
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDelayed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "30s"}}}},
+      {});
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+
+  task_environment_.FastForwardBy(base::Seconds(15) + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+
+  task_environment_.FastForwardBy(base::Seconds(15) + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kSuccess, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
+  fake_settings_.set_execute_delay(base::Seconds(30));
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+
+  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kInterrupted, 1);
+
+  // Session was created to the service should still be connected.
+  EXPECT_TRUE(test_controller_->IsServiceConnected());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFails) {
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillFailValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
+  fake_settings_.set_execute_delay(base::Seconds(10));
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  test_controller_->CrashService();
+  task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kServiceCrash, 1);
+}
 
 }  // namespace optimization_guide

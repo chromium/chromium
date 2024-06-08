@@ -140,21 +140,10 @@ OnDeviceModelServiceController::CreateSession(
   }
 
   CHECK(model_metadata_);
-  on_device_model::ModelAssetPaths model_paths;
-  model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
+  on_device_model::ModelAssetPaths model_paths = PopulateModelPaths();
 
   auto adapter = GetFeatureAdapter(feature);
   CHECK(adapter);
-
-  // Populate the model paths even if they are not needed for the current
-  // feature, since the base model remote could be used for subsequent features.
-  if (safety_model_info_) {
-    model_paths.ts_data = safety_model_info_->GetDataPath();
-    model_paths.ts_sp_model = safety_model_info_->GetSpModelPath();
-  }
-  if (language_detection_model_path_) {
-    model_paths.language_detection_model = *language_detection_model_path_;
-  }
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
   if (features::ShouldUseTextSafetyClassifierModel() &&
@@ -184,6 +173,7 @@ OnDeviceModelServiceController::CreateSession(
   opts.adapter = std::move(adapter);
   opts.safety_cfg = SafetyConfig(safety_config);
 
+  has_started_session_ = true;
   return std::make_unique<SessionImpl>(
       feature, std::move(opts), std::move(execute_remote_fn),
       optimization_guide_logger, model_quality_uploader_service, config_params);
@@ -191,14 +181,20 @@ OnDeviceModelServiceController::CreateSession(
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
+  active_performance_estimator_count_++;
   LaunchService();
   service_remote_->GetEstimatedPerformanceClass(base::BindOnce(
       [](GetEstimatedPerformanceClassCallback callback,
+         base::WeakPtr<OnDeviceModelServiceController> controller,
          on_device_model::mojom::PerformanceClass performance_class) {
+        if (controller) {
+          controller->active_performance_estimator_count_--;
+        }
         std::move(callback).Run(performance_class);
       },
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  std::nullopt)));
+                                                  std::nullopt),
+      GetWeakPtr()));
 }
 
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
@@ -284,11 +280,89 @@ void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
   safety_model_info_ = SafetyModelInfo::Load(model_info);
 }
 
+on_device_model::ModelAssetPaths
+OnDeviceModelServiceController::PopulateModelPaths() {
+  on_device_model::ModelAssetPaths model_paths;
+  model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
+
+  // Populate the model paths even if they are not needed for the current
+  // feature, since the base model remote could be used for subsequent features.
+  if (safety_model_info_) {
+    model_paths.ts_data = safety_model_info_->GetDataPath();
+    model_paths.ts_sp_model = safety_model_info_->GetSpModelPath();
+  }
+  if (language_detection_model_path_) {
+    model_paths.language_detection_model = *language_detection_model_path_;
+  }
+  return model_paths;
+}
+
 void OnDeviceModelServiceController::UpdateModel(
     std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
   model_metadata_ = std::move(model_metadata);
+  has_started_session_ = false;
+  validation_callback_.Cancel();
+  model_validator_ = nullptr;
+
+  if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
+    return;
+  }
+
+  if (model_metadata_->validation_config().validation_prompts().empty()) {
+    // Immediately succeed in validation if there are no prompts specified.
+    if (access_controller_->ShouldValidateModel(model_metadata_->version())) {
+      access_controller_->OnValidationFinished(
+          OnDeviceModelValidationResult::kSuccess);
+    }
+    return;
+  }
+
+  validation_callback_.Reset(
+      base::BindOnce(&OnDeviceModelServiceController::StartValidation,
+                     weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, validation_callback_.callback(),
+      features::GetOnDeviceModelValidationDelay());
+}
+
+void OnDeviceModelServiceController::StartValidation() {
+  // Skip validation if a session has started to avoid interrupting.
+  if (has_started_session_) {
+    return;
+  }
+
+  if (!access_controller_->ShouldValidateModel(model_metadata_->version())) {
+    return;
+  }
+
+  MaybeCreateBaseModelRemote(PopulateModelPaths());
+  mojo::Remote<on_device_model::mojom::Session> session;
+  base_model_remote_->StartSession(session.BindNewPipeAndPassReceiver());
+  model_validator_ = std::make_unique<OnDeviceModelValidator>(
+      model_metadata_->validation_config(),
+      base::BindOnce(&OnDeviceModelServiceController::FinishValidation,
+                     GetWeakPtr()),
+      std::move(session));
+}
+
+void OnDeviceModelServiceController::FinishValidation(
+    OnDeviceModelValidationResult result) {
+  if (!model_validator_) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", result);
+
+  model_validator_ = nullptr;
+  access_controller_->OnValidationFinished(result);
+  if (!has_started_session_ && active_performance_estimator_count_ == 0) {
+    // Immediately shut down the service to give back resources after
+    // validation.
+    OnRemoteIdle();
+  }
 }
 
 void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
@@ -327,6 +401,7 @@ void OnDeviceModelServiceController::OnDisconnected() {
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
   access_controller_->OnDisconnectedFromRemote();
+  FinishValidation(OnDeviceModelValidationResult::kServiceCrash);
 }
 
 void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {

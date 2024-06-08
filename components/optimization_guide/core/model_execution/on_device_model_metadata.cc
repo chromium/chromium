@@ -35,6 +35,8 @@ OnDeviceModelMetadata::OnDeviceModelMetadata(
     adapters_[feature] = base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
         std::move(feature_config));
   }
+
+  validation_config_ = std::move(*config->mutable_validation_config());
 }
 
 OnDeviceModelMetadata::~OnDeviceModelMetadata() = default;
