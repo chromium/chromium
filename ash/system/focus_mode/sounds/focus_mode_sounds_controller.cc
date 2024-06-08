@@ -336,8 +336,14 @@ void FocusModeSoundsController::SelectPlaylist(
   // TODO(b/337063849): Update the sound state when the media stream
   // actually starts playing.
   selected_playlist_.state = focus_mode_util::SoundState::kSelected;
-
   sound_type_ = selected_playlist_.type;
+
+  // Reserve a place for the last selected playlist for future use.
+  if (sound_type_ == focus_mode_util::SoundType::kYouTubeMusic) {
+    youtube_music_delegate_->ReservePlaylistForGetPlaylists(
+        selected_playlist_.id);
+  }
+
   SaveUserPref();
   for (auto& observer : observers_) {
     observer.OnSelectedPlaylistChanged();

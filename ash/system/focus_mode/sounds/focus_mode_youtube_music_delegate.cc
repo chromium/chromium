@@ -80,21 +80,25 @@ bool FocusModeYouTubeMusicDelegate::GetPlaylists(
     return false;
   }
 
+  // Cache the done callback, add focus supermix/reserved playlist to the to-do
+  // list, and update the total number of API request to run.
   get_playlists_state_.done_callback = std::move(callback);
-  const bool needs_to_get_last_playlist =
-      !next_track_state_.last_playlist_id.empty() &&
-      next_track_state_.last_playlist_id != kFocusSupermixPlaylistId;
-  get_playlists_state_.target_count = needs_to_get_last_playlist ? 3 : 2;
+  if (get_playlists_state_.reserved_playlist_id) {
+    get_playlists_state_
+        .playlists_to_query[get_playlists_state_.reserved_playlist_id.value()] =
+        1;
+  }
+  get_playlists_state_.playlists_to_query[kFocusSupermixPlaylistId] = 0;
+  get_playlists_state_.target_count =
+      get_playlists_state_.playlists_to_query.size() + 1;
 
-  youtube_music_controller->GetPlaylist(
-      kFocusSupermixPlaylistId,
-      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
-                     weak_factory_.GetWeakPtr(), /*bucket=*/0));
-  if (needs_to_get_last_playlist) {
+  // Invoke the API requests.
+  for (const auto& [playlist_id, playlist_bucket] :
+       get_playlists_state_.playlists_to_query) {
     youtube_music_controller->GetPlaylist(
-        next_track_state_.last_playlist_id,
+        playlist_id,
         base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
-                       weak_factory_.GetWeakPtr(), /*bucket=*/1));
+                       weak_factory_.GetWeakPtr(), playlist_bucket));
   }
   youtube_music_controller->GetMusicSection(
       base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
@@ -109,6 +113,11 @@ void FocusModeYouTubeMusicDelegate::SetFailureCallback(
   failure_callback_ = std::move(callback);
 }
 
+void FocusModeYouTubeMusicDelegate::ReservePlaylistForGetPlaylists(
+    const std::string& playlist_id) {
+  get_playlists_state_.reserved_playlist_id = playlist_id;
+}
+
 FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
     GetPlaylistsRequestState() = default;
 FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::
@@ -118,6 +127,7 @@ void FocusModeYouTubeMusicDelegate::GetPlaylistsRequestState::Reset() {
   for (auto& playlist_bucket : playlist_buckets) {
     playlist_bucket.clear();
   }
+  playlists_to_query.clear();
   target_count = 0;
   count = 0;
   ResetDoneCallback();
