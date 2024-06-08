@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
@@ -155,9 +156,12 @@ public class NotificationIntentInterceptor {
 
         // The delete intent needs to be handled by broadcast receiver from Q due to background
         // activity start restriction.
-        boolean shouldUseService = actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE;
+        boolean shouldUseService =
+                actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE
+                        && shouldUseServiceIntentForPreUnsubscribeAction();
         boolean shouldUseBroadcast =
                 intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT
+                        || actionType == NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE
                         || actionType == NotificationUmaTracker.ActionType.UNDO_UNSUBSCRIBE
                         || actionType
                                 == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT
@@ -218,6 +222,15 @@ public class NotificationIntentInterceptor {
                 /* actionType= */ NotificationUmaTracker.ActionType.UNKNOWN,
                 metadata,
                 /* pendingIntentProvider= */ null);
+    }
+
+    /** Whether to use a service-type intent for handling PRE_UNSUBSCRIBE actions. */
+    public static boolean shouldUseServiceIntentForPreUnsubscribeAction() {
+        final String useServiceIntentParam = "use_service_intent";
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
+                useServiceIntentParam,
+                false);
     }
 
     // Launches the notification's pending intent, which will perform Chrome feature related tasks.

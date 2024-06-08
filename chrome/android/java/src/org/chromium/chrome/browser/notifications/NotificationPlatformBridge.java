@@ -428,7 +428,9 @@ public class NotificationPlatformBridge {
         Context context = ContextUtils.getApplicationContext();
         Uri intentData = makeIntentData(attributes.notificationId, attributes.origin, actionIndex);
         boolean useServiceIntent =
-                NotificationServiceImpl.shouldUseServiceIntentWithSyncStartupForAction(action);
+                NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(action)
+                        && NotificationIntentInterceptor
+                                .shouldUseServiceIntentForPreUnsubscribeAction();
         Intent intent = new Intent(action, intentData);
         intent.setClass(
                 context,

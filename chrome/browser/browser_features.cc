@@ -234,6 +234,8 @@ BASE_FEATURE(kNoPreReadMainDll,
 BASE_FEATURE(kNotificationOneTapUnsubscribe,
              "NotificationOneTapUnsubscribe",
              base::FEATURE_DISABLED_BY_DEFAULT);
+base::FeatureParam<bool> kNotificationOneTapUnsubscribeUseServiceIntentParam{
+    &kNotificationOneTapUnsubscribe, "use_service_intent", false};
 #endif
 
 // This flag is used for enabling Omnibox triggered prerendering. See

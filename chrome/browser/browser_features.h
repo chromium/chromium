@@ -103,6 +103,8 @@ BASE_DECLARE_FEATURE(kNoPreReadMainDll);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
+extern base::FeatureParam<bool>
+    kNotificationOneTapUnsubscribeUseServiceIntentParam;
 #endif
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);

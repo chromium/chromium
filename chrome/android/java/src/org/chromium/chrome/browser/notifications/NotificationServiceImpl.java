@@ -148,14 +148,6 @@ public class NotificationServiceImpl extends NotificationService.Impl {
     }
 
     /**
-     * Whether to use a service-type intent for handling the given `action` and synchronously handle
-     * native startup for minimum latency.
-     */
-    public static boolean shouldUseServiceIntentWithSyncStartupForAction(String action) {
-        return NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(action);
-    }
-
-    /**
      * Called when a Notification has been interacted with by the user. If we can verify that the
      * Intent has a notification Id, start Chrome (if needed) on the UI thread.
      *
@@ -168,7 +160,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             return;
         }
 
-        if (shouldUseServiceIntentWithSyncStartupForAction(intent.getAction())) {
+        if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
             Receiver receiver = new Receiver();
             receiver.onReceive(ContextUtils.getApplicationContext(), intent);
             return;
@@ -234,7 +226,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         // TODO(crbug.com/324827395): A blocking start-up ensures that `onStartJob` does not return
         // `false` and does not release the wake lock prematurely. Clean this up once we have
         // confirmation in telemetry that this solution is effective.
-        boolean isAsync = !shouldUseServiceIntentWithSyncStartupForAction(intent.getAction());
+        boolean isAsync = !NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction());
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(isAsync, parts);
     }
 }

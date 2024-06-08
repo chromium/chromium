@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -880,6 +881,42 @@ public class NotificationPlatformBridgeTest {
     }
 
     /**
+     * Verifies that activating the PendingIntent associated with the "Unsubscribe" button shows the
+     * `provisionally unsubscribed` notification and suspends all existing notifications, even when
+     * we are using service-type intents.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_service_intent/true"
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationProvisionalUnsubscribeWithServiceIntent() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        Notification notification1 = showAndGetNotification("Notification1", "{}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Click the "Unsubscribe" button.
+        Assert.assertEquals(1, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        unsubscribeIntent.send();
+
+        // Wait for the two notifications to be collapsed and the `provisionally unsubscribed`
+        // notification to appear.
+        mNotificationTestRule.waitForNotificationCount(1);
+    }
+
+    /**
      * Verifies that creating a notification with an associated "tag" will cause any previous
      * notification with the same tag to be dismissed prior to being shown.
      */
@@ -981,6 +1018,59 @@ public class NotificationPlatformBridgeTest {
 
         // Expect +1 engagement from interacting with the notification.
         Assert.assertEquals(2.5, getEngagementScoreBlocking(), 0);
+    }
+
+    /**
+     * The next two tests verify that the PendingIntent associated with the "Unsubscribe" button is
+     * either a broadcast or service type intent based on field trial configuration.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later, but these tests rely on
+     * `isBroadcast` and `isService` that was added in API level 31.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "Notifications"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_service_intent/false"
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testNotificationProvisionalUnsubscribeIsBroadcast() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+
+        Notification notification = showAndGetNotification("Notification1", "{}");
+
+        // Verify the "Unsubscribe" button's intent.
+        Assert.assertEquals(1, notification.actions.length);
+        PendingIntent unsubscribeIntent = notification.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        Assert.assertTrue(unsubscribeIntent.isBroadcast());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser", "Notifications"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_service_intent/true"
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testNotificationProvisionalUnsubscribeIsService() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+
+        Notification notification = showAndGetNotification("Notification1", "{}");
+
+        // Verify the "Unsubscribe" button's intent.
+        Assert.assertEquals(1, notification.actions.length);
+        PendingIntent unsubscribeIntent = notification.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        Assert.assertTrue(unsubscribeIntent.isService());
     }
 
     /**
