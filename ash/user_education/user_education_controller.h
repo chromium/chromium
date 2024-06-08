@@ -60,7 +60,7 @@ class ASH_EXPORT UserEducationController {
   // user. As such, this value is absent until the first app list sync of the
   // session is completed.
   // NOTE: Currently only the primary user profile is supported.
-  const std::optional<bool>& IsNewUser(UserEducationPrivateApiKey) const;
+  std::optional<bool> IsNewUser(UserEducationPrivateApiKey) const;
 
   // Attempts to launch the system web app associated with the given type on
   // the display associated with the given ID asynchronously.

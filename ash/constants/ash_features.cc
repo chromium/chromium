@@ -3112,7 +3112,7 @@ BASE_FEATURE(kWelcomeExperience,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
-BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the Welcome Tour that walks new users through ChromeOS System UI is
 // enabled counterfactually as part of an experiment arm.
@@ -3123,7 +3123,7 @@ const base::FeatureParam<bool> kWelcomeTourEnabledCounterfactually{
 // through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTourChromeVoxSupported,
              "WelcomeTourChromeVoxSupported",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Forces user eligibility for the Welcome Tour that walks new users through
 // ChromeOS System UI. Enabling this flag has no effect unless `kWelcomeTour` is

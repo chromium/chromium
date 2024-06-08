@@ -23,7 +23,10 @@ namespace {
 // Helpers ---------------------------------------------------------------------
 
 PrefService* GetLastActiveUserPrefService() {
-  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  return Shell::HasInstance() ? Shell::Get()
+                                    ->session_controller()
+                                    ->GetLastActiveUserPrefService()
+                              : nullptr;
 }
 
 }  // namespace
@@ -132,9 +135,10 @@ void RecordTourDuration(base::TimeDelta duration, bool completed) {
 
 void RecordTourPrevented(PreventedReason reason) {
   CHECK(features::IsWelcomeTourEnabled());
-
-  welcome_tour_prefs::MarkFirstTourPrevention(GetLastActiveUserPrefService(),
-                                              reason);
+  // TODO: b/345829923 - `prefs` could be nullptr in the tests.
+  if (auto* prefs = GetLastActiveUserPrefService()) {
+    welcome_tour_prefs::MarkFirstTourPrevention(prefs, reason);
+  }
 
   base::UmaHistogramEnumeration("Ash.WelcomeTour.Prevented.Reason", reason);
 }

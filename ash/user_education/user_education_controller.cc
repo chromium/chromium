@@ -58,16 +58,19 @@ void UserEducationController::RegisterProfilePrefs(
 std::optional<ui::ElementIdentifier>
 UserEducationController::GetElementIdentifierForAppId(
     const std::string& app_id) const {
-  return delegate_->GetElementIdentifierForAppId(app_id);
+  // TODO: b/345829923 - Set up `delegate_` in the test base.
+  return delegate_ ? delegate_->GetElementIdentifierForAppId(app_id)
+                   : std::nullopt;
 }
 
-const std::optional<bool>& UserEducationController::IsNewUser(
+std::optional<bool> UserEducationController::IsNewUser(
     UserEducationPrivateApiKey) const {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   CHECK(user_education_util::IsPrimaryAccountId(account_id));
-  return delegate_->IsNewUser(account_id);
+  // TODO: b/345829923 - Set up `delegate_` in the test base.
+  return delegate_ ? delegate_->IsNewUser(account_id) : std::nullopt;
 }
 
 void UserEducationController::LaunchSystemWebAppAsync(
@@ -79,8 +82,11 @@ void UserEducationController::LaunchSystemWebAppAsync(
   // user profile. This is a self-imposed restriction.
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   CHECK(user_education_util::IsPrimaryAccountId(account_id));
-  delegate_->LaunchSystemWebAppAsync(account_id, system_web_app_type,
-                                     launch_source, display_id);
+  // TODO: b/345829923 - Set up `delegate_` in the test base.
+  if (delegate_) {
+    delegate_->LaunchSystemWebAppAsync(account_id, system_web_app_type,
+                                       launch_source, display_id);
+  }
 }
 
 }  // namespace ash
