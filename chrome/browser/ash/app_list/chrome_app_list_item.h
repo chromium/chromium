@@ -114,6 +114,7 @@ class ChromeAppListItem {
   // Returns the default position if it exists; otherwise returns an empty
   // value.
   syncer::StringOrdinal CalculateDefaultPositionIfApplicable();
+  syncer::StringOrdinal CalculateDefaultPositionForModifiedOrder();
 
   // Activates (opens) the item. Does nothing by default.
   virtual void Activate(int event_flags);

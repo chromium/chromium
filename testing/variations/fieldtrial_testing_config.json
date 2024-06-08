@@ -785,7 +785,8 @@
                 {
                     "name": "Counterfactual_M127",
                     "params": {
-                        "is-counterfactual": "true"
+                        "is-counterfactual": "true",
+                        "is-modified-order": "false"
                     },
                     "enable_features": [
                         "AppsCollections"
@@ -794,7 +795,18 @@
                 {
                     "name": "Enabled_M127",
                     "params": {
-                        "is-counterfactual": "false"
+                        "is-counterfactual": "false",
+                        "is-modified-order": "false"
+                    },
+                    "enable_features": [
+                        "AppsCollections"
+                    ]
+                },
+                {
+                    "name": "Modified_Order_M127",
+                    "params": {
+                        "is-counterfactual": "false",
+                        "is-modified-order": "true"
                     },
                     "enable_features": [
                         "AppsCollections"

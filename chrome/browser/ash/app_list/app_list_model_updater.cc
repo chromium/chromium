@@ -57,3 +57,7 @@ syncer::StringOrdinal AppListModelUpdater::GetPositionBeforeFirstItemInternal(
 
   return (*iter)->position().CreateBefore();
 }
+
+bool AppListModelUpdater::ModelHasBeenReorderedInThisSession() {
+  return false;
+}

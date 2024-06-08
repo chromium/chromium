@@ -11,13 +11,16 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/no_destructor.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 
@@ -101,6 +104,7 @@ AppCollectionMap GetAppCollectionsMap() {
       {web_app::kGoogleMapsAppId, ash::AppCollection::kUtilities},
       {web_app::kHelpAppId, ash::AppCollection::kUtilities},
       {web_app::kMallAppId, ash::AppCollection::kUtilities},
+      {ash::kMallSystemAppId, ash::AppCollection::kUtilities},
       {web_app::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kTextEditorAppId, ash::AppCollection::kUtilities},
@@ -112,6 +116,124 @@ AppCollectionMap GetAppCollectionsMap() {
       {extensions::kWebStoreAppId, ash::AppCollection::kUtilities},
   };
 }
+
+// TODO(anasalazar): Remove this when experiment is finished.
+// Gets built-in default app order for secondary experimental arm in apps
+// collections experiment.
+void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
+  // clang-format off
+  app_ids->insert(app_ids->end(), {
+    app_constants::kChromeAppId,
+    arc::kPlayStoreAppId,
+
+    extension_misc::kFilesManagerAppId,
+    file_manager::kFileManagerSwaAppId
+  });
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
+      app_ids->push_back(web_app::kContainerAppId);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  app_ids->insert(app_ids->end(), {
+    web_app::kCameraAppId,
+
+    ash::kInternalAppIdSettings,
+    web_app::kSettingsAppId,
+    web_app::kOsSettingsAppId,
+
+    arc::kGmailAppId,
+    extension_misc::kGmailAppId,
+    web_app::kGmailAppId,
+
+    web_app::kGoogleMeetAppId,
+
+    web_app::kGoogleChatAppId,
+
+    extension_misc::kGoogleDocsAppId,
+    web_app::kGoogleDocsAppId,
+
+    extension_misc::kGoogleSlidesAppId,
+    web_app::kGoogleSlidesAppId,
+
+    extension_misc::kGoogleSheetsAppId,
+    web_app::kGoogleSheetsAppId,
+
+    extension_misc::kGoogleDriveAppId,
+    web_app::kGoogleDriveAppId,
+
+    extension_misc::kGoogleKeepAppId,
+    web_app::kGoogleKeepAppId,
+
+    arc::kGoogleCalendarAppId,
+    extension_misc::kCalendarAppId,
+    web_app::kGoogleCalendarAppId,
+
+    web_app::kMessagesAppId,
+
+    arc::kGooglePhotosAppId,
+    extension_misc::kGooglePhotosAppId,
+
+    web_app::kMediaAppId,
+    web_app::kCanvasAppId,
+
+    web_app::kAdobeExpressAppId,
+
+    ash::kChromeUIUntrustedProjectorSwaAppId,
+    web_app::kCursiveAppId,
+
+    arc::kYoutubeAppId,
+    extension_misc::kYoutubeAppId,
+    web_app::kYoutubeAppId,
+
+    arc::kYoutubeMusicAppId,
+    web_app::kYoutubeMusicAppId,
+    arc::kYoutubeMusicWebApkAppId,
+
+    arc::kPlayMoviesAppId,
+    extension_misc::kGooglePlayMoviesAppId,
+    arc::kGoogleTVAppId,
+
+    arc::kPlayMusicAppId,
+    extension_misc::kGooglePlayMusicAppId,
+
+    arc::kPlayBooksAppId,
+    extension_misc::kGooglePlayBooksAppId,
+    web_app::kPlayBooksAppId,
+
+    arc::kGoogleMapsAppId,
+    web_app::kGoogleMapsAppId,
+
+    web_app::kHelpAppId,
+
+    web_app::kMallAppId,
+    ash::kMallSystemAppId,
+
+    web_app::kCalculatorAppId,
+    extension_misc::kCalculatorAppId,
+    extension_misc::kTextEditorAppId,
+    web_app::kPrintManagementAppId,
+    web_app::kScanningAppId,
+    web_app::kShortcutCustomizationAppId,
+    guest_os::kTerminalSystemAppId,
+
+    web_app::kYoutubeTVAppId,
+    web_app::kGoogleNewsAppId,
+    extensions::kWebStoreAppId,
+
+    arc::kLightRoomAppId,
+    arc::kInfinitePainterAppId,
+    web_app::kShowtimeAppId,
+    extension_misc::kGooglePlusAppId,
+  });
+  // clang-format on
+
+  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
+    app_ids->push_back(web_app::kNvidiaGeForceNowAppId);
+  }
+}
+
 }  // namespace
 
 namespace apps_util {
@@ -124,6 +246,24 @@ ash::AppCollection GetCollectionIdForAppId(const std::string& app_id) {
   return app_collection_found != app_to_collection_map->end()
              ? app_collection_found->second
              : ash::AppCollection::kUnknown;
+}
+
+bool GetModifiedOrdinals(const extensions::ExtensionId& extension_id,
+                         syncer::StringOrdinal* app_launch_ordinal) {
+  // The following defines the default order of apps.
+  std::vector<std::string> app_ids;
+  GetSecondaryDefaultOrder(&app_ids);
+
+  syncer::StringOrdinal app_launch =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  for (auto id : app_ids) {
+    if (id == extension_id) {
+      *app_launch_ordinal = app_launch;
+      return true;
+    }
+    app_launch = app_launch.CreateAfter();
+  }
+  return false;
 }
 
 }  // namespace apps_util

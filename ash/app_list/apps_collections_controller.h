@@ -43,7 +43,11 @@ class ASH_EXPORT AppsCollectionsController {
     // For users that are considered as part of the AppsCollections experiment
     // and are shown the AppsCollections.
     kEnabled = 2,
-    kMaxValue = kEnabled,
+    // For users that are considered as part of the AppsCollections experiment
+    // and are not shown the AppsCollections but the AppsGrid in a different
+    // default order.
+    kModifiedOrder = 3,
+    kMaxValue = kModifiedOrder,
   };
 
   AppsCollectionsController();
@@ -64,6 +68,7 @@ class ASH_EXPORT AppsCollectionsController {
   // Whether the AppsCollection page should be presented by default when opening
   // the bubble, instead of the Apps page.
   bool ShouldShowAppsCollection();
+  void CalculateExperimentalArm();
 
   // Signal that the user has dismissed the AppsCollection page.
   void SetAppsCollectionDismissed(DismissReason reason);

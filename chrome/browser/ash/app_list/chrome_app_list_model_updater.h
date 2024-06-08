@@ -65,6 +65,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   GetPublishedSearchResultsForTest() override;
   void SetAccessibleName(const std::string& id,
                          const std::string& name) override;
+  bool ModelHasBeenReorderedInThisSession() override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.
   void SetItemIconVersion(const std::string& id, int icon_version) override;
@@ -85,6 +86,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                        const std::string& folder_id) override;
   void SetNotificationBadgeColor(const std::string& id,
                                  const SkColor color) override;
+  void RequestDefaultPositionForModifiedOrder() override;
 
   // Methods only used by ChromeSearchResult that talk to ash directly.
   void SetSearchResultMetadata(
@@ -235,6 +237,10 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       published_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   bool search_engine_is_google_ = false;
+
+  // Whether the model has reordered the position of an item in the current
+  // session.
+  bool has_requested_move_item_position_ = false;
 
   // The id of the item whose icon update is in progress.
   std::optional<std::string> item_with_icon_update_;

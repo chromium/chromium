@@ -154,6 +154,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
       const std::vector<std::string>& apps_below_the_fold,
       bool is_apps_collections_page) = 0;
 
+  // Whether the app list was reordered locally.
+  virtual bool HasReordered() = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

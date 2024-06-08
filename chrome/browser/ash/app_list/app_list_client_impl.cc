@@ -435,6 +435,25 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   }
 }
 
+void AppListClientImpl::MaybeRecalculateAppsGridDefaultOrder() {
+  // Do not attempt to calculate the experimental arm if the active
+  // profile is not the primary profile.
+  if (!IsPrimaryProfile(ProfileManager::GetActiveUserProfile())) {
+    return;
+  }
+
+  ash::AppsCollectionsController* apps_collections_controller =
+      ash::AppsCollectionsController::Get();
+  apps_collections_controller->CalculateExperimentalArm();
+  if (apps_collections_controller->GetUserExperimentalArm() !=
+      ash::AppsCollectionsController::ExperimentalArm::kModifiedOrder) {
+    return;
+  }
+  CHECK(current_model_updater_);
+
+  current_model_updater_->RequestDefaultPositionForModifiedOrder();
+}
+
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   app_list_visible_ = visible;
   if (visible) {
@@ -719,8 +738,12 @@ void AppListClientImpl::OnProfileAdded(Profile* profile) {
     app_list_syncable_service->OnFirstSync(base::BindOnce(
         [](const base::WeakPtr<AppListClientImpl>& self,
            bool was_first_sync_ever) {
-          if (self) {
-            self->is_primary_profile_new_user_ = was_first_sync_ever;
+          if (!self) {
+            return;
+          }
+          self->is_primary_profile_new_user_ = was_first_sync_ever;
+          if (was_first_sync_ever) {
+            self->MaybeRecalculateAppsGridDefaultOrder();
           }
         },
         weak_ptr_factory_.GetWeakPtr()));
@@ -745,6 +768,14 @@ void AppListClientImpl::RecalculateWouldTriggerLauncherSearchIph() {
   }
 
   current_model_updater_->RecalculateWouldTriggerLauncherSearchIph();
+}
+
+bool AppListClientImpl::HasReordered() {
+  if (!current_model_updater_) {
+    return false;
+  }
+
+  return current_model_updater_->ModelHasBeenReorderedInThisSession();
 }
 
 std::unique_ptr<ash::ScopedIphSession>
@@ -978,9 +1009,11 @@ void AppListClientImpl::MaybeRecordActivatedItemVisibility(
 std::optional<bool> AppListClientImpl::IsNewUser(
     const AccountId& account_id) const {
   // NOTE: Apps Collections in Ash is currently only supported for the primary
-  // user profile. This is a self-imposed restriction.
+  // user profile. This is a self-imposed restriction but may happen in tests.
   auto* const profile = GetProfile(account_id);
-  CHECK(IsPrimaryProfile(profile));
+  if (!IsPrimaryProfile(profile)) {
+    return false;
+  }
   return is_primary_profile_new_user_;
 }
 

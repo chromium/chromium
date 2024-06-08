@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/gtest_prod_util.h"
@@ -122,6 +123,7 @@ class AppListClientImpl
       const std::vector<std::string>& apps_above_the_fold,
       const std::vector<std::string>& apps_below_the_fold,
       bool is_apps_collections_page) override;
+  bool HasReordered() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -172,6 +174,9 @@ class AppListClientImpl
 
   // Initializes as if a new user logged in for testing.
   void InitializeAsIfNewUserLoginForTest();
+
+  // Recalculate the default position of apps with a modified order.
+  void MaybeRecalculateAppsGridDefaultOrder();
 
  private:
   friend class AppListSurveyTriggerTest;

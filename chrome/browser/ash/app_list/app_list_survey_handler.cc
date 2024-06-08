@@ -31,18 +31,25 @@ void AppListSurveyHandler::MaybeTriggerSurvey() {
   ash::AppsCollectionsController::ExperimentalArm experimental_arm =
       ash::AppsCollectionsController::Get()->GetUserExperimentalArm();
 
-  // This survey only cares for AppsCollections experiment group.
-  if (experimental_arm ==
-      ash::AppsCollectionsController::ExperimentalArm::kControl) {
-    return;
+  std::string experimental_group = "";
+
+  switch (experimental_arm) {
+    case ash::AppsCollectionsController::ExperimentalArm::kDefaultValue:
+    case ash::AppsCollectionsController::ExperimentalArm::kControl:
+      return;
+    case ash::AppsCollectionsController::ExperimentalArm::kEnabled:
+      experimental_group = "enabled";
+      break;
+    case ash::AppsCollectionsController::ExperimentalArm::kCounterfactual:
+      experimental_group = "counterfactual";
+      break;
+    case ash::AppsCollectionsController::ExperimentalArm::kModifiedOrder:
+      experimental_group = "modified_order";
+      break;
   }
 
   const base::flat_map<std::string, std::string> product_specific_data = {
-      {"experiment_group",
-       experimental_arm ==
-               ash::AppsCollectionsController::ExperimentalArm::kEnabled
-           ? "enabled"
-           : "counterfactual"}};
+      {"experiment_group", experimental_group}};
 
   if (ash::HatsNotificationController::ShouldShowSurveyToProfile(
           profile_, ash::kHatsLauncherAppsFindingSurvey)) {

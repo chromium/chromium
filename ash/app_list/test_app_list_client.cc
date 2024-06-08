@@ -136,6 +136,7 @@ void TestAppListClient::OnZeroStateSearchDone(base::OnceClosure on_done) {
   zero_state_search_done_count_++;
   std::move(on_done).Run();
 }
+
 std::optional<bool> TestAppListClient::IsNewUser(
     const AccountId& account_id) const {
   return is_new_user_;
@@ -147,6 +148,10 @@ void TestAppListClient::RecordAppsDefaultVisibility(
     bool is_apps_collections_page) {
   items_above_the_fold_count_ = apps_above_the_fold.size();
   items_below_the_fold_count_ = apps_below_the_fold.size();
+}
+
+bool TestAppListClient::HasReordered() {
+  return false;
 }
 
 }  // namespace ash

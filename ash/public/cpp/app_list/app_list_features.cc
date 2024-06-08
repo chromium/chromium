@@ -83,6 +83,11 @@ bool IsAppsCollectionsEnabledCounterfactually() {
          kAppsCollectionsEnabledCounterfactually.Get();
 }
 
+bool IsAppsCollectionsEnabledWithModifiedOrder() {
+  return IsAppsCollectionsEnabled() &&
+         kAppsCollectionsEnabledWithModifiedOrder.Get();
+}
+
 bool IsForceShowAppsCollectionsEnabled() {
   return base::FeatureList::IsEnabled(kForceShowAppsCollections);
 }

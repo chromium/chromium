@@ -343,14 +343,17 @@ class AppsCollectionsControllerPrefTest
     : public NoSessionAshTestBase,
       public ::testing::WithParamInterface<std::tuple<
           /*is_apps_collections_active=*/bool,
-          /*is_counterfactual=*/bool>> {
+          /*is_counterfactual=*/bool,
+          /*is_modified_order=*/bool>> {
  public:
   AppsCollectionsControllerPrefTest() {
     if (IsAppsCollectionsEnabled()) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           app_list_features::kAppsCollections,
           {{"is-counterfactual",
-            IsAppsCollectionsEnabledCounterfactually() ? "true" : "false"}});
+            IsAppsCollectionsEnabledCounterfactually() ? "true" : "false"},
+           {"is-modified-order",
+            IsAppsCollectionsEnabledWithModifiedOrder() ? "true" : "false"}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           app_list_features::kAppsCollections);
@@ -388,14 +391,22 @@ class AppsCollectionsControllerPrefTest
   bool IsAppsCollectionsEnabledCounterfactually() const {
     return IsAppsCollectionsEnabled() && std::get<1>(GetParam());
   }
+  // Returns whether apps collections feature is enabled counterfactrually.
+  bool IsAppsCollectionsEnabledWithModifiedOrder() const {
+    return IsAppsCollectionsEnabled() && std::get<2>(GetParam());
+  }
 
   AppsCollectionsController::ExperimentalArm GetExpectedExperimentalArm() {
     if (!IsAppsCollectionsEnabled()) {
       return AppsCollectionsController::ExperimentalArm::kControl;
     }
 
-    return IsAppsCollectionsEnabledCounterfactually()
-               ? AppsCollectionsController::ExperimentalArm::kCounterfactual
+    if (IsAppsCollectionsEnabledCounterfactually()) {
+      return AppsCollectionsController::ExperimentalArm::kCounterfactual;
+    }
+
+    return IsAppsCollectionsEnabledWithModifiedOrder()
+               ? AppsCollectionsController::ExperimentalArm::kModifiedOrder
                : AppsCollectionsController::ExperimentalArm::kEnabled;
   }
 
@@ -406,8 +417,9 @@ class AppsCollectionsControllerPrefTest
 INSTANTIATE_TEST_SUITE_P(All,
                          AppsCollectionsControllerPrefTest,
                          ::testing::Combine(
-                             /*is_new_user_locally=*/::testing::Bool(),
-                             /*is_managed_user=*/::testing::Bool()));
+                             /*is_apps_collections_active=*/::testing::Bool(),
+                             /*is_counterfactual=*/::testing::Bool(),
+                             /*is_modified_order=*/::testing::Bool()));
 
 // Verifies that the experimental arm for the user is calculated and stored
 // correctly.

@@ -70,6 +70,7 @@ class TestAppListClient : public AppListClient {
       const std::vector<std::string>& apps_above_the_fold,
       const std::vector<std::string>& apps_below_the_fold,
       bool is_apps_collections_page) override;
+  bool HasReordered() override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

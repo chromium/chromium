@@ -60,6 +60,9 @@ class AppListModelUpdater {
                                   bool add_from_local) {}
   virtual void RemoveItem(const std::string& id, bool is_uninstall) {}
   virtual void SetStatus(ash::AppListModelStatus status) {}
+  virtual void RequestDefaultPositionForModifiedOrder() {}
+  virtual bool ModelHasBeenReorderedInThisSession();
+
   // For SearchModel:
   virtual void SetSearchEngineIsGoogle(bool is_google) {}
   virtual void PublishSearchResults(
