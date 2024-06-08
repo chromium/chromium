@@ -3957,6 +3957,7 @@ if (!is_android) {
         "../browser/extensions/service_worker_tracking_browsertest.cc",
         "../browser/extensions/shared_module_apitest.cc",
         "../browser/extensions/shared_worker_apitest.cc",
+        "../browser/extensions/side_panel_manifest_browsertest.cc",
         "../browser/extensions/startup_helper_browsertest.cc",
         "../browser/extensions/stubs_apitest.cc",
         "../browser/extensions/subscribe_page_action_browsertest.cc",

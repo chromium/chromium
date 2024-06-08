@@ -84,10 +84,14 @@ bool SidePanelManifestHandler::Validate(
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   std::string path = SidePanelInfo::GetDefaultPath(extension);
-  if (!ExtensionResourceExists(extension, path)) {
+  GURL side_panel_url = extension->GetResourceURL(path);
+
+  if (!side_panel_url.is_valid() ||
+      !ExtensionResourceExists(extension, side_panel_url.path())) {
     *error = errors::kSidePanelManifestDefaultPathError;
     return false;
   }
+
   return true;
 }
 
