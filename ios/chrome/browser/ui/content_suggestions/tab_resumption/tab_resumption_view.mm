@@ -370,9 +370,14 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   NSString* hostnameAndSyncTimeString;
   UILabel* label = [[UILabel alloc] init];
   if (IsTabResumption1_5Enabled()) {
-    hostnameAndSyncTimeString = [NSString
-        stringWithFormat:@"%@ • %@", [self hostnameFromGURL:_item.tabURL],
-                         _item.sessionName];
+    if (_item.itemType == kLastSyncedTab && _item.sessionName) {
+      hostnameAndSyncTimeString = [NSString
+          stringWithFormat:@"%@ • %@", [self hostnameFromGURL:_item.tabURL],
+                           _item.sessionName];
+    } else {
+      hostnameAndSyncTimeString = [NSString
+          stringWithFormat:@"%@", [self hostnameFromGURL:_item.tabURL]];
+    }
     label.lineBreakMode = NSLineBreakByTruncatingTail;
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
   } else {

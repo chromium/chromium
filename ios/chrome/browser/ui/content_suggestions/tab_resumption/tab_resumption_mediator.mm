@@ -664,7 +664,7 @@ const char kGStatic[] = ".gstatic.com";
   }
 
   // Fetch the favicon.
-  [self fetchFaviconForItem:item];
+  [self fetchImageForItem:item];
 }
 
 @end
