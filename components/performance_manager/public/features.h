@@ -85,8 +85,11 @@ BASE_DECLARE_FEATURE(kDiscardRingImprovements);
 // configuring performance settings.
 BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
 
-// This enables the performance detection backend and interventions UI.
+// This enables the performance detection backend.
 BASE_DECLARE_FEATURE(kPerformanceIntervention);
+
+// This enables the performance intervention UI
+BASE_DECLARE_FEATURE(kPerformanceInterventionUI);
 
 #if BUILDFLAG(IS_WIN)
 // Prefetch the main browser DLL when a new node is added to the PM graph

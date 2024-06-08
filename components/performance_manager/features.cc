@@ -81,8 +81,12 @@ BASE_FEATURE(kPerformanceIntervention,
              "PerformanceIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPerformanceInterventionUI,
+             "PerformanceInterventionUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout{
-    &kPerformanceIntervention, "intervention_button_timeout",
+    &kPerformanceInterventionUI, "intervention_button_timeout",
     base::Seconds(10)};
 
 const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold{

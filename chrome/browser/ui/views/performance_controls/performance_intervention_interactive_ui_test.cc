@@ -4,8 +4,10 @@
 
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
@@ -43,7 +45,9 @@ class PerformanceInterventionInteractiveTest
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceIntervention}, {});
+        {performance_manager::features::kPerformanceIntervention,
+         performance_manager::features::kPerformanceInterventionUI},
+        {});
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -303,4 +307,54 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId));
+}
+
+class PerformanceInterventionNonUiMetricsTest
+    : public PerformanceInterventionInteractiveTest {
+ public:
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+    feature_list_.InitWithFeatures(
+        {performance_manager::features::kPerformanceIntervention}, {});
+    InteractiveFeaturePromoTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionNonUiMetricsTest,
+                       TriggerMetricsRecorded) {
+  base::HistogramTester histogram_tester;
+  const std::string message_trigger_reason_histogram_name =
+      "PerformanceControls.Intervention.BackgroundTab.Cpu.MessageTriggerResult";
+  RunTestSequence(AddInstrumentedTab(kSecondTab, GetURL()),
+                  AddInstrumentedTab(kThirdTab, GetURL()),
+                  SelectTab(kTabStripElementId, 0), Do([&]() {
+                    // verify that metrics were recorded
+                    histogram_tester.ExpectBucketCount(
+                        message_trigger_reason_histogram_name,
+                        InterventionMessageTriggerResult::kShown, 0);
+                    histogram_tester.ExpectBucketCount(
+                        message_trigger_reason_histogram_name,
+                        InterventionMessageTriggerResult::kRateLimited, 0);
+                  }),
+                  TriggerOnActionableTabListChange({1, 2}), Do([&]() {
+                    // verify that metrics were recorded
+                    histogram_tester.ExpectBucketCount(
+                        message_trigger_reason_histogram_name,
+                        InterventionMessageTriggerResult::kShown, 1);
+                    histogram_tester.ExpectBucketCount(
+                        message_trigger_reason_histogram_name,
+                        InterventionMessageTriggerResult::kRateLimited, 0);
+                  }),
+                  TriggerOnActionableTabListChange({1, 2}), Do([&]() {
+                    // verify that metrics were recorded
+                    histogram_tester.ExpectBucketCount(
+                        message_trigger_reason_histogram_name,
+                        InterventionMessageTriggerResult::kShown, 1);
+                    histogram_tester.ExpectBucketCount(
+                        message_trigger_reason_histogram_name,
+                        InterventionMessageTriggerResult::kRateLimited, 1);
+                  }));
 }

@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Enabled"/>
 </enum>
 
+<enum name="InterventionMessageTriggerResult">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Rate Limited"/>
+</enum>
+
 <enum name="MemorySaverBubbleActionType">
   <int value="0" label="Open settings"/>
   <int value="1" label="Dismiss dialog"/>

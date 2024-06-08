@@ -52,6 +52,72 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageShownCount"
+    units="count" expires_after="2024-09-02">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs daily the number of times the intervention message is shown to users on
+    the previous day. This will be used to understand how often a user will see
+    the performance intervention message.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageTriggerResult"
+    enum="InterventionMessageTriggerResult" expires_after="2024-09-02">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs an enum when the performance intervention message is triggered by the
+    Performance Detection Manager. The enum represents result of trying to
+    trigger the intervention messaging (i.e it was able to be shown or the
+    reason why it was unable to do so). This is used to understand why a message
+    is unable to be shown and how often it occurs.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.RateLimitedCount"
+    units="count" expires_after="2024-09-02">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs daily the number of times the intervention message is unable to show
+    due to rate limiting on the previous day. This will be used to understand
+    how often we supress the message and whether our rate limiting threshold is
+    too low.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.BubbleAction"
     enum="MemorySaverBubbleActionType" expires_after="2024-09-22">
   <owner>agale@chromium.org</owner>

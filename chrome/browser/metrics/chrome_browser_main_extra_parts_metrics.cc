@@ -41,9 +41,11 @@
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/metrics/android_metrics_helper.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1152,6 +1154,13 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
     power_metrics_reporter_ =
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
   }
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceIntervention)) {
+    performance_intervention_metrics_reporter_ =
+        std::make_unique<PerformanceInterventionMetricsReporter>(
+            g_browser_process->local_state());
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
@@ -1191,6 +1200,11 @@ void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
     // pointer or similar.
     metrics::TabStatsTracker::ClearInstance();
   }
+
+  // Reset the pointer to `performance_intervention_metrics_reporter_` to ensure
+  // that PrefService outlives the metrics reporter to prevent the reporter from
+  // holding a dangling pointer.
+  performance_intervention_metrics_reporter_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

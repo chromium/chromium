@@ -9,10 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -20,6 +22,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 PerformanceInterventionButtonController::
@@ -58,9 +61,26 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
     auto* const tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(profile);
     CHECK(tracker);
-    if (!delegate_->IsButtonShowing() &&
-        tracker->ShouldTriggerHelpUI(
-            feature_engagement::kIPHPerformanceInterventionDialogFeature)) {
+
+    const bool can_show_intervention = tracker->ShouldTriggerHelpUI(
+        feature_engagement::kIPHPerformanceInterventionDialogFeature);
+
+    RecordInterventionTriggerResult(
+        type, can_show_intervention
+                  ? InterventionMessageTriggerResult::kShown
+                  : InterventionMessageTriggerResult::kRateLimited);
+
+    PrefService* const pref_service = g_browser_process->local_state();
+    CHECK(pref_service);
+    if (can_show_intervention) {
+      RecordInterventionMessageCount(type, pref_service);
+    } else {
+      RecordInterventionRateLimitedCount(type, pref_service);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kPerformanceInterventionUI) &&
+        !delegate_->IsButtonShowing() && can_show_intervention) {
       delegate_->Show();
       // Immediately dismiss the feature engagement tracker because the
       // performance intervention button shouldn't prevent other promos from

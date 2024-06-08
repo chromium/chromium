@@ -4020,6 +4020,15 @@ inline constexpr char kMemorySaverChipExpandedCount[] =
 inline constexpr char kLastMemorySaverChipExpandedTimestamp[] =
     "high_efficiency.last_chip_expanded_timestamp";
 
+inline constexpr char kPerformanceInterventionBackgroundCpuMessageCount[] =
+    "performance_intervention.background_cpu_message_count";
+
+inline constexpr char kPerformanceInterventionBackgroundCpuRateLimitedCount[] =
+    "performance_intervention.background_cpu_rate_limited_count";
+
+inline constexpr char kPerformanceInterventionDailySample[] =
+    "performance_intervention.last_daily_sample";
+
 // A boolean indicating whether the price track first user experience bubble
 // should show. This is set to false if the user has clicked the "Price track"
 // button in the FUE bubble once.
