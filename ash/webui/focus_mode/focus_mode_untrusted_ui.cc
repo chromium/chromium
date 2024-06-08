@@ -36,9 +36,10 @@ FocusModeUntrustedUI::FocusModeUntrustedUI(content::WebUI* web_ui)
   // Enables the page to actually load media.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc, "media-src *;");
-  // Enables the page to load images. This is used to load track thumbnails.
+  // Enables the page to load images. The page is restricted to only loading
+  // images from data URLs passed to the page.
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc, "img-src *;");
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
   // Enables the page to be loaded as an iframe by the trusted page.
   source->AddFrameAncestor(GURL(chrome::kChromeUIFocusModeMediaURL));
 }

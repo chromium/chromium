@@ -62,19 +62,9 @@ constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
            "Experimental feature disabled by default. Policy not yet "
            "implemented."
         })");
-
-void DownloadImageFromUrl(const GURL& url,
-                          ImageDownloader::DownloadCallback callback) {
-  CHECK(!url.is_empty());
-
-  const UserSession* active_user_session =
-      Shell::Get()->session_controller()->GetUserSession(0);
-  DCHECK(active_user_session);
-
-  ImageDownloader::Get()->Download(url, kFocusModeSoundsThumbnailTag,
-                                   active_user_session->user_info.account_id,
-                                   std::move(callback));
 }
+
+namespace {
 
 // Invoked upon completion of the `thumbnail` download. `thumbnail` can be a
 // null image if the download attempt from the url failed.
@@ -143,9 +133,10 @@ void DispatchRequests(
                                        std::move(sorted_playlists_callback)));
 
   for (const auto& item : data) {
-    DownloadImageFromUrl(item.thumbnail_url,
-                         base::BindOnce(&OnOneThumbnailDownloaded,
-                                        barrier_callback, item.id, item.title));
+    FocusModeSoundsController::DownloadTrackThumbnail(
+        item.thumbnail_url,
+        base::BindOnce(&OnOneThumbnailDownloaded, barrier_callback, item.id,
+                       item.title));
   }
 }
 
@@ -208,10 +199,26 @@ FocusModeSoundsController::FocusModeSoundsController()
 
 FocusModeSoundsController::~FocusModeSoundsController() = default;
 
+// static
+void FocusModeSoundsController::DownloadTrackThumbnail(
+    const GURL& url,
+    ImageDownloader::DownloadCallback callback) {
+  CHECK(!url.is_empty());
+
+  const UserSession* active_user_session =
+      Shell::Get()->session_controller()->GetUserSession(0);
+  CHECK(active_user_session);
+
+  ImageDownloader::Get()->Download(url, kFocusModeSoundsThumbnailTag,
+                                   active_user_session->user_info.account_id,
+                                   std::move(callback));
+}
+
 void FocusModeSoundsController::GetNextTrack(GetNextTrackCallback callback) {
   if (selected_playlist_.type == focus_mode_util::SoundType::kNone ||
       selected_playlist_.id.empty()) {
     LOG(WARNING) << "No selected playlist";
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -223,6 +230,7 @@ void FocusModeSoundsController::GetNextTrack(GetNextTrackCallback callback) {
     delegate = youtube_music_delegate_.get();
   } else {
     LOG(ERROR) << "Unrecognized playlist type";
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

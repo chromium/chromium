@@ -21,6 +21,11 @@ function getProvider(): TrackProviderInterface {
 
 // Post a track play request to the iframe.
 function postPlayRequest(track: TrackDefinition) {
+  if (!track.mediaUrl.url) {
+    // If there is no valid URL, then there's no point in continuing.
+    return;
+  }
+
   const child = document.getElementById('child') as HTMLIFrameElement;
   if (child.contentWindow) {
     child.contentWindow.postMessage(

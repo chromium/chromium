@@ -10,16 +10,13 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/image_downloader.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
 
 namespace ash {
 
@@ -72,6 +69,13 @@ class ASH_EXPORT FocusModeSoundsController {
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
       delete;
   ~FocusModeSoundsController();
+
+  // Download the artwork for a track. Exposed here so that native portion of
+  // the focus mode web UI can download the artwork using the focus mode network
+  // traffic annotation.
+  static void DownloadTrackThumbnail(
+      const GURL& url,
+      ImageDownloader::DownloadCallback callback);
 
   using GetNextTrackCallback = base::OnceCallback<void(
       const std::optional<FocusModeSoundsDelegate::Track>&)>;

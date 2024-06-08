@@ -11,6 +11,8 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_focus_mode_resources.h"
 #include "ash/webui/grit/ash_focus_mode_resources_map.h"
+#include "base/base64.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -21,21 +23,51 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/gfx/codec/webp_codec.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/webui/webui_allowlist.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
 namespace {
 
-void HandleTrack(focus_mode::mojom::TrackProvider::GetTrackCallback callback,
-                 const std::optional<FocusModeSoundsDelegate::Track>& track) {
-  if (!track) {
-    std::move(callback).Run(focus_mode::mojom::TrackDefinition::New());
-    return;
+// The artwork needs to be at least this big to be shown. If the source is
+// smaller, we'll scale it up to this size. This constant is based on
+// global_media_controls::kMediaItemArtworkMinSize.
+constexpr gfx::Size kArtworkMinSize(114, 114);
+
+// Resizes an image so that it is at least `kArtworkMinSize`.
+gfx::ImageSkia EnsureMinSize(const gfx::ImageSkia& image) {
+  // We are assuming that the input artwork is roughly square in aspect ratio.
+  if (image.width() < kArtworkMinSize.width() ||
+      image.height() < kArtworkMinSize.height()) {
+    return gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_GOOD, kArtworkMinSize);
   }
-  auto mojo_track = focus_mode::mojom::TrackDefinition::New(
-      track->title, track->artist, track->thumbnail_url, track->source_url);
-  std::move(callback).Run(std::move(mojo_track));
+
+  return image;
+}
+
+// Takes the given image, encodes it as webp and returns it in the form of a
+// data URL. Returns an empty URL on error.
+GURL MakeImageDataURL(const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    return {};
+  }
+  gfx::ImageSkia resized_image = EnsureMinSize(image);
+
+  std::vector<unsigned char> webp_data;
+  if (!gfx::WebpCodec::Encode(*resized_image.bitmap(), 50, &webp_data)) {
+    return {};
+  }
+
+  GURL url("data:image/webp;base64," + base::Base64Encode(webp_data));
+  if (url.spec().size() > url::kMaxURLChars) {
+    return {};
+  }
+
+  return url;
 }
 
 }  // namespace
@@ -46,7 +78,8 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
     auto* sounds_controller =
         FocusModeController::Get()->focus_mode_sounds_controller();
     sounds_controller->GetNextTrack(
-        base::BindOnce(&HandleTrack, std::move(callback)));
+        base::BindOnce(&FocusModeTrackProvider::HandleTrack,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void SetMediaClient(
@@ -62,8 +95,41 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
   }
 
  private:
+  void HandleTrack(focus_mode::mojom::TrackProvider::GetTrackCallback callback,
+                   const std::optional<FocusModeSoundsDelegate::Track>& track) {
+    if (!track) {
+      std::move(callback).Run(focus_mode::mojom::TrackDefinition::New());
+      return;
+    }
+
+    // If there is no thumbnail, then we can reply immediately.
+    if (!track->thumbnail_url.is_valid()) {
+      auto mojo_track = focus_mode::mojom::TrackDefinition::New(
+          track->title, track->artist, /*thumbnail_url=*/GURL{},
+          track->source_url);
+      std::move(callback).Run(std::move(mojo_track));
+      return;
+    }
+
+    // Otherwise we need to download and convert the thumbnail first.
+    FocusModeSoundsController::DownloadTrackThumbnail(
+        track->thumbnail_url,
+        base::BindOnce(&FocusModeTrackProvider::OnThumbnailDownloaded,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       *track));
+  }
+
+  void OnThumbnailDownloaded(GetTrackCallback callback,
+                             const FocusModeSoundsDelegate::Track& track,
+                             const gfx::ImageSkia& image) {
+    auto mojo_track = focus_mode::mojom::TrackDefinition::New(
+        track.title, track.artist, MakeImageDataURL(image), track.source_url);
+    std::move(callback).Run(std::move(mojo_track));
+  }
+
   mojo::Remote<focus_mode::mojom::MediaClient> client_remote_;
   mojo::Receiver<focus_mode::mojom::TrackProvider> receiver_{this};
+  base::WeakPtrFactory<FocusModeTrackProvider> weak_factory_{this};
 };
 
 FocusModeUI::FocusModeUI(content::WebUI* web_ui)

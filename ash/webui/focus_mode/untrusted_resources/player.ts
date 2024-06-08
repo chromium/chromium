@@ -7,7 +7,7 @@ const TRUSTED_ORIGIN = 'chrome://focus-mode-media';
 interface Track {
   // The URL of the audio data.
   mediaUrl: string;
-  // The URL of the track thumbnail.
+  // The track thumbnail in the form of a data URL.
   thumbnailUrl: string;
   // The title of the track.
   title: string;
@@ -42,17 +42,14 @@ function loadTrack(track: Track) {
   const p = getPlayerElement();
   p.src = track.mediaUrl;
 
-  navigator.mediaSession.metadata = new MediaMetadata({
+  const metadata: any = {
     title: track.title,
     artist: track.artist,
-    // TODO: Implement thumbnail handling. We apparently cannot simply use the
-    // thumbnailUrl here. It seems that the parent frame will handle the
-    // actual network load (presumably because we're working with `navigator`)
-    // and since the parent isn't allowed to do network requests, the thing
-    // will fail. A workaround that should be fairly easy to implement is to
-    // load the thumbnail manually in this frame and convert the data to a
-    // blob: or data: URL.
-  });
+  };
+  if (track.thumbnailUrl) {
+    metadata.artwork = [{src: track.thumbnailUrl}];
+  }
+  navigator.mediaSession.metadata = new MediaMetadata(metadata);
 }
 
 globalThis.addEventListener('load', () => {
