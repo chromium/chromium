@@ -3037,11 +3037,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
 // created until prerender activation.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
                        PrerenderWithCrossSiteEmbeddedPdf) {
-  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const GURL initial_url =
       embedded_test_server()->GetURL("a.test", "/empty.html");
   const GURL pdf_url = embedded_test_server()->GetURL(
@@ -3057,10 +3052,27 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
 
   content::test::PrerenderHostObserver prerender_observer(*web_contents,
                                                           host_id);
-  prerender_helper().NavigatePrimaryPage(pdf_url);
-  prerender_observer.WaitForActivation();
-  ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
-  EXPECT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
+
+  if (UseOopif()) {
+    // There are two expected navigations in `web_contents`: the navigation to
+    // the webpage containing the iframe, and the cross-site navigation to the
+    // PDF in the iframe.
+    content::TestNavigationObserver navigation_observer(web_contents, 2);
+    prerender_helper().NavigatePrimaryPage(pdf_url);
+    prerender_observer.WaitForActivation();
+    navigation_observer.Wait();
+
+    ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
+    ASSERT_TRUE(pdf::TestPdfViewerStreamManager::FromWebContents(web_contents));
+    EXPECT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    prerender_helper().NavigatePrimaryPage(pdf_url);
+    prerender_observer.WaitForActivation();
+
+    ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
+    EXPECT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
+  }
 }
 
 class PDFExtensionSubmitFormTest : public PDFExtensionTest {
@@ -3142,10 +3154,10 @@ class PDFExtensionPrerenderAndFencedFrameTest : public PDFExtensionTest {
 };
 
 // TODO(crbug.com/40180674): The PDF viewer cannot currently be prerendered
-// correctly. Once this is supported, this test should be re-enabled.
+// correctly. Once this is supported, this test should be re-enabled for
+// GuestView PDF viewer and enabled for OOPIF PDF viewer.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderAndFencedFrameTest,
                        DISABLED_LoadPDFInPrerender) {
-  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
   }
