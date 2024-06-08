@@ -608,6 +608,7 @@ artifact_zip("updater_zip") {
     "$root_build_dir/chrome/updater/.install",
     "$root_build_dir/UpdaterSetup",
     "$root_build_dir/qualification_app",
+    "$root_build_dir/${updater_product_full_name}Util",
   ]
   inputs += rebase_path(get_path_info(updater_signing_sources, "file"),
                         "",
@@ -619,5 +620,6 @@ artifact_zip("updater_zip") {
     "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
+    "//chrome/updater/tools:${updater_product_full_name}Util",
   ]
 }
