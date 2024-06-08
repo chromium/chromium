@@ -718,6 +718,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both 32-bit and 64-bit"/>
 </enum>
 
+<enum name="DebuggingEnabled">
+  <int value="0" label="Debugging not enabled."/>
+  <int value="1"
+      label="Debugging set by calling setWebContentsDebuggingEnabled(true)."/>
+  <int value="2"
+      label="Debugging set by device being a debuggable OS / Build regardless
+             of the setWebContentsDebuggingEnabled value."/>
+</enum>
+
 <enum name="DesktopWindowHeuristicResult">
   <int value="0" label="Invalid result."/>
   <int value="1" label="The app is in a desktop window."/>

@@ -5702,6 +5702,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.isDebuggable" enum="DebuggingEnabled"
+    expires_after="2025-05-18">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>thomasbull@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of times the WebView is debuggable or not debuggable, if
+    it is debuggable then also how it has been set set, whether it is from the
+    app or from the OS or from calling setWebContentsDebuggingEnabled(true).
+    This is logged each time the MetricsService uploads metrics.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.JavaBridge.InvocationIsInPrimaryMainFrame"
     enum="BooleanMainFrame" expires_after="2023-04-19">
   <owner>peter@chromium.org</owner>

@@ -16,6 +16,7 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
@@ -425,6 +427,35 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Accessibility.Android.ScreenReader.EveryReport"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_debugging() throws Throwable {
+        // Wait for a metrics log, since DebuggingMetricsProvider only logs this histogram
+        // during log collection. Do not assert anything about this histogram before this point (ex.
+        // do not assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assume.assumeTrue(
+                "Build type is userdebug in the test environment, so we expect this to pass.",
+                BuildInfo.isDebugAndroidOrApp());
+
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.isDebuggable", /* sample=not enabled */ 0));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.isDebuggable", /* sample=enabled by setWebContentsDebuggingEnabled(true) */
+                        1));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.isDebuggable", /* sample=enabled by debuggable app or os */
+                        2));
     }
 
     @Test
