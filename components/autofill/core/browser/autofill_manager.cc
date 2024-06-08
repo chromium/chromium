@@ -366,14 +366,18 @@ void AutofillManager::OnCaretMovedInFormField(const FormData& form,
   if (!IsValidFormData(form)) {
     return;
   }
+  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
+  if (!field) {
+    return;
+  }
   NotifyObservers(&Observer::OnBeforeCaretMovedInFormField, form.global_id(),
-                  field_id, caret_bounds);
+                  field_id, field->selected_text(), caret_bounds);
   ParseFormAsync(
       form, ParsingCallback(&AutofillManager::OnCaretMovedInFormFieldImpl,
                             field_id, caret_bounds)
                 .Then(NotifyObserversCallback(
                     &Observer::OnAfterCaretMovedInFormField, form.global_id(),
-                    field_id, caret_bounds)));
+                    field_id, field->selected_text(), caret_bounds)));
 }
 
 void AutofillManager::OnTextFieldDidChange(const FormData& form,

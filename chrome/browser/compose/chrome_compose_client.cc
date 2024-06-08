@@ -627,6 +627,10 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       std::move(nudge_signals));
 }
 
+bool ChromeComposeClient::IsPopupTimerRunning() {
+  return nudge_tracker_.IsTimerRunning();
+}
+
 void ChromeComposeClient::DisableProactiveNudge() {
   nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/false);
   proactive_nudge_enabled_.SetValue(false);

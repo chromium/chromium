@@ -206,6 +206,9 @@ bool ProactiveNudgeTracker::ProactiveNudgeRequestedForFormField(
   return true;
 }
 
+bool ProactiveNudgeTracker::IsTimerRunning() {
+  return state_ && state_->timer.IsRunning();
+}
 
 void ProactiveNudgeTracker::FocusChangedInPage() {
   ResetState();
@@ -232,13 +235,13 @@ void ProactiveNudgeTracker::OnAfterFocusOnFormField(
   ResetState();
 }
 
-void ProactiveNudgeTracker::OnAfterTextFieldDidChange(
+void ProactiveNudgeTracker::OnAfterCaretMovedInFormField(
     autofill::AutofillManager& manager,
-    autofill::FormGlobalId form,
-    autofill::FieldGlobalId field,
-    const std::u16string& text_value) {
-  // Continue to delay the proactive nudge if the current field is being
-  // changed.
+    const autofill::FormGlobalId& form,
+    const autofill::FieldGlobalId& field,
+    const std::u16string& selection,
+    const gfx::Rect& caret_bounds) {
+  // Delay the proactive nudge if the current field is being changed.
   if (state_ && !state_->timer_complete && state_->timer.IsRunning() &&
       MatchesCurrentField(form, field)) {
     state_->timer.Reset();

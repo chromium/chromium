@@ -134,6 +134,9 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   // Returns true if the nudge can be shown immediately.
   bool ProactiveNudgeRequestedForFormField(Signals signals);
 
+  // Returns whether or not the tracker is currently waiting.
+  bool IsTimerRunning();
+
   void FocusChangedInPage();
 
   void Clear();
@@ -147,10 +150,11 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void OnAfterFocusOnFormField(autofill::AutofillManager& manager,
                                autofill::FormGlobalId form,
                                autofill::FieldGlobalId field) override;
-  void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
-                                 autofill::FormGlobalId form,
-                                 autofill::FieldGlobalId field,
-                                 const std::u16string& text_value) override;
+  void OnAfterCaretMovedInFormField(autofill::AutofillManager& manager,
+                                    const autofill::FormGlobalId& form,
+                                    const autofill::FieldGlobalId& field,
+                                    const std::u16string& selection,
+                                    const gfx::Rect& caret_bounds) override;
 
  private:
   class EngagementTracker;

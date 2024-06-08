@@ -87,10 +87,12 @@ class AutofillManager
     virtual void OnBeforeCaretMovedInFormField(AutofillManager& manager,
                                                const FormGlobalId& form,
                                                const FieldGlobalId& field_id,
+                                               const std::u16string& selection,
                                                const gfx::Rect& caret_bounds) {}
     virtual void OnAfterCaretMovedInFormField(AutofillManager& manager,
                                               const FormGlobalId& form,
                                               const FieldGlobalId& field_id,
+                                              const std::u16string& selection,
                                               const gfx::Rect& caret_bounds) {}
 
     virtual void OnBeforeTextFieldDidChange(AutofillManager& manager,

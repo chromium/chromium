@@ -159,14 +159,6 @@ class ChromeComposeClient
           handler,
       mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog> dialog);
 
-  void SetModelQualityLogsUploaderForTest(
-      optimization_guide::ModelQualityLogsUploader* model_quality_uploader);
-  void SetModelExecutorForTest(
-      optimization_guide::OptimizationGuideModelExecutor* model_executor);
-  void SetSkipShowDialogForTest(bool should_skip);
-  void SetSessionIdForTest(base::Token session_id);
-  void SetInnerTextProviderForTest(InnerTextProvider* inner_text);
-
   // content::WebContentsObserver implementation.
   // Called when the primary page location changes. This includes reloads.
   // TODO: Look into using DocumentUserData or keying sessions on render ID
@@ -192,23 +184,33 @@ class ChromeComposeClient
   void ShowProactiveNudge(autofill::FormGlobalId form,
                           autofill::FieldGlobalId field) override;
 
-  void SetOptimizationGuideForTest(
-      optimization_guide::OptimizationGuideDecider* opt_guide);
-
   // This API gets optimization guidance for a web site.  We use this
   // to guide our decision to enable the feature and trigger the nudge.
   compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url);
 
   ComposeEnabling& GetComposeEnabling();
 
+  // Returns true when the dialog is showing and false otherwise.
+  bool IsDialogShowing();
+
+  // Returns true when the delay timmer to show the popup is running.
+  bool IsPopupTimerRunning();
+
+  // Helper methods for setting up testing state.
   int GetSessionCountForTest();
+  void SetOptimizationGuideForTest(
+      optimization_guide::OptimizationGuideDecider* opt_guide);
+  void SetModelQualityLogsUploaderForTest(
+      optimization_guide::ModelQualityLogsUploader* model_quality_uploader);
+  void SetModelExecutorForTest(
+      optimization_guide::OptimizationGuideModelExecutor* model_executor);
+  void SetSkipShowDialogForTest(bool should_skip);
+  void SetSessionIdForTest(base::Token session_id);
+  void SetInnerTextProviderForTest(InnerTextProvider* inner_text);
 
   // If there is an active session calls the OpenFeedbackPage method on it.
   // Used only for testing.
   void OpenFeedbackPageForTest(std::string feedback_id);
-
-  // Returns true when the dialog is showing and false otherwise.
-  bool IsDialogShowing();
 
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
