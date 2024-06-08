@@ -69,7 +69,8 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
 
   // Initialize required provider if it is not initialized yet, and discard
   // pending requests to avoid racing condition.
-  void MaybeInitializeAndDiscardPendingRequests();
+  // Returns true if successfully initialized.
+  bool MaybeInitializeAndDiscardPendingRequests();
 
   void OnGetPageContentForSummary(
       crosapi::mojom::MahiPageInfoPtr request_page_info,

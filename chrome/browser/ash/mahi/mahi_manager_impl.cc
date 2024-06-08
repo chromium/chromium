@@ -135,7 +135,12 @@ GURL MahiManagerImpl::GetContentUrl() {
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
-  MaybeInitializeAndDiscardPendingRequests();
+  if (!MaybeInitializeAndDiscardPendingRequests()) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    std::move(callback).Run(u"", latest_response_status_);
+    LOG(ERROR) << "Initialized unsuccessfully.";
+    return;
+  }
 
   current_panel_info_ = current_page_info_->Clone();
 
@@ -203,7 +208,12 @@ void MahiManagerImpl::GoToOutlineContent(int outline_id) {}
 void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
                                      bool current_panel_content,
                                      MahiAnswerQuestionCallback callback) {
-  MaybeInitializeAndDiscardPendingRequests();
+  if (!MaybeInitializeAndDiscardPendingRequests()) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    std::move(callback).Run(u"", latest_response_status_);
+    LOG(ERROR) << "Initialized unsuccessfully.";
+    return;
+  }
 
   if (current_panel_content) {
     mahi_provider_->QuestionAndAnswer(
@@ -450,11 +460,10 @@ void MahiManagerImpl::OnMahiPrefChanged() {
   }
 }
 
-void MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
+bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
   if (!mahi_provider_) {
     mahi_provider_ = CreateProvider();
   }
-  CHECK(mahi_provider_);
 
   if (!mahi_browser_delegate_ash_) {
     mahi_browser_delegate_ash_ = crosapi::CrosapiManager::Get()
@@ -462,11 +471,11 @@ void MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
                                      ->mahi_browser_delegate_ash();
   }
 
-  CHECK(mahi_browser_delegate_ash_);
-
   if (weak_ptr_factory_for_requests_.HasWeakPtrs()) {
     weak_ptr_factory_for_requests_.InvalidateWeakPtrs();
   }
+
+  return mahi_provider_ && mahi_browser_delegate_ash_;
 }
 
 void MahiManagerImpl::OnGetPageContentForSummary(
