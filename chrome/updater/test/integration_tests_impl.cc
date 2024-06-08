@@ -485,34 +485,69 @@ void InstallUpdaterAndApp(UpdaterScope scope,
 
 void PrintFile(const base::FilePath& file) {
   std::string contents;
-  if (base::ReadFileToString(file, &contents)) {
-    VLOG(0) << "Contents of " << file << " for " << GetTestName();
-    const std::string demarcation(72, '=');
-    VLOG(0) << demarcation;
-    VLOG(0) << contents;
-    VLOG(0) << "End contents of " << file << " for " << GetTestName() << ".";
-    VLOG(0) << demarcation;
-  } else {
-    VLOG(0) << file << " not found for " << GetTestName();
+  if (!base::ReadFileToString(file, &contents)) {
+    return;
   }
+  VLOG(0) << "Contents of " << file << " for " << GetTestName();
+  const std::string demarcation(72, '=');
+  VLOG(0) << demarcation;
+  VLOG(0) << contents;
+  VLOG(0) << "End contents of " << file << " for " << GetTestName() << ".";
+  VLOG(0) << demarcation;
+}
+
+std::vector<base::FilePath> GetUpdaterLogFilesInTmp() {
+  base::FilePath temp_dir;
+
+#if BUILDFLAG(IS_WIN)
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    base::FilePath windows_dir;
+    EXPECT_TRUE(base::PathService::Get(base::DIR_WINDOWS, &windows_dir));
+    temp_dir = windows_dir.Append(FILE_PATH_LITERAL("Temp"));
+  }
+#endif
+  if (temp_dir.empty() && !base::GetTempDir(&temp_dir)) {
+    return {};
+  }
+
+  std::vector<base::FilePath> files;
+  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
+                       FILE_PATH_LITERAL("updater*.log"))
+      .ForEach([&](const base::FilePath& item) { files.push_back(item); });
+  return files;
 }
 
 void PrintLog(UpdaterScope scope) {
-  std::optional<base::FilePath> path = GetInstallDirectory(scope);
-  EXPECT_TRUE(path);
-  if (path) {
-    PrintFile(path->AppendASCII("updater.log"));
-  }
+  PrintFile([&]() -> base::FilePath {
+    std::optional<base::FilePath> path = GetInstallDirectory(scope);
+    if (path && base::PathExists(path->AppendASCII("updater.log"))) {
+      return path->AppendASCII("updater.log");
+    } else if (const std::vector<base::FilePath> files =
+                   GetUpdaterLogFilesInTmp();
+               !files.empty()) {
+      return files[0];
+    } else {
+      VLOG(0) << "updater.log file not found for " << GetTestName();
+      return {};
+    }
+  }());
 }
 
-// Copies the updater log file present in `src_dir` to a test-specific directory
-// name in Swarming/Isolate. Avoids overwriting the destination log file if
-// other instances of it exist in the destination directory. Swarming retries
-// each failed test. It is useful to capture a few logs from previous failures
-// instead of the log of the last run only.
+// Copies the updater log file present in `src_dir` or `%TMP%` to a
+// test-specific directory name in Swarming/Isolate. Avoids overwriting the
+// destination log file if other instances of it exist in the destination
+// directory. Swarming retries each failed test. It is useful to capture a few
+// logs from previous failures instead of the log of the last run only.
 void CopyLog(const base::FilePath& src_dir) {
+  base::FilePath log_path = src_dir.AppendASCII("updater.log");
+  if (!base::PathExists(log_path)) {
+    if (const std::vector<base::FilePath> files = GetUpdaterLogFilesInTmp();
+        !files.empty()) {
+      log_path = files[0];
+    }
+  }
+
   base::FilePath dest_dir = GetLogDestinationDir();
-  const base::FilePath log_path = src_dir.AppendASCII("updater.log");
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&
       base::PathExists(log_path)) {
     dest_dir = dest_dir.AppendASCII(GetTestName());

@@ -1790,15 +1790,6 @@ TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
 
-  // Delete any old updater logs in %TMP%.
-  base::FilePath temp_dir;
-  ASSERT_TRUE(base::GetTempDir(&temp_dir));
-  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
-                       FILE_PATH_LITERAL("updater*.log"))
-      .ForEach([](const base::FilePath& item) {
-        ASSERT_TRUE(base::DeleteFile(item));
-      });
-
   // Running the uninstall command does not uninstall this instance of the
   // updater right after installing it (not enough server starts).
   ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
@@ -1806,11 +1797,7 @@ TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   // Expect no updater logs in %TMP%.
-  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
-                       FILE_PATH_LITERAL("updater*.log"))
-      .ForEach([](const base::FilePath& item) {
-        ADD_FAILURE() << "Unexpected updater log file found: " << item;
-      });
+  EXPECT_EQ(GetUpdaterLogFilesInTmp().size(), 0u);
 
   ASSERT_NO_FATAL_FAILURE(SetServerStarts(24));
 
@@ -1820,24 +1807,22 @@ TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
 
   // Expect a single updater log in %TMP%, and print it out.
   int invocation_count = 0;
-  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
-                       FILE_PATH_LITERAL("updater*.log"))
-      .ForEach([&](const base::FilePath& item) {
-        ++invocation_count;
-        if (invocation_count == 1) {
-          updater::test::PrintFile(item);
-          std::wstring item_base = item.BaseName().value();
-          EXPECT_TRUE(base::StartsWith(item_base, L"updater"));
-          EXPECT_TRUE(base::EndsWith(item_base, L".log"));
-          base::ReplaceSubstringsAfterOffset(&item_base, 0, L"updater", {});
-          base::ReplaceSubstringsAfterOffset(&item_base, 0, L".log", {});
-          EXPECT_TRUE(base::Uuid::ParseLowercase(base::WideToUTF8(item_base))
-                          .is_valid());
-        } else {
-          ADD_FAILURE() << "Unexpected, more than one updater log found: "
-                        << item;
-        }
-      });
+  for (const auto& file : GetUpdaterLogFilesInTmp()) {
+    ++invocation_count;
+    if (invocation_count == 1) {
+      updater::test::PrintFile(file);
+      std::wstring file_base = file.BaseName().value();
+      EXPECT_TRUE(base::StartsWith(file_base, L"updater"));
+      EXPECT_TRUE(base::EndsWith(file_base, L".log"));
+      base::ReplaceSubstringsAfterOffset(&file_base, 0, L"updater", {});
+      base::ReplaceSubstringsAfterOffset(&file_base, 0, L".log", {});
+      EXPECT_TRUE(
+          base::Uuid::ParseLowercase(base::WideToUTF8(file_base)).is_valid());
+    } else {
+      ADD_FAILURE() << "Unexpected, more than one updater log found: " << file;
+    }
+  }
+  EXPECT_EQ(invocation_count, 1);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
