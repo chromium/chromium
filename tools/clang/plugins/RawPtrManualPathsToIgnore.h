@@ -70,29 +70,19 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // Exclude dir that should hold C headers.
     "mojo/public/c/",
 
-    // Exclude code that only runs inside a renderer process - renderer
-    // processes are excluded for now from the MiraclePtr project scope,
-    // because they are sensitive to performance regressions (to a much higher
-    // degree than, say, the Browser process).
+    // Renderer-only code is generally allowed to use MiraclePtr. These
+    // directories, however, are specifically disallowed, for perf reasons.
     //
     // Note that some renderer-only directories are already excluded
-    // elsewhere - for example "v8/" is excluded in another part of this
-    // file.
-    //
-    // The common/ directories must be included in the rewrite as they contain
-    // code
-    // that is also used from the browser process.
+    // elsewhere - for example "v8/" is excluded, because it's in another
+    // repository.
     //
     // Also, note that isInThirdPartyLocation AST matcher in
-    // RewriteRawPtrFields.cpp explicitly includes third_party/blink
-    // (because it is in the same git repository as the rest of Chromium),
-    // but we go ahead and exclude most of it below (as Renderer-only code).
-    "/renderer/",                     // (e.g. //content/renderer/ or
-                                      // //components/visitedlink/renderer/
-                                      //  or //third_party/blink/renderer)",
-    "third_party/blink/public/web/",  // TODO: Consider renaming this directory
-                                      // to",
-                                      // public/renderer?",
+    // RewriteRawPtrFields.cpp explicitly allows third_party/blink
+    "third_party/blink/renderer/core/",
+    "third_party/blink/renderer/platform/heap/",
+    "third_party/blink/renderer/platform/wtf/",
+    "third_party/blink/renderer/platform/fonts/",
     // The below paths are an explicitly listed subset of Renderer-only code,
     // because the plan is to Oilpanize it.
     // TODO(crbug.com/330759291): Remove once Oilpanization is completed or
