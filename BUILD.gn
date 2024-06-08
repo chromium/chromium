@@ -353,6 +353,7 @@ group("gn_all") {
       if (enable_platform_experience) {
         deps += [
           "//chrome/browser/platform_experience/win:platform_experience_helper",
+          "//chrome/browser/platform_experience/win:win_update_helper",
         ]
       }
     }
