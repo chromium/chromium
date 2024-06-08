@@ -191,6 +191,9 @@ bool SnapGroupController::RemoveSnapGroupContainingWindow(
 
 SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
     const aura::Window* window) const {
+  if (!window) {
+    return nullptr;
+  }
   auto iter = window_to_snap_group_map_.find(window);
   return iter != window_to_snap_group_map_.end() ? iter->second : nullptr;
 }

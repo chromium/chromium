@@ -314,10 +314,17 @@ void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO: This doesn't allow |this| to be navigated by ChromeVox, find a way
   // to allow |this| as well as the title and close button.
   node_data->role = ax::mojom::Role::kGenericContainer;
+  const bool is_group_item = [&]() {
+    auto* snap_group_controller = SnapGroupController::Get();
+    return snap_group_controller &&
+           snap_group_controller->GetSnapGroupForGivenWindow(source_window());
+  }();
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kDescription,
       l10n_util::GetStringUTF8(
-          IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
+          is_group_item
+              ? IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION
+              : IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
 }
 
 void OverviewItemView::OnThemeChanged() {
