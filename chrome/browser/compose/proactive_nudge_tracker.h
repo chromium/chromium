@@ -22,27 +22,32 @@
 namespace compose {
 
 // This class is a state machine tracking whether the proactive nudge should
-// show for Compose. It has 4 states:
-//   - UNINITIALIZED,
-//   - WAITING,
-//   - REQUESTED,
-//   - SHOWN
+// show for Compose. It has the following states:
+//   - kInitial,
+//   - kWaitingForTimer,
+//   - kWaitingForSegmentation,
+//   - kWaitingForProactiveNudgeRequest,
+//   - kShouldNotBeShown,
+//   - kShown
 //
 // Generally, states transition forward through the list (skipping states if
 // required). If the active form field changes (or the form loses focus), the
-// state is reset to UNINITIALIZED.
+// state is reset to `kInitial`.
 //
 // The state is represented by an optional `State` struct.
-// * If the struct is `std::nullopt` then the state is UNINITIALIZED.
+// * If the struct is `std::nullopt` then the state is `kInitial`.
 // * If the struct has a value, the value of `show_state` differentiates between
 //   the remaining states.
-// * The Delegate is called at the transition from WAITING to REQUESTED.
+// * The Delegate is called at the transition from `kWaitingForSegmentation` to
+//   `kWaitingForProactiveNudgeRequest`.
 // * Unintuitively, `ProactiveNudgeRequestedForFormField` can cause a transition
-//   from REQUESTED to SHOWN. Compose interacts with Autofill such that
-//   it cannot directly show the nudge; instead it requests the Autofill Agent
-//   for the current frame to ask for values to fill. Thus, the entry point is
-//   the same both for new nudge states, and for the final step of actually
-//   showing the nudge.
+//   from kWaitingForProactiveNudgeRequest to `kShown`. Compose interacts with
+//   Autofill such that it cannot directly show the nudge; instead it requests
+//   the Autofill Agent for the current frame to ask for values to fill. Thus,
+//   the entry point is the same both for new nudge states, and for the final
+//   step of actually showing the nudge. Thus, the only way to transition to
+//   `kShown` is to call after the tracker has entered the state
+//   `kWaitingForProactiveNudgeRequest`.
 class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
  public:
   using FallbackShowResult = base::RepeatingCallback<float()>;
@@ -64,9 +69,11 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   };
 
   enum class ShowState {
+    kInitial,
     kWaitingForTimer,
     kWaitingForSegmentation,
-    kCanBeShown,
+    kWaitingForProactiveNudgeRequest,
+    kShouldNotBeShown,
     kShown
   };
 
@@ -98,7 +105,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     base::OneShotTimer timer;
     bool timer_complete = false;
 
-    ShowState show_state = ShowState::kWaitingForTimer;
+    ShowState show_state = ShowState::kInitial;
 
     base::WeakPtr<State> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
@@ -147,20 +154,29 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
  private:
   class EngagementTracker;
+
   bool SegmentationStateIsValid();
   void ResetState();
-  void BeginSegmentationIfRequired();
+
+  void UpdateStateForCurrentFormField();
+  std::optional<ShowState> CheckForStateTransition(ShowState current_state);
+  void TransitionToState(ShowState new_show_state);
+
+  void BeginWaitingForTimer();
+  void BeginSegmentation();
+  void BeginWaitingForProactiveNudgeRequest();
+  void BeginShouldNotBeShown();
+  void BeginShown();
+
   void ShowTimerElapsed();
   void GotClassificationResult(
       base::WeakPtr<State> state,
       const segmentation_platform::ClassificationResult& result);
-  void MaybeShowProactiveNudge();
   bool MatchesCurrentField(autofill::FormGlobalId form,
                            autofill::FieldGlobalId field);
   void CollectTrainingData(
       const segmentation_platform::TrainingRequestId training_request_id,
       ProactiveNudgeDerivedEngagement engagement);
-  bool ShouldShow(const State& state);
 
   std::unique_ptr<State> state_;
 

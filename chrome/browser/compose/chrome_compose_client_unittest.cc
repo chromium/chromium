@@ -174,6 +174,10 @@ class MockComposeDialog : public compose::mojom::ComposeUntrustedDialog {
 
 class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  public:
+  ChromeComposeClientTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
     BrowserWithTestWindowTest::SetUp();
@@ -247,7 +251,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
               result.request_id = kTrainingRequestId;
               result.ordered_labels = {
                   segmentation_platform::kComposePrmotionLabelShow};
-              std::move(callback).Run(result);
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), result));
             })));
 
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
@@ -816,10 +821,13 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
-  while (!client().ShouldTriggerPopup(form_data, selected_field_data,
-                                      trigger_source)) {
-    task_environment()->RunUntilIdle();
-  }
+  ASSERT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+
+  task_environment()->FastForwardBy(config.proactive_nudge_delay);
+
+  ASSERT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
 
   // Simulate clicking on the nudge to open compose.
   ShowDialogAndBindMojoWithFieldData(
@@ -866,15 +874,17 @@ TEST_F(ChromeComposeClientTest,
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
-  ON_CALL(GetSegmentationPlatformService(), GetClassificationResult(_, _, _, _))
-      .WillByDefault(testing::WithArg<3>(testing::Invoke(
+  EXPECT_CALL(GetSegmentationPlatformService(),
+              GetClassificationResult(_, _, _, _))
+      .WillOnce(testing::WithArg<3>(testing::Invoke(
           [](segmentation_platform::ClassificationResultCallback callback) {
             auto result = segmentation_platform::ClassificationResult(
                 segmentation_platform::PredictionStatus::kSucceeded);
             result.request_id = kTrainingRequestId;
             result.ordered_labels = {
                 segmentation_platform::kComposePrmotionLabelDontShow};
-            std::move(callback).Run(result);
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), result));
           })));
 
   // The initial trigger request comes from a text field change.
@@ -882,19 +892,18 @@ TEST_F(ChromeComposeClientTest,
       form_data, selected_field_data,
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
 
+  task_environment()->FastForwardBy(config.proactive_nudge_delay);
+
   // All remaining popup trigger requests come from the delayed nudge.
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge;
 
-  // Check that the nudge is eventually blocked by segmentation platform.
-  while (histograms().GetBucketCount(
-             compose::kComposeProactiveNudgeShowStatus,
-             compose::ComposeShowStatus::
-                 kProactiveNudgeBlockedBySegmentationPlatform) == 0) {
-    ASSERT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
-                                             trigger_source));
-    task_environment()->RunUntilIdle();
-  }
+  ASSERT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kProactiveNudgeBlockedBySegmentationPlatform,
+      1);
 
   // Commit metrics on page navigation.
   NavigateAndCommitActiveTab(GURL("about:blank"));
