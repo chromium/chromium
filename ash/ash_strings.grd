@@ -796,8 +796,8 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER" desc="The text used for the subheader of the task section of the focus mode detailed view.">
         Google Tasks
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_OFFLINE_SUBHEADER" translateable="false" desc="The text used for the subheader of the task section of the focus mode detailed view when the user is offline.">
-        Google Tasks · Offline
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_OFFLINE_TOOLTIP" desc="The text used for the tooltip text of the task section of the focus mode detailed view when the user is offline.">
+        You're offline. Check your connection and try again.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER" desc="The text used for the placeholder for the textfield in the task section of the focus mode detailed view.">
         What would you like to focus on?
@@ -823,8 +823,11 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_LEARN_MORE_BUTTON" desc="The text on the learn more button.">
         Learn more
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL" translateable="false" desc="The text shown to the user in the sounds view when they are offline.">
-        You are not connected to the internet
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_ONE" desc="The text shown to the user in the first line of the sounds view when they are offline.">
+        You're offline.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_TWO" desc="The text shown to the user in the second line of the sounds view when they are offline.">
+        Check your connection and try again.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
         Do Not Disturb while in Focus

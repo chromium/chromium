@@ -88,6 +88,18 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
     show_selected_state_ = show_selected_state;
   }
 
+  std::u16string GetTooltipText() const { return tooltip_text_; }
+
+  void SetTooltipText(const std::u16string& tooltip_text) {
+    if (tooltip_text_ == tooltip_text) {
+      return;
+    }
+
+    tooltip_text_ = tooltip_text;
+    TooltipTextChanged();
+    OnPropertyChanged(&tooltip_text_, views::kPropertyEffectsNone);
+  }
+
   void UpdateElideBehavior(bool active) {
     GetRenderText()->SetElideBehavior(active ? gfx::NO_ELIDE : gfx::ELIDE_TAIL);
   }
@@ -116,15 +128,18 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
 
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return show_selected_state_ ? GetText() : std::u16string();
+    return tooltip_text_;
   }
 
  private:
   // True if `FocusModeTaskView` has a selected task.
   bool show_selected_state_ = false;
+
+  std::u16string tooltip_text_;
 };
 
 BEGIN_METADATA(FocusModeTaskView, TaskTextfield)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 
 //---------------------------------------------------------------------
@@ -511,6 +526,11 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
                                      kIconSize));
 
   textfield_->set_show_selected_state(show_selected_state);
+  textfield_->SetTooltipText(
+      is_network_connected
+          ? (show_selected_state ? textfield_->GetText() : std::u16string())
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_OFFLINE_TOOLTIP));
   textfield_->GetViewAccessibility().SetName(
       show_selected_state
           ? l10n_util::GetStringFUTF16(

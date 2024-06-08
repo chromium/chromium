@@ -735,10 +735,8 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
   // Create the task header.
   auto* task_view_header =
       task_view_container_->AddChildView(std::make_unique<views::Label>());
-  task_view_header->SetText(l10n_util::GetStringUTF16(
-      is_network_connected
-          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_OFFLINE_SUBHEADER));
+  task_view_header->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
   task_view_header->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   task_view_header->SetBorder(views::CreateEmptyBorder(kTaskViewHeaderInsets));

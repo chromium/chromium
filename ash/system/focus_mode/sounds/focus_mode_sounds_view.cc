@@ -50,6 +50,7 @@ constexpr int kNonPremiumChildViewsSpacing = 16;
 constexpr int kNonPremiumLabelViewMaxWidth = 288;
 
 constexpr float kOfflineStateOpacity = 0.38f;
+constexpr auto kLabelPadding = gfx::Insets::VH(0, 40);
 
 std::optional<int> GetYouTubeMusicIconResourceId() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -105,19 +106,27 @@ std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
   return box_view;
 }
 
-std::unique_ptr<views::BoxLayoutView> CreateOfflineStateView() {
-  auto box_view = std::make_unique<views::BoxLayoutView>();
-  box_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  box_view->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  auto* label = box_view->AddChildView(
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL)));
+std::unique_ptr<views::Label> CreateOfflineLabel(const int message_id) {
+  auto label =
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(message_id));
   label->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
       ash::TypographyToken::kCrosBody2));
   label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+  return label;
+}
 
+std::unique_ptr<views::BoxLayoutView> CreateOfflineStateView() {
+  auto box_view = std::make_unique<views::BoxLayoutView>();
+  box_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  box_view->SetBorder(views::CreateEmptyBorder(kLabelPadding));
+  box_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  box_view->AddChildView(CreateOfflineLabel(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_ONE));
+  box_view->AddChildView(CreateOfflineLabel(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_TWO));
   return box_view;
 }
 
