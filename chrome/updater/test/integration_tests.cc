@@ -1805,12 +1805,12 @@ TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
   ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  // Expect a single updater log in %TMP%, and print it out.
+  // Expect a single updater log in %TMP%, and confirm that the file name has an
+  // uuid embedded within it.
   int invocation_count = 0;
   for (const auto& file : GetUpdaterLogFilesInTmp()) {
     ++invocation_count;
     if (invocation_count == 1) {
-      updater::test::PrintFile(file);
       std::wstring file_base = file.BaseName().value();
       EXPECT_TRUE(base::StartsWith(file_base, L"updater"));
       EXPECT_TRUE(base::EndsWith(file_base, L".log"));
