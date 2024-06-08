@@ -341,6 +341,10 @@ inline constexpr char kLearnMoreReportingURL[] =
 inline constexpr char kManage3pcHelpCenterURL[] =
     "https://support.google.com/chrome?p=manage_tp_cookies";
 
+// The URL for the tab group sync help center page.
+inline constexpr char kTabGroupsLearnMoreURL[] =
+    "https://support.google.com/chrome?p=desktop_tab_groups";
+
 // The URL for the Learn More page about policies and enterprise enrollment.
 inline constexpr char16_t kManagedUiLearnMoreUrl[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)

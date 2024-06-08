@@ -40,6 +40,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -720,12 +721,27 @@ void MaybeRegisterChromeFeaturePromos(
                          "defaulted to saved for the first time.")));
 
     registry.RegisterFeature(std::move(
-        FeaturePromoSpecification::CreateForToastPromo(
+      FeaturePromoSpecification::CreateForCustomAction(
             feature_engagement::kIPHTabGroupsSaveV2IntroFeature,
             kToolbarAppMenuButtonElementId,
             IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
-            IDS_SAVED_TAB_GROUPS_V2_INTRO_DEFAULT_BODY_A11Y,
-            FeaturePromoSpecification::AcceleratorInfo())
+            IDS_LEARN_MORE,
+            base::BindRepeating(
+                [](ui::ElementContext ctx,
+                   user_education::FeaturePromoHandle promo_handle) {
+                  auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                  if (!browser) {
+                    return;
+                  }
+
+                  const GURL learn_more_link{chrome::kTabGroupsLearnMoreURL};
+                  NavigateParams params(browser->profile(), learn_more_link,
+                                        ui::PAGE_TRANSITION_LINK);
+                  params.disposition =
+                      WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                  params.browser = browser;
+                  Navigate(&params);
+                }))
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
             .SetAnchorElementFilter(
                 base::BindRepeating(&tab_groups::SavedTabGroupUtils::
