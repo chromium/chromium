@@ -1789,6 +1789,7 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".Counterfactual" summary=""/>
     <variant name=".Enabled" summary=""/>
+    <variant name=".ModifiedOrder" summary=""/>
   </token>
 </histogram>
 
@@ -1812,6 +1813,7 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".Counterfactual" summary=""/>
     <variant name=".Enabled" summary=""/>
+    <variant name=".ModifiedOrder" summary=""/>
   </token>
 </histogram>
 
@@ -1838,6 +1840,7 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".Counterfactual" summary=""/>
     <variant name=".Enabled" summary=""/>
+    <variant name=".ModifiedOrder" summary=""/>
   </token>
   <token key="Visibility">
     <variant name="AboveTheFold" summary="above the launcher fold"/>
@@ -1865,6 +1868,7 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".Counterfactual" summary=""/>
     <variant name=".Enabled" summary=""/>
+    <variant name=".ModifiedOrder" summary=""/>
   </token>
   <token key="Visibility">
     <variant name="AboveTheFold" summary="above the launcher fold"/>
