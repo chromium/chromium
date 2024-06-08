@@ -122,7 +122,6 @@ class GraphInfoBuilder final {
   //  std::optional<uint64_t> bias_operand_id;
   //  uint32_t axis = 1;
   //  float epsilon = 1e-5;
-  //  std::optional<Activation> activation;
   // };
   template <typename BatchNormalizationAttributes>
   void BuildBatchNormalization(uint64_t input_operand_id,
@@ -161,9 +160,7 @@ class GraphInfoBuilder final {
   //   std::vector<uint32_t> strides;
   //   std::vector<uint32_t> dilations;
   //   uint32_t groups;
-  //   mojom::InputOperandLayout input_layout;
   //   std::optional<uint64_t> bias_operand_id,
-  //   std::optional<Activation> activation;
   // };
   template <typename Conv2dAttributes>
   void BuildConv2d(mojom::Conv2d::Kind type,

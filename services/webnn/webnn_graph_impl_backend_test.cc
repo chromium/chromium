@@ -658,7 +658,6 @@ struct BatchNormalizationTester {
     std::optional<uint64_t> bias_operand_id;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    std::optional<Activation> activation;
   };
   BatchNormalizationAttributes attributes;
   OperandInfo<T> output;
@@ -916,142 +915,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorBatchNormalization) {
                               -0.22474078892909666, 1, 2.224740788929097}}}
         .Test();
   }
-  {  // Test batchNormalization with 4-D input, default axis and activation =
-    // linear.
-    BatchNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 2, 1, 3},
-                  .values = {-1, 0, 1, 2, 3, 4}},
-        .mean = {.type = mojom::Operand::DataType::kFloat32,
-                 .dimensions = {2},
-                 .values = {0, 3}},
-        .variance = {.type = mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2},
-                     .values = {1.0, 1.5}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {1.0, 1.5}},
-        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {2},
-                                   .values = {0, 1}},
-        .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kLinear,
-                                      .linear_alpha = 10,
-                                      .linear_beta = 1}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = {-8.999950000374997, 1, 10.999950000374997,
-                              -1.2474078892909666, 11, 23.24740788929097}}}
-        .Test();
-  }
-  {
-    // Test batchNormalization with 4-D input with activation = hardsigmoid.
-    BatchNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 2, 1, 3},
-                  .values = {-1, 0, 1, 2, 3, 4}},
-        .mean = {.type = mojom::Operand::DataType::kFloat32,
-                 .dimensions = {2},
-                 .values = {0, 3}},
-        .variance = {.type = mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2},
-                     .values = {1.0, 1.5}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {1.0, 1.5}},
-        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {2},
-                                   .values = {0, 1}},
-        .attributes = {.activation =
-                           Activation{
-                               .kind = mojom::Activation::Tag::kHardSigmoid,
-                               .hard_sigmoid_alpha = 1,
-                               .hard_sigmoid_beta = 3}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = {1, 1, 1, 1, 1, 1}}}
-        .Test();
-  }
-  {
-    // Test batchNormalization with 4-D input with activation = relu.
-    BatchNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 2, 1, 3},
-                  .values = {-1, 0, 1, 2, 3, 4}},
-        .mean = {.type = mojom::Operand::DataType::kFloat32,
-                 .dimensions = {2},
-                 .values = {0, 3}},
-        .variance = {.type = mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2},
-                     .values = {1.0, 1.5}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {1.0, 1.5}},
-        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {2},
-                                   .values = {0, 1}},
-        .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kRelu}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = {0, 0, 0.9999950000374997, 0, 1,
-                              2.224740788929097}}}
-        .Test();
-  }
-  {
-    // Test batchNormalization with 4-D input with activation = softplus.
-    BatchNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 2, 1, 3},
-                  .values = {-100, -50, 100, 101, 102, 103}},
-        .mean = {.type = mojom::Operand::DataType::kFloat32,
-                 .dimensions = {2},
-                 .values = {0, 3}},
-        .variance = {.type = mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2},
-                     .values = {1, 4}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {1, 2}},
-        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {2},
-                                   .values = {0, 1}},
-        .attributes = {.epsilon = 0,
-                       .activation =
-                           Activation{.kind =
-                                          mojom::Activation::Tag::kSoftplus}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = {0, 0, 100, 99, 100, 101}}}
-        .Test();
-  }
-  {
-    // Test batchNormalization with 1-D input with activation = softsign.
-    BatchNormalizationTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {2},
-                  .values = {-1, 1}},
-        .mean = {.type = mojom::Operand::DataType::kFloat32,
-                 .dimensions = {2},
-                 .values = {-1, 1}},
-        .variance = {.type = mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2},
-                     .values = {1.0, 1.5}},
-        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {2},
-                                    .values = {1.0, 1.5}},
-        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
-                                   .dimensions = {2},
-                                   .values = {0, 1}},
-        .attributes = {.axis = 0,
-                       .activation =
-                           Activation{.kind =
-                                          mojom::Activation::Tag::kSoftsign}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {2},
-                   .values = {0, 0.5}}}
-        .Test();
-  }
   {
     // Test batchNormalization with 4-D input with axis = 3.
     BatchNormalizationTester<float>{
@@ -1211,7 +1074,6 @@ struct Conv2dTester {
     mojom::InputOperandLayout input_layout =
         mojom::InputOperandLayout::kChannelsFirst;
     std::optional<OperandInfo<T>> bias;
-    std::optional<Activation> activation;
   };
   Conv2dAttributes attributes;
   OperandInfo<float> output;
@@ -1370,59 +1232,6 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                        .linear_alpha = 0.01,
                        .linear_beta = 1});
   }
-  // Test conv2d with NHWC layout, float 32 data type, fusing with bias and relu
-  // activation.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 5, 5, 1},
-                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = std::vector<float>(9, 1)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
-                       .bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {-100}}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 5, 5, 1},
-                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
-                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
-  }
-  // Test conv2d with NHWC layout, float 16 data type, fusing with bias and relu
-  // activation.
-  {
-    Conv2dTester<float16>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat16,
-                  .dimensions = {1, 5, 5, 1},
-                  .values = Float16FromFloat32(
-                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
-        .filter = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
-                       .bias =
-                           OperandInfo<float16>{
-                               .type = mojom::Operand::DataType::kFloat16,
-                               .dimensions = {1},
-                               .values = Float16FromFloat32({-100})}},
-        .output = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 5, 5, 1},
-                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
-                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
-  }
   // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
   {
     Conv2dTester<float>{
@@ -1473,8 +1282,6 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                               0.0813970738017622, 0.5303338853508432,
                               0.30721364807734, 0.4324123448833208,
                               0.9849002194630809, 0.4281076188358701}},
-        .attributes = {.input_layout =
-                           mojom::InputOperandLayout::kChannelsFirst},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 3, 2, 2},
                    .values = {0.7077627182006836, 0.6772933602333069,
@@ -1535,9 +1342,7 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
                    .values = std::vector<float>(9, 0.05)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout =
-                           mojom::InputOperandLayout::kChannelsFirst},
+        .attributes = {.padding = {1, 1, 1, 1}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 5, 5},
                    .values = {0.5370495669980353, 0.7818063576087741,
@@ -1631,348 +1436,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
-  // Test conv2d with NHWC input layout, OHWI filter layout, padding = {1, 1, 1,
-  // 1}, float 32 data type, without bias.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 5, 5, 1},
-                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = std::vector<float>(9, 1)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout =
-                           mojom::InputOperandLayout::kChannelsLast},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 5, 5, 1},
-                   .values = {12,  21,  27, 33,  24,  33,  54, 63,  72,
-                              51,  63,  99, 108, 117, 81,  93, 144, 153,
-                              162, 111, 72, 111, 117, 123, 84}}}
-        .Test();
-  }
-  // Test conv2d with NHWC input layout, OHWI filter layout, float 16 data type,
-  // padding = {1, 1, 1, 1}, without bias.
-  {
-    Conv2dTester<float16>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat16,
-                  .dimensions = {1, 5, 5, 1},
-                  .values = Float16FromFloat32(
-                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
-        .filter = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout =
-                           mojom::InputOperandLayout::kChannelsLast},
-        .output = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 5, 5, 1},
-                   .values = {12,  21,  27, 33,  24,  33,  54, 63,  72,
-                              51,  63,  99, 108, 117, 81,  93, 144, 153,
-                              162, 111, 72, 111, 117, 123, 84}}}
-        .Test();
-  }
-  // Test depthwise conv2d with NHWC input layout, IHWO filter layout, float 32
-  // data type, groups = 2.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 2, 2, 2},
-                  .values = {0, 1, 2, 3, 4, 5, 6, 7}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 2, 2},
-                   .values = std::vector<float>(8, 1)},
-        .attributes = {.groups = 2,
-                       .input_layout =
-                           mojom::InputOperandLayout::kChannelsLast},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 1, 2},
-                   .values = {12, 16}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
-  // bias and fusing with elu activation.
-  {
-    Conv2dTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 3, 3},
-                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 1, 1},
-                   .values = {1}},
-        .attributes = {.bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {-5}},
-                       .activation =
-                           Activation{.kind = mojom::Activation::Tag::kElu,
-                                      .elu_alpha = 0.8}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = {-0.7946096424007316, -0.7853474888890126,
-                              -0.7601703453057089, -0.6917317734107099,
-                              -0.5056964470628461, 0, 1, 2, 3}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
-  // bias and fusing with leakyRelu activation.
-  {
-    Conv2dTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 4, 4},
-                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-                             15}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 1)},
-        .attributes = {.bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {-60}},
-                       .activation =
-                           Activation{
-                               .kind = mojom::Activation::Tag::kLeakyRelu,
-                               .leaky_relu_alpha = 0.02}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 2, 2},
-                   .values = {-0.3, -0.12, 21, 30}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
-  // fusing with bias and linear activation.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 5, 5},
-                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 1)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {1}},
-                       .activation =
-                           Activation{.kind = mojom::Activation::Tag::kLinear,
-                                      .linear_alpha = 0.01,
-                                      .linear_beta = 1}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 5, 5},
-                   .values = {1.13, 1.22, 1.28, 1.34, 1.25, 1.34, 1.55,
-                              1.64, 1.73, 1.52, 1.64, 2,    2.09, 2.18,
-                              1.82, 1.94, 2.45, 2.54, 2.63, 2.12, 1.73,
-                              2.12, 2.18, 2.24, 1.85}}}
-        .Test();
-  }
-  // Test conv2d with NHWC input layout, OHWI filter layout, float 32 data type,
-  // fusing with bias and relu activation.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 5, 5, 1},
-                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = std::vector<float>(9, 1)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
-                       .bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {-100}},
-                       .activation =
-                           Activation{.kind = mojom::Activation::Tag::kRelu}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 5, 5, 1},
-                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
-                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
-        .Test();
-  }
-  // Test conv2d with NHWC input layout, OHWI filter layout, float 16 data type,
-  // fusing with bias and relu activation.
-  {
-    Conv2dTester<float16>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat16,
-                  .dimensions = {1, 5, 5, 1},
-                  .values = Float16FromFloat32(
-                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
-        .filter = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 3, 3, 1},
-                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
-                       .bias =
-                           OperandInfo<float16>{
-                               .type = mojom::Operand::DataType::kFloat16,
-                               .dimensions = {1},
-                               .values = Float16FromFloat32({-100})},
-                       .activation =
-                           Activation{.kind = mojom::Activation::Tag::kRelu}},
-        .output = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 5, 5, 1},
-                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
-                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, fusing with
-  // hardSigmoid activation.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kDirect,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 5, 5},
-                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 1)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {1}},
-                       .activation =
-                           Activation{
-                               .kind = mojom::Activation::Tag::kHardSigmoid,
-                               .hard_sigmoid_alpha = 0.01,
-                               .hard_sigmoid_beta = -1}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 5, 5},
-                   .values = {0,    0,    0, 0,    0,    0,    0, 0,    0,
-                              0,    0,    0, 0.09, 0.18, 0,    0, 0.45, 0.54,
-                              0.63, 0.12, 0, 0.12, 0.18, 0.24, 0}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, fusing with sigmoid
-  // activation.
-  {
-    Conv2dTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {2, 1, 3, 3},
-                  .values = {0.7529087201709872, 0.7520291960017611,
-                             0.594952773514815, 0.21631854011984264,
-                             0.07589348976741683, 0.15106785419828572,
-                             0.12124850358598671, 0.5364335407319905,
-                             0.5937089927693522, 0.9910031422560608,
-                             0.36309423611370084, 0.9289673923363004,
-                             0.22727376737331384, 0.5414123970044269,
-                             0.0844534212564596, 0.6765284772046276,
-                             0.619325655574763, 0.39292160755260475}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {3, 1, 2, 2},
-                   .values = {0.14543837927656278, 0.9671129790291346,
-                              0.10836050336762582, 0.320230810822804,
-                              0.6952692250382182, 0.5070913293589028,
-                              0.0813970738017622, 0.5303338853508432,
-                              0.30721364807734, 0.4324123448833208,
-                              0.9849002194630809, 0.4281076188358701}},
-        .attributes = {.input_layout =
-                           mojom::InputOperandLayout::kChannelsFirst,
-                       .activation =
-                           Activation{.kind =
-                                          mojom::Activation::Tag::kSigmoid}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {2, 3, 2, 2},
-                   .values = {0.7077627182006836, 0.6772933602333069,
-                              0.5719422101974487, 0.5999819040298462,
-                              0.7236577272415161, 0.7131744623184204,
-                              0.618513286113739,  0.6196115612983704,
-                              0.690409243106842,  0.6519721746444702,
-                              0.6102449893951416, 0.704983651638031,
-                              0.6666978597640991, 0.7382584810256958,
-                              0.6959947943687439, 0.5874307155609131,
-                              0.7647256255149841, 0.6926159262657166,
-                              0.6934033632278442, 0.6633020043373108,
-                              0.7144469618797302, 0.7469926476478577,
-                              0.7747598886489868, 0.7273134589195251}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
-  // bias and fusing with softplus activation.
-  {
-    Conv2dTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 2, 2},
-                  .values = {40, 48, 56, 64}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 1, 1},
-                   .values = {1}},
-        .attributes = {.activation =
-                           Activation{.kind =
-                                          mojom::Activation::Tag::kSoftplus}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 2, 2},
-                   .values = {40, 48, 56, 64}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
-  // fusing with softsign activation.
-  {
-    Conv2dTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 3, 3},
-                  .values = {-3, -2, -1, -4, 0, 2, 1, 3, 4}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 2, 2},
-                   .values = std::vector<float>(4, 1)},
-        .attributes = {.activation =
-                           Activation{.kind =
-                                          mojom::Activation::Tag::kSoftsign}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 2, 2},
-                   .values = {-0.9, -0.5, 0, 0.9}}}
-        .Test();
-  }
-  // Test conv2d with NCHW input layout, OIHW filter layout, fusing with tanh
-  // activation.
-  {
-    Conv2dTester<float>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 5, 5},
-                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 0.05)},
-        .attributes = {.padding = {1, 1, 1, 1},
-                       .input_layout =
-                           mojom::InputOperandLayout::kChannelsFirst,
-                       .activation =
-                           Activation{.kind = mojom::Activation::Tag::kTanh}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 5, 5},
-                   .values = {0.5370495669980353, 0.7818063576087741,
-                              0.874053287886007,  0.9288576214547277,
-                              0.8336546070121552, 0.9288576214547277,
-                              0.9910074536781176, 0.9963341221150144,
-                              0.9985079423323266, 0.9878803970168317,
-                              0.9963341221150144, 0.9998996556706324,
-                              0.9999592018254402, 0.9999834124992523,
-                              0.9993931059399421, 0.9998171682522957,
-                              0.9999988852198828, 0.9999995467640772,
-                              0.9999998157280003, 0.999969775809118,
-                              0.9985079423323266, 0.999969775809118,
-                              0.9999834124992523, 0.9999908965525104,
-                              0.9995503664595334}}}
-        .Test();
-  }
 }
 
 // Test building and computing a graph with single operator convTranspose2d.
@@ -1995,27 +1458,6 @@ TEST_F(WebNNGraphImplBackendTest,
                               6., 13., 21., 15., 8.,  0., 1.,  3.,  3.,  2.,
                               3., 8.,  15., 12., 7.,  9., 21., 36., 27., 15.,
                               9., 20., 33., 24., 13., 6., 13., 21., 15., 8.}}}
-        .Test();
-  }
-  // Test convTranspose2d with NHWC input layout.
-  {
-    Conv2dTester<float>{
-        .type = mojom::Conv2d::Kind::kTransposed,
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 3, 3, 1},
-                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
-        .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 3, 3},
-                   .values = std::vector<float>(18, 1)},
-        .attributes = {.input_layout =
-                           mojom::InputOperandLayout::kChannelsLast},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 5, 5, 2},
-                   .values = {0., 0., 1.,  1.,  3.,  3.,  3.,  3.,  2.,  2.,
-                              3., 3., 8.,  8.,  15., 15., 12., 12., 7.,  7.,
-                              9., 9., 21., 21., 36., 36., 27., 27., 15., 15.,
-                              9., 9., 20., 20., 33., 33., 24., 24., 13., 13.,
-                              6., 6., 13., 13., 21., 21., 15., 15., 8.,  8.}}}
         .Test();
   }
   // Test convTranspose2d with padding = {1, 1, 1, 1}.
@@ -2127,29 +1569,6 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
                    .values = {1., 1., 2., 1., 5., 7., 5., 13., 10.}}}
-        .Test();
-  }
-  // Test convTranspose2d float 16 data type, fusing with bias and relu
-  // activation.
-  {
-    Conv2dTester<float16>{
-        .type = mojom::Conv2d::Kind::kTransposed,
-        .input = {.type = mojom::Operand::DataType::kFloat16,
-                  .dimensions = {1, 1, 2, 2},
-                  .values = Float16FromFloat32({0, 1, 2, 3})},
-        .filter = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 1, 2, 2},
-                   .values = Float16FromFloat32({0, 1, 2, 3})},
-        .attributes = {.bias =
-                           OperandInfo<float16>{
-                               .type = mojom::Operand::DataType::kFloat16,
-                               .dimensions = {1},
-                               .values = Float16FromFloat32({-5})},
-                       .activation =
-                           Activation{.kind = mojom::Activation::Tag::kRelu}},
-        .output = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = {0., 0., 0., 0., 0., 1., 0., 7., 4.}}}
         .Test();
   }
 }
@@ -8612,16 +8031,15 @@ TEST_F(WebNNGraphImplBackendTest,
     // Build the mojom graph info.
     GraphInfoBuilder builder;
     uint64_t input_operand_id = builder.BuildInput(
-        "input", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "input", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     uint64_t filter_operand_id = builder.BuildConstant(
-        {1, 3, 3, 1}, mojom::Operand::DataType::kFloat32,
+        {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32,
         base::as_bytes(base::make_span(std::vector<float>(9, 1))));
     uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
-        {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
 
     Conv2dTester<float>::Conv2dAttributes attributes{
         .padding = {1, 1, 1, 1},
-        .input_layout = mojom::InputOperandLayout::kChannelsLast,
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {1},
                                    .values = {-100}},
@@ -8639,11 +8057,11 @@ TEST_F(WebNNGraphImplBackendTest,
                         std::move(attributes), bias_operand_id);
 
     uint64_t relu1_output_operand_id = builder.BuildOutput(
-        "output1", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "output1", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     builder.BuildRelu(conv2d_output_operand_id, relu1_output_operand_id);
 
     uint64_t relu2_output_operand_id = builder.BuildOutput(
-        "output2", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "output2", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     builder.BuildRelu(conv2d_output_operand_id, relu2_output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
@@ -8681,16 +8099,15 @@ TEST_F(WebNNGraphImplBackendTest,
     // Build the mojom graph info.
     GraphInfoBuilder builder;
     uint64_t input_operand_id = builder.BuildInput(
-        "input", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "input", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     uint64_t filter_operand_id = builder.BuildConstant(
-        {1, 3, 3, 1}, mojom::Operand::DataType::kFloat32,
+        {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32,
         base::as_bytes(base::make_span(std::vector<float>(9, 1))));
     uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
-        {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
 
     Conv2dTester<float>::Conv2dAttributes attributes{
         .padding = {1, 1, 1, 1},
-        .input_layout = mojom::InputOperandLayout::kChannelsLast,
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {1},
                                    .values = {-100}},
@@ -8712,7 +8129,7 @@ TEST_F(WebNNGraphImplBackendTest,
     builder.BuildReshape(conv2d_output_operand_id, reshape_output_operand_id);
 
     uint64_t relu_output_operand_id = builder.BuildOutput(
-        "output2", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "output2", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     builder.BuildRelu(conv2d_output_operand_id, relu_output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
@@ -8750,16 +8167,15 @@ TEST_F(WebNNGraphImplBackendTest,
     // Build the mojom graph info.
     GraphInfoBuilder builder;
     uint64_t input_operand_id = builder.BuildInput(
-        "input", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "input", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     uint64_t filter_operand_id = builder.BuildConstant(
-        {1, 3, 3, 1}, mojom::Operand::DataType::kFloat32,
+        {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32,
         base::as_bytes(base::make_span(std::vector<float>(9, 1))));
     uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
-        {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
 
     Conv2dTester<float>::Conv2dAttributes attributes{
         .padding = {1, 1, 1, 1},
-        .input_layout = mojom::InputOperandLayout::kChannelsLast,
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {1},
                                    .values = {-100}},
@@ -8778,7 +8194,7 @@ TEST_F(WebNNGraphImplBackendTest,
     builder.AddOutput("output2", conv2d_output_operand_id);
 
     uint64_t relu_output_operand_id = builder.BuildOutput(
-        "output1", {1, 5, 5, 1}, mojom::Operand::DataType::kFloat32);
+        "output1", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
     builder.BuildRelu(conv2d_output_operand_id, relu_output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
