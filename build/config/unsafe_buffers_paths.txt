@@ -66,8 +66,6 @@
 -codelabs/
 -components/
 +components/discardable_memory
--content/
-+content/browser/renderer_host
 -courgette/
 -crypto/
 -data/
