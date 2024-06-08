@@ -412,6 +412,17 @@ void VideoConferenceTray::OnScreenSharingStateChange(bool is_capturing_screen) {
   }
 }
 
+void VideoConferenceTray::OnDlcDownloadStateChanged(
+    bool add_warning,
+    const std::u16string& feature_tile_title) {
+  auto* bubble_view = GetBubbleView();
+  if (!bubble_view) {
+    return;
+  }
+  views::AsViewClass<video_conference::BubbleView>(bubble_view)
+      ->OnDLCDownloadStateInError(add_warning, feature_tile_title);
+}
+
 void VideoConferenceTray::OnCameraCapturingStateChange(bool is_capturing) {
   camera_icon_->SetIsCapturing(is_capturing);
 }

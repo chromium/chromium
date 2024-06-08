@@ -30,11 +30,21 @@ VcTileUiController::VcTileUiController(const VcHostedEffect* effect)
     : effect_(effect) {
   effect_id_ = effect->id();
   effect_state_ = effect->GetState(/*index=*/0);
-  DlcserviceClient::Get()->AddObserver(this);
+  auto* dlc_service_client = DlcserviceClient::Get();
+  if (!dlc_service_client) {
+    // `dlc_service_client` may not exist in tests.
+    return;
+  }
+  dlc_service_client->AddObserver(this);
 }
 
 VcTileUiController::~VcTileUiController() {
-  DlcserviceClient::Get()->RemoveObserver(this);
+  auto* dlc_service_client = DlcserviceClient::Get();
+  if (!dlc_service_client) {
+    // `dlc_service_client` may not exist in tests.
+    return;
+  }
+  dlc_service_client->RemoveObserver(this);
 }
 
 std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
@@ -211,6 +221,10 @@ void VcTileUiController::OnDlcDownloadStateFetched(
   if (!tile_) {
     return;
   }
+
+  VideoConferenceTrayController::Get()->OnDlcDownloadStateFetched(
+      /*add_warning=*/download_state == FeatureTile::DownloadState::kError,
+      effect_state_->label_text());
 
   tile_->SetDownloadState(download_state, progress);
 }

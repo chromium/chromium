@@ -1794,6 +1794,12 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_LINUX_APP_WARNING_TEXT" desc="Text for the warning label placed inside the VC bubble when there's any linux app running.">
         Effects are not supported on linux apps
       </message>
+     <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_DLC_ERROR_ONE" desc="The text shown in a warning label when one DLC had an error downloading.">
+        <ph name="UNAVAILABLE_DLC">$1<ex>Live Caption</ex></ph> is not available.
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_DLC_ERROR_TWO" desc="The text shown in a warning label when two DLCs had an error downloading.">
+        <ph name="UNAVAILABLE_DLC_ONE">$1<ex>Live Caption</ex></ph>, and <ph name="UNAVAILABLE_DLC_TWO">$2<ex>Background Blur</ex></ph> are not available.
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED" desc="A toast message that we show when user tries to speak while muted on system-level.">
         Are you talking? Your mic is off. Select the mic to turn it on.
       </message>

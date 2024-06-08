@@ -41,9 +41,18 @@ enum BubbleViewID {
   // Label which is a child of an individual "toggle" VC effect.
   kToggleEffectLabel,
 
-  // The label with a warning icon, indicating that effects are not available
+  // The view with a warning icon and label, indicating that effects are not
+  // available
   // for linux apps.
   kLinuxAppWarningView,
+
+  // The view with a warning icon and a custom label for each DLC which had an
+  // error installing.
+  kDLCDownloadsInErrorView,
+
+  // The label in the generic warning view which is either
+  // `kLinuxAppWarningView` or `kDLCDownloadsInErrorView`.
+  kWarningViewLabel,
 
   // The VC bubble that will be displayed when all the running media apps are
   // Linux apps.

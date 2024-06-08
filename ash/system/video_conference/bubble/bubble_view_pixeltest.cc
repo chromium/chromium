@@ -131,6 +131,11 @@ class BubbleViewPixelTest
 
   bool IsVcDlcUiEnabled() { return GetParam(); }
 
+  void ModifyDlcDownloadState(bool add_warning, std::u16string warning_label) {
+    static_cast<video_conference::BubbleView*>(bubble_view())
+        ->OnDLCDownloadStateInError(add_warning, warning_label);
+  }
+
   VideoConferenceTray* video_conference_tray() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->video_conference_tray();
@@ -411,6 +416,80 @@ TEST_P(BubbleViewPixelTest, ThreeToggleEffects) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_three_toggle_effects",
       /*revision_number=*/6, GetToggleEffectsView()));
+}
+
+TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
+  if (!IsVcDlcUiEnabled()) {
+    return;
+  }
+  // Create a toggle effect so the warning label is available.
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
+
+  // Click to open the bubble, toggle effect button should be visible.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+  ASSERT_TRUE(GetToggleEffectsView()->GetVisible());
+
+  // Add an error, make sure the label shows up.
+  ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name1");
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "one-toggle-effects-view",
+      /*revision_number=*/1, bubble_view()));
+
+  // Add one set-value effect.
+  controller()->GetEffectsManager().RegisterDelegate(shaggy_fur());
+
+  // Hide and re-show the bubble so the set-value effect show sup.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_FALSE(bubble_view());
+
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+
+  ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name1");
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "additional-set-value-view",
+      /*revision_number=*/1, bubble_view()));
+}
+
+TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
+  if (!IsVcDlcUiEnabled()) {
+    return;
+  }
+  // Create a toggle effect so the warning label is available.
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
+
+  // Click to open the bubble, toggle effect button should be visible.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+  ASSERT_TRUE(GetToggleEffectsView()->GetVisible());
+
+  // Add 2 errors (the max), make sure the label shows up.
+  ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name1");
+  ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name2");
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "one-toggle-effects-view",
+      /*revision_number=*/1, bubble_view()));
+
+  // Add one set-value effect.
+  controller()->GetEffectsManager().RegisterDelegate(shaggy_fur());
+
+  // Hide and re-show the bubble so the set-value effect show sup.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_FALSE(bubble_view());
+
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+
+  ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name1");
+  ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name2");
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "additional-set-value-view",
+      /*revision_number=*/1, bubble_view()));
 }
 
 }  // namespace ash::video_conference

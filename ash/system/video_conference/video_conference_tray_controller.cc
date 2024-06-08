@@ -370,6 +370,14 @@ void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction(bool opt_in) {
   ToastManager::Get()->Show(std::move(toast_data));
 }
 
+void VideoConferenceTrayController::OnDlcDownloadStateFetched(
+    bool add_warning,
+    const std::u16string& feature_tile_title) {
+  for (auto& observer : observer_list_) {
+    observer.OnDlcDownloadStateChanged(add_warning, feature_tile_title);
+  }
+}
+
 void VideoConferenceTrayController::CloseAllVcNudges() {
   for (size_t i = 0; i < std::size(kNudgeIds); ++i) {
     AnchoredNudgeManager::Get()->Cancel(kNudgeIds[i]);

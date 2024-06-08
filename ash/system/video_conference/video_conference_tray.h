@@ -153,6 +153,9 @@ class ASH_EXPORT VideoConferenceTray
   void OnCameraCapturingStateChange(bool is_capturing) override;
   void OnMicrophoneCapturingStateChange(bool is_capturing) override;
   void OnScreenSharingStateChange(bool is_capturing_screen) override;
+  void OnDlcDownloadStateChanged(
+      bool add_warning,
+      const std::u16string& feature_tile_title) override;
 
   // VideoConferenceTrayEffectsManager::Observer:
   void OnEffectSupportStateChanged(VcEffectId effect_id,
