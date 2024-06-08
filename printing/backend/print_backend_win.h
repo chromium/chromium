@@ -7,9 +7,14 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "printing/backend/print_backend.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace printing {
 
@@ -44,9 +49,36 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackendWin : public PrintBackend {
       base::RepeatingClosure callback);
 
  protected:
+  // The printable area of a paper and the inputs needed to query for it with
+  // `GetPaperPrintableArea()`.
+  struct DriverPaperPrintableArea {
+    DriverPaperPrintableArea(const std::string& name,
+                             const std::vector<std::string>& driver,
+                             const std::string& id,
+                             const gfx::Rect& area_um);
+    DriverPaperPrintableArea(const DriverPaperPrintableArea& other);
+    ~DriverPaperPrintableArea();
+
+    // Identify the printer and driver info this was saved for.
+    std::string printer_name;
+    std::vector<std::string> driver_info;
+
+    // Platform specific id to map it back to the particular media.
+    std::string vendor_id;
+
+    gfx::Rect printable_area_um;
+  };
+
   ~PrintBackendWin() override;
 
  private:
+  // A cache of the printable area for the default paper that was loaded by
+  // `GetPrinterSemanticCapsAndDefaults()`. The value remains cached until it is
+  // replaced by another call to `GetPrinterSemanticCapsAndDefaults()`.  This
+  // ensures its validity matches that of any other printer settings that have
+  // been fetched from the operating system and would be used by callers.
+  std::optional<DriverPaperPrintableArea> last_default_paper_printable_area_;
+
   base::RepeatingClosure printable_area_loaded_callback_for_test_;
 };
 

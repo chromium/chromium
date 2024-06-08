@@ -294,6 +294,22 @@ void LoadDpi(const wchar_t* printer,
 
 }  // namespace
 
+PrintBackendWin::DriverPaperPrintableArea::DriverPaperPrintableArea(
+    const std::string& name,
+    const std::vector<std::string>& driver,
+    const std::string& id,
+    const gfx::Rect& area_um)
+    : printer_name(name),
+      driver_info(driver),
+      vendor_id(id),
+      printable_area_um(area_um) {}
+
+PrintBackendWin::DriverPaperPrintableArea::DriverPaperPrintableArea(
+    const PrintBackendWin::DriverPaperPrintableArea& other) = default;
+
+PrintBackendWin::DriverPaperPrintableArea::~DriverPaperPrintableArea() =
+    default;
+
 PrintBackendWin::PrintBackendWin() = default;
 
 PrintBackendWin::~PrintBackendWin() = default;
@@ -468,8 +484,17 @@ mojom::ResultCode PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
       LoadPaper(name, port, user_settings.get(), &caps);
   LoadDpi(name, port, user_settings.get(), &caps);
 
-  if (printable_area_loaded_callback_for_test_ && loaded_printable_area) {
-    printable_area_loaded_callback_for_test_.Run();
+  if (loaded_printable_area) {
+    // Save the printable area of the default paper that was loaded.  Any
+    // subsequent call to `GetPaperPrintableArea()` can reuse this value so
+    // long as the printer/paper hasn't changed.
+    last_default_paper_printable_area_ = DriverPaperPrintableArea(
+        printer_name, GetDriverInfo(printer_handle.Get()),
+        caps.default_paper.vendor_id(), caps.default_paper.printable_area_um());
+
+    if (printable_area_loaded_callback_for_test_) {
+      printable_area_loaded_callback_for_test_.Run();
+    }
   }
 
   *printer_info = caps;
@@ -549,6 +574,16 @@ std::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
   if (!printer_handle.IsValid()) {
     return std::nullopt;
+  }
+
+  // Reuse the paper printable area loaded with rest of printer capabilities
+  // if possible.
+  if (last_default_paper_printable_area_.has_value() &&
+      last_default_paper_printable_area_.value().printer_name == printer_name &&
+      last_default_paper_printable_area_.value().driver_info ==
+          GetDriverInfo(printer_handle.Get()) &&
+      last_default_paper_printable_area_.value().vendor_id == paper_vendor_id) {
+    return last_default_paper_printable_area_.value().printable_area_um;
   }
 
   std::unique_ptr<DEVMODE, base::FreeDeleter> devmode =
