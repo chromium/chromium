@@ -72,6 +72,24 @@ proto::SafetyCategoryThreshold RequireReasonable() {
   return result;
 }
 
+class FakeOnDeviceModelAvailabilityObserver
+    : public OnDeviceModelAvailabilityObserver {
+ public:
+  explicit FakeOnDeviceModelAvailabilityObserver(
+      ModelBasedCapabilityKey expected_feature) {
+    expected_feature_ = expected_feature;
+  }
+
+  void OnDeviceModelAvailablityChanged(
+      ModelBasedCapabilityKey feature,
+      OnDeviceModelEligibilityReason reason) override {
+    EXPECT_EQ(expected_feature_, feature);
+    reason_ = reason;
+  }
+  ModelBasedCapabilityKey expected_feature_;
+  std::optional<OnDeviceModelEligibilityReason> reason_;
+};
+
 }  // namespace
 
 std::vector<std::string> ConcatResponses(
@@ -461,16 +479,30 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   Initialize({.config = config_compose, .config2 = config_test});
 
+  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
+      ModelBasedCapabilityKey::kCompose),
+      availability_observer_test(ModelBasedCapabilityKey::kTest);
+  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
+  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey::kTest, &availability_observer_test);
+
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
       OnDeviceModelAdaptationMetadata::New(
           on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
           /*adapter=*/nullptr));
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_compose.reason_);
+  EXPECT_FALSE(availability_observer_test.reason_);
+
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kTest,
       OnDeviceModelAdaptationMetadata::New(
           on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
           /*adapter=*/nullptr));
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_test.reason_);
 
   auto session_compose = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),
@@ -3326,6 +3358,52 @@ TEST_F(OnDeviceModelServiceControllerTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
       OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::internal::kModelAdaptationCompose, {}},
+       {features::internal::kOnDeviceModelTestFeature,
+        {{"enable_adaptation", "false"}}}},
+      {});
+
+  proto::OnDeviceModelExecutionFeatureConfig config_compose, config_test;
+  config_compose.set_can_skip_text_safety(true);
+  config_test.set_can_skip_text_safety(true);
+  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
+  PopulateConfigForFeature(ModelBasedCapabilityKey::kTest, config_test);
+
+  Initialize({.config = config_compose,
+              .config2 = config_test,
+              .model_component_ready = false});
+
+  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
+      ModelBasedCapabilityKey::kCompose),
+      availability_observer_test(ModelBasedCapabilityKey::kTest);
+  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
+  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey::kTest, &availability_observer_test);
+
+  on_device_component_state_manager_.get()->OnStartup();
+  task_environment_.RunUntilIdle();
+  on_device_component_state_manager_.SetReady(temp_dir());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_test.reason_);
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable,
+            availability_observer_compose.reason_);
+
+  test_controller_->MaybeUpdateModelAdaptation(
+      ModelBasedCapabilityKey::kCompose,
+      OnDeviceModelAdaptationMetadata::New(
+          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
+          /*adapter=*/nullptr));
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_test.reason_);
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_compose.reason_);
 }
 
 class OnDeviceModelServiceControllerTsIntervalTest

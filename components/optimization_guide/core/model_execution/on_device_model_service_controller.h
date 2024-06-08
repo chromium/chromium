@@ -128,6 +128,14 @@ class OnDeviceModelServiceController
   void OnModelAdaptationRemoteDisconnected(ModelBasedCapabilityKey feature,
                                            ModelRemoteDisconnectReason reason);
 
+  // Add/remove observers for notifying on-device model availability changes.
+  void AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey feature,
+      OnDeviceModelAvailabilityObserver* observer);
+  void RemoveOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey feature,
+      OnDeviceModelAvailabilityObserver* observer);
+
   base::WeakPtr<OnDeviceModelServiceController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -213,6 +221,9 @@ class OnDeviceModelServiceController
 
   on_device_model::ModelAssetPaths PopulateModelPaths();
 
+  // Called to update the model availability changes for `feature`.
+  void NotifyModelAvailabilityChange(ModelBasedCapabilityKey feature);
+
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
@@ -249,6 +260,10 @@ class OnDeviceModelServiceController
 
   std::unique_ptr<OnDeviceModelValidator> model_validator_;
   base::CancelableOnceCallback<void()> validation_callback_;
+
+  std::map<ModelBasedCapabilityKey,
+           base::ObserverList<OnDeviceModelAvailabilityObserver>>
+      model_availability_change_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

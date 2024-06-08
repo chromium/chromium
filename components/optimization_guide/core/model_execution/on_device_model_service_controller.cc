@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -312,12 +313,19 @@ OnDeviceModelServiceController::PopulateModelPaths() {
 
 void OnDeviceModelServiceController::UpdateModel(
     std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
+  bool did_model_change = !model_metadata.get() != !model_metadata_.get();
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
   model_metadata_ = std::move(model_metadata);
   has_started_session_ = false;
   validation_callback_.Cancel();
   model_validator_ = nullptr;
+
+  if (did_model_change) {
+    for (const auto& entry : model_availability_change_observers_) {
+      NotifyModelAvailabilityChange(entry.first);
+    }
+  }
 
   if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
     return;
@@ -390,6 +398,7 @@ void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
   if (it != model_adaptation_controllers_.end()) {
     model_adaptation_controllers_.erase(it);
   }
+  NotifyModelAvailabilityChange(feature);
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(
@@ -496,6 +505,33 @@ OnDeviceModelServiceController::GetFeatureAdapter(
     return adaptation_metadata_it->second.adapter();
   }
   return model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
+}
+
+void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
+    ModelBasedCapabilityKey feature,
+    OnDeviceModelAvailabilityObserver* observer) {
+  DCHECK(features::internal::IsOnDeviceModelEnabled(feature));
+  model_availability_change_observers_[feature].AddObserver(observer);
+}
+
+void OnDeviceModelServiceController::
+    RemoveOnDeviceModelAvailabilityChangeObserver(
+        ModelBasedCapabilityKey feature,
+        OnDeviceModelAvailabilityObserver* observer) {
+  DCHECK(features::internal::IsOnDeviceModelEnabled(feature));
+  model_availability_change_observers_[feature].RemoveObserver(observer);
+}
+
+void OnDeviceModelServiceController::NotifyModelAvailabilityChange(
+    ModelBasedCapabilityKey feature) {
+  auto entry_it = model_availability_change_observers_.find(feature);
+  if (entry_it == model_availability_change_observers_.end()) {
+    return;
+  }
+  auto can_create_session = CanCreateSession(feature);
+  for (auto& observer : entry_it->second) {
+    observer.OnDeviceModelAvailablityChanged(feature, can_create_session);
+  }
 }
 
 }  // namespace optimization_guide

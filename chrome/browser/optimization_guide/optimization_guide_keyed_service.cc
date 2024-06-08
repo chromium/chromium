@@ -640,6 +640,35 @@ void OptimizationGuideKeyedService::ExecuteModel(
                                          std::move(callback));
 }
 
+void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+  if (!on_device_component_manager_) {
+    return;
+  }
+  auto service_controller = GetOnDeviceModelServiceController(
+      on_device_component_manager_->GetWeakPtr());
+  if (service_controller) {
+    service_controller->AddOnDeviceModelAvailabilityChangeObserver(feature,
+                                                                   observer);
+  }
+}
+
+void OptimizationGuideKeyedService::
+    RemoveOnDeviceModelAvailabilityChangeObserver(
+        optimization_guide::ModelBasedCapabilityKey feature,
+        optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+  if (!on_device_component_manager_) {
+    return;
+  }
+  auto service_controller = GetOnDeviceModelServiceController(
+      on_device_component_manager_->GetWeakPtr());
+  if (service_controller) {
+    service_controller->RemoveOnDeviceModelAvailabilityChangeObserver(feature,
+                                                                      observer);
+  }
+}
+
 void OptimizationGuideKeyedService::UploadModelQualityLogs(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

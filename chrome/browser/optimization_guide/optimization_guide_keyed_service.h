@@ -45,6 +45,7 @@ class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogEntry;
 class ModelValidatorKeyedService;
+class OnDeviceModelAvailabilityObserver;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
 class OptimizationGuideKeyedServiceBrowserTest;
@@ -138,6 +139,12 @@ class OptimizationGuideKeyedService
       const google::protobuf::MessageLite& request_metadata,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
+  void AddOnDeviceModelAvailabilityChangeObserver(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
+  void RemoveOnDeviceModelAvailabilityChangeObserver(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
 
   // optimization_guide::ModelQualityLogsUploader implementation.
   //
