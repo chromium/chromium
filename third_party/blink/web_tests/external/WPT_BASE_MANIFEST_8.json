@@ -287,6 +287,13 @@
        {}
       ]
      ],
+     "image-with-detached-text-child.html": [
+      "64f5ab46939ab5af19db90405307259da4856046",
+      [
+       null,
+       {}
+      ]
+     ],
      "img-map-pseudo.html": [
       "443934e431b9ffe9a0bca469c1d97cb8edccf5c6",
       [
@@ -400527,7 +400534,7 @@
       ]
      },
      "utils.js": [
-      "3694f4840c6006f07dc5ee3b1fb4f5254173f67d",
+      "3cfcf579a50e4658f7cb0fbe0306fa84cbaea240",
       []
      ],
      "utils_validation.js": [
@@ -408092,39 +408099,83 @@
       {}
      ]
     ],
-    "idbcursor_advance_objectstore.htm": [
-     "c9226c5667a61c0d852d0eaaf838a2d5ec1fcc92",
+    "idbcursor_advance_objectstore.any.js": [
+     "5ce345e8b178221b86c8db5fbb51aa6727a86353",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_advance_objectstore2.htm": [
-     "3d46f0c6755f5351a84c65a5cd4556a3d57e5fa6",
+      "IndexedDB/idbcursor_advance_objectstore.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_advance_objectstore3.htm": [
-     "c91e4acaab55caa9f50e943b5bcf021f31daa203",
+      "IndexedDB/idbcursor_advance_objectstore.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_advance_objectstore4.htm": [
-     "766a56daf41c27af9dc793c12aabc0148b0d4e4e",
+      "IndexedDB/idbcursor_advance_objectstore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_advance_objectstore5.htm": [
-     "2c6fa640aed149039e559de04c4a1ae14dc4448a",
-     [
-      null,
-      {}
+      "IndexedDB/idbcursor_advance_objectstore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.advance()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor_continue_delete_objectstore.htm": [
@@ -646601,7 +646652,7 @@
     ],
     "piping": {
      "abort.any.js": [
-      "c9929df91cf68816a6a3381249616b4c38085dc5",
+      "e813b017769c6805f7682d150f202107ceb6b438",
       [
        "streams/piping/abort.any.html",
        {
@@ -648702,7 +648753,7 @@
       ]
      ],
      "cancel.any.js": [
-      "9915c1fb6330c1f2a8143fb956abc9bec5504f3d",
+      "d44222f1497f0acbf9d080b0668f9759c001d716",
       [
        "streams/readable-streams/cancel.any.html",
        {
@@ -678321,7 +678372,7 @@
    "webnn": {
     "conformance_tests": {
      "arg_min_max.https.any.js": [
-      "0f9e590fc884d6f7be157a19690cb6874a83c134",
+      "dd6cd6d9181abe7070e34376b678df6d5204f076",
       [
        "webnn/conformance_tests/arg_min_max.https.any.html?cpu",
        {
@@ -678341,6 +678392,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678375,6 +678430,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/arg_min_max.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API argMin/Max operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678405,6 +678500,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678439,6 +678538,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/arg_min_max.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API argMin/Max operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678452,7 +678591,7 @@
       ]
      ],
      "batch_normalization.https.any.js": [
-      "d3107820dbcbc8281e0d7b876ef5cac56f8322dd",
+      "569881f94f6d058da35cfe051c1ab78d81f8b70c",
       [
        "webnn/conformance_tests/batch_normalization.https.any.html?cpu",
        {
@@ -678472,6 +678611,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678506,6 +678649,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/batch_normalization.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API batchNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678536,6 +678719,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678570,6 +678757,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/batch_normalization.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API batchNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678583,7 +678810,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "51804e7224f8d845e8a59183cbb2e55db29707a0",
+      "9b4c43198b4df239b2bf5af91ec436ee49188314",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -678603,6 +678830,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678637,6 +678868,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/buffer.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678667,6 +678938,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678701,6 +678976,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/buffer.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678714,7 +679029,7 @@
       ]
      ],
      "cast.https.any.js": [
-      "086428dd964bd6fcb6142d3aaeeeb0591b7d9476",
+      "29f197a1aa6c20c053c79874606432cf9a4736d9",
       [
        "webnn/conformance_tests/cast.https.any.html?cpu",
        {
@@ -678734,6 +679049,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678768,6 +679087,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cast.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cast operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678798,6 +679157,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678832,6 +679195,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cast.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cast operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678845,7 +679248,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "ab47ac9c5c700bc9acbd8b6a9ad1f307c5bdd784",
+      "15777271872bc1e53c1845f358b6294e76d1439f",
       [
        "webnn/conformance_tests/clamp.https.any.html?cpu",
        {
@@ -678865,6 +679268,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678899,6 +679306,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/clamp.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API clamp operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678929,6 +679376,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -678963,6 +679414,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/clamp.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API clamp operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -678976,7 +679467,7 @@
       ]
      ],
      "compute-arraybufferview-with-bigger-arraybuffer.https.any.js": [
-      "96a20f1fe57d26a35f3214fbb2fba2035c8e38a3",
+      "1380b604dac20d4cb0d12dac197503c4b34dd731",
       [
        "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.html?cpu",
        {
@@ -678996,6 +679487,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679025,6 +679520,41 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ]
@@ -679050,6 +679580,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679079,6 +679613,41 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ]
@@ -679087,7 +679656,7 @@
       ]
      ],
      "concat.https.any.js": [
-      "619f20fe1c65eb976c13381a0633f35af1fe8b97",
+      "3898ee7d6d864dac33c48c446c6f44d019b0e7c1",
       [
        "webnn/conformance_tests/concat.https.any.html?cpu",
        {
@@ -679107,6 +679676,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679141,6 +679714,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/concat.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API concat operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679171,6 +679784,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679205,6 +679822,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/concat.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API concat operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679218,7 +679875,7 @@
       ]
      ],
      "constant.https.any.js": [
-      "79362947f1d5cd48be717605516715fba0dc5e9a",
+      "acc24e7772b4da85bb478c2ae1429a3e135b2f49",
       [
        "webnn/conformance_tests/constant.https.any.html?cpu",
        {
@@ -679238,6 +679895,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679272,6 +679933,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/constant.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API constant"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679302,6 +680003,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679336,6 +680041,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/constant.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API constant"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679349,7 +680094,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "34af583162bbce07c55042324941d2c919575c4d",
+      "f6e5ec0fa1dabcb8492b9cc7d68fe605d5c09be4",
       [
        "webnn/conformance_tests/conv2d.https.any.html?cpu",
        {
@@ -679369,6 +680114,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679403,6 +680152,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/conv2d.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API conv2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679433,6 +680222,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679467,6 +680260,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/conv2d.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API conv2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679480,7 +680313,7 @@
       ]
      ],
      "conv_transpose2d.https.any.js": [
-      "2943e67851c52c41f0792cfe56ba3abc5d651017",
+      "9e741a45d09f77a8c1ba6347dcafc0d1468126ae",
       [
        "webnn/conformance_tests/conv_transpose2d.https.any.html?cpu",
        {
@@ -679500,6 +680333,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679534,6 +680371,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/conv_transpose2d.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API convTranspose2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679564,6 +680441,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679598,6 +680479,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/conv_transpose2d.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API convTranspose2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679611,7 +680532,7 @@
       ]
      ],
      "elementwise_binary.https.any.js": [
-      "a85a06e1d21d6acf9c54ca51929a9538b7632618",
+      "0124077773db1bffcfd2e8208376878876eb7ca8",
       [
        "webnn/conformance_tests/elementwise_binary.https.any.html?cpu",
        {
@@ -679631,6 +680552,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679665,6 +680590,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elementwise_binary.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679695,6 +680660,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679729,6 +680698,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elementwise_binary.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679742,7 +680751,7 @@
       ]
      ],
      "elementwise_logical.https.any.js": [
-      "3d3a825f9c07065c3050b3933623d1a0c485d18f",
+      "826b21dd8fef7493aaa5ea31bbb7d8a5ed271bd8",
       [
        "webnn/conformance_tests/elementwise_logical.https.any.html?cpu",
        {
@@ -679762,6 +680771,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679796,6 +680809,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elementwise_logical.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679826,6 +680879,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679860,6 +680917,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elementwise_logical.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679873,7 +680970,7 @@
       ]
      ],
      "elementwise_unary.https.any.js": [
-      "f202af01e51325c271afa67cd22105c3e3751e56",
+      "54406005e89639c8f856830e9cc7d922c18c3c6b",
       [
        "webnn/conformance_tests/elementwise_unary.https.any.html?cpu",
        {
@@ -679893,6 +680990,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679927,6 +681028,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elementwise_unary.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise unary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -679957,6 +681098,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -679991,6 +681136,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elementwise_unary.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise unary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680004,7 +681189,7 @@
       ]
      ],
      "elu.https.any.js": [
-      "ac1c19a80bcd35e130f7630e2ee6ad8ad1dd8b6d",
+      "b16cf04b624290d85578a46014f750556cc65b10",
       [
        "webnn/conformance_tests/elu.https.any.html?cpu",
        {
@@ -680024,6 +681209,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680058,6 +681247,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elu.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API elu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680088,6 +681317,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680122,6 +681355,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/elu.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API elu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680135,7 +681408,7 @@
       ]
      ],
      "expand.https.any.js": [
-      "e7bf106f961e812716076a423c49ffbe7821533b",
+      "1535bb76a9027572b3fa91e7b4c7074b7a2f1691",
       [
        "webnn/conformance_tests/expand.https.any.html?cpu",
        {
@@ -680155,6 +681428,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680189,6 +681466,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/expand.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API expand operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680219,6 +681536,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680253,6 +681574,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/expand.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API expand operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680266,7 +681627,7 @@
       ]
      ],
      "gather.https.any.js": [
-      "504f2dd792e27ba5b1f9fb0c4855a25875737d30",
+      "68d33bbf748f6842283e401d13d5487fed88d64a",
       [
        "webnn/conformance_tests/gather.https.any.html?cpu",
        {
@@ -680286,6 +681647,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680320,6 +681685,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gather.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gather operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680350,6 +681755,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680384,6 +681793,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gather.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gather operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680397,7 +681846,7 @@
       ]
      ],
      "gemm.https.any.js": [
-      "03a836a44a63fde6ad7710bb7e446818196b56e6",
+      "0af471753e049fe8984e9c047c3b1d9555914e49",
       [
        "webnn/conformance_tests/gemm.https.any.html?cpu",
        {
@@ -680417,6 +681866,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680451,6 +681904,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gemm.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gemm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680481,6 +681974,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680515,6 +682012,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gemm.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gemm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680528,7 +682065,7 @@
       ]
      ],
      "hard_sigmoid.https.any.js": [
-      "55391e7f1c9b6e36429cea968aa9bc6824d7929a",
+      "cfc726a57be26bca99b7c8857276dd0a86b82104",
       [
        "webnn/conformance_tests/hard_sigmoid.https.any.html?cpu",
        {
@@ -680548,6 +682085,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680582,6 +682123,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/hard_sigmoid.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API hardSigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680612,6 +682193,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680646,6 +682231,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/hard_sigmoid.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API hardSigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680659,7 +682284,7 @@
       ]
      ],
      "hard_swish.https.any.js": [
-      "24b8c413bbaabe1d3c80955e5e2cebbbd312b993",
+      "229e1b561083b852b26519e86b896dc222e14811",
       [
        "webnn/conformance_tests/hard_swish.https.any.html?cpu",
        {
@@ -680679,6 +682304,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680713,6 +682342,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/hard_swish.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tanh operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680743,6 +682412,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680777,6 +682450,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/hard_swish.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tanh operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680790,7 +682503,7 @@
       ]
      ],
      "instance_normalization.https.any.js": [
-      "fc339e5bab4ccf8f0f9c5425e48ffb65f7221756",
+      "4c5d33bbf70cdec71a79c005c852e4c3f66f9976",
       [
        "webnn/conformance_tests/instance_normalization.https.any.html?cpu",
        {
@@ -680810,6 +682523,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680844,6 +682561,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/instance_normalization.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API instanceNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680874,6 +682631,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680908,6 +682669,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/instance_normalization.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API instanceNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -680921,7 +682722,7 @@
       ]
      ],
      "layer_normalization.https.any.js": [
-      "ea3cd04240b345439639706666ca7091fdff719c",
+      "f5bfb8c2cc82800a2602337f2af7e6290ddf660e",
       [
        "webnn/conformance_tests/layer_normalization.https.any.html?cpu",
        {
@@ -680941,6 +682742,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -680975,6 +682780,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/layer_normalization.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API layerNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681005,6 +682850,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681039,6 +682888,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/layer_normalization.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API layerNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681052,7 +682941,7 @@
       ]
      ],
      "leaky_relu.https.any.js": [
-      "b2a4055bde70aa4009f227ef8ac9ef2c9a0eb6ed",
+      "9012f02a5edf2de886f3c308659a23336de293a1",
       [
        "webnn/conformance_tests/leaky_relu.https.any.html?cpu",
        {
@@ -681072,6 +682961,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681106,6 +682999,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/leaky_relu.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API leakyRelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681136,6 +683069,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681170,6 +683107,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/leaky_relu.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API leakyRelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681183,7 +683160,7 @@
       ]
      ],
      "linear.https.any.js": [
-      "0e22f7a0360f151bed23197611b815fd60061637",
+      "c011229db8f1f50f6ab3f7930d754984fb58f866",
       [
        "webnn/conformance_tests/linear.https.any.html?cpu",
        {
@@ -681203,6 +683180,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681237,6 +683218,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/linear.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API linear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681267,6 +683288,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681301,6 +683326,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/linear.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API linear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681314,7 +683379,7 @@
       ]
      ],
      "matmul.https.any.js": [
-      "da7823057924b3df87aafa83afcb45796d4b9ca4",
+      "50930d1b0f73102da00921e543a3f8e2ce86ef06",
       [
        "webnn/conformance_tests/matmul.https.any.html?cpu",
        {
@@ -681334,6 +683399,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681368,6 +683437,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/matmul.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API matmul operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681398,6 +683507,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681432,6 +683545,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/matmul.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API matmul operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681445,7 +683598,7 @@
       ]
      ],
      "pad.https.any.js": [
-      "d733cbb6edb730b1aaaad8019eda3683edeb286d",
+      "ec9c106e6330fe399c99e63d523f611b8f4c31ee",
       [
        "webnn/conformance_tests/pad.https.any.html?cpu",
        {
@@ -681465,6 +683618,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681499,6 +683656,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/pad.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API pad operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681529,6 +683726,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681563,6 +683764,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/pad.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API pad operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681576,7 +683817,7 @@
       ]
      ],
      "parallel-compute.https.any.js": [
-      "642fec9f731bb5d207cb66597ea4a904f3ff6c01",
+      "ea1b5dbdc44917b34c70a21d04498f9b6b6912d3",
       [
        "webnn/conformance_tests/parallel-compute.https.any.html?cpu",
        {
@@ -681596,6 +683837,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681630,6 +683875,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-compute.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API compute operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681660,6 +683945,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681694,6 +683983,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-compute.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API compute operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681707,7 +684036,7 @@
       ]
      ],
      "pooling.https.any.js": [
-      "de2ae35a9c1f5b45bb1c3ed74fdee9ce58748fdd",
+      "83eea50a12f0021027cc22334e2c712f31b00d97",
       [
        "webnn/conformance_tests/pooling.https.any.html?cpu",
        {
@@ -681727,6 +684056,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681761,6 +684094,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/pooling.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API pooling operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681791,6 +684164,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681825,6 +684202,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/pooling.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API pooling operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681838,7 +684255,7 @@
       ]
      ],
      "prelu.https.any.js": [
-      "9337211e548635746e238784c2bab94388e4a7b6",
+      "3b4717663fa86ed33f38e09eade394f29b5a833a",
       [
        "webnn/conformance_tests/prelu.https.any.html?cpu",
        {
@@ -681858,6 +684275,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681892,6 +684313,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/prelu.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API prelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681922,6 +684383,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -681956,6 +684421,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/prelu.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API prelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -681969,7 +684474,7 @@
       ]
      ],
      "reduction.https.any.js": [
-      "c291906ba1c7b1bf6fd3990be49981c346c939c0",
+      "f5247ee137c6bfd24140028a87bf60cd5081465c",
       [
        "webnn/conformance_tests/reduction.https.any.html?cpu",
        {
@@ -681989,6 +684494,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682023,6 +684532,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduction.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction  operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682053,6 +684602,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682087,6 +684640,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduction.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction  operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682100,7 +684693,7 @@
       ]
      ],
      "relu.https.any.js": [
-      "7cb23eea1bdab567b3252279e944cf6b6470aedc",
+      "458cd61d82c1840cc872797b68f9ca743e77dee7",
       [
        "webnn/conformance_tests/relu.https.any.html?cpu",
        {
@@ -682120,6 +684713,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682154,6 +684751,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/relu.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API relu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682184,6 +684821,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682218,6 +684859,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/relu.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API relu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682231,7 +684912,7 @@
       ]
      ],
      "resample2d.https.any.js": [
-      "b5bdda7197ec056dd0be568970e4b3c8ca2a07d6",
+      "4d68f9f51bd5e6b6fc20202a1fbdd76c8c65577e",
       [
        "webnn/conformance_tests/resample2d.https.any.html?cpu",
        {
@@ -682251,6 +684932,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682285,6 +684970,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/resample2d.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API resample2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682315,6 +685040,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682349,6 +685078,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/resample2d.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API resample2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682362,7 +685131,7 @@
       ]
      ],
      "reshape.https.any.js": [
-      "a7d03b2a0c2b46c2b1dc1090d1dd6137e8b4de99",
+      "de9953e6f820353f15dcbd828e919b972c553860",
       [
        "webnn/conformance_tests/reshape.https.any.html?cpu",
        {
@@ -682382,6 +685151,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682416,6 +685189,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reshape.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reshape operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682446,6 +685259,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682480,6 +685297,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reshape.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reshape operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682493,7 +685350,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "9730b548b5622c960539fa88eb9f9719e836905a",
+      "154e68e4299947ce83bece8db01b828a82c2c24c",
       [
        "webnn/conformance_tests/sigmoid.https.any.html?cpu",
        {
@@ -682513,6 +685370,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682547,6 +685408,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/sigmoid.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API sigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682577,6 +685478,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682611,6 +685516,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/sigmoid.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API sigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682624,7 +685569,7 @@
       ]
      ],
      "slice.https.any.js": [
-      "b316ea58c4b9f49e8a1dd941c731d2d79cca86c3",
+      "b39eade98f29b9590a23cac65b3c69f798e8096d",
       [
        "webnn/conformance_tests/slice.https.any.html?cpu",
        {
@@ -682644,6 +685589,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682678,6 +685627,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/slice.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API slice operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682708,6 +685697,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682742,6 +685735,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/slice.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API slice operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682755,7 +685788,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "a68a32c45f04728956738c2feaad4eb4384c5148",
+      "75893eb34cb208ead47f2ec2595e798e6828b235",
       [
        "webnn/conformance_tests/softmax.https.any.html?cpu",
        {
@@ -682775,6 +685808,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682809,6 +685846,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/softmax.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API softmax operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682839,6 +685916,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682873,6 +685954,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/softmax.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API softmax operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682886,7 +686007,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "7d89b117eb54c024bf0626af88bd42acfb7dc3bf",
+      "a2f90bd23d5e1899401041914c8a4c707876662a",
       [
        "webnn/conformance_tests/softplus.https.any.html?cpu",
        {
@@ -682906,6 +686027,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -682940,6 +686065,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/softplus.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API softplus operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -682970,6 +686135,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683004,6 +686173,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/softplus.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API softplus operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683017,7 +686226,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "e175e0de56c18e5bcebdcfd9bd475bb96ec6fa63",
+      "1e9c9f77fee33850f75566ad8f174f6114dca53f",
       [
        "webnn/conformance_tests/softsign.https.any.html?cpu",
        {
@@ -683037,6 +686246,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683071,6 +686284,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/softsign.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API softsign operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683101,6 +686354,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683135,6 +686392,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/softsign.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API softsign operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683148,7 +686445,7 @@
       ]
      ],
      "split.https.any.js": [
-      "78d707687f08ff2bcf1fffc1429930fb26684db6",
+      "84fee2f66512a5d53f0dee6596342feba7b21695",
       [
        "webnn/conformance_tests/split.https.any.html?cpu",
        {
@@ -683168,6 +686465,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683202,6 +686503,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/split.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API split operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683232,6 +686573,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683266,6 +686611,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/split.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API split operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683279,7 +686664,7 @@
       ]
      ],
      "tanh.https.any.js": [
-      "e3ab5e9192de01fda2a05b9089f58504b56195dd",
+      "d7d1b5975189091bbe1cf6ffef4b836ca8bf2831",
       [
        "webnn/conformance_tests/tanh.https.any.html?cpu",
        {
@@ -683299,6 +686684,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683333,6 +686722,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tanh.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tanh operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683363,6 +686792,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683397,6 +686830,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/tanh.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API tanh operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683410,7 +686883,7 @@
       ]
      ],
      "transpose.https.any.js": [
-      "83bd7a45c18f31175db3ad9706e19fa8d049f42a",
+      "82abef96ea2f66dd70d827550a9b6151e752c814",
       [
        "webnn/conformance_tests/transpose.https.any.html?cpu",
        {
@@ -683430,6 +686903,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683464,6 +686941,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/transpose.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API transpose operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683494,6 +687011,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683528,6 +687049,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/transpose.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API transpose operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683541,7 +687102,7 @@
       ]
      ],
      "triangular.https.any.js": [
-      "499f60ed3668b7ee219dc326591da008681b6f3a",
+      "9919110e9b1941f42185a53db0975d81fcfa4f2d",
       [
        "webnn/conformance_tests/triangular.https.any.html?cpu",
        {
@@ -683561,6 +687122,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683595,6 +687160,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/triangular.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API triangular operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683625,6 +687230,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683659,6 +687268,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/triangular.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API triangular operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683672,7 +687321,7 @@
       ]
      ],
      "where.https.any.js": [
-      "4ab453ab24535a88a2f6a7f73bc2ee17988f0277",
+      "fa920ac2519dc35d05477845925283f05b96b282",
       [
        "webnn/conformance_tests/where.https.any.html?cpu",
        {
@@ -683692,6 +687341,10 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
@@ -683726,6 +687379,46 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/where.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API where operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683758,6 +687451,10 @@
           "?gpu"
          ],
          [
+          "variant",
+          "?npu"
+         ],
+         [
           "script",
           "../resources/utils.js"
          ],
@@ -683788,6 +687485,46 @@
          [
           "variant",
           "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/where.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API where operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
          ],
          [
           "script",
