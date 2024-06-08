@@ -62,7 +62,7 @@ class OfferNotificationBubbleControllerImpl
   // for a card-linked offer. `options` contains information on how the offer
   // notification should show.
   void ShowOfferNotificationIfApplicable(
-      const AutofillOfferData* offer,
+      const AutofillOfferData& offer,
       const CreditCard* card,
       const OfferNotificationOptions& options);
 

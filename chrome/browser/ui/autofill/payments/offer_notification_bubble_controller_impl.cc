@@ -168,24 +168,22 @@ void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
-    const AutofillOfferData* offer,
+    const AutofillOfferData& offer,
     const CreditCard* card,
     const OfferNotificationOptions& options) {
-  DCHECK(offer);
-
   icon_should_expand_ = options.expand_notification_icon;
 
   // If this is not the bubble's first show, and offer to be shown has not
   // changed, and it has not been shown for more than
   // kAutofillBubbleSurviveNavigationTime, do not dismiss the bubble.
   if (offer_.GetOfferType() != AutofillOfferData::OfferType::UNKNOWN &&
-      offer_ == *offer && bubble_shown_timestamp_.has_value() &&
+      offer_ == offer && bubble_shown_timestamp_.has_value() &&
       AutofillClock::Now() - *bubble_shown_timestamp_ <
           kAutofillBubbleSurviveNavigationTime) {
     return;
   }
 
-  offer_ = *offer;
+  offer_ = offer;
 
   // Hides the old bubble. Sets bubble_state_ to show icon here since we are
   // going to show another bubble anyway.
@@ -193,15 +191,15 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
 
   DCHECK(IsIconVisible());
   autofill_metrics::LogPageLoadsWithOfferIconShown(
-      offer->GetOfferType(), web_contents()->GetLastCommittedURL());
+      offer.GetOfferType(), web_contents()->GetLastCommittedURL());
 
   if (card)
     card_ = *card;
 
-  if (offer->GetOfferType() ==
+  if (offer.GetOfferType() ==
       AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
     base::Time last_display_time =
-        coupon_service_->GetCouponDisplayTimestamp(*offer);
+        coupon_service_->GetCouponDisplayTimestamp(offer);
     if (!last_display_time.is_null() &&
         (base::Time::Now() - last_display_time) <
             commerce::kCouponDisplayInterval.Get()) {
@@ -211,7 +209,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     }
     // This will update the offer's last shown time both in cache layer and
     // storage.
-    coupon_service_->RecordCouponDisplayTimestamp(*offer);
+    coupon_service_->RecordCouponDisplayTimestamp(offer);
   }
 
   is_user_gesture_ = false;

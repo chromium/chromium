@@ -565,7 +565,7 @@ void ChromePaymentsAutofillClient::UpdateOfferNotification(
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  controller->ShowOfferNotificationIfApplicable(&offer, card, options);
+  controller->ShowOfferNotificationIfApplicable(offer, card, options);
 #endif
 }
 

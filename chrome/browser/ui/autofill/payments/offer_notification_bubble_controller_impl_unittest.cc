@@ -82,7 +82,7 @@ class OfferNotificationBubbleControllerImplTest
                 (const autofill::AutofillOfferData& offer));
   };
 
-  void ShowBubble(const AutofillOfferData* offer,
+  void ShowBubble(const AutofillOfferData& offer,
                   bool expand_notification_icon = false) {
     controller()->ShowOfferNotificationIfApplicable(
         offer, &card_,
@@ -168,7 +168,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*eligible_instrument_ids=*/{123});
-  ShowBubble(&offer);
+  ShowBubble(offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 }
 
@@ -179,18 +179,18 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*eligible_instrument_ids=*/{123});
-  ShowBubble(&offer);
+  ShowBubble(offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
   test_clock_.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
   controller()->ShowOfferNotificationIfApplicable(
-      &offer, nullptr, {.notification_has_been_shown = true});
+      offer, nullptr, {.notification_has_been_shown = true});
   // Ensure the bubble is still there if
   // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
   test_clock_.Advance(base::Seconds(2));
   controller()->ShowOfferNotificationIfApplicable(
-      &offer, nullptr, {.notification_has_been_shown = true});
+      offer, nullptr, {.notification_has_been_shown = true});
   // Ensure new page does not have an active offer notification bubble.
   EXPECT_EQ(nullptr, controller()->GetOfferNotificationBubbleView());
 }
@@ -200,7 +200,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*eligible_instrument_ids=*/{123});
-  ShowBubble(&offer);
+  ShowBubble(offer);
 
   EXPECT_TRUE(*controller()->GetOffer() == offer);
 }
@@ -219,7 +219,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   EXPECT_CALL(mock_coupon_service_, RecordCouponDisplayTimestamp(offer))
       .Times(0);
 
-  ShowBubble(&offer);
+  ShowBubble(offer);
 
   histogram_tester.ExpectTotalCount(
       "Autofill.OfferNotificationBubbleSuppressed.FreeListingCouponOffer", 1);
@@ -242,7 +242,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   EXPECT_CALL(mock_coupon_service_, RecordCouponDisplayTimestamp(offer))
       .Times(1);
 
-  ShowBubble(&offer);
+  ShowBubble(offer);
 
   histogram_tester.ExpectTotalCount(
       "Autofill.OfferNotificationBubbleSuppressed.FreeListingCouponOffer", 0);
@@ -259,7 +259,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
       .WillOnce(::testing::Return(base::Time::Now() -
                                   commerce::kCouponDisplayInterval.Get() -
                                   base::Seconds(1)));
-  ShowBubble(&offer);
+  ShowBubble(offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
   AutofillOfferData offer2 = CreateTestFreeListingCouponOffer(
@@ -278,7 +278,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
   AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*promo_code=*/"FREEFALL5678");
-  ShowBubble(&offer);
+  ShowBubble(offer);
 
   EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
@@ -294,7 +294,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*promo_code=*/"FREEFALL1234");
   controller()->ShowOfferNotificationIfApplicable(
-      &offer, nullptr,
+      offer, nullptr,
       {.notification_has_been_shown = true, .expand_notification_icon = true});
 
   EXPECT_TRUE(controller()->ShouldIconExpand());
