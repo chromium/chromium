@@ -651,6 +651,8 @@ public class AccessibilityNodeInfoBuilder {
         view.getLocationOnScreen(viewLocation);
         rect.offset(viewLocation[0], viewLocation[1]);
 
+        // TODO(mschillaci): This block is the same per-node and is purely viewport dependent,
+        //                   pull this out into a reusable object for simplicity/performance.
         // rect is the unclipped values, but we need to clip to viewport bounds. The original
         // unclipped values will be placed in the Bundle extras.
         int clippedTop = viewLocation[1] + (int) ac.getContentOffsetYPix();
@@ -658,41 +660,37 @@ public class AccessibilityNodeInfoBuilder {
         // There is currently no x offset, y offset comes from tab bar / browser controls.
         int clippedLeft = viewLocation[0];
         int clippedRight = clippedLeft + ac.getLastFrameViewportWidthPixInt();
-        int clippedWidth = clippedRight - clippedLeft;
-        int clippedHeight = clippedBottom - clippedTop;
 
-        // A cached node will contain Bundle extras values from the last time it was populated. For
-        // unclipped bounds, the extras would be stale and should be removed if present.
-        extras.remove(EXTRAS_KEY_UNCLIPPED_TOP);
-        extras.remove(EXTRAS_KEY_UNCLIPPED_BOTTOM);
-        extras.remove(EXTRAS_KEY_UNCLIPPED_LEFT);
-        extras.remove(EXTRAS_KEY_UNCLIPPED_RIGHT);
-        extras.remove(EXTRAS_KEY_UNCLIPPED_WIDTH);
-        extras.remove(EXTRAS_KEY_UNCLIPPED_HEIGHT);
+        // Always provide the unclipped bounds in the Bundle for any interested downstream client.
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, rect.bottom);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, rect.left);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_RIGHT, rect.right);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, rect.width());
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, rect.height());
 
         if (rect.top < clippedTop) {
-            extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
             rect.top = clippedTop;
+        } else if (rect.top > clippedBottom) {
+            rect.top = clippedBottom;
         }
+
         if (rect.bottom > clippedBottom) {
-            extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, rect.bottom);
             rect.bottom = clippedBottom;
+        } else if (rect.bottom < clippedTop) {
+            rect.bottom = clippedTop;
         }
+
         if (rect.left < clippedLeft) {
-            extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, rect.left);
             rect.left = clippedLeft;
+        } else if (rect.left > clippedRight) {
+            rect.left = clippedRight;
         }
+
         if (rect.right > clippedRight) {
-            extras.putInt(EXTRAS_KEY_UNCLIPPED_RIGHT, rect.right);
             rect.right = clippedRight;
-        }
-        if (rect.width() > clippedWidth) {
-            extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, rect.width());
-            // No rect.width to set, it is computed by width().
-        }
-        if (rect.height() > clippedHeight) {
-            extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, rect.height());
-            // No rect.height to set, it is computed by height().
+        } else if (rect.right < clippedLeft) {
+            rect.right = clippedLeft;
         }
     }
 }
