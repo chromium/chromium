@@ -35,6 +35,7 @@ class SavedTabGroupUtils {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleGroupPinStateMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabsTitleItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTab);
 
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
@@ -49,9 +50,7 @@ class SavedTabGroupUtils {
                                const base::Uuid& saved_group_guid);
 
   // Open the `url` to the end of `browser` tab strip.
-  static void OpenUrlToBrowser(Browser* browser,
-                               const GURL& url,
-                               int event_flags);
+  static void OpenUrlToBrowser(Browser* browser, const GURL& url);
 
   static void OpenOrMoveSavedGroupToNewWindow(
       Browser* browser,
@@ -60,8 +59,7 @@ class SavedTabGroupUtils {
   // Pin the saved tab group if it's unpinned, or unpin the saved tab group if
   // it's pinned.
   static void ToggleGroupPinState(Browser* browser,
-                                  base::Uuid id,
-                                  int event_flags);
+                                  const base::Uuid& saved_group_guid);
 
   // Helper method to show the deletion dialog, if its needed. a return value of
   // true means that a synchronous deletion is allowed, and the callback wasnt
@@ -76,12 +74,9 @@ class SavedTabGroupUtils {
   // Create the the context menu model for a saved tab group button or a saved
   // tab group menu item in the Everything menu. `browser` is the one from
   // which this method is invoked. `saved_guid` is the saved tab group's Uuid.
-  // Show a "Pin / Unpin group from bookmarks bar" option if
-  // `show_pin_unpin_option` is true.
   static std::unique_ptr<ui::DialogModel> CreateSavedTabGroupContextMenuModel(
       Browser* browser,
-      const base::Uuid& saved_guid,
-      bool show_pin_unpin_option);
+      const base::Uuid& saved_guid);
 
   // Converts a webcontents into a SavedTabGroupTab.
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(

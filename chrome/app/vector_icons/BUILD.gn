@@ -150,6 +150,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "nfc.icon",
     "note_outline.icon",
     "notes.icon",
+    "open_in_browser.icon",
     "open_in_new.icon",
     "open_in_new_chrome_refresh.icon",
     "open_in_new_off_chrome_refresh.icon",
@@ -366,10 +367,6 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (!is_android) {
     sources += [ "nearby_share.icon" ]
-  }
-
-  if ((enable_vr && !is_android) || is_chromeos_ash) {
-    sources += [ "open_in_browser.icon" ]
   }
 
   if (enable_webui_tab_strip) {

@@ -1119,11 +1119,6 @@ bool AppMenu::ShowContextMenu(MenuItemView* source,
                               int command_id,
                               const gfx::Point& p,
                               ui::MenuSourceType source_type) {
-  if (IsTabGroupsCommand(command_id)) {
-    stg_everything_menu_->SetShowPinOption(false);
-    return stg_everything_menu_->ShowContextMenu(source, command_id, p,
-                                                 source_type);
-  }
   return IsBookmarkCommand(command_id)
              ? bookmark_menu_delegate_->ShowContextMenu(source, command_id, p,
                                                         source_type)
@@ -1168,9 +1163,12 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return false;  // The root item, a separator, or a title.
   }
 
-  if (command_id == IDC_CREATE_NEW_TAB_GROUP ||
-      IsTabGroupsCommand(command_id)) {
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
     return true;
+  }
+
+  if (IsTabGroupsCommand(command_id)) {
+    return stg_everything_menu_->ShouldEnableCommand(command_id);
   }
 
   if (IsBookmarkCommand(command_id) ||
@@ -1278,7 +1276,10 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
                               LIMIT_MENU_ACTION);
     stg_everything_menu_ =
           std::make_unique<tab_groups::STGEverythingMenu>(nullptr, browser_);
+    stg_everything_menu_->SetShowSubmenu(true);
     stg_everything_menu_->PopulateMenu(menu);
+  } else if (IsTabGroupsCommand(menu->GetCommand())) {
+    stg_everything_menu_->PopulateTabGroupSubMenu(menu);
   } else if (menu == bookmark_menu_) {
     CreateBookmarkMenu();
   } else if (bookmark_menu_delegate_) {

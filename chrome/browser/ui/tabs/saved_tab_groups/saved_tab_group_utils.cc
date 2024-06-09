@@ -49,6 +49,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
                                       kToggleGroupPinStateMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTabsTitleItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTab);
 
 // static
 void SavedTabGroupUtils::RemoveGroupFromTabstrip(
@@ -186,9 +187,7 @@ bool SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   return true;
 }
 
-void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser,
-                                          const GURL& url,
-                                          int event_flags) {
+void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser, const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.started_from_context_menu = true;
@@ -227,19 +226,18 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
       ->MoveGroupToNewWindow(save_group->local_group_id().value());
 }
 
-void SavedTabGroupUtils::ToggleGroupPinState(Browser* browser,
-                                             base::Uuid id,
-                                             int event_flags) {
+void SavedTabGroupUtils::ToggleGroupPinState(
+    Browser* browser,
+    const base::Uuid& saved_group_guid) {
   auto* const service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-  service->model()->TogglePinState(id);
+  service->model()->TogglePinState(saved_group_guid);
 }
 
 std::unique_ptr<ui::DialogModel>
 SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
     Browser* browser,
-    const base::Uuid& saved_guid,
-    bool show_pin_unpin_option) {
+    const base::Uuid& saved_guid) {
   const auto* const service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
   const auto* const saved_group = service->model()->Get(saved_guid);
@@ -288,7 +286,7 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           .SetId(kMoveGroupToNewWindowMenuItem)
           .SetIsEnabled(should_enable_move_menu_item));
 
-  if (is_ui_update && show_pin_unpin_option) {
+  if (is_ui_update) {
     dialog_model.AddMenuItem(
         ui::ImageModel::FromVectorIcon(
             saved_group->is_pinned() ? kKeepPinFilledChromeRefreshIcon
@@ -298,8 +296,13 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
         l10n_util::GetStringUTF16(saved_group->is_pinned()
                                       ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
                                       : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP),
-        base::BindRepeating(&SavedTabGroupUtils::ToggleGroupPinState, browser,
-                            saved_group->saved_guid()),
+        base::BindRepeating(
+            [](Browser* browser, const base::Uuid& saved_group_guid,
+               int event_flags) {
+              SavedTabGroupUtils::ToggleGroupPinState(browser,
+                                                      saved_group_guid);
+            },
+            browser, saved_group->saved_guid()),
         ui::DialogModelMenuItem::Params().SetId(kToggleGroupPinStateMenuItem));
   }
 
@@ -333,8 +336,12 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
         tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec()) : tab.title();
     dialog_model.AddMenuItem(
         image, title,
-        base::BindRepeating(&SavedTabGroupUtils::OpenUrlToBrowser, browser,
-                            tab.url()));
+
+        base::BindRepeating(
+            [](Browser* browser, const GURL& url, int event_flags) {
+              SavedTabGroupUtils::OpenUrlToBrowser(browser, url);
+            },
+            browser, tab.url()));
   }
 
   return dialog_model.Build();

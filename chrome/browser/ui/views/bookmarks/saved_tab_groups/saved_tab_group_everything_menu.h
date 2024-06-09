@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 
+#include <map>
+
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/saved_tab_groups/features.h"
@@ -15,6 +17,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/dialog_model_context_menu_controller.h"
+#include "url/gurl.h"
 
 namespace tab_groups {
 
@@ -26,6 +29,29 @@ class STGEverythingMenu : public views::MenuDelegate,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroup);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenGroup);
+
+  // The action users can perform on a saved tab group's submenu.
+  struct Action {
+    enum class Type {
+      DEFAULT = -1,
+      OPEN_IN_BROWSER,
+      OPEN_OR_MOVE_TO_NEW_WINDOW,
+      PIN_OR_UNPIN_GROUP,
+      DELETE_GROUP,
+      OPEN_URL,
+    };
+
+    Action(Type type, std::variant<base::Uuid, GURL> element);
+    Action(const Action&);
+    ~Action();
+
+    Type type = Type::DEFAULT;
+
+    // The action needs either a Uuid (e.g. Open group in new window) or a Url
+    // (e.g. Open tab) to perform.
+    std::variant<base::Uuid, GURL> element;
+  };
 
   STGEverythingMenu(views::MenuButtonController* menu_button_controller,
                     Browser* browser);
@@ -40,14 +66,19 @@ class STGEverythingMenu : public views::MenuDelegate,
   // menu, `parent` will be the MenuItemView that reprensents "Tab groups".
   void PopulateMenu(views::MenuItemView* parent);
 
+  // Called at runtime when users hover a saved tab group to show the submenu.
+  void PopulateTabGroupSubMenu(views::MenuItemView* parent);
+
+  // App menu will be the delegate that gets queried if a submenu item should
+  // be enabled. The app menu then asks `this` to confirm.
+  bool ShouldEnableCommand(int command_id);
+
   // Runs the menu. Only called via pressing the Everything button.
   void RunMenu();
 
   bool IsShowing() { return menu_runner_ && menu_runner_->IsRunning(); }
 
-  void SetShowPinOption(bool show_pin_unpin_option) {
-    show_pin_unpin_option_ = show_pin_unpin_option;
-  }
+  void SetShowSubmenu(bool show_submenu) { show_submenu_ = show_submenu; }
 
   // override views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -68,6 +99,34 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::vector<base::Uuid> GetSortedTabGroupsByCreationTime(
       const SavedTabGroupModel* stg_model);
 
+  // Because all the menu items (i.e. tab group items in the Everything menu -
+  // primary menu and their submenus - secondary menu) need to be recognized and
+  // invoked from the 3-dot menu so they follow the same pattern to get their
+  // command ids, i.e. starts from a min command id
+  // (AppMenuModel::kMinTabGroupsCommandId) and increments by a certain gap
+  // (AppMenuModel::kNumUnboundedMenuTypes). When a command is invoked under the
+  // app menu, AppMenu::IsTabGroupsCommand(id) recognizes it as a tab group
+  // command then delegates to `this` (serves as the real delegate) to execute.
+  // This function updates the latest command id which will be assigned to those
+  // menu items. Here is an example: Suppose the starting command id is 100 and
+  // it increments by 4. If we have 3 tab groups in primary menu and each has
+  // only one tab, then if you open the submenu for the first tab group, the
+  // command ids for all of them are:
+  //
+  // TabGroup1 - 100
+  //        Open Group - 112
+  //        Open/Move to New Window - 116
+  //        Pin/Unpin Group - 120
+  //        Delete Group - 124
+  //        Tab - 128
+  // TabGroup2 - 104
+  // TabGroup3 - 108
+  //
+  // The command ids are assigned to primary menu items first, because the
+  // secondary menu items are generated at run time only if you invoke the
+  // submenu. That's why you have 112 as the first action's id.
+  int GetAndIncrementLatestCommandId();
+
   const SavedTabGroupModel* GetSavedTabGroupModelFromBrowser();
 
   // Saved tab groups with the most recently created as the first.
@@ -76,15 +135,37 @@ class STGEverythingMenu : public views::MenuDelegate,
   // Owned by the Everything button.
   raw_ptr<views::MenuButtonController> menu_button_controller_;
 
-  // Whether or not the submenu of a tab group item should have "Pin/Unpin group
-  // from bookmarks bar" option. True by default. False if the submenu if
-  // visually far away from the bookmark bar e.g. in 3-dot menu.
-  bool show_pin_unpin_option_ = true;
+  // Whether or not a saved tab group item in the Everything menu should have
+  // submenu. True for 3-dot menu.
+  bool show_submenu_ = false;
+
+  // The submenu model of a saved tab group item in the Everything menu. Will be
+  // created at run time from the 3-dot menu.
+  std::unique_ptr<ui::SimpleMenuModel> submenu_model_;
 
   // The convenient controller that runs a context menu for saved tab group menu
   // items.
   std::unique_ptr<views::DialogModelContextMenuController>
       context_menu_controller_;
+
+  // Whether or not the "Open or Move to New Window" should be enabled.
+  bool should_enable_move_menu_item_ = true;
+
+  // The key is a submenu command id, i.e. one of the following:
+  //        Open Group
+  //        Open/Move to New Window
+  //        Pin/Unpin Group
+  //        Delete Group
+  //        Tab
+  // App menu is the delegate to be notified when a submenu item is invoked, it
+  // will then delegate to `this` to execute. See `AppMenu::ExecuteCommand`.
+  // `this` only gets a command id from AppMenu, so `this` needs to know which
+  // action should be performed. That is why this map exists.
+  std::map<int, Action> command_id_to_action_;
+
+  // The command id that gets updated and assigned to tab groups and their
+  // submenu items.
+  int latest_tab_group_command_id_ = -1;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<ui::SimpleMenuModel> model_;
