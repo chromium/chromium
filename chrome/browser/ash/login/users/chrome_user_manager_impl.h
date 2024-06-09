@@ -55,7 +55,6 @@ class ChromeUserManagerImpl
 
   // UserManager implementation:
   void Shutdown() override;
-  void AsyncRemoveCryptohome(const AccountId& account_id) const override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;
@@ -81,8 +80,6 @@ class ChromeUserManagerImpl
  protected:
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
-  void RemoveUserInternal(const AccountId& account_id,
-                          user_manager::UserRemovalReason reason) override;
 
  private:
   friend class UserManagerTest;
@@ -163,8 +160,6 @@ class ChromeUserManagerImpl
       profile_observations_;
 
   base::RepeatingClosure remove_non_cryptohome_data_barrier_;
-
-  std::unique_ptr<MountPerformer> mount_performer_;
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
 };

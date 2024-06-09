@@ -15,8 +15,10 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/user_manager/user.h"
@@ -82,6 +84,31 @@ void UserManagerDelegateImpl::CheckProfileOnLogin(
   CHECK(
       !g_browser_process->profile_manager()->GetProfileByPath(user_profile_dir))
       << "The user profile was loaded before we mounted the cryptohome.";
+}
+
+void UserManagerDelegateImpl::RemoveProfileByAccountId(
+    const AccountId& account_id) {
+  g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .RemoveProfileByAccountId(account_id);
+}
+
+void UserManagerDelegateImpl::RemoveCryptohomeAsync(
+    const AccountId& account_id) {
+  cryptohome::AccountIdentifier identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
+  mount_performer_.RemoveUserDirectoryByIdentifier(
+      identifier, base::BindOnce(
+                      [](const AccountId& account_id,
+                         std::optional<AuthenticationError> error) {
+                        if (error.has_value()) {
+                          LOG(ERROR) << "Removal of cryptohome for "
+                                     << account_id.Serialize()
+                                     << " failed, return code: "
+                                     << error->get_cryptohome_error();
+                        }
+                      },
+                      account_id));
 }
 
 }  // namespace ash

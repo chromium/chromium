@@ -255,11 +255,6 @@ user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
   return result;
 }
 
-void FakeChromeUserManager::AsyncRemoveCryptohome(
-    const AccountId& account_id) const {
-  NOTIMPLEMENTED();
-}
-
 bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==

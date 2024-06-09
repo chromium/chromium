@@ -110,7 +110,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const User& user) const override;
   bool IsUserAllowed(const User& user) const override;
-  void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
 

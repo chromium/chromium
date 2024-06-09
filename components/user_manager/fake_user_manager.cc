@@ -342,10 +342,6 @@ bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
   return false;
 }
 
-void FakeUserManager::AsyncRemoveCryptohome(const AccountId& account_id) const {
-  NOTIMPLEMENTED();
-}
-
 bool FakeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return false;

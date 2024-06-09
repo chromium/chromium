@@ -461,9 +461,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if this is first exec after boot.
   virtual bool IsFirstExecAfterBoot() const = 0;
 
-  // Actually removes cryptohome.
-  virtual void AsyncRemoveCryptohome(const AccountId& account_id) const = 0;
-
   // Returns true if |account_id| is deprecated supervised.
   // TODO(crbug.com/40735554): Check it is not used anymore and remove it.
   virtual bool IsDeprecatedSupervisedAccountId(

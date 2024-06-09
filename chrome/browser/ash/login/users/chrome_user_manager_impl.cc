@@ -122,15 +122,6 @@ namespace {
 
 using ::content::BrowserThread;
 
-// Callback that is called after user removal is complete.
-void OnRemoveUserComplete(const AccountId& account_id,
-                          std::optional<AuthenticationError> error) {
-  if (error.has_value()) {
-    LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
-               << " failed, return code: " << error->get_cryptohome_error();
-  }
-}
-
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
@@ -190,8 +181,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
               : nullptr,
           g_browser_process ? g_browser_process->local_state() : nullptr,
           CrosSettings::Get()),
-      device_local_account_policy_service_(nullptr),
-      mount_performer_(std::make_unique<MountPerformer>()) {
+      device_local_account_policy_service_(nullptr) {
   // UserManager instance should be used only on UI thread.
   // (or in unit tests)
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -305,32 +295,6 @@ void ChromeUserManagerImpl::Shutdown() {
   }
 
   cloud_external_data_policy_handlers_.clear();
-}
-
-void ChromeUserManagerImpl::RemoveUserInternal(
-    const AccountId& account_id,
-    user_manager::UserRemovalReason reason) {
-  auto callback =
-      base::BindOnce(&ChromeUserManagerImpl::RemoveUserInternal,
-                     weak_factory_.GetWeakPtr(), account_id, reason);
-
-  // Ensure the value of owner email has been fetched.
-  if (CrosSettingsProvider::TRUSTED !=
-      cros_settings()->PrepareTrustedValues(std::move(callback))) {
-    // Value of owner email is not fetched yet.  RemoveUserInternal will be
-    // called again after fetch completion.
-    return;
-  }
-  std::string owner;
-  cros_settings()->GetString(kDeviceOwner, &owner);
-  if (account_id == AccountId::FromUserEmail(owner)) {
-    // Owner is not allowed to be removed from the device.
-    return;
-  }
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .RemoveProfileByAccountId(account_id);
-  RemoveNonOwnerUserInternal(account_id, reason);
 }
 
 void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
@@ -694,14 +658,6 @@ void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
 
 void ChromeUserManagerImpl::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
-}
-
-void ChromeUserManagerImpl::AsyncRemoveCryptohome(
-    const AccountId& account_id) const {
-  cryptohome::AccountIdentifier identifier =
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
-  mount_performer_->RemoveUserDirectoryByIdentifier(
-      identifier, base::BindOnce(&OnRemoveUserComplete, account_id));
 }
 
 std::unique_ptr<user_manager::User>

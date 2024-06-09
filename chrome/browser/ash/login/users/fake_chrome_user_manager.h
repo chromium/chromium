@@ -118,7 +118,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
-  void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
 

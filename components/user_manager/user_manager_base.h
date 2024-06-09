@@ -88,6 +88,12 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
     // Verifies the Profile's state for the given `user` on login.
     virtual void CheckProfileOnLogin(const User& user) = 0;
+
+    // Removes the Profile tied to the `account_id`.
+    virtual void RemoveProfileByAccountId(const AccountId& account_id) = 0;
+
+    // Triggers to remove cryptohome for the user identified by `account_id`
+    virtual void RemoveCryptohomeAsync(const AccountId& account_id) = 0;
   };
 
   // Creates UserManagerBase with |task_runner| for UI thread, and given
@@ -269,13 +275,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Notifies observers that another user was added to the session.
   void NotifyUserAddedToSession(const User* added_user);
 
-  // Implementation for RemoveUser method. It is synchronous. It is called from
-  // RemoveUserInternal after owner check.
-  // Pass |account_id| by value here to avoid use-after-free. Original
-  // |account_id| could be destroyed during the user removal.
-  virtual void RemoveNonOwnerUserInternal(AccountId account_id,
-                                          UserRemovalReason reason);
-
   // Removes a regular or supervised user from the user list.
   // Returns the user if found or NULL otherwise.
   // Also removes the user from the persistent user list.
@@ -288,15 +287,15 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // via OnUserToBeRemoved, OnUserRemoved and LocalStateChanged.
   // If |trigger_cryptohome_removal| is set to true, this triggeres an
   // asynchronous operation to remove the user data in Cryptohome.
-  void RemoveUserFromListImpl(const AccountId& account_id,
+  void RemoveUserFromListImpl(AccountId account_id,
                               std::optional<UserRemovalReason> reason,
                               bool trigger_cryptohome_removal);
 
   // Implementation for RemoveUser method. This is an asynchronous part of the
   // method, that verifies that owner will not get deleted, and calls
   // |RemoveNonOwnerUserInternal|.
-  virtual void RemoveUserInternal(const AccountId& account_id,
-                                  UserRemovalReason reason);
+  void RemoveUserInternal(const AccountId& account_id,
+                          UserRemovalReason reason);
 
   // Removes data stored or cached outside the user's cryptohome (wallpaper,
   // avatar, OAuth token status, display name, display email).

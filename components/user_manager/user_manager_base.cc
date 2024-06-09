@@ -458,11 +458,25 @@ void UserManagerBase::RemoveUser(const AccountId& account_id,
 
 void UserManagerBase::RemoveUserInternal(const AccountId& account_id,
                                          UserRemovalReason reason) {
-  RemoveNonOwnerUserInternal(account_id, reason);
-}
+  auto callback =
+      base::BindOnce(&UserManagerBase::RemoveUserInternal,
+                     weak_factory_.GetWeakPtr(), account_id, reason);
 
-void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
-                                                 UserRemovalReason reason) {
+  // Ensure the value of owner email has been fetched.
+  if (cros_settings()->PrepareTrustedValues(std::move(callback)) !=
+      ash::CrosSettingsProvider::TRUSTED) {
+    // Value of owner email is not fetched yet.  RemoveUserInternal will be
+    // called again after fetch completion.
+    return;
+  }
+  std::string owner;
+  cros_settings()->GetString(ash::kDeviceOwner, &owner);
+  if (account_id == AccountId::FromUserEmail(owner)) {
+    // Owner is not allowed to be removed from the device.
+    return;
+  }
+  delegate_->RemoveProfileByAccountId(account_id);
+
   RemoveUserFromListImpl(account_id, reason,
                          /*trigger_cryptohome_removal=*/true);
 }
@@ -500,8 +514,11 @@ void UserManagerBase::CleanStaleUserInformationFor(
   RemoveUserFromList(account_id);
 }
 
+// Use AccountId instead of const AccountId& here, since the account_id maybe
+// originated from the one stored in the User being removed, and the removed ID
+// will be kept using after the actual deletion for observer call.
 void UserManagerBase::RemoveUserFromListImpl(
-    const AccountId& account_id,
+    AccountId account_id,
     std::optional<UserRemovalReason> reason,
     bool trigger_cryptohome_removal) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
@@ -509,7 +526,7 @@ void UserManagerBase::RemoveUserFromListImpl(
     NotifyUserToBeRemoved(account_id);
   }
   if (trigger_cryptohome_removal) {
-    AsyncRemoveCryptohome(account_id);
+    delegate_->RemoveCryptohomeAsync(account_id);
   }
 
   RemoveNonCryptohomeData(account_id);
