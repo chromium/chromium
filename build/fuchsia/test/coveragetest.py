@@ -19,7 +19,10 @@ COVERED_FILES = [
 ]
 
 # The files will be tested without coverage requirements.
-TESTED_FILES = ['common.py', 'ffx_emulator.py', 'serial_boot_device.py']
+TESTED_FILES = [
+    'common.py', 'ffx_emulator.py', 'modification_waiter.py',
+    'serial_boot_device.py'
+]
 
 
 def main():
