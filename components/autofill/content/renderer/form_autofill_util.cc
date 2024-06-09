@@ -2048,7 +2048,7 @@ void WebFormControlElementToFormField(
     }
   }
   if (extract_options.contains(ExtractOption::kDatalist)) {
-    if (WebInputElement input = element.DynamicTo<WebInputElement>(); input) {
+    if (WebInputElement input = element.DynamicTo<WebInputElement>()) {
       std::vector<SelectOption> datalist_options;
       GetDataListSuggestions(input, &datalist_options);
       field->set_datalist_options(std::move(datalist_options));
@@ -2144,7 +2144,7 @@ WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
   return WebFormElement();
 }
 
-std::optional<std::pair<FormData, raw_ref<FormFieldData>>>
+std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,

@@ -310,7 +310,7 @@ std::vector<blink::WebElement> GetWebElementsFromIdList(
 // the default options which is {ExtractOption::kValue,
 // ExtractOption::kOptions}. Returns nullopt if the form is not found or cannot
 // be serialized.
-std::optional<std::pair<FormData, raw_ref<FormFieldData>>>
+std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,

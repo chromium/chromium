@@ -93,7 +93,7 @@ constexpr char kSubmissionSourceHistogram[] =
 // will be acted upon, instead of multiple in close succession (debounce time).
 constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
-using FormAndField = std::pair<FormData, raw_ref<FormFieldData>>;
+using FormAndField = std::pair<FormData, raw_ref<const FormFieldData>>;
 
 // Compare the values before and after JavaScript value changes after:
 // - Converting to lower case.
@@ -1305,12 +1305,13 @@ void AutofillAgent::QueryAutofillSuggestions(
     // If we couldn't extract the form, at least let autocomplete have a shot at
     // providing suggestions.
     FormData form_for_single_field;
-    form_for_single_field.fields.emplace_back();
+    FormFieldData field;
     WebFormControlElementToFormField(
         form_util::GetOwningForm(element), element, nullptr,
         MaybeExtractDatalist({form_util::ExtractOption::kValue,
                               form_util::ExtractOption::kBounds}),
-        &form_for_single_field.fields.back());
+        &field);
+    form_for_single_field.set_fields({std::move(field)});
     form_and_field.emplace(std::move(form_for_single_field),
                            raw_ref(form_for_single_field.fields.back()));
   }
@@ -1329,7 +1330,15 @@ void AutofillAgent::QueryAutofillSuggestions(
       // Find the datalist values and send them to the browser process.
       std::vector<SelectOption> datalist_options;
       form_util::GetDataListSuggestions(input_element, &datalist_options);
-      field->set_datalist_options(std::move(datalist_options));
+      // TODO crbug.com/40232021 - Eliminate const_cast. Some options are:
+      // - Introduce a new ExtractOption.
+      // - Set ExtractOption::kDatalist in the above
+      //   FindFormAndFieldForFormControlElement() and
+      //   WebFormControlElementToFormField() calls.
+      // - Retrieve `field` in `form.mutable_fields()`.
+      // - Let FindFormAndFieldForFormControlElement() return only a FormData.
+      const_cast<FormFieldData&>(*field).set_datalist_options(
+          std::move(datalist_options));
     }
   }
 

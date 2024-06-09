@@ -1785,7 +1785,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
 
   FormData form;
   FormFieldData field;
-  if (std::optional<std::pair<FormData, raw_ref<FormFieldData>>>
+  if (std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
           form_and_field = form_util::FindFormAndFieldForFormControlElement(
               user_input, field_data_manager(), /*extract_options=*/{})) {
     form = std::move(form_and_field->first);

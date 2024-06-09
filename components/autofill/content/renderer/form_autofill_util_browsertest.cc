@@ -852,9 +852,9 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
-      FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
-                                            {ExtractOption::kBounds});
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = FindFormAndFieldForFormControlElement(
+          web_control, field_data_manager(), {ExtractOption::kBounds});
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -865,9 +865,10 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
-      FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
-                                            /*extract_options=*/{});
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = FindFormAndFieldForFormControlElement(
+          web_control, field_data_manager(),
+          /*extract_options=*/{});
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -878,9 +879,9 @@ TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
-      FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
-                                            {ExtractOption::kBounds});
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = FindFormAndFieldForFormControlElement(
+          web_control, field_data_manager(), {ExtractOption::kBounds});
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -926,9 +927,9 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
-      FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
-                                            {ExtractOption::kDatalist});
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = FindFormAndFieldForFormControlElement(
+          web_control, field_data_manager(), {ExtractOption::kDatalist});
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -948,9 +949,9 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
-      FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
-                                            {ExtractOption::kBounds});
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = FindFormAndFieldForFormControlElement(
+          web_control, field_data_manager(), {ExtractOption::kBounds});
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;

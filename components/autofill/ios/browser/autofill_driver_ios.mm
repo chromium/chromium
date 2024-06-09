@@ -419,7 +419,9 @@ void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
 
   // Update the snapshot of the last interacted form with the data in
   // FieldDataManager.
-  for (auto& field : last_interacted_form_->form_data.fields) {
+  std::vector<FormFieldData> fields =
+      last_interacted_form_->form_data.ExtractFields();
+  for (auto& field : fields) {
     const auto& field_id = field.renderer_id();
     if (!field_data_manager->HasFieldData(field_id)) {
       continue;
@@ -428,6 +430,7 @@ void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
     field.set_properties_mask(
         field_data_manager->GetFieldPropertiesMask(field_id));
   }
+  last_interacted_form_->form_data.set_fields(std::move(fields));
 }
 
 void AutofillDriverIOS::RecordFormRemoval(bool submission_detected,
