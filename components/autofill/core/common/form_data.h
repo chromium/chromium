@@ -316,8 +316,10 @@ struct FormData {
   //   fields with the same FormFieldData::global_id().
   std::vector<FormFieldData> fields;
 
-  struct MutableFieldsPassKey {
+  class MutableFieldsPassKey {
+    constexpr MutableFieldsPassKey() = default;
     friend class AutofillAgent;
+    friend class FormDataAndroid;
     friend class FormFiller;
     friend class internal::FormForest;
   };
