@@ -132,6 +132,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1420408895951708260">Beralih ke Cahaya Malam. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1435537621343861112">Tidak dapat memulai dikte. Mikrofon Anda nonaktif.</translation>
+<translation id="1447907279406111651">Sekarang ⋅ Berakhir pukul <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspot perangkat Anda</translation>
 <translation id="1455242230282523554">Tampilkan setelan bahasa</translation>
 <translation id="1460620680449458626">Volume dibisukan.</translation>
@@ -491,6 +492,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2894949423239620203">Kabel dapat memengaruhi performa</translation>
 <translation id="2914580577416829331">Screenshot</translation>
 <translation id="2924416280450782352">Tidak dapat menampilkan item. Coba buka kembali panel ini.</translation>
+<translation id="292506373491190801">Dari acara yang sedang berlangsung</translation>
 <translation id="2931572158271115754">Tidak ada apa pun di daftar tugas ini.</translation>
 <translation id="2932487126591186298">10 menit ditambahkan. <ph name="REMAINING_TIME" /> lagi.</translation>
 <translation id="2935225303485967257">Kelola profil</translation>
@@ -777,6 +779,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3950272133184491871">Logout sekarang?</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="3953130726459169782">Belum ada tugas yang diselesaikan.</translation>
+<translation id="3958714870339660776">Sepanjang Hari</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3969043077941541451">Nonaktif</translation>
 <translation id="3970324493235864154">Lihat notifikasi ponsel Anda</translation>
@@ -1418,6 +1421,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6228457605945141550">Mengurangi kecerahan</translation>
 <translation id="623116199192908855">Transmisikan layar dari Chromebook</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
+<translation id="6232416233079464213">Dari <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon Anda</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Tombol Atas</translation>
@@ -1821,6 +1825,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7807067443225230855">Penelusuran dan Asisten</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Dari acara kalender mendatang</translation>
 <translation id="7829386189513694949">Sinyal kuat</translation>
 <translation id="7830453190047749513">Anda dapat mempersonalisasi tindakan tombol, kecepatan kursor, dan lainnya untuk <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Waktu habis</translation>
@@ -2135,6 +2140,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="899350903320462459">Buka kunci perangkat sebagai <ph name="LOGIN_ID" /> untuk melakukan tindakan notifikasi</translation>
 <translation id="8993733019280019776">Sedang berbicara? Mikrofon Anda nonaktif. Pilih mikrofon untuk mengaktifkannya.</translation>
 <translation id="9000771174482730261">KELOLA PENYIMPANAN</translation>
+<translation id="9002204506712855687">Jelajahi fitur terbaru</translation>
 <translation id="9005984960510803406">Membuka jendela Crosh</translation>
 <translation id="9017320285115481645">Masukkan kode akses orang tua Family Link.</translation>
 <translation id="9024331582947483881">layar penuh</translation>
@@ -2164,6 +2170,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Urungkan tindakan terakhir</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Dalam 1 mnt}other{Dalam # mnt}}</translation>
 <translation id="9129245940793250979">Tombol Belakang</translation>
 <translation id="9133335900048457298">Tidak dapat merekam konten yang dilindungi</translation>
 <translation id="9139720510312328767">Hapus huruf berikutnya</translation>
@@ -2177,6 +2184,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9192133205265227850">Gunakan "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Mentransmisi pada penerima yang tidak dikenal</translation>
 <translation id="9194617393863864469">Login pengguna lain...</translation>
+<translation id="9195990613383871904">Besok</translation>
 <translation id="9198992156681343238">Resolusi <ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" />. Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Hubungkan <ph name="NAME" /> ke Chromebook ini</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Dikelola oleh Administrator Anda</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">तुमच्या शेअर केलेल्या टॅबचा आशय स्क्रोल करा आणि झूम करा</translation>
 <translation id="1089439967362294234">पासवर्ड बदला</translation>
 <translation id="1090629319939036170">VR मेनू</translation>
+<translation id="1091779689406092804">स्क्रीनशॉट</translation>
 <translation id="1094777233105318927">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर आणि फाइल याविषयीची माहिती</translation>
 <translation id="1096545575934602868">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी काढून टाकल्या जातील.</translation>
 <translation id="1097803577928227769">प्रादेशिक उद्याने आणि बागा</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">होम थिएटर सिस्टीम</translation>
 <translation id="1842969606798536927">पेमेंट करा</translation>
 <translation id="1846432862466000825">प्लॅस्टिक (आर्कायव्हल)</translation>
+<translation id="1848640291751752317">डाउनलोड</translation>
 <translation id="1848982255014129637">फोटो (हाय-ग्लॉस)</translation>
 <translation id="1853392626017747777">व्हर्च्युअल कार्डची नोंदणी बंद केली</translation>
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">मटण आणि सीफूड</translation>
 <translation id="2367567093518048410">दर्जा</translation>
 <translation id="23703388716193220">गॉल्फ उपकरणे</translation>
+<translation id="2370368710215137370">फाइल अपलोड</translation>
 <translation id="2374629208601905275">तुमच्या प्रदेशातील कायद्याच्या आधारावर, Chrome तुम्हाला तुमचे डीफॉल्ट शोध इंजीन निवडण्यास सांगते. ही शोध इंजीन तुमच्या प्रदेशात लोकप्रिय आहेत आणि रँडम क्रमाने दाखवली आहेत.</translation>
 <translation id="2377241607395428273">ग्राफिक आणि अ‍ॅनिमेशन सॉफ्टवेअर</translation>
 <translation id="2378084239755710604">सेव्ह केलेले कार्ड बंद आहे.</translation>
@@ -1421,6 +1424,7 @@
 <translation id="3682094733650754138">पत्ता भरा हा पर्याय निवडला होता</translation>
 <translation id="3687920599421452763">व्हॅन आणि मिनीव्हॅन</translation>
 <translation id="3693327506115126094">हे तुम्हीच आहात याची पडताळणी कशी कराल ते निवडा</translation>
+<translation id="3698353241727597930">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमच्या एंटरप्राइझद्वारे व्यवस्थापित केल्या जाणाऱ्या <ph name="CLOUD_STORAGE" /> मध्ये <ph name="FILES" /> सेव्ह करण्यासाठी कॉन्फिगर केले आहे. तुम्ही या फाइल हटवता, तेव्हा त्यांचे नियंत्रण, ऑडिट केले जाऊ शकते आणि त्या स्टोअर केल्या जाऊ शकतात.</translation>
 <translation id="3698629142018988477">साइट तयार करा बटण, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="3701325639446035885">इव्‍हेंट तिकीट विक्री</translation>
 <translation id="3701427423622901115">रीसेट करण्याची नोंद घेतली आहे.</translation>
@@ -1496,6 +1500,7 @@
 <translation id="3826050100957962900">तृतीय पक्ष साइन इन</translation>
 <translation id="3827112369919217609">अ‍ॅब्सोल्यूट</translation>
 <translation id="3828924085048779000">रिक्त सांकेतिक पासफ्रेझाची परवानगी नाही.</translation>
+<translation id="3830139096297532361">ही PDF ॲक्सेस करण्यायोग्य नाही. मजकूर एक्स्ट्रॅक्शन फाइल डाउनलोड करता आल्या नाहीत. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="3830470485672984938">दुसरी पासकी वापरा</translation>
 <translation id="3831065134033923230">तुमचे सेव्ह केलेले पासवर्ड तपासा</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ने अतिरिक्त फंक्शनसाठी एक्स्टेंशन इंस्टॉल केले आहे. एक्स्टेंशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
@@ -1670,6 +1675,7 @@
 <translation id="4202554117186904723">पाचवा रोल</translation>
 <translation id="4203769790323223880">कॅमेराला अनुमती नाही</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवॉल आणि अँटीव्हायरस कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">मोठा</translation>
 <translation id="4210602799576081649">पडताळणी कोड एक्स्पायर झाला, नवीन कोडसाठी विनंती करा</translation>
 <translation id="421066178035138955">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरा</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">नौकाविहार</translation>
 <translation id="6272088941196661550">तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी तुमचा प्रवास पुन्हा सुरू करा</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive आणि OneDrive</translation>
 <translation id="6280223929691119688">या पत्त्यावर देऊ शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284449872909111707">एसएमएस आणि झटपट मेसेजिंग</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">टीव्हीवरील नाटके</translation>
 <translation id="7119371694555167493">कॉपी करणे टाइम आउट झाले</translation>
 <translation id="7119414471315195487">अन्य टॅब आणि प्रोग्राम बंद करा</translation>
+<translation id="7120588595737538743">डाउनलोड आणि स्क्रीनशॉट</translation>
 <translation id="7124354851782353862">तुमचा CVC एंटर करा</translation>
 <translation id="7129409597930077180">या पत्त्यावर पाठवू शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome टीप डिसमिस करण्यासाठी टॅब त्यानंतर एंटर प्रेस करा.</translation>
 <translation id="7485085230273446323">व्यवसाय आणि औद्योगिक</translation>
 <translation id="7485870689360869515">डेटा आढळला नाही.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">शँपू आणि कंडिशनर</translation>
 <translation id="7495528107193238112">हा आशय ब्लॉक केला गेला आहे. समस्येचे निराकरण करण्यासाठी साइटच्या मालकाशी संपर्क साधा.</translation>
 <translation id="749865518782565832">प्लंबिंग</translation>

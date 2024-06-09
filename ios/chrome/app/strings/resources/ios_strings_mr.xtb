@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">पासवर्ड सेव्ह करा</translation>
 <translation id="1753905327828125965">सर्वाधिक भेट दिलेले</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} कमकुवत पासवर्ड}other{{count} कमकुवत पासवर्ड}}</translation>
+<translation id="1764070164487214210">दिशानिर्देश</translation>
 <translation id="1766411844240160513">फॉर्म ऑटोफिल करा</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">पर्सनलाइझ केलेला आशय</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">गुप्त टॅब</translation>
 <translation id="3775743491439407556">सिंक काम करत नाही</translation>
 <translation id="3779810277399252432">कोणतेही इंटरनेट कनेक्शन नाही.</translation>
+<translation id="3785672280731998727">दाखवण्याचे नाव</translation>
 <translation id="3789294999358192700">खालील पायर्‍या फॉलो करा:</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="380329542618494757">नाव</translation>
 <translation id="3803696231112616155">ही साइट भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="3808311849069021992">शोध इंजीन तपशील दाखवा</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
+<translation id="3812308602011798782">परीक्षणे</translation>
 <translation id="3818045793209708987">हे पॅकेज ट्रॅक करणे थांबवले आहे</translation>
 <translation id="3818293389945649617">पुढील शोधा</translation>
 <translation id="3819183753496523827">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">एका टॅपसह तुमचे पासवर्ड कोणत्याही अ‍ॅपमध्ये सेव्ह करा</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="4054572406751135230">बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसंबंधित अपडेट मिळवा.</translation>
+<translation id="4068959193278821990">वर्धित संरक्षण सुरू करा...</translation>
 <translation id="4092655288299341041">मदत दाखवा</translation>
 <translation id="4105841739161771091">{count,plural, =1{पत्ता हटवा}other{पत्ते हटवा}}</translation>
 <translation id="4108998448622696017">धोकादायक घटना घडल्यावर ती ओळखून तुम्हाला चेतावणी देतो.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">निव्वळ-एक्सपोर्ट डेटा पाठविण्यासाठी, कृपया सेटिंग्ज ॲप मध्ये तुमचे ईमेल खाते कॉन्फिगर करा.</translation>
 <translation id="4124987746317609294">वेळ वर्गवारी</translation>
 <translation id="4133265950310064865">वर्धित संरक्षण</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">या वेबसाइटला फाइल डाउनलोड करायची आहे आणि ती तुमच्या कॅलेंडरमध्ये जोडायची आहे.</translation>
 <translation id="4152011295694446843">तुमचे बुकमार्क तुम्हाला येथे सापडतील</translation>
@@ -1473,6 +1478,7 @@
 <translation id="834783239627985533">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8358401059263985056">सूचना सुरू करा</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> साठी Google Photos मध्ये इमेज सेव्ह करत आहे...</translation>
+<translation id="8369246252708539904">पासकी हटवा</translation>
 <translation id="8370406443343902172">सेटिंग्ज वर जा...</translation>
 <translation id="8374977641764177587">सूचना सुरू करायच्या आहेत का?</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>

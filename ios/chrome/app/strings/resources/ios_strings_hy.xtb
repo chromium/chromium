@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Պահել գաղտնաբառերը</translation>
 <translation id="1753905327828125965">Ամենահաճախ այցելվող</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} թույլ գաղտնաբառ}one{{count} թույլ գաղտնաբառ}other{{count} թույլ գաղտնաբառ}}</translation>
+<translation id="1764070164487214210">Երթուղիներ</translation>
 <translation id="1766411844240160513">Ավտոմատ լրացնել ձևը</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Անհատականացված բովանդակություն</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">Ինկոգնիտո ներդիրներ</translation>
 <translation id="3775743491439407556">Համաժամացումը չի աշխատում</translation>
 <translation id="3779810277399252432">Կապ չկա</translation>
+<translation id="3785672280731998727">Ցուցադրվող անունը</translation>
 <translation id="3789294999358192700">Կատարեք հետևյալ քայլերը․</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="380329542618494757">Անուն</translation>
 <translation id="3803696231112616155">Առաջարկել այս կայքի թագմանությունը</translation>
 <translation id="3808311849069021992">Ցույց տալ որոնողական համակարգի մանրամասները</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
+<translation id="3812308602011798782">Կարծիքներ</translation>
 <translation id="3818045793209708987">Այս առաքանին այլևս չի հետագծվում</translation>
 <translation id="3818293389945649617">Գտնել հաջորդը</translation>
 <translation id="3819183753496523827">Կապ չկա։ Ստուգեք կապը և նորից փորձեք։</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">Մեկ հպումով մուտքագրեք ձեր պահված գաղտնաբառերը ցանկացած հավելվածում</translation>
 <translation id="4049507953662678203">Համոզվեք, որ կապակցված եք համացանցին և փորձեք նորից:</translation>
 <translation id="4054572406751135230">Հետևեք նորություններին, սպորտային իրադարձություններին և այլ թեմաների։</translation>
+<translation id="4068959193278821990">Միացնել բարելավված պաշտպանությունը...</translation>
 <translation id="4092655288299341041">Ցույց տալ օգնության էջը</translation>
 <translation id="4105841739161771091">{count,plural, =1{Ջնջել հասցեն}one{Ջնջել հասցեն}other{Ջնջել հասցեները}}</translation>
 <translation id="4108998448622696017">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">Զուտ արտահանման տվյալները ուղարկելու համար կազմաձևեք ձեր էլփոստի հաշիվը Կարգավորումներ հավելվածում:</translation>
 <translation id="4124987746317609294">Ժամանակի սանդղակ</translation>
 <translation id="4133265950310064865">Կատարելագործված պաշտպանություն</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4148023517926189160">Այս կայքն ուզում է ֆայլ ներբեռնել և այն ավելացնել ձեր օրացույցում։</translation>
 <translation id="4152011295694446843">Ձեր էջանիշները կգտնեք այստեղ</translation>
@@ -1472,6 +1477,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="834783239627985533">Հաճախ այցելվող կայքեր</translation>
 <translation id="8358401059263985056">Միացնել ծանուցումները</translation>
 <translation id="8364841868226993049">Պատկերը պահվում է Google Լուսանկարների <ph name="USER_EMAIL" /> հաշվում...</translation>
+<translation id="8369246252708539904">Ջնջել մուտքի բանալին</translation>
 <translation id="8370406443343902172">Անցնել Կարգավորումներ...</translation>
 <translation id="8374977641764177587">Միացնե՞լ ծանուցումները</translation>
 <translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>

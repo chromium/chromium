@@ -252,6 +252,7 @@
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1918022425394817322">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում</translation>
 <translation id="1923539912171292317">Ավտոմատ սեղմումներ</translation>
+<translation id="1925320505152357008">1 րոպեից պակաս</translation>
 <translation id="1928739107511554905">Թարմացումը տեղադրելու համար հպէկրանի միջոցով վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
 <translation id="1948405482892809935">Անցնել հաջորդ օգտատիրոջը</translation>
 <translation id="1951012854035635156">Օգնական</translation>
@@ -606,6 +607,7 @@
 <translation id="334927402682780278">Ընտրել տեքստը՝ նշորդից մինչև տողի վերջ</translation>
 <translation id="3349345708646875009">Բացել խնդիրների կառավարիչը</translation>
 <translation id="3364721542077212959">Ստիլուսի գործիքներ</translation>
+<translation id="3365281428003534650">Ժամաչափ, առաջադրանք և երաժշտ․</translation>
 <translation id="3365977133351922112">Հեռախոսը շատ հեռու է։ Մոտեցրեք այն։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369111525500416043">Վերջնաժամկետը մոտ է</translation>
@@ -908,6 +910,7 @@
 <translation id="4406883609789734330">Կենդանի ենթագրեր</translation>
 <translation id="4412698727486357573">Օգնության կենտրոն</translation>
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
+<translation id="4417647906073317561">Առանց շեղումների ռեժիմի կարգավորումներ։ Սահմանեք ժամանակաչափ, առաջադրանք և երաժշտություն, որոնք կօգնեն ձեզ կենտրոնանալ։</translation>
 <translation id="4424159417645388645">Աշխատասեղան 5</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
 <translation id="4441283832827406317">Հավելվածները դասավորված են ըստ անվանման</translation>
@@ -1133,6 +1136,7 @@
 <translation id="5208059991603368177">Միացված է</translation>
 <translation id="5216991270656129561">Անջատված կլինի մինչև <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
+<translation id="5228195526683428788">Տրոհված էկրանի բաժանիչ</translation>
 <translation id="5229343007215035173">Միացնել/անջատել գաղտնիության էկրանը</translation>
 <translation id="5230516054153933099">Պատուհան</translation>
 <translation id="5234764350956374838">Փակել</translation>
@@ -1519,6 +1523,7 @@
 <translation id="6613765291890844037">Օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" /> տարածք | Ընդհանուր տարածքը՝ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>
 <translation id="6622679827379792051">Կարգավորել հեռախոսի հավելվածների դիտումը</translation>
+<translation id="662279009180869175">Տրոհված էկրանի չափը փոխելու համար օգտագործեք ձախ և աջ սլաքները</translation>
 <translation id="6624493541160101248">Ընթացիկ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> և այլ հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="6627638273713273709">Որոնում+Shift+K</translation>
@@ -1537,6 +1542,7 @@
 <translation id="6670153871843998651">Աշխատասեղան 3</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6671661918848783005">Չհաջողվեց ապակողպել Chromebook-ը</translation>
+<translation id="6676552993057022464">Տրոհված էկրանի չափը փոխելու համար օգտագործեք վերև և ներքև սլաքները</translation>
 <translation id="6682029141988159141">Տեղադրել սեղմատախտակի բովանդակությունը</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6686023075541098243">Կարգավորել հեռախոսի ծանուցումների դիտումը</translation>
@@ -1856,6 +1862,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Առանց շեղումների ռեժիմում ծանուցումների ձայնն անջատված է մինչև <ph name="TIME" /></translation>
 <translation id="7901190436359881020">Տեղերով փոխել պատուհանները</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Հպեք մատնահետքի սկաներին</translation>
