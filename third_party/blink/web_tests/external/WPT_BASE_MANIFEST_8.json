@@ -236706,6 +236706,19 @@
        }
       ]
      ],
+     "new-content-ancestor-clipped-2.html": [
+      "3ce02097476ec97219e2991ab1366f1ea746caa1",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-ancestor-clipped-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "new-content-ancestor-clipped.html": [
       "69a8de5f527a459f2a85b562dee46b8298bbb65e",
       [
@@ -236902,6 +236915,35 @@
        {}
       ]
      ],
+     "new-content-flat-transform-ancestor.html": [
+      "112a0af2c45d8df8b6e2a8580dece11e86f816e8",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-flat-transform-ancestor-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            63
+           ],
+           [
+            0,
+            510
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "new-content-from-root-display-none.html": [
       "e59c029ccce74d22c553af008d478e8accf3cef1",
       [
@@ -237094,6 +237136,19 @@
        {}
       ]
      ],
+     "new-content-preserve-3d-ancestor.html": [
+      "61f274d276cae22f5f52b45bb16bd3b0600e8b1e",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-preserve-3d-ancestor-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "new-content-scaling.html": [
       "376b7fd11f7e2e86e549c300fcb09cc8767751c4",
       [
@@ -237121,6 +237176,19 @@
          ]
         ]
        }
+      ]
+     ],
+     "new-content-transform-position-fixed.html": [
+      "4b27796c9b4fa224b82514fd0c05bea56a125ea1",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-transform-position-fixed-ref.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "new-content-with-object-view-box.html": [
@@ -237973,7 +238041,7 @@
       ]
      ],
      "root-scrollbar-with-fixed-background.html": [
-      "3c3429412bf309be9181f5f4f2d75019b80a2dbf",
+      "11673d82fc3f24d3084a64819c2d8c669ec834f2",
       [
        null,
        [
@@ -343459,6 +343527,10 @@
       "79e89801391530b6fb074545a92db68493667f05",
       []
      ],
+     "new-content-ancestor-clipped-2-ref.html": [
+      "f37c9544be60183e8ae831c413330f34d4cfb757",
+      []
+     ],
      "new-content-ancestor-clipped-ref.html": [
       "caa99f280796f2ccae9b926f14f8355599f02add",
       []
@@ -343503,6 +343575,10 @@
       "9ed3f5f681c4c86cb5397cc25d66f3dd8b68902f",
       []
      ],
+     "new-content-flat-transform-ancestor-ref.html": [
+      "8728d34ae49502881159ff16b7bdd497faca6283",
+      []
+     ],
      "new-content-from-root-display-none-ref.html": [
       "6c165d1b24415a791848788d2b3b2c08683f4902",
       []
@@ -343535,8 +343611,16 @@
       "89d23319710d00a46f29da79b15976641a72e171",
       []
      ],
+     "new-content-preserve-3d-ancestor-ref.html": [
+      "c6c054c130be55d5886264979d0f2364901287ac",
+      []
+     ],
      "new-content-scaling-ref.html": [
       "729be2fcbf606723a4e3449bf3ffad97c8e6bf15",
+      []
+     ],
+     "new-content-transform-position-fixed-ref.html": [
+      "3c3a33d0b2ce23eeffc1dee733c12bf11e09cdb9",
       []
      ],
      "new-element-on-start-ref.html": [
@@ -343644,7 +343728,7 @@
       []
      ],
      "root-scrollbar-with-fixed-background-ref.html": [
-      "7b2a6103f3bf27494089f9d8b210d9f99e7f959c",
+      "ae1ff38f2f63dae173043e9ae07a7e494e236134",
       []
      ],
      "root-style-change-during-animation-ref.html": [
@@ -392981,6 +393065,10 @@
      []
     ],
     "resources": {
+     "helpers.js": [
+      "2dc5ab00dd16f181f85c4b0ab8f87934a932091d",
+      []
+     ],
      "partitioned-estimate-usage-details-caches-helper-frame.html": [
       "0679c1decf55835a0de37a9e64f12647da2a6c0a",
       []
@@ -645673,7 +645761,7 @@
      ]
     ],
     "opaque-origin.https.window.js": [
-     "cc1d31fdf2c68322f72a40b1e84ec05ab1930779",
+     "b9539760db7c42b3079bac97efeb7f252b54ccaa",
      [
       "storage/opaque-origin.https.window.html",
       {
@@ -645681,6 +645769,18 @@
         [
          "title",
          "StorageManager API and opaque origins"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "resources/helpers.js"
         ]
        ]
       }
@@ -645789,33 +645889,34 @@
       }
      ]
     ],
-    "storagemanager-persist-persisted-match.https.any.js": [
-     "edbe67fae2c1e17bc7ce3aa3c3d1dc9db7982cac",
+    "storagemanager-persist-persisted-match.https.window.js": [
+     "9a4e0d329fcff1b5370ca8e63f1e2052a6130d52",
      [
-      "storage/storagemanager-persist-persisted-match.https.any.html",
+      "storage/storagemanager-persist-persisted-match.https.window.html",
       {
        "script_metadata": [
         [
          "title",
          "StorageManager: result of persist() matches result of persisted()"
-        ]
-       ]
-      }
-     ],
-     [
-      "storage/storagemanager-persist-persisted-match.https.any.worker.html",
-      {
-       "script_metadata": [
+        ],
         [
-         "title",
-         "StorageManager: result of persist() matches result of persisted()"
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "resources/helpers.js"
         ]
        ]
       }
      ]
     ],
     "storagemanager-persist.https.window.js": [
-     "13e17a16e14198e21b0b5984ed46c93a50daed41",
+     "1bcbefd8a96f4e680e0c31a40c8b457818411215",
      [
       "storage/storagemanager-persist.https.window.html",
       {
@@ -645823,6 +645924,18 @@
         [
          "title",
          "StorageManager: persist()"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "resources/helpers.js"
         ]
        ]
       }

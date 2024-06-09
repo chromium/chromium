@@ -56,7 +56,13 @@ failIfNot(document.startViewTransition, "Missing document.startViewTransition");
 async function runTest() {
   await waitForAtLeastOneFrame();
 
-  document.documentElement.scrollTop = 500;
+  await new Promise((resolve) => {
+    addEventListener("scroll", () => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    }, { once: true, capture: true });
+
+    document.documentElement.scrollTop = 500;
+  });
   document.startViewTransition(() => {
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
