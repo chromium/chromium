@@ -224,7 +224,7 @@ struct MEDIA_EXPORT XByteRangeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
   static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
 
-  types::ByteRangeExpression range;
+  types::parsing::ByteRangeExpression range;
 };
 
 // Represents the contents of the #EXT-X-DISCONTINUITY tag
@@ -275,7 +275,7 @@ struct MEDIA_EXPORT XMapTag {
 
   // This specifies a byte range into the resource containing the media
   // initialization section.
-  std::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::parsing::ByteRangeExpression> byte_range;
 };
 
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
@@ -306,7 +306,7 @@ struct MEDIA_EXPORT XPartTag {
 
   // If this partial segment is a subrange of its resource, this defines the
   // subrange.
-  std::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::parsing::ByteRangeExpression> byte_range;
 
   // Whether the partial segment contains an independent frame.
   bool independent = false;

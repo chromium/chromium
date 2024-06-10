@@ -19,6 +19,62 @@
 
 namespace media::hls::types {
 
+namespace parsing {
+
+// static
+ParseStatus::Or<base::TimeDelta> TimeDelta::Parse(ResolvedSourceString str) {
+  return ParseDecimalFloatingPoint(str).MapValue(
+      [](DecimalFloatingPoint t) -> ParseStatus::Or<base::TimeDelta> {
+        auto duration = base::Seconds(t);
+        if (duration.is_max()) {
+          return ParseStatusCode::kValueOverflowsTimeDelta;
+        }
+        return duration;
+      });
+}
+
+// static
+ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
+    ResolvedSourceString source_str) {
+  // If this ByteRange has an offset, it will be separated from the length by
+  // '@'.
+  const auto at_index = source_str.Str().find_first_of('@');
+  const auto length_str = source_str.Consume(at_index);
+  auto length = ParseDecimalInteger(length_str);
+  if (!length.has_value()) {
+    return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+        .AddCause(std::move(length).error());
+  }
+
+  // If the offset was present, try to parse it
+  std::optional<types::DecimalInteger> offset;
+  if (at_index != std::string_view::npos) {
+    source_str.Consume(1);
+    auto offset_result = ParseDecimalInteger(source_str);
+    if (!offset_result.has_value()) {
+      return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+          .AddCause(std::move(offset_result).error());
+    }
+
+    offset = std::move(offset_result).value();
+  }
+
+  return ByteRangeExpression{.length = std::move(length).value(),
+                             .offset = offset};
+}
+
+// static
+ParseStatus::Or<ResolvedSourceString> RawStr::Parse(ResolvedSourceString str) {
+  return str;
+}
+
+// static
+ParseStatus::Or<bool> YesOrNo::Parse(ResolvedSourceString str) {
+  return str.Str() == "YES";
+}
+
+}  // namespace parsing
+
 namespace {
 bool IsOneOf(char c, std::string_view set) {
   return base::Contains(set, c);
@@ -186,35 +242,6 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
                            .height = std::move(height).value()};
 }
 
-// static
-ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
-    ResolvedSourceString source_str) {
-  // If this ByteRange has an offset, it will be separated from the length by
-  // '@'.
-  const auto at_index = source_str.Str().find_first_of('@');
-  const auto length_str = source_str.Consume(at_index);
-  auto length = ParseDecimalInteger(length_str);
-  if (!length.has_value()) {
-    return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
-        .AddCause(std::move(length).error());
-  }
-
-  // If the offset was present, try to parse it
-  std::optional<types::DecimalInteger> offset;
-  if (at_index != std::string_view::npos) {
-    source_str.Consume(1);
-    auto offset_result = ParseDecimalInteger(source_str);
-    if (!offset_result.has_value()) {
-      return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
-          .AddCause(std::move(offset_result).error());
-    }
-
-    offset = std::move(offset_result).value();
-  }
-
-  return ByteRangeExpression{.length = std::move(length).value(),
-                             .offset = offset};
-}
 
 // static
 std::optional<ByteRange> ByteRange::Validate(DecimalInteger length,

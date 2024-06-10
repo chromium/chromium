@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/time/time.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/variable_dictionary.h"
@@ -18,6 +19,106 @@ namespace media::hls::types {
 // A `DecimalInteger` is an unsigned integer value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=of%20the%20following%3A%0A%0A%20%20%20o-,decimal%2Dinteger,-%3A%20an%20unquoted%20string
 using DecimalInteger = uint64_t;
+
+namespace parsing {
+
+// A substituting parser functions as a super-struct parser which provides the
+// entry points for raw SourceStrings to either be consumed raw or resolved by
+// the sub-struct's Parse method. It is specialized with:
+// Subtype: The substruct implementation, which provides the method
+//          `static T Parse(ResolvedSourceString, ParseArgs...)`
+// T: The type that should result from successful parsing.
+// ParseArgs...: Additional arguments that might be passed to the Parse
+//               function declared on `Subtype`. For example, some quoted
+//               strings are required to be non-empty, so the quoted string
+//               parser should have an optional bool parameter to require it.
+template <typename Subtype, typename T, typename... ParseArgs>
+struct MEDIA_EXPORT SubstitutingParser {
+  using ParseInto = T;
+
+  static ParseStatus::Or<ParseInto> ParseWithSubstitution(
+      SourceString str,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer,
+      ParseArgs&&... args) {
+    return variable_dict.Resolve(str, sub_buffer)
+        .MapValue([... args = std::forward<ParseArgs>(args)](
+                      ResolvedSourceString str) {
+          return Subtype::Parse(str, std::forward<ParseArgs>(args)...);
+        });
+  }
+
+  static ParseStatus::Or<ParseInto> ParseWithoutSubstitution(
+      SourceString str,
+      ParseArgs&&... args) {
+    return Subtype::Parse(str.SkipVariableSubstitution(),
+                          std::forward<ParseArgs>(args)...);
+  }
+};
+
+// A wrapping parser that will parse some other type T which is contained
+// withing quotation marks. Quoted<RawStr>::ParseWithoutSubstitution will ensure
+// that the SourceString starts and ends with quotation marks, and will return
+// a ResolvedSourceString representing the content inside those quotes.
+template <typename T>
+struct MEDIA_EXPORT Quoted
+    : public SubstitutingParser<Quoted<T>, typename T::ParseInto> {
+  static ParseStatus::Or<typename T::ParseInto> Parse(
+      ResolvedSourceString str,
+      bool allow_empty = false) {
+    if (str.Size() < 2) {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+    if (*str.Str().begin() != '"') {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+    if (*str.Str().rbegin() != '"') {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+
+    ResolvedSourceString unquoted = str.Substr(1, str.Size() - 2);
+    if (!allow_empty && unquoted.Empty()) {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+
+    return T::Parse(unquoted);
+  }
+};
+
+// Parser struct for a plain ResolvedSourceString. This is usually used
+// for things like URIs.
+struct MEDIA_EXPORT RawStr : SubstitutingParser<RawStr, ResolvedSourceString> {
+  static ParseStatus::Or<ResolvedSourceString> Parse(ResolvedSourceString str);
+};
+
+struct MEDIA_EXPORT YesOrNo : SubstitutingParser<YesOrNo, bool> {
+  static ParseStatus::Or<bool> Parse(ResolvedSourceString str);
+};
+
+// Parser struct for floating point representations of TimeDelta instances.
+struct MEDIA_EXPORT TimeDelta : SubstitutingParser<TimeDelta, base::TimeDelta> {
+  static ParseStatus::Or<base::TimeDelta> Parse(ResolvedSourceString str);
+};
+
+// A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
+// in tags describing byte ranges of a resource.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
+struct MEDIA_EXPORT ByteRangeExpression
+    : public SubstitutingParser<ByteRangeExpression, ByteRangeExpression> {
+  static ParseStatus::Or<ByteRangeExpression> Parse(
+      ResolvedSourceString source_str);
+
+  // The length of the sub-range, in bytes.
+  types::DecimalInteger length;
+
+  // If present, the offset in bytes from the beginning of the resource.
+  // If not present, the sub-range begins at the next byte following that of the
+  // previous segment. The previous segment must be a subrange of the same
+  // resource.
+  std::optional<types::DecimalInteger> offset;
+};
+
+}  // namespace parsing
 
 MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
     ResolvedSourceString source_str);
@@ -47,23 +148,6 @@ struct MEDIA_EXPORT DecimalResolution {
   types::DecimalInteger height;
 
   types::DecimalInteger Area() const { return width * height; }
-};
-
-// A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
-// in tags describing byte ranges of a resource.
-// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
-struct MEDIA_EXPORT ByteRangeExpression {
-  static ParseStatus::Or<ByteRangeExpression> Parse(
-      ResolvedSourceString source_str);
-
-  // The length of the sub-range, in bytes.
-  types::DecimalInteger length;
-
-  // If present, the offset in bytes from the beginning of the resource.
-  // If not present, the sub-range begins at the next byte following that of the
-  // previous segment. The previous segment must be a subrange of the same
-  // resource.
-  std::optional<types::DecimalInteger> offset;
 };
 
 // This is similar to `ByteRangeExpression`, but with a stronger contract:

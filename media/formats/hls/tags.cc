@@ -416,34 +416,6 @@ ParseStatus::Or<Result> ParseField(AttrEnum field_name,
   return ParseStatusCode::kMalformedTag;
 }
 
-ParseStatus::Or<base::TimeDelta> ParseTimeDelta(
-    SourceString content,
-    const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer) {
-  auto maybe_dfp =
-      types::ParseDecimalFloatingPoint(content.SkipVariableSubstitution());
-  if (!maybe_dfp.has_value()) {
-    return std::move(maybe_dfp).error();
-  }
-  auto duration = base::Seconds(std::move(maybe_dfp).value());
-  if (duration.is_max()) {
-    return ParseStatusCode::kValueOverflowsTimeDelta;
-  }
-  return duration;
-}
-
-ParseStatus::Or<types::ByteRangeExpression> ParseByteRange(
-    SourceString content,
-    const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer) {
-  return types::ParseQuotedString(content, variable_dict, sub_buffer)
-      .MapValue(types::ByteRangeExpression::Parse);
-}
-
-ParseStatus::Or<bool> YesNoStringToBool(SourceString content) {
-  return content.SkipVariableSubstitution().Str() == "YES";
-}
-
 }  // namespace
 
 // static
@@ -1045,7 +1017,7 @@ ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
     return ParseStatusCode::kMalformedTag;
   }
 
-  auto range = types::ByteRangeExpression::Parse(
+  auto range = types::parsing::ByteRangeExpression::Parse(
       tag.GetContent()->SkipVariableSubstitution());
   if (!range.has_value()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
@@ -1115,12 +1087,12 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
     return ParseStatusCode::kMalformedTag;
   }
 
-  std::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::parsing::ByteRangeExpression> byte_range;
   if (map.HasValue(XMapTagAttribute::kByteRange)) {
     auto result =
         types::ParseQuotedString(map.GetValue(XMapTagAttribute::kByteRange),
                                  variable_dict, sub_buffer)
-            .MapValue(types::ByteRangeExpression::Parse);
+            .MapValue(types::parsing::ByteRangeExpression::Parse);
     if (!result.has_value()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(result).error());
@@ -1156,25 +1128,33 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
         .AddCause(std::move(map_result));
   }
 
-  auto uri = ParseField<ResolvedSourceString>(XPartTagAttribute::kUri, map,
-                                              &types::ParseQuotedString, vars,
-                                              subs, false);
+  auto uri = ParseField<ResolvedSourceString>(
+      XPartTagAttribute::kUri, map,
+      &types::parsing::Quoted<types::parsing::RawStr>::ParseWithSubstitution,
+      vars, subs);
   RETURN_IF_ERROR(uri);
 
-  auto duration = ParseField<base::TimeDelta>(XPartTagAttribute::kDuration, map,
-                                              &ParseTimeDelta, vars, subs);
+  auto duration = ParseField<base::TimeDelta>(
+      XPartTagAttribute::kDuration, map,
+      &types::parsing::TimeDelta::ParseWithoutSubstitution);
   RETURN_IF_ERROR(duration);
 
-  auto byte_range = ParseField<std::optional<types::ByteRangeExpression>>(
-      XPartTagAttribute::kByteRange, map, &ParseByteRange, vars, subs);
+  auto byte_range =
+      ParseField<std::optional<types::parsing::ByteRangeExpression>>(
+          XPartTagAttribute::kByteRange, map,
+          &types::parsing::Quoted<
+              types::parsing::ByteRangeExpression>::ParseWithSubstitution,
+          vars, subs);
   RETURN_IF_ERROR(byte_range);
 
   auto independent = ParseField<std::optional<bool>>(
-      XPartTagAttribute::kIndependent, map, &YesNoStringToBool);
+      XPartTagAttribute::kIndependent, map,
+      &types::parsing::YesOrNo::ParseWithoutSubstitution);
   RETURN_IF_ERROR(independent);
 
-  auto gap = ParseField<std::optional<bool>>(XPartTagAttribute::kGap, map,
-                                             &YesNoStringToBool);
+  auto gap = ParseField<std::optional<bool>>(
+      XPartTagAttribute::kGap, map,
+      &types::parsing::YesOrNo::ParseWithoutSubstitution);
   RETURN_IF_ERROR(gap);
 
   return XPartTag{.uri = std::move(uri).value(),
