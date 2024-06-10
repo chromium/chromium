@@ -923,7 +923,8 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     uint64_t trigger_field_max_length) {
-  // TODO(b/): Remove when launching AutofillGranularFillingAvailable.
+  // TODO(crbug.com/40274514): Remove when launching
+  // AutofillGranularFillingAvailable.
   if (profiles.empty()) {
     return {};
   }
@@ -934,6 +935,9 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
           profiles, field_types, suggestion_type, trigger_field_type,
           app_locale);
   // This will be used to check if suggestions should be supported with icons.
+  // TODO(b/40285811): Consider simplifying this to be any address field. This
+  // will allow to add icons for every full form filling and manual fallback
+  // case.
   const bool contains_profile_related_fields =
       base::ranges::count_if(field_types, [](FieldType field_type) {
         FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
@@ -957,6 +961,7 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
                   .Get()
           ? NAME_FULL
           : trigger_field_type;
+  const bool is_filling_address_form = IsAddressType(trigger_field_type);
   for (size_t i = 0; i < profiles.size(); ++i) {
     const AutofillProfile* const profile = profiles[i];
     // Compute the main text to be displayed in the suggestion bubble.
@@ -975,22 +980,24 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().type = suggestion_type;
-    suggestions.back().is_acceptable = IsAddressType(trigger_field_type);
+    suggestions.back().is_acceptable = is_filling_address_form;
     if (suggestions.back().type ==
         SuggestionType::kAddressFieldByFieldFilling) {
       suggestions.back().field_by_field_filling_type_used =
           std::optional(trigger_field_type);
     }
     // We add an icon to the address (profile) suggestion if there is more than
-    // one profile related field in the form. For email fields, the email icon
-    // is used unconditionally to create consistency with plus address
-    // suggestions.
+    // one profile related field in the form or the user triggered address
+    // filling on on a non address field (manual fallbacks). For email fields,
+    // the email icon is used unconditionally to create consistency with plus
+    // address suggestions.
     if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {
       suggestions.back().icon = Suggestion::Icon::kEmail;
-    } else if (contains_profile_related_fields) {
+    } else if (contains_profile_related_fields || !is_filling_address_form) {
       const bool fill_full_form =
           suggestions.back().type == SuggestionType::kAddressEntry;
-      if (base::FeatureList::IsEnabled(
+      if (!is_filling_address_form ||
+          base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
         suggestions.back().icon = fill_full_form ? Suggestion::Icon::kLocation
                                                  : Suggestion::Icon::kNoIcon;

@@ -1612,7 +1612,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
 // label are always chosen from the available fields (or only main_text if the
 // profile has only one field).
 TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
-       SuggestionsAreCorrectAndExpectedLabelsAreCreated) {
+       SuggestionsAreCorrectAndExpectedLabelsAndIconsAreCreated) {
   std::vector<AutofillProfile> profiles(
       5, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
   profiles[0].SetRawInfo(NAME_FULL, u"John Doe");
@@ -1642,32 +1642,37 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"Address 123"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false)),
+                Field(&Suggestion::is_acceptable, false),
+                Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Johnas Dhonas",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"New York"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false)),
+                Field(&Suggestion::is_acceptable, false),
+                Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Other Address 33",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"Old City"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false)),
+                Field(&Suggestion::is_acceptable, false),
+                Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Munich",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels({{u"munich@gmail.com"}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false)),
+                Field(&Suggestion::is_acceptable, false),
+                Field(&Suggestion::icon, Suggestion::Icon::kLocation)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"other@gmail.com",
                                        Suggestion::Text::IsPrimary(true))),
                 EqualLabels(std::vector<std::vector<Suggestion::Text>>{
                     {Suggestion::Text(u"")}}),
                 Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                Field(&Suggestion::is_acceptable, false))));
+                Field(&Suggestion::is_acceptable, false),
+                Field(&Suggestion::icon, Suggestion::Icon::kLocation))));
 }
 
 // This test checks that the resulting string of
