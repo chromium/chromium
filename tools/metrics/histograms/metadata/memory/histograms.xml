@@ -1969,14 +1969,22 @@ chromium-metrics-reviews@google.com.
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
-    An estimate of additional processes created due to OriginAgentCluster (OAC).
-    Computed assuming no coalescing of multiple BrowsingInstances into a single
-    RenderProcess (including no subframe process reuse), and only when
-    cross-process origin isolation occurs due to the OAC header. Given this, the
-    count of additional SiteInstances corresponds exactly to the additional
-    number of RenderProcesses that OAC gives rise to, and therefore gives a
+    An estimate of additional processes created due to origin-keyed processes,
+    including OriginAgentCluster (OAC) headers and OriginKeyedProcessesByDefault
+    mode. Computed assuming no coalescing of multiple BrowsingInstances into a
+    single RenderProcess (including no subframe process reuse), and only when
+    cross-process origin isolation occurs due to the OAC header or
+    OriginKeyedProcessesByDefault. Given this, the count of additional
+    SiteInstances corresponds exactly to the additional number of
+    RenderProcesses that that are due to origin-keying, and therefore gives a
     sense of how much process count overhead it creates. Recorded once per UMA
     ping.
+
+    Note: when the feature OriginKeyedProcessesByDefault is enabled, all
+    navigations are treated as if the OAC opt-in header is present, unless the
+    OAC opt-out header is present. As a result, any analyses of this metric
+    should separate users with and without OriginKeyedProcessesByDefault, to
+    distinguish actual header adoption.
   </summary>
 </histogram>
 
@@ -1999,15 +2007,21 @@ chromium-metrics-reviews@google.com.
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
-    The percentage of the total renderer process count that is due to the
-    OriginAgentCluster (OAC) header, based on the overhead estimate from
+    The percentage of the total renderer process count that is due to
+    origin-keyed processes, based on the overhead estimate from
     Memory.RenderProcessHost.Count.OriginAgentClusterProcesses. That value is
     computed assuming no coalescing of multiple BrowsingInstances into a single
     RenderProcess (including no subframe process reuse), and only when
-    cross-process origin isolation occurs due to the OAC header. Given this, the
-    percentage of total SiteInstances due to the OAC header corresponds exactly
-    to the percentage of RenderProcesses that OAC gives rise to. Recorded once
-    per UMA ping.
+    cross-process origin isolation occurs due to origin-keying. Given this, the
+    percentage of total SiteInstances due to origin-keying corresponds exactly
+    to the percentage of RenderProcesses that origin-keying gives rise to.
+    Recorded once per UMA ping.
+
+    Note: when the feature OriginKeyedProcessesByDefault is enabled, all
+    navigations are treated as if the OAC opt-in header is present, unless the
+    OAC opt-out header is present. As a result, any analyses of this metric
+    should separate users with and without OriginKeyedProcessesByDefault, to
+    distinguish actual header adoption.
   </summary>
 </histogram>
 
