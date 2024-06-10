@@ -5,3 +5,5 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.TextView name='Hi! '
 ++++android.view.View name='ruby base' hint='ruby text'
+++android.view.View
+++++android.view.View name='ruby base' hint='ruby text'

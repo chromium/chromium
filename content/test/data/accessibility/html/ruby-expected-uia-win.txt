@@ -8,3 +8,6 @@ Document
 ++++Text Name='Hi! '
 ++++Group
 ++++++Text Name='ruby base'
+++Group IsControlElement=false
+++++Group
+++++++Text Name='ruby base'
