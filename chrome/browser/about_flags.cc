@@ -7494,6 +7494,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-auth-view", flag_descriptions::kCCTAuthViewName,
+     flag_descriptions::kCCTAuthViewDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTAuthView)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"cct-before-unload", flag_descriptions::kCCTBeforeUnloadName,
      flag_descriptions::kCCTBeforeUnloadDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTBeforeUnload)},

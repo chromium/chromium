@@ -1553,4 +1553,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public long getNetworkHandle() {
         return mNetwork != null ? mNetwork.getNetworkHandle() : DEFAULT_NETWORK_HANDLE;
     }
+
+    @Override
+    public boolean isAuthView() {
+        // TODO(crbug.com/345627627): Remove this and set this to return true in a new
+        //     intent data provider.
+        boolean isAuthView = false;
+        return ChromeFeatureList.sCctAuthView.isEnabled() && isAuthView;
+    }
 }

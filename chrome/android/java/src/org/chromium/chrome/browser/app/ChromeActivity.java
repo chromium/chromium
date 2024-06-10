@@ -1035,7 +1035,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
 
         // TODO(crbug.com/40141057): Move contextual search initialization to the RootUiCoordinator.
-        if (ContextualSearchFieldTrial.isEnabled()) {
+        if (isContextualSearchEnabled()) {
             mContextualSearchManagerSupplier.set(
                     new ContextualSearchManager(
                             this,
@@ -1052,6 +1052,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         TraceEvent.end("ChromeActivity:CompositorInitialization");
+    }
+
+    protected boolean isContextualSearchEnabled() {
+        return ContextualSearchFieldTrial.isEnabled();
     }
 
     @Override

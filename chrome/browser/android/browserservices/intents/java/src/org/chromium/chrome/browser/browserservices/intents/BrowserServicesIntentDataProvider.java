@@ -627,4 +627,9 @@ public abstract class BrowserServicesIntentDataProvider {
     public long getNetworkHandle() {
         return DEFAULT_NETWORK_HANDLE;
     }
+
+    /** Return {@code true} if the service was launched for authentication. */
+    public boolean isAuthView() {
+        return false;
+    }
 }

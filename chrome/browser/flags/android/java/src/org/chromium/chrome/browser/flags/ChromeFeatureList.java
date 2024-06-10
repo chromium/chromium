@@ -230,6 +230,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
+    public static final String CCT_AUTH_VIEW = "CCTAuthView";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
     public static final String CCT_BEFORE_UNLOAD = "CCTBeforeUnload";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
@@ -553,6 +554,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BACK_TO_HOME_ANIMATION, false);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
+    public static final CachedFlag sCctAuthView = newCachedFlag(CCT_AUTH_VIEW, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctFeatureUsage = newCachedFlag(CCT_FEATURE_USAGE, false);
     public static final CachedFlag sCctEphemeralMode = newCachedFlag(CCT_EPHEMERAL_MODE, false);
@@ -701,6 +703,7 @@ public abstract class ChromeFeatureList {
                     sBackGestureRefactorAndroid,
                     sBackToHomeAnimation,
                     sBlockIntentsWhileLocked,
+                    sCctAuthView,
                     sCctAutoTranslate,
                     sCctEphemeralMode,
                     sCctFeatureUsage,

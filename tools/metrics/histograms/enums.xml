@@ -16585,6 +16585,7 @@ from previous Chrome versions.
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1641656402"
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
+  <int value="-1641386382" label="CCTAuthView:disabled"/>
   <int value="-1641384018" label="SideSearchClearCacheWhenClosed:enabled"/>
   <int value="-1640944841" label="HardwareSecureDecryption:disabled"/>
   <int value="-1640077990"
@@ -19396,6 +19397,7 @@ from previous Chrome versions.
   <int value="-429580313" label="OmniboxActionsInSuggest:disabled"/>
   <int value="-429419276"
       label="OptimizationPersonalizedHintsFetching:disabled"/>
+  <int value="-429043583" label="CCTAuthView:enabled"/>
   <int value="-428599163" label="NTPDownloadSuggestions:enabled"/>
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>

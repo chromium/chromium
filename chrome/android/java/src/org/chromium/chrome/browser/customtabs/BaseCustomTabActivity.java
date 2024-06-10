@@ -416,6 +416,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     @Override
+    protected boolean isContextualSearchEnabled() {
+        if (mIntentDataProvider.isAuthView()) return false;
+        return super.isContextualSearchEnabled();
+    }
+
+    @Override
     protected void onDestroyInternal() {
         if (mFullscreenManager != null) {
             mFullscreenManager.removeObserver(mFullscreenObserver);
