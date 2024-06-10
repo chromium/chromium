@@ -18,7 +18,13 @@ void FetchHistogramsFromChildProcesses() {
 
 using AppShimMetricsTest = WebAppIntegrationTest;
 
-IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, Basics) {
+// TODO(crbug.com/346222377): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Basics DISABLED_Basics
+#else
+#define MAYBE_Basics Basics
+#endif
+IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, MAYBE_Basics) {
   base::HistogramTester histogram_tester;
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
