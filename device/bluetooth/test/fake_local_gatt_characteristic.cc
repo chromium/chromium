@@ -54,4 +54,9 @@ device::BluetoothLocalGattService* FakeLocalGattCharacteristic::GetService()
   return service_.get();
 }
 
+std::vector<device::BluetoothLocalGattDescriptor*>
+FakeLocalGattCharacteristic::GetDescriptors() const {
+  return {};
+}
+
 }  // namespace bluetooth

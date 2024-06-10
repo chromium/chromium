@@ -51,6 +51,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
                                         const std::vector<uint8_t>& new_value,
                                         bool indicate) override;
   device::BluetoothLocalGattService* GetService() const override;
+  std::vector<device::BluetoothLocalGattDescriptor*> GetDescriptors()
+      const override;
 
   // floss::FlossGattServerObserver overrides.
   void GattServerCharacteristicReadRequest(std::string address,
@@ -73,8 +75,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
 
   void ResolveInstanceId(const GattService& service);
   int32_t InstanceId() const { return floss_instance_id_; }
-  const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>>&
-  GetDescriptors() const;
   NotificationType CccdNotificationType();
 
  private:

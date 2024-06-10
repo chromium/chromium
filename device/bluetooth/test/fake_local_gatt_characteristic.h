@@ -38,6 +38,8 @@ class FakeLocalGattCharacteristic
                                         const std::vector<uint8_t>& new_value,
                                         bool indicate) override;
   device::BluetoothLocalGattService* GetService() const override;
+  std::vector<device::BluetoothLocalGattDescriptor*> GetDescriptors()
+      const override;
 
   base::WeakPtr<FakeLocalGattCharacteristic> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

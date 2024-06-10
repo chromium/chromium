@@ -53,6 +53,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
 
   virtual BluetoothLocalGattService* GetService() const = 0;
 
+  virtual std::vector<BluetoothLocalGattDescriptor*> GetDescriptors() const = 0;
+
  protected:
   BluetoothLocalGattCharacteristic() = default;
 };

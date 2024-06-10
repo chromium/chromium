@@ -270,13 +270,10 @@ arc::mojom::BluetoothPropertyPtr GetDiscoveryTimeoutProperty(uint32_t timeout) {
 
 const device::BluetoothLocalGattDescriptor* FindCCCD(
     const device::BluetoothLocalGattCharacteristic* characteristic) {
-  for (const auto& descriptor :
-       static_cast<const bluez::BluetoothLocalGattCharacteristicBlueZ*>(
-           characteristic)
-           ->GetDescriptors()) {
+  for (auto descriptor : characteristic->GetDescriptors()) {
     if (descriptor->GetUUID() ==
         BluetoothGattDescriptor::ClientCharacteristicConfigurationUuid()) {
-      return descriptor.get();
+      return descriptor;
     }
   }
   return nullptr;
