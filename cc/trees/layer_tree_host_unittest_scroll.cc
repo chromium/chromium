@@ -2989,7 +2989,8 @@ class LayerTreeHostScrollTestViewportAbortedCommit
   void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
     if (is_first_frame_) {
       host_impl->browser_controls_manager()->UpdateBrowserControlsState(
-          BrowserControlsState::kHidden, BrowserControlsState::kHidden, true);
+          BrowserControlsState::kHidden, BrowserControlsState::kHidden, true,
+          std::nullopt);
       bool changed_since_last_sync = false;
       BrowserControlsState permitted_constraint =
           host_impl->browser_controls_manager()->PullConstraintForMainThread(

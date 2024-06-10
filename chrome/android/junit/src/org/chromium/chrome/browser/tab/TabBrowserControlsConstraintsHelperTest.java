@@ -156,7 +156,8 @@ public class TabBrowserControlsConstraintsHelperTest {
                         Mockito.any(),
                         Mockito.anyInt(),
                         Mockito.anyInt(),
-                        Mockito.anyBoolean());
+                        Mockito.anyBoolean(),
+                        Mockito.any());
     }
 
     @Test
@@ -209,7 +210,8 @@ public class TabBrowserControlsConstraintsHelperTest {
                         Mockito.same(mWebContents),
                         Mockito.eq(constraints),
                         Mockito.eq(current),
-                        Mockito.eq(animate));
+                        Mockito.eq(animate),
+                        Mockito.any());
         Mockito.clearInvocations(mJniMock);
     }
 

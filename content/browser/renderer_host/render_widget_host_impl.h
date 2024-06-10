@@ -31,6 +31,7 @@
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -932,9 +933,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   SiteInstanceGroup* GetSiteInstanceGroup();
 
   // Updates the browser controls by directly IPCing onto the compositor thread.
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate);
+  void UpdateBrowserControlsState(
+      cc::BrowserControlsState constraints,
+      cc::BrowserControlsState current,
+      bool animate,
+      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info);
 
   void StartDragging(blink::mojom::DragDataPtr drag_data,
                      const url::Origin& source_origin,

@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "content/common/input/input_router_config_helper.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/render_widget_host_view_input.h"
@@ -93,9 +94,12 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
           request) override {
     NOTREACHED_IN_MIGRATION() << "Input request on unbound interface";
   }
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override {
+  void UpdateBrowserControlsState(
+      cc::BrowserControlsState constraints,
+      cc::BrowserControlsState current,
+      bool animate,
+      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
+      override {
     NOTREACHED_IN_MIGRATION() << "Input request on unbound interface";
   }
 };

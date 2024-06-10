@@ -20,10 +20,12 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_ref.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/metrics/compositor_timing_history.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/trees/compositor_commit_data.h"
@@ -172,10 +174,11 @@ void ProxyImpl::InitializePaintWorkletLayerPainterOnImpl(
 void ProxyImpl::UpdateBrowserControlsStateOnImpl(
     BrowserControlsState constraints,
     BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
   DCHECK(IsImplThread());
   host_impl_->browser_controls_manager()->UpdateBrowserControlsState(
-      constraints, current, animate);
+      constraints, current, animate, offset_tags_info);
 }
 
 void ProxyImpl::InitializeLayerTreeFrameSinkOnImpl(

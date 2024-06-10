@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -172,9 +173,12 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   void ClearClient();
 
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate);
+  void UpdateBrowserControlsState(
+      cc::BrowserControlsState constraints,
+      cc::BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
+          offset_tags_info);
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 

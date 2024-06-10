@@ -1,3 +1,7 @@
+include_rules = {
+  "+cc/input/browser_controls_offset_tags_info.h",
+}
+
 specific_include_rules = {
   "ad_tracker_test\.cc": [
     "+base/run_loop.h",

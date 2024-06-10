@@ -12,8 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -45,9 +47,11 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   ProxyImpl& operator=(const ProxyImpl&) = delete;
 
-  void UpdateBrowserControlsStateOnImpl(BrowserControlsState constraints,
-                                        BrowserControlsState current,
-                                        bool animate);
+  void UpdateBrowserControlsStateOnImpl(
+      BrowserControlsState constraints,
+      BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
   void InitializeLayerTreeFrameSinkOnImpl(
       LayerTreeFrameSink* layer_tree_frame_sink,
       base::WeakPtr<ProxyMain> proxy_main_frame_sink_bound_weak_ptr);

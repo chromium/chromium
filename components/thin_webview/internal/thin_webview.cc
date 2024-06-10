@@ -53,7 +53,7 @@ void ThinWebView::PrimaryPageChanged(content::Page& page) {
   // Disable browser controls when used for thin webview.
   web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kHidden,
                                             cc::BrowserControlsState::kHidden,
-                                            false);
+                                            false, std::nullopt);
 }
 
 void ThinWebView::SetWebContents(

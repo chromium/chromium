@@ -49,6 +49,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/url_formatter/url_formatter.h"
@@ -10786,10 +10787,12 @@ void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {
 void WebContentsImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
   // Browser controls should be synchronised with the scroll state. Therefore,
   // they are controlled from the renderer by the main RenderFrame(Host).
-  GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate);
+  GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate,
+                                              offset_tags_info);
 }
 
 void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {

@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "cc/cc_export.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
@@ -438,9 +440,11 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // compositor thread has had a chance to update the scroll offset.
   virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const;
 
-  virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                          BrowserControlsState current,
-                                          bool animate);
+  virtual void UpdateBrowserControlsState(
+      BrowserControlsState constraints,
+      BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
 
   virtual void SetIsHandlingTouchSequence(bool is_handling_touch_sequence);
 

@@ -10,9 +10,11 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"
@@ -2115,11 +2117,13 @@ void InputHandler::SetDeferBeginMainFrame(bool defer_begin_main_frame) const {
   compositor_delegate_->SetDeferBeginMainFrame(defer_begin_main_frame);
 }
 
-void InputHandler::UpdateBrowserControlsState(BrowserControlsState constraints,
-                                              BrowserControlsState current,
-                                              bool animate) {
+void InputHandler::UpdateBrowserControlsState(
+    BrowserControlsState constraints,
+    BrowserControlsState current,
+    bool animate,
+    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
   compositor_delegate_->UpdateBrowserControlsState(constraints, current,
-                                                   animate);
+                                                   animate, offset_tags_info);
 }
 
 void InputHandler::SetIsHandlingTouchSequence(bool is_handling_touch_sequence) {

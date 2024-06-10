@@ -30,12 +30,14 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/page_scale_animation.h"
@@ -1200,13 +1202,16 @@ void LayerTreeHost::DetachInputDelegateAndRenderFrameObserver() {
   proxy_->DetachInputDelegateAndRenderFrameObserver();
 }
 
-void LayerTreeHost::UpdateBrowserControlsState(BrowserControlsState constraints,
-                                               BrowserControlsState current,
-                                               bool animate) {
+void LayerTreeHost::UpdateBrowserControlsState(
+    BrowserControlsState constraints,
+    BrowserControlsState current,
+    bool animate,
+    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
   DCHECK(IsMainThread());
   // Browser controls are only used in threaded mode but Blink layout tests may
   // call into this. The single threaded version is a no-op.
-  proxy_->UpdateBrowserControlsState(constraints, current, animate);
+  proxy_->UpdateBrowserControlsState(constraints, current, animate,
+                                     offset_tags_info);
 }
 
 void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {

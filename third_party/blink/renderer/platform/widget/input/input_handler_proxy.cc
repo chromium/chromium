@@ -20,8 +20,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
@@ -1592,9 +1594,12 @@ void InputHandlerProxy::RequestAnimationForSnapFling() {
 void InputHandlerProxy::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
+        offset_tags_info) {
   DCHECK(input_handler_);
-  input_handler_->UpdateBrowserControlsState(constraints, current, animate);
+  input_handler_->UpdateBrowserControlsState(constraints, current, animate,
+                                             offset_tags_info);
 }
 
 void InputHandlerProxy::FlushQueuedEventsForTesting() {

@@ -331,7 +331,7 @@ void RestoreBrowserControlsState(RenderFrameHostImpl* cached_rfh) {
     cached_rfh->GetPage().UpdateBrowserControlsState(
         cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
         // Do not animate as we want this to happen "instantaneously"
-        false);
+        false, std::nullopt);
   }
 }
 

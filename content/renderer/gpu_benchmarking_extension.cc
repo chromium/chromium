@@ -1225,7 +1225,7 @@ void GpuBenchmarking::SetBrowserControlsShown(bool show) {
       cc::BrowserControlsState::kBoth,
       show ? cc::BrowserControlsState::kShown
            : cc::BrowserControlsState::kHidden,
-      false);
+      false, std::nullopt);
 }
 
 float GpuBenchmarking::VisualViewportY() {

@@ -11,9 +11,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -56,6 +59,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // min-height, which is equal to the current visible min-height. Otherwise,
   // this will return the same value as |TopControlsMinHeight()|.
   float TopControlsMinHeightOffset() const;
+  viz::OffsetTag TopControlsOffsetTag() const;
 
   // The amount of offset of the web content area, calculating from the bottom.
   // Same as the current shown height of the bottom controls.
@@ -87,9 +91,13 @@ class CC_EXPORT BrowserControlsOffsetManager {
                AnimationDirection::kShowingControls;
   }
 
-  void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                  BrowserControlsState current,
-                                  bool animate);
+  // See UpdateBrowserControlsState in
+  // third_party/blink/public/mojom/frame/frame.mojom
+  void UpdateBrowserControlsState(
+      BrowserControlsState constraints,
+      BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
 
   // Return the browser control constraint that must be synced to the
   // main renderer thread (to trigger viewport and related changes).
@@ -196,6 +204,11 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // to show the controls when the scroll starts, or if one starts during the
   // gesture, then we reorder the animation until after the scroll.
   bool show_controls_when_scroll_completes_ = false;
+
+  // The tag used to accompany scroll offsets in the render frame's metadata.
+  // During surface aggregation, the layers with the same token will have the
+  // corresponding offsets applied.
+  viz::OffsetTag top_controls_offset_tag_;
 
   // Class that holds and manages the state of the controls animations.
   class Animation {

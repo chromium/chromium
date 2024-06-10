@@ -15,12 +15,14 @@ class TabBrowserControlsConstraintsHelper {
       const base::android::JavaParamRef<jobject>& obj);
   ~TabBrowserControlsConstraintsHelper();
 
-  void UpdateState(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
-                   const base::android::JavaParamRef<jobject>& jweb_contents,
-                   jint constraints,
-                   jint current,
-                   jboolean animate);
+  void UpdateState(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jweb_contents,
+      jint constraints,
+      jint current,
+      jboolean animate,
+      const base::android::JavaParamRef<jobject>& joffset_tags_info);
   void OnDestroyed(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj);
 

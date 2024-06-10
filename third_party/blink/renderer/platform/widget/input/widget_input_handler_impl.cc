@@ -220,9 +220,10 @@ void WidgetInputHandlerImpl::GetFrameWidgetInputHandler(
 void WidgetInputHandlerImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
   input_handler_manager_->UpdateBrowserControlsState(constraints, current,
-                                                     animate);
+                                                     animate, offset_tags_info);
 }
 
 void WidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {

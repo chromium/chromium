@@ -9,6 +9,7 @@
 #include "base/i18n/character_encoding.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_client.h"
+#include "services/viz/public/mojom/compositing/offset_tag.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -321,9 +323,11 @@ RenderFrameHostImpl& PageImpl::GetMainDocument() const {
   return *main_document_;
 }
 
-void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                          cc::BrowserControlsState current,
-                                          bool animate) {
+void PageImpl::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate,
+    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
   // TODO(crbug.com/40159655): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
   if (!GetMainDocument().IsRenderFrameLive())
@@ -332,10 +336,10 @@ void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
   if (base::FeatureList::IsEnabled(
           features::kUpdateBrowserControlsWithoutProxy)) {
     GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
-        constraints, current, animate);
+        constraints, current, animate, offset_tags_info);
   } else {
     GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
-        constraints, current, animate);
+        constraints, current, animate, offset_tags_info);
   }
 }
 

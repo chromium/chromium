@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
+import "cc/mojom/browser_controls_offset_tags_info.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -20,6 +21,7 @@ import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/attribution.mojom";
+import "services/viz/public/mojom/compositing/offset_tag.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
@@ -1219,9 +1221,27 @@ interface LocalMainFrame {
   // Notifies the renderer whether hiding/showing the browser controls is
   // enabled, what the current state should be, and whether or not to
   // animate to the proper state.
-  UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
-                             cc.mojom.BrowserControlsState current,
-                             bool animate);
+  //
+  // offset_tags_info consists of OffsetTags, and metadata for creating
+  // OffsetTagConstraints. It is passed to the renderer and used to tag the
+  // browser controls scroll offsets in the compositor frame's metadata, with
+  // the goal of allowing viz to scroll the top controls by applying the
+  // offset. The slim::Layers for the top controls in the browser must be
+  // tagged with the same token.
+  // A zero token is passed when the browser is forcing the controls to be
+  // shown/hidden. When this happens, the browser process will have removed
+  // the renderer's OffsetTagDefinition from the associated SurfaceLayer, so
+  // viz will not look for scroll offsets or OffsetTags in the compositor frame
+  // metadata anymore. The renderer should also not tag any scroll offsets with
+  // OffsetTags, as they won't be seen by viz.
+  // A null token is passed when scrolling top controls is viz is not
+  // applicable (ex. chromeos, UI elements that overlay on top of chrome,
+  // tests, etc.)
+  UpdateBrowserControlsState(
+      cc.mojom.BrowserControlsState constraints,
+      cc.mojom.BrowserControlsState current,
+      bool animate,
+      cc.mojom.BrowserControlsOffsetTagsInfo? offset_tags_info);
 
   // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
   // data is a Bloom filter describing which JavaScript functions on the page

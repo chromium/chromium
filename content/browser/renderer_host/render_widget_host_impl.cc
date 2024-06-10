@@ -41,6 +41,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -2683,9 +2684,10 @@ SiteInstanceGroup* RenderWidgetHostImpl::GetSiteInstanceGroup() {
 void RenderWidgetHostImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
-  GetWidgetInputHandler()->UpdateBrowserControlsState(constraints, current,
-                                                      animate);
+    bool animate,
+    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
+  GetWidgetInputHandler()->UpdateBrowserControlsState(
+      constraints, current, animate, offset_tags_info);
 }
 
 void RenderWidgetHostImpl::StartDragging(

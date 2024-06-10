@@ -42,9 +42,11 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
@@ -1901,10 +1903,12 @@ const cc::LayerTreeSettings* WebFrameWidgetImpl::GetLayerTreeSettings() {
 void WebFrameWidgetImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
+        offset_tags_info) {
   DCHECK(View()->does_composite());
-  widget_base_->LayerTreeHost()->UpdateBrowserControlsState(constraints,
-                                                            current, animate);
+  widget_base_->LayerTreeHost()->UpdateBrowserControlsState(
+      constraints, current, animate, offset_tags_info);
 }
 
 void WebFrameWidgetImpl::SetHaveScrollEventHandlers(bool has_handlers) {

@@ -529,6 +529,7 @@ _CONFIG = [
             'cc::kPixelsPerLineStep',
             'cc::kMinFractionToStepWhenPaging',
             'cc::kPercentDeltaForDirectionalScroll',
+            'cc::BrowserControlsOffsetTagsInfo',
             'cc::MainThreadScrollingReason',
             'cc::ManipulationInfo',
             'cc::ScrollSnapAlign',

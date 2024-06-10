@@ -22,6 +22,7 @@ component("shared_mojom_traits") {
 mojom("mojom") {
   generate_java = true
   sources = [
+    "browser_controls_offset_tags_info.mojom",
     "browser_controls_params.mojom",
     "browser_controls_state.mojom",
     "overscroll_behavior.mojom",
@@ -85,6 +86,17 @@ mojom("mojom") {
       ]
       traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
       traits_public_deps = [ "//cc/ipc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.BrowserControlsOffsetTagsInfo"
+          cpp = "::cc::BrowserControlsOffsetTagsInfo"
+        },
+      ]
+      traits_headers =
+          [ "//cc/mojom/browser_controls_offset_tags_info_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

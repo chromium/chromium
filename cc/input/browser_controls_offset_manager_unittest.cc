@@ -982,7 +982,8 @@ TEST(BrowserControlsOffsetManagerTest, ScrollByWithZeroHeightControlsIsNoop) {
   MockBrowserControlsOffsetManagerClient client(0.f, 0.5f, 0.5f);
   BrowserControlsOffsetManager* manager = client.manager();
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kBoth, false);
+                                      BrowserControlsState::kBoth, false,
+                                      std::nullopt);
 
   manager->ScrollBegin();
   gfx::Vector2dF pending = manager->ScrollBy(gfx::Vector2dF(0.f, 20.f));
@@ -1053,12 +1054,14 @@ TEST(BrowserControlsOffsetManagerTest,
   EXPECT_FLOAT_EQ(1.f, client.CurrentBottomControlsShownRatio());
 
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kHidden, true);
+                                      BrowserControlsState::kHidden, true,
+                                      std::nullopt);
   EXPECT_TRUE(manager->HasAnimation());
   EXPECT_FLOAT_EQ(1.f, client.CurrentBottomControlsShownRatio());
 
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kShown, true);
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
   EXPECT_FALSE(manager->HasAnimation());
   EXPECT_FLOAT_EQ(1.f, client.CurrentBottomControlsShownRatio());
 }
@@ -1214,7 +1217,8 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightChangeUpdatesAnimation) {
   // Hide the controls to start an animation to min-height.
   EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
   manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
-                                      BrowserControlsState::kBoth, true);
+                                      BrowserControlsState::kBoth, true,
+                                      std::nullopt);
   base::TimeTicks time = base::TimeTicks::Now();
   manager->Animate(time);
   EXPECT_TRUE(manager->HasAnimation());
@@ -1314,7 +1318,8 @@ TEST(BrowserControlsOffsetManagerTest,
 
   // Start an animation to show the controls
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kShown, true);
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
   EXPECT_TRUE(manager->IsAnimatingToShowControls());
 
   // Start a scroll, which should cancel the animation.
@@ -1349,7 +1354,8 @@ TEST(BrowserControlsOffsetManagerTest,
 
   // Start an animation to show the controls.
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kShown, true);
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
   EXPECT_TRUE(manager->IsAnimatingToShowControls());
 
   // Finish the scroll, and the animation should still be in progress and/or

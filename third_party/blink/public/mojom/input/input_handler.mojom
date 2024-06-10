@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "cc/mojom/browser_controls_offset_tags_info.mojom";
 import "cc/mojom/browser_controls_state.mojom";
 import "cc/mojom/overscroll_behavior.mojom";
 import "cc/mojom/touch_action.mojom";
@@ -529,10 +530,9 @@ interface WidgetInputHandler {
   GetFrameWidgetInputHandler(
       pending_associated_receiver<FrameWidgetInputHandler> interface_request);
 
-  // Notifies the renderer whether hiding/showing the browser controls is
-  // enabled, what the current state should be, and whether or not to
-  // animate to the proper state.
+  // see UpdateBrowserControlsState in third_party/blink/public/mojom/frame/frame.mojom for details
   UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
                              cc.mojom.BrowserControlsState current,
-                             bool animate);
+                             bool animate,
+                             cc.mojom.BrowserControlsOffsetTagsInfo? offset_tags_info);
 };

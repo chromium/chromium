@@ -263,7 +263,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         mTab.getWebContents(),
                         constraints,
                         current,
-                        animate);
+                        animate,
+                        new BrowserControlsOffsetTagsInfo(newTag));
 
         mTopControlsOffsetTag = newTag;
     }
@@ -290,6 +291,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 WebContents webContents,
                 int contraints,
                 int current,
-                boolean animate);
+                boolean animate,
+                BrowserControlsOffsetTagsInfo offsetTagsInfo);
     }
 }

@@ -15,8 +15,10 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -1167,14 +1169,16 @@ void WidgetInputHandlerManager::ClearClient() {
 void WidgetInputHandlerManager::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
+        offset_tags_info) {
   if (!input_handler_proxy_) {
     return;
   }
 
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
   input_handler_proxy_->UpdateBrowserControlsState(constraints, current,
-                                                   animate);
+                                                   animate, offset_tags_info);
 }
 
 void WidgetInputHandlerManager::FlushCompositorQueueForTesting() {

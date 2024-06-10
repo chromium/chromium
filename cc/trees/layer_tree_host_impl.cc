@@ -41,6 +41,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -51,6 +52,7 @@
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/append_quads_data.h"
@@ -354,9 +356,10 @@ void LayerTreeHostImpl::SetDeferBeginMainFrame(
 void LayerTreeHostImpl::UpdateBrowserControlsState(
     BrowserControlsState constraints,
     BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
   browser_controls_offset_manager_->UpdateBrowserControlsState(
-      constraints, current, animate);
+      constraints, current, animate, offset_tags_info);
 }
 
 bool LayerTreeHostImpl::HasScrollLinkedAnimation(ElementId for_scroller) const {

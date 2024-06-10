@@ -166,7 +166,7 @@ void OverlayPanelContent::UpdateBrowserControlsState(
     state = cc::BrowserControlsState::kHidden;
 
   web_contents_->UpdateBrowserControlsState(
-      state, cc::BrowserControlsState::kBoth, false);
+      state, cc::BrowserControlsState::kBoth, false, std::nullopt);
 }
 
 jlong JNI_OverlayPanelContent_Init(JNIEnv* env,
