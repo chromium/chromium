@@ -621,12 +621,13 @@ blink::FakeWebGraphicsContext3DProvider::image_decode_cache_
 blink::MemoryManagedPaintRecorder::current_canvas_
 viz::DisplayResourceProvider::ScopedReadLockSharedImage::resource_
 viz::DisplayResourceProvider::ScopedReadLockSharedImage::resource_provider_
-gpu::ClientSharedImage::ScopedMapping::buffer_
 media::VideoFrame::ScopedMapping::gpu_memory_buffer_  # duplicated in crrev.com/c/5581537
+gpu::ClientSharedImage::ScopedMapping::buffer_
 gpu::SharedImageRepresentation::ScopedAccessBase::representation_
 gpu::SharedImageRepresentation::manager_
 gpu::SharedImageRepresentation::backing_
 gpu::SharedImageRepresentation::tracker_
+gpu::SchedulerDfs::Sequence::scheduler_
 
 #######
 # End of recent manual exclusions
