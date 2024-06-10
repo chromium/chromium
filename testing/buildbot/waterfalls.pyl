@@ -3635,9 +3635,7 @@
         'mixins': [
           'finch-chromium-swarming-pool',
           'has_native_resultdb_integration',
-          # TODO(crbug/345748239) revert to mac_default_arm64 after bots
-          # have been upgraded to Mac-14
-          'mac_13_OR_14_arm64',
+          'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_15_main',
