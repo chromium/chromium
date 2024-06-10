@@ -215,7 +215,8 @@ class ExpandableItemsFinder {
   void Find(LogicalLineItems::iterator begin, LogicalLineItems::iterator end) {
     for (auto iter = begin; iter != end; ++iter) {
       LogicalLineItem& item = *iter;
-      if (item.shape_result || item.layout_result) {
+      if ((item.shape_result && item.shape_result->NumGlyphs() > 0) ||
+          item.layout_result) {
         last_item_ = &item;
         if (!first_item_) {
           first_item_ = &item;

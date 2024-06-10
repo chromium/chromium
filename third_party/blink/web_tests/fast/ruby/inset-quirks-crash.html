@@ -1,0 +1,12 @@
+<!-- quirks mode -->
+<ruby>
+&#xf16b;<doodad></doodad><parsererror style="overflow-wrap: anywhere; ">	&#xfe29;&#x1c5c;</parsererror>
+<rt>&#xa8baa;&#x2fe31;-&#xcfaa;<x-element style="margin: 115 16px -45 4294967047px; "></x-element>{{&#x5932;&#xf033;&#x134a;s9&#x75a4;&#x3cf8;</ruby>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+// crbug.com/345308888
+// Crash by a line including only a no-glyph ShapeResult.
+test(() => {
+}, 'No crash in ShapeResult::ApplyLeadingExpansion()');
+</script>
