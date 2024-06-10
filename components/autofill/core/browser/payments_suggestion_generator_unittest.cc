@@ -64,6 +64,7 @@ namespace autofill {
 
 namespace {
 
+using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
@@ -627,11 +628,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 }
 
 // Tests that credit card suggestions are not subject to prefix matching for the
-// credit card number if `kAutofillDontPrefixMatchCreditCardNumbers` is enabled.
+// credit card number if `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is
+// enabled.
 TEST_F(PaymentsSuggestionGeneratorTest,
        NoPrefixMatchingForCreditCardsIfFeatureIsTurnedOn) {
   base::test::ScopedFeatureList features(
-      features::kAutofillDontPrefixMatchCreditCardNumbers);
+      features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs);
   CreditCard card1 = test::GetCreditCard();
   card1.set_record_type(CreditCard::RecordType::kLocalCard);
   personal_data().payments_data_manager().AddCreditCard(card1);
@@ -655,6 +657,36 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_THAT(get_cards(card1.number()), UnorderedElementsAre(card1, card2));
 
   EXPECT_THAT(get_cards(card2.number()), UnorderedElementsAre(card1, card2));
+}
+
+// Tests that credit card suggestions are not subject to prefix matching for the
+// CVC if `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is enabled.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       NoPrefixMatchingForCvcsIfFeatureIsTurnedOn) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs);
+  CreditCard credit_card;
+  test::SetCreditCardInfo(&credit_card, /*name_on_card=*/"Cardholder name",
+                          /*card_number=*/"1111222233334444",
+                          /*expiration_month=*/nullptr,
+                          /*expiration_year*/ nullptr,
+                          /*billing_address_id=*/"", /*cvc=*/u"123");
+  credit_card.set_record_type(CreditCard::RecordType::kLocalCard);
+  personal_data().payments_data_manager().AddCreditCard(credit_card);
+
+  auto get_cards = [&](std::u16string field_value) {
+    FormFieldData field;
+    field.set_value(std::move(field_value));
+    return test_api(suggestion_generator())
+        .GetOrderedCardsToSuggest(field, CREDIT_CARD_VERIFICATION_CODE,
+                                  /*suppress_disused_cards=*/false,
+                                  /*prefix_match=*/true,
+                                  /*include_virtual_cards=*/false);
+  };
+
+  EXPECT_THAT(get_cards(u""), ElementsAre(credit_card));
+  EXPECT_THAT(get_cards(u"1"), ElementsAre(credit_card));
+  EXPECT_THAT(get_cards(u"2"), ElementsAre(credit_card));
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,

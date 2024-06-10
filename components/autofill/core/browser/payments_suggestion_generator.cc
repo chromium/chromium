@@ -195,21 +195,27 @@ bool IsValidPaymentsSuggestionForFieldContents(
     FieldType trigger_field_type,
     bool is_masked_server_card,
     bool field_is_autofilled) {
-  if (trigger_field_type != CREDIT_CARD_NUMBER) {
-    return suggestion_canon.starts_with(field_contents_canon);
-  }
-  // If `kAutofillDontPrefixMatchCreditCardNumbers` is enabled, we do not apply
-  // prefix matching to credit cards. If the feature is disabled, we suggest a
-  // card iff
-  // - the number matches any part of the card, or
-  // - it's a masked card and there are 6 or fewer typed so far.
-  // - it's a masked card, field is autofilled, and the last 4 digits in the
-  // field match the last 4 digits of the card.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillDontPrefixMatchCreditCardNumbers)) {
+  // If `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is enabled, we do not
+  // apply prefix matching to credit card numbers or CVCs.
+  static constexpr FieldTypeSet kFieldTypesWithoutPrefixMatching = {
+      CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE,
+      CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+  if (kFieldTypesWithoutPrefixMatching.contains(trigger_field_type) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs)) {
     return true;
   }
 
+  if (trigger_field_type != CREDIT_CARD_NUMBER) {
+    return suggestion_canon.starts_with(field_contents_canon);
+  }
+
+  // If `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is disabled, we
+  // suggest a card iff
+  // - the number matches any part of the card, or
+  // - it's a masked card and there are 6 or fewer typed so far.
+  // - it's a masked card, field is autofilled, and the last 4 digits of the
+  //   field match the last 4 digits of the card.
   if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
   }
