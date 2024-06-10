@@ -41,7 +41,7 @@ message HistoryQueryResponse {
   reserved 1, 2;
 }
 
-// Next Id: 8
+// Next Id: 9
 message HistoryQueryQuality {
   // The history search query entered by the user.
   string query = 4;
@@ -69,6 +69,8 @@ message HistoryQueryQuality {
   // to search. For example, search may be narrowed to yesterday or last week.
   // If absent, all available history is used for search.
   optional uint32 num_days = 7;
+
+  UserFeedback user_feedback = 8;
 }
 
 // Next ID: 5
