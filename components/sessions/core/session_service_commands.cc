@@ -690,8 +690,12 @@ void CreateTabsAndWindows(
           if (!iter.ReadString(&saved_guid)) {
             return;
           }
-
           group->saved_guid = saved_guid;
+        } else {
+          // Explicitly update the |saved_guid| to nullopt if the group
+          // isn't saved. This is to ensure the right value is set when there
+          // are multiple entries in the append log file.
+          group->saved_guid = std::nullopt;
         }
 
         break;

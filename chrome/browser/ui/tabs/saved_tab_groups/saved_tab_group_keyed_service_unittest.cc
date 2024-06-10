@@ -265,7 +265,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
   // Store the guid to tab_group_id association in the keyed service. We should
   // expect at the end of the test, `tab_group_id_3` has no association with the
   // SavedTabGroupModel at all.
-  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
@@ -312,7 +312,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Store the guid to tab_group_id association in the keyed service. We should
   // expect at the end of the test, `tab_group_id_3` has no association with the
   // SavedTabGroupModel at all.
-  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
@@ -369,20 +369,20 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       browser_1->tab_strip_model()->AddToNewGroup({0});
   const base::Uuid guid_1 = base::Uuid::GenerateRandomV4();
 
-  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
   // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
   service()->model()->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
 
-  // Expect calling StoreLocalToSavedId before the model is loaded does not link
-  // non-existent saved groups.
+  // Expect calling ConnectRestoredGroupToSaveId before the model is loaded does
+  // not link non-existent saved groups.
   EXPECT_FALSE(service()->model()->Contains(tab_group_id_1));
   EXPECT_FALSE(service()->model()->Contains(guid_1));
 
   // Expect calling StoreLocalSavedId after the model is loaded does not link
   // non-existent saved groups.
-  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
   EXPECT_FALSE(service()->model()->Contains(tab_group_id_1));
   EXPECT_FALSE(service()->model()->Contains(guid_1));
 }
@@ -412,8 +412,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Store the guid to tab_group_id association in the keyed service. We should
   // expect at the end of the test, `tab_group_id_3` has no association with the
   // SavedTabGroupModel at all.
-  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
-  service()->StoreLocalToSavedId(guid_2, tab_group_id_2);
+  service()->ConnectRestoredGroupToSaveId(guid_1, tab_group_id_1);
+  service()->ConnectRestoredGroupToSaveId(guid_2, tab_group_id_2);
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
@@ -471,7 +471,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   // Store the guid to tab_group_id association in the keyed service.
-  service()->StoreLocalToSavedId(guid, tab_group_id);
+  service()->ConnectRestoredGroupToSaveId(guid, tab_group_id);
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading persisted data on startup.
@@ -534,7 +534,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   // Store the guid to tab_group_id association in the keyed service.
-  service()->StoreLocalToSavedId(guid, tab_group_id);
+  service()->ConnectRestoredGroupToSaveId(guid, tab_group_id);
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading persisted data on startup.
@@ -596,7 +596,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   // Store the guid to tab_group_id association in the keyed service.
-  service()->StoreLocalToSavedId(guid, tab_group_id);
+  service()->ConnectRestoredGroupToSaveId(guid, tab_group_id);
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading persisted data on startup.

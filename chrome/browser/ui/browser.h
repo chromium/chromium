@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/sessions/core/session_id.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/zoom/zoom_observer.h"
@@ -128,6 +129,7 @@ enum class BrowserClosingStatus {
 // scoped to an instance of this class, usually via direct or indirect ownership
 // of a std::unique_ptr. See BrowserWindowFeatures and TabFeatures.
 class Browser : public TabStripModelObserver,
+                public tab_groups::SavedTabGroupModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
                 public ChromeWebModalDialogManagerDelegate,
@@ -761,6 +763,11 @@ class Browser : public TabStripModelObserver,
                               content::WebContents* contents,
                               int index) override;
   void TabStripEmpty() override;
+
+  // Overridden from tab_groups::SavedTabGroupModelObserver:
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
+  void SavedTabGroupRemovedLocally(
+      const tab_groups::SavedTabGroup* removed_group) override;
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;

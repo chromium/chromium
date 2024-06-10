@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -153,8 +154,10 @@ class SavedTabGroupModel {
 
   // Loads the model from the storage. `tabs` must have a corresponding group in
   // `groups`.
-  void LoadStoredEntries(std::vector<SavedTabGroup> groups,
-                         std::vector<SavedTabGroupTab> tabs);
+  void LoadStoredEntries(
+      std::vector<SavedTabGroup> groups,
+      std::vector<SavedTabGroupTab> tabs,
+      base::OnceCallback<void()> on_loaded_callback = base::DoNothing());
 
   // Functions that should be called when a SavedTabGroup's corresponding
   // TabGroup is closed or opened.

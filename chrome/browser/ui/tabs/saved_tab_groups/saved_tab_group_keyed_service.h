@@ -42,11 +42,6 @@ class SavedTabGroupKeyedService : public KeyedService,
   GetSavedTabGroupControllerDelegate();
   Profile* profile() { return profile_; }
 
-  // Populates `saved_guid_to_local_group_id_mapping_` with a pair to link once
-  // SavedTabGroupModelLoaded is called.
-  void StoreLocalToSavedId(const base::Uuid& saved_guid,
-                           const tab_groups::TabGroupId local_group_id);
-
   // SavedTabGroupController
   std::optional<tab_groups::TabGroupId> OpenSavedTabGroupInBrowser(
       Browser* browser,
@@ -69,6 +64,17 @@ class SavedTabGroupKeyedService : public KeyedService,
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
       const std::optional<base::Uuid>& tab_guid) override;
+
+  // Connects local tab group to the saved guid from session restore.
+  // This can be called prior to the saved tab group model is loaded or
+  // that the `saved_guid` could no longer be present in the model.
+  void ConnectRestoredGroupToSaveId(
+      const base::Uuid& saved_guid,
+      const tab_groups::TabGroupId local_group_id);
+
+  // Saves a restored group. This can be called prior to the saved tab
+  // group model is loaded. These groups are saved when the model is loaded.
+  void SaveRestoredGroup(const tab_groups::TabGroupId& group_id);
 
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
@@ -152,12 +158,12 @@ class SavedTabGroupKeyedService : public KeyedService,
   // (saved and unsaved).
   base::RepeatingTimer metrics_timer_;
 
-  // Keeps track of the ids of session restored tab groups that were once saved
-  // in order to link them together again once the SavedTabGroupModelLoaded is
-  // called. After the model is loaded, this variable is emptied to conserve
-  // memory.
+  // Keeps track of restored group to connect to model load.
   std::vector<std::pair<base::Uuid, tab_groups::TabGroupId>>
-      saved_guid_to_local_group_id_mapping_;
+      restored_groups_to_connect_on_load_;
+
+  // Keeps track of the groups to save on model load.
+  std::vector<tab_groups::TabGroupId> restored_groups_to_save_on_load_;
 };
 
 }  // namespace tab_groups

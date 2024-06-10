@@ -187,6 +187,7 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/search/search.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
@@ -397,6 +398,26 @@ bool ShouldShowCookieMigrationNoticeForBrowser(const Browser& browser) {
   return last_window_for_profile;
 }
 
+void UpdateTabGroupSessionMetadata(
+    Browser* browser,
+    const tab_groups::TabGroupId& group_id,
+    const std::optional<std::string> saved_group_id) {
+  SessionService* const session_service =
+      SessionServiceFactory::GetForProfile(browser->profile());
+  if (!session_service) {
+    return;
+  }
+
+  const tab_groups::TabGroupVisualData* visual_data =
+      browser->tab_strip_model()
+          ->group_model()
+          ->GetTabGroup(group_id)
+          ->visual_data();
+
+  session_service->SetTabGroupMetadata(browser->session_id(), group_id,
+                                       visual_data, saved_group_id);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -577,6 +598,12 @@ Browser::Browser(const CreateParams& params)
 
   tab_strip_model_->AddObserver(this);
 
+  auto* saved_tab_group_keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+  if (saved_tab_group_keyed_service && tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_tab_group_keyed_service->model()->AddObserver(this);
+  }
+
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
   profile_pref_registrar_.Init(profile_->GetPrefs());
@@ -637,6 +664,12 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
+  auto* saved_tab_group_keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+  if (saved_tab_group_keyed_service && tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_tab_group_keyed_service->model()->RemoveObserver(this);
+  }
+
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
   // calls to Browser:: should be avoided while it is being torn down.
@@ -1385,29 +1418,19 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   DCHECK(!IsRelevantToAppSessionService(type_));
   DCHECK(tab_strip_model_->group_model());
   if (change.type == TabGroupChange::kVisualsChanged) {
-    SessionService* const session_service =
-        SessionServiceFactory::GetForProfile(profile_);
-    if (session_service) {
-      const tab_groups::TabGroupVisualData* visual_data =
-          tab_strip_model_->group_model()
-              ->GetTabGroup(change.group)
-              ->visual_data();
-      const tab_groups::SavedTabGroupKeyedService* const
-          saved_tab_group_keyed_service =
-              tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-      std::optional<std::string> saved_guid;
+    std::optional<std::string> saved_guid;
 
-      if (saved_tab_group_keyed_service) {
-        const tab_groups::SavedTabGroup* const saved_group =
-            saved_tab_group_keyed_service->model()->Get(change.group);
-        if (saved_group) {
-          saved_guid = saved_group->saved_guid().AsLowercaseString();
-        }
+    const tab_groups::SavedTabGroupKeyedService* const
+        saved_tab_group_keyed_service =
+            tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+    if (saved_tab_group_keyed_service) {
+      const tab_groups::SavedTabGroup* const saved_group =
+          saved_tab_group_keyed_service->model()->Get(change.group);
+      if (saved_group) {
+        saved_guid = saved_group->saved_guid().AsLowercaseString();
       }
-
-      session_service->SetTabGroupMetadata(session_id(), change.group,
-                                           visual_data, std::move(saved_guid));
     }
+    UpdateTabGroupSessionMetadata(this, change.group, std::move(saved_guid));
   } else if (change.type == TabGroupChange::kClosed) {
     sessions::TabRestoreService* tab_restore_service =
         TabRestoreServiceFactory::GetForProfile(profile());
@@ -1458,6 +1481,42 @@ void Browser::TabStripEmpty() {
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.
   instant_controller_.reset();
+}
+
+void Browser::SavedTabGroupAddedLocally(const base::Uuid& guid) {
+  // See comment in Browser::OnTabGroupChanged
+  DCHECK(!IsRelevantToAppSessionService(type_));
+  DCHECK(tab_strip_model_->group_model());
+
+  const tab_groups::SavedTabGroupKeyedService* const
+      saved_tab_group_keyed_service =
+          tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+  CHECK(saved_tab_group_keyed_service);
+
+  const tab_groups::SavedTabGroup* const added_group =
+      saved_tab_group_keyed_service->model()->Get(guid);
+  CHECK(added_group);
+
+  if (!added_group->local_group_id().has_value()) {
+    return;
+  }
+
+  UpdateTabGroupSessionMetadata(this, added_group->local_group_id().value(),
+                                guid.AsLowercaseString());
+}
+
+void Browser::SavedTabGroupRemovedLocally(
+    const tab_groups::SavedTabGroup* removed_group) {
+  // See comment in Browser::OnTabGroupChanged
+  DCHECK(!IsRelevantToAppSessionService(type_));
+  DCHECK(tab_strip_model_->group_model());
+
+  if (!removed_group->local_group_id().has_value()) {
+    return;
+  }
+
+  UpdateTabGroupSessionMetadata(this, removed_group->local_group_id().value(),
+                                std::nullopt);
 }
 
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,

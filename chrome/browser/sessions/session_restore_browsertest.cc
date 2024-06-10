@@ -83,12 +83,14 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -4514,4 +4516,160 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
   EXPECT_TRUE(HasCookie(new_browser, "other_page_session_cookie"));
   EXPECT_EQ(HasCookie(new_browser, "other_page_session_stale_cookie"),
             !ShouldDeleteStaleSessionCookiesOnStartup());
+}
+
+class SavedTabGroupSessionRestoreTest : public SessionRestoreTest {
+ public:
+  SavedTabGroupSessionRestoreTest() {
+    feature_list_.InitAndEnableFeature(tab_groups::kTabGroupsSaveV2);
+  }
+  SavedTabGroupSessionRestoreTest(const SavedTabGroupSessionRestoreTest&) =
+      delete;
+  SavedTabGroupSessionRestoreTest& operator=(
+      const SavedTabGroupSessionRestoreTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test simulates migrating from V1 of SavedTabGroups to V2. A user may
+// have unsaved groups at the time they update the browser. We must ensure all
+// groups are saved by default correctly. See crbug.com/344016224.
+IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
+                       UnsavedGroupDefaultSavedAfterBrowserRestart) {
+  // Add a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add the tab to a group. We use the restore version of the AddToGroup
+  // function to prevent the group from being saved by default. The group id sis
+  // respun when restoring to prevent collisions. Just create an arbitrary one
+  // for now.
+  browser()->tab_strip_model()->AddToGroupForRestore(
+      {0}, tab_groups::TabGroupId::GenerateNew());
+
+  // Expect no groups have been saved at this point.
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  ASSERT_NE(service, nullptr);
+  EXPECT_TRUE(service->model()->IsEmpty());
+
+  // Close the browser and restore the last session
+  Browser* restored = QuitBrowserAndRestore(browser());
+  TabStripModel* tab_strip_model = restored->tab_strip_model();
+  const int tabs = tab_strip_model->count();
+  ASSERT_EQ(2, tabs);
+
+  // Expect the unsaved group has been saved at this point.
+  EXPECT_EQ(1, service->model()->Count());
+}
+
+// This test simulates creating a default group (using the default group color
+// and no title). Ensure on restart there was no duplicated groups and that the
+// restored group is connected to the saved group.
+IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
+                       NoDuplicatesOfDefaultSavedGroupAfterBrowserRestart) {
+  // Add a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add the tab to a new group.
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // Expect the newly created to be saved at this point.
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  ASSERT_NE(service, nullptr);
+  EXPECT_EQ(1, service->model()->Count());
+
+  // Close the browser and restore the last session
+  Browser* restored = QuitBrowserAndRestore(browser());
+  TabStripModel* tab_strip_model = restored->tab_strip_model();
+  const int tabs = tab_strip_model->count();
+  ASSERT_EQ(2, tabs);
+
+  // Expect the restored browser to still has 1 saved group i.e. no duplicates.
+  EXPECT_EQ(1, service->model()->Count());
+}
+
+// This test simulates creating multiple groups with different visual data
+// and ensuring on restart they are restored with the same information.
+IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
+                       MultipleSavedGroupsAfterBrowserRestart) {
+  // Add a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add a third tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  ASSERT_NE(service, nullptr);
+
+  // Add the tab to a new groups.
+  auto group1 = browser()->tab_strip_model()->AddToNewGroup({0});
+  base::Uuid group1_saved_guid = service->model()->Get(group1)->saved_guid();
+
+  auto group2 = browser()->tab_strip_model()->AddToNewGroup({1});
+  base::Uuid group2_saved_guid = service->model()->Get(group2)->saved_guid();
+
+  // Expect the newly created to be saved at this point.
+  EXPECT_EQ(2, service->model()->Count());
+
+  // Update the visual data of the new groups.
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group1)
+      ->SetVisualData(tab_groups::TabGroupVisualData(
+                          u"Group1", tab_groups::TabGroupColorId::kGrey),
+                      true);
+
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group2)
+      ->SetVisualData(tab_groups::TabGroupVisualData(
+                          u"Group2", tab_groups::TabGroupColorId::kBlue),
+                      true);
+
+  // Close the browser and restore the last session
+  Browser* restored = QuitBrowserAndRestore(browser());
+  TabStripModel* tab_strip_model = restored->tab_strip_model();
+  const int tabs = tab_strip_model->count();
+  ASSERT_EQ(3, tabs);
+
+  // Expect the restored browser to still has 2 saved group.
+  EXPECT_EQ(2, service->model()->Count());
+
+  auto* saved_group1 = service->model()->Get(group1_saved_guid);
+  ASSERT_NE(saved_group1, nullptr);
+  ASSERT_TRUE(saved_group1->local_group_id().has_value());
+  auto* local_group1 = tab_strip_model->group_model()->GetTabGroup(
+      saved_group1->local_group_id().value());
+  EXPECT_EQ(u"Group1", local_group1->visual_data()->title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kGrey,
+            local_group1->visual_data()->color());
+
+  auto* saved_group2 = service->model()->Get(group2_saved_guid);
+  ASSERT_NE(saved_group2, nullptr);
+  ASSERT_TRUE(saved_group2->local_group_id().has_value());
+  auto* local_group2 = tab_strip_model->group_model()->GetTabGroup(
+      saved_group2->local_group_id().value());
+  EXPECT_EQ(u"Group2", local_group2->visual_data()->title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kBlue,
+            local_group2->visual_data()->color());
 }

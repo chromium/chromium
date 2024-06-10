@@ -1265,6 +1265,11 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
             break;
           }
           current_tab->saved_group_id = base::Uuid::ParseLowercase(saved_id);
+        } else {
+          // Explicitly update the nullopt if the group isn't saved. This is to
+          // ensure the right value is set when there are multiple entries in
+          // the append log file.
+          current_tab->saved_group_id = std::nullopt;
         }
 
         current_tab->group =

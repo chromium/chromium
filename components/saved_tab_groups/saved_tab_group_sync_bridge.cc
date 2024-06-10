@@ -70,7 +70,8 @@ base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
 
 std::vector<proto::SavedTabGroupData> LoadStoredEntries(
     std::vector<proto::SavedTabGroupData> stored_entries,
-    SavedTabGroupModel* model) {
+    SavedTabGroupModel* model,
+    base::OnceCallback<void()> on_loaded_callback) {
   std::vector<SavedTabGroup> groups;
   std::unordered_set<std::string> group_guids;
 
@@ -98,7 +99,8 @@ std::vector<proto::SavedTabGroupData> LoadStoredEntries(
     tabs_missing_groups.push_back(std::move(proto));
   }
 
-  model->LoadStoredEntries(std::move(groups), std::move(tabs));
+  model->LoadStoredEntries(std::move(groups), std::move(tabs),
+                           std::move(on_loaded_callback));
   return tabs_missing_groups;
 }
 
@@ -943,9 +945,16 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
 
   // Update `model_` with any data stored in local storage except for orphaned
   // tabs. Orphaned tabs will be returned and added to `tabs_missing_groups_` in
-  // case their missing group ever arrives.
-  tabs_missing_groups_ =
-      LoadStoredEntries(std::move(stored_entries), model_.get());
+  // case their missing group ever arrives. Use `on_loaded_callback` to start
+  // observing the model immediately after loading the stored entries. This
+  // ensures the sync bridge is able to observe restored groups on startup.
+  tabs_missing_groups_ = LoadStoredEntries(
+      std::move(stored_entries), model_.get(),
+      base::BindOnce(&SavedTabGroupSyncBridge::StartObservingModel,
+                     base::Unretained(this)));
+}
+
+void SavedTabGroupSyncBridge::StartObservingModel() {
   observation_.Observe(model_);
 }
 

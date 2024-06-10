@@ -79,6 +79,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -959,13 +960,19 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     for (const std::unique_ptr<sessions::SessionTabGroup>& session_tab_group :
          tab_groups) {
-      if (session_tab_group->saved_guid.has_value() &&
-          saved_tab_group_keyed_service) {
-        const base::Uuid& saved_guid =
-            base::Uuid::ParseLowercase(session_tab_group->saved_guid.value());
+      if (saved_tab_group_keyed_service) {
+        if (session_tab_group->saved_guid.has_value()) {
+          const base::Uuid& saved_guid =
+              base::Uuid::ParseLowercase(session_tab_group->saved_guid.value());
 
-        saved_tab_group_keyed_service->StoreLocalToSavedId(
-            saved_guid, new_group_ids.at(session_tab_group->id));
+          saved_tab_group_keyed_service->ConnectRestoredGroupToSaveId(
+              saved_guid, new_group_ids.at(session_tab_group->id));
+        } else if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+          // Default save any groups that are not save yet. This happens when
+          // a user goes from V1 of SavedTabGroups to V2 through an update.
+          saved_tab_group_keyed_service->SaveRestoredGroup(
+              new_group_ids.at(session_tab_group->id));
+        }
       }
 
       TabGroup* model_tab_group =

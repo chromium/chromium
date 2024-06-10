@@ -179,6 +179,10 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
+  // Callback passed to `LoadStoredEntries` to start observing model after
+  // loading the stored entries.
+  void StartObservingModel();
+
   // Called to migrate the SavedTabGroupSpecfics to SavedTabGroupData.
   void MigrateSpecificsToSavedTabGroupData(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
