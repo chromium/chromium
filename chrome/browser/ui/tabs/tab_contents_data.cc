@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_collection.h"
+#include "chrome/browser/ui/ui_features.h"
 
 TabContentsData::TabContentsData() = default;
 TabContentsData::~TabContentsData() = default;
@@ -57,7 +59,11 @@ class TabContentsDataImpl : public TabContentsData {
 };
 
 std::unique_ptr<TabContentsData> CreateTabContentsDataImpl() {
-  return std::make_unique<TabContentsDataImpl>();
+  if (base::FeatureList::IsEnabled(features::kTabStripCollectionStorage)) {
+    return std::make_unique<tabs::TabStripCollection>();
+  } else {
+    return std::make_unique<TabContentsDataImpl>();
+  }
 }
 
 size_t TabContentsDataImpl::TabCountRecursive() const {

@@ -2522,9 +2522,6 @@ void TabStripModel::InsertTabAtIndexImpl(
     bool active) {
   WebContents* web_contents = tab_model->contents();
 
-  tab_model->set_group(group);
-  tab_model->set_pinned(pin);
-
   contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
 
   // Update selection model and send the notification.
@@ -2560,9 +2557,6 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   // Remove the tab.
   std::unique_ptr<tabs::TabModel> old_data =
       contents_data_->RemoveTabAtIndexRecursive(index);
-
-  // Update the tab properties.
-  old_data->set_group(std::nullopt);
 
   if (empty()) {
     selection_model_.Clear();

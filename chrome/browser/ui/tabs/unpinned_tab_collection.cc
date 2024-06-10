@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
@@ -70,8 +71,11 @@ void UnpinnedTabCollection::AddTabRecursive(
   // Case when we want to add a tab to the end of this collection as a direct
   // child.
   if (index == curr_index) {
+    CHECK(!new_group_id.has_value());
     return AddTab(std::move(tab_model), direct_child_index);
   }
+
+  NOTREACHED_NORETURN();
 }
 
 tabs::TabModel* UnpinnedTabCollection::GetTabAtIndexRecursive(size_t index) {
@@ -273,6 +277,23 @@ TabGroupTabCollection* UnpinnedTabCollection::GetTabGroupCollection(
 std::optional<size_t> UnpinnedTabCollection::GetIndexOfTab(
     const TabModel* tab_model) const {
   return impl_->GetIndexOfTab(tab_model);
+}
+
+void UnpinnedTabCollection::MoveGroupToRecursive(
+    int index,
+    TabGroupTabCollection* collection) {
+  std::unique_ptr<tabs::TabGroupTabCollection> removed_collection =
+      RemoveGroup(collection);
+  if (index == static_cast<int>(TabCountRecursive())) {
+    AddTabGroup(std::move(removed_collection), ChildCount());
+  } else {
+    const tabs::TabModel* const tab_at_destination =
+        GetTabAtIndexRecursive(index);
+    const size_t index_to_move =
+        GetDirectChildIndexOfCollectionContainingTab(tab_at_destination)
+            .value();
+    AddTabGroup(std::move(removed_collection), index_to_move);
+  }
 }
 
 }  // namespace tabs
