@@ -116,35 +116,39 @@ TEST(CodeSignCloneManagerTest, Clone) {
 }
 
 TEST(CodeSignCloneManagerTest, InvalidDirhelperPath) {
-  base::test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      code_sign_clone_manager::kMacAppCodeSignClone);
+  // Remove the @available check once `MAC_OS_X_VERSION_MIN_REQUIRED` is macOS
+  // 11+.
+  if (@available(macOS 11.0, *)) {
+    base::test::TaskEnvironment task_environment;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        code_sign_clone_manager::kMacAppCodeSignClone);
 
-  base::FilePath test_app = CreateTestApp();
-  base::ScopedPathOverride scoped_path_override(content::CHILD_PROCESS_EXE);
+    base::FilePath test_app = CreateTestApp();
+    base::ScopedPathOverride scoped_path_override(content::CHILD_PROCESS_EXE);
 
-  // Set an unsupported `_dirhelper` path.
-  CodeSignCloneManager::SetDirhelperPathForTesting(base::FilePath("/tmp"));
+    // Set an unsupported `_dirhelper` path.
+    CodeSignCloneManager::SetDirhelperPathForTesting(base::FilePath("/tmp"));
 
-  base::RunLoop run_loop;
-  base::FilePath tmp_app_path;
-  CodeSignCloneManager clone_manager(
-      test_app, base::FilePath("TestApp"),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, base::FilePath* out_app_path,
-             base::FilePath in_app_path) {
-            *out_app_path = in_app_path;
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure(), &tmp_app_path));
-  run_loop.Run();
+    base::RunLoop run_loop;
+    base::FilePath tmp_app_path;
+    CodeSignCloneManager clone_manager(
+        test_app, base::FilePath("TestApp"),
+        base::BindOnce(
+            [](base::OnceClosure quit_closure, base::FilePath* out_app_path,
+               base::FilePath in_app_path) {
+              *out_app_path = in_app_path;
+              std::move(quit_closure).Run();
+            },
+            run_loop.QuitClosure(), &tmp_app_path));
+    run_loop.Run();
 
-  // Ensure there was a failure.
-  EXPECT_TRUE(tmp_app_path.empty());
-  EXPECT_FALSE(clone_manager.get_needs_cleanup_for_testing());
+    // Ensure there was a failure.
+    EXPECT_TRUE(tmp_app_path.empty());
+    EXPECT_FALSE(clone_manager.get_needs_cleanup_for_testing());
 
-  CodeSignCloneManager::ClearDirhelperPathForTesting();
+    CodeSignCloneManager::ClearDirhelperPathForTesting();
+  }
 }
 
 TEST(CodeSignCloneManagerTest, FailedHardLink) {
