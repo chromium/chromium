@@ -188,6 +188,25 @@ TEST_F(FontDescriptionTest, VariantAlternatesDifferentCacheKey) {
   ASSERT_NE(key_a, key_b);
 }
 
+TEST_F(FontDescriptionTest, VariantEmojiDifferentCacheKey) {
+  FontDescription a;
+  FontDescription b(a);
+
+  FontVariantEmoji variant_emoji_a = kEmojiVariantEmoji;
+  FontVariantEmoji variant_emoji_b = kUnicodeVariantEmoji;
+
+  a.SetVariantEmoji(variant_emoji_a);
+  b.SetVariantEmoji(variant_emoji_b);
+
+  ASSERT_NE(a, b);
+
+  FontFaceCreationParams test_creation_params;
+  FontCacheKey key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey key_b = b.CacheKey(test_creation_params, false);
+
+  ASSERT_NE(key_a, key_b);
+}
+
 TEST_F(FontDescriptionTest, AllFeaturesHash) {
   FontDescription font_description;
   font_description.SetFamily(

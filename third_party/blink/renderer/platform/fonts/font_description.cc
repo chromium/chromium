@@ -267,6 +267,7 @@ FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
     bool is_unique_match) const {
   unsigned options =
+      static_cast<unsigned>(fields_.variant_emoji_) << 10 |         // bit 11-12
       static_cast<unsigned>(fields_.font_synthesis_style_) << 9 |   // bit 10
       static_cast<unsigned>(fields_.font_synthesis_weight_) << 8 |  // bit 9
       static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |    // bit 8
@@ -282,7 +283,7 @@ FontCacheKey FontDescription::CacheKey(
   float device_scale_factor_for_key = 1.0f;
 #endif
   FontCacheKey cache_key(creation_params, EffectiveFontSize(),
-                         options | font_selection_request_.GetHash() << 11,
+                         options | font_selection_request_.GetHash() << 13,
                          device_scale_factor_for_key, size_adjust_,
                          variation_settings_, font_palette_,
                          font_variant_alternates_, is_unique_match);
