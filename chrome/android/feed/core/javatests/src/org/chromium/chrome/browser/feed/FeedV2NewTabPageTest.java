@@ -119,6 +119,7 @@ import java.util.concurrent.Callable;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=IPH_FeedHeaderMenu"
 })
+@Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class FeedV2NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
@@ -326,10 +327,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @Features.EnableFeatures({
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-        SigninFeatures.SEED_ACCOUNTS_REVAMP
-    })
+    @Features.EnableFeatures({SigninFeatures.SEED_ACCOUNTS_REVAMP})
     public void testSignInPromo_NotShownAfterSignIn() {
         mIsCachePopulatedInAccountManagerFacade = true;
         openNewTabPage();
@@ -350,7 +348,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
+    public void testSignInPromoWhenDefaultAccountCannotShowHistorySyncWithoutMinorRestrictions() {
         final AccountCapabilitiesBuilder capabilitiesBuilder = new AccountCapabilitiesBuilder();
         mAccountManagerTestRule.addAccount(
                 "test@gmail.com",
@@ -363,8 +361,8 @@ public class FeedV2NewTabPageTest {
         onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
 
-        // Check that the sign-in promo is not displayed.
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        // Check that the sign-in promo is displayed.
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
     }
 
     @Test

@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -72,6 +73,7 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class RecentTabsPageTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";
@@ -151,7 +153,7 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
         mPage = loadRecentTabsPage();
@@ -206,7 +208,7 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
         mPage = loadRecentTabsPage();
@@ -262,7 +264,7 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedBulkEvent() throws Exception {
         mPage = loadRecentTabsPage();
@@ -326,6 +328,8 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
+    // TODO(crbug.com/346248569): Enable this test once the empty state is fixed.
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testEmptyStateView() throws ExecutionException {
         // Sign in and enable sync.
         // TODO(b/343378391) Update accountInfo to use
