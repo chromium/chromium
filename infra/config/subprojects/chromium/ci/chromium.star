@@ -809,6 +809,62 @@ ci.builder(
 )
 
 ci.builder(
+    name = "win-arm64-archive-rel",
+    description_html = "Chromium snapshot archive builder for win-arm64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = "public_build_scripts",
+        additional_compile_targets = "all",
+    ),
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    # TODO(crbug.com/335863313): Enable when verified.
+    # tree_closing = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|rel",
+        short_name = "arm64",
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    # TODO(crbug.com/335863313): Enable when verified.
+    gardener_rotations = args.ignore_default(None),
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "win-arm64-archive-rel.json",
+            ],
+        },
+    },
+)
+
+ci.builder(
     name = "win-official",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(

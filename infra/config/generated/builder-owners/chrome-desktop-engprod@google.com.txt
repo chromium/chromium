@@ -21,6 +21,7 @@ ci/linux-lacros-dbg
 ci/linux-lacros-rel-dangling-ptr-fyi
 ci/linux-lacros-tester-rel
 ci/win-archive-rel
+ci/win-arm64-archive-rel
 ci/win-arm64-dbg
 ci/win-arm64-rel
 ci/win-official
@@ -36,6 +37,7 @@ try/lacros-amd64-generic-rel-non-skylab
 try/lacros-arm-generic-rel-skylab
 try/lacros-arm64-generic-rel-skylab
 try/linux-lacros-rel-dangling-ptr-fyi
+try/win-arm64-clobber-rel
 try/win-arm64-compile-dbg
 try/win-arm64-dbg
 try/win-arm64-rel

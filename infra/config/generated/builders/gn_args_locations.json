@@ -14,6 +14,7 @@
     "mac-arm64-archive-rel": "ci/mac-arm64-archive-rel/gn-args.json",
     "mac-official": "ci/mac-official/gn-args.json",
     "win-archive-rel": "ci/win-archive-rel/gn-args.json",
+    "win-arm64-archive-rel": "ci/win-arm64-archive-rel/gn-args.json",
     "win-official": "ci/win-official/gn-args.json",
     "win32-archive-rel": "ci/win32-archive-rel/gn-args.json",
     "win32-official": "ci/win32-official/gn-args.json"
@@ -932,6 +933,7 @@
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
     "linux-win-cross-rel": "try/linux-win-cross-rel/gn-args.json",
     "win-annotator-rel": "try/win-annotator-rel/gn-args.json",
+    "win-arm64-clobber-rel": "try/win-arm64-clobber-rel/gn-args.json",
     "win-arm64-compile-dbg": "try/win-arm64-compile-dbg/gn-args.json",
     "win-arm64-dbg": "try/win-arm64-dbg/gn-args.json",
     "win-arm64-rel": "try/win-arm64-rel/gn-args.json",

@@ -62,6 +62,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win-arm64-clobber-rel",
+    description_html = "Chromium snapshot archive builder for win-arm64",
+    mirrors = [
+        "ci/win-arm64-archive-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-arm64-archive-rel",
+            "no_symbols",
+            "dcheck_always_on",
+        ],
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
+)
+
+try_.builder(
     name = "win-asan",
     mirrors = [
         "ci/win-asan",
