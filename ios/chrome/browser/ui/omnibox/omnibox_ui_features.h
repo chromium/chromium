@@ -14,9 +14,6 @@ BASE_DECLARE_FEATURE(kEnableSuggestionsScrollingOnIPad);
 // Feature flag to make omnibox popup a floating rounded rect.
 BASE_DECLARE_FEATURE(kEnablePopoutOmniboxIpad);
 
-// Feature flag to enable paste button on the omnibox keyboard accessories.
-BASE_DECLARE_FEATURE(kOmniboxKeyboardPasteButton);
-
 // Returns if kEnablePopoutOmniboxIpad feature is enabled.
 bool IsIpadPopoutOmniboxEnabled();
 

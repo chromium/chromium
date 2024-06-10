@@ -195,13 +195,6 @@ id<GREYMatcher> ClearButton() {
       IDS_IOS_ACCNAME_CLEAR_TEXT);
 }
 
-// Returns Paste to Search button on the omnibox's keyboard accessory.
-id<GREYMatcher> PasteToSearchButton() {
-  NSString* a11yHintPasteButton =
-      l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH);
-  return grey_accessibilityHint(a11yHintPasteButton);
-}
-
 #pragma mark LocationBar context menu buttons
 
 // LocationBar context menu buttons can be showed in different orders depending
@@ -492,74 +485,6 @@ void FocusFakebox() {
   // Check that the omnibox started a google search.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText("google")];
-}
-
-#pragma mark - Omnibox Keyboard Accessory Paste to Search
-
-// Tests that the keyboard accessory's paste to search button is shown with a
-// text in the clipboard and is starting a search.
-// TODO(crbug.com/40912596): Re-enable when fixed.
-- (void)DISABLED_testOmniboxKeyboardAccessoryPasteTextToSearch {
-  if (@available(iOS 16, *)) {
-    [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithFeaturesEnabled:{kOmniboxKeyboardPasteButton}
-                                    disabled:{}
-                              relaunchPolicy:ForceRelaunchByCleanShutdown];
-    FocusFakebox();
-    NSString* textToSearch = @"TextToCopy";
-    [ChromeEarlGrey copyTextToPasteboard:textToSearch];
-    [[EarlGrey selectElementWithMatcher:PasteToSearchButton()]
-        performAction:grey_tap()];
-
-    // Check that the omnibox contains the copied text.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                              base::SysNSStringToUTF8(textToSearch))];
-  }
-}
-
-// Tests that the keyboard accessory's paste to search button is shown with a
-// link in the clipboard and is visiting the link.
-- (void)testOmniboxKeyboardAccessoryPasteURLToSearch {
-  if (@available(iOS 16, *)) {
-    [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithFeaturesEnabled:{kOmniboxKeyboardPasteButton}
-                                    disabled:{}
-                              relaunchPolicy:ForceRelaunchByCleanShutdown];
-    FocusFakebox();
-    [ChromeEarlGrey copyTextToPasteboard:base::SysUTF8ToNSString(_URL1.spec())];
-
-    [[EarlGrey selectElementWithMatcher:PasteToSearchButton()]
-        performAction:grey_tap()];
-    [ChromeEarlGrey waitForPageToFinishLoading];
-    [ChromeEarlGrey waitForWebStateContainingText:kPage1];
-  }
-}
-
-// Tests that the keyboard accessory's paste to search button is shown with an
-// image in the clipboard and is starting an image search.
-// TODO(crbug.com/40912596): Re-enable when fixed.
-- (void)DISABLED_testOmniboxKeyboardAccessoryPasteImageToSearch {
-  if (@available(iOS 16, *)) {
-    [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithFeaturesEnabled:{kOmniboxKeyboardPasteButton}
-                                    disabled:{}
-                              relaunchPolicy:ForceRelaunchByCleanShutdown];
-    [self copyImageIntoClipboard];
-
-    // Wait for the context menu to dismiss, so the omnibox can be tapped.
-    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                        chrome_test_util::DefocusedLocationView()];
-
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-        performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:PasteToSearchButton()]
-        performAction:grey_tap()];
-    // Check that the omnibox started a google search.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        assertWithMatcher:chrome_test_util::OmniboxContainingText("google")];
-  }
 }
 
 // Tests that copying in the omnibox will trigger the share button IPH to be

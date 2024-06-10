@@ -2160,9 +2160,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS" desc="Accessibility label for a button that opens Lens [iOS only].">
         Search with Lens
       </message>
-      <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH" desc="Accessibility label for a button that starts a Paste and Search [iOS only]">
-        Paste and Search
-      </message>
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH" desc="Accessibility label for a button that starts scanning QR Codes [iOS only].">
         QR code Search
       </message>

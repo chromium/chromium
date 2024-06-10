@@ -16,10 +16,6 @@ BASE_FEATURE(kEnablePopoutOmniboxIpad,
              "EnablePopoutOmniboxIpad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxKeyboardPasteButton,
-             "OmniboxKeyboardPasteButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxSuggestionsRTLImprovements,
              "OmniboxSuggestionsRTLImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);

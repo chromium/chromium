@@ -673,11 +673,6 @@ extern const char kOmniboxGroupingFrameworkForZPSDescription[];
 extern const char kOmniboxGroupingFrameworkForTypedSuggestionsName[];
 extern const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[];
 
-// Title and description for the flag to enable paste button in the omnibox's
-// keyboard accessory.
-extern const char kOmniboxKeyboardPasteButtonName[];
-extern const char kOmniboxKeyboardPasteButtonDescription[];
-
 // Title and description for local history zero-prefix suggestions beyond NTP.
 extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPName[];
 extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];

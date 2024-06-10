@@ -762,11 +762,6 @@ const char kOmniboxInspireMeSignedOutDescription[] =
     "When enabled, appends additional suggestions based on local trends and "
     "optionally extends the ZPS limit (for signed out users).";
 
-const char kOmniboxKeyboardPasteButtonName[] = "Omnibox keyboard paste button";
-const char kOmniboxKeyboardPasteButtonDescription[] =
-    "Enables paste button in the omnibox's keyboard accessory. Only available "
-    "from iOS 16 onward.";
-
 const char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
 const char kOmniboxUIMaxAutocompleteMatchesDescription[] =

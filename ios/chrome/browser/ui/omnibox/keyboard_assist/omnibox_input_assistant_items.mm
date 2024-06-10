@@ -50,29 +50,7 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
       cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
       @"QR code Search");
   [items addObject:cameraItem];
-  if (base::FeatureList::IsEnabled(kOmniboxKeyboardPasteButton)) {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-    if (@available(iOS 16, *)) {
-      UIPasteControl* pasteControl =
-          OmniboxAssistiveKeyboardPasteControl(pasteTarget);
-      UIView* pasteControlContainer = [[UIView alloc] init];
-      [pasteControlContainer addSubview:pasteControl];
-      [pasteControlContainer setTranslatesAutoresizingMaskIntoConstraints:NO];
-      [NSLayoutConstraint activateConstraints:@[
-        [pasteControlContainer.widthAnchor
-            constraintEqualToConstant:kPasteButtonSize],
-        [pasteControlContainer.centerXAnchor
-            constraintEqualToAnchor:pasteControl.centerXAnchor],
-        [pasteControlContainer.centerYAnchor
-            constraintEqualToAnchor:pasteControl.centerYAnchor]
-      ]];
-      UIBarButtonItem* pasteButtonItem =
-          [[UIBarButtonItem alloc] initWithCustomView:pasteControlContainer];
-      [pasteButtonItem setWidth:kPasteButtonSize];
-      [items addObject:pasteButtonItem];
-    }
-#endif  // defined(__IPHONE_16_0)
-  }
+
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
         configurationWithPointSize:kOmniboxAssistiveKeyboardSymbolPointSize
