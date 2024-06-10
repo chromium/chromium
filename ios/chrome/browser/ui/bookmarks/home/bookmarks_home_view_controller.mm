@@ -9,6 +9,7 @@
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -152,9 +153,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     UITableViewDataSource,
     UITableViewDelegate>
 
-// The user's browser state model used.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
-
 // The mediator that provides data for this view controller.
 @property(nonatomic, strong) BookmarksHomeMediator* mediator;
 
@@ -247,20 +245,20 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser->AsWeakPtr();
-    _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ChromeBrowserState* browserState = self.browserState;
     _webStateList = browser->GetWebStateList();
 
     _faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(_browserState);
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
 
     _localOrSyncableBookmarkModel =
         ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-            _browserState)
+            browserState)
             ->AsWeakPtr();
     _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _localOrSyncableBookmarkModel.get());
     _accountBookmarkModel =
-        ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState)
+        ios::AccountBookmarkModelFactory::GetForBrowserState(browserState)
             ->AsWeakPtr();
     _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _accountBookmarkModel.get());
@@ -282,7 +280,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.mediator.consumer = nil;
   self.mediator = nil;
   _browser = nullptr;
-  self.browserState = nullptr;
   [self.searchController dismissViewControllerAnimated:YES completion:nil];
   [self dismissActionSheetCoordinator];
   _localOrSyncableBookmarkModel = nullptr;
@@ -311,7 +308,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack {
   // This method is only designed to be called for the view controller
   // associated with the root node.
-  CHECK(AreAllAvailableBookmarkModelsLoaded(_browserState));
+  CHECK(AreAllAvailableBookmarkModelsLoaded(self.browserState));
   DCHECK([self isDisplayingBookmarkRoot]);
 
   NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
@@ -436,7 +433,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.searchTerm = @"";
 
-  if (AreAllAvailableBookmarkModelsLoaded(_browserState)) {
+  if (AreAllAvailableBookmarkModelsLoaded(self.browserState)) {
     [self loadBookmarkViews];
   } else {
     [self showLoadingSpinnerBackground];
@@ -456,7 +453,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
   // Hide the toolbar if we're displaying the root node.
-  if (AreAllAvailableBookmarkModelsLoaded(_browserState) &&
+  if (AreAllAvailableBookmarkModelsLoaded(self.browserState) &&
       (![self isDisplayingBookmarkRoot] ||
        self.mediator.currentlyShowingSearchResults)) {
     self.navigationController.toolbarHidden = NO;
@@ -561,7 +558,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [self editExternalBookmarkIfSet];
 
-  DCHECK(AreAllAvailableBookmarkModelsLoaded(_browserState));
+  DCHECK(AreAllAvailableBookmarkModelsLoaded(self.browserState));
   DCHECK([self isViewLoaded]);
 }
 
@@ -1261,17 +1258,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK_GE(editedNodesVector.size(), 1u);
 
   [self setTableViewEditing:NO];
+  ChromeBrowserState* browserState = self.browserState;
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                               editedNodesVector,
                               _localOrSyncableBookmarkModel.get(),
-                              _accountBookmarkModel.get(), folder,
-                              self.browserState,
+                              _accountBookmarkModel.get(), folder, browserState,
                               AuthenticationServiceFactory::GetForBrowserState(
-                                  _browserState)
+                                  browserState)
                                   ->GetWeakPtr(),
                               SyncServiceFactory::GetForBrowserState(
-                                  _browserState))];
+                                  browserState))];
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
@@ -1291,7 +1288,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState)) {
+  if (!AreAllAvailableBookmarkModelsLoaded(self.browserState)) {
     return;
   }
   DCHECK(!self.displayedFolderNode);
@@ -1396,6 +1393,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 #pragma mark - private
+
+// Returns the browser state.
+- (ChromeBrowserState*)browserState {
+  if (Browser* browser = _browser.get()) {
+    return browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  }
+  return nullptr;
+}
 
 - (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];
@@ -1825,13 +1830,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Returns whether the incognito mode is forced.
 - (BOOL)isIncognitoForced {
-  return IsIncognitoModeForced(_browser.get()->GetBrowserState()->GetPrefs());
+  return IsIncognitoModeForced(self.browserState->GetPrefs());
 }
 
 // Returns whether the incognito mode is available.
 - (BOOL)isIncognitoAvailable {
-  return !IsIncognitoModeDisabled(
-      _browser.get()->GetBrowserState()->GetPrefs());
+  return !IsIncognitoModeDisabled(self.browserState->GetPrefs());
 }
 
 #pragma mark - Loading and Empty States

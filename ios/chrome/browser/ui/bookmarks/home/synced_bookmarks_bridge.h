@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 class ChromeBrowserState;
@@ -35,7 +36,7 @@ class SyncedBookmarksObserverBridge : public SyncObserverBridge {
 
  private:
   raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  base::WeakPtr<ChromeBrowserState> browser_state_;
 };
 
 }  // namespace sync_bookmarks

@@ -31,7 +31,7 @@ void BookmarkRemoverHelper::BookmarkModelChanged() {
 void BookmarkRemoverHelper::BookmarkModelLoaded(
     bool) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!AreAllAvailableBookmarkModelsLoaded(browser_state_)) {
+  if (!AreAllAvailableBookmarkModelsLoaded(browser_state_.get())) {
     // Some models are still loading, need to wait more.
     return;
   }

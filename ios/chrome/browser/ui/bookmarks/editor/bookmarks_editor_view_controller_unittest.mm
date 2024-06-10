@@ -66,7 +66,7 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
                                                GetForBrowserState(
                                                    chrome_browser_state_.get())
                                syncService:nullptr
-                              browserState:nullptr];
+                              browserState:chrome_browser_state_.get()];
   _controller.mutator = mediator;
   [_controller updateSync];
   [mediator disconnect];

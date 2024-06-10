@@ -81,7 +81,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   // The browser for this view controller.
   base::WeakPtr<Browser> _browser;
-  raw_ptr<ChromeBrowserState> _browserState;
   // Parent folder to `_folder`. Should never be `nullptr`.
   raw_ptr<const BookmarkNode> _parentFolder;
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
@@ -143,7 +142,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _parentFolder = parentFolder;
     _editingExistingFolder = _folder != nullptr;
     _browser = browser->AsWeakPtr();
-    _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
     _authService = authService;
     _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
         authService, self);
@@ -156,7 +154,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)disconnect {
-  _browserState = nullptr;
   _localOrSyncableBookmarkModel.reset();
   _localOrSyncableModelBridge.reset();
   _accountBookmarkModel.reset();
@@ -171,7 +168,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dealloc {
-  DCHECK(!_browserState);
+  DCHECK(!_parentFolder);
 }
 
 #pragma mark - Public
@@ -313,7 +310,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           _accountBookmarkModel.get());
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              editedNodes, {modelForFolder}, _browserState,
+                              editedNodes, {modelForFolder}, self.browserState,
                               FROM_HERE)];
   [self.delegate bookmarksFolderEditorDidDeleteEditedFolder:self];
 }
@@ -351,7 +348,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                   bookmarksVector,
                                   _localOrSyncableBookmarkModel.get(),
                                   _accountBookmarkModel.get(), _parentFolder,
-                                  _browserState, _authService->GetWeakPtr(),
+                                  self.browserState, _authService->GetWeakPtr(),
                                   _syncService)];
       // Move might change the pointer, grab the updated value.
       CHECK_EQ(bookmarksVector.size(), 1u);
@@ -367,7 +364,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
         _parentFolder, _localOrSyncableBookmarkModel.get(),
         _accountBookmarkModel.get());
-    SetLastUsedBookmarkFolder(_browserState->GetPrefs(), _parentFolder, type);
+    SetLastUsedBookmarkFolder(self.browserState->GetPrefs(), _parentFolder,
+                              type);
   }
   [self.view endEditing:YES];
   [self.delegate bookmarksFolderEditor:self didFinishEditingFolder:_folder];
@@ -505,6 +503,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
+
+// Returns the browser state.
+- (ChromeBrowserState*)browserState {
+  if (Browser* browser = _browser.get()) {
+    return browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  }
+  return nullptr;
+}
 
 // Change parent folder to a default folder. Either the one of model if it
 // exists, or the one of local or syncable.

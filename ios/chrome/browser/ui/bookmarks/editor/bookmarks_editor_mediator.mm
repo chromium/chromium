@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
+
 #import "base/auto_reset.h"
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
@@ -15,6 +17,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -33,7 +36,7 @@
   std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelObserver;
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridgeObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
-  raw_ptr<ChromeBrowserState> _browserState;
+  base::WeakPtr<ChromeBrowserState> _browserState;
   // Whether the user manually changed the folder. In which case it must be
   // saved as last used folder on "save".
   BOOL _manuallyChangedTheFolder;
@@ -88,7 +91,7 @@
         new BookmarkModelBridge(self, _localOrSyncableBookmarkModel.get()));
     _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
-    _browserState = browserState;
+    _browserState = browserState->AsWeakPtr();
     _authenticationService = authenticationService->GetWeakPtr();
   }
   return self;
@@ -268,7 +271,7 @@
       showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
                               self.bookmark, name, url, _originalFolder,
                               self.folder, _localOrSyncableBookmarkModel.get(),
-                              _accountBookmarkModel.get(), _browserState,
+                              _accountBookmarkModel.get(), self.browserState,
                               _authenticationService, _syncService)];
   if (_manuallyChangedTheFolder) {
     BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
@@ -301,7 +304,7 @@
     [self.snackbarCommandsHandler
         showSnackbarMessageOverBrowserToolbar:
             bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                nodes, {[self bookmarkModel]}, _browserState, FROM_HERE)];
+                nodes, {[self bookmarkModel]}, self.browserState, FROM_HERE)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }
 }
@@ -334,6 +337,11 @@
     folderName = bookmark_utils_ios::TitleForBookmarkNode(_folder);
   }
   [_consumer updateFolderLabel:folderName];
+}
+
+// Returns the browser state.
+- (ChromeBrowserState*)browserState {
+  return _browserState.get();
 }
 
 @end

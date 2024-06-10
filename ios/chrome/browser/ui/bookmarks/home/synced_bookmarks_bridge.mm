@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/home/synced_bookmarks_bridge.h"
 
+#import "base/memory/weak_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -21,15 +22,16 @@ SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
                          SyncServiceFactory::GetForBrowserState(browserState)),
       identity_manager_(
           IdentityManagerFactory::GetForBrowserState(browserState)),
-      browser_state_(browserState) {}
+      browser_state_(browserState->AsWeakPtr()) {}
 
 SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}
 
 #pragma mark - Signin and syncing status
 
 bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
+  CHECK(browser_state_.get());
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state_);
+      SyncServiceFactory::GetForBrowserState(browser_state_.get());
 
   return sync_service->GetTypesWithPendingDownloadForInitialSync().Has(
       syncer::BOOKMARKS);

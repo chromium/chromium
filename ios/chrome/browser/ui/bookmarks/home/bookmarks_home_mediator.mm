@@ -155,8 +155,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   ChromeBrowserState* browserState = [self originalBrowserState];
   _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
       self, _localOrSyncableBookmarkModel.get());
-    _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
-        self, _accountBookmarkModel.get());
+  _accountBookmarkModelBridge =
+      std::make_unique<BookmarkModelBridge>(self, _accountBookmarkModel.get());
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
@@ -170,7 +170,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(browserState->GetPrefs());
-  _prefObserverBridge.reset(new PrefObserverBridge(self));
+  _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
 
   _prefObserverBridge->ObserveChangesForPreference(
       bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
