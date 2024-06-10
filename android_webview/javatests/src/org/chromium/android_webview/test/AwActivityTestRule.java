@@ -95,22 +95,12 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     @Override
     public Statement apply(final Statement base, Description description) {
         mCurrentTestDescription = description;
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        setUp();
-                        try {
-                            base.evaluate();
-                        } finally {
-                            tearDown();
-                        }
-                    }
-                },
-                description);
+        return super.apply(base, description);
     }
 
-    public void setUp() {
+    @Override
+    protected void before() throws Throwable {
+        super.before();
         if (needsAwBrowserContextCreated()) {
             createAwBrowserContext();
         }
@@ -122,8 +112,12 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         }
     }
 
-    public void tearDown() {
-        if (!needsAwContentsCleanup()) return;
+    @Override
+    protected void after() {
+        if (!needsAwContentsCleanup()) {
+            super.after();
+            return;
+        }
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -138,6 +132,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 () -> {
                     mAwContentsDestroyedInTearDown.clear();
                 });
+        super.after();
     }
 
     public boolean needsHideActionBar() {

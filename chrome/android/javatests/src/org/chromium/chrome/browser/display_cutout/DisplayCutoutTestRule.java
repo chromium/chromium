@@ -15,8 +15,6 @@ import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.Criteria;
@@ -154,25 +152,36 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     }
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        // TODO(mthiesse): This class should be refactored to have an
-                        // ActivityTestRule rather than extending one.
-                        ChromeTabbedActivityTestRule rule = new ChromeTabbedActivityTestRule();
-                        rule.startMainActivityOnBlankPage();
-                        setActivity((T) rule.getActivity());
+    protected void before() throws Throwable {
+        super.before();
 
-                        setUp();
-                        loadUrl(getTestURL());
+        startActivity();
+        mTab = getActivity().getActivityTab();
 
-                        base.evaluate();
-                        tearDown();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setDisplayCutoutController(TestDisplayCutoutController.create(mTab, null));
+                    mListener = new FullscreenToggleObserver();
+                    getActivity().getFullscreenManager().addObserver(mListener);
+                });
+        loadUrl(getTestURL());
+    }
+
+    protected void startActivity() {
+        ChromeTabbedActivityTestRule rule = new ChromeTabbedActivityTestRule();
+        rule.startMainActivityOnBlankPage();
+        setActivity((T) rule.getActivity());
+    }
+
+    @Override
+    protected void after() {
+        super.after();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (!getActivity().isActivityFinishingOrDestroyed()) {
+                        getActivity().getFullscreenManager().removeObserver(mListener);
                     }
-                },
-                description);
+                });
     }
 
     protected String getTestURL() {
@@ -184,29 +193,9 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
         return mTestServer.getURL(DEFAULT_TEST_PAGE);
     }
 
-    protected void setUp() {
-        mTab = getActivity().getActivityTab();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    setDisplayCutoutController(TestDisplayCutoutController.create(mTab, null));
-                    mListener = new FullscreenToggleObserver();
-                    getActivity().getFullscreenManager().addObserver(mListener);
-                });
-    }
-
     protected void setDisplayCutoutController(TestDisplayCutoutController controller) {
         mTestController = controller;
         DisplayCutoutTabHelper.initForTesting(mTab, mTestController);
-    }
-
-    protected void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (!getActivity().isActivityFinishingOrDestroyed()) {
-                        getActivity().getFullscreenManager().removeObserver(mListener);
-                    }
-                });
     }
 
     /** Set a simulated dip scale for this device. */

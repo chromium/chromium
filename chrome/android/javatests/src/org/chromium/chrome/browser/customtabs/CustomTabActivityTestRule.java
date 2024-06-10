@@ -12,8 +12,6 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.mockito.Mockito;
 
 import org.chromium.base.Log;
@@ -40,30 +38,26 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     }
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        Statement superStatement = super.apply(base, description);
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                // TODO(crbug.com/342240475): Find a better way to deal with IPH in tests.
-                Log.w(
-                        TAG,
-                        "A mock Tracker is set in CustomTabActivityTestRule. This will"
-                                + " prevent any IPH from showing. See crbug.com/342240475.");
-                Tracker tracker = Mockito.mock(Tracker.class);
-                // Disable IPH to prevent it from interfering with the tests.
-                when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
-                TrackerFactory.setTrackerForTests(tracker);
-                try {
-                    superStatement.evaluate();
-                } finally {
-                    TestThreadUtils.runOnUiThreadBlocking(
-                            () -> {
-                                WarmupManager.getInstance().destroySpareTab();
-                            });
-                }
-            }
-        };
+    protected void before() throws Throwable {
+        super.before();
+        // TODO(crbug.com/342240475): Find a better way to deal with IPH in tests.
+        Log.w(
+                TAG,
+                "A mock Tracker is set in CustomTabActivityTestRule. This will"
+                        + " prevent any IPH from showing. See crbug.com/342240475.");
+        Tracker tracker = Mockito.mock(Tracker.class);
+        // Disable IPH to prevent it from interfering with the tests.
+        when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
+        TrackerFactory.setTrackerForTests(tracker);
+    }
+
+    @Override
+    protected void after() {
+        super.after();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WarmupManager.getInstance().destroySpareTab();
+                });
     }
 
     public static void putCustomTabIdInIntent(Intent intent) {

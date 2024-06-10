@@ -53,7 +53,7 @@ public class ApplicationTestUtils {
     }
 
     /** Finishes the given activity and waits for its onDestroy() to be called. */
-    public static void finishActivity(final Activity activity) throws Exception {
+    public static void finishActivity(final Activity activity) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (sMonitor.getLifecycleStageOf(activity) != Stage.DESTROYED) {

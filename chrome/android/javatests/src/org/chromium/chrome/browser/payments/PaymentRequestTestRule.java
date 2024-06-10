@@ -16,8 +16,6 @@ import androidx.annotation.IntDef;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -1295,18 +1293,11 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        if (!mDelayStartActivity) {
-                            startMainActivityWithURL(mTestFilePath);
-                            setObserversAndWaitForInitialPageLoad();
-                        }
-                        base.evaluate();
-                    }
-                },
-                description);
+    protected void before() throws Throwable {
+        super.before();
+        if (!mDelayStartActivity) {
+            startMainActivityWithURL(mTestFilePath);
+            setObserversAndWaitForInitialPageLoad();
+        }
     }
 }

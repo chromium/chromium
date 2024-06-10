@@ -7,8 +7,6 @@ package org.chromium.content.browser;
 import android.webkit.JavascriptInterface;
 
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.UrlUtils;
@@ -157,15 +155,8 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     @Override
-    public Statement apply(Statement base, Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        setUpContentView();
-                        base.evaluate();
-                    }
-                },
-                desc);
+    protected void before() throws Throwable {
+        super.before();
+        setUpContentView();
     }
 }

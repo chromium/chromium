@@ -10,8 +10,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -32,16 +30,9 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
     }
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        Statement webApkUpdateManagerStatement =
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        WebApkUpdateManager.setUpdatesDisabledForTesting(true);
-                        base.evaluate();
-                    }
-                };
-        return super.apply(webApkUpdateManagerStatement, description);
+    protected void before() throws Throwable {
+        WebApkUpdateManager.setUpdatesDisabledForTesting(true);
+        super.before();
     }
 
     /**

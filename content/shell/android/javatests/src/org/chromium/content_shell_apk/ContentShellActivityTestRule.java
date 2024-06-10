@@ -15,8 +15,6 @@ import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -66,24 +64,14 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public Statement apply(final Statement base, final Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        PowerManager pm =
-                                (PowerManager)
-                                        InstrumentationRegistry.getInstrumentation()
-                                                .getContext()
-                                                .getSystemService(Context.POWER_SERVICE);
-                        Assert.assertTrue(
-                                "Many tests will fail if the screen is not on.",
-                                pm.isInteractive());
-                        base.evaluate();
-                    }
-                },
-                desc);
+    protected void before() throws Throwable {
+        super.before();
+        PowerManager pm =
+                (PowerManager)
+                        InstrumentationRegistry.getInstrumentation()
+                                .getContext()
+                                .getSystemService(Context.POWER_SERVICE);
+        Assert.assertTrue("Many tests will fail if the screen is not on.", pm.isInteractive());
     }
 
     public void runOnUiThread(Runnable r) {

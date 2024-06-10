@@ -185,15 +185,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         return mSigninTestRule;
     }
 
-    private void ruleTearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSyncService = null;
-                    mFakeServerHelper = null;
-                    FakeServerHelper.destroyInstance();
-                });
-    }
-
     public SyncTestRule() {}
 
     /** Getters for Test variables */
@@ -353,44 +344,39 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     @Override
-    public Statement apply(final Statement statement, final Description desc) {
-        final Statement base =
-                super.apply(
-                        new Statement() {
-                            @Override
-                            public void evaluate() throws Throwable {
-                                TrustedVaultClient.setInstanceForTesting(
-                                        new TrustedVaultClient(
-                                                FakeTrustedVaultClientBackend.get()));
+    public Statement apply(final Statement base, final Description desc) {
+        final Statement superStatement = super.apply(base, desc);
+        return mSigninTestRule.apply(superStatement, desc);
+    }
 
-                                startMainActivityForSyncTest();
+    @Override
+    protected void before() throws Throwable {
+        super.before();
+        TrustedVaultClient.setInstanceForTesting(
+                new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
 
-                                TestThreadUtils.runOnUiThreadBlocking(
-                                        () -> {
-                                            SyncService syncService = createSyncServiceImpl();
-                                            if (syncService != null) {
-                                                SyncServiceFactory.setInstanceForTesting(
-                                                        syncService);
-                                            }
-                                            mSyncService =
-                                                    SyncTestUtil.getSyncServiceForLastUsedProfile();
-                                            mFakeServerHelper =
-                                                    FakeServerHelper.createInstanceAndGet();
-                                        });
+        startMainActivityForSyncTest();
 
-                                statement.evaluate();
-                            }
-                        },
-                        desc);
-        return mSigninTestRule.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        base.evaluate();
-                        ruleTearDown();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncService syncService = createSyncServiceImpl();
+                    if (syncService != null) {
+                        SyncServiceFactory.setInstanceForTesting(syncService);
                     }
-                },
-                desc);
+                    mSyncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    mFakeServerHelper = FakeServerHelper.createInstanceAndGet();
+                });
+    }
+
+    @Override
+    protected void after() {
+        super.after();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSyncService = null;
+                    mFakeServerHelper = null;
+                    FakeServerHelper.destroyInstance();
+                });
     }
 
     /*

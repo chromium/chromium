@@ -25,9 +25,7 @@ import com.google.android.apps.common.testing.accessibility.framework.checks.Spe
 import com.google.android.apps.common.testing.accessibility.framework.checks.TouchTargetSizeCheck;
 
 import org.junit.Assert;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.rules.ExternalResource;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -39,7 +37,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
  *
  * @param <T> The type of Activity this Rule will use.
  */
-public class BaseActivityTestRule<T extends Activity> implements TestRule {
+public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     private static final String TAG = "BaseActivityTestRule";
 
     private final Class<T> mActivityClass;
@@ -100,19 +98,10 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
 
     @Override
     @CallSuper
-    public Statement apply(final Statement base, final Description desc) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    base.evaluate();
-                } finally {
-                    if (mFinishActivity && mActivity != null) {
-                        ApplicationTestUtils.finishActivity(mActivity);
-                    }
-                }
-            }
-        };
+    protected void after() {
+        if (mFinishActivity && mActivity != null) {
+            ApplicationTestUtils.finishActivity(mActivity);
+        }
     }
 
     /**

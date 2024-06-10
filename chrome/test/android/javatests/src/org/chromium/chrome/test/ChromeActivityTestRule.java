@@ -90,46 +90,39 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @Override
     public Statement apply(final Statement base, Description description) {
         mCurrentTestName = description.getMethodName();
-        Statement chromeActivityStatement =
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        mDefaultUncaughtExceptionHandler =
-                                Thread.getDefaultUncaughtExceptionHandler();
-                        Thread.setDefaultUncaughtExceptionHandler(
-                                new ChromeUncaughtExceptionHandler());
-                        ChromeApplicationTestUtils.setUp(
-                                ApplicationProvider.getApplicationContext());
-                        // Instrumentation infrastructure and tests often access variables from the
-                        // instrumentation thread for asserts. See crbug.com/1173814 for more
-                        // details.
-                        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
-
-                        // Preload Calendar so that it does not trigger ReadFromDisk Strict mode
-                        // violations if called on the UI Thread. See https://crbug.com/705477 and
-                        // https://crbug.com/577185
-                        Calendar.getInstance();
-
-                        // Tests are run on bots that are offline by default. This might cause
-                        // offline UI to show and cause flakiness or failures in tests. Using this
-                        // switch will prevent that.
-                        // TODO(crbug.com/40134877): Remove this once we disable the offline
-                        // indicator for specific tests.
-                        CommandLine.getInstance()
-                                .appendSwitch(
-                                        ContentSwitches
-                                                .FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR);
-
-                        try {
-                            base.evaluate();
-                        } finally {
-                            Thread.setDefaultUncaughtExceptionHandler(
-                                    mDefaultUncaughtExceptionHandler);
-                        }
-                    }
-                };
-        Statement testServerStatement = mTestServerRule.apply(chromeActivityStatement, description);
+        Statement testServerStatement = mTestServerRule.apply(base, description);
         return super.apply(testServerStatement, description);
+    }
+
+    @Override
+    protected void before() throws Throwable {
+        super.before();
+        mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(new ChromeUncaughtExceptionHandler());
+        ChromeApplicationTestUtils.setUp(ApplicationProvider.getApplicationContext());
+        // Instrumentation infrastructure and tests often access variables from the
+        // instrumentation thread for asserts. See crbug.com/1173814 for more
+        // details.
+        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
+
+        // Preload Calendar so that it does not trigger ReadFromDisk Strict mode
+        // violations if called on the UI Thread. See https://crbug.com/705477 and
+        // https://crbug.com/577185
+        Calendar.getInstance();
+
+        // Tests are run on bots that are offline by default. This might cause
+        // offline UI to show and cause flakiness or failures in tests. Using this
+        // switch will prevent that.
+        // TODO(crbug.com/40134877): Remove this once we disable the offline
+        // indicator for specific tests.
+        CommandLine.getInstance()
+                .appendSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR);
+    }
+
+    @Override
+    protected void after() {
+        Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
+        super.after();
     }
 
     /** Return the timeout limit for Chrome activty start in tests */
@@ -478,13 +471,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         return mCurrentTestName;
     }
 
-    public String getTestName() {
-        return mCurrentTestName;
-    }
-
     /**
-     * @return {@link InfoBarContainer} of the active tab of the activity.
-     *     {@code null} if there is no tab for the activity or infobar is available.
+     * @return {@link InfoBarContainer} of the active tab of the activity. {@code null} if there is
+     *     no tab for the activity or infobar is available.
      */
     public InfoBarContainer getInfoBarContainer() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(

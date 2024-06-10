@@ -17,8 +17,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -108,45 +106,39 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
     }
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        Statement webappTestRuleStatement =
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        // We run the WebappRegistry calls on the UI thread to prevent
-                        // ConcurrentModificationExceptions caused by multiple threads iterating and
-                        // modifying its hashmap at the same time.
-                        final TestFetchStorageCallback callback = new TestFetchStorageCallback();
-                        TestThreadUtils.runOnUiThreadBlocking(
-                                () -> {
-                                    // Register the webapp so when the data storage is opened, the
-                                    // test doesn't crash.
-                                    WebappRegistry.refreshSharedPrefsForTesting();
-                                    WebappRegistry.getInstance().register(WEBAPP_ID, callback);
-                                });
+    protected void before() throws Throwable {
+        super.before();
+        // We run the WebappRegistry calls on the UI thread to prevent
+        // ConcurrentModificationExceptions caused by multiple threads iterating and
+        // modifying its hashmap at the same time.
+        final TestFetchStorageCallback callback = new TestFetchStorageCallback();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Register the webapp so when the data storage is opened, the
+                    // test doesn't crash.
+                    WebappRegistry.refreshSharedPrefsForTesting();
+                    WebappRegistry.getInstance().register(WEBAPP_ID, callback);
+                });
 
-                        // Running this on the UI thread causes issues, so can't group everything
-                        // into one runnable.
-                        callback.waitForCallback(0);
+        // Running this on the UI thread causes issues, so can't group everything
+        // into one runnable.
+        callback.waitForCallback(0);
 
-                        TestThreadUtils.runOnUiThreadBlocking(
-                                () -> {
-                                    callback.getStorage()
-                                            .updateFromWebappIntentDataProvider(
-                                                    WebappIntentDataProviderFactory.create(
-                                                            createIntent()));
-                                });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    callback.getStorage()
+                            .updateFromWebappIntentDataProvider(
+                                    WebappIntentDataProviderFactory.create(createIntent()));
+                });
+    }
 
-                        base.evaluate();
-
-                        TestThreadUtils.runOnUiThreadBlocking(
-                                () -> {
-                                    WebappRegistry.getInstance().clearForTesting();
-                                });
-                    }
-                };
-
-        return super.apply(webappTestRuleStatement, description);
+    @Override
+    protected void after() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebappRegistry.getInstance().clearForTesting();
+                });
+        super.after();
     }
 
     /** Starts up the WebappActivity and sets up the test observer. */

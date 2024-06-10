@@ -13,8 +13,6 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
@@ -244,20 +242,8 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        setUp();
-                        base.evaluate();
-                        tearDown();
-                    }
-                },
-                description);
-    }
-
-    private void setUp() throws Exception {
+    protected void before() throws Throwable {
+        super.before();
         mActivityStart.customMainActivityStart();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -279,13 +265,15 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
                 });
     }
 
-    private void tearDown() {
+    @Override
+    protected void after() {
         cleanUpAllDownloads();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadManagerService.getDownloadManagerService()
                             .removeDownloadObserver(mDownloadManagerServiceObserver);
                 });
+        super.after();
     }
 
     public void deleteFilesInDownloadDirectory(String... filenames) {

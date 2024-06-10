@@ -16,8 +16,6 @@ import androidx.annotation.IntDef;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -130,16 +128,9 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     }
 
     @Override
-    public Statement apply(Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        ModalDialogView.disableButtonTapProtectionForTesting();
-                        base.evaluate();
-                    }
-                },
-                description);
+    protected void before() throws Throwable {
+        super.before();
+        ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
     /** Starts an activity and listens for info-bars appearing/disappearing. */

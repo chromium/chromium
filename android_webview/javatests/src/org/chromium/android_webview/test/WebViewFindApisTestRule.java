@@ -6,9 +6,6 @@ package org.chromium.android_webview.test;
 
 import androidx.test.InstrumentationRegistry;
 
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
 import org.chromium.android_webview.AwContents;
 
 import java.util.concurrent.CountDownLatch;
@@ -24,20 +21,9 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
     private AwContents mContents;
 
     @Override
-    public Statement apply(final Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        try {
-                            mContents = loadContentsFromStringSync(WOODCHUCK);
-                        } catch (Throwable t) {
-                            throw new Exception(t);
-                        }
-                        base.evaluate();
-                    }
-                },
-                description);
+    protected void before() throws Throwable {
+        super.before();
+        mContents = loadContentsFromStringSync(WOODCHUCK);
     }
 
     public AwContents contents() {
