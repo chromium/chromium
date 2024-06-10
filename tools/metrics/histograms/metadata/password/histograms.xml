@@ -4267,6 +4267,30 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram name="PasswordManager{Store}.PasswordLossPotentialReason.WIP"
+    enum="PasswordManagerPasswordLossPotentialReason"
+    expires_after="2024-09-03">
+  <owner>izuzic@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    This histogram is recorded if the password manager observed a possible loss
+    of passwords (change from &gt;1 stored password in previous profile startup
+    to 0 passwords in this profile startup).
+
+    Records the reasons for credentials to be removed from the {Store} during
+    the last day or longer, if Chrome wasn't started up for longer than a day.
+    See `enum class PasswordManagerCredentialRemovalReason`.
+
+    If the value of the bitmask is 0, then there was no known reason for
+    credential removal.
+
+    This histogram is recorded on all platforms during browser start-up, at most
+    once per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram name="PasswordProtection.CSDCacheContainsDebuggingMetadata"
     enum="BooleanPresent" expires_after="2024-11-16">
   <owner>andysjlim@chromium.org</owner>

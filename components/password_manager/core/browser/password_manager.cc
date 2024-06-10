@@ -392,6 +392,8 @@ void PasswordManager::RegisterProfilePrefs(
 #endif
   registry->RegisterIntegerPref(prefs::kTotalPasswordsAvailableForAccount, 0);
   registry->RegisterIntegerPref(prefs::kTotalPasswordsAvailableForProfile, 0);
+  registry->RegisterIntegerPref(prefs::kPasswordRemovalReasonForAccount, 0);
+  registry->RegisterIntegerPref(prefs::kPasswordRemovalReasonForProfile, 0);
 }
 
 // static

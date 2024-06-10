@@ -56,8 +56,13 @@ constexpr char kOverallSuffix[] = ".Overall";
 constexpr char kWithCustomPassphraseSuffix[] = ".WithCustomPassphrase";
 constexpr char kWithoutCustomPassphraseSuffix[] = ".WithoutCustomPassphrase";
 
-// Suffix for the histogram that track password loss.
+// Suffix for the histogram that tracks password loss.
 constexpr char kPasswordLossSuffix[] = ".PasswordLoss";
+
+// Suffix for the histogram that tracks the reasons why passwords were recently
+// removed.
+constexpr char kPasswordLossPotentialReasonSuffix[] =
+    ".PasswordLossPotentialReason.WIP";
 
 bool IsCustomPassphraseEnabled(
     password_manager::sync_util::SyncState sync_state) {
@@ -642,6 +647,16 @@ CredentialsCount ReportAllMetrics(
   return credentials_count;
 }
 
+// Enum to track the reasons of password loss.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordManagerCredentialRemovalReason {
+  // TODO(crbug.com/342519805): Add reasons.
+  kToBeDefined = 0,  // Stored as (1<<0) in the bit vector.
+  kMaxValue = kToBeDefined,
+};
+
 void OnBackgroundMetricsReportingCompleted(
     base::WeakPtr<StoreMetricsReporter> reporter_weak_ptr,
     base::OnceClosure done_callback,
@@ -670,7 +685,15 @@ void OnBackgroundMetricsReportingCompleted(
       base::UmaHistogramCustomCounts(
           base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
           old_account_credentials_count, 0, 1000, 100);
+
+      int credential_removal_reasons =
+          prefs->GetInteger(prefs::kPasswordRemovalReasonForAccount);
+      base::UmaHistogramSparse(
+          base::StrCat({kPasswordManager, store_suffix,
+                        kPasswordLossPotentialReasonSuffix}),
+          credential_removal_reasons);
     }
+
     int old_profile_credentials_count =
         prefs->GetInteger(prefs::kTotalPasswordsAvailableForProfile);
     if (old_profile_credentials_count > 0 &&
@@ -680,6 +703,13 @@ void OnBackgroundMetricsReportingCompleted(
       base::UmaHistogramCustomCounts(
           base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
           old_profile_credentials_count, 0, 1000, 100);
+
+      int credential_removal_reasons =
+          prefs->GetInteger(prefs::kPasswordRemovalReasonForProfile);
+      base::UmaHistogramSparse(
+          base::StrCat({kPasswordManager, store_suffix,
+                        kPasswordLossPotentialReasonSuffix}),
+          credential_removal_reasons);
     }
 
     // Store the current total count of passwords per store for tracking
@@ -688,6 +718,11 @@ void OnBackgroundMetricsReportingCompleted(
                       credentials_count.account_credentials_count);
     prefs->SetInteger(prefs::kTotalPasswordsAvailableForProfile,
                       credentials_count.profile_credentials_count);
+
+    // The reasons for password loss need to be tracked anew because the old
+    // ones were already processed.
+    prefs->ClearPref(prefs::kPasswordRemovalReasonForAccount);
+    prefs->ClearPref(prefs::kPasswordRemovalReasonForProfile);
   }
 }
 

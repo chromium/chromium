@@ -4563,6 +4563,10 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Suggestions popup shown (once)"/>
 </enum>
 
+<enum name="PasswordManagerPasswordLossPotentialReason">
+  <int value="0" label="The reason is unknown"/>
+</enum>
+
 <enum name="PaymentsWindowUserConsentDialogResult">
   <int value="0" label="The tab or browser was closed"/>
   <int value="1" label="The escape key was pressed, closing the dialog"/>

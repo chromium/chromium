@@ -171,6 +171,10 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         prefs::kTotalPasswordsAvailableForAccount, 0);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kTotalPasswordsAvailableForProfile, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kPasswordRemovalReasonForAccount, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kPasswordRemovalReasonForProfile, 0);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     prefs_.registry()->RegisterDictionaryPref(
         prefs::kAccountStoragePerAccountSettings);
@@ -380,6 +384,8 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForAccount) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.PasswordLoss", 10, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.PasswordLossPotentialReason.WIP", 0, 1);
   histogram_tester.ExpectTotalCount("PasswordManager.ProfileStore.PasswordLoss",
                                     0);
 
@@ -395,7 +401,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForAccount) {
   RunUntilIdle();
 }
 
-TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForLocal) {
+TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForProfile) {
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   profile_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
@@ -418,6 +424,8 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForLocal) {
                                     0);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.PasswordLoss", 10, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.PasswordLossPotentialReason.WIP", 0, 1);
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
