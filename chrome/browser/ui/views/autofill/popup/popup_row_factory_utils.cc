@@ -5,10 +5,22 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
@@ -23,15 +35,20 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/compose/core/browser/compose_features.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -42,6 +59,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
@@ -259,7 +277,11 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
 
   std::unique_ptr<views::Label> main_text_label =
       CreateMainTextLabel(suggestion, kMainTextStyleLight);
-  main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
+  // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
+  if (!suggestion.apply_deactivated_style) {
+    main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  }
   main_text_label->SetEnabled(!suggestion.is_loading);
   view->AddChildView(std::move(main_text_label));
 
@@ -283,7 +305,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
     view->AddChildView(std::move(trailing_icon));
   }
 
-  // Force a refresh to ensure all the labels'styles are correct.
+  // Force a refresh to ensure all the labels' styles are correct.
   view->UpdateStyle(/*selected=*/false);
 
   return view;
