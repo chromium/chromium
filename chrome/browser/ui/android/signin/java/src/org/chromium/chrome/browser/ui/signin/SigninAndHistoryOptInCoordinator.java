@@ -139,14 +139,7 @@ public class SigninAndHistoryOptInCoordinator
             // the user cannot sign in, we should not show history sync either.
             return false;
         }
-        return switch (historyOptInMode) {
-            case HistoryOptInMode.NONE -> false;
-                // TODO(crbug.com/331568233): Show history opt-in only if it's not suppressed.
-            case HistoryOptInMode.OPTIONAL, HistoryOptInMode.REQUIRED -> shouldShowHistorySync(
-                    profile);
-            default -> throw new IllegalArgumentException(
-                    "Unexpected value for historyOptInMode :" + historyOptInMode);
-        };
+        return shouldShowHistorySync(profile, historyOptInMode);
     }
 
     /**
@@ -231,7 +224,7 @@ public class SigninAndHistoryOptInCoordinator
 
         mAccountPickerCoordinator.destroy();
         mAccountPickerCoordinator = null;
-        showHistoryOptInOrFinish();
+        maybeShowHistoryOptInDialog();
     }
 
     /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
@@ -309,7 +302,7 @@ public class SigninAndHistoryOptInCoordinator
                                     IdentityServicesProvider.get()
                                             .getIdentityManager(mProfileSupplier.get());
                             if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-                                showHistoryOptInOrFinish();
+                                maybeShowHistoryOptInDialog();
                                 return;
                             }
 
@@ -360,23 +353,10 @@ public class SigninAndHistoryOptInCoordinator
         mDidShowSigninStep = true;
     }
 
-    private void showHistoryOptInOrFinish() {
-        switch (mHistoryOptInMode) {
-            case HistoryOptInMode.NONE:
-                onFlowComplete();
-                break;
-            case HistoryOptInMode.OPTIONAL:
-                // TODO(crbug.com/40944119): Show history opt-in only if it's not suppressed.
-            case HistoryOptInMode.REQUIRED:
-                maybeShowHistoryOptInDialog();
-                break;
-        }
-    }
-
     private void maybeShowHistoryOptInDialog() {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
-        if (!shouldShowHistorySync(profile)) {
+        if (!shouldShowHistorySync(profile, mHistoryOptInMode)) {
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             onFlowComplete();
@@ -449,9 +429,17 @@ public class SigninAndHistoryOptInCoordinator
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
-    private static boolean shouldShowHistorySync(Profile profile) {
+    private static boolean shouldShowHistorySync(
+            Profile profile, @HistoryOptInMode int historyOptInMode) {
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
-        return !historySyncHelper.shouldSuppressHistorySync();
+        return switch (historyOptInMode) {
+            case HistoryOptInMode.NONE -> false;
+            case HistoryOptInMode.OPTIONAL -> !historySyncHelper.shouldSuppressHistorySync()
+                    && !historySyncHelper.isDeclinedOften();
+            case HistoryOptInMode.REQUIRED -> !historySyncHelper.shouldSuppressHistorySync();
+            default -> throw new IllegalArgumentException(
+                    "Unexpected value for historyOptInMode :" + historyOptInMode);
+        };
     }
 
     private void onFlowComplete() {

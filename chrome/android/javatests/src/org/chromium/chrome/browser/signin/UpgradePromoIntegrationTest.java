@@ -197,6 +197,23 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
+    public void testHistorySyncDeclinedOften() {
+        when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown and accept.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_continue_button)).perform(click());
+
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        Assert.assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        verify(mHistorySyncHelperMock).recordHistorySyncNotShown(SigninAccessPoint.SIGNIN_PROMO);
+    }
+
+    @Test
+    @MediumTest
     public void testUserAlreadySignedIn_onlyShowsHistorySync() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);

@@ -38,6 +38,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.time.Duration;
 import java.util.Set;
 
 /** Unit tests for the {@link HistorySyncHelper} */
@@ -113,6 +114,35 @@ public class HistorySyncHelperTest {
 
         Assert.assertTrue(mHistorySyncHelper.isHistorySyncDisabledByCustodian());
         Assert.assertTrue(mHistorySyncHelper.shouldSuppressHistorySync());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsDeclinedOften_didDeclineInThePastTwoWeeks() {
+        when(mPrefServiceMock.getLong(Pref.HISTORY_SYNC_LAST_DECLINED_TIMESTAMP))
+                .thenReturn(TimeUtils.currentTimeMillis());
+
+        Assert.assertTrue(mHistorySyncHelper.isDeclinedOften());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsDeclinedOften_didDeclineTwiceInARow() {
+        when(mPrefServiceMock.getInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT)).thenReturn(2);
+
+        Assert.assertTrue(mHistorySyncHelper.isDeclinedOften());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsDeclinedOften() {
+        when(mPrefServiceMock.getInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT)).thenReturn(0);
+        when(mPrefServiceMock.getLong(Pref.HISTORY_SYNC_LAST_DECLINED_TIMESTAMP))
+                .thenReturn(TimeUtils.currentTimeMillis());
+
+        mFakeTimeTestRule.advanceMillis(Duration.ofDays(15).toMillis());
+
+        Assert.assertFalse(mHistorySyncHelper.isDeclinedOften());
     }
 
     @Test

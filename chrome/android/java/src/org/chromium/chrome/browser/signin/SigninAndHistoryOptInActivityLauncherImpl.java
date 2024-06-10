@@ -120,7 +120,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
     public void launchUpgradePromoActivityIfAllowed(Context context, Profile profile) {
         if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
                 || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
-                        profile, SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED)) {
+                        profile, SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL)) {
             Intent intent = SigninAndHistoryOptInActivity.createIntentForUpgradePromo(context);
             context.startActivity(intent);
         }

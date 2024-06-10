@@ -147,7 +147,7 @@ public final class UpgradePromoCoordinator
         }
         Profile profile = mProfileSupplier.get().getOriginalProfile();
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
-        if (historySyncHelper.shouldSuppressHistorySync()) {
+        if (historySyncHelper.shouldSuppressHistorySync() || historySyncHelper.isDeclinedOften()) {
             historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.SIGNIN_PROMO);
             mDelegate.onFlowComplete();
             return;

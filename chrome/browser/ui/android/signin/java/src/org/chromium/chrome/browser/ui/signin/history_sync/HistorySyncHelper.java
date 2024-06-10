@@ -17,10 +17,13 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.time.Duration;
 import java.util.Set;
 
 /** A helper object that provides history sync opt-in related utilities. */
 public class HistorySyncHelper {
+    private static final int MAX_SUCCESSIVE_DECLINES = 2;
+    private static final long MIN_DAYS_SINCE_LAST_DECLINE = 14;
     @Nullable private static HistorySyncHelper sHistorySyncHelperForTest;
     private final SyncService mSyncService;
     private final PrefService mPrefService;
@@ -61,10 +64,24 @@ public class HistorySyncHelper {
                 || mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS);
     }
 
+    /** Whether the history sync prompt should be suppressed. */
     public boolean shouldSuppressHistorySync() {
         return didAlreadyOptIn()
                 || isHistorySyncDisabledByCustodian()
                 || isHistorySyncDisabledByPolicy();
+    }
+
+    /** Whether history sync is often declined. */
+    public boolean isDeclinedOften() {
+        if (mPrefService.getInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT)
+                >= MAX_SUCCESSIVE_DECLINES) {
+            // The user has declined two or more opt-ins in a row.
+            return true;
+        }
+        final long lastDecline = mPrefService.getLong(Pref.HISTORY_SYNC_LAST_DECLINED_TIMESTAMP);
+        // The user has declined in the past two weeks.
+        return Duration.ofMillis(TimeUtils.currentTimeMillis() - lastDecline).toDays()
+                < MIN_DAYS_SINCE_LAST_DECLINE;
     }
 
     /**
