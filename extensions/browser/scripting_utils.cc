@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/scripting/scripting_utils.h"
+#include "extensions/browser/scripting_utils.h"
 
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/scripting_constants.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/user_script.h"

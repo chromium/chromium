@@ -5,9 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_USER_SCRIPTS_USER_SCRIPTS_API_H_
 #define EXTENSIONS_BROWSER_API_USER_SCRIPTS_USER_SCRIPTS_API_H_
 
-#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/browser/scripting_utils.h"
 #include "extensions/common/api/user_scripts.h"
 
 namespace extensions {

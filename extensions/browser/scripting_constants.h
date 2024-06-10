@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_CONSTANTS_H_
-#define EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_CONSTANTS_H_
+#ifndef EXTENSIONS_BROWSER_SCRIPTING_CONSTANTS_H_
+#define EXTENSIONS_BROWSER_SCRIPTING_CONSTANTS_H_
 
 namespace extensions {
 namespace scripting {
@@ -15,4 +15,4 @@ inline constexpr char kRegisteredScriptsStorageKey[] = "dynamic_scripts";
 }  // namespace scripting
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_CONSTANTS_H_
+#endif  // EXTENSIONS_BROWSER_SCRIPTING_CONSTANTS_H_
