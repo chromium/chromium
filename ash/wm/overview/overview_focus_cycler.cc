@@ -239,19 +239,18 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
 
   maybe_add_widget(overview_session_->overview_focus_widget());
 
-  // TODO(http://b/325335020): Handle multidisplay focus.
-  OverviewGrid* primary_grid =
-      overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  for (const auto& item : primary_grid->window_list()) {
-    maybe_add_widget(item->item_widget());
+  for (const auto& grid : overview_session_->grid_list()) {
+    for (const auto& item : grid->window_list()) {
+      maybe_add_widget(item->item_widget());
+    }
+    maybe_add_widget(grid->desks_widget());
+    maybe_add_widget(grid->save_desk_button_container_widget());
+    maybe_add_widget(grid->pine_widget());
+    maybe_add_widget(grid->birch_bar_widget());
+    maybe_add_widget(grid->saved_desk_library_widget());
+    maybe_add_widget(grid->faster_splitview_widget());
+    maybe_add_widget(grid->no_windows_widget());
   }
-  maybe_add_widget(primary_grid->desks_widget());
-  maybe_add_widget(primary_grid->save_desk_button_container_widget());
-  maybe_add_widget(primary_grid->pine_widget());
-  maybe_add_widget(primary_grid->birch_bar_widget());
-  maybe_add_widget(primary_grid->saved_desk_library_widget());
-  maybe_add_widget(primary_grid->faster_splitview_widget());
-  maybe_add_widget(primary_grid->no_windows_widget());
   return traversable_widgets;
 }
 

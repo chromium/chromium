@@ -22,6 +22,8 @@
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "overview_focus_cycler.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/test/display_manager_test_api.h"
 
 namespace ash {
 
@@ -174,6 +176,113 @@ TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
     EXPECT_THAT(test_case.expected_ids, actual_ids);
     ToggleOverview();
   }
+}
+
+// Tests basic selection across multiple monitors.
+TEST_P(OverviewFocusCyclerTest, BasicMultiMonitorArrowKeyNavigation) {
+  UpdateDisplay("500x400,500x400");
+
+  // Create two windows on each display.
+  const gfx::Rect bounds1(100, 100);
+  const gfx::Rect bounds2(550, 0, 100, 100);
+  std::unique_ptr<aura::Window> window4 = CreateAppWindow(bounds2);
+  std::unique_ptr<aura::Window> window3 = CreateAppWindow(bounds2);
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(bounds1);
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(bounds1);
+
+  ToggleOverview();
+
+  auto* event_generator = GetEventGenerator();
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_root1 =
+      GetOverviewItemsForRoot(0);
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_root2 =
+      GetOverviewItemsForRoot(1);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(overview_root1[0]->item_widget(), GetFocusedView()->GetWidget());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(overview_root1[1]->item_widget(), GetFocusedView()->GetWidget());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(overview_root2[0]->item_widget(), GetFocusedView()->GetWidget());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(overview_root2[1]->item_widget(), GetFocusedView()->GetWidget());
+}
+
+// Tests first monitor when display order doesn't match left to right screen
+// positions.
+TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
+  UpdateDisplay("500x400,500x400");
+  Shell::Get()->display_manager()->SetLayoutForCurrentDisplays(
+      display::test::CreateDisplayLayout(display_manager(),
+                                         display::DisplayPlacement::LEFT, 0));
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
+  std::unique_ptr<aura::Window> window1 =
+      CreateAppWindow(gfx::Rect(-450, 0, 100, 100));
+  ASSERT_EQ(root_windows[1], window1->GetRootWindow());
+  ASSERT_EQ(root_windows[0], window2->GetRootWindow());
+
+  ToggleOverview();
+
+  // Coming from the left to right, we should select `window1` first being on
+  // the display to the left.
+  auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(GetOverviewItemForWindow(window1.get())->item_widget(),
+            GetFocusedView()->GetWidget());
+
+  // Exit and reenter overview.
+  ToggleOverview();
+  ToggleOverview();
+
+  // Coming from right to left, we should select window2 first being on the
+  // display on the right.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_LEFT, event_generator);
+  EXPECT_EQ(GetOverviewItemForWindow(window2.get())->item_widget(),
+            GetFocusedView()->GetWidget());
+}
+
+// Tests three monitors where the grid becomes empty on one of the monitors.
+TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
+  UpdateDisplay("500x400,500x400,500x400");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  std::unique_ptr<aura::Window> window3 =
+      CreateAppWindow(gfx::Rect(1000, 0, 100, 100));
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(500, 0, 100, 100));
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(100, 100));
+  EXPECT_EQ(root_windows[0], window1->GetRootWindow());
+  EXPECT_EQ(root_windows[1], window2->GetRootWindow());
+  EXPECT_EQ(root_windows[2], window3->GetRootWindow());
+
+  ToggleOverview();
+
+  auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(GetOverviewItemForWindow(window3.get())->item_widget(),
+            GetFocusedView()->GetWidget());
+
+  // If the selected window is closed, then something should be selected.
+  // Closing a window is done on a post task.
+  window3.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetFocusedView());
+  ToggleOverview();
+
+  window3 = CreateTestWindow(gfx::Rect(1000, 0, 100, 100));
+  ToggleOverview();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+
+  // If the window on the second display is removed, the selected window should
+  // remain window3.
+  EXPECT_EQ(GetOverviewItemForWindow(window3.get())->item_widget(),
+            GetFocusedView()->GetWidget());
+  window2.reset();
+  EXPECT_EQ(GetOverviewItemForWindow(window3.get())->item_widget(),
+            GetFocusedView()->GetWidget());
 }
 
 // Tests selecting a window in overview mode with the return key.
