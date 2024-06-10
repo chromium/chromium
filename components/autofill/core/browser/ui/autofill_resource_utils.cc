@@ -46,6 +46,7 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kCreate, IDR_ANDROID_AUTOFILL_CREATE},
     {Suggestion::Icon::kOfferTag, IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
     {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
+    {Suggestion::Icon::kPlusAddressSmall, IDR_AUTOFILL_PLUS_ADDRESS_SMALL},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {Suggestion::Icon::kGooglePay, IDR_AUTOFILL_GOOGLE_PAY},
@@ -80,6 +81,7 @@ constexpr auto kNewCardArtAndNetworkDataResources =
         {Suggestion::Icon::kCreate, IDR_ANDROID_AUTOFILL_CREATE},
         {Suggestion::Icon::kOfferTag, IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
         {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
+        {Suggestion::Icon::kPlusAddressSmall, IDR_AUTOFILL_PLUS_ADDRESS_SMALL},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         {Suggestion::Icon::kGooglePay, IDR_AUTOFILL_GOOGLE_PAY},

@@ -63,6 +63,7 @@ using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::base::test::RunOnceCallback;
 using ::testing::AllOf;
+using ::testing::Conditional;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -76,19 +77,22 @@ auto IsSingleCreatePlusAddressSuggestion() {
 }
 
 auto EqualsFillPlusAddressSuggestion(std::string_view address) {
+  const bool redesignEnabled = base::FeatureList::IsEnabled(
+      plus_addresses::features::kPlusAddressUIRedesign);
   std::vector<std::vector<Suggestion::Text>> labels;
   if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    if (base::FeatureList::IsEnabled(
-            plus_addresses::features::kPlusAddressUIRedesign)) {
+    if (redesignEnabled) {
       labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
     }
   }
-
-  return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
-                                /*main_text=*/base::UTF8ToUTF16(address),
-                                Suggestion::Icon::kPlusAddress),
-               Field(&Suggestion::labels, labels));
+  return AllOf(
+      EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
+                       /*main_text=*/base::UTF8ToUTF16(address)),
+      Field(&Suggestion::icon,
+            Conditional(redesignEnabled, Suggestion::Icon::kPlusAddressSmall,
+                        Suggestion::Icon::kPlusAddress)),
+      Field(&Suggestion::labels, labels));
 }
 
 auto IsSingleFillPlusAddressSuggestion(std::string_view address) {

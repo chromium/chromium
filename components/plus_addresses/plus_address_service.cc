@@ -274,7 +274,10 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
                 IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
       }
     }
-    create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
+    create_plus_address_suggestion.icon =
+        base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)
+            ? Suggestion::Icon::kPlusAddressSmall
+            : Suggestion::Icon::kPlusAddress;
     std::move(callback).Run({std::move(create_plus_address_suggestion)});
     return;
   }
@@ -291,7 +294,10 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
             IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
       }
     }
-    suggestion.icon = Suggestion::Icon::kPlusAddress;
+    suggestion.icon =
+        base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)
+            ? Suggestion::Icon::kPlusAddressSmall
+            : Suggestion::Icon::kPlusAddress;
 
     // Only suggest filling a plus address whose prefix matches the field's
     // value.
