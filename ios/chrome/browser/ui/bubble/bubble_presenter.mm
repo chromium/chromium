@@ -717,6 +717,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       topConstraintForBottomEdgeSwipe;
   toolbarSwipeGestureIPH.topConstraintForTopEdgeSwipe =
       topConstraintForTopEdgeSwipe;
+  toolbarSwipeGestureIPH.delegate = self;
   [self.rootViewController.view addSubview:toolbarSwipeGestureIPH];
   AddSameConstraints(toolbarSwipeGestureIPH, guide);
 
