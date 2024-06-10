@@ -1166,6 +1166,19 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
           state_->account_id_, signin::ConsentLevel::kSignin,
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
     }
+
+    // Set the ChromeSignin setting to always signin following accepting the
+    // signin intercept and being signed in.
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      CoreAccountInfo account_info =
+          IdentityManagerFactory::GetForProfile(new_profile)
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      if (!account_info.IsEmpty()) {
+        SigninPrefs(*new_profile->GetPrefs())
+            .SetChromeSigninInterceptionUserChoice(
+                account_info.gaia, ChromeSigninUserChoice::kSignin);
+      }
+    }
   }
 
   chrome::enterprise_util::SetUserAcceptedAccountManagement(

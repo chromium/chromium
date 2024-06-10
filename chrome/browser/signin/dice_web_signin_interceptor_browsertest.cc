@@ -776,6 +776,48 @@ IN_PROC_BROWSER_TEST_F(
       "Signin.SigninPending.InconsistentStateInvoked", true, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest,
+    MultiUserSigninInterception) {
+  // Set up for Multi user signin interception.
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary_account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", kNoHostedDomainFound);
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+
+  // Intercept.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  source_interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  source_interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kAccepted);
+  ProfileWaiter waiter;
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, secondary_account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
+
+  // New Profile created from accepting the signin interception.
+  Profile* new_profile = waiter.WaitForProfileAdded();
+  // Should be signed in.
+  EXPECT_TRUE(IdentityManagerFactory::GetForProfile(new_profile)
+                  ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  // ChromeSignin setting should be set.
+  EXPECT_EQ(
+      SigninPrefs(*new_profile->GetPrefs())
+          .GetChromeSigninInterceptionUserChoice(secondary_account_info.gaia),
+      ChromeSigninUserChoice::kSignin);
+}
+
 // Test to sign in to Chrome from the Chrome Signin Bubble Intercept with
 // `switches::kExplicitBrowserSigninUIOnDesktop` enabled.
 class DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest
