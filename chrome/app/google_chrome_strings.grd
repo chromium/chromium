@@ -982,6 +982,19 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Extension requests sign in to Chrome through chrome.identity API -->
+      <if expr="enable_extensions">
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+          The extension \"<ph name="EXTENSION_NAME">$1<ex>Screencast</ex></ph>\" wants you to sign in to Chrome
+        </message>
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY" desc="This string is the body of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+          To use this extension as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph>, sign in to Chrome.\nYou’ll also be able to use and save your passwords and more from your Google Account.
+        </message>
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE_FALLBACK" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account. Used when the extension name couldn't be retrieved.">
+          An extension wants you to sign in to Chrome
+        </message>
+      </if>
+
       <!-- about:browser-switch strings -->
       <if expr="toolkit_views and not chromeos_lacros and not chromeos_ash">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
