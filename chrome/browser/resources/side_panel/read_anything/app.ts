@@ -21,7 +21,7 @@ import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-web
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
@@ -320,7 +320,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateImagePath_: string;
   private emptyStateDarkImagePath_: string;
   private emptyStateHeading_: string;
-  private lastDownloadedLang_: string;
+  private lastDownloadedLang: string;
+  private toastDuration_: number = toastDurationMs;
   private emptyStateSubheading_: string;
 
   private previousHighlights_: HTMLElement[] = [];
@@ -995,13 +996,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           if (oldVoicePackStatus &&
               oldVoicePackStatus.code !==
                   VoicePackServerStatusSuccessCode.INSTALLED) {
-            this.lastDownloadedLang_ =
+            this.lastDownloadedLang =
                 this.getVoicePackConvertedLangIfExists_(lang);
-            this.showToast_();
 
             // Force a refresh of the voices list since we might not get an
             // update the voices have changed.
             this.getVoices(true);
+            this.showToast_();
           }
 
           this.autoSwitchVoice_(lang);
@@ -1062,7 +1063,30 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(b/325962407): replace toast with system notification
   private showToast_(): void {
-    const toast = document.querySelector<CrToastElement>('#toast')!;
+    let toast: CrToastElement;
+    // Tests don't have menus and dialogs set up, no need to check
+    if (document.querySelector('#toolbar')!.shadowRoot!.querySelector(
+            'voice-selection-menu')) {
+      const isLanguageMenuOpen = document.querySelector('#toolbar') ?
+          document.querySelector('#toolbar')!.shadowRoot!
+              .querySelector('voice-selection-menu')!.shadowRoot!
+              .querySelector('language-menu')!.shadowRoot!
+              .querySelector('cr-dialog')!.shadowRoot!.querySelector(
+                                                          'dialog')!.open :
+          false;
+      toast = isLanguageMenuOpen ?
+          document.querySelector('#toolbar')!.shadowRoot!
+              .querySelector('voice-selection-menu')!.shadowRoot!
+              .querySelector('language-menu')!.shadowRoot!
+              .querySelector<CrToastElement>('#toast-in-dialog')! :
+          document.querySelector<CrToastElement>('#toast')!;
+    } else {
+      toast = document.querySelector<CrToastElement>('#toast')!;
+    }
+
+    if (toast.open) {
+      toast.hide();
+    }
     toast.show();
   }
 

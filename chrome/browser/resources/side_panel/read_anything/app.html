@@ -122,6 +122,7 @@
       available-voices="[[availableVoices]]"
       preview-voice-playing="[[previewVoicePlaying]]"
       locale-to-display-name="[[localeToDisplayName]]"
+      last-downloaded-lang="[[lastDownloadedLang]]"
       on-select-voice="onSelectVoice_"
       on-voice-language-toggle="onVoiceLanguageToggle_"
       on-preview-voice="onPreviewVoice_"
@@ -158,7 +159,7 @@
   </div>
 </div>
 
-<cr-toast id="toast" duration="10000">
+<cr-toast id="toast" duration="[[toastDuration_]]">
   <div id="toastDiv">
     <span id="toastTitle">
       [[getLanguageDownloadedTitle_(lastDownloadedLang_)]]

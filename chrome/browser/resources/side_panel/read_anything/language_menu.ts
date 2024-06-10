@@ -15,9 +15,11 @@ import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {toastDurationMs} from './common.js';
 import {getTemplate} from './language_menu.html.js';
 import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode} from './voice_language_util.js';
 
@@ -67,6 +69,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       },
       selectedLang: String,
       currentNotifications_: Array,
+      lastDownloadedLang: String,
+      toastTitle_: {
+        type: String,
+        computed: 'getLanguageDownloadedTitle_(localeToDisplayName,' +
+            'lastDownloadedLang)',
+      },
       availableLanguages_: {
         type: Array,
         computed:
@@ -78,6 +86,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   private availableVoices: SpeechSynthesisVoice[];
   private languageSearchValue_: string;
+  private toastDuration_: number = toastDurationMs;
   private readonly voicePackInstallStatus:
       {[language: string]: VoiceClientSideStatusCode};
   private readonly enabledLanguagesInPref: string[];
@@ -190,6 +199,14 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   // TODO(b/40927698): Investigate removing voicePackInstallStatus as a
   // dependency.
+  private getLanguageDownloadedTitle_(
+      localeToDisplayName: {[lang: string]: string}, lang: string) {
+    const langDisplayName = this.getDisplayName(localeToDisplayName, lang);
+
+    return loadTimeData.getStringF(
+        'readingModeVoiceDownloadedTitle', langDisplayName);
+  }
+
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},

@@ -78,6 +78,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       voicePackInstallStatus: Object,
       paused: Boolean,
       localeToDisplayName: Object,
+      lastDownloadedLang: String,
       downloadingMessages_: {
         type: Boolean,
         computed: 'computeDownloadingMessages_(voicePackInstallStatus)',
