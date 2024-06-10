@@ -264,6 +264,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                              inRow:(NSUInteger)row {
   [self logPedalShownForCurrentResult];
 
+  // Log the suggest actions that were shown and not used.
+  if (suggestion.actionsInSuggest.count == 0) {
+    [self logActionsInSuggestShownForCurrentResult];
+  }
+
   if ([suggestion isKindOfClass:[PedalSuggestionWrapper class]]) {
     PedalSuggestionWrapper* pedalSuggestionWrapper =
         (PedalSuggestionWrapper*)suggestion;
@@ -313,6 +318,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
          didSelectSuggestionAction:(SuggestAction*)action
                         suggestion:(id<AutocompleteSuggestion>)suggestion
                              inRow:(NSUInteger)row {
+  OmniboxActionInSuggest::RecordShownAndUsedMetrics(action.type,
+                                                    true /* used */);
+
   switch (action.type) {
     case omnibox::ActionInfo_ActionType_CALL: {
       NSURL* URL = net::NSURLWithGURL(action.actionURI);
@@ -500,6 +508,21 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     base::UmaHistogramEnumeration("Omnibox.PedalShown",
                                   (OmniboxPedalId)pedalMatch.innerPedal.type,
                                   OmniboxPedalId::TOTAL_COUNT);
+  }
+}
+
+- (void)logActionsInSuggestShownForCurrentResult {
+  NSArray<id<AutocompleteSuggestion>>* allMatches =
+      [self extractMatches:self.autocompleteResult];
+
+  for (id<AutocompleteSuggestion> match in allMatches) {
+    if (match.actionsInSuggest.count == 0) {
+      continue;
+    }
+    for (SuggestAction* action in match.actionsInSuggest) {
+      OmniboxActionInSuggest::RecordShownAndUsedMetrics(action.type,
+                                                        false /* used */);
+    }
   }
 }
 

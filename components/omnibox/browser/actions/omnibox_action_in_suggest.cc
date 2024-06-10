@@ -119,16 +119,8 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
 #endif
 
 void OmniboxActionInSuggest::RecordActionShown(size_t position,
-                                               bool executed) const {
-  base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Shown",
-                                ToUmaActionType(action_info.action_type()));
-  if (executed) {
-    base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Used",
-                                  ToUmaActionType(action_info.action_type()));
-  }
-
-  base::UmaHistogramBoolean(ToUmaUsageHistogramName(action_info.action_type()),
-                            executed);
+                                               bool used) const {
+  RecordShownAndUsedMetrics(action_info.action_type(), used);
 }
 
 void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
@@ -155,6 +147,20 @@ OmniboxActionInSuggest* OmniboxActionInSuggest::FromAction(
     return static_cast<OmniboxActionInSuggest*>(action);
   }
   return nullptr;
+}
+
+// static
+void OmniboxActionInSuggest::RecordShownAndUsedMetrics(
+    omnibox::ActionInfo::ActionType type,
+    bool used) {
+  base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Shown",
+                                ToUmaActionType(type));
+  if (used) {
+    base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Used",
+                                  ToUmaActionType(type));
+  }
+
+  base::UmaHistogramBoolean(ToUmaUsageHistogramName(type), used);
 }
 
 omnibox::ActionInfo::ActionType OmniboxActionInSuggest::Type() const {
