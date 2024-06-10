@@ -33,7 +33,10 @@ source_set("lens") {
 
   # TODO(crbug.com/339497734): It doesn't make sense to try to set up
   # public_deps while circular dependencies are allowed.
-  public_deps = [ ":lens_internal" ]
+  public_deps = [
+    ":lens_internal",
+    "//chrome/browser/ui/views/side_panel",
+  ]
   deps = [
     "//base",
     "//chrome/app:generated_resources_grit",
@@ -175,6 +178,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/side_panel",
     "//chrome/test:test_support_ui",
     "//components/lens:features",
     "//components/lens/proto/server:proto",

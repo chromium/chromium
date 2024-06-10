@@ -1834,6 +1834,7 @@ if (!is_android) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/ui/webui",
@@ -6925,7 +6926,6 @@ test("unit_tests") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/breadcrumbs:unit_tests",
     "//chrome/browser/browsing_data:constants",
-    "//chrome/browser/companion:unit_tests",
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/devtools",
     "//chrome/browser/dips:unit_tests",
@@ -7355,8 +7355,6 @@ test("unit_tests") {
       "//components/optimization_guide/proto:optimization_guide_proto",
     ]
   }
-
-  public_deps = []
 
   if (is_win) {
     assert(toolkit_views)
@@ -8498,6 +8496,9 @@ test("unit_tests") {
       deps += [ "//ui/ozone" ]
     }
 
+    public_deps = [ "//chrome/browser/ui/views/side_panel" ]
+
+    # Non-android deps for "unit_tests" target.
     deps += [
       "//chrome:packed_resources_integrity_header",
       "//chrome/browser/apps:icon_standardizer",
@@ -8510,6 +8511,7 @@ test("unit_tests") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/apps/link_capturing:unit_tests",
+      "//chrome/browser/companion:unit_tests",
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/companion/core/proto",
@@ -10802,6 +10804,7 @@ if (!is_android) {
 
     public_deps = [
       "//chrome/browser:test_support_ui",
+      "//chrome/browser/ui/views/side_panel",
       "//components/supervised_user/core/browser",
       "//content/public/browser",
       "//content/test:test_support",
@@ -11287,6 +11290,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/lens:interactive_ui_tests",
+      "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",

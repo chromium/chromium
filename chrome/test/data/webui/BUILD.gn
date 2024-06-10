@@ -170,6 +170,7 @@ source_set("browser_tests") {
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/side_panel",
     "//chrome/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/bookmarks/managed:managed",

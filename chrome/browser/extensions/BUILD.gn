@@ -786,6 +786,9 @@ source_set("extensions") {
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
+
+    # TODO(crbug.com/345487716): Remove this circular dependency.
+    "//chrome/browser/ui/views/side_panel",
   ]
 
   # Since browser and browser_extensions actually depend on each other,
@@ -828,6 +831,7 @@ source_set("extensions") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/views/side_panel",
 
     # Only for allow_circular_includes_from
     "//chrome/browser/apps/app_service/app_icon",

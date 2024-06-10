@@ -2065,7 +2065,6 @@ static_library("browser") {
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
-    "//chrome/browser/companion/core",
     "//chrome/browser/companion/text_finder",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",
@@ -2637,9 +2636,12 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/companion/core",
+      "//chrome/browser/lens/region_search",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/search/background",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//components/manta",
@@ -2647,8 +2649,13 @@ static_library("browser") {
       "//components/user_education/common",
     ]
 
-    # TODO(crbug.com/339497734): Remove circular dependencies.
-    allow_circular_includes_from += [ "//chrome/browser/ui/lens" ]
+    allow_circular_includes_from += [
+      # TODO(crbug.com/339497734): Remove circular dependencies.
+      "//chrome/browser/ui/lens",
+
+      # TODO(crbug.com/345487716): Remove this circular dependency.
+      "//chrome/browser/ui/views/side_panel",
+    ]
   }
 
   if (enable_feed_v2) {

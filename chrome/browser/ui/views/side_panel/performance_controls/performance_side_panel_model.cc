@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_model.h"
 
 #include "chrome/browser/ui/views/side_panel/side_panel_model.h"
+#include "ui/base/models/dialog_model_field.h"
 
 std::unique_ptr<SidePanelModel> GetPerformanceSidePanelModel() {
   return SidePanelModel::Builder()

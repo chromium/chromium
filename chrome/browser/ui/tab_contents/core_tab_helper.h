@@ -33,6 +33,7 @@ using DownscaleAndEncodeBitmapCallback = base::OnceCallback<void(
     const std::vector<lens::mojom::LatencyLogPtr> log_data)>;
 
 // Per-tab class to handle functionality that is core to the operation of tabs.
+// TODO(crbug.com/346044243): Delete this class.
 class CoreTabHelper : public content::WebContentsObserver,
                       public content::WebContentsUserData<CoreTabHelper> {
  public:

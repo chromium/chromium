@@ -36,7 +36,10 @@ source_set("configs") {
   ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [ "//chrome/browser/ui/lens" ]
+    deps += [
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/views/side_panel",
+    ]
   }
 
   # Includes Ash Chrome and Lacros Chrome
