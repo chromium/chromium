@@ -9,8 +9,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -41,7 +39,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
         // If initialization is already complete, notify the newly added observer.
         if (mInitialized) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> observer.onInitialized());
+            observer.onInitialized();
         }
     }
 

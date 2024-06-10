@@ -84,7 +84,6 @@ public class TabGroupSyncRemoteObserverUnitTest {
                         enable -> {
                             mEnabledLocalObservers = enable;
                         },
-                        () -> {},
                         mPrefService,
                         mIsActiveWindowSupplier);
         mEnabledLocalObservers = true;

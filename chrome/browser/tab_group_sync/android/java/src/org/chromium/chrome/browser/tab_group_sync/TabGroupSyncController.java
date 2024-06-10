@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -56,16 +57,41 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
 
     private final TabModelSelector mTabModelSelector;
     private final TabGroupSyncService mTabGroupSyncService;
+    private final PrefService mPrefService;
+    private final Supplier<Boolean> mIsActiveWindowSupplier;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final NavigationTracker mNavigationTracker;
     private final TabCreatorManager mTabCreatorManager;
     private final TabCreationDelegate mTabCreationDelegate;
-    private final TabGroupSyncLocalObserver mLocalObserver;
-    private final TabGroupSyncRemoteObserver mRemoteObserver;
     private final LocalTabGroupMutationHelper mLocalMutationHelper;
     private final RemoteTabGroupMutationHelper mRemoteMutationHelper;
-    private final StartupHelper mStartupHelper;
+    private TabGroupSyncLocalObserver mLocalObserver;
+    private TabGroupSyncRemoteObserver mRemoteObserver;
+    private StartupHelper mStartupHelper;
     private boolean mSyncBackendInitialized;
+
+    private final TabGroupSyncService.Observer mSyncInitObserver =
+            new TabGroupSyncService.Observer() {
+                @Override
+                public void onInitialized() {
+                    mTabGroupSyncService.removeObserver(mSyncInitObserver);
+                    mSyncBackendInitialized = true;
+                    assert mTabModelSelector.isTabStateInitialized();
+                    initializeTabGroupSyncComponents();
+                }
+
+                @Override
+                public void onTabGroupAdded(SavedTabGroup group, int source) {}
+
+                @Override
+                public void onTabGroupUpdated(SavedTabGroup group, int source) {}
+
+                @Override
+                public void onTabGroupRemoved(LocalTabGroupId localTabGroupId, int source) {}
+
+                @Override
+                public void onTabGroupRemoved(String syncTabGroupId, int source) {}
+            };
 
     /** Constructor. */
     public TabGroupSyncController(
@@ -77,6 +103,8 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
         mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
         mTabGroupSyncService = tabGroupSyncService;
+        mPrefService = prefService;
+        mIsActiveWindowSupplier = isActiveWindowSupplier;
 
         mNavigationTracker = new NavigationTracker();
         mTabCreationDelegate =
@@ -95,16 +123,50 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
                         mNavigationTracker);
         mRemoteMutationHelper =
                 new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
+
+        TabModelUtils.runOnTabStateInitialized(
+                tabModelSelector, selector -> onTabStateInitialized());
+    }
+
+    /** Called when the activity is getting destroyed. */
+    public void destroy() {
+        if (mLocalObserver != null) mLocalObserver.destroy();
+        if (mRemoteObserver != null) mRemoteObserver.destroy();
+    }
+
+    @Override
+    public void openTabGroup(String syncId) {
+        assert mSyncBackendInitialized;
+        if (!mSyncBackendInitialized) return;
+
+        // Skip groups that are open in another window, or have been deleted.
+        SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
+        if (savedTabGroup == null || savedTabGroup.localId != null) return;
+
+        mLocalObserver.enableObservers(false);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
+        mLocalObserver.enableObservers(true);
+    }
+
+    private void onTabStateInitialized() {
+        mTabGroupSyncService.addObserver(mSyncInitObserver);
+    }
+
+    /**
+     * Construction and initialization of this glue layer between sync and tab model. Sets up
+     * observers for both directions and starts syncing. Invoked only after sync and local tab model
+     * have been initialized.
+     */
+    private void initializeTabGroupSyncComponents() {
         mStartupHelper =
                 new StartupHelper(
                         mTabGroupModelFilter,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         mRemoteMutationHelper);
-
         mLocalObserver =
                 new TabGroupSyncLocalObserver(
-                        tabModelSelector,
+                        mTabModelSelector,
                         mTabGroupModelFilter,
                         mTabGroupSyncService,
                         mRemoteMutationHelper,
@@ -115,37 +177,8 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         enable -> mLocalObserver.enableObservers(enable),
-                        this::onSyncBackendInitialized,
-                        prefService,
-                        isActiveWindowSupplier);
-        TabModelUtils.runOnTabStateInitialized(
-                tabModelSelector, selector -> maybeCompleteInitialization());
-    }
-
-    /** Called when the activity is getting destroyed. */
-    public void destroy() {
-        mLocalObserver.destroy();
-        mRemoteObserver.destroy();
-    }
-
-    @Override
-    public void openTabGroup(String syncId) {
-        // Skip groups that are open in another window, or have been deleted.
-        SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
-        if (savedTabGroup == null || savedTabGroup.localId != null) return;
-
-        mLocalObserver.enableObservers(false);
-        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
-        mLocalObserver.enableObservers(true);
-    }
-
-    private void onSyncBackendInitialized() {
-        mSyncBackendInitialized = true;
-        maybeCompleteInitialization();
-    }
-
-    private void maybeCompleteInitialization() {
-        if (!mSyncBackendInitialized || !mTabModelSelector.isTabStateInitialized()) return;
+                        mPrefService,
+                        mIsActiveWindowSupplier);
 
         mStartupHelper.initializeTabGroupSync();
         mLocalObserver.enableObservers(true);

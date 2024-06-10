@@ -88,9 +88,9 @@ public class TabGroupSyncControllerUnitTest {
     public void testInitialization() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
-        mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
-        verify(mTabGroupSyncService, times(1)).addObserver(any());
-        verify(mTabGroupSyncService, times(2)).getDeletedGroupIds();
+        mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
+        verify(mTabGroupSyncService, times(2)).addObserver(any());
+        verify(mTabGroupSyncService, times(1)).getDeletedGroupIds();
     }
 }
