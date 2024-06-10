@@ -1,4 +1,4 @@
-    <style include="settings-shared md-select">
+    <style include="settings-shared md-select iron-flex">
       :host(.list-frame) settings-toggle-button {
         padding-inline-end: 0;
         padding-inline-start: 0;
@@ -17,13 +17,18 @@
       #chromeSigninUserChoiceSetting {
         padding: 10px 0px 10px;
       }
+
+      #label-wrapper {
+        margin-inline-end: 20px;
+      }
+
     </style>
 
 <if expr="not is_chromeos">
     <div id="chromeSigninUserChoiceSetting" class="hr cr-row"
         hidden="[[!chromeSigninUserChoiceInfo_.shouldShowSettings]]"
         aria-label="$i18n{chromeSigninChoiceTitle}">
-      <div>
+      <div id="label-wrapper" class="flex">
           <div>
             $i18n{chromeSigninChoiceTitle}
           </div>
