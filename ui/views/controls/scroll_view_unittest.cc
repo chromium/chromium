@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/scroll_view.h"
 
 #include <algorithm>
@@ -15,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1577,11 +1572,11 @@ TEST_F(WidgetScrollViewTest, ScrollersOnRest) {
   ScrollView* scroll_view = AddScrollViewWithContentSize(
       gfx::Size(kDefaultWidth * 5, kDefaultHeight * 5));
   ScrollViewTestApi test_api(scroll_view);
-  ScrollBar* bar[]{test_api.GetScrollBar(HORIZONTAL),
-                   test_api.GetScrollBar(VERTICAL)};
-  base::RetainingOneShotTimer* hide_timer[] = {
-      test_api.GetScrollBarHideTimer(HORIZONTAL),
-      test_api.GetScrollBarHideTimer(VERTICAL)};
+  const auto bar = std::to_array<ScrollBar*>(
+      {test_api.GetScrollBar(HORIZONTAL), test_api.GetScrollBar(VERTICAL)});
+  const auto hide_timer = std::to_array<base::RetainingOneShotTimer*>(
+      {test_api.GetScrollBarHideTimer(HORIZONTAL),
+       test_api.GetScrollBarHideTimer(VERTICAL)});
 
   EXPECT_EQ(0, bar[HORIZONTAL]->layer()->opacity());
   EXPECT_EQ(0, bar[VERTICAL]->layer()->opacity());

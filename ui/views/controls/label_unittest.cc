@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/label.h"
 
 #include <stddef.h>
@@ -121,13 +115,14 @@ std::u16string GetClipboardText(ui::ClipboardBuffer clipboard_buffer) {
 }
 
 // Makes an RTL string by mapping 0..6 to [א,ב,ג,ד,ה,ו,ז].
-std::u16string ToRTL(const char* ascii) {
+std::u16string ToRTL(const std::string& ascii) {
   std::u16string rtl;
-  for (const char* c = ascii; *c; ++c) {
-    if (*c >= '0' && *c <= '6')
-      rtl += static_cast<char16_t>(u'א' + (*c - '0'));
-    else
-      rtl += static_cast<char16_t>(*c);
+  for (char c : ascii) {
+    if (c >= '0' && c <= '6') {
+      rtl += static_cast<char16_t>(u'א' + (c - '0'));
+    } else {
+      rtl += static_cast<char16_t>(c);
+    }
   }
   return rtl;
 }
@@ -1303,10 +1298,11 @@ TEST_F(LabelTest, WordOffsets) {
 }
 
 TEST_F(LabelTest, AccessibleGraphemeOffsets) {
-  struct {
+  struct Case {
     std::u16string text;
     std::vector<int32_t> expected_offsets;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Case>({
       {std::u16string(), {}},
       // LTR.
       {u"This is a string",
@@ -1329,7 +1325,7 @@ TEST_F(LabelTest, AccessibleGraphemeOffsets) {
       // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
       // Windows requires wide strings for \Unnnnnnnn universal character names.
       {u"ab\U0001D11Ecd", {4, 10, 17, 23, 29, 37}},
-  };
+  });
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
@@ -1525,14 +1521,14 @@ TEST_F(LabelSelectionTest, MouseDragMultilineLTR) {
   PerformMouseDragTo(gfx::Point(100, GetCursorPoint(6).y()));
   EXPECT_EQ(u"cd\nefgh", GetSelectedText());
 
-  const gfx::Point points[] = {
+  const auto points = std::to_array<gfx::Point>({
       {GetCursorPoint(1).x(), -5},   // NW.
       {GetCursorPoint(2).x(), -5},   // NORTH.
       {GetCursorPoint(3).x(), -5},   // NE.
       {GetCursorPoint(8).x(), 100},  // SE.
       {GetCursorPoint(7).x(), 100},  // SOUTH.
       {GetCursorPoint(6).x(), 100},  // SW.
-  };
+  });
   constexpr const char16_t* kExtendLeft = u"ab";
   constexpr const char16_t* kExtendRight = u"cd\nefgh";
 
@@ -1557,14 +1553,14 @@ TEST_F(LabelSelectionTest, MouseDragSingleLineLTR) {
   label()->SizeToPreferredSize();
   ASSERT_TRUE(label()->SetSelectable(true));
   PerformMousePress(GetCursorPoint(2));
-  const gfx::Point points[] = {
+  const auto points = std::to_array<gfx::Point>({
       {GetCursorPoint(1).x(), -5},   // NW.
       {GetCursorPoint(2).x(), -5},   // NORTH.
       {GetCursorPoint(3).x(), -5},   // NE.
       {GetCursorPoint(3).x(), 100},  // SE.
       {GetCursorPoint(2).x(), 100},  // SOUTH.
       {GetCursorPoint(1).x(), 100},  // SW.
-  };
+  });
   constexpr const char16_t* kExtendLeft = u"ab";
   constexpr const char16_t* kExtendRight = u"cdef";
 
@@ -1606,14 +1602,14 @@ TEST_F(LabelSelectionTest, MouseDragMultilineRTL) {
   PerformMouseDragTo(gfx::Point(100, GetCursorPoint(6).y()));
   EXPECT_EQ(ToRTL("12\n"), GetSelectedText());
 
-  const gfx::Point points[] = {
+  const auto points = std::to_array<gfx::Point>({
       {GetCursorPoint(2).x(), -5},   // NW: Now towards the end of the string.
       {GetCursorPoint(1).x(), -5},   // NORTH,
       {GetCursorPoint(0).x(), -5},   // NE: Towards the start.
       {GetCursorPoint(4).x(), 100},  // SE.
       {GetCursorPoint(5).x(), 100},  // SOUTH.
       {GetCursorPoint(6).x(), 100},  // SW.
-  };
+  });
 
   // Visual right, so to the beginning of the string for RTL.
   const std::u16string extend_right = ToRTL("0");
@@ -1640,7 +1636,7 @@ TEST_F(LabelSelectionTest, MouseDragSingleLineRTL) {
   ASSERT_TRUE(label()->SetSelectable(true));
 
   PerformMousePress(GetCursorPoint(1));
-  const gfx::Point points[] = {
+  const std::vector<gfx::Point> points{
       {GetCursorPoint(2).x(), -5},   // NW.
       {GetCursorPoint(1).x(), -5},   // NORTH.
       {GetCursorPoint(0).x(), -5},   // NE.

@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/styled_label.h"
 
 #include <stddef.h>
@@ -804,8 +798,9 @@ TEST_F(StyledLabelTest, ViewsCenteredForEvenAndOddSizes) {
   for (int height : {60, 61}) {
     StyledLabel* styled = InitStyledLabel("abc");
 
-    const int view_heights[] = {height, height / 2, height / 2 + 1};
-    for (uint32_t i = 0; i < 3; ++i) {
+    const auto view_heights =
+        std::to_array<int>({height, height / 2, height / 2 + 1});
+    for (uint32_t i = 0; i < view_heights.size(); ++i) {
       auto view = std::make_unique<StaticSizedView>(
           gfx::Size(kViewWidth, view_heights[i]));
       StyledLabel::RangeStyleInfo style_info;
