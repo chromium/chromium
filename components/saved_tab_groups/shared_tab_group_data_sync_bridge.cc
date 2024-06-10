@@ -140,8 +140,7 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
-    change_processor()->ReportError(
-        {FROM_HERE, "Failed to read data or metadata."});
+    change_processor()->ReportError(*error);
     return;
   }
 
