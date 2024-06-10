@@ -20,6 +20,11 @@ namespace net {
 // Class to parse Sec-Session-Registration header.
 // See explainer for details:
 // https://github.com/WICG/dbsc/blob/main/README.md#start-session
+// The header format for the session registration is a list of
+// algorithm tokens, the list have two parameters, one is a string
+// representing the challenge, the other is a string representing
+// the path. Example:
+// (RS256 ES256);path="start";challenge="code"
 class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
  public:
   DeviceBoundSessionRegistrationFetcherParam(
@@ -62,10 +67,10 @@ class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
       std::string challenge);
+
   static std::optional<DeviceBoundSessionRegistrationFetcherParam> ParseItem(
       const GURL& request_url,
-      structured_headers::Item item,
-      structured_headers::Parameters params);
+      const structured_headers::ParameterizedMember& session_registration);
 
   // TODO(chlily): Store last-updated time and last-updated isolationinfo as
   // needed.

@@ -7,20 +7,19 @@
 #include <optional>
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "crypto/signature_verifier.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/structured_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "net/http/structured_headers.h"
 
 namespace net {
 namespace {
 
-constexpr char kChallenge[] = ":Y2hhbGxlbmdl:";
-constexpr char kDecodedChallenge[] = "challenge";
+constexpr char kRegistrationHeader[] = "Sec-Session-Registration";
 using crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
 using crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
 using ::testing::UnorderedElementsAre;
@@ -28,23 +27,28 @@ using ::testing::UnorderedElementsAre;
 scoped_refptr<net::HttpResponseHeaders> CreateHeaders(
     std::optional<std::string> path,
     std::optional<std::string> algs,
-    std::optional<std::string> challenge) {
-  std::string path_string = path ? base::StrCat({"\"", *path, "\"", "; "}) : "";
-  std::string algs_string =
-      (algs && !algs->empty()) ? base::StrCat({*algs, "; "}) : "";
-  std::string challenge_string =
-      challenge ? base::StrCat({"challenge=", *challenge}) : "";
-  std::string full_string =
-      base::StrCat({path_string, algs_string, challenge_string});
-  return HttpResponseHeaders::Builder({1, 1}, "200 OK")
-      .AddHeader("Sec-Session-Registration", full_string)
-      .Build();
+    std::optional<std::string> challenge,
+    scoped_refptr<net::HttpResponseHeaders> headers = nullptr) {
+  const std::string algs_string = (algs && !algs->empty()) ? *algs : "()";
+  const std::string path_string =
+      path ? base::StrCat({";path=\"", *path, "\""}) : "";
+  const std::string challenge_string =
+      challenge ? base::StrCat({";challenge=\"", *challenge, "\""}) : "";
+  const std::string full_string =
+      base::StrCat({algs_string, path_string, challenge_string});
+
+  if (!headers) {
+    headers = HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  }
+  headers->AddHeader(kRegistrationHeader, full_string);
+
+  return headers;
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, BasicValid) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("startsession", "es256;rs256", kChallenge);
+      CreateHeaders("startsession", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -54,14 +58,14 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, BasicValid) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest,
     ExtraUnrecognizedAlgorithm) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("startsession", "es256;bf512", kChallenge);
+      CreateHeaders("startsession", "(ES256 bf512)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -70,13 +74,13 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest,
   EXPECT_EQ(param.registration_endpoint(),
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, NoHeader) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -85,30 +89,33 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, NoHeader) {
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, ChallengeFirst) {
   GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";", "challenge=",
-                                            kChallenge, "; ", "rs256;es256"}));
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->SetHeader(
+      kRegistrationHeader,
+      "(RS256 ES256);challenge=\"challenge1\";path=\"first\"");
+
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
   EXPECT_EQ(param.registration_endpoint(),
-            GURL("https://www.example.com/startsession"));
+            GURL("https://www.example.com/first"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "challenge1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, NoSpaces) {
   GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";challenge=",
-                                            kChallenge, ";rs256;es256"}));
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->SetHeader(
+      kRegistrationHeader,
+      "(RS256 ES256);path=\"startsession\";challenge=\"challenge1\"");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -118,86 +125,112 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, NoSpaces) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "challenge1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, TwoRegistrations) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";challenge=",
-                                            kChallenge, ";rs256;es256"}));
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:;es256");
+      CreateHeaders("/first", "(ES256 RS256)", "c1");
+  CreateHeaders("/second", "(ES256)", "challenge2", response_headers);
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 2U);
   auto p1 = std::move(params[0]);
-  EXPECT_EQ(p1.registration_endpoint(),
-            GURL("https://www.example.com/startsession"));
+  EXPECT_EQ(p1.registration_endpoint(), GURL("https://www.example.com/first"));
   EXPECT_THAT(p1.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(p1.challenge(), kDecodedChallenge);
+  EXPECT_EQ(p1.challenge(), "c1");
 
   auto p2 = std::move(params[1]);
-  EXPECT_EQ(p2.registration_endpoint(), GURL("https://www.example.com/new"));
+  EXPECT_EQ(p2.registration_endpoint(), GURL("https://www.example.com/second"));
   EXPECT_THAT(p2.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
-  EXPECT_EQ(p2.challenge(), "coded");
+  EXPECT_EQ(p2.challenge(), "challenge2");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, ValidInvalid) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";challenge=",
-                                            kChallenge, ";rs256;es256"}));
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:");
+      CreateHeaders("/first", "(ES256 RS256)", "c1");
+  CreateHeaders("/second", "(es256)", "challenge2", response_headers);
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto p1 = std::move(params[0]);
-  EXPECT_EQ(p1.registration_endpoint(),
-            GURL("https://www.example.com/startsession"));
+  EXPECT_EQ(p1.registration_endpoint(), GURL("https://www.example.com/first"));
   EXPECT_THAT(p1.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(p1.challenge(), kDecodedChallenge);
+  EXPECT_EQ(p1.challenge(), "c1");
 }
 
-TEST(DeviceBoundSessionRegistrationFetcherParamTest, AddedNonsenseCharacters) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest,
+     AddedInvalidNonsenseCharacters) {
   GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:;rs256;;=;");
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(kRegistrationHeader,
+                              "(RS256);path=\"new\";challenge=\"test\";;=;");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_TRUE(params.empty());
+}
+
+TEST(DeviceBoundSessionRegistrationFetcherParamTest,
+     AddedValidNonsenseCharacters) {
+  GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeader,
+      "(RS256);path=\"new\";challenge=\"test\";nonsense=\";';'\",OTHER");
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get());
+  ASSERT_EQ(params.size(), 1U);
+  auto p1 = std::move(params[0]);
+  EXPECT_EQ(p1.registration_endpoint(), GURL("https://www.example.com/new"));
+  EXPECT_THAT(p1.supported_algos(), UnorderedElementsAre(RSA_PKCS1_SHA256));
+  EXPECT_EQ(p1.challenge(), "test");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, AlgAsString) {
   GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:;\"rs256\"");
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(kRegistrationHeader,
+                              "(\"RS256\");path=\"new\";challenge=\"test\"");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_TRUE(params.empty());
 }
 
-TEST(DeviceBoundSessionRegistrationFetcherParamTest, ChallengeAsString) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, PathAsToken) {
   GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=\"Y29kZWQ=\";rs256");
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(kRegistrationHeader,
+                              "(RS256);path=new;challenge=\"test\"");
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get());
+  ASSERT_TRUE(params.empty());
+}
+
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ChallengeAsByteSequence) {
+  GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(kRegistrationHeader,
+                              "(RS256);path=\"new\";challenge=:Y29kZWQ=:");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -207,42 +240,33 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, ChallengeAsString) {
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, ValidInvalidValid) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";challenge=",
-                                            kChallenge, ";rs256;es256"}));
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:");
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:;es256");
+      CreateHeaders("/first", "(ES256 RS256)", "c1");
+  CreateHeaders("/second", "(es256)", "challenge2", response_headers);
+  CreateHeaders("/third", "(ES256)", "challenge3", response_headers);
+
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 2U);
   auto p1 = std::move(params[0]);
-  EXPECT_EQ(p1.registration_endpoint(),
-            GURL("https://www.example.com/startsession"));
+  EXPECT_EQ(p1.registration_endpoint(), GURL("https://www.example.com/first"));
   EXPECT_THAT(p1.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(p1.challenge(), kDecodedChallenge);
+  EXPECT_EQ(p1.challenge(), "c1");
 
   auto p2 = std::move(params[1]);
-  EXPECT_EQ(p2.registration_endpoint(), GURL("https://www.example.com/new"));
+  EXPECT_EQ(p2.registration_endpoint(), GURL("https://www.example.com/third"));
   EXPECT_THAT(p2.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
-  EXPECT_EQ(p2.challenge(), "coded");
+  EXPECT_EQ(p2.challenge(), "challenge3");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";challenge=",
-                                            kChallenge, ";rs256;es256"}));
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:;es256");
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"third\";challenge=:YW5vdGhlcg==:;es256");
+      CreateHeaders("/startsession", "(ES256 RS256)", "c1");
+  CreateHeaders("/new", "(ES256)", "coded", response_headers);
+  CreateHeaders("/third", "(ES256)", "another", response_headers);
+
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -252,7 +276,7 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(p1.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(p1.challenge(), kDecodedChallenge);
+  EXPECT_EQ(p1.challenge(), "c1");
 
   auto p2 = std::move(params[1]);
   EXPECT_EQ(p2.registration_endpoint(), GURL("https://www.example.com/new"));
@@ -267,14 +291,12 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
   GURL registration_request = GURL("https://www.example.com/registration");
+  // Testing customized header
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_headers->SetHeader("Sec-Session-Registration",
-                              base::StrCat({"\"startsession\";challenge=",
-                                            kChallenge, ";rs256;es256"}));
-  response_headers->AddHeader("Sec-Session-Registration",
-                              "\"new\";challenge=:Y29kZWQ=:;es256, "
-                              "\"third\";challenge=:YW5vdGhlcg==:;es256");
+      CreateHeaders("/startsession", "(ES256 RS256)", "c1");
+  response_headers->AddHeader(kRegistrationHeader,
+                              "(ES256);path=\"new\";challenge=\"coded\", "
+                              "(ES256);path=\"third\";challenge=\"another\"");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -284,7 +306,7 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(p1.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(p1.challenge(), kDecodedChallenge);
+  EXPECT_EQ(p1.challenge(), "c1");
 
   auto p2 = std::move(params[1]);
   EXPECT_EQ(p2.registration_endpoint(), GURL("https://www.example.com/new"));
@@ -300,7 +322,7 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, StartWithSlash) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("/startsession", "es256;rs256", kChallenge);
+      CreateHeaders("/startsession", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -310,13 +332,13 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, StartWithSlash) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, EscapeOnce) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("/%2561", "es256;rs256", kChallenge);
+      CreateHeaders("/%2561", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -325,13 +347,13 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, EscapeOnce) {
   EXPECT_EQ(param.registration_endpoint(), GURL("https://www.example.com/%61"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidUrl) {
   GURL registration_request = GURL("https://[/");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("[", "es256;rs256", kChallenge);
+      CreateHeaders("new", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -341,7 +363,7 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidUrl) {
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, HasUrlEncoded) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("test%2Fstart", "es256;rs256", kChallenge);
+      CreateHeaders("test%2Fstart", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -351,13 +373,13 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, HasUrlEncoded) {
             GURL("https://www.example.com/test/start"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, FullUrl) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers = CreateHeaders(
-      "https://accounts.example.com/startsession", "es256;rs256", kChallenge);
+      "https://accounts.example.com/startsession", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -367,13 +389,13 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, FullUrl) {
             GURL("https://accounts.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, SwapAlgo) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("startsession", "es256;rs256", kChallenge);
+      CreateHeaders("startsession", "(ES256 RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -383,13 +405,13 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, SwapAlgo) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(),
               UnorderedElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, OneAlgo) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("startsession", "rs256", kChallenge);
+      CreateHeaders("startsession", "(RS256)", "c1");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
@@ -398,22 +420,25 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, OneAlgo) {
   EXPECT_EQ(param.registration_endpoint(),
             GURL("https://www.example.com/startsession"));
   ASSERT_THAT(param.supported_algos(), UnorderedElementsAre(RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
-TEST(DeviceBoundSessionRegistrationFetcherParamTest, AddedParameter) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidParamIgnored) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
-      CreateHeaders("startsession", "rs256;lolcat", kChallenge);
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->SetHeader(
+      kRegistrationHeader,
+      "(RS256);path=\"first\";challenge=\"c1\";another=true");
   std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
       DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
   EXPECT_EQ(param.registration_endpoint(),
-            GURL("https://www.example.com/startsession"));
+            GURL("https://www.example.com/first"));
   ASSERT_THAT(param.supported_algos(), UnorderedElementsAre(RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), kDecodedChallenge);
+  EXPECT_EQ(param.challenge(), "c1");
 }
 
 TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidInputs) {
@@ -426,26 +451,26 @@ TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidInputs) {
 
   const Input kInvalidInputs[] = {
       // All invalid
-      {"https://www.example.com/reg", "", "", ""},
+      {"https://www.example.com/reg", "", "()", ""},
       // All missing
       {"https://www.example.com/reg", std::nullopt, std::nullopt, std::nullopt},
       // All valid different Url
       {"https://www.example.com/registration",
-       "https://accounts.different.url/startsession", "rs256", kChallenge},
+       "https://accounts.different.url/startsession", "(RS256)", "c1"},
       // Empty request Url
-      {"", "start", "rs256", kChallenge},
+      {"", "start", "(RS256)", "c1"},
       // Empty algo
-      {"https://www.example.com/reg", "start", "", kChallenge},
+      {"https://www.example.com/reg", "start", "()", "c1"},
       // Missing algo
-      {"https://www.example.com/reg", "start", std::nullopt, kChallenge},
+      {"https://www.example.com/reg", "start", std::nullopt, "c1"},
       // Missing registration
-      {"https://www.example.com/reg", std::nullopt, "es256;rs256", kChallenge},
+      {"https://www.example.com/reg", std::nullopt, "(ES256 RS256)", "c1"},
       // Missing challenge
-      {"https://www.example.com/reg", "start", "es256;rs256", std::nullopt},
+      {"https://www.example.com/reg", "start", "(ES256 RS256)", std::nullopt},
       // Empty challenge
-      {"https://www.example.com/reg", "start", "es256;rs256", ""},
+      {"https://www.example.com/reg", "start", "(ES256 RS256)", ""},
       // Challenge invalid utf8
-      {"https://www.example.com/reg", "start", "es256;rs256", "ab\xC0\x80"}};
+      {"https://www.example.com/reg", "start", "(ES256 RS256)", "ab\xC0\x80"}};
 
   for (const auto& input : kInvalidInputs) {
     GURL registration_request = GURL(input.request_url);
