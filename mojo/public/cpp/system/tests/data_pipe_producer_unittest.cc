@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/system/data_pipe_producer.h"
+
 #include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "mojo/public/cpp/system/filtered_data_source.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -58,14 +60,14 @@ class DataPipeReader {
   void OnDataAvailable(MojoResult result, const HandleSignalsState& state) {
     if (result == MOJO_RESULT_OK) {
       size_t size = read_size_;
-      std::vector<char> buffer(size, 0);
+      std::string buffer(size, '\0');
       MojoResult read_result;
       do {
-        read_result = consumer_handle_->ReadData(buffer.data(), &size,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+        read_result = consumer_handle_->ReadData(
+            MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+            size);
         if (read_result == MOJO_RESULT_OK) {
-          std::copy(buffer.begin(), buffer.begin() + size,
-                    std::back_inserter(data_));
+          data_.append(base::as_string_view(base::span(buffer).first(size)));
         }
       } while (read_result == MOJO_RESULT_OK);
 
