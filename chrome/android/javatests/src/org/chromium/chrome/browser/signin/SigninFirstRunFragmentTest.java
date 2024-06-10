@@ -1002,7 +1002,29 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFragmentWhenClickingOnUmaDialogLink() {
+        launchActivityWithFragment();
+
+        clickOnUmaDialogLinkAndWait();
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_first_section_header))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_first_section_body))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_second_section_header))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_second_section_body_with_history_sync))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.done)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testFragmentWhenClickingOnUmaDialogLink_replaceSyncBySigninDisabled() {
         launchActivityWithFragment();
 
         clickOnUmaDialogLinkAndWait();

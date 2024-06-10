@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.MainThread;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -18,6 +19,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /**
  * Creates a dialog that lets users choose whether or not they want to send diagnostic data to
@@ -55,6 +57,12 @@ public class UMADialogCoordinator {
                             mDialogManager.dismissDialog(
                                     mModel, DialogDismissalCause.ACTION_ON_CONTENT);
                         });
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            TextViewWithLeading secondDescriptionView =
+                    mView.findViewById(R.id.fre_uma_dialog_second_section_text);
+            secondDescriptionView.setText(R.string.signin_fre_uma_dialog_second_section_body);
+        }
         final MaterialSwitchWithText umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);
         umaSwitch.setChecked(allowMetricsAndCrashUploading);
         umaSwitch.setOnCheckedChangeListener(

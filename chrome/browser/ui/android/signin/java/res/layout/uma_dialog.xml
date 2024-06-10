@@ -66,10 +66,11 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
 
             <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/fre_uma_dialog_second_section_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:leading="@dimen/text_size_medium_leading"
-                android:text="@string/signin_fre_uma_dialog_second_section_body"
+                android:text="@string/signin_fre_uma_dialog_second_section_body_with_history_sync"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
     </ScrollView>
