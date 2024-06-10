@@ -106,6 +106,11 @@ base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser() {
   return allowed_features;
 }
 
+// LINT.IfChange(IsOnDeviceModelEnabled)
+//
+// On-device supported features should return true.
+// `GetOnDeviceFeatureRecentlyUsedPref` should return a valid pref for each
+// on-device feature.
 bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kCompose:
@@ -121,7 +126,16 @@ bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
       return true;
   }
 }
+// LINT.ThenChange(model_execution_prefs.cc:GetOnDeviceFeatureRecentlyUsedPref,
+//                 IsOnDeviceModelAdaptationEnabled,
+//                 GetOptimizationTargetForModelAdaptation)
 
+// LINT.IfChange(IsOnDeviceModelAdaptationEnabled)
+//
+// On-device model adaptation features should return true.
+// `GetOptimizationTargetForModelAdaptation` should return a valid optimization
+// target for each on-device model adaptation feature, that will be used to
+// download the adaptation model.
 bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kCompose:
@@ -138,7 +152,9 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
       return false;
   }
 }
+// LINT.ThenChange(IsOnDeviceModelEnabled)
 
+// LINT.IfChange(GetOptimizationTargetForModelAdaptation)
 proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
     ModelBasedCapabilityKey feature) {
   switch (feature) {
@@ -154,6 +170,7 @@ proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
   }
   return proto::OPTIMIZATION_TARGET_UNKNOWN;
 }
+// LINT.ThenChange(IsOnDeviceModelEnabled)
 
 }  // namespace internal
 

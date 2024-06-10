@@ -5,10 +5,12 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 
 #include "base/files/file_util.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -103,6 +105,22 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
     return nullptr;
   }
   return config;
+}
+
+bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
+                                            const PrefService& local_state) {
+  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
+    return false;
+  }
+  base::Time last_use = local_state.GetTime(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature));
+  auto recent_use_period =
+      features::GetOnDeviceEligibleModelFeatureRecentUsePeriod();
+  auto time_since_use = base::Time::Now() - last_use;
+  // Note: Since we're storing a base::Time, we need to consider the possibility
+  // of clock changes.
+  return time_since_use < recent_use_period &&
+         time_since_use > -recent_use_period;
 }
 
 }  // namespace optimization_guide

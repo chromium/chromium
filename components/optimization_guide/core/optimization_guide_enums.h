@@ -395,9 +395,12 @@ enum class OnDeviceModelAdaptationAvailability {
   // The execution config in the adaptation model was invalid.
   kAdaptationModelExecutionConfigInvalid = 6,
 
+  // The model execution feature was not recently used.
+  kFeatureNotRecentlyUsed = 7,
+
   // This must be kept in sync with OnDeviceModelAdaptationAvailability in
   // optimization/enums.xml.
-  kMaxValue = kAdaptationModelExecutionConfigInvalid,
+  kMaxValue = kFeatureNotRecentlyUsed,
 };
 
 // The result of running validation prompts for the on-device model.

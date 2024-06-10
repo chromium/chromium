@@ -52,9 +52,10 @@ class OnDeviceModelServiceAdaptationControllerTest : public testing::Test {
     pref_service_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kLow));
-    pref_service_.SetTime(model_execution::prefs::localstate::
-                              kLastTimeOnDeviceEligibleFeatureWasUsed,
-                          base::Time::Now());
+    pref_service_.SetTime(
+        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+            ModelBasedCapabilityKey::kCompose),
+        base::Time::Now());
   }
 
   void Initialize() {

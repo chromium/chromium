@@ -127,9 +127,10 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     pref_service_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kLow));
-    pref_service_.SetTime(model_execution::prefs::localstate::
-                              kLastTimeOnDeviceEligibleFeatureWasUsed,
-                          base::Time::Now());
+    pref_service_.SetTime(
+        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+            ModelBasedCapabilityKey::kCompose),
+        base::Time::Now());
   }
 
   void TearDown() override {
@@ -771,16 +772,20 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::internal::kOnDeviceModelTestFeature);
+
   Initialize();
   base::HistogramTester histogram_tester;
 
   EXPECT_FALSE(test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kTabOrganization, base::DoNothing(),
-      logger_.GetWeakPtr(), nullptr, /*config_params=*/std::nullopt));
+      ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
+      nullptr, /*config_params=*/std::nullopt));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
-      "TabOrganization",
+      "Test",
       OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
 }
 

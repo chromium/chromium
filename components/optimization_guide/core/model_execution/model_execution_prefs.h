@@ -10,6 +10,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace optimization_guide::model_execution::prefs {
 
@@ -56,7 +57,11 @@ extern const char kOnDeviceModelValidationResult[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClass[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kLastTimeOnDeviceEligibleFeatureWasUsed[];
+extern const char kLastTimeComposeWasUsed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kLastTimePromptApiWasUsed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kLastTimeTestFeatureWasUsed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -71,6 +76,12 @@ bool IsLocalFoundationalModelEnterprisePolicyAllowed();
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+// Returns the value of the local state pref to check for whether an on-device
+// eligible `feature` was recently used. All on-device eligible features should
+// have this pref defined.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+const char* GetOnDeviceFeatureRecentlyUsedPref(ModelBasedCapabilityKey feature);
 
 }  // namespace optimization_guide::model_execution::prefs
 

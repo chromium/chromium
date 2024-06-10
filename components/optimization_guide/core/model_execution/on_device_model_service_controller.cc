@@ -86,8 +86,12 @@ void OnDeviceModelServiceController::Init() {
 
 OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     ModelBasedCapabilityKey feature) {
+  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
+    return OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled;
+  }
+
   if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
+    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed(feature);
   }
 
   if (!model_metadata_) {
@@ -118,10 +122,6 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
       return OnDeviceModelEligibilityReason::
           kLanguageDetectionModelNotAvailable;
     }
-  }
-
-  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
-    return OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled;
   }
 
   if (features::internal::IsOnDeviceModelAdaptationEnabled(feature) &&

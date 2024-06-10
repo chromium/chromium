@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -46,15 +47,20 @@ base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
   return *state_manager_instance.get();
 }
 
-bool WasAnOnDeviceFeatureRecentlyUsed(const PrefService& local_state) {
-  base::Time last_use =
-      local_state.GetTime(model_execution::prefs::localstate::
-                              kLastTimeOnDeviceEligibleFeatureWasUsed);
-  constexpr base::TimeDelta grace_period = base::Days(7);
-  auto time_since_use = base::Time::Now() - last_use;
-  // Note: Since we're storing a base::Time, we need to consider the possibility
-  // of clock changes.
-  return time_since_use < grace_period && time_since_use > -grace_period;
+bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
+  // TODO(b/322818928): Change this to iterate over all on-device model
+  // execution features, including kPromptApi and KTest.
+  for (const auto& feature : kAllUserVisibleFeatureKeys) {
+    if (!features::internal::IsOnDeviceModelEnabled(
+            ToModelBasedCapabilityKey(feature))) {
+      continue;
+    }
+    if (WasOnDeviceEligibleFeatureRecentlyUsed(
+            ToModelBasedCapabilityKey(feature), local_state)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool IsDeviceCapable(const PrefService& local_state) {
@@ -142,10 +148,11 @@ void OnDeviceModelComponentStateManager::UninstallComplete() {
   component_installer_registered_ = false;
 }
 
-void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed() {
-  local_state_->SetTime(model_execution::prefs::localstate::
-                            kLastTimeOnDeviceEligibleFeatureWasUsed,
-                        base::Time::Now());
+void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
+    ModelBasedCapabilityKey feature) {
+  local_state_->SetTime(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
+      base::Time::Now());
 
   OnDeviceModelStatus status;
   if (GetState() != nullptr) {
@@ -262,7 +269,7 @@ OnDeviceModelComponentStateManager::GetRegistrationCriteria(
       IsFreeDiskSpaceSufficientForOnDeviceModelInstall(disk_space_free_bytes);
   result.device_capable = IsDeviceCapable(*local_state_);
   result.on_device_feature_recently_used =
-      WasAnOnDeviceFeatureRecentlyUsed(*local_state_);
+      WasAnyOnDeviceEligibleFeatureRecentlyUsed(*local_state_);
   result.enabled_by_feature = features::IsOnDeviceExecutionEnabled();
   result.enabled_by_enterprise_policy =
       GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state_) ==

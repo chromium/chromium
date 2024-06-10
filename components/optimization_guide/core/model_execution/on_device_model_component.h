@@ -26,6 +26,8 @@ inline constexpr std::string_view kOnDeviceModelCrxId =
 
 class OnDeviceModelComponentState;
 
+enum class ModelBasedCapabilityKey;
+
 // Wraps the specification needed to determine compatibility of the
 // on-device base model with any feature specific code.
 struct OnDeviceBaseModelSpec {
@@ -88,7 +90,7 @@ class OnDeviceModelComponentStateManager
   void OnStartup();
 
   // Should be called whenever an on-device eligible feature was used.
-  void OnDeviceEligibleFeatureUsed();
+  void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature);
 
   // Should be called whenever the device performance class changes.
   void DevicePerformanceClassChanged(

@@ -97,6 +97,7 @@ chromium-metrics-reviews@google.com.
              model"/>
   <int value="6"
       label="The execution config in the adaptation model was invalid"/>
+  <int value="7" label="The model execution feature was not recently used."/>
 </enum>
 
 <enum name="OnDeviceModelLoadResult">

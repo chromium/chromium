@@ -68,6 +68,7 @@ class OnDeviceModelAdaptationLoader
       OptimizationGuideModelProvider* model_provider,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
+      PrefService* local_state,
       OnLoadFn on_load_fn);
   ~OnDeviceModelAdaptationLoader() override;
 
@@ -102,6 +103,8 @@ class OnDeviceModelAdaptationLoader
   base::ScopedObservation<OnDeviceModelComponentStateManager,
                           OnDeviceModelComponentStateManager::Observer>
       component_state_manager_observation_{this};
+
+  raw_ptr<PrefService> local_state_;
 
   // The model provider to observe for updates to model adaptations.
   raw_ptr<OptimizationGuideModelProvider> model_provider_;

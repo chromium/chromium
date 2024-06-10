@@ -6,7 +6,9 @@
 
 #include "base/notreached.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace optimization_guide::model_execution::prefs {
 
@@ -70,11 +72,23 @@ const char kOnDeviceModelValidationResult[] =
 const char kOnDevicePerformanceClass[] =
     "optimization_guide.on_device.performance_class";
 
-// A timestamp for the last time a feature was used which could have benefited
-// from the on-device model. We will use this to help decide whether to acquire
-// the on device model.
-const char kLastTimeOnDeviceEligibleFeatureWasUsed[] =
+// A timestamp for the last time various features were used which could have
+// benefited from the on-device model. These are on-device eligible features,
+// and this will be used to help decide whether to acquire the on device base
+// model and the adaptation model.
+//
+// For historical reasons, the compose pref was named generically and is
+// continued to be used.
+
+const char kLastTimeComposeWasUsed[] =
     "optimization_guide.last_time_on_device_eligible_feature_used";
+
+const char kLastTimePromptApiWasUsed[] =
+    "optimization_guide.model_execution.last_time_prompt_api_"
+    "used";
+
+const char kLastTimeTestFeatureWasUsed[] =
+    "optimization_guide.model_execution.last_time_test_used";
 
 // A timestamp for the last time the on-device model was eligible for download.
 const char kLastTimeEligibleForOnDeviceModelDownload[] =
@@ -97,15 +111,38 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
-  registry->RegisterDictionaryPref(localstate::kOnDeviceModelValidationResult);
-  registry->RegisterTimePref(
-      localstate::kLastTimeOnDeviceEligibleFeatureWasUsed, base::Time::Min());
+  registry->RegisterTimePref(localstate::kLastTimeComposeWasUsed,
+                             base::Time::Min());
+  registry->RegisterTimePref(localstate::kLastTimePromptApiWasUsed,
+                             base::Time::Min());
+  registry->RegisterTimePref(localstate::kLastTimeTestFeatureWasUsed,
+                             base::Time::Min());
   registry->RegisterTimePref(
       localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
+  registry->RegisterDictionaryPref(localstate::kOnDeviceModelValidationResult);
   registry->RegisterInt64Pref(localstate::kModelQualityLogggingClientId, 0,
                               PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
       localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
 }
+
+// LINT.IfChange(GetOnDeviceFeatureRecentlyUsedPref)
+const char* GetOnDeviceFeatureRecentlyUsedPref(
+    ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+      return prefs::localstate::kLastTimeComposeWasUsed;
+    case ModelBasedCapabilityKey::kPromptApi:
+      return prefs::localstate::kLastTimePromptApiWasUsed;
+    case ModelBasedCapabilityKey::kTest:
+      return prefs::localstate::kLastTimeTestFeatureWasUsed;
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kTextSafety:
+      // This should not be called for features that are not on-device.
+      NOTREACHED_NORETURN();
+  }
+}
+// LINT.ThenChange(IsOnDeviceModelEnabled)
 
 }  // namespace optimization_guide::model_execution::prefs

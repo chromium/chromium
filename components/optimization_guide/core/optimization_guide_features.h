@@ -422,6 +422,12 @@ bool CanLaunchOnDeviceModelService();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsOnDeviceExecutionEnabled();
 
+// The amount of grace period to use from the last time the feature was used to
+// consider it as recently used. Recent usage is one of the criteria for the
+// base and adaptation on-device models to be downloaded.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
+
 // The on-device model is fetched when the device is considered eligible for
 // on-device execution. When the device stops being eligible, the model is
 // retained for this amount of time. This protects the user from repeatedly

@@ -47,9 +47,10 @@ class OnDeviceModelComponentTest : public testing::Test {
     local_state_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kLow));
-    local_state_.SetTime(model_execution::prefs::localstate::
-                             kLastTimeOnDeviceEligibleFeatureWasUsed,
-                         base::Time::Now());
+    local_state_.SetTime(
+        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+            ModelBasedCapabilityKey::kCompose),
+        base::Time::Now());
 
     feature_list_.InitWithFeatures({features::kOptimizationGuideModelExecution,
                                     features::kOptimizationGuideOnDeviceModel},
@@ -214,8 +215,9 @@ TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
-  local_state_.ClearPref(model_execution::prefs::localstate::
-                             kLastTimeOnDeviceEligibleFeatureWasUsed);
+  local_state_.ClearPref(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
 
   manager()->OnStartup();
   WaitForStartup();
@@ -228,9 +230,10 @@ TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
 }
 
 TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
-  local_state_.SetTime(model_execution::prefs::localstate::
-                           kLastTimeOnDeviceEligibleFeatureWasUsed,
-                       base::Time::Now() - base::Days(31));
+  local_state_.SetTime(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose),
+      base::Time::Now() - base::Days(31));
 
   manager()->OnStartup();
   WaitForStartup();
@@ -270,8 +273,9 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
                            kLastTimeEligibleForOnDeviceModelDownload,
                        base::Time::Now() - base::Minutes(1) -
                            features::GetOnDeviceModelRetentionTime());
-  local_state_.ClearPref(model_execution::prefs::localstate::
-                             kLastTimeOnDeviceEligibleFeatureWasUsed);
+  local_state_.ClearPref(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
 
   // Should uninstall the first time, and skip uninstallation the next time.
   manager()->OnStartup();
@@ -313,11 +317,12 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
 
-  // Simulate a restart, and clear kLastTimeOnDeviceEligibleFeatureWasUsed so
-  // that the model is no longer eligible for download.
+  // Simulate a restart, and clear feature recently used pref so that the model
+  // is no longer eligible for download.
   on_device_component_state_manager_.Reset();
-  local_state_.ClearPref(model_execution::prefs::localstate::
-                             kLastTimeOnDeviceEligibleFeatureWasUsed);
+  local_state_.ClearPref(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
   manager()->OnStartup();
   WaitForStartup();
 
@@ -452,14 +457,15 @@ TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {
 }
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
-  local_state_.ClearPref(model_execution::prefs::localstate::
-                             kLastTimeOnDeviceEligibleFeatureWasUsed);
+  local_state_.ClearPref(
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
   manager()->OnStartup();
   WaitForStartup();
 
   ASSERT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
 
-  manager()->OnDeviceEligibleFeatureUsed();
+  manager()->OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey::kCompose);
   WaitForStartup();
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
 }
@@ -474,7 +480,7 @@ TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
 
   manager()->InstallerRegistered();
 
-  manager()->OnDeviceEligibleFeatureUsed();
+  manager()->OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey::kCompose);
 
   histograms_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",

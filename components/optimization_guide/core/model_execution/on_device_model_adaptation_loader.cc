@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
@@ -102,9 +103,11 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     OptimizationGuideModelProvider* model_provider,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
+    PrefService* local_state,
     OnLoadFn on_load_fn)
     : feature_(feature),
       on_load_fn_(on_load_fn),
+      local_state_(local_state),
       model_provider_(model_provider),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
@@ -144,6 +147,11 @@ void OnDeviceModelAdaptationLoader::StateChanged(
   if (!switches::GetOnDeviceModelExecutionOverride() && !base_model_spec_) {
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kBaseModelSpecInvalid);
+    return;
+  }
+  if (!WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_)) {
+    RecordAdaptationModelAvailability(
+        feature_, OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed);
     return;
   }
 

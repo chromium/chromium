@@ -117,6 +117,7 @@ GetRequiredModelAdaptationLoaders(
     OptimizationGuideModelProvider* model_provider,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
+    PrefService* local_state,
     base::WeakPtr<OnDeviceModelServiceController>
         on_device_model_service_controller) {
   std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader> loaders;
@@ -130,6 +131,7 @@ GetRequiredModelAdaptationLoaders(
         std::piecewise_construct, std::forward_as_tuple(feature),
         std::forward_as_tuple(
             feature, model_provider, on_device_component_state_manager,
+            local_state,
             base::BindRepeating(
                 &OnDeviceModelServiceController::MaybeUpdateModelAdaptation,
                 on_device_model_service_controller, feature)));
@@ -165,6 +167,7 @@ ModelExecutionManager::ModelExecutionManager(
       model_adaptation_loaders_(GetRequiredModelAdaptationLoaders(
           model_provider,
           on_device_component_state_manager,
+          local_state,
           on_device_model_service_controller
               ? on_device_model_service_controller->GetWeakPtr()
               : nullptr)),
