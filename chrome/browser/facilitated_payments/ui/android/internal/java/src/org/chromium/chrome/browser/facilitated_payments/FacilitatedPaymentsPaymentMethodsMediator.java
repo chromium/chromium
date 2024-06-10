@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_1_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
@@ -19,6 +20,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.components.autofill.payments.AccountType;
@@ -52,12 +54,15 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
+        sheetItems.add(buildHeader());
+
         for (BankAccount bankAccount : bankAccounts) {
             final PropertyModel model = createBankAccountModel(mContext, bankAccount);
             sheetItems.add(new ListItem(BANK_ACCOUNT, model));
         }
 
-        sheetItems.add(0, buildHeader());
+        sheetItems.add(buildAdditionalInfo());
+
         mModel.set(VISIBLE, true);
 
         return true;
@@ -70,6 +75,17 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(DESCRIPTION_ID, R.string.pix_payment_methods_bottom_sheet_description)
                         .with(IMAGE_DRAWABLE_ID, R.drawable.pix_gpay_logo)
                         .with(TITLE_ID, R.string.pix_payment_methods_bottom_sheet_title)
+                        .build());
+    }
+
+    @VisibleForTesting
+    static ListItem buildAdditionalInfo() {
+        return new ListItem(
+                FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO,
+                new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
+                        .with(
+                                DESCRIPTION_1_ID,
+                                R.string.pix_payment_transaction_exceeding_balance_note)
                         .build());
     }
 

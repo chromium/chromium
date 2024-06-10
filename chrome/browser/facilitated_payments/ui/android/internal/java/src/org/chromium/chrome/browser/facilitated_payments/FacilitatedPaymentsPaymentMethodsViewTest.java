@@ -149,6 +149,23 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(getBankAccountSummaryAt(1).getText(), is(expectedBankAccountSummary2));
     }
 
+    @Test
+    @MediumTest
+    public void testDescriptionLine1() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .add(FacilitatedPaymentsPaymentMethodsMediator.buildAdditionalInfo());
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line_1);
+        assertThat(
+                descriptionLine1.getText(),
+                is("Transactions that exceed your balance will not be processed"));
+    }
+
     private PropertyModel createFacilitatedPaymentsPaymentMethodsModel() {
         return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                 .with(VISIBLE, false)

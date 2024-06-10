@@ -28,8 +28,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         // A section containing the bank account data.
         int BANK_ACCOUNT = 1;
 
+        // Additional info to users making payments through bottom sheet.
+        int ADDITIONAL_INFO = 2;
+
         // A footer section containing additional actions.
-        int FOOTER = 2;
+        int FOOTER = 3;
     }
 
     /** Properties for a payment instrument entry in the facilitated payments bottom sheet. */
@@ -58,9 +61,23 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final ReadableIntPropertyKey TITLE_ID = new ReadableIntPropertyKey("title_id");
         static final ReadableIntPropertyKey DESCRIPTION_ID =
                 new ReadableIntPropertyKey("description_id");
+
         static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID, DESCRIPTION_ID};
 
         private HeaderProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the additional info in the facilitated
+     * payments bottom sheet for payments.
+     */
+    static class AdditionalInfoProperties {
+        static final ReadableIntPropertyKey DESCRIPTION_1_ID =
+                new ReadableIntPropertyKey("description_1_id");
+
+        static final PropertyKey[] ALL_KEYS = {DESCRIPTION_1_ID};
+
+        private AdditionalInfoProperties() {}
     }
 
     /**

@@ -40,6 +40,9 @@
   <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_DESCRIPTION" desc="Explanation text for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
     Account info is encrypted and kept private
   </message>
+  <message name="IDS_PIX_PAYMENT_TRANSACTION_EXCEEDING_BALANCE_NOTE" desc="A note shown to remind user that transactions exceeding their account balance will not be processed. It is shown in the bottom sheet that displays user's PIX bank accounts prompting them to pay." formatter_data="android_java">
+    Transactions that exceed your balance will not be processed
+  </message>
 </if>
 
 </grit-part>

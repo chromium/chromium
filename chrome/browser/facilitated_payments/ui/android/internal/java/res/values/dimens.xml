@@ -8,4 +8,6 @@ found in the LICENSE file.
 <resources>
     <dimen name="facilitated_payments_product_icon_height">32dp</dimen>
     <dimen name="facilitated_payments_product_icon_margin_vertical">12dp</dimen>
+    <dimen name="facilitated_payments_horizontal_margin">8dp</dimen>
+    <dimen name="facilitated_payments_additional_info_margin_top">20dp</dimen>
 </resources>

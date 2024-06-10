@@ -50,6 +50,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/bank_account_item.xml",
+    "java/res/layout/facilitated_payments_payment_methods_additional_info.xml",
     "java/res/layout/facilitated_payments_payment_methods_sheet_header_item.xml",
     "java/res/values/dimens.xml",
   ]

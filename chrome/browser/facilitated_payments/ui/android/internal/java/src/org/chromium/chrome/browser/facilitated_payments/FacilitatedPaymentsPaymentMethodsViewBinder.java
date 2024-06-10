@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_1_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
@@ -82,6 +83,37 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             sheetHeaderImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create additional info below the payment methods inside the
+     * FacilitatedPaymentsPaymentMethodsView.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createAdditionalInfoView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(
+                        R.layout.facilitated_payments_payment_methods_additional_info,
+                        parent,
+                        false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the additional info to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindAdditionalInfoView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == DESCRIPTION_1_ID) {
+            TextView descriptionLine1 = view.findViewById(R.id.description_line_1);
+            descriptionLine1.setText(
+                    view.getContext().getResources().getString(model.get(DESCRIPTION_1_ID)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

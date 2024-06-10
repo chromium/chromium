@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
@@ -81,6 +82,10 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 BANK_ACCOUNT,
                 BankAccountViewBinder::createBankAccountItemView,
                 BankAccountViewBinder::bindBankAccountItemView);
+        adapter.registerType(
+                ADDITIONAL_INFO,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createAdditionalInfoView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindAdditionalInfoView);
         view.getSheetItemListView().setAdapter(adapter);
     }
 
