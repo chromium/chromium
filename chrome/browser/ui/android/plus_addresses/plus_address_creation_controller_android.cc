@@ -52,7 +52,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
   callback_ = std::move(callback);
   relevant_origin_ = main_frame_origin;
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown);
-  modal_shown_time_ = clock_->Now();
+  modal_shown_time_ = base::TimeTicks::Now();
   if (!suppress_ui_for_testing_) {
     view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
                                                              &GetWebContents());
@@ -174,9 +174,9 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
 void PlusAddressCreationControllerAndroid::RecordModalShownDuration(
     metrics::PlusAddressModalCompletionStatus status) {
   if (modal_shown_time_.has_value()) {
-    metrics::RecordModalShownOutcome(status,
-                                     clock_->Now() - modal_shown_time_.value(),
-                                     std::max(reserve_response_count_ - 1, 0));
+    metrics::RecordModalShownOutcome(
+        status, base::TimeTicks::Now() - *modal_shown_time_,
+        std::max(reserve_response_count_ - 1, 0));
     modal_shown_time_.reset();
     reserve_response_count_ = 0;
   }

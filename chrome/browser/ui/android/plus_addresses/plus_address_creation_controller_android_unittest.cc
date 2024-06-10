@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -31,7 +30,6 @@ namespace {
 
 constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
 constexpr base::TimeDelta kDuration = base::Milliseconds(3600);
-constexpr base::Time kStartTime = base::Time::FromSecondsSinceUnixEpoch(1);
 
 std::string FormatModalDurationMetrics(
     metrics::PlusAddressModalCompletionStatus status) {
@@ -57,7 +55,9 @@ class PlusAddressCreationControllerAndroidEnabledTest
     : public ChromeRenderViewHostTestHarness {
  public:
   PlusAddressCreationControllerAndroidEnabledTest()
-      : override_profile_selections_(
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        override_profile_selections_(
             PlusAddressServiceFactory::GetInstance(),
             PlusAddressServiceFactory::CreateProfileSelections()) {}
 
@@ -82,15 +82,24 @@ class PlusAddressCreationControllerAndroidEnabledTest
   }
 
  protected:
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
+  FakePlusAddressService& plus_address_service() {
+    return *fake_plus_address_service_;
+  }
+
+  base::HistogramTester histogram_tester_;
+
+ private:
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;
   signin::IdentityTestEnvironment identity_test_env_;
-  base::HistogramTester histogram_tester_;
-  raw_ptr<FakePlusAddressService> fake_plus_address_service_;
-  base::SimpleTestClock test_clock_;
+  raw_ptr<FakePlusAddressService> fake_plus_address_service_ = nullptr;
 };
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
@@ -102,13 +111,11 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
-  controller->SetClockForTesting(&test_clock_);
   base::test::TestFuture<const std::string&> future;
-  test_clock_.SetNow(kStartTime);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
-  test_clock_.SetNow(kStartTime + kDuration);
+  FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -135,14 +142,12 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
-  controller->SetClockForTesting(&test_clock_);
   base::test::TestFuture<const std::string&> future;
-  test_clock_.SetNow(kStartTime);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
   controller->OnRefreshClicked();
-  test_clock_.SetNow(kStartTime + kDuration);
+  FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -169,17 +174,13 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
-  controller->SetClockForTesting(&test_clock_);
   base::test::TestFuture<const std::string&> future;
-  test_clock_.SetNow(kStartTime);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
 
-  fake_plus_address_service_->set_should_fail_to_confirm(true);
-
-  test_clock_.SetNow(kStartTime + kDuration);
-
+  plus_address_service().set_should_fail_to_confirm(true);
+  FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_FALSE(future.IsReady());
 
@@ -214,18 +215,14 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
-  controller->SetClockForTesting(&test_clock_);
   base::test::TestFuture<const std::string&> future;
 
-  fake_plus_address_service_->set_should_fail_to_reserve(true);
+  plus_address_service().set_should_fail_to_reserve(true);
 
-  test_clock_.SetNow(kStartTime);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
-
-  test_clock_.SetNow(kStartTime + kDuration);
-
+  FastForwardBy(kDuration);
   controller->OnCanceled();
 
   // Ensure that plus address can be canceled after erroneous reserve event and
@@ -275,14 +272,12 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
-  controller->SetClockForTesting(&test_clock_);
 
   base::test::TestFuture<const std::string&> future;
-  test_clock_.SetNow(kStartTime);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
-  test_clock_.SetNow(kStartTime + kDuration);
+  FastForwardBy(kDuration);
   controller->OnCanceled();
   EXPECT_FALSE(future.IsReady());
   EXPECT_THAT(
@@ -310,23 +305,20 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   PlusAddressCreationControllerAndroid* controller =
       PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
-  controller->SetClockForTesting(&test_clock_);
 
   // Setup fake service behavior.
   base::test::TestFuture<const PlusProfileOrError&> confirm_future;
-  fake_plus_address_service_->set_is_confirmed(true);
-  fake_plus_address_service_->set_confirm_callback(
-      confirm_future.GetCallback());
+  plus_address_service().set_is_confirmed(true);
+  plus_address_service().set_confirm_callback(confirm_future.GetCallback());
 
   base::test::TestFuture<const std::string&> autofill_future;
-  test_clock_.SetNow(kStartTime);
   controller->OfferCreation(
       url::Origin::Create(GURL("https://kirubelwashere.example")),
       autofill_future.GetCallback());
   ASSERT_FALSE(autofill_future.IsReady());
 
-  test_clock_.SetNow(kStartTime + kDuration);
   // Confirmation should fill the field, but not call ConfirmPlusAddress.
+  FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(autofill_future.IsReady());
   EXPECT_FALSE(confirm_future.IsReady());

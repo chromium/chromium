@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/time/default_clock.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
@@ -48,9 +47,6 @@ class PlusAddressCreationControllerAndroid
   // Validate storage and clearing of `plus_profile_`.
   std::optional<PlusProfile> get_plus_profile_for_testing();
 
-  // For setting custom `clock_` during test.
-  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-
  private:
   // WebContentsUserData:
   explicit PlusAddressCreationControllerAndroid(
@@ -80,9 +76,8 @@ class PlusAddressCreationControllerAndroid
   void RecordModalShownDuration(
       metrics::PlusAddressModalCompletionStatus status);
 
-  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   // This is set on `OfferCreation`.
-  std::optional<base::Time> modal_shown_time_;
+  std::optional<base::TimeTicks> modal_shown_time_;
   std::optional<metrics::PlusAddressModalCompletionStatus> modal_error_status_;
   // The number of responses from calls to reserve a plus address that a user
   // has made. This equals 1 + number of refreshes.
