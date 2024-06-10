@@ -476,7 +476,7 @@ class AutofillClient {
 #endif
 
   // Causes the Autofill settings UI to be shown.
-  virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
+  virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;
 
   // Gets or creates a payments autofill mandatory re-auth manager. This will be
   // used to handle payments mandatory re-auth related flows.

@@ -183,7 +183,10 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
-    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kClearForm:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
@@ -522,7 +525,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
@@ -585,15 +591,18 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kScanCreditCard:
       DidAcceptPaymentsSuggestion(suggestion, position);
       break;
-    case SuggestionType::kAutofillOptions: {
-      // User selected 'Autofill Options'.
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress: {
       const FillingProduct main_filling_product = GetMainFillingProduct();
       CHECK(main_filling_product == FillingProduct::kAddress ||
             main_filling_product == FillingProduct::kPlusAddresses ||
             main_filling_product == FillingProduct::kCreditCard ||
             main_filling_product == FillingProduct::kIban);
+      // TODO(crubg.com/40274514): Remove recording this metric.
       autofill_metrics::LogAutofillSelectedManageEntry(main_filling_product);
-      manager_->client().ShowAutofillSettings(main_filling_product);
+      manager_->client().ShowAutofillSettings(suggestion.type);
       break;
     }
     case SuggestionType::kClearForm:
@@ -748,7 +757,10 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:

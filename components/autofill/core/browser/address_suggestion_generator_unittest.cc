@@ -103,7 +103,7 @@ Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
 
 Matcher<Suggestion> EqualsManageAddressesSuggestion() {
   return EqualsSuggestion(
-      SuggestionType::kAutofillOptions,
+      SuggestionType::kManageAddress,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
       Suggestion::Icon::kSettings);
 }
@@ -1952,11 +1952,11 @@ TEST_F(AddressSuggestionGeneratorTest,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
 
   // There should be one `SuggestionType::kDevtoolsTestAddresses`, one
-  // `SuggestionType::kSeparator` and one `SuggestionType::kAutofillOptions`.
+  // `SuggestionType::kSeparator` and one `SuggestionType::kManageAddress`.
   ASSERT_EQ(suggestions.size(), 3u);
   EXPECT_EQ(suggestions[0].type, SuggestionType::kDevtoolsTestAddresses);
   EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
-  EXPECT_EQ(suggestions[2].type, SuggestionType::kAutofillOptions);
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAddress);
 
   EXPECT_EQ(suggestions[0].main_text.value, u"Devtools");
   EXPECT_THAT(suggestions[0], EqualLabels({{u"Address test data"}}));

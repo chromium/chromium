@@ -253,7 +253,7 @@ class TestAutofillClientTemplate : public T {
   }
 #endif
 
-  void ShowAutofillSettings(FillingProduct main_filling_product) override {}
+  void ShowAutofillSettings(SuggestionType suggestion_type) override {}
 
   payments::MockMandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager() override {

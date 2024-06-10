@@ -84,7 +84,10 @@ const std::vector<SuggestionType> kClickableSuggestionTypes{
     SuggestionType::kAutocompleteEntry,
     SuggestionType::kPasswordEntry,
     SuggestionType::kClearForm,
-    SuggestionType::kAutofillOptions,
+    SuggestionType::kManageAddress,
+    SuggestionType::kManageCreditCard,
+    SuggestionType::kManageIban,
+    SuggestionType::kManagePlusAddress,
     SuggestionType::kDatalistEntry,
     SuggestionType::kScanCreditCard,
     SuggestionType::kAllSavedPasswordsEntry,
@@ -334,7 +337,7 @@ TEST_F(PopupViewViewsTest, ShowHideTest) {
 TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
   CreateAndShowView({SuggestionType::kAutocompleteEntry,
                      SuggestionType::kSeparator,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
 
   const int kSingleItemPopupHeight = view().GetPreferredSize().height();
   const int kElementY = 10;
@@ -358,7 +361,7 @@ TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
   CreateAndShowView(
       {SuggestionType::kAutocompleteEntry, SuggestionType::kAutocompleteEntry,
        SuggestionType::kAutocompleteEntry, SuggestionType::kSeparator,
-       SuggestionType::kAutofillOptions});
+       SuggestionType::kManageAddress});
   EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 100, 35}));
   EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds(
       {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
@@ -378,7 +381,7 @@ TEST_F(PopupViewViewsTest, AccessibilitySelectedEvent) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kAutocompleteEntry,
                      SuggestionType::kSeparator,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
 
   // Checks that a selection event is not sent when the view's |is_selected_|
   // member does not change.
@@ -404,7 +407,7 @@ TEST_F(PopupViewViewsTest, AccessibilitySelectedEvent) {
 TEST_F(PopupViewViewsTest, AccessibilityTest) {
   CreateAndShowView({SuggestionType::kDatalistEntry, SuggestionType::kSeparator,
                      SuggestionType::kAutocompleteEntry,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
 
   // Select first item.
   GetPopupRowViewAt(0).SetSelectedCell(PopupRowView::CellType::kContent);
@@ -684,7 +687,7 @@ TEST_F(PopupViewViewsTest, PageUpDownForSelectableCells) {
 
 TEST_F(PopupViewViewsTest, MovingSelectionSkipsSeparator) {
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
   view().SetSelectedCell(CellIndex{0u, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
 
@@ -744,7 +747,7 @@ class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
  public:
   void SelectItem(size_t index) {
     CreateAndShowView(
-        {SuggestionType::kAddressEntry, SuggestionType::kAutofillOptions});
+        {SuggestionType::kAddressEntry, SuggestionType::kManageAddress});
     // Select the `index`th item.
     view().SetSelectedCell(CellIndex{index, CellType::kContent},
                            PopupCellSelectionSource::kNonUserInput);
@@ -784,13 +787,13 @@ TEST_F(PopupViewViewsTestKeyboard, NoFillOnTabPressedWithModifiers) {
 TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
   // Set up the popup and select the options cell.
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
   view().SetSelectedCell(CellIndex{2u, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
   EXPECT_EQ(view().GetSelectedCell(),
             std::make_optional<CellIndex>(2u, CellType::kContent));
 
-  // Because the selected line is SuggestionType::kAutofillOptions, we expect
+  // Because the selected line is `SuggestionType::kManageAddress`, we expect
   // that the tab key does not trigger anything.
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   SimulateKeyPress(ui::VKEY_TAB);
@@ -800,7 +803,7 @@ TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
 // when we press tab before a line is selected.
 TEST_F(PopupViewViewsTest, TabBeforeSelectingALine) {
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
   EXPECT_FALSE(view().GetSelectedCell().has_value());
 
   // The following should not crash:
@@ -810,7 +813,7 @@ TEST_F(PopupViewViewsTest, TabBeforeSelectingALine) {
 TEST_F(PopupViewViewsTest, RemoveLine) {
   CreateAndShowView({SuggestionType::kAddressEntry,
                      SuggestionType::kAddressEntry,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
 
   // If no cell is selected, pressing delete has no effect.
   EXPECT_FALSE(view().GetSelectedCell().has_value());
@@ -837,7 +840,7 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
 TEST_F(PopupViewViewsTest, RemoveAutofillInvokesController) {
   CreateAndShowView({SuggestionType::kAddressEntry,
                      SuggestionType::kAddressEntry,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
 
   view().SetSelectedCell(CellIndex{1u, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
@@ -1086,7 +1089,7 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
 
 TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
-                     SuggestionType::kAutofillOptions});
+                     SuggestionType::kManageAddress});
   UpdateSuggestions({SuggestionType::kAddressEntry});
 }
 

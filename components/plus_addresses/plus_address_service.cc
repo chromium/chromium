@@ -238,7 +238,7 @@ std::optional<Suggestion> PlusAddressService::GetManagePlusAddressSuggestion()
   }
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
-      SuggestionType::kAutofillOptions);
+      SuggestionType::kManagePlusAddress);
   suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
   return suggestion;
 }

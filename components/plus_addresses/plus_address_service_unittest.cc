@@ -1381,7 +1381,7 @@ TEST_F(PlusAddressSuggestionsTest,
   base::test::ScopedFeatureList feature_list(features::kPlusAddressUIRedesign);
   EXPECT_THAT(service().GetManagePlusAddressSuggestion(),
               Optional(EqualsSuggestion(
-                  SuggestionType::kAutofillOptions,
+                  SuggestionType::kManagePlusAddress,
                   l10n_util::GetStringUTF16(
                       IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
                   Suggestion::Icon::kGoogleMonochrome)));

@@ -56,7 +56,9 @@ constexpr int kCloseIconSize = 16;
 constexpr auto kPopupItemTypesUsingLeadingIcons =
     base::MakeFixedFlatSet<SuggestionType>(
         {SuggestionType::kClearForm, SuggestionType::kShowAccountCards,
-         SuggestionType::kAutofillOptions, SuggestionType::kEditAddressProfile,
+         SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
+         SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
+         SuggestionType::kEditAddressProfile,
          SuggestionType::kDeleteAddressProfile,
          SuggestionType::kAllSavedPasswordsEntry,
          SuggestionType::kFillEverythingFromAddressProfile,

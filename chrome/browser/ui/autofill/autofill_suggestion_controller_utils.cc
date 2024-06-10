@@ -35,7 +35,10 @@ bool IsAcceptableSuggestionType(SuggestionType id) {
 bool IsFooterSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAllSavedPasswordsEntry:
-    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kClearForm:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:

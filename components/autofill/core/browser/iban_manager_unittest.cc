@@ -123,7 +123,7 @@ class IbanManagerTest : public testing::Test {
   Suggestion SetUpFooterManagePaymentMethods() {
     Suggestion footer_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-    footer_suggestion.type = SuggestionType::kAutofillOptions;
+    footer_suggestion.type = SuggestionType::kManageIban;
     footer_suggestion.icon = Suggestion::Icon::kSettings;
     return footer_suggestion;
   }

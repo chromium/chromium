@@ -160,7 +160,10 @@ class KeyboardAccessoryMediator
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
             case SuggestionType.SHOW_ACCOUNT_CARDS:
-            case SuggestionType.AUTOFILL_OPTIONS:
+            case SuggestionType.MANAGE_ADDRESS:
+            case SuggestionType.MANAGE_CREDIT_CARD:
+            case SuggestionType.MANAGE_IBAN:
+            case SuggestionType.MANAGE_PLUS_ADDRESS:
                 return false;
             case SuggestionType.AUTOCOMPLETE_ENTRY:
             case SuggestionType.PASSWORD_ENTRY:

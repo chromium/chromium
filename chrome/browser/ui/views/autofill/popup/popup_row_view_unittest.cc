@@ -543,7 +543,7 @@ struct PosInSetTestdata {
 const PosInSetTestdata kPosInSetTestcases[] = {
     PosInSetTestdata{
         .types = {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
-                  SuggestionType::kSeparator, SuggestionType::kAutofillOptions},
+                  SuggestionType::kSeparator, SuggestionType::kManageAddress},
         .line_number = 1,
         .set_size = 3,
         .set_index = 2,
@@ -559,7 +559,7 @@ const PosInSetTestdata kPosInSetTestcases[] = {
     },
     PosInSetTestdata{
         .types = {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
-                  SuggestionType::kSeparator, SuggestionType::kAutofillOptions},
+                  SuggestionType::kSeparator, SuggestionType::kManageAddress},
         .line_number = 3,
         .set_size = 3,
         .set_index = 3,

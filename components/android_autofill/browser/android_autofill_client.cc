@@ -151,7 +151,7 @@ translate::TranslateDriver* AndroidAutofillClient::GetTranslateDriver() {
 }
 
 void AndroidAutofillClient::ShowAutofillSettings(
-    autofill::FillingProduct main_filling_product) {
+    autofill::SuggestionType suggestion_type) {
   NOTIMPLEMENTED();
 }
 

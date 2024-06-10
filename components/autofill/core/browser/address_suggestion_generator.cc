@@ -1204,7 +1204,7 @@ Suggestion AddressSuggestionGenerator::CreateSeparator() {
 Suggestion AddressSuggestionGenerator::CreateManageAddressesEntry() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
-      SuggestionType::kAutofillOptions);
+      SuggestionType::kManageAddress);
   suggestion.icon = Suggestion::Icon::kSettings;
   return suggestion;
 }

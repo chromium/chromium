@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -288,7 +289,7 @@ void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
 }
 
 void TouchToFillDelegateAndroidImpl::ShowPaymentMethodSettings() {
-  manager_->client().ShowAutofillSettings(FillingProduct::kCreditCard);
+  manager_->client().ShowAutofillSettings(SuggestionType::kManageCreditCard);
 }
 
 void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(

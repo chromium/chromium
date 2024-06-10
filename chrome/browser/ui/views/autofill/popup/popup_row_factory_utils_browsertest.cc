@@ -64,7 +64,7 @@ const Suggestion kSuggestions[] = {
                "Minor text",
                "label",
                Suggestion::Icon::kSettings,
-               SuggestionType::kAutofillOptions),
+               SuggestionType::kManageAddress),
     Suggestion(u"Autocomplete", SuggestionType::kAutocompleteEntry),
     Suggestion("Compose",
                "Minor text",

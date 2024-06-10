@@ -191,7 +191,7 @@ translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
 }
 
 void WebViewAutofillClientIOS::ShowAutofillSettings(
-    FillingProduct main_filling_product) {
+    SuggestionType suggestion_type) {
   NOTREACHED_IN_MIGRATION();
 }
 

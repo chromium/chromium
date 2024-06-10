@@ -30,8 +30,14 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kEditAddressProfile";
     case SuggestionType::kDeleteAddressProfile:
       return "kDeleteAddressProfile";
-    case SuggestionType::kAutofillOptions:
-      return "kAutofillOptions";
+    case SuggestionType::kManageAddress:
+      return "kManageAddress";
+    case SuggestionType::kManageCreditCard:
+      return "kManageCreditCard";
+    case SuggestionType::kManageIban:
+      return "kManageIban";
+    case SuggestionType::kManagePlusAddress:
+      return "kManagePlusAddress";
     case SuggestionType::kComposeResumeNudge:
       return "kComposeResumeNudge";
     case SuggestionType::kComposeDisable:

@@ -40,7 +40,10 @@ enum class SuggestionType {
   kAddressFieldByFieldFilling,
   kEditAddressProfile,
   kDeleteAddressProfile,
-  kAutofillOptions,
+  kManageAddress,
+  kManageCreditCard,
+  kManageIban,
+  kManagePlusAddress,
 
   // Compose popup suggestion shown when no Compose session exists.
   kComposeProactiveNudge,

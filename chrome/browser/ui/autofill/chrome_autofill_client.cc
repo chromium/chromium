@@ -453,34 +453,26 @@ ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
 }
 
 void ChromeAutofillClient::ShowAutofillSettings(
-    FillingProduct main_filling_product) {
-  DCHECK(main_filling_product != FillingProduct::kPassword);
+    SuggestionType suggestion_type) {
 #if BUILDFLAG(IS_ANDROID)
-  switch (main_filling_product) {
-    case FillingProduct::kAddress:
+  switch (suggestion_type) {
+    case SuggestionType::kManageAddress:
       ShowAutofillProfileSettings(web_contents());
       return;
-    case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
+    case SuggestionType::kManageCreditCard:
       ShowAutofillCreditCardSettings(web_contents());
       return;
-    case FillingProduct::kAutocomplete:
-    case FillingProduct::kCompose:
-    case FillingProduct::kIban:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kPassword:
-    case FillingProduct::kPlusAddresses:
-    case FillingProduct::kNone:
+    default:
       NOTREACHED_IN_MIGRATION();
   }
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
-    switch (main_filling_product) {
-      case FillingProduct::kAddress:
+    switch (suggestion_type) {
+      case SuggestionType::kManageAddress:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
-      case FillingProduct::kPlusAddresses:
+      case SuggestionType::kManagePlusAddress:
         CHECK(base::FeatureList::IsEnabled(
             plus_addresses::features::kPlusAddressesEnabled));
         CHECK(base::FeatureList::IsEnabled(
@@ -489,16 +481,11 @@ void ChromeAutofillClient::ShowAutofillSettings(
             browser,
             GURL(plus_addresses::features::kPlusAddressManagementUrl.Get()));
         return;
-      case FillingProduct::kCreditCard:
-      case FillingProduct::kIban:
-      case FillingProduct::kStandaloneCvc:
+      case SuggestionType::kManageCreditCard:
+      case SuggestionType::kManageIban:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
-      case FillingProduct::kAutocomplete:
-      case FillingProduct::kCompose:
-      case FillingProduct::kMerchantPromoCode:
-      case FillingProduct::kPassword:
-      case FillingProduct::kNone:
+      default:
         NOTREACHED_IN_MIGRATION();
     }
   }

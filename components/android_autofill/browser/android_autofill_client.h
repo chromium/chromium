@@ -27,6 +27,7 @@ class AutofillSuggestionDelegate;
 class CreditCard;
 class PersonalDataManager;
 class StrikeDatabase;
+enum class SuggestionType;
 }  // namespace autofill
 
 namespace content {
@@ -94,8 +95,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(
-      autofill::FillingProduct main_filling_product) override;
+  void ShowAutofillSettings(autofill::SuggestionType suggestion_type) override;
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,

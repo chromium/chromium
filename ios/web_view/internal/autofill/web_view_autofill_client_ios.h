@@ -26,6 +26,8 @@
 
 namespace autofill {
 
+enum class SuggestionType;
+
 namespace payments {
 class IOSWebViewPaymentsAutofillClient;
 }  // namespace payments
@@ -73,7 +75,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(FillingProduct main_filling_product) override;
+  void ShowAutofillSettings(SuggestionType suggestion_type) override;
   void ConfirmSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,

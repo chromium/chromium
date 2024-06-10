@@ -1687,7 +1687,7 @@ TEST_F(BrowserAutofillManagerTest,
           return suggestion.type == SuggestionType::kAddressEntry
                      ? suggestion.is_acceptable
                      : (suggestion.type == SuggestionType::kSeparator ||
-                        suggestion.type == SuggestionType::kAutofillOptions);
+                        suggestion.type == SuggestionType::kManageAddress);
         }));
     // Expect 3 credit card suggestions + separator + footer because the fixture
     // created 3 credit cards during setup (see `CreateTestCreditCards()`).
@@ -1701,7 +1701,7 @@ TEST_F(BrowserAutofillManagerTest,
           return suggestion.type == SuggestionType::kCreditCardEntry
                      ? !suggestion.is_acceptable
                      : (suggestion.type == SuggestionType::kSeparator ||
-                        suggestion.type == SuggestionType::kAutofillOptions);
+                        suggestion.type == SuggestionType::kManageCreditCard);
         }));
   }
 }
@@ -2462,7 +2462,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2484,7 +2484,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2505,7 +2505,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2527,7 +2527,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2557,7 +2557,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       field.global_id(),
       {GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2580,7 +2580,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       field.global_id(),
       {GetCardSuggestion(kVisaCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2625,7 +2625,7 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
                   Suggestion::Icon::kCardMasterCard,
                   SuggestionType::kCreditCardEntry),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2680,7 +2680,7 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
                   Suggestion::Icon::kCardMasterCard,
                   SuggestionType::kCreditCardEntry),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2733,7 +2733,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2755,7 +2755,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2786,7 +2786,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2875,7 +2875,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[1].global_id(),
       {mastercard_suggestion, amex_suggestion, visa_suggestion,
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2933,7 +2933,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                     Suggestion::Icon::kCardVisa,
                     SuggestionType::kCreditCardEntry),
          PaymentsSuggestionGenerator::CreateSeparator(),
-         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
              /*with_gpay_logo=*/false)});
   }
 
@@ -2949,7 +2949,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                     Suggestion::Icon::kCardMasterCard,
                     SuggestionType::kCreditCardEntry),
          PaymentsSuggestionGenerator::CreateSeparator(),
-         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
              /*with_gpay_logo=*/false)});
   }
 
@@ -2965,7 +2965,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                     Suggestion::Icon::kCardVisa,
                     SuggestionType::kCreditCardEntry),
          PaymentsSuggestionGenerator::CreateSeparator(),
-         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
              /*with_gpay_logo=*/false)});
   }
 
@@ -2982,7 +2982,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                     Suggestion::Icon::kCardAmericanExpress,
                     SuggestionType::kCreditCardEntry),
          PaymentsSuggestionGenerator::CreateSeparator(),
-         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
              /*with_gpay_logo=*/false)});
   }
 }
@@ -3031,7 +3031,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 
   // Query by cardholder name field.
@@ -3045,7 +3045,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                   Suggestion::Icon::kCardAmericanExpress,
                   SuggestionType::kCreditCardEntry),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -3078,7 +3078,7 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -5773,7 +5773,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[3].global_id(),
       {GetCardSuggestion(kVisaCard),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -6100,7 +6100,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       {expected_virtual_card_number_suggestion,
        expected_credit_card_number_suggestion,
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/true)});
 
   // Non card number field (cardholder name field).
@@ -6117,7 +6117,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       {expected_virtual_card_name_suggestion,
        expected_credit_card_name_suggestion,
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/true)});
 }
 
@@ -6160,7 +6160,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields[1].global_id(),
       {virtual_card_number_suggestion, credit_card_number_suggestion,
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/true)});
 
   // Non card number field (cardholder name field).
@@ -6176,7 +6176,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields[0].global_id(),
       {virtual_card_name_suggestion, credit_card_name_suggestion,
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/true)});
 }
 
@@ -7635,7 +7635,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
       form.fields[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard, expected_nickname_),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/true)});
 }
 
@@ -7669,7 +7669,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
       {GetCardSuggestion(kAmericanExpressCard, local_nickname_),
        GetCardSuggestion(kAmericanExpressCard, server_nickname_),
        PaymentsSuggestionGenerator::CreateSeparator(),
-       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -8072,7 +8072,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   EXPECT_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion)
-      .WillOnce(Return(Suggestion(SuggestionType::kAutofillOptions)));
+      .WillOnce(Return(Suggestion(SuggestionType::kManagePlusAddress)));
   EXPECT_CALL(
       plus_address_delegate(),
       OnPlusAddressSuggestionShown(
@@ -8095,7 +8095,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       external_delegate()->suggestions(),
       ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
                   EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kAutofillOptions)));
+                  EqualsSuggestion(SuggestionType::kManagePlusAddress)));
 }
 
 // Tests that a manage plus address suggestion is not added if there are no plus

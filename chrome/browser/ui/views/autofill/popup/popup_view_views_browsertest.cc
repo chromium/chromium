@@ -108,7 +108,7 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   suggestions.emplace_back(SuggestionType::kSeparator);
 
   Suggestion settings(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES));
-  settings.type = SuggestionType::kAutofillOptions;
+  settings.type = SuggestionType::kManageAddress;
   settings.icon = Suggestion::Icon::kSettings;
   suggestions.push_back(std::move(settings));
 
@@ -127,7 +127,7 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
 
   Suggestion settings(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  settings.type = SuggestionType::kAutofillOptions;
+  settings.type = SuggestionType::kManageCreditCard;
   settings.icon = Suggestion::Icon::kSettings;
   suggestions.push_back(std::move(settings));
 
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        NoScrollingForNonExcessiveHeightRootPopup) {
   controller().set_suggestions(
       {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
-       SuggestionType::kSeparator, SuggestionType::kAutofillOptions});
+       SuggestionType::kSeparator, SuggestionType::kManageAddress});
   ShowAndVerifyUi(/*popup_has_parent=*/false);
 }
 
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        NoScrollingForNonExcessiveHeightNonRootPopup) {
   controller().set_suggestions(
       {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
-       SuggestionType::kSeparator, SuggestionType::kAutofillOptions});
+       SuggestionType::kSeparator, SuggestionType::kManageAddress});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   // Create many suggestions that don't fit the height and activate scrolling.
   std::vector<SuggestionType> suggestions(20, SuggestionType::kAddressEntry);
   suggestions.push_back(SuggestionType::kSeparator);
-  suggestions.push_back(SuggestionType::kAutofillOptions);
+  suggestions.push_back(SuggestionType::kManageAddress);
   controller().set_suggestions(std::move(suggestions));
   ShowAndVerifyUi();
 }
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   // Create many suggestions that don't fit the height and activate scrolling.
   std::vector<SuggestionType> suggestions(20, SuggestionType::kAddressEntry);
   suggestions.push_back(SuggestionType::kSeparator);
-  suggestions.push_back(SuggestionType::kAutofillOptions);
+  suggestions.push_back(SuggestionType::kManageAddress);
   controller().set_suggestions(std::move(suggestions));
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        SearchBarViewNoSuggestionsFound) {
   // This set imitates empty search result, it contains footer suggestions only.
   controller().set_suggestions(
-      {SuggestionType::kSeparator, SuggestionType::kAutofillOptions});
+      {SuggestionType::kSeparator, SuggestionType::kManageAddress});
   ON_CALL(controller(), HasFilteredOutSuggestions).WillByDefault(Return(true));
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,

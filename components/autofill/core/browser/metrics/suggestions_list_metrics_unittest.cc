@@ -48,15 +48,19 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields.front().global_id());
-    histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.Address", 2,
+    // There are 3 suggestions: 2 address profiles and one "manage addresses"
+    // suggestion.
+    histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.Address", 3,
                                         1);
   }
   {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form,
                                                 form.fields.back().global_id());
+    // There are 2 suggestions: 1 card and one "manage payment methods"
+    // suggestion.
     histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.CreditCard",
-                                        1, 1);
+                                        2, 1);
   }
 }
 

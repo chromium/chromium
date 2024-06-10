@@ -84,7 +84,19 @@ class PaymentsSuggestionGenerator {
   // Generates a footer suggestion "Manage payment methods..." menu item which
   // will redirect to Chrome payment settings page. `with_gpay_logo` is used to
   // conditionally add GPay logo icon to the manage payment methods suggestion.
-  static Suggestion CreateManagePaymentMethodsEntry(bool with_gpay_logo);
+  //
+  // The difference between `CreateManageCreditCardsEntry()` and
+  // `CreateManageIbansEntry()` is that they use a different `SuggestionType`.
+  // This distinction is needed for metrics recording.
+  static Suggestion CreateManageCreditCardsEntry(bool with_gpay_logo);
+
+  // Generates a footer suggestion "Manage payment methods..." menu item which
+  // will redirect to Chrome payment settings page.
+  //
+  // The difference between `CreateManageCreditCardsEntry()` and
+  // `CreateManageIbansEntry()` is that they use a different `SuggestionType`.
+  // This distinction is needed for metrics recording.
+  static Suggestion CreateManageIbansEntry();
 
   // Generate "Clear form" suggestion.
   // TODO(b/41484171): Remove.

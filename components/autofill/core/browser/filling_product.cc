@@ -50,16 +50,19 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kManageAddress:
       return FillingProduct::kAddress;
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kShowAccountCards:
+    case SuggestionType::kManageCreditCard:
       return FillingProduct::kCreditCard;
     case SuggestionType::kMerchantPromoCodeEntry:
       return FillingProduct::kMerchantPromoCode;
     case SuggestionType::kIbanEntry:
+    case SuggestionType::kManageIban:
       return FillingProduct::kIban;
     case SuggestionType::kAutocompleteEntry:
       return FillingProduct::kAutocomplete;
@@ -86,8 +89,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kCompose;
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kManagePlusAddress:
       return FillingProduct::kPlusAddresses;
-    case SuggestionType::kAutofillOptions:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:

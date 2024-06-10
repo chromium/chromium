@@ -248,6 +248,29 @@ bool IsCreditCardExpiryData(FieldType trigger_field_type) {
   }
 }
 
+Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
+                                           bool with_gpay_logo) {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+      suggestion_type);
+  // On Android and Desktop, Google Pay branding is shown along with Settings.
+  // So Google Pay Icon is just attached to an existing menu item.
+  if (with_gpay_logo) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    suggestion.icon = Suggestion::Icon::kGooglePay;
+#else
+    suggestion.icon = Suggestion::Icon::kSettings;
+    suggestion.trailing_icon =
+        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+            ? Suggestion::Icon::kGooglePayDark
+            : Suggestion::Icon::kGooglePay;
+#endif
+  } else {
+    suggestion.icon = Suggestion::Icon::kSettings;
+  }
+  return suggestion;
+}
+
 }  // namespace
 
 PaymentsSuggestionGenerator::PaymentsSuggestionGenerator(
@@ -422,27 +445,16 @@ Suggestion PaymentsSuggestionGenerator::CreateSeparator() {
 }
 
 // static
-Suggestion PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
+Suggestion PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
     bool with_gpay_logo) {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
-      SuggestionType::kAutofillOptions);
-  // On Android and Desktop, Google Pay branding is shown along with Settings.
-  // So Google Pay Icon is just attached to an existing menu item.
-  if (with_gpay_logo) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestion.icon = Suggestion::Icon::kGooglePay;
-#else
-    suggestion.icon = Suggestion::Icon::kSettings;
-    suggestion.trailing_icon =
-        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-            ? Suggestion::Icon::kGooglePayDark
-            : Suggestion::Icon::kGooglePay;
-#endif
-  } else {
-    suggestion.icon = Suggestion::Icon::kSettings;
-  }
-  return suggestion;
+  return CreateManagePaymentMethodsEntry(SuggestionType::kManageCreditCard,
+                                         with_gpay_logo);
+}
+
+// static
+Suggestion PaymentsSuggestionGenerator::CreateManageIbansEntry() {
+  return CreateManagePaymentMethodsEntry(SuggestionType::kManageIban,
+                                         /*with_gpay_logo=*/false);
 }
 
 Suggestion PaymentsSuggestionGenerator::CreateClearFormSuggestion() {
@@ -547,8 +559,7 @@ std::vector<Suggestion> PaymentsSuggestionGenerator::GetSuggestionsForIbans(
   }
 
   suggestions.push_back(CreateSeparator());
-  suggestions.push_back(
-      CreateManagePaymentMethodsEntry(/*with_gpay_logo=*/false));
+  suggestions.push_back(CreateManageIbansEntry());
   return suggestions;
 }
 
@@ -1110,7 +1121,7 @@ PaymentsSuggestionGenerator::GetCreditCardFooterSuggestions(
     footer_suggestions.push_back(CreateClearFormSuggestion());
   }
 
-  footer_suggestions.push_back(CreateManagePaymentMethodsEntry(with_gpay_logo));
+  footer_suggestions.push_back(CreateManageCreditCardsEntry(with_gpay_logo));
 
   return footer_suggestions;
 }

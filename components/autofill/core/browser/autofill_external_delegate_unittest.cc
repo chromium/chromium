@@ -440,7 +440,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
                                       u"address suggestion"),
-       test::CreateAutofillSuggestion(SuggestionType::kAutofillOptions,
+       test::CreateAutofillSuggestion(SuggestionType::kManageAddress,
                                       u"manage addresses")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kAddress);
@@ -450,7 +450,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kCreateNewPlusAddress,
                                       u"create new plus address"),
-       test::CreateAutofillSuggestion(SuggestionType::kAutofillOptions,
+       test::CreateAutofillSuggestion(SuggestionType::kManagePlusAddress,
                                       u"manage address methods")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kPlusAddresses);
@@ -460,7 +460,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kFillExistingPlusAddress,
                                       u"fill existing plus address"),
-       test::CreateAutofillSuggestion(SuggestionType::kAutofillOptions,
+       test::CreateAutofillSuggestion(SuggestionType::kManagePlusAddress,
                                       u"manage address methods")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kPlusAddresses);
@@ -470,7 +470,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,
                                       u"credit card suggestion"),
-       test::CreateAutofillSuggestion(SuggestionType::kAutofillOptions,
+       test::CreateAutofillSuggestion(SuggestionType::kManageCreditCard,
                                       u"manage payment methods")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kCreditCard);

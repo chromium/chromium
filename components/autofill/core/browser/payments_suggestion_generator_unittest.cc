@@ -137,12 +137,12 @@ Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
 Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return EqualsSuggestion(
-      SuggestionType::kAutofillOptions,
+      SuggestionType::kManageCreditCard,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
       with_gpay_logo ? Suggestion::Icon::kGooglePay
                      : Suggestion::Icon::kSettings);
 #else
-  return AllOf(EqualsSuggestion(SuggestionType::kAutofillOptions,
+  return AllOf(EqualsSuggestion(SuggestionType::kManageCreditCard,
                                 l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
                                 Suggestion::Icon::kSettings),
@@ -1213,7 +1213,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetLocalIbanSuggestions) {
 
   EXPECT_EQ(iban_suggestions[5].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[5].type, SuggestionType::kAutofillOptions);
+  EXPECT_EQ(iban_suggestions[5].type, SuggestionType::kManageIban);
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, GetServerIbanSuggestions) {
@@ -1257,7 +1257,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetServerIbanSuggestions) {
 
   EXPECT_EQ(iban_suggestions[4].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kAutofillOptions);
+  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
@@ -1300,7 +1300,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
 
   EXPECT_EQ(iban_suggestions[4].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kAutofillOptions);
+  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,

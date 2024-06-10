@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -47,7 +48,7 @@ class MockAutofillClient : public TestAutofillClient {
               ScanCreditCard,
               (CreditCardScanCallback callback),
               (override));
-  MOCK_METHOD(void, ShowAutofillSettings, (FillingProduct), (override));
+  MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               ((base::WeakPtr<autofill::TouchToFillDelegate> delegate),
@@ -837,8 +838,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        ShowCreditCardSettingsIsCalled) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(autofill_client_,
-              ShowAutofillSettings(testing::Eq(FillingProduct::kCreditCard)));
+  EXPECT_CALL(
+      autofill_client_,
+      ShowAutofillSettings(testing::Eq(SuggestionType::kManageCreditCard)));
   touch_to_fill_delegate_->ShowPaymentMethodSettings();
 
   ASSERT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), true);
