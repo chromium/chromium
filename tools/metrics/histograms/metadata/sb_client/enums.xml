@@ -39,16 +39,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Disk error"/>
 </enum>
 
-<enum name="AsyncCheckTriggerForceRequestResult">
-  <int value="0" label="Classification is triggered"/>
-  <int value="1"
-      label="Classification is not triggered because the trigger models ping
-             is not skipped"/>
-  <int value="2"
-      label="Classification is not triggered because the URL is not forced by
-             real-time URL check"/>
-</enum>
-
 <enum name="BooleanForceRequest">
   <int value="0" label="No Force Request"/>
   <int value="1" label="Force CSD-P ping request"/>

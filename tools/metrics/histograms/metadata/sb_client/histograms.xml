@@ -614,20 +614,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SBClientPhishing.ClientSideDetection.AsyncCheckTriggerForceRequestResult"
-    enum="AsyncCheckTriggerForceRequestResult" expires_after="2024-12-06">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of async check triggering CSD-Phishing classification
-    forced by the request from real-time URL lookup. Recorded each time async
-    Safe Browsing check is completed (note: this only happens when the check
-    goes through async check tracker, which only happens if the Safe Browsing
-    check is slow).
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.ClientSideDetectionTypeRequest"
     enum="ClientSideDetectionType" expires_after="2025-01-23">
   <owner>andysjlim@chromium.org</owner>
