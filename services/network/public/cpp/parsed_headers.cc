@@ -83,7 +83,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
           clear_site_data_set.end()) {
     parsed_headers->client_hints_ignored_due_to_clear_site_data_header = true;
   }
-  if (!parsed_headers->client_hints_ignored_due_to_clear_site_data_header) {
+  if (!features::ShouldBlockAcceptClientHintsFor(url::Origin::Create(url)) &&
+      !parsed_headers->client_hints_ignored_due_to_clear_site_data_header) {
     std::string accept_ch;
     if (headers->GetNormalizedHeader("Accept-CH", &accept_ch)) {
       parsed_headers->accept_ch = ParseClientHintsHeader(accept_ch);

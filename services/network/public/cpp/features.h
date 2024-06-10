@@ -5,13 +5,24 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
-namespace network {
-namespace features {
+namespace url {
+class Origin;
+}  // namespace url
+
+namespace network::features {
+
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kBlockAcceptClientHints);
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<std::string> kBlockAcceptClientHintsBlockedSite;
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ShouldBlockAcceptClientHintsFor(const url::Origin& origin);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kNetworkErrorLogging);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReporting);
@@ -201,7 +212,6 @@ BASE_DECLARE_FEATURE(kNetworkContextPrefetch);
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders;
 
-}  // namespace features
-}  // namespace network
+}  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

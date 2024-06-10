@@ -6,14 +6,36 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "net/base/mime_sniffer.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network::features {
+
+// Enables the Accept-CH support disabler. If this feature is activated, Chrome
+// ignore Accept-CH response headers for a site that is specified in the
+// following kBlockAcceptClientHintsBlockedSite. This is used to compare Chrome
+// performance with a dedicated site.
+BASE_FEATURE(kBlockAcceptClientHints,
+             "BlockAcceptClientHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kBlockAcceptClientHintsBlockedSite{
+    &kBlockAcceptClientHints, /*name=*/"BlockedSite", /*default_value=*/""};
+
+bool ShouldBlockAcceptClientHintsFor(const url::Origin& origin) {
+  // Check if the Accept-CH support is disabled for a specified site.
+  static const bool block_accept_ch =
+      base::FeatureList::IsEnabled(features::kBlockAcceptClientHints);
+  static const base::NoDestructor<url::Origin> blocked_site(url::Origin::Create(
+      GURL(features::kBlockAcceptClientHintsBlockedSite.Get())));
+  return block_accept_ch && blocked_site->IsSameOriginWith(origin);
+}
 
 BASE_FEATURE(kNetworkErrorLogging,
              "NetworkErrorLogging",
