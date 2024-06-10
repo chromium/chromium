@@ -222,6 +222,10 @@ BASE_FEATURE(kTrackingProtectionReminder,
 const base::FeatureParam<bool> kTrackingProtectionIsSilentReminder{
     &kTrackingProtectionReminder, "is-silent-reminder", false};
 
+BASE_FEATURE(kPrivateStateTokensDevUI,
+             "PrivateStateTokensDevUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
              "PrivacySandboxActivityTypeStorage",
              base::FEATURE_ENABLED_BY_DEFAULT);

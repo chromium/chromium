@@ -7191,6 +7191,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "private-state-tokens-dev-ui",
+    "owners": [
+      "kmg@google.com",
+      "koilos@google.com",
+      "dylancutler@google.com"
+    ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "probabilistic-memory-saver",
     "owners": ["chrome-performance-ui-team@google.com"],
     "expiry_milestone": 125
