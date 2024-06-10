@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
 class AutocompleteProviderClient;
 class GURL;
@@ -102,6 +103,12 @@ class BaseSearchProvider : public AutocompleteProvider {
       omnibox::ActionInfo action_info,
       const TemplateURLRef& search_url,
       const TemplateURLRef::SearchTermsArgs& original_search_terms,
+      const SearchTermsData& search_terms_data);
+
+  static scoped_refptr<OmniboxAction> CreateAnswerAction(
+      omnibox::SuggestionEnhancement enhancement,
+      const TemplateURLRef& search_url,
+      TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data);
 
   // Returns whether the URL of the current page is eligible to be sent in any

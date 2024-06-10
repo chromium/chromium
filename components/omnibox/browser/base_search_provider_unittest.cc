@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
@@ -836,5 +837,66 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     }
     EXPECT_TRUE(found_matching_param_sequence)
         << "while evaluating case `" << test_case.test_name << '`';
+  }
+}
+
+TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
+  struct {
+    std::string query;
+    std::vector<std::pair<std::string, std::string>> query_cgi_params;
+    std::vector<std::string> possible_param_variations;
+  } test_cases[]{
+      // No additional params.
+      {/*query=*/"Alphabet Inc Class C compare", /*query_cgi_params=*/{},
+       /*possible_param_variations=*/{}},
+      // One additional param.
+      {/*query=*/"Alphabet Inc Class C financials",
+       /*query_cgi_params=*/{{"name", "value"}},
+       /*possible_param_variations=*/{"name=value"}},
+      // Multiple additional params.
+      {/*query=*/"About Alphabet Inc Class C",
+       /*query_cgi_params=*/{{"name1", "value1"}, {"name2", "value2"}},
+       /*possible_param_variations=*/
+       {"name1=value1&name2=value2", "name2=value2&name1=value1"}},
+  };
+  omnibox::RichAnswerTemplate answer_template;
+  for (const auto& test_case : test_cases) {
+    omnibox::SuggestionEnhancement* enhancement =
+        answer_template.mutable_enhancements()->add_enhancements();
+    enhancement->set_query(test_case.query);
+    for (const auto& param : test_case.query_cgi_params) {
+      enhancement->mutable_query_cgi_params()->insert(
+          {param.first, param.second});
+    }
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    SearchTermsData search_terms_data;
+    TemplateURLData template_url_data;
+    template_url_data.SetURL("https://www.google.com/search?q={searchTerms}");
+    auto template_url = std::make_unique<TemplateURL>(template_url_data);
+
+    auto action = BaseSearchProvider::CreateAnswerAction(
+        std::move(*enhancement), template_url->url_ref(), search_terms_args,
+        search_terms_data);
+
+    auto* answer_action = OmniboxAnswerAction::FromAction(action.get());
+    // Check that query is found in action's destination URL.
+    std::string query_formatted = test_case.query;
+    size_t index = query_formatted.find(" ");
+    while (index != std::string::npos) {
+      query_formatted.replace(index, 1, "+");
+      index = query_formatted.find(" ");
+    }
+    EXPECT_TRUE(answer_action->getUrl().spec().find(query_formatted) !=
+                std::string::npos);
+    // Ensure destination URL contains params. Checking the exact destintion URL
+    // of action is not easily possible as param order is not guaranteed.
+    bool found_matching_param_sequence =
+        test_case.possible_param_variations.empty();
+    for (const std::string& param_sequence :
+         test_case.possible_param_variations) {
+      found_matching_param_sequence |= answer_action->getUrl().spec().find(
+                                           param_sequence) != std::string::npos;
+    }
+    EXPECT_TRUE(found_matching_param_sequence);
   }
 }
