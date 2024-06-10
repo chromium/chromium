@@ -867,6 +867,22 @@
             ]
         }
     ],
+    "ArcExtendInputAnrTimeout": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcExtendInputAnrTimeout"
+                    ],
+                    "min_os_version": "15915.0.0"
+                }
+            ]
+        }
+    ],
     "ArcIgnoreHoverEventAnr": [
         {
             "platforms": [
