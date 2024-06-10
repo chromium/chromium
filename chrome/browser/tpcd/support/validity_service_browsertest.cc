@@ -650,7 +650,7 @@ class ValidityService1pTrialBrowserTest
 
     URLLoaderInterceptor::WriteResponse(
         base::StrCat({"HTTP/1.1 200 OK\n", "Content-type: text/html\n",
-                      "Origin-Trial: ", kTopLevelTrialToken, "\n", "\n"}),
+                      "Origin-Trial: ", k1pDeprecationTrialToken, "\n", "\n"}),
         ("<html><head><title>Trial enabled page with iframe</title></head>"
          "<body>"
          "<iframe id='test'></iframe>"

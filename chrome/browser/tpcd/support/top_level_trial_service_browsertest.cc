@@ -206,7 +206,7 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
             "Content-Type: text/html\n"
             "Origin-Trial: %s\n"
             "Location: %s\n",
-            kTopLevelTrialToken, kOtherTrialEnabledSite.spec().c_str())));
+            k1pDeprecationTrialToken, kOtherTrialEnabledSite.spec().c_str())));
     auto response = network::mojom::URLResponseHead::New();
     response->headers = info.headers;
     response->headers->GetMimeType(&response->mime_type);
@@ -221,24 +221,24 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
 
     if (host == kTrialEnabledDomain) {
       if (query == "subdomain_matching_token") {
-        return kTopLevelTrialSubdomainMatchingToken;
+        return k1pDeprecationTrialSubdomainMatchingToken;
       } else {
-        return kTopLevelTrialToken;
+        return k1pDeprecationTrialToken;
       }
     }
 
     if (host == kTrialEnabledSubdomain) {
       if (query == "etld_plus_1_token") {
-        return kTopLevelTrialSubdomainMatchingToken;
+        return k1pDeprecationTrialSubdomainMatchingToken;
       } else if (query == "subdomain_matching_token") {
-        return kSubdomainTopLevelTrialSubdomainMatchingToken;
+        return kSubdomain1pDeprecationTrialSubdomainMatchingToken;
       } else {
-        return kSubdomainTopLevelTrialToken;
+        return kSubdomain1pDeprecationTrialToken;
       }
     }
 
     if (host == kOtherTrialEnabledDomain) {
-      return kOtherDomainTopLevelTrialToken;
+      return kOtherDomain1pDeprecationTrialToken;
     }
 
     // The host isn't one of our trial-enabled domains, so return no token.
