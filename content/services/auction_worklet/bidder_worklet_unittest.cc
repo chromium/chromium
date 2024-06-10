@@ -1141,6 +1141,7 @@ class BidderWorkletMultiBidAndCookieDeprecationTest : public BidderWorkletTest {
 // should be no Mojo exception due to destroying the creation callback without
 // invoking it.
 TEST_F(BidderWorkletTest, PipeClosed) {
+  base::HistogramTester histogram_tester;
   auto bidder_worklet = CreateWorklet();
   GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   bidder_worklet.reset();
@@ -1149,6 +1150,13 @@ TEST_F(BidderWorkletTest, PipeClosed) {
   // This should not result in a Mojo crash.
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(bidder_worklets_.empty());
+
+  // These metrics should get recorded when a bidder worklet is destroyed.
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.BidderWorkletIsolateUsedHeapSizeKilobytes", 1);
 }
 
 TEST_F(BidderWorkletTest, NetworkError) {

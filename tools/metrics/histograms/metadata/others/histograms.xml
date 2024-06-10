@@ -504,6 +504,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes"
+    units="KB" expires_after="2024-12-01">
+  <owner>abigailkatcoff@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The total number of kilobytes v8 has allocated to the heap of the bidder
+    worklet isolate. This number should be greater than or equal to its
+    corresponding BidderWorkletIsolateUsedHeapSizeKilobytes. Recorded when the
+    worklet is destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.Auction.BidderWorkletIsolateUsedHeapSizeKilobytes"
+    units="KB" expires_after="2024-12-01">
+  <owner>abigailkatcoff@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of kilobytes used in the heap of the bidder worklet isolate. This
+    number should be less than or equal to its corresponding
+    BidderWorkletIsolateTotalHeapSizeKilobytes. Recorded when the worklet is
+    destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.BidFiltered" enum="Boolean"
     expires_after="2024-10-28">
   <owner>pauljensen@chromium.org</owner>
