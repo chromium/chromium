@@ -68,7 +68,7 @@ arguments passed to `ninja`).
 Some additional options you may wish to set by passing in `--args` to `gn gen`
 or running `gn args out/Default`:
 
-    # Googlers: Reclient is a distributed compiler service. Goma successor.
+    # Googlers: Reclient is a distributed compiler service.
     use_remoteexec = true
 
     is_component_build = true  # Links faster.
