@@ -470,4 +470,14 @@ TEST_F(ExtendedUpdatesControllerTest,
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
 }
 
+TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_DoesNotCrashForOTRProfiles) {
+  auto eol_info = MakeEligibleEolInfo();
+  Profile* otr_profile = profile_->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(), true);
+
+  controller()->OnEolInfo(otr_profile, eol_info);
+
+  EXPECT_TRUE(true);
+}
+
 }  // namespace ash
