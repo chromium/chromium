@@ -11,6 +11,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.SyncButtonClicked;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
@@ -78,22 +80,6 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int NUM_ENTRIES = 4;
     };
 
-    public @interface SyncButtonClicked {
-        // These values are persisted to logs. Entries should not be renumbered and
-        // numeric values should never be reused.
-        int SYNC_OPT_IN_EQUAL_WEIGHTED = 0;
-        int SYNC_CANCEL_EQUAL_WEIGHTED = 1;
-        int SYNC_SETTINGS_EQUAL_WEIGHTED = 2;
-        int SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 3;
-        int SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 4;
-        int SYNC_SETTINGS_NOT_EQUAL_WEIGHTED = 5;
-        int HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED = 6;
-        int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
-        int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
-        int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
-        int NUM_ENTRIES = 8;
-    };
-
     private static boolean sDisableHistorySyncOptInTimeoutForTesting;
 
     private final long mCreated = SystemClock.elapsedRealtime();
@@ -149,9 +135,14 @@ public class MinorModeHelper implements IdentityManager.Observer {
                 BUTTONS_SHOWN_HISTOGRAM_NAME, type, SyncButtonsType.NUM_ENTRIES);
     }
 
-    static void recordButtonClicked(@SyncButtonClicked int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                BUTTON_CLICKED_HISTOGRAM_NAME, type, SyncButtonClicked.NUM_ENTRIES);
+    /**
+     * Records which buttons (accept or decline) were clicked on sync screen and history sync and
+     * whether the buttons were equally weighted.
+     *
+     * @param type See {@link SyncButtonClicked}
+     */
+    public static void recordButtonClicked(@SyncButtonClicked int type) {
+        SigninMetricsUtils.recordButtonTypeClicked(type);
     }
 
     /**

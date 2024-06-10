@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -1240,7 +1241,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
+                                SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED)
@@ -1264,7 +1265,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                                SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
@@ -1287,7 +1288,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
+                                SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED)
@@ -1311,7 +1312,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                                SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)

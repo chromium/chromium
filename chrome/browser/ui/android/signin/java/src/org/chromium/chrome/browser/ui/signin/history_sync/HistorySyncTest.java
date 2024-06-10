@@ -47,6 +47,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -144,12 +145,17 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    public void testPositiveButton() {
+    public void testPositiveButtonWithNonMinorModeAccount() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SigninMetricsUtils.SyncButtonClicked
+                                        .HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .build();
 
         onView(withText(R.string.history_sync_primary_action)).perform(click());
 
@@ -162,12 +168,61 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    public void testNegativeButton() {
+    public void testNegativeButtonNonMinorModeAccount() {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SigninMetricsUtils.SyncButtonClicked
+                                        .HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                        .build();
+
+        onView(withText(R.string.history_sync_secondary_action)).perform(click());
+
+        histogramWatcher.assertExpected();
+        verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    public void testPositiveButtonWithMinorModeAccount() {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        buildHistorySyncCoordinator();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SigninMetricsUtils.SyncButtonClicked
+                                        .HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
+                        .build();
+
+        onView(withText(R.string.history_sync_primary_action)).perform(click());
+
+        histogramWatcher.assertExpected();
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncDelegateMock).dismissHistorySync();
+    }
+
+    @Test
+    @MediumTest
+    public void testNegativeButtonWithMinorModeAccount() {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        buildHistorySyncCoordinator();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SigninMetricsUtils.SyncButtonClicked
+                                        .HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
+                        .build();
 
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
 

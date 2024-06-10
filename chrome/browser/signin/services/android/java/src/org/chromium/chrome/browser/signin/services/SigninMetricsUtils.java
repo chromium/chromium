@@ -39,8 +39,25 @@ public class SigninMetricsUtils {
         int NUM_STATES = 6;
     }
 
+    public @interface SyncButtonClicked {
+        // These values are persisted to logs. Entries should not be renumbered and
+        // numeric values should never be reused.
+        int SYNC_OPT_IN_EQUAL_WEIGHTED = 0;
+        int SYNC_CANCEL_EQUAL_WEIGHTED = 1;
+        int SYNC_SETTINGS_EQUAL_WEIGHTED = 2;
+        int SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 3;
+        int SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 4;
+        int SYNC_SETTINGS_NOT_EQUAL_WEIGHTED = 5;
+        int HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED = 6;
+        int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
+        int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
+        int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
+        int NUM_ENTRIES = 8;
+    };
+
     /**
      * Logs Signin.AccountConsistencyPromoAction.* histograms.
+     *
      * @param promoAction {@link AccountConsistencyPromoAction} for this sign-in flow.
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
      */
@@ -73,6 +90,25 @@ public class SigninMetricsUtils {
     public static void logAddAccountStateHistogram(@State int state) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.AddAccountState", state, State.NUM_STATES);
+    }
+
+    public static void logHistorySyncAcceptButtonClicked(
+            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.HistorySyncOptIn.Completed", accessPoint, SigninAccessPoint.MAX);
+        recordButtonTypeClicked(syncButtonType);
+    }
+
+    public static void logHistorySyncDeclineButtonClicked(
+            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.HistorySyncOptIn.Declined", accessPoint, SigninAccessPoint.MAX);
+        recordButtonTypeClicked(syncButtonType);
+    }
+
+    public static void recordButtonTypeClicked(@SyncButtonClicked int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.SyncButtons.Clicked", type, SyncButtonClicked.NUM_ENTRIES);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

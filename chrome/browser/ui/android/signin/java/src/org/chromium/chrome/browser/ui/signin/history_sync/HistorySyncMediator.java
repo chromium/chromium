@@ -14,8 +14,11 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.SyncButtonClicked;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -105,8 +108,13 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     }
 
     private void onAcceptClicked(View view) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Completed", mAccessPoint, SigninAccessPoint.MAX);
+        int syncButtonType =
+                mModel.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
+                                == ScreenMode.RESTRICTED
+                        ? SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED
+                        : SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED;
+        SigninMetricsUtils.logHistorySyncAcceptButtonClicked(mAccessPoint, syncButtonType);
+
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
         mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
         mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
@@ -114,8 +122,14 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     }
 
     private void onDeclineClicked(View view) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Declined", mAccessPoint, SigninAccessPoint.MAX);
+        @SyncButtonClicked
+        int syncButtonType =
+                mModel.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
+                                == ScreenMode.RESTRICTED
+                        ? SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED
+                        : SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED;
+        SigninMetricsUtils.logHistorySyncDeclineButtonClicked(mAccessPoint, syncButtonType);
+
         if (mShouldSignOutOnDecline) {
             mSigninManager.signOut(
                     SignoutReason.USER_DECLINED_HISTORY_SYNC_AFTER_DEDICATED_SIGN_IN);
