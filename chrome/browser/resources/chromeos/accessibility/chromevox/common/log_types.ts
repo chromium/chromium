@@ -10,104 +10,89 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {TreeDumper} from './tree_dumper.js';
 import {QueueMode} from './tts_types.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
-const EventType = chrome.automation.EventType;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type EventType = chrome.automation.EventType;
 
 /**
  * Supported log types.
  * Note that filter type checkboxes are shown in this order at the log page.
- * @enum {string}
  */
-export const LogType = {
-  SPEECH: 'speech',
-  SPEECH_RULE: 'speechRule',
-  BRAILLE: 'braille',
-  BRAILLE_RULE: 'brailleRule',
-  EARCON: 'earcon',
-  EVENT: 'event',
-  TEXT: 'text',
-  TREE: 'tree',
-};
+export enum LogType {
+  SPEECH = 'speech',
+  SPEECH_RULE = 'speechRule',
+  BRAILLE = 'braille',
+  BRAILLE_RULE = 'brailleRule',
+  EARCON = 'earcon',
+  EVENT = 'event',
+  TEXT = 'text',
+  TREE = 'tree',
+}
 
-/**
- * @typedef {{
- *   logType: !LogType,
- *   date: !string,
- *   value: string
- * }}
- */
-export let SerializableLog;
+// TODO(anastasi): Convert this to an interface after typescript migration.
+export abstract class SerializableLog {
+  abstract logType: LogType;
+  abstract date: string;
+  abstract value: string;
+}
 
 export class BaseLog {
-  constructor(logType) {
-    /** @public {!LogType} */
-    this.logType = logType;
+  logType: LogType;
+  date: Date;
 
-    /** @public {!Date} */
+  constructor(logType: LogType) {
+    this.logType = logType;
     this.date = new Date();
   }
 
-  /** @return {!SerializableLog} */
-  serialize() {
-    return /** @type {!SerializableLog} */ ({
+  serialize(): SerializableLog {
+    return {
       logType: this.logType,
       date: this.date.toString(),  // Explicit toString(); converts either way.
       value: this.toString(),
-    });
+    };
   }
 
-  /** @return {string} */
-  toString() {
+  toString(): string {
     return '';
   }
 }
 
 export class EventLog extends BaseLog {
-  /** @param {!AutomationEvent} event */
-  constructor(event) {
+  private docUrl_?: string;
+  private rootName_?: string;
+  private targetName_?: string;
+  private type_: EventType;
+
+  constructor(event: AutomationEvent) {
     super(LogType.EVENT);
 
-    /** @private {EventType} */
     this.type_ = event.type;
-
-    /** @private {string|undefined} */
     this.targetName_ = event.target.name;
-
-    /** @private {string|undefined} */
-    this.rootName_ = event.target.root.name;
-
-    /** @private {string|undefined} */
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.rootName_ = event.target.root!.name;
     this.docUrl_ = event.target.docUrl;
   }
 
-  /** @override */
-  toString() {
+  override toString(): string {
     return `EventType = ${this.type_}, TargetName = ${this.targetName_}, ` +
         `RootName = ${this.rootName_}, DocumentURL = ${this.docUrl_}`;
   }
 }
 
 export class SpeechLog extends BaseLog {
-  /**
-   * @param {!string} textString
-   * @param {!QueueMode} queueMode
-   * @param {?string} category
-   */
-  constructor(textString, queueMode, category) {
+  private category_?: string;
+  private queueMode_: QueueMode;
+  private textString_: string;
+
+  constructor(textString: string, queueMode: QueueMode, category?: string) {
     super(LogType.SPEECH);
 
-    /** @private {string} */
     this.textString_ = textString;
-
-    /** @private {QueueMode} */
     this.queueMode_ = queueMode;
-
-    /** @private {?string} */
     this.category_ = category;
   }
 
-  /** @override */
-  toString() {
+  override toString(): string {
     let logStr = 'Speak';
     if (this.queueMode_ === QueueMode.FLUSH) {
       logStr += ' (F)';
@@ -127,34 +112,29 @@ export class SpeechLog extends BaseLog {
 }
 
 export class TextLog extends BaseLog {
-  /**
-   * @param {string} logStr
-   * @param {!LogType} logType
-   */
-  constructor(logStr, logType) {
+  private logStr_: string;
+
+  constructor(logStr: string, logType: LogType) {
     super(logType);
 
-    /** @private {string} */
     this.logStr_ = logStr;
   }
 
-  /** @override */
-  toString() {
+  override toString(): string {
     return this.logStr_;
   }
 }
 
 export class TreeLog extends BaseLog {
-  /** @param {!TreeDumper} tree */
-  constructor(tree) {
+  private tree_: TreeDumper;
+
+  constructor(tree: TreeDumper) {
     super(LogType.TREE);
 
-    /** @private {!TreeDumper} */
     this.tree_ = tree;
   }
 
-  /** @override */
-  toString() {
+  override toString(): string {
     return this.tree_.treeToString();
   }
 }
