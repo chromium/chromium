@@ -1347,8 +1347,9 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
                                    FocusedFieldType::kFillablePasswordField);
 }
 
+// https://crbug.com/346331137: Broken after M4 rollout.
 TEST_F(ChromePasswordManagerClientAndroidTest,
-       FocusedInputChangedFormsFetchedSplitStores) {
+       DISABLED_FocusedInputChangedFormsFetchedSplitStores) {
   profile()->GetTestingPrefService()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
@@ -1397,8 +1398,9 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
                                    FocusedFieldType::kFillablePasswordField);
 }
 
+// https://crbug.com/346331137: Broken after M4 rollout.
 TEST_F(ChromePasswordManagerClientAndroidTest,
-       FocusedInputChangedFormsFetchedSingleStore) {
+       DISABLED_FocusedInputChangedFormsFetchedSingleStore) {
   profile()->GetTestingPrefService()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
