@@ -203,8 +203,8 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
    */
   private onAriaLabelSet_(): void {
     const ariaLabel = this.getAttribute('aria-label');
+    this.removeAttribute('aria-label');
     if (ariaLabel) {
-      this.removeAttribute('aria-label');
       this.ariaLabel = ariaLabel;
     }
   }
@@ -217,8 +217,8 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
    */
   private onAriaDescriptionSet_(): void {
     const ariaDescription = this.getAttribute('aria-description');
+    this.removeAttribute('aria-description');
     if (ariaDescription) {
-      this.removeAttribute('aria-description');
       this.ariaDescription = ariaDescription;
     }
   }

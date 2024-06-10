@@ -58,19 +58,13 @@ export const BaseRowMixin = dedupingMixin(
              * Used to manually define an a11y label for the associated control
              * element of the row.
              */
-            ariaLabel: {
-              type: String,
-              reflectToAttribute: true,
-            },
+            ariaLabel: String,
 
             /**
              * Used to manually define an a11y description for the associated
              * control element of the row.
              */
-            ariaDescription: {
-              type: String,
-              reflectToAttribute: true,
-            },
+            ariaDescription: String,
           };
         }
 
@@ -85,15 +79,7 @@ export const BaseRowMixin = dedupingMixin(
          * returns null.
          */
         getAriaLabel(): string|null {
-          if (this.ariaLabel) {
-            return this.ariaLabel;
-          }
-
-          if (this.label) {
-            return this.label;
-          }
-
-          return null;
+          return this.ariaLabel || this.label || null;
         }
 
         /**
@@ -102,15 +88,7 @@ export const BaseRowMixin = dedupingMixin(
          * them is defined, it returns null.
          */
         getAriaDescription(): string|null {
-          if (this.ariaDescription) {
-            return this.ariaDescription;
-          }
-
-          if (this.sublabel) {
-            return this.sublabel;
-          }
-
-          return null;
+          return this.ariaDescription || this.sublabel || null;
         }
       }
 

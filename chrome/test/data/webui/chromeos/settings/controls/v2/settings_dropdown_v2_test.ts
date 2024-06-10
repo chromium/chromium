@@ -334,7 +334,7 @@ suite(SettingsDropdownV2Element.is, () => {
     });
   });
 
-  suite('For a11y', () => {
+  suite('for a11y', () => {
     test('ariaLabel property should apply to internal select', () => {
       const ariaLabel = 'A11y label';
       dropdownElement.ariaLabel = ariaLabel;

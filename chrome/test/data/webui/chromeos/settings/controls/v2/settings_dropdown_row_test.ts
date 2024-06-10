@@ -217,4 +217,39 @@ suite(SettingsDropdownRowElement.is, () => {
       assertEquals(internalSelectElement, getDeepActiveElement());
     });
   });
+
+  suite('for a11y', () => {
+    test('label is the ARIA label by default', () => {
+      const label = 'Lorem ipsum';
+      dropdownRow.label = label;
+      assertEquals(label, internalSelectElement.getAttribute('aria-label'));
+    });
+
+    test('sublabel is the ARIA description by default', () => {
+      const sublabel = 'Lorem ipsum dolor sit amet';
+      dropdownRow.sublabel = sublabel;
+      assertEquals(
+          sublabel, internalSelectElement.getAttribute('aria-description'));
+    });
+
+    test('ariaLabel property takes precedence for the ARIA label', () => {
+      const label = 'Lorem ipsum';
+      const ariaLabel = 'A11y ' + label;
+      dropdownRow.label = label;
+      dropdownRow.ariaLabel = ariaLabel;
+      assertEquals(ariaLabel, internalSelectElement.getAttribute('aria-label'));
+    });
+
+    test(
+        'ariaDescription property takes precedence for the ARIA description',
+        () => {
+          const sublabel = 'Lorem ipsum dolor sit amet';
+          const ariaDescription = 'A11y ' + sublabel;
+          dropdownRow.sublabel = sublabel;
+          dropdownRow.ariaDescription = ariaDescription;
+          assertEquals(
+              ariaDescription,
+              internalSelectElement.getAttribute('aria-description'));
+        });
+  });
 });

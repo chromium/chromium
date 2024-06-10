@@ -46,19 +46,19 @@ suite('SettingsBaseRowMixin', () => {
       assertEquals(icon, testRowElement.icon);
     });
 
-    test('learnMoreUrl is set correctly', () => {
+    test('learnMoreUrl reflects to attribute', () => {
       testRowElement.learnMoreUrl = learnMoreUrl;
       assertEquals(learnMoreUrl, testRowElement.learnMoreUrl);
       assertEquals(learnMoreUrl, testRowElement.getAttribute('learn-more-url'));
     });
 
-    test('ariaLabel is set correctly', () => {
+    test('ariaLabel reflects to attribute', () => {
       testRowElement.ariaLabel = ariaLabel;
       assertEquals(ariaLabel, testRowElement.ariaLabel);
       assertEquals(ariaLabel, testRowElement.getAttribute('aria-label'));
     });
 
-    test('ariaDescription is set correctly', () => {
+    test('ariaDescription reflects to attribute', () => {
       testRowElement.ariaDescription = ariaDescription;
       assertEquals(ariaDescription, testRowElement.ariaDescription);
       assertEquals(
