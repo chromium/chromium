@@ -103,6 +103,7 @@ SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];
 SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kRelauncherProcessType[];
+SANDBOX_POLICY_EXPORT extern const char kCodeSignCloneCleanupProcessType[];
 
 }  // namespace switches
 }  // namespace policy

@@ -774,6 +774,16 @@ const char kRelauncherProcessDMGDevice[] = "dmg-device";
 // Indicates whether Chrome should be set as the default browser during
 // installation.
 const char kMakeChromeDefault[] = "make-chrome-default";
+
+// A process type (switches::kProcessType) that cleans up the browser's
+// temporary code sign clone.
+const char kCodeSignCloneCleanupProcess[] = "code-sign-clone-cleanup";
+
+// When switches::kProcessType is switches::kCodeSignCloneCleanupProcess this
+// switch is required. The value must be the unique suffix portion of the
+// temporary directory that contains the clone. The full path will be
+// reconstructed by the cleanup process.
+const char kUniqueTempDirSuffix[] = "unique-temp-dir-suffix";
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

@@ -42,6 +42,7 @@
 #include "chrome/browser/chrome_resource_bundle_helper.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/mac/code_sign_clone_manager.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/buildflags.h"
@@ -1818,18 +1819,18 @@ absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
   NOTREACHED_IN_MIGRATION();  // Android provides a subclass and shares no code
                               // here.
 #else
+
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && \
+                          !BUILDFLAG(IS_CHROMEOS))
   static const MainFunction kMainFunctions[] = {
 #if BUILDFLAG(IS_MAC)
-    {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
-#endif
-
-  // This entry is not needed on Linux, where the NaCl loader
-  // process is launched via nacl_helper instead.
-#if BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-    {switches::kNaClLoaderProcess, NaClMain},
-#else
-    {"<invalid>", nullptr},  // To avoid constant array of size 0
-                             // when NaCl disabled
+      {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
+      {switches::kCodeSignCloneCleanupProcess,
+       code_sign_clone_manager::internal::ChromeCodeSignCloneCleanupMain},
+#elif BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+      // This entry is not needed on Linux, where the NaCl loader
+      // process is launched via nacl_helper instead.
+      {switches::kNaClLoaderProcess, NaClMain},
 #endif
   };
 
@@ -1837,6 +1838,9 @@ absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     if (process_type == kMainFunctions[i].name)
       return kMainFunctions[i].function(std::move(main_function_params));
   }
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CHROMEOS))
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return std::move(main_function_params);

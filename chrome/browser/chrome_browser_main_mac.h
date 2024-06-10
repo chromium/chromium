@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/chrome_browser_main_posix.h"
+#include "chrome/browser/mac/code_sign_clone_manager.h"
 
 namespace mac_metrics {
 class Metrics;
@@ -39,6 +40,14 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   // Records mac related metrics. Some metrics are recorded on startup, some
   // are recorded later in response to an events.
   std::unique_ptr<mac_metrics::Metrics> metrics_;
+
+  // Prevent code sign verification issues of the running instance of Chrome
+  // when it has been updated on disk. CodeSignCloneManager does this by
+  // creating a temporary clone of the on-disk app including a hard link of the
+  // main executable during browser startup. The clone and hard link keep files
+  // covered by the code signature reachable on the filesystem for dynamic and
+  // static verification.
+  code_sign_clone_manager::CodeSignCloneManager code_sign_clone_manager_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_MAC_H_

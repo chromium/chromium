@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Mac.App.CodeSignCloneCreationTime" units="ms"
+    expires_after="2025-03-06">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The time it took in milliseconds to create the browser app code sign clone.
+    Logged once at browser startup.
+  </summary>
+</histogram>
+
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
     expires_after="2025-03-06">
   <owner>bur@google.com</owner>

@@ -10,8 +10,10 @@
 
 #include "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -50,9 +52,21 @@
 
 // ChromeBrowserMainPartsMac ---------------------------------------------------
 
+namespace {
+
+base::FilePath GetMainExecutableName() {
+  base::FilePath path;
+  base::PathService::Get(base::FILE_EXE, &path);
+  return path.BaseName();
+}
+
+}  // namespace
+
 ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
                                                      StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
+    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data),
+      code_sign_clone_manager_(base::apple::OuterBundlePath(),
+                               GetMainExecutableName()) {}
 
 ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() = default;
 

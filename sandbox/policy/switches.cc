@@ -133,6 +133,7 @@ const char kRendererProcess[] = "renderer";
 const char kUtilityProcess[] = "utility";
 const char kZygoteProcessType[] = "zygote";
 const char kRelauncherProcessType[] = "relauncher";
+const char kCodeSignCloneCleanupProcessType[] = "code-sign-clone-cleanup";
 
 }  // namespace switches
 }  // namespace policy

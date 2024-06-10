@@ -223,8 +223,10 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (process_type == switches::kRelauncherProcessType)
+  if (process_type == switches::kRelauncherProcessType ||
+      process_type == switches::kCodeSignCloneCleanupProcessType) {
     return Sandbox::kNoSandbox;
+  }
 #endif
 
   CHECK(false)

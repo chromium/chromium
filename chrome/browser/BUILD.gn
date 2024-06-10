@@ -6295,6 +6295,8 @@ static_library("browser") {
       "mac/bluetooth_utility.mm",
       "mac/chrome_browser_main_extra_parts_mac.h",
       "mac/chrome_browser_main_extra_parts_mac.mm",
+      "mac/code_sign_clone_manager.h",
+      "mac/code_sign_clone_manager.mm",
       "mac/dock.h",
       "mac/dock.mm",
       "mac/exception_processor.h",

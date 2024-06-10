@@ -242,6 +242,8 @@ extern const char kMetricsClientID[];
 extern const char kRelauncherProcess[];
 extern const char kRelauncherProcessDMGDevice[];
 extern const char kMakeChromeDefault[];
+extern const char kCodeSignCloneCleanupProcess[];
+extern const char kUniqueTempDirSuffix[];
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
