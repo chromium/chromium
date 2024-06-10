@@ -910,6 +910,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AutomationRate.{FormType}" units="%"
+    expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the percentage of input text field characters that were autofilled.
+    This function measures text input as a number of UTF-16 code points. Fields
+    with more than 150 code points input are ignored. Emitted on form
+    submission.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
     expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
@@ -1754,6 +1769,19 @@ chromium-metrics-reviews@google.com.
     per Chrome User Profile load.
   </summary>
   <token key="Category" variants="AutofillProfileCategory"/>
+</histogram>
+
+<histogram name="Autofill.DaysUntilFirstUsage.Profile" units="day"
+    expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of days from saving an Autofill profile until using it
+    for the first time before it got purged. Emitted on the first usage of the
+    profile for filling a form.
+  </summary>
 </histogram>
 
 <histogram
@@ -4421,6 +4449,22 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="AutofillProfile.StorableTypes"/>
 </histogram>
 
+<histogram name="Autofill.ProfileTokenQualityScore" units="bits"
+    expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the {number of observations (bits 0-3, capped at 10), quality score
+    (bits 4-7), profile token (bits 8-15)} as a bitmask, if there were any
+    observations. The score is an integer ranging from 0 to 10, as is the number
+    of observations. Observations are from the profile that was used for
+    filling. Emitted on form submission, after the profile's observations were
+    updated.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProgressDialog.{FlowType}.Result"
     enum="BooleanCanceled" expires_after="2025-07-01">
   <owner>siashah@chromium.org</owner>
@@ -4454,50 +4498,6 @@ chromium-metrics-reviews@google.com.
     is a part of.
   </summary>
   <token key="FlowType" variants="Autofill.ProgressDialog.FlowType"/>
-</histogram>
-
-<histogram name="Autofill.Quality.AutomationRate.{FormType}" units="%"
-    expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>bwolfgang@google.com</owner>
-  <owner>mlerman@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the percentage of input text field characters that were autofilled.
-    This function measures text input as a number of UTF-16 code points. Fields
-    with more than 150 code points input are ignored. Emitted on form
-    submission.
-  </summary>
-  <token key="FormType" variants="Autofill.Ablation.FormType"/>
-</histogram>
-
-<histogram name="Autofill.Quality.DaysUntilFirstUsage.Profile" units="day"
-    expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>bwolfgang@google.com</owner>
-  <owner>mlerman@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the number of days from saving an Autofill profile until using it
-    for the first time before it got purged. Emitted on the first usage of the
-    profile for filling a form.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Quality.ProfileTokenQualityScore" units="bits"
-    expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>bwolfgang@google.com</owner>
-  <owner>mlerman@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the {number of observations (bits 0-3, capped at 10), quality score
-    (bits 4-7), profile token (bits 8-15)} as a bitmask, if there were any
-    observations. The score is an integer ranging from 0 to 10, as is the number
-    of observations. Observations are from the profile that was used for
-    filling. Emitted on form submission, after the profile's observations were
-    updated.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"

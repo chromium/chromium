@@ -1036,9 +1036,9 @@ void AutofillProfile::RecordAndLogUse() {
     if (use_count() == 1) {
       // The max is the number of days a profile wasn't used before it gets
       // deleted (see `kDisusedDataModelDeletionTimeDelta`).
-      base::UmaHistogramCustomCounts(
-          "Autofill.Quality.DaysUntilFirstUsage.Profile",
-          time_since_last_used.InDays(), 1, 395, 100);
+      base::UmaHistogramCustomCounts("Autofill.DaysUntilFirstUsage.Profile",
+                                     time_since_last_used.InDays(), 1, 395,
+                                     100);
     }
     set_use_count(use_count() + 1);
     UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",

@@ -1715,14 +1715,14 @@ TEST(AutofillProfileTest, EmitsDaysUntilFirstUsageProfile) {
 
   base::HistogramTester histogram_tester;
   profile.RecordAndLogUse();
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Quality.DaysUntilFirstUsage.Profile", expect_number_of_days, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.DaysUntilFirstUsage.Profile",
+                                      expect_number_of_days, 1);
 
   profile.RecordAndLogUse();
-  EXPECT_EQ(histogram_tester
-                .GetAllSamples("Autofill.Quality.DaysUntilFirstUsage.Profile")
-                .size(),
-            1UL);
+  EXPECT_EQ(
+      histogram_tester.GetAllSamples("Autofill.DaysUntilFirstUsage.Profile")
+          .size(),
+      1UL);
 }
 
 enum Expectation { GREATER, LESS };

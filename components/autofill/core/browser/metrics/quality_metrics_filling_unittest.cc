@@ -14,7 +14,7 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
-constexpr char kUmaAutomationRate[] = "Autofill.Quality.AutomationRate.Address";
+constexpr char kUmaAutomationRate[] = "Autofill.AutomationRate.Address";
 
 std::unique_ptr<FormStructure> GetFormStructure(
     const test::FormDescription& form_description) {
@@ -32,7 +32,7 @@ class QualityMetricsFillingTest : public testing::Test {
 };
 
 // Tests that no metrics are reported for
-// Autofill.Quality.AutomationRate.Address if a form is submitted with empty
+// Autofill.AutomationRate.Address if a form is submitted with empty
 // fields because it's not possible to calculate a filling rate if the
 // denominator is 0.
 TEST_F(QualityMetricsFillingTest, AutomationRateNotEmittedForEmptyForm) {
@@ -46,7 +46,7 @@ TEST_F(QualityMetricsFillingTest, AutomationRateNotEmittedForEmptyForm) {
   EXPECT_TRUE(histogram_tester_.GetAllSamples(kUmaAutomationRate).empty());
 }
 
-// Tests that Autofill.Quality.AutomationRate.Address is reported as 0 if all
+// Tests that Autofill.AutomationRate.Address is reported as 0 if all
 // input was generated via manual typing.
 TEST_F(QualityMetricsFillingTest, AutomationRate0EmittedForManuallyFilledForm) {
   test::FormDescription form_description = {
@@ -59,7 +59,7 @@ TEST_F(QualityMetricsFillingTest, AutomationRate0EmittedForManuallyFilledForm) {
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 0, 1);
 }
 
-// Tests that Autofill.Quality.AutomationRate.Address is reported as 100% if all
+// Tests that Autofill.AutomationRate.Address is reported as 100% if all
 // input was generated via autofilling typing.
 TEST_F(QualityMetricsFillingTest, AutomationRate100EmittedForAutofilledForm) {
   test::FormDescription form_description = {
@@ -78,7 +78,7 @@ TEST_F(QualityMetricsFillingTest, AutomationRate100EmittedForAutofilledForm) {
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 100, 1);
 }
 
-// Tests that Autofill.Quality.AutomationRate.Address is reported as 57% if
+// Tests that Autofill.AutomationRate.Address is reported as 57% if
 // 4 out of 7 submitted characters are are autofilled.
 TEST_F(QualityMetricsFillingTest,
        AutomationRateEmittedWithCorrectCalculationForPartiallyAutofilledForm) {
@@ -96,7 +96,7 @@ TEST_F(QualityMetricsFillingTest,
 }
 
 // Tests that fields with a lot of input are ignored in the calculation of
-// Autofill.Quality.AutomationRate.Address. This is to prevent outliers in
+// Autofill.AutomationRate.Address. This is to prevent outliers in
 // metrics where a user types a long essay in a single field.
 TEST_F(QualityMetricsFillingTest, AutomationRateEmittedIgnoringLongValues) {
   test::FormDescription form_description = {
@@ -119,7 +119,7 @@ TEST_F(QualityMetricsFillingTest, AutomationRateEmittedIgnoringLongValues) {
 
 // Tests that fields that were already filled at page load time and not modified
 // by the user are ignored in the calculation of
-// Autofill.Quality.AutomationRate.Address.
+// Autofill.AutomationRate.Address.
 TEST_F(QualityMetricsFillingTest,
        AutomationRateEmittedIgnoringUnchangedPreFilledValues) {
   test::FormDescription form_description = {

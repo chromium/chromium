@@ -228,8 +228,7 @@ void LogProfileTokenQualityScoreMetric(const FormStructure& form,
       std::optional<int> bucket =
           GetQualityScoreBucket(field_type, observations);
       if (bucket) {
-        base::UmaHistogramSparse("Autofill.Quality.ProfileTokenQualityScore",
-                                 *bucket);
+        base::UmaHistogramSparse("Autofill.ProfileTokenQualityScore", *bucket);
       }
     }
   }

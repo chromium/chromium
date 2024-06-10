@@ -122,7 +122,7 @@ TEST(ProfileTokenQualityMetricsTest,
   histogram_tester.ExpectUniqueSample(kBaseMetricName + "PerProfile", 3, 1);
 }
 
-// Tests that "Autofill.Quality.ProfileTokenQualityScore" is emitted with
+// Tests that "Autofill.ProfileTokenQualityScore" is emitted with
 // correctly calculated bucket values and quality scores.
 TEST(ProfileTokenQualityMetricsTest, LogProfileTokenQualityScoreMetric) {
   AutofillProfile profile = test::GetFullProfile();
@@ -164,21 +164,21 @@ TEST(ProfileTokenQualityMetricsTest, LogProfileTokenQualityScoreMetric) {
   base::HistogramTester histogram_tester;
   LogProfileTokenQualityScoreMetric(form, test_pdm);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.Quality.ProfileTokenQualityScore"),
-              base::BucketsAre(
-                  // 850 corresponds to n = 2, quality score = 5, field type =
-                  // `NAME_FIRST`.
-                  base::Bucket(850, 1),
-                  // 1441 corresponds to n = 1, quality score = 10, field type =
-                  // `NAME_LAST`.
-                  base::Bucket(1441, 1),
-                  // 8785 corresponds to n = 1, quality score = 5, field type =
-                  // `ADDRESS_HOME_STATE`.
-                  base::Bucket(8785, 1),
-                  // 19713 corresponds to n = 1, quality score = 0, field type =
-                  // `ADDRESS_HOME_STREET_ADDRESS`.
-                  base::Bucket(19713, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.ProfileTokenQualityScore"),
+      base::BucketsAre(
+          // 850 corresponds to n = 2, quality score = 5, field type =
+          // `NAME_FIRST`.
+          base::Bucket(850, 1),
+          // 1441 corresponds to n = 1, quality score = 10, field type =
+          // `NAME_LAST`.
+          base::Bucket(1441, 1),
+          // 8785 corresponds to n = 1, quality score = 5, field type =
+          // `ADDRESS_HOME_STATE`.
+          base::Bucket(8785, 1),
+          // 19713 corresponds to n = 1, quality score = 0, field type =
+          // `ADDRESS_HOME_STREET_ADDRESS`.
+          base::Bucket(19713, 1)));
 }
 
 }  // namespace

@@ -45,8 +45,8 @@ void LogAutomationRate(const FormStructure& form) {
       // TODO(crrev.com/c/5499250): Use `FormTypeNameForLogging` once the CL is
       // merged.
       base::UmaHistogramPercentage(
-          base::StrCat({"Autofill.Quality.AutomationRate.",
-                        FormTypeToStringView(form_type)}),
+          base::StrCat(
+              {"Autofill.AutomationRate.", FormTypeToStringView(form_type)}),
           100 * total_length_autofilled_fields / total_length);
     }
   }
