@@ -368,8 +368,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
     [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
-  } else if (base::FeatureList::IsEnabled(
-                 kLinkAccountSettingsToPrivacyFooter)) {
+  } else {
     if (!syncService->GetAccountInfo().IsEmpty()) {
       // Footer for signed in users.
       privacyFooterText = l10n_util::GetNSString(
@@ -380,11 +379,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       privacyFooterText =
           l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER);
     }
-  } else {
-    // Footer for signed in or signed out users. Should be deprecated once
-    // kLinkAccountSettingsToPrivacyFooter is enabled by default.
-    privacyFooterText =
-        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER);
   }
   [urls
       addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];

@@ -247,22 +247,13 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
 
   // Testing section index and text of the privacy footer.
-  if (base::FeatureList::IsEnabled(kLinkAccountSettingsToPrivacyFooter)) {
-    CheckSectionFooter(
-        l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
-        /* section= */ expectedNumberOfSections - 1);
-  } else {
-    CheckSectionFooter(
-        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-        /* section= */ expectedNumberOfSections - 1);
-  }
+  CheckSectionFooter(l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
+                     /* section= */ expectedNumberOfSections - 1);
 }
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // non-syncing user.
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kLinkAccountSettingsToPrivacyFooter);
 
   ON_CALL(*mock_sync_service()->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
@@ -282,9 +273,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
 
   // Testing section index and text of the privacy footer.
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-      /* section= */ expectedNumberOfSections - 1);
+  CheckSectionFooter(l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
+                     /* section= */ expectedNumberOfSections - 1);
 }
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
