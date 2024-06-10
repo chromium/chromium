@@ -472,7 +472,7 @@ std::vector<CreditCard> PaymentsSuggestionGenerator::GetOrderedCardsToSuggest(
     bool prefix_match,
     bool include_virtual_cards) {
   std::vector<CreditCard*> available_cards =
-      payments_data().GetCreditCardsToSuggest();
+      personal_data().payments_data_manager().GetCreditCardsToSuggest();
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
   if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
@@ -497,7 +497,7 @@ std::vector<CreditCard> PaymentsSuggestionGenerator::GetOrderedCardsToSuggest(
       base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
   for (const CreditCard* credit_card : available_cards) {
     std::u16string suggested_value =
-        credit_card->GetInfo(trigger_field_type, payments_data().app_locale());
+        credit_card->GetInfo(trigger_field_type, personal_data().app_locale());
     if (prefix_match && suggested_value.empty()) {
       continue;
     }
@@ -632,7 +632,8 @@ std::u16string PaymentsSuggestionGenerator::GetDisplayNicknameForCreditCard(
   }
   // Either the card a) has no nickname or b) is a server card and we would
   // prefer to use the nickname of a local card.
-  std::vector<CreditCard*> candidates = payments_data().GetCreditCards();
+  std::vector<CreditCard*> candidates =
+      personal_data().payments_data_manager().GetCreditCards();
   for (CreditCard* candidate : candidates) {
     if (candidate->guid() != card.guid() &&
         candidate->MatchingCardDetails(card) &&
@@ -665,7 +666,8 @@ bool PaymentsSuggestionGenerator::ShouldShowVirtualCardOption(
   switch (candidate_card->record_type()) {
     case CreditCard::RecordType::kLocalCard:
       candidate_server_card =
-          payments_data().GetServerCardForLocalCard(candidate_card);
+          personal_data().payments_data_manager().GetServerCardForLocalCard(
+              candidate_card);
       break;
     case CreditCard::RecordType::kMaskedServerCard:
       candidate_server_card = candidate_card;
@@ -762,7 +764,7 @@ Suggestion PaymentsSuggestionGenerator::CreateCreditCardSuggestion(
 void PaymentsSuggestionGenerator::AddPaymentsGranularFillingChildSuggestions(
     const CreditCard& credit_card,
     Suggestion& suggestion) const {
-  const std::string& app_locale = payments_data().app_locale();
+  const std::string& app_locale = personal_data().app_locale();
 
   bool has_content_above =
       AddCreditCardNameChildSuggestion(credit_card, app_locale, suggestion);
@@ -832,7 +834,7 @@ PaymentsSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
   }
 
   return create_text(
-      credit_card.GetInfo(trigger_field_type, payments_data().app_locale()));
+      credit_card.GetInfo(trigger_field_type, personal_data().app_locale()));
 }
 
 void PaymentsSuggestionGenerator::SetSuggestionLabelsForCard(
@@ -840,7 +842,7 @@ void PaymentsSuggestionGenerator::SetSuggestionLabelsForCard(
     FieldType trigger_field_type,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
     Suggestion& suggestion) const {
-  const std::string& app_locale = payments_data().app_locale();
+  const std::string& app_locale = personal_data().app_locale();
 
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
       autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
@@ -871,7 +873,8 @@ void PaymentsSuggestionGenerator::SetSuggestionLabelsForCard(
       // interactions.
       metadata_logging_context.instrument_ids_with_benefits_available.insert(
           credit_card.instrument_id());
-      if (payments_data().IsCardEligibleForBenefits(credit_card)) {
+      if (personal_data().payments_data_manager().IsCardEligibleForBenefits(
+              credit_card)) {
         labels.push_back({*benefit_label});
       }
       suggestion.feature_for_iph =
@@ -942,10 +945,12 @@ std::optional<Suggestion::Text>
 PaymentsSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
     const CreditCard& credit_card) const {
   const std::u16string& benefit_description =
-      payments_data().GetApplicableBenefitDescriptionForCardAndOrigin(
-          credit_card,
-          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin(),
-          autofill_client_->GetAutofillOptimizationGuide());
+      personal_data()
+          .payments_data_manager()
+          .GetApplicableBenefitDescriptionForCardAndOrigin(
+              credit_card,
+              autofill_client_->GetLastCommittedPrimaryMainFrameOrigin(),
+              autofill_client_->GetAutofillOptimizationGuide());
   return benefit_description.empty()
              ? std::nullopt
              : std::optional<Suggestion::Text>(
@@ -958,7 +963,8 @@ void PaymentsSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     FieldType trigger_field_type) const {
   if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
-        payments_data().GetServerCardForLocalCard(&credit_card);
+        personal_data().payments_data_manager().GetServerCardForLocalCard(
+            &credit_card);
     DCHECK(server_duplicate_card);
     suggestion.payload = Suggestion::Guid(server_duplicate_card->guid());
   }
@@ -1036,7 +1042,8 @@ void PaymentsSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       std::optional<Suggestion::Text> benefit_label =
           GetCreditCardBenefitSuggestionLabel(credit_card);
       if (benefit_label &&
-          payments_data().IsCardEligibleForBenefits(credit_card)) {
+          personal_data().payments_data_manager().IsCardEligibleForBenefits(
+              credit_card)) {
         suggestion.labels.push_back({*benefit_label});
       }
     }
@@ -1055,7 +1062,8 @@ void PaymentsSuggestionGenerator::SetCardArtURL(
     Suggestion& suggestion,
     const CreditCard& credit_card,
     bool virtual_card_option) const {
-  const GURL card_art_url = payments_data().GetCardArtURL(credit_card);
+  const GURL card_art_url =
+      personal_data().payments_data_manager().GetCardArtURL(credit_card);
 
   // The Capital One icon for virtual cards is not card metadata, it only helps
   // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
@@ -1073,7 +1081,8 @@ void PaymentsSuggestionGenerator::SetCardArtURL(
     suggestion.custom_icon_url = card_art_url;
 #else
     gfx::Image* image =
-        payments_data().GetCreditCardArtImageForUrl(card_art_url);
+        personal_data().payments_data_manager().GetCreditCardArtImageForUrl(
+            card_art_url);
     if (image) {
       suggestion.custom_icon = *image;
     }
