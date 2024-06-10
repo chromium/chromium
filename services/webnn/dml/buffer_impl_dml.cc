@@ -22,12 +22,21 @@ BufferImplDml::~BufferImplDml() = default;
 
 void BufferImplDml::ReadBufferImpl(ReadBufferCallback callback) {
   static_cast<ContextImplDml*>(context_.get())
-      ->ReadBuffer(*this, std::move(callback));
+      ->ReadBuffer(this, std::move(callback));
 }
 
 void BufferImplDml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
   static_cast<ContextImplDml*>(context_.get())
-      ->WriteBuffer(*this, std::move(src_buffer));
+      ->WriteBuffer(this, std::move(src_buffer));
+}
+
+void BufferImplDml::SetLastSubmissionFenceValue(
+    uint64_t last_submission_fence_value) {
+  last_submission_fence_value_ = last_submission_fence_value;
+}
+
+uint64_t BufferImplDml::last_submission_fence_value() const {
+  return last_submission_fence_value_;
 }
 
 }  // namespace webnn::dml

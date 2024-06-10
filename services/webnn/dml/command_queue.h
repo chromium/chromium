@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
 
   uint64_t GetCompletedValue() const;
   uint64_t GetLastFenceValue() const;
+  uint64_t GetPendingFenceValue() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNCommandQueueTest, ReferenceAndRelease);

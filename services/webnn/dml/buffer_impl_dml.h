@@ -28,11 +28,22 @@ class BufferImplDml final : public WebNNBufferImpl {
 
   ID3D12Resource* buffer() const { return buffer_.Get(); }
 
+  // Called when a recorded command will modify the contents of this buffer.
+  // The caller must compare last_submission_fence_value() with the command
+  // queue's completed fence before mapping the buffer.
+  void SetLastSubmissionFenceValue(uint64_t last_submission_fence_value);
+  uint64_t last_submission_fence_value() const;
+
  private:
   void ReadBufferImpl(ReadBufferCallback callback) override;
   void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override;
 
   Microsoft::WRL::ComPtr<ID3D12Resource> buffer_;
+
+  // The fence value used to track progress of GPU execution of commands using
+  // this buffer. Comparing it with the command queue's completed fence can
+  // indicate whether commands have completed execution.
+  uint64_t last_submission_fence_value_ = UINT64_MAX;
 };
 
 }  // namespace webnn::dml

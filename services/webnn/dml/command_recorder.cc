@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/utils.h"
@@ -391,6 +392,10 @@ HRESULT CommandRecorder::ExecuteOperator(
   command_resources_.push_back(std::move(descriptor_heap));
 
   return S_OK;
+}
+
+void CommandRecorder::OnBufferAccessed(BufferImplDml* buffer) {
+  buffer->SetLastSubmissionFenceValue(command_queue_->GetPendingFenceValue());
 }
 
 }  // namespace webnn::dml

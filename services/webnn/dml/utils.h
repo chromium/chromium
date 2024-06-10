@@ -56,6 +56,19 @@ void COMPONENT_EXPORT(WEBNN_SERVICE) ReadbackBufferWithBarrier(
     Microsoft::WRL::ComPtr<ID3D12Resource> default_buffer,
     size_t buffer_size);
 
+// TODO(crbug.com/40278771): move buffer helpers into command recorder.
+void COMPONENT_EXPORT(WEBNN_SERVICE)
+    UploadBufferWithBarrier(CommandRecorder* command_recorder,
+                            BufferImplDml* dst_buffer,
+                            Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
+                            size_t buffer_size);
+
+void COMPONENT_EXPORT(WEBNN_SERVICE)
+    ReadbackBufferWithBarrier(CommandRecorder* command_recorder,
+                              Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
+                              BufferImplDml* src_buffer,
+                              size_t buffer_size);
+
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message);
 

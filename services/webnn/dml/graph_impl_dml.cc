@@ -5980,6 +5980,7 @@ void GraphImplDml::DispatchImpl(
           &graph_input_buffer_bindings[graph_input_index]};
       previous_input_buffers_[std::string(name)] =
           input_buffer_impl->GetWeakPtr();
+      command_recorder_->OnBufferAccessed(input_buffer_impl);
     }
 
     // TODO(crbug.com/40278771): consider pre-computing the output binding
@@ -6016,6 +6017,8 @@ void GraphImplDml::DispatchImpl(
           &graph_output_buffer_bindings[graph_output_index]};
       previous_output_buffers_[std::string(name)] =
           output_buffer_impl->GetWeakPtr();
+      // Only output buffers could get modified upon execution.
+      command_recorder_->OnBufferAccessed(output_buffer_impl);
     }
 
     std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;

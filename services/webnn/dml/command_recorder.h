@@ -18,6 +18,7 @@
 
 namespace webnn::dml {
 
+class BufferImplDml;
 class CommandQueue;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
@@ -131,6 +132,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
   CommandQueue* command_queue() const { return command_queue_.get(); }
+
+  // Called when a WebNNBuffer requires tracking of GPU progress
+  // because a recorded command will modify the data which could be accessed
+  // by the CPU. The last submission fence will be updated during
+  // recording to ensure the CPU can safely use the buffer.
+  void OnBufferAccessed(BufferImplDml* buffer);
 
  private:
   CommandRecorder(

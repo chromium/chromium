@@ -71,12 +71,27 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
   const uint64_t aligned_buffer_byte_size =
       base::bits::AlignUp(buffer_info->size, kDMLBufferAlignment);
 
+  HRESULT hr = S_OK;
+
+  // If adapter supports UMA, create the custom heap with CPU memory pool. The
+  // CPU will directly read/write to this heap if the GPU isn't using it.
   ComPtr<ID3D12Resource> buffer;
-  HRESULT hr =
-      CreateDefaultBuffer(adapter_->d3d12_device(), aligned_buffer_byte_size,
-                          L"WebNN_Default_Buffer_External", buffer);
+  if (adapter_->IsUMA()) {
+    // TODO(crbug.com/40278771): consider introducing buffer usages for INPUT or
+    // OUTPUT since using upload-equivelent custom heaps everywhere could be
+    // inefficient.
+    hr = CreateCustomUploadBuffer(
+        adapter_->d3d12_device(), aligned_buffer_byte_size,
+        L"WebNN_Custom_Upload_Buffer_External", buffer);
+  } else {
+    // Create a default buffer that can be accessed only by GPU.
+    // The CPU must use a staging buffer to read/write to this buffer.
+    hr = CreateDefaultBuffer(adapter_->d3d12_device(), aligned_buffer_byte_size,
+                             L"WebNN_Default_Buffer_External", buffer);
+  }
+
   if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to create the default buffer: "
+    LOG(ERROR) << "[WebNN] Failed to create the external buffer: "
                << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
@@ -90,17 +105,30 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
                                          buffer_handle);
 }
 
-void ContextImplDml::ReadBuffer(const WebNNBufferImpl& src_buffer,
-                             mojom::WebNNBuffer::ReadBufferCallback callback) {
-  HRESULT hr = StartRecordingIfNecessary();
-  if (FAILED(hr)) {
-    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
-        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+void ContextImplDml::ReadBuffer(
+    BufferImplDml* src_buffer,
+    mojom::WebNNBuffer::ReadBufferCallback callback) {
+  const uint64_t src_buffer_size = src_buffer->size();
+
+  // Read size needs to be cast to size_t.
+  base::CheckedNumeric<size_t> checked_src_buffer_size(src_buffer_size);
+  if (!checked_src_buffer_size.IsValid()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
 
-  // TODO(crbug.com/329198124): avoid creating staging buffers on UMA devices.
-  const uint64_t src_buffer_size = src_buffer.size();
+  HRESULT hr = S_OK;
+
+  // Map entire buffer to readback the output data.
+  if (adapter_->IsUMA() && adapter_->command_queue()->GetCompletedValue() >=
+                               src_buffer->last_submission_fence_value()) {
+    ContextImplDml::OnReadbackComplete(src_buffer->buffer(),
+                                       checked_src_buffer_size.ValueOrDie(),
+                                       std::move(callback), hr);
+    return;
+  }
+
+  // Copy the buffer into a staging buffer to readback the output data.
   ComPtr<ID3D12Resource> download_buffer;
   hr = CreateReadbackBuffer(adapter_->d3d12_device(), src_buffer_size,
                             L"WebNN_Readback_Buffer", download_buffer);
@@ -112,10 +140,15 @@ void ContextImplDml::ReadBuffer(const WebNNBufferImpl& src_buffer,
     return;
   }
 
-  const BufferImplDml& src_buffer_impl =
-      static_cast<const BufferImplDml&>(src_buffer);
+  hr = StartRecordingIfNecessary();
+  if (FAILED(hr)) {
+    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    return;
+  }
+
   ReadbackBufferWithBarrier(command_recorder_.get(), download_buffer,
-                            src_buffer_impl.buffer(), src_buffer_size);
+                            src_buffer, src_buffer_size);
 
   // Submit copy and schedule GPU wait.
   hr = command_recorder_->CloseAndExecute();
@@ -123,13 +156,6 @@ void ContextImplDml::ReadBuffer(const WebNNBufferImpl& src_buffer,
     HandleRecordingError("Failed to close and execute the command list.", hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
-    return;
-  }
-
-  // Read size needs to be cast to size_t.
-  base::CheckedNumeric<size_t> checked_src_buffer_size(src_buffer_size);
-  if (!checked_src_buffer_size.IsValid()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
 
@@ -180,64 +206,72 @@ void ContextImplDml::OnReadbackComplete(
       mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
 }
 
-void ContextImplDml::WriteBuffer(const WebNNBufferImpl& dst_buffer,
-                              mojo_base::BigBuffer src_buffer) {
-  if (FAILED(StartRecordingIfNecessary())) {
-    return;
+void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
+                                 mojo_base::BigBuffer src_buffer) {
+  HRESULT hr = S_OK;
+  ComPtr<ID3D12Resource> buffer_to_map = dst_buffer->buffer();
+
+  // Create a staging buffer to upload data into when the existing buffer
+  // cannot be updated by the CPU.
+  if (!adapter_->IsUMA() || adapter_->command_queue()->GetCompletedValue() <
+                                dst_buffer->last_submission_fence_value()) {
+    hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
+                            L"WebNN_Upload_Buffer", buffer_to_map);
+    if (FAILED(hr)) {
+      // TODO(crbug.com/41492165): generate error using context.
+      LOG(ERROR) << "[WebNN] Failed to create the upload buffer: "
+                 << logging::SystemErrorCodeToString(hr);
+      return;
+    }
   }
 
-  // TODO(crbug.com/329198124): avoid creating staging buffers on UMA devices.
-  ComPtr<ID3D12Resource> upload_buffer;
-  HRESULT hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
-                                  L"WebNN_Upload_Buffer", upload_buffer);
+  CHECK(buffer_to_map);
+
+  // Copy over data from the source buffer to the mapped buffer.
+  void* mapped_buffer_data = nullptr;
+  hr = buffer_to_map->Map(0, nullptr, &mapped_buffer_data);
   if (FAILED(hr)) {
-    // TODO(crbug.com/41492165): generate error using context.
-    LOG(ERROR) << "[WebNN] Failed to create the upload buffer: "
+    LOG(ERROR) << "[WebNN] Failed to map the buffer: "
                << logging::SystemErrorCodeToString(hr);
     return;
   }
 
-  CHECK(upload_buffer);
+  CHECK(mapped_buffer_data);
 
-  // Copy over data from the source buffer to the upload buffer.
-  void* mapped_upload_data = nullptr;
-  hr = upload_buffer->Map(0, nullptr, &mapped_upload_data);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to map the upload buffer: "
-               << logging::SystemErrorCodeToString(hr);
-    return;
-  }
-
-  CHECK(mapped_upload_data);
-
-  // SAFETY: `upload_buffer` was constructed with size `src_buffer.size()`.
+  // SAFETY: `buffer_to_map` was constructed with size `src_buffer.size()`.
   UNSAFE_BUFFERS(
-      base::span(static_cast<uint8_t*>(mapped_upload_data), src_buffer.size()))
+      base::span(static_cast<uint8_t*>(mapped_buffer_data), src_buffer.size()))
       .copy_from(src_buffer);
 
-  upload_buffer->Unmap(0, nullptr);
+  buffer_to_map->Unmap(0, nullptr);
 
-  const BufferImplDml& dst_buffer_impl =
-      static_cast<const BufferImplDml&>(dst_buffer);
-  UploadBufferWithBarrier(command_recorder_.get(), dst_buffer_impl.buffer(),
-                          std::move(upload_buffer), src_buffer.size());
+  // Uploads are only required when the mapped buffer was a staging buffer.
+  if (dst_buffer->buffer() != buffer_to_map.Get()) {
+    if (FAILED(StartRecordingIfNecessary())) {
+      return;
+    }
 
-  // TODO(crbug.com/40278771): consider not submitting after every write.
-  // CloseAndExecute() only needs to be called once, when the buffer is read by
-  // another context operation (ex. input into dispatch). Submitting immediately
-  // prevents memory usage from increasing; however, it also incurs more
-  // overhead due to a near empty command-list getting executed every time.
-  hr = command_recorder_->CloseAndExecute();
-  if (FAILED(hr)) {
-    HandleRecordingError("Failed to close and execute the command list.", hr);
-    return;
+    UploadBufferWithBarrier(command_recorder_.get(), dst_buffer,
+                            std::move(buffer_to_map), src_buffer.size());
+
+    // TODO(crbug.com/40278771): consider not submitting after every write.
+    // CloseAndExecute() only needs to be called once, when the buffer is read
+    // by another context operation (ex. input into dispatch). Submitting
+    // immediately prevents memory usage from increasing; however, it also
+    // incurs more overhead due to a near empty command-list getting executed
+    // every time.
+    hr = command_recorder_->CloseAndExecute();
+    if (FAILED(hr)) {
+      HandleRecordingError("Failed to close and execute the command list.", hr);
+      return;
+    }
+
+    // Since the queue owns the upload buffer, it does not need to be provided
+    // to OnUploadComplete() and will be finally released once the wait is
+    // satisfied.
+    adapter_->command_queue()->WaitAsync(base::BindOnce(
+        &ContextImplDml::OnUploadComplete, weak_factory_.GetWeakPtr()));
   }
-
-  // Since the queue owns the upload buffer, it does not need to be provided
-  // to OnUploadComplete() and will be finally released once the wait is
-  // satisfied.
-  adapter_->command_queue()->WaitAsync(base::BindOnce(
-      &ContextImplDml::OnUploadComplete, weak_factory_.GetWeakPtr()));
 }
 
 void ContextImplDml::OnUploadComplete(HRESULT hr) {

@@ -14,6 +14,7 @@
 namespace webnn::dml {
 
 class Adapter;
+class BufferImplDml;
 class CommandRecorder;
 
 // `ContextImplDml` is created by `WebNNContextProviderImpl` and responsible for
@@ -33,11 +34,10 @@ class ContextImplDml final : public WebNNContextImpl {
 
   ~ContextImplDml() override;
 
-  void ReadBuffer(const WebNNBufferImpl& src_buffer,
+  void ReadBuffer(BufferImplDml* src_buffer,
                   mojom::WebNNBuffer::ReadBufferCallback callback);
 
-  void WriteBuffer(const WebNNBufferImpl& dst_buffer,
-                   mojo_base::BigBuffer src_buffer);
+  void WriteBuffer(BufferImplDml* dst_buffer, mojo_base::BigBuffer src_buffer);
 
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
