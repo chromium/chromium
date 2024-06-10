@@ -62,3 +62,21 @@ TEST_F(BrowserActionsTest, CheckBrowserActionsEnabledState) {
   EXPECT_EQ(action_manager.FindAction(kActionQrCodeGenerator)->GetEnabled(),
             false);
 }
+
+TEST_F(BrowserActionsTest, GetCleanTitleAndTooltipText) {
+  // \u2026 is the unicode hex value for a horizontal ellipsis.
+  const std::u16string expected = u"Print";
+  std::u16string input = u"&Print\u2026";
+  std::u16string output = BrowserActions::GetCleanTitleAndTooltipText(input);
+  EXPECT_EQ(output, expected);
+
+  std::u16string input_middle_amp = u"Pri&nt\u2026";
+  std::u16string output_middle_amp =
+      BrowserActions::GetCleanTitleAndTooltipText(input_middle_amp);
+  EXPECT_EQ(output_middle_amp, expected);
+
+  std::u16string input_ellipsis_text = u"&Print...";
+  std::u16string output_ellipsis_text =
+      BrowserActions::GetCleanTitleAndTooltipText(input_ellipsis_text);
+  EXPECT_EQ(output_ellipsis_text, expected);
+}

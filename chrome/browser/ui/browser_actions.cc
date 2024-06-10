@@ -46,19 +46,19 @@
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
+
 actions::ActionItem::ActionItemBuilder ChromeMenuAction(
     actions::ActionItem::InvokeActionCallback callback,
     actions::ActionId action_id,
     int title_id,
     int tooltip_id,
     const gfx::VectorIcon& icon) {
-  auto clean_text = [](int str_id) {
-    return gfx::RemoveAccelerator(l10n_util::GetStringUTF16(str_id));
-  };
   return actions::ActionItem::Builder(callback)
       .SetActionId(action_id)
-      .SetText(clean_text(title_id))
-      .SetTooltipText(clean_text(tooltip_id))
+      .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          l10n_util::GetStringUTF16(title_id)))
+      .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+          l10n_util::GetStringUTF16(tooltip_id)))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
       .SetProperty(actions::kActionItemPinnableKey, true);
 }
@@ -91,6 +91,23 @@ BrowserActions::~BrowserActions() {
   std::unique_ptr<actions::ActionItem> owned_root_action_item =
       actions::ActionManager::Get().RemoveAction(root_action_item_);
   root_action_item_ = nullptr;
+}
+
+// static
+std::u16string BrowserActions::GetCleanTitleAndTooltipText(
+    std::u16string string) {
+  const std::u16string ellipsis_unicode = u"\u2026";
+  const std::u16string ellipsis_text = u"...";
+
+  auto remove_ellipsis = [&string](const std::u16string ellipsis) {
+    size_t ellipsis_pos = string.find(ellipsis);
+    if (ellipsis_pos != std::u16string::npos) {
+      string.erase(ellipsis_pos);
+    }
+  };
+  remove_ellipsis(ellipsis_unicode);
+  remove_ellipsis(ellipsis_text);
+  return gfx::RemoveAccelerator(string);
 }
 
 void BrowserActions::InitializeBrowserActions() {

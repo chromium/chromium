@@ -20,6 +20,8 @@ class BrowserActions {
   BrowserActions& operator=(const BrowserActions&) = delete;
   ~BrowserActions();
 
+  static std::u16string GetCleanTitleAndTooltipText(std::u16string string);
+
   actions::ActionItem* root_action_item() const { return root_action_item_; }
 
  private:
