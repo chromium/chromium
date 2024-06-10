@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/compiled_action.gni")
 import("//build/config/android/config.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/cpuinfo/cpuinfo.gni")
+import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
@@ -33,6 +35,9 @@ proto_library("tflite_op_resolver_proto") {
 
 config("tflite_config") {
   include_dirs = [
+    # must be first to prefer our flatbuffer codegens over checked-in ones
+    "$root_gen_dir/third_party/tflite/src",
+
     "shims",
     "src",
     "src/third_party/xla",
@@ -201,6 +206,78 @@ tflite_static_library("tflite_builtin_op_resolver") {
   conditional_deps = [ ":tflite" ]
 }
 
+# This one flatbuffer is a special boy. The proto is defined in protobuf schema, because both protobuf
+# and flatbuffers are supported, so it has to be first converted into a flatbuffers schema.
+# This is a supported flatc feature, so that's fine, but then the types generated from a simple
+# conversion would conflict with the ones from protobuf. Upstream solves this with a perl string
+# replace one-liner in their bazel workflow.
+# https://github.com/tensorflow/tensorflow/blob/306833457d32dd27a198ec8f6839b4966f941d4d/tensorflow/lite/acceleration/configuration/BUILD#L45-L49
+# Here, this is recreated with a python script.
+compiled_action("tflite_accel_proto_to_fbs_presed") {
+  tool = "//third_party/flatbuffers:flatc"
+  input = "src/tensorflow/lite/acceleration/configuration/configuration.proto"
+  inputs = [ input ]
+  outputs = [ "$root_gen_dir/pre-sed/third_party/tflite/src/tensorflow/lite/acceleration/configuration/configuration.fbs" ]
+  args = [
+    "--proto",
+    "-o",
+    rebase_path(
+        "$root_gen_dir/pre-sed/third_party/tflite/src/tensorflow/lite/acceleration/configuration",
+        root_build_dir),
+    rebase_path(input, root_build_dir),
+  ]
+}
+action("tflite_accel_proto_to_fbs") {
+  script = "accelerator_proto_to_fbs_sed.py"
+  input = "$root_gen_dir/pre-sed/third_party/tflite/src/tensorflow/lite/acceleration/configuration/configuration.fbs"
+  output = "$root_gen_dir/third_party/tflite/src/tensorflow/lite/acceleration/configuration/configuration.fbs"
+  inputs = [ input ]
+  outputs = [ output ]
+  args = [
+    rebase_path(input, root_build_dir),
+    rebase_path(output, root_build_dir),
+  ]
+  deps = [ ":tflite_accel_proto_to_fbs_presed" ]
+}
+flatbuffer("tflite_flatbuffer_accel_header") {
+  sources = [ "$root_gen_dir/third_party/tflite/src/tensorflow/lite/acceleration/configuration/configuration.fbs" ]
+  flatc_out_dir =
+      "third_party/tflite/src/tensorflow/lite/acceleration/configuration"
+  deps = [ ":tflite_accel_proto_to_fbs" ]
+  args = [ "--gen-object-api" ]
+  flatc_include_dirs = [ "src" ]
+  extra_include_dirs = [ "src" ]
+}
+
+flatbuffer("tflite_flatbuffer_regular_headers") {
+  sources = [
+    "src/tensorflow/compiler/mlir/lite/schema/schema.fbs",
+    "src/tensorflow/lite/delegates/gpu/cl/compiled_program_cache.fbs",
+    "src/tensorflow/lite/delegates/gpu/cl/serialization.fbs",
+    "src/tensorflow/lite/delegates/gpu/common/gpu_model.fbs",
+    "src/tensorflow/lite/delegates/gpu/common/task/serialization_base.fbs",
+    "src/tensorflow/lite/schema/conversion_metadata.fbs",
+  ]
+  args = [ "--gen-object-api" ]
+  flatc_include_dirs = [ "src" ]
+  extra_include_dirs = [ "src" ]
+}
+
+# Both paths are referred to in the source code, for legacy reasons.
+copy("tflite_flatbuffer_schema_header_copy") {
+  deps = [ ":tflite_flatbuffer_regular_headers" ]
+  sources = [ "$root_gen_dir/third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h" ]
+  outputs = [ "$root_gen_dir/third_party/tflite/src/tensorflow/lite/schema/schema_generated.h" ]
+}
+
+group("tflite_flatbuffer_headers") {
+  public_deps = [
+    ":tflite_flatbuffer_accel_header",
+    ":tflite_flatbuffer_regular_headers",
+    ":tflite_flatbuffer_schema_header_copy",
+  ]
+}
+
 source_set("tflite_public_headers") {
   public = [
     "src/tensorflow/compiler/mlir/lite/schema/schema_utils.h",
@@ -232,6 +309,7 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/string_util.h",
     "src/tensorflow/lite/util.h",
   ]
+  public_deps = [ ":tflite_flatbuffer_headers" ]
 
   configs += [ ":tflite_flags" ]
 }

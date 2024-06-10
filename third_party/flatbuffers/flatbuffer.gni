@@ -42,6 +42,10 @@
 #       A list of config labels that will be appended to the configs applying
 #       to the source set.
 #
+#   extra_include_dirs (optional)
+#       A list of include dirs (relative to the root path of generated sources)
+#       that will be appended to the configs applying to the source set.
+#
 #   testonly (optional)
 #       Boolean to indicate whether the generated source sets should be labeled
 #       as testonly.
@@ -70,8 +74,10 @@ template("flatbuffer") {
 
     if (defined(invoker.flatc_out_dir)) {
       out_dir = "$root_gen_dir/" + invoker.flatc_out_dir
+      out_dir_relative = rebase_path(out_dir, root_build_dir)
     } else {
       out_dir = "{{source_gen_dir}}"
+      out_dir_relative = out_dir
     }
 
     outputs = [ "$out_dir/{{source_name_part}}_generated.h" ]
@@ -80,7 +86,7 @@ template("flatbuffer") {
       "-c",
       "--keep-prefix",
       "-o",
-      "$out_dir",
+      out_dir_relative,
       "-I",
       rebase_path("//", root_build_dir),
     ]
@@ -121,6 +127,19 @@ template("flatbuffer") {
 
     if (defined(invoker.extra_configs)) {
       configs += invoker.extra_configs
+    }
+
+    if (defined(invoker.extra_include_dirs)) {
+      if (defined(invoker.flatc_out_dir)) {
+        _out_dir = "$root_gen_dir/" + invoker.flatc_out_dir
+      } else {
+        _out_dir = root_gen_dir
+      }
+
+      include_dirs = []
+      foreach(include_dir, invoker.extra_include_dirs) {
+        include_dirs += [ _out_dir + "/" + include_dir ]
+      }
     }
 
     if (defined(invoker.testonly)) {
