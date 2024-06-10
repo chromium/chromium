@@ -8151,7 +8151,7 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
         continue;
       }
     }
-    return nullptr;
+    break;
   } while (!range.AtEnd());
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -8160,6 +8160,9 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   }
   if (scroll_state_value) {
     list->Append(*scroll_state_value);
+  }
+  if (list->length() == 0) {
+    return nullptr;
   }
   return list;
 }
