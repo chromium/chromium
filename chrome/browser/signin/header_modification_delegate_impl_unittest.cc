@@ -161,8 +161,8 @@ void SetValidRegistrationHeader(TestResponseAdapter* response_adapter) {
 void SetValidRegistrationListHeader(TestResponseAdapter* response_adapter) {
   response_adapter->SetHeader(
       "Sec-Session-Google-Registration-List",
-      "\"startsession\";es256;challenge=\"Y2hhbGxlbmdl\","
-      "\"startsession2\";es256;challenge=\"Y2hhbGxlbmdlMg==\"");
+      "(ES256);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\","
+      "(ES256);path=\"startsession2\";challenge=\"Y2hhbGxlbmdlMg==\"");
 }
 
 class BoundSessionHeaderModificationDelegateImplTest : public testing::Test {

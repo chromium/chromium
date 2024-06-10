@@ -54,8 +54,7 @@ class BoundSessionRegistrationFetcherParam {
  private:
   static std::optional<BoundSessionRegistrationFetcherParam> ParseListItem(
       const GURL& request_url,
-      const net::structured_headers::Item& item,
-      const net::structured_headers::Parameters& params);
+      const net::structured_headers::ParameterizedMember& item);
   static std::vector<BoundSessionRegistrationFetcherParam>
   MaybeCreateFromListHeader(const GURL& request_url,
                             std::string_view header_value);
