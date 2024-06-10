@@ -355,7 +355,9 @@ void TrustSafetySentimentService::InteractedWithPageInfo() {
 }
 
 void TrustSafetySentimentService::PageInfoClosed() {
-  DCHECK(page_info_state_);
+  if (!page_info_state_) {
+    return;
+  }
 
   base::TimeDelta threshold =
       base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)
