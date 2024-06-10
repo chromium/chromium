@@ -14,24 +14,31 @@ namespace performance_manager {
 // static
 base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>
 GraphImplOperations::GetAssociatedPageNodes(const ProcessNodeImpl* process) {
-  base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>> page_nodes;
+  std::vector<raw_ptr<PageNodeImpl, CtnExperimental>> page_nodes;
+  page_nodes.reserve(process->frame_nodes().size());
+
   for (FrameNodeImpl* frame_node : process->frame_nodes()) {
-    page_nodes.insert(frame_node->page_node());
+    page_nodes.push_back(frame_node->page_node());
   }
-  return page_nodes;
+
+  return base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>(
+      std::move(page_nodes));
 }
 
 // static
 base::flat_set<raw_ptr<ProcessNodeImpl, CtnExperimental>>
 GraphImplOperations::GetAssociatedProcessNodes(const PageNodeImpl* page) {
-  base::flat_set<raw_ptr<ProcessNodeImpl, CtnExperimental>> process_nodes;
+  std::vector<raw_ptr<ProcessNodeImpl, CtnExperimental>> process_nodes;
+  process_nodes.reserve(10);  // Avoid resizing in most cases.
+
   VisitFrameTreePreOrder(page,
                          [&process_nodes](FrameNodeImpl* frame_node) -> bool {
-                           if (auto* process_node = frame_node->process_node())
-                             process_nodes.insert(process_node);
+                           process_nodes.push_back(frame_node->process_node());
                            return true;
                          });
-  return process_nodes;
+
+  return base::flat_set<raw_ptr<ProcessNodeImpl, CtnExperimental>>(
+      std::move(process_nodes));
 }
 
 // static
