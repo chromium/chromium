@@ -628,6 +628,27 @@
     <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_DETAILS" desc="Paragraph section disclaiming to the user what their organization can do with their device information.">
       To make sure this device can be used safely, your organization may need to see information about its operating system, browser, and settings, and what software is installed on the device.
     </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that a work profile is being created for them.">
+      Setting up your work profile ...
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_TITLE" desc="Title of a section telling the user that their work profile has been created..">
+      Your work profile is ready
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_SUBTITLE" desc="Subtitle of a section telling the user that their work profile has been created.">
+      You are ready to use your profile for work
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_TITLE" desc="Title of a section telling the user that their work profile was created but is not fully ready yet.">
+      Your profile setup is almost done
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
+      We're getting your workspace ready! Feel free to explore in the meantime and we'll be ready for you soon.
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
+      Something went wrong
+    </message>
+    <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
+      You can try again or contact your administrator or help
+    </message>
 
     <!-- Profile Picker -->
     <message name="IDS_PROFILE_PICKER_ADD_SPACE_BUTTON" desc="Text for the add space button on the profile picker main view">
