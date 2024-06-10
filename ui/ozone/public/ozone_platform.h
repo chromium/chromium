@@ -214,6 +214,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
     // Wayland only: whether bubble widgets can use platform objects.
     bool supports_subwindows_as_accelerated_widgets = false;
+
+    // Indicates whether the platform supports system-controlled per-window
+    // scaling.
+    bool supports_per_window_scaling = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

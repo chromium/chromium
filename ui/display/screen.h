@@ -6,6 +6,7 @@
 #define UI_DISPLAY_SCREEN_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -99,11 +100,19 @@ class DISPLAY_EXPORT Screen {
   // Returns the display nearest the specified window.
   // If the window is NULL or the window is not rooted to a display this will
   // return the primary display.
+  //
+  // Warning: When determining which scale factor to use for a given native
+  // window, use `GetPreferredScaleFactorForWindow` instead, as it properly
+  // supports system-controlled per-window scaling, such as Wayland.
   virtual Display GetDisplayNearestWindow(gfx::NativeWindow window) const = 0;
 
   // Returns the display nearest the specified view. It may still use the window
   // that contains the view (i.e. if a window is spread over two displays,
   // the location of the view within that window won't influence the result).
+  //
+  // Warning: When determining which scale factor to use for a given native
+  // view, use `GetPreferredScaleFactorForView` instead, as it properly
+  // supports system-controlled per-window scaling, such as Wayland.
   virtual Display GetDisplayNearestView(gfx::NativeView view) const;
 
   // Returns the display nearest the specified DIP |point|.
@@ -195,6 +204,14 @@ class DISPLAY_EXPORT Screen {
   // other system properties related to the compositing.
   virtual base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
+
+  // Returns the preferred scale factor for |window|, if the underlying platform
+  // supports per-window scaling, otherwise returns the scale factor of display
+  // nearst to |window|, using GetDisplayNearest[Window|View].
+  virtual std::optional<float> GetPreferredScaleFactorForWindow(
+      gfx::NativeWindow window) const;
+  virtual std::optional<float> GetPreferredScaleFactorForView(
+      gfx::NativeView view) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns tablet state.

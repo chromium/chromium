@@ -80,6 +80,11 @@ Display DisplayAndroidManager::GetDisplayMatching(
   return GetPrimaryDisplay();
 }
 
+std::optional<float> DisplayAndroidManager::GetPreferredScaleFactorForView(
+    gfx::NativeView view) const {
+  return GetDisplayNearestView(view).device_scale_factor();
+}
+
 void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             gfx::Size size_in_pixels,
                                             float dipScale,
