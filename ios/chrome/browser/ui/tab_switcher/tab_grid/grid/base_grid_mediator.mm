@@ -331,7 +331,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   _scopedWebStateObservation->RemoveObservation(webState);
 }
 
-- (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL {
+- (void)insertNewWebStateAtGridIndex:(int)index withURL:(const GURL&)newTabURL {
   // The incognito mediator's Browser is briefly set to nil after the last
   // incognito tab is closed.  This occurs because the incognito BrowserState
   // needs to be destroyed to correctly clear incognito browsing data.  Don't
@@ -354,13 +354,18 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   web::WebState::CreateParams params(self.browserState);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
+  int webStateListIndex =
+      WebStateIndexFromGridDropItemIndex(self.webStateList, index);
+  webStateListIndex =
+      std::clamp(webStateListIndex, 0, self.webStateList->count());
+
   web::NavigationManager::WebLoadParams loadParams(newTabURL);
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   self.webStateList->InsertWebState(
       std::move(webState),
-      WebStateList::InsertionParams::AtIndex(index).Activate());
+      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
@@ -744,8 +749,10 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return NO;
   }
 
-  [self insertNewWebStateAtIndex:self.webStateList->count()
-                         withURL:GURL(kChromeUINewTabURL)];
+  // The function is clamping the value, so it safe to pass the total count of
+  // the WebState even if it is supposed to be a grid index.
+  [self insertNewWebStateAtGridIndex:self.webStateList->count()
+                             withURL:GURL(kChromeUINewTabURL)];
   return YES;
 }
 
@@ -1284,10 +1291,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
     URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
-    int destinationWebStateIndex =
-        WebStateIndexFromGridDropItemIndex(self.webStateList, destinationIndex);
-    [self insertNewWebStateAtIndex:destinationWebStateIndex
-                           withURL:droppedURL.URL];
+    [self insertNewWebStateAtGridIndex:destinationIndex withURL:droppedURL.URL];
     return;
   }
 }
@@ -1301,15 +1305,13 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return;
   }
 
-  int destinationWebStateIndex =
-      WebStateIndexFromGridDropItemIndex(self.webStateList, destinationIndex);
   auto loadHandler =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
           [placeholderContext deletePlaceholder];
           NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-          [self insertNewWebStateAtIndex:destinationWebStateIndex
-                                 withURL:net::GURLWithNSURL(droppedURL)];
+          [self insertNewWebStateAtGridIndex:destinationIndex
+                                     withURL:net::GURLWithNSURL(droppedURL)];
         });
       };
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];

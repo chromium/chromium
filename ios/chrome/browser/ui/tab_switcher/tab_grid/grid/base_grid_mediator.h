@@ -107,8 +107,9 @@ class WebState;
 - (void)addObservationForWebState:(web::WebState*)webState;
 - (void)removeObservationForWebState:(web::WebState*)webState;
 
-// Inserts a new WebState at the given WebStateList `index`.
-- (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL;
+// Inserts a new WebState at the given grid `index` with `newTabURL`. This is
+// clamping the index to make sure it is in correct bounds.
+- (void)insertNewWebStateAtGridIndex:(int)index withURL:(const GURL&)newTabURL;
 
 // Inserts `item` before the WebState at `nextWebStateIndex`.
 - (void)insertItem:(GridItemIdentifier*)item

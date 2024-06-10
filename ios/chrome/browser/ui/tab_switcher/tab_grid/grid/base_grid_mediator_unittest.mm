@@ -4,11 +4,22 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+#import <memory>
+
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -16,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
@@ -27,14 +39,19 @@
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
-#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
+
+// URL to be used for drag and drop tests.
+const char kDraggedUrl[] = "https://dragged_url.com";
 
 // BaseGridMediatorTest is parameterized on this enum to test all children
 // mediator.
@@ -784,6 +801,195 @@ TEST_P(BaseGridMediatorTest, SelectionAfterChangingGroup) {
   web_state_list->MoveToGroup({1}, group1);
   ASSERT_EQ("| [ 1 b c* ] [ 2 a ]", builder.GetWebStateListDescription());
   EXPECT_EQ(group1, consumer_.selectedItem.tabGroupItem.tabGroup);
+}
+
+// Tests dropping a local tab (e.g. drag from same window) in the grid.
+TEST_P(BaseGridMediatorTest, DropLocalTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:YES];
+
+  EXPECT_EQ("| c a* b", builder.GetWebStateListDescription());
+}
+
+// Tests dropping a tab from another browser (e.g. drag from another window) in
+// the grid.
+TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
+  auto other_browser = std::make_unique<TestBrowser>(
+      browser_state_.get(), scene_state_,
+      std::make_unique<BrowserWebStateListDelegate>());
+  SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
+
+  browser_list_->AddBrowser(other_browser.get());
+
+  GURL url_to_load = GURL(kDraggedUrl);
+  std::unique_ptr<web::FakeWebState> other_web_state =
+      CreateFakeWebStateWithURL(url_to_load);
+  web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
+  other_browser->GetWebStateList()->InsertWebState(std::move(other_web_state));
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  id local_object = [[TabInfo alloc]
+      initWithTabID:other_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:NO];
+
+  EXPECT_EQ(4, web_state_list->count());
+  EXPECT_EQ(0, other_browser->GetWebStateList()->count());
+  EXPECT_EQ(url_to_load, web_state_list->GetWebStateAt(1)->GetVisibleURL());
+}
+
+// Tests dropping a local Tab Group (i.e. from the same window).
+TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| [ 1 a* b ] c [ 2 d e ]", browser_->GetBrowserState()));
+
+  const TabGroup* tab_group = web_state_list->GetGroupOfWebStateAt(4);
+
+  id local_object =
+      [[TabGroupInfo alloc] initWithTabGroup:tab_group
+                                   incognito:browser_state_->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
+
+  EXPECT_EQ("| [ 1 a* b ] [ 2 d e ] c", builder.GetWebStateListDescription());
+}
+
+// Tests dropping a Tab Group from another browser (i.e. from the same window).
+TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+
+  // Prepare the web state list in which the group will be dropped.
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| [ 1 a* b ] c [ 2 d e ]", browser_->GetBrowserState()));
+
+  // Prepare the other web state list, from which the group will be dragged.
+  auto other_browser = std::make_unique<TestBrowser>(
+      browser_state_.get(), scene_state_,
+      std::make_unique<BrowserWebStateListDelegate>());
+  SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
+
+  browser_list_->AddBrowser(other_browser.get());
+
+  GURL url_to_load = GURL(kDraggedUrl);
+  other_browser->GetWebStateList()->InsertWebState(
+      CreateFakeWebStateWithURL(url_to_load));
+  other_browser->GetWebStateList()->CreateGroup({0}, {});
+
+  const TabGroup* other_tab_group =
+      other_browser->GetWebStateList()->GetGroupOfWebStateAt(0);
+
+  id local_object =
+      [[TabGroupInfo alloc] initWithTabGroup:other_tab_group
+                                   incognito:browser_state_->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:2 fromSameCollection:NO];
+
+  EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(other_tab_group, web_state_list->GetGroupOfWebStateAt(3));
+}
+
+// Tests dropping an interal URL (e.g. drag from omnibox) in the grid.
+TEST_P(BaseGridMediatorTest, DropInternalURL) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  GURL url_to_load = GURL(kDraggedUrl);
+  id local_object = [[URLInfo alloc] initWithURL:url_to_load title:@"My title"];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
+
+  EXPECT_EQ(4, web_state_list->count());
+  web::WebState* web_state = web_state_list->GetWebStateAt(1);
+  EXPECT_EQ(url_to_load,
+            web_state->GetNavigationManager()->GetPendingItem()->GetURL());
+}
+
+// Tests dropping an external URL in the grid.
+TEST_P(BaseGridMediatorTest, DropExternalURL) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  NSItemProvider* item_provider = [[NSItemProvider alloc]
+      initWithContentsOfURL:[NSURL URLWithString:base::SysUTF8ToNSString(
+                                                     kDraggedUrl)]];
+
+  // Drop item.
+  [mediator_ dropItemFromProvider:item_provider
+                          toIndex:1
+               placeholderContext:nil];
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), ^bool(void) {
+        return web_state_list->count() == 4;
+      }));
+  web::WebState* web_state = web_state_list->GetWebStateAt(1);
+  EXPECT_EQ(GURL(kDraggedUrl),
+            web_state->GetNavigationManager()->GetPendingItem()->GetURL());
 }
 
 INSTANTIATE_TEST_SUITE_P(

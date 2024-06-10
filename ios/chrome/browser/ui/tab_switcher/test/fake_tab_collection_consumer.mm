@@ -3,19 +3,26 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+
 #import "base/check.h"
-
+#import "base/notreached.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
-
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
 
 @implementation FakeTabCollectionConsumer {
   std::vector<web::WebStateID> _items;
+  std::vector<const TabGroup*> _groups;
 }
 
 - (const std::vector<web::WebStateID>&)items {
   return _items;
+}
+
+- (const std::vector<const TabGroup*>&)groups {
+  return _groups;
 }
 
 - (void)setItemsRequireAuthentication:(BOOL)require {
@@ -27,8 +34,16 @@
   _selectedItem = selectedItemIdentifier;
   _items.clear();
   for (GridItemIdentifier* item in items) {
-    CHECK(item.type == GridItemType::Tab);
-    _items.push_back(item.tabSwitcherItem.identifier);
+    switch (item.type) {
+      case GridItemType::Tab:
+        _items.push_back(item.tabSwitcherItem.identifier);
+        break;
+      case GridItemType::Group:
+        _groups.push_back(item.tabGroupItem.tabGroup);
+        break;
+      case GridItemType::SuggestedActions:
+        NOTREACHED_NORETURN();
+    }
   }
 }
 

@@ -31,6 +31,7 @@ source_set("fakes") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
