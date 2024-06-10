@@ -360,9 +360,7 @@ source_set("web_applications") {
       "web_app_run_on_os_login_manager.cc",
       "web_app_run_on_os_login_manager.h",
     ]
-  }
-
-  if (!is_chromeos) {
+  } else {
     sources += [
       "jobs/link_capturing.cc",
       "jobs/link_capturing.h",
@@ -456,6 +454,7 @@ source_set("web_applications") {
     "//components/browsing_data/content",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/crx_file",
     "//components/custom_handlers",
     "//components/device_event_log",
     "//components/keep_alive_registry:keep_alive_registry",
@@ -496,9 +495,6 @@ source_set("web_applications") {
     "//ui/events/devices:devices",
     "//url",
   ]
-
-  # TODO(crbug.com/40775647): Clean up this legacy crx dependency.
-  deps += [ "//components/crx_file" ]
 
   if (is_chrome_branded) {
     sources += [
@@ -700,7 +696,6 @@ source_set("web_applications_test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//components/base32",
-    "//components/crx_file:crx_file",
     "//components/keyed_service/content",
     "//components/services/app_service",
     "//components/sync:test_support",
@@ -900,9 +895,7 @@ source_set("web_applications_unit_tests") {
       "os_integration/web_app_run_on_os_login_chromeos_unittest.cc",
       "web_app_run_on_os_login_manager_unittest.cc",
     ]
-  }
-
-  if (!is_chromeos) {
+  } else {
     sources += [ "jobs/link_capturing_unittest.cc" ]
   }
 
