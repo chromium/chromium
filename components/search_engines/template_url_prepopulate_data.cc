@@ -13,6 +13,7 @@
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -166,6 +167,35 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
   return t_urls;
 }
 
+std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
+    PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    int prepopulated_id,
+    bool use_first_as_fallback) {
+  // This could be more efficient. We load all URLs but keep only one.
+  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_engines =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs, search_engine_choice_service);
+  if (prepopulated_engines.empty()) {
+    // Not expected to be a real possibility, branch to be removed when this is
+    // verified.
+    NOTREACHED(base::NotFatalUntil::M132);
+    return nullptr;
+  }
+
+  for (auto& engine : prepopulated_engines) {
+    if (engine->prepopulate_id == prepopulated_id) {
+      return std::move(engine);
+    }
+  }
+
+  if (use_first_as_fallback) {
+    return std::move(prepopulated_engines[0]);
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 // Global functions -----------------------------------------------------------
@@ -193,41 +223,36 @@ int GetDataVersion(PrefService* prefs) {
 
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
-    size_t* default_search_provider_index) {
+    search_engines::SearchEngineChoiceService* search_engine_choice_service) {
   // If there is a set of search engines in the preferences file, it overrides
   // the built-in set.
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       GetOverriddenTemplateURLData(prefs);
-  if (t_urls.empty()) {
+  if (!t_urls.empty()) {
+    return t_urls;
+  }
+
+  int country_id;
+  if (search_engine_choice_service) {
+    country_id = search_engine_choice_service->GetCountryId();
+  } else {
     // `search_engine_choice_service` (and `prefs`) can be null in tests.
-    // TODO(b/318801987): Make sure `prefs` and `search_engine_choice_service`
-    //                    are always not null.
-    int country_id = search_engine_choice_service
-                         ? search_engine_choice_service->GetCountryId()
-                         : country_codes::GetCurrentCountryID();
-    t_urls = GetPrepopulatedTemplateURLData(country_id, prefs);
+    // TODO(crbug.com/40287734): Make sure `prefs` and
+    // `search_engine_choice_service` are always not null.
+    CHECK_IS_TEST();
+    country_id = country_codes::GetCurrentCountryID();
   }
-  if (default_search_provider_index) {
-    const auto itr =
-        base::ranges::find(t_urls, google.id, &TemplateURLData::prepopulate_id);
-    *default_search_provider_index =
-        itr == t_urls.end() ? 0 : std::distance(t_urls.begin(), itr);
-  }
-  return t_urls;
+
+  return GetPrepopulatedTemplateURLData(country_id, prefs);
 }
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     int prepopulated_id) {
-  auto engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      prefs, search_engine_choice_service, nullptr);
-  for (auto& engine : engines) {
-    if (engine->prepopulate_id == prepopulated_id)
-      return std::move(engine);
-  }
-  return nullptr;
+  return FindPrepopulatedEngineInternal(prefs, search_engine_choice_service,
+                                        prepopulated_id,
+                                        /*use_first_as_fallback=*/false);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -296,18 +321,12 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
   prefs->ClearPref(prefs::kSearchProviderOverridesVersion);
 }
 
-std::unique_ptr<TemplateURLData> GetPrepopulatedDefaultSearch(
+std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service) {
-  size_t default_search_index;
-  // This could be more efficient.  We load all URLs but keep only the default.
-  std::vector<std::unique_ptr<TemplateURLData>> loaded_urls =
-      GetPrepopulatedEngines(prefs, search_engine_choice_service,
-                             &default_search_index);
-
-  return (default_search_index < loaded_urls.size())
-             ? std::move(loaded_urls[default_search_index])
-             : nullptr;
+  return FindPrepopulatedEngineInternal(prefs, search_engine_choice_service,
+                                        google.id,
+                                        /*use_first_as_fallback=*/true);
 }
 
 std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines() {

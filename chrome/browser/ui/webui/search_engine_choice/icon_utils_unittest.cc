@@ -53,7 +53,7 @@ TEST_F(IconUtilsTest, GetSearchEngineGeneratedIconPath) {
     pref_service()->SetInteger(country_codes::kCountryIDAtInstall, country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
-            pref_service(), search_engine_choice_service(), nullptr);
+            pref_service(), search_engine_choice_service());
     for (const std::unique_ptr<TemplateURLData>& url : urls) {
       EXPECT_FALSE(GetSearchEngineGeneratedIconPath(url->keyword()).empty())
           << "Missing icon for " << url->keyword() << ". Try re-running "

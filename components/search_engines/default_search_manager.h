@@ -175,7 +175,7 @@ class DefaultSearchManager {
   void OnDefaultSearchPrefChanged();
 
   // Handles changes to kSearchProviderOverrides pref. Calls
-  // LoadPrepopulatedDefaultSearch() and NotifyObserver() if the effective DSE
+  // LoadPrepopulatedFallbackSearch() and NotifyObserver() if the effective DSE
   // might have changed.
   void OnOverridesPrefChanged();
 
@@ -192,7 +192,7 @@ class DefaultSearchManager {
   // Reads pre-populated search providers, which will be built-in or overridden
   // by kSearchProviderOverrides. Updates |fallback_default_search_|. Invoke
   // MergePrefsDataWithPrepopulated().
-  void LoadPrepopulatedDefaultSearch();
+  void LoadPrepopulatedFallbackSearch();
 
   // Invokes |change_observer_| if it is not NULL.
   void NotifyObserver();

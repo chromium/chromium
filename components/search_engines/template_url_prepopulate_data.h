@@ -52,12 +52,9 @@ int GetDataVersion(PrefService* prefs);
 // Returns the prepopulated URLs for the current country.
 // `search_engine_choice_service` is used for obtaining the country code and
 // shouldn't be null outside of tests.
-// If |default_search_provider_index| is non-null, it is set to the index of the
-// default search provider within the returned vector.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
-    size_t* default_search_provider_index);
+    search_engines::SearchEngineChoiceService* search_engine_choice_service);
 
 // Returns the prepopulated search engine with the given |prepopulated_id|
 // from the profile country's known prepopulated search engines, or `nullptr`
@@ -91,13 +88,16 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
 // Removes prepopulated engines and their version stored in user prefs.
 void ClearPrepopulatedEnginesInPrefs(PrefService* prefs);
 
-// Returns the default search provider specified by the prepopulate data, which
-// may be NULL.
-// If |prefs| is NULL, any search provider overrides from the preferences are
-// not used.
+// Returns the fallback default search provider, currently hardcoded to be
+// Google, or whichever one is the first of the list if Google is not in the
+// list of prepopulated search engines.
+// Search provider overrides are read from `prefs`, so they won't be used if
+// it's null.
 // `search_engine_choice_service` is used for obtaining the country code and
 // shouldn't be null outside of tests.
-std::unique_ptr<TemplateURLData> GetPrepopulatedDefaultSearch(
+// May return `nullptr` if for some reason there are no prepopulated search
+// engines available.
+std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service);
 

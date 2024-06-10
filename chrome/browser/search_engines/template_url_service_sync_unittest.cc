@@ -1896,7 +1896,7 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
   std::vector<std::unique_ptr<TemplateURLData>> prepop_turls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           profile_a()->GetTestingPrefService(),
-          test_util_a_->search_engine_choice_service(), nullptr);
+          test_util_a_->search_engine_choice_service());
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
       TemplateURLStarterPackData::GetStarterPackEngines();
@@ -2124,7 +2124,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr));
 
@@ -2149,7 +2149,7 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
                                     syncer::SyncDataList(), PassProcessor());
 
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr));
   std::unique_ptr<TemplateURL> sync_turl = CopyTemplateURL(
@@ -2170,7 +2170,7 @@ TEST_F(TemplateURLServiceSyncTest, AddPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr));
 
@@ -2202,7 +2202,7 @@ TEST_F(TemplateURLServiceSyncTest, UpdatePrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr));
 
@@ -2232,7 +2232,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeEditedPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr));
 
@@ -2296,7 +2296,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr);
 
@@ -2348,7 +2348,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr);
 
@@ -2419,7 +2419,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr);
 
@@ -2490,7 +2490,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr);
 
@@ -2561,7 +2561,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
   const TemplateURLData default_data =
-      *TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      *TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr);
 
@@ -2632,7 +2632,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
 
 TEST_F(TemplateURLServiceSyncTest, MergeNonEditedPrepopulatedEngine) {
   std::unique_ptr<TemplateURLData> default_turl(
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           /*prefs=*/nullptr,
           /*search_engine_choice_service=*/nullptr));
 

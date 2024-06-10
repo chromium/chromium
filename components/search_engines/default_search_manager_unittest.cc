@@ -19,6 +19,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/choice_made_location.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -166,7 +167,6 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
 
 // Test DefaultSearchmanager handles user-selected DSEs correctly.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
-  size_t default_search_index = 0;
   DefaultSearchManager manager(pref_service(), search_engine_choice_service(),
                                DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -174,13 +174,16 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
                                /*for_lacros_main_profile=*/false
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service(), search_engine_choice_service(),
-          &default_search_index);
+  std::unique_ptr<TemplateURLData> fallback_t_url_data =
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+          pref_service(), search_engine_choice_service());
+  EXPECT_EQ(fallback_t_url_data->keyword(),
+            TemplateURLPrepopulateData::google.keyword);
+  EXPECT_EQ(fallback_t_url_data->prepopulate_id,
+            TemplateURLPrepopulateData::google.id);
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_POLICY;
   // If no user pref is set, we should use the pre-populated values.
-  ExpectSimilar(prepopulated_urls[default_search_index].get(),
+  ExpectSimilar(fallback_t_url_data.get(),
                 manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 
@@ -213,7 +216,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   // Clearing the user pref should cause the default search to revert to the
   // prepopulated vlaues.
   manager.ClearUserSelectedDefaultSearchEngine();
-  ExpectSimilar(prepopulated_urls[default_search_index].get(),
+  ExpectSimilar(fallback_t_url_data.get(),
                 manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 }
@@ -221,7 +224,6 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
 // Test that DefaultSearch manager detects changes to kSearchProviderOverrides.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
   SetOverrides(pref_service(), false);
-  size_t default_search_index = 0;
   DefaultSearchManager manager(pref_service(), search_engine_choice_service(),
                                DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -229,23 +231,28 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
                                /*for_lacros_main_profile=*/false
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service(), search_engine_choice_service(),
-          &default_search_index);
+  std::unique_ptr<TemplateURLData> fallback_t_url_data =
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+          pref_service(), search_engine_choice_service());
+  EXPECT_NE(fallback_t_url_data->keyword(),
+            TemplateURLPrepopulateData::google.keyword);
+  EXPECT_NE(fallback_t_url_data->prepopulate_id,
+            TemplateURLPrepopulateData::google.id);
 
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_POLICY;
+  EXPECT_TRUE(manager.GetDefaultSearchEngine(&source));
   TemplateURLData first_default(*manager.GetDefaultSearchEngine(&source));
-  ExpectSimilar(prepopulated_urls[default_search_index].get(), &first_default);
+  ExpectSimilar(fallback_t_url_data.get(), &first_default);
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 
   // Update the overrides:
   SetOverrides(pref_service(), true);
-  prepopulated_urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      pref_service(), search_engine_choice_service(), &default_search_index);
+  fallback_t_url_data =
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+          pref_service(), search_engine_choice_service());
 
   // Make sure DefaultSearchManager updated:
-  ExpectSimilar(prepopulated_urls[default_search_index].get(),
+  ExpectSimilar(fallback_t_url_data.get(),
                 manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
   EXPECT_NE(manager.GetDefaultSearchEngine(nullptr)->short_name(),
