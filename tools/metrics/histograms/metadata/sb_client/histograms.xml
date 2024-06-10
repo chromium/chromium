@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
-    enum="BooleanReady" expires_after="2024-07-24">
+    enum="BooleanReady" expires_after="2025-07-24">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
