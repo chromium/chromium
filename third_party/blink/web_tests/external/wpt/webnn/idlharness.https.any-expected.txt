@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
-Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Not implemented"
-[FAIL] NavigatorML must be primary interface of navigator
-  assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
-[FAIL] Stringification of navigator
-  assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object Navigator]"
 [FAIL] MLGraph must be primary interface of graph
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
 [FAIL] Stringification of graph

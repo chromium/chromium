@@ -1,13 +1,7 @@
 This is a testharness.js-based test.
-Found 324 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 321 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "ReferenceError: MLGraphBuilder is not defined"
-[FAIL] NavigatorML must be primary interface of navigator
-  assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
-[FAIL] Stringification of navigator
-  assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object WorkerNavigator]"
-[FAIL] NavigatorML interface: navigator must not have property "ml"
-  assert_false: expected false got true
 [FAIL] MLActivation interface: existence and properties of interface object
   assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
 [FAIL] MLActivation interface object length
