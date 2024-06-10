@@ -11021,6 +11021,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4994" label="TextSizeAdjustNotAuto"/>
   <int value="4995" label="TextSizeAdjustPercentNot100"/>
   <int value="4996" label="ServiceWorkerAutoPreload"/>
+  <int value="4997" label="V8InvalidatedNoUndetectableObjectsProtector"/>
+  <int value="4998" label="V8DocumentAllLegacyCall"/>
+  <int value="4999" label="V8DocumentAllLegacyConstruct"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

@@ -357,6 +357,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmModuleCompilation:
       blink_feature = WebFeature::kWebAssemblyModuleCompilation;
       break;
+    case v8::Isolate::kInvalidatedNoUndetectableObjectsProtector:
+      blink_feature = WebFeature::kV8InvalidatedNoUndetectableObjectsProtector;
+      break;
     case v8::Isolate::kWasmJavaScriptPromiseIntegration:
       blink_feature = WebFeature::kV8WasmJavaScriptPromiseIntegration;
       break;
@@ -377,6 +380,12 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kWasmTypedFuncRef:
       blink_feature = WebFeature::kV8WasmTypedFuncRef;
+      break;
+    case v8::Isolate::kDocumentAllLegacyCall:
+      blink_feature = WebFeature::kV8DocumentAllLegacyCall;
+      break;
+    case v8::Isolate::kDocumentAllLegacyConstruct:
+      blink_feature = WebFeature::kV8DocumentAllLegacyConstruct;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink
