@@ -161,8 +161,7 @@ inline constexpr int kAccountUpmMinGmsVersion = 223012000;
 // feature guard remaining on automotive!
 inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
     "min_gms_version_for_auto";
-inline constexpr int kDefaultLocalUpmMinGmsVersionForAuto =
-    std::numeric_limits<int>::max();
+inline constexpr int kDefaultLocalUpmMinGmsVersionForAuto = 241512000;
 // Helper function returning the status of
 // `UnifiedPasswordManagerSyncOnlyInGMSCore`.
 bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
