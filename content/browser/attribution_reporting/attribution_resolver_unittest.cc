@@ -18,8 +18,7 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +26,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
@@ -164,12 +162,12 @@ MATCHER_P(CreateReportMaxAggregatableReportsLimitIs, matcher, "") {
 class AttributionResolverTest : public testing::Test {
  public:
   AttributionResolverTest() {
-    EXPECT_TRUE(dir_.CreateUniqueTempDir());
     auto delegate = std::make_unique<ConfigurableStorageDelegate>();
     delegate->set_report_delay(kReportDelay);
     delegate_ = delegate.get();
-    storage_ = std::make_unique<AttributionResolverImpl>(dir_.GetPath(),
-                                                       std::move(delegate));
+    // Use an empty path for an in-memory database for performance.
+    storage_ = std::make_unique<AttributionResolverImpl>(base::FilePath(),
+                                                         std::move(delegate));
   }
 
   AttributionReport GetExpectedAggregatableReport(
@@ -210,43 +208,11 @@ class AttributionResolverTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir dir_;
 
  private:
   std::unique_ptr<AttributionResolver> storage_;
   raw_ptr<ConfigurableStorageDelegate> delegate_;
 };
-
-TEST_F(AttributionResolverTest, StorageUsedAfterFailedInitialization_NoCrash) {
-  const base::FilePath db_path =
-      dir_.GetPath().Append(FILE_PATH_LITERAL("Conversions"));
-
-  // We create a failed initialization by writing a dir to the database file
-  // path.
-  ASSERT_TRUE(base::CreateDirectoryAndGetError(db_path, nullptr));
-
-  std::unique_ptr<AttributionResolver> storage =
-      std::make_unique<AttributionResolverImpl>(
-          dir_.GetPath(), std::make_unique<ConfigurableStorageDelegate>());
-
-  // Test all public methods on AttributionResolver.
-  EXPECT_NO_FATAL_FAILURE(storage->StoreSource(SourceBuilder().Build()));
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kInternalError,
-            storage->MaybeCreateAndStoreReport(DefaultTrigger())
-                .event_level_status());
-  EXPECT_THAT(storage->GetAttributionReports(base::Time::Now()), IsEmpty());
-  EXPECT_THAT(storage->GetActiveSources(), IsEmpty());
-  EXPECT_TRUE(storage->DeleteReport(AttributionReport::Id(0)));
-  EXPECT_NO_FATAL_FAILURE(storage->ClearData(
-      base::Time::Min(), base::Time::Max(), base::NullCallback()));
-  EXPECT_EQ(storage->AdjustOfflineReportTimes(), std::nullopt);
-
-#if BUILDFLAG(IS_FUCHSIA)
-  EXPECT_FALSE(base::PathExists(db_path));
-#else
-  EXPECT_TRUE(base::PathExists(db_path));
-#endif
-}
 
 TEST_F(AttributionResolverTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   base::HistogramTester histograms;
@@ -691,66 +657,6 @@ TEST_F(AttributionResolverTest, ExceedsChannelCapacity_SupersedesRateLimits) {
   delegate()->set_exceeds_channel_capacity_limit(true);
   EXPECT_EQ(storage()->StoreSource(SourceBuilder().Build()).status(),
             StorableSource::Result::kExceedsMaxChannelCapacity);
-}
-
-TEST_F(AttributionResolverTest, MaxImpressionsPerOrigin_LimitsStorage) {
-  delegate()->set_max_sources_per_origin(2);
-
-  base::HistogramTester histograms;
-
-  ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder()
-                                  .SetSourceEventId(3)
-                                  .SetPriority(1)
-                                  .SetMaxEventLevelReports(1)
-                                  .Build())
-                .status(),
-            StorableSource::Result::kSuccess);
-
-  ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder()
-                                  .SetSourceEventId(5)
-                                  .SetPriority(2)
-                                  .SetMaxEventLevelReports(1)
-                                  .Build())
-                .status(),
-            StorableSource::Result::kSuccess);
-
-  // Force the lower-priority source to be deactivated.
-  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-
-  ASSERT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
-
-  // There's still room for this source, as the limit applies only to active
-  // sources.
-  ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder()
-                                  .SetSourceEventId(6)
-                                  .SetMaxEventLevelReports(1)
-                                  .Build())
-                .status(),
-            StorableSource::Result::kSuccess);
-
-  ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder()
-                                  .SetSourceEventId(7)
-                                  .SetMaxEventLevelReports(1)
-                                  .Build())
-                .status(),
-            StorableSource::Result::kInsufficientSourceCapacity);
-
-  int64_t file_size = histograms.GetTotalSum(
-      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2");
-  EXPECT_GT(file_size, 0);
-
-  int64_t file_size_per_source = histograms.GetTotalSum(
-      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
-      "PerSource");
-  EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
-
-  ASSERT_THAT(storage()->GetActiveSources(),
-              ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));
 }
 
 TEST_F(AttributionResolverTest, MaxImpressionsPerOrigin_PerOriginNotSite) {

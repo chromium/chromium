@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "build/build_config.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -491,6 +492,34 @@ TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
   // The DB should be razed because the version is too new.
   ASSERT_NO_FATAL_FAILURE(OpenDatabase());
   ASSERT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+}
+
+TEST_F(AttributionStorageSqlTest,
+       StorageUsedAfterFailedInitialization_NoCrash) {
+  // We create a failed initialization by writing a dir to the database file
+  // path.
+  ASSERT_TRUE(base::CreateDirectoryAndGetError(db_path(), nullptr));
+
+  OpenDatabase();
+
+  // Test all public methods on AttributionResolver.
+  EXPECT_NO_FATAL_FAILURE(storage()->StoreSource(SourceBuilder().Build()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kInternalError,
+            storage()
+                ->MaybeCreateAndStoreReport(DefaultTrigger())
+                .event_level_status());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
+  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(0)));
+  EXPECT_NO_FATAL_FAILURE(storage()->ClearData(
+      base::Time::Min(), base::Time::Max(), base::NullCallback()));
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(), std::nullopt);
+
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(base::PathExists(db_path()));
+#else
+  EXPECT_TRUE(base::PathExists(db_path()));
+#endif
 }
 
 TEST_F(AttributionStorageSqlTest,
@@ -2952,6 +2981,67 @@ TEST_F(AttributionStorageSqlTest, ClearData_AggregatableDebugDataDeleted) {
                         ProcessAggregatableDebugReportResult::kSuccess));
 
   CloseDatabase();
+}
+
+TEST_F(AttributionStorageSqlTest, MaxImpressionsPerOrigin_LimitsStorage) {
+  OpenDatabase();
+  delegate()->set_max_sources_per_origin(2);
+
+  base::HistogramTester histograms;
+
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(3)
+                                  .SetPriority(1)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
+                .status(),
+            StorableSource::Result::kSuccess);
+
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(5)
+                                  .SetPriority(2)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
+                .status(),
+            StorableSource::Result::kSuccess);
+
+  // Force the lower-priority source to be deactivated.
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  ASSERT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
+
+  // There's still room for this source, as the limit applies only to active
+  // sources.
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(6)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
+                .status(),
+            StorableSource::Result::kSuccess);
+
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceEventId(7)
+                                  .SetMaxEventLevelReports(1)
+                                  .Build())
+                .status(),
+            StorableSource::Result::kInsufficientSourceCapacity);
+
+  int64_t file_size = histograms.GetTotalSum(
+      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2");
+  EXPECT_GT(file_size, 0);
+
+  int64_t file_size_per_source = histograms.GetTotalSum(
+      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
+      "PerSource");
+  EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
+
+  ASSERT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));
 }
 
 }  // namespace
