@@ -13,13 +13,16 @@
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -71,6 +74,10 @@ chrome::mojom::ResumeBlockedRequestsTrigger AggregateMultipleTriggers(
 
 }  // namespace
 
+BASE_FEATURE(kMultipleBoundSessionsEnabled,
+             "MultipleBoundSessionsEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
@@ -93,11 +100,20 @@ BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
   std::vector<bound_session_credentials::BoundSessionParams>
       bound_session_params = session_params_storage_->ReadAllParams();
-  if (!bound_session_params.empty()) {
-    // Only a single bound session is currently supported.
-    // TODO(http://b/274774185): support multiple parallel bound sessions.
-    InitializeBoundSession(bound_session_params.front());
+  if (bound_session_params.empty()) {
+    return;
   }
+
+  if (!base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
+    InitializeBoundSession(bound_session_params.front());
+    UpdateAllRenderers();
+    return;
+  }
+
+  for (const auto& params : bound_session_params) {
+    InitializeBoundSession(params);
+  }
+  UpdateAllRenderers();
 }
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
@@ -106,25 +122,43 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     DVLOG(1) << "Invalid session params or failed to serialize session params.";
     return;
   }
-  // Only one session is supported at the moment. New session should override an
-  // existing one.
-  // TODO(http://b/325451275): only remove a session that has a matching key.
-  if (BoundSessionCookieController* controller = cookie_controller();
-      controller) {
-    bool clear_params = controller->url().spec() != params.site() ||
-                        controller->session_id() != params.session_id();
-    if (clear_params) {
-      session_params_storage_->ClearParams(controller->url().spec(),
-                                           controller->session_id());
+
+  if (base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
+    // In the multi-session mode, we need to stop the controller corresponding
+    // to the same session, if any.
+    auto it = cookie_controllers_.find(
+        bound_session_credentials::GetBoundSessionKey(params));
+    if (it != cookie_controllers_.end()) {
+      cookie_controllers_.erase(it);
+      RecordSessionTerminationTrigger(
+          SessionTerminationTrigger::kSessionOverride);
+      // Note: `NotifyBoundSessionTerminated()` is not called as new session is
+      // starting with the same scope.
     }
-    cookie_controllers_.clear();
-    // `controller` is no longer valid and must not be used.
-    RecordSessionTerminationTrigger(
-        SessionTerminationTrigger::kSessionOverride);
-    // Note: `NotifyBoundSessionTerminated()` is not called as new session is
-    // starting with the same scope.
+  } else {
+    // In the single-session mode, we need to do the following:
+    // - stop the current controller regardless of what session it controls, and
+    // - clear storage entry for the current session if it doesn't match the new
+    //   session.
+    if (BoundSessionCookieController* controller = cookie_controller();
+        controller) {
+      bool clear_params = controller->GetBoundSessionKey() !=
+                          bound_session_credentials::GetBoundSessionKey(params);
+      if (clear_params) {
+        session_params_storage_->ClearParams(controller->url().spec(),
+                                             controller->session_id());
+      }
+      cookie_controllers_.clear();
+      // `controller` is no longer valid and must not be used.
+      RecordSessionTerminationTrigger(
+          SessionTerminationTrigger::kSessionOverride);
+      // Note: `NotifyBoundSessionTerminated()` is not called as new session is
+      // starting with the same scope.
+    }
   }
+
   InitializeBoundSession(params);
+  UpdateAllRenderers();
 }
 
 void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
@@ -331,19 +365,17 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
-  // TODO(http://b/325451275): remove this CHECK once multiple sessions are
-  // supported.
-  CHECK(cookie_controllers_.empty());
+  if (!base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
+    CHECK(cookie_controllers_.empty());
+  }
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);
-  BoundSessionKey key = {.site = controller->url(),
-                         .session_id = controller->session_id()};
+  BoundSessionKey key = controller->GetBoundSessionKey();
   auto [it, inserted] =
       cookie_controllers_.emplace(std::move(key), std::move(controller));
   CHECK(inserted);
   it->second->Initialize();
-  UpdateAllRenderers();
 }
 
 void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
@@ -358,8 +390,7 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     BoundSessionCookieController* controller,
     SessionTerminationTrigger trigger) {
-  BoundSessionKey session_key{.site = controller->url(),
-                              .session_id = controller->session_id()};
+  BoundSessionKey session_key = controller->GetBoundSessionKey();
   auto it = cookie_controllers_.find(session_key);
   CHECK(it != cookie_controllers_.end());
   CHECK_EQ(it->second.get(), controller);

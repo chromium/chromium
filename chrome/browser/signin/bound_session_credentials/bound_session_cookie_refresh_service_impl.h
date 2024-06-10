@@ -35,6 +35,8 @@ class StoragePartition;
 
 class BoundSessionParamsStorage;
 
+BASE_DECLARE_FEATURE(kMultipleBoundSessionsEnabled);
+
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
       public BoundSessionCookieController::Delegate,
@@ -83,7 +85,7 @@ class BoundSessionCookieRefreshServiceImpl
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
  private:
-  friend class BoundSessionCookieRefreshServiceImplTest;
+  friend class BoundSessionCookieRefreshServiceImplTestBase;
 
   // Used by tests to provide their own implementation of the
   // `BoundSessionCookieController` and `BoundSessionRegistrationFetcher`.

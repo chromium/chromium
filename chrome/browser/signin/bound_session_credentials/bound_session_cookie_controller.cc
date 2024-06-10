@@ -61,3 +61,7 @@ base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()
       bound_cookies_info_, {},
       [](const auto& bound_cookie_info) { return bound_cookie_info.first; });
 }
+
+BoundSessionKey BoundSessionCookieController::GetBoundSessionKey() {
+  return {.site = url(), .session_id = session_id()};
+}
