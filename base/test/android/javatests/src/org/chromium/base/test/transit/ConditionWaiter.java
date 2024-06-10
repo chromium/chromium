@@ -200,7 +200,10 @@ public class ConditionWaiter {
         //        E.g. when not possible to determine whether the trigger needs to be run.
         if (!anyCriteriaMissing && !options.mPossiblyAlreadyFulfilled && trigger != null) {
             throw buildWaitConditionsException(
-                    "All Conditions already fulfilled before running Trigger", conditionWaits);
+                    "All Conditions already fulfilled before running Trigger. If this is expected,"
+                        + " use a null Trigger. If this is possible but not necessarily expected,"
+                        + " use TransitionOptions.withPossiblyAlreadyFulfilled().",
+                    conditionWaits);
         }
     }
 
