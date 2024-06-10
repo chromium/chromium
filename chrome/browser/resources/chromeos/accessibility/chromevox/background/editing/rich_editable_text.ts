@@ -249,7 +249,8 @@ export class RichEditableText extends AutomationEditableText {
     }
 
     const curBase = baseLineOnStart ? endLine : startLine;
-    if ((cur.startContainer.role === RoleType.TEXT_FIELD ||
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if ((cur.startContainer!.role === RoleType.TEXT_FIELD ||
          (cur.startContainer === prev.startContainer &&
           cur.endContainer === prev.endContainer)) &&
         cur.startContainerValue !== prev.startContainerValue) {

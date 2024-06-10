@@ -17,40 +17,65 @@ import {RecoveryStrategy, TreePathRecoveryStrategy} from '/common/cursors/recove
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Spannable} from '../../common/spannable.js';
-import {LibLouis} from '../braille/liblouis.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent, OutputNodeSpan} from '../output/output_types.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
-const EventType = chrome.automation.EventType;
-const FormType = LibLouis.FormType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 const Movement = CursorMovement;
 const Unit = CursorUnit;
 
+interface StartMetadata {
+  lineStart?: AutomationNode;
+  value: Spannable;
+  textCountBeforeLineStart: number;
+}
+interface EndMetadata {
+  lineEnd?: AutomationNode;
+  value: Spannable;
+  textCountAfterLineEnd: number;
+}
+
 export class EditableLine {
+  private start_: Cursor;
+  private end_: Cursor;
+  private localContainerStartOffset_: number;
+  private localContainerEndOffset_: number;
+
+  // Computed members.
+  private endContainer_?: AutomationNode;
+  private lineStart_?: AutomationNode;
+  private lineStartContainer_?: AutomationNode;
+  private lineStartContainerRecovery_?: RecoveryStrategy;
+  private lineEnd_?: AutomationNode;
+  private lineEndContainer_?: AutomationNode;
+  private localLineStartContainerOffset_ = 0;
+  private localLineEndContainerOffset_ = 0;
+  private startContainer_?: AutomationNode;
+  private startContainerValue_ = '';
+  private value_: Spannable;
+
   /**
-   * @param {!AutomationNode} startNode
-   * @param {number} startIndex
-   * @param {!AutomationNode} endNode
-   * @param {number} endIndex
-   * @param {boolean=} opt_baseLineOnStart  Controls whether to use
-   *     |startNode| or |endNode| for Line computations. Selections are
-   * automatically truncated up to either the line start or end.
+   * Controls whether line computations include offscreen inline text boxes.
+   * Note that a caller should have this set prior to creating a line.
    */
-  constructor(startNode, startIndex, endNode, endIndex, opt_baseLineOnStart) {
-    /** @private {!Cursor} */
+  static includeOffscreen = true;
+
+  /**
+   * @param baseLineOnStart  Controls whether to use |startNode| or |endNode|
+   *     for Line computations. Selections are automatically truncated up to
+   *     either the line start or end.
+   */
+  constructor(
+      startNode: AutomationNode, startIndex: number, endNode: AutomationNode,
+      endIndex: number, baseLineOnStart?: boolean) {
     this.start_ = new Cursor(startNode, startIndex);
     this.start_ = this.start_.deepEquivalent ?? this.start_;
-    /** @private {!Cursor} */
+
     this.end_ = new Cursor(endNode, endIndex);
     this.end_ = this.end_.deepEquivalent ?? this.end_;
-
-    /** @private {AutomationNode|undefined} */
-    this.endContainer_;
 
     // Update |startIndex| and |endIndex| if the calls above to
     // Cursor.deepEquivalent results in cursors to different container
@@ -73,49 +98,16 @@ export class EditableLine {
           this.end_.index;
     }
 
-    /** @private {number} */
     this.localContainerStartOffset_ = startIndex;
-    /** @private {number} */
     this.localContainerEndOffset_ = endIndex;
 
-    // Computed members.
-    /** @private {Spannable} */
-    this.value_;
-    /** @private {AutomationNode|undefined} */
-    this.lineStart_;
-    /** @private {AutomationNode|undefined} */
-    this.lineEnd_;
-    /** @private {AutomationNode|undefined} */
-    this.startContainer_;
-    /** @private {string} */
-    this.startContainerValue_ = '';
-    /** @private {AutomationNode|undefined} */
-    this.lineStartContainer_;
-    /** @private {number} */
-    this.localLineStartContainerOffset_ = 0;
-    /** @private {AutomationNode|undefined} */
-    this.lineEndContainer_;
-    /** @private {number} */
-    this.localLineEndContainerOffset_ = 0;
-    /** @type {RecoveryStrategy} */
-    this.lineStartContainerRecovery_;
-
-    this.computeLineData_(opt_baseLineOnStart);
-  }
-
-  /**
-   * @param {boolean=} opt_baseLineOnStart Computes the line based on the start
-   * node if true.
-   * @private
-   */
-  computeLineData_(opt_baseLineOnStart) {
     // Note that we calculate the line based only upon |start_| or
     // |end_| even if they do not fall on the same line. It is up to
     // the caller to specify which end to base this line upon since it requires
     // reasoning about two lines.
     let nameLen = 0;
-    const lineBase = opt_baseLineOnStart ? this.start_ : this.end_;
-    const lineExtend = opt_baseLineOnStart ? this.end_ : this.start_;
+    const lineBase = baseLineOnStart ? this.start_ : this.end_;
+    const lineExtend = baseLineOnStart ? this.end_ : this.start_;
 
     if (lineBase.node.name) {
       nameLen = lineBase.node.name.length;
@@ -131,9 +123,9 @@ export class EditableLine {
       this.startContainer_ = this.startContainer_.parent;
     }
     this.startContainerValue_ =
-        this.startContainer_.role === RoleType.TEXT_FIELD ?
-        this.startContainer_.value ?? '' :
-        this.startContainer_.name ?? '';
+        this.startContainer_?.role === RoleType.TEXT_FIELD ?
+        this.startContainer_?.value ?? '' :
+        this.startContainer_?.name ?? '';
     this.endContainer_ = this.end_.node;
     if (this.endContainer_.role === RoleType.INLINE_TEXT_BOX) {
       this.endContainer_ = this.endContainer_.parent;
@@ -150,7 +142,8 @@ export class EditableLine {
 
     // Also, track the nodes necessary for selection (either their parents, in
     // the case of inline text boxes, or the node itself).
-    const parents = [this.startContainer_];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const parents: AutomationNode[] = [this.startContainer_!];
 
     // Keep track of visited nodes to ensure we don't visit the same node twice.
     // Workaround for crbug.com/1203840.
@@ -159,27 +152,29 @@ export class EditableLine {
       visited.add(this.lineStart_);
     }
 
-    let data = this.computeLineStartMetadata_(
+    const startData = this.computeLineStartMetadata_(
         this.lineStart_, this.value_, parents, visited);
-    this.lineStart_ = data.lineStart;
-    this.lineStartContainer_ = this.lineStart_.parent;
-    this.value_ = data.value;
-    const textCountBeforeLineStart = data.textCountBeforeLineStart;
+    this.lineStart_ = startData.lineStart;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.lineStartContainer_ = this.lineStart_!.parent;
+    this.value_ = startData.value;
+    const textCountBeforeLineStart = startData.textCountBeforeLineStart;
     this.localLineStartContainerOffset_ = textCountBeforeLineStart;
     if (this.lineStartContainer_) {
       this.lineStartContainerRecovery_ =
           new TreePathRecoveryStrategy(this.lineStartContainer_);
     }
 
-    data = this.computeLineEndMetadata_(
+    const endData = this.computeLineEndMetadata_(
         this.lineEnd_, this.value_, parents, visited);
-    this.lineEnd_ = data.lineEnd;
-    this.lineEndContainer_ = this.lineEnd_.parent;
-    this.value_ = data.value;
-    const textCountAfterLineEnd = data.textCountAfterLineEnd;
-    if (this.lineEndContainer_.name) {
+    this.lineEnd_ = endData.lineEnd;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.lineEndContainer_ = this.lineEnd_!.parent;
+    this.value_ = endData.value;
+    const textCountAfterLineEnd = endData.textCountAfterLineEnd;
+    if (this.lineEndContainer_!.name) {
       this.localLineEndContainerOffset_ =
-          this.lineEndContainer_.name.length - textCountAfterLineEnd;
+          this.lineEndContainer_!.name.length - textCountAfterLineEnd;
     }
 
     // Annotate with all parent static texts as NodeSpans so that braille
@@ -188,18 +183,10 @@ export class EditableLine {
         this.value_, parents, textCountBeforeLineStart, textCountAfterLineEnd);
   }
 
-  /**
-   * @param {AutomationNode|undefined} scanNode
-   * @param {Spannable} value
-   * @param {!Array<!AutomationNode>} parents
-   * @param {!WeakSet<!AutomationNode>} visited
-   * @return {!{
-   *      lineStart: (AutomationNode|undefined),
-   *      value: Spannable,
-   *      textCountBeforeLineStart: number}}
-   * @private
-   */
-  computeLineStartMetadata_(scanNode, value, parents, visited) {
+  private computeLineStartMetadata_(
+      scanNode: AutomationNode | undefined, value: Spannable,
+      parents: AutomationNode[], visited: WeakSet<AutomationNode>)
+      : StartMetadata {
     let lineStart = scanNode;
     if (scanNode) {
       scanNode = this.getPreviousOnLine_(scanNode);
@@ -212,11 +199,11 @@ export class EditableLine {
       if (scanNode.role !== RoleType.INLINE_TEXT_BOX) {
         parents.unshift(scanNode);
       } else if (parents[0] !== scanNode.parent) {
-        parents.unshift(scanNode.parent);
+        parents.unshift(scanNode.parent!);
       }
 
       const prepend = new Spannable(scanNode.name, scanNode);
-      prepend.append(/** @type {!Spannable} */ (value));
+      prepend.append(value);
       value = prepend;
 
       scanNode = this.getPreviousOnLine_(scanNode);
@@ -226,28 +213,21 @@ export class EditableLine {
     // as follows.
     let textCountBeforeLineStart = 0;
     let finder = lineStart;
-    while (finder.previousSibling &&
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    while (finder!.previousSibling &&
            (EditableLine.includeOffscreen ||
-            !finder.previousSibling.state[StateType.OFFSCREEN])) {
-      finder = finder.previousSibling;
+            !finder!.previousSibling.state![StateType.OFFSCREEN])) {
+      finder = finder!.previousSibling;
       textCountBeforeLineStart += finder.name?.length ?? 0;
     }
 
     return {lineStart, value, textCountBeforeLineStart};
   }
 
-  /**
-   * @param {AutomationNode|undefined} scanNode
-   * @param {Spannable} value
-   * @param {!Array<!AutomationNode>} parents
-   * @param {!WeakSet<!AutomationNode>} visited
-   * @return {!{
-   *      lineEnd: (AutomationNode|undefined),
-   *      value: Spannable,
-   *      textCountAfterLineEnd: number}}
-   * @private
-   */
-  computeLineEndMetadata_(scanNode, value, parents, visited) {
+  private computeLineEndMetadata_(
+      scanNode: AutomationNode | undefined, value: Spannable,
+      parents: AutomationNode[], visited: WeakSet<AutomationNode>)
+      : EndMetadata {
     let lineEnd = scanNode;
     if (scanNode) {
       scanNode = this.getNextOnLine_(scanNode);
@@ -260,10 +240,11 @@ export class EditableLine {
       if (scanNode.role !== RoleType.INLINE_TEXT_BOX) {
         parents.push(scanNode);
       } else if (parents[parents.length - 1] !== scanNode.parent) {
-        parents.push(scanNode.parent);
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        parents.push(scanNode.parent!);
       }
 
-      let annotation = scanNode;
+      let annotation: AutomationNode | Cursor = scanNode;
       if (scanNode === this.end_.node) {
         annotation = this.end_;
       }
@@ -276,27 +257,22 @@ export class EditableLine {
     // Note that we need to account for potential offsets into the static texts
     // as follows.
     let textCountAfterLineEnd = 0;
-    let finder = lineEnd;
-    while (finder.nextSibling &&
+    let finder: AutomationNode | undefined = lineEnd;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    while (finder!.nextSibling &&
            (EditableLine.includeOffscreen ||
-            !finder.nextSibling.state[StateType.OFFSCREEN])) {
-      finder = finder.nextSibling;
+            !finder!.nextSibling.state![StateType.OFFSCREEN])) {
+      finder = finder!.nextSibling;
       textCountAfterLineEnd += finder.name?.length ?? 0;
     }
 
     return {lineEnd, value, textCountAfterLineEnd};
   }
 
-  /**
-   * @param {Spannable} value
-   * @param {!Array<!AutomationNode>} parents
-   * @param {number} textCountBeforeLineStart
-   * @param {number} textCountAfterLineEnd
-   * @return {Spannable}
-   * @private
-   */
-  annotateWithParents_(
-      value, parents, textCountBeforeLineStart, textCountAfterLineEnd) {
+  private annotateWithParents_(
+      value: Spannable, parents: AutomationNode[],
+      textCountBeforeLineStart: number, textCountAfterLineEnd: number)
+      : Spannable {
     let len = 0;
     for (let i = 0; i < parents.length; i++) {
       const parent = parents[i];
@@ -336,12 +312,7 @@ export class EditableLine {
     return value;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {!AutomationNode|undefined}
-   * @private
-   */
-  getNextOnLine_(node) {
+  private getNextOnLine_(node: AutomationNode): AutomationNode | undefined {
     const nextOnLine = node.nextOnLine;
     const nextSibling = node.nextSibling;
     if (nextOnLine?.role) {
@@ -359,12 +330,7 @@ export class EditableLine {
     return undefined;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {!AutomationNode|undefined}
-   * @private
-   */
-  getPreviousOnLine_(node) {
+  private getPreviousOnLine_(node: AutomationNode): AutomationNode | undefined {
     const previousLine = node.previousOnLine;
     const previousSibling = node.previousSibling;
     if (previousLine?.role) {
@@ -382,11 +348,8 @@ export class EditableLine {
     return undefined;
   }
 
-  /**
-   * Gets the selection offset based on the text content of this line.
-   * @return {number}
-   */
-  get startOffset() {
+  /** Gets the selection offset based on the text content of this line. */
+  get startOffset(): number {
     // It is possible that the start cursor points to content before this line
     // (e.g. in a multi-line selection).
     try {
@@ -398,11 +361,8 @@ export class EditableLine {
     }
   }
 
-  /**
-   * Gets the selection offset based on the text content of this line.
-   * @return {number}
-   */
-  get endOffset() {
+  /** Gets the selection offset based on the text content of this line. */
+  get endOffset(): number {
     try {
       return this.value_.getSpanStart(this.end_) +
           (this.end_.index === CURSOR_NODE_INDEX ? 0 : this.end_.index);
@@ -415,18 +375,16 @@ export class EditableLine {
   /**
    * Gets the selection offset based on the parent's text.
    * The parent is expected to be static text.
-   * @return {number}
    */
-  get localStartOffset() {
+  get localStartOffset(): number {
     return this.localContainerStartOffset_;
   }
 
   /**
    * Gets the selection offset based on the parent's text.
    * The parent is expected to be static text.
-   * @return {number}
    */
-  get localEndOffset() {
+  get localEndOffset(): number {
     return this.localContainerEndOffset_;
   }
 
@@ -434,84 +392,66 @@ export class EditableLine {
    * Gets the start offset of the container, relative to the line text
    * content. The container refers to the static text parenting the inline
    * text box.
-   * @return {number}
    */
-  get containerStartOffset() {
+  get containerStartOffset(): number {
     return this.value_.getSpanStart(this.startContainer_);
   }
 
   /**
    * Gets the end offset of the container, relative to the line text content.
    * The container refers to the static text parenting the inline text box.
-   * @return {number}
    */
-  get containerEndOffset() {
+  get containerEndOffset(): number {
     return this.value_.getSpanEnd(this.startContainer_) - 1;
   }
 
-  /**
-   * The text content of this line.
-   * @return {string} The text of this line.
-   */
-  get text() {
+  /** @return The text content of this line. */
+  get text(): string {
     return this.value_.toString();
   }
 
-  /** @return {string} */
-  get selectedText() {
+  get selectedText(): string {
     return this.value_.toString().substring(this.startOffset, this.endOffset);
   }
 
-  /** @return {AutomationNode|undefined} */
-  get startContainer() {
+  get startContainer(): AutomationNode | undefined {
     return this.startContainer_;
   }
 
-  /** @return {AutomationNode|undefined} */
-  get endContainer() {
+  get endContainer(): AutomationNode | undefined {
     return this.endContainer_;
   }
 
-  /** @return {Spannable} */
-  get value() {
+  get value(): Spannable {
     return this.value_;
   }
 
-  /** @return {!Cursor} */
-  get start() {
+  get start(): Cursor {
     return this.start_;
   }
 
-  /** @return {!Cursor} */
-  get end() {
+  get end(): Cursor {
     return this.end_;
   }
 
-  /** @return {number} */
-  get localContainerStartOffset() {
+  get localContainerStartOffset(): number {
     return this.localContainerStartOffset_;
   }
 
-  /** @return {number} */
-  get localContainerEndOffset() {
+  get localContainerEndOffset(): number {
     return this.localContainerEndOffset_;
   }
 
-  /** @return {string} */
-  get startContainerValue() {
+  get startContainerValue(): string {
     return this.startContainerValue_;
   }
 
-  /** @return {boolean} */
-  hasCollapsedSelection() {
+  hasCollapsedSelection(): boolean {
     return this.start_.equals(this.end_);
   }
 
-  /**
-   * Returns whether this line has selection over text nodes.
-   * @return {boolean}
-   */
-  hasTextSelection() {
+  /** @return Whether this line has selection over text nodes. */
+  hasTextSelection(): boolean {
     if (this.start_.node && this.end_.node) {
       return AutomationPredicate.text(this.start_.node) &&
           AutomationPredicate.text(this.end_.node);
@@ -523,10 +463,8 @@ export class EditableLine {
   /**
    * Returns true if |otherLine| surrounds the same line as |this|. Note that
    * the contents of the line might be different.
-   * @param {EditableLine} otherLine
-   * @return {boolean}
    */
-  isSameLine(otherLine) {
+  isSameLine(otherLine: EditableLine): boolean {
     // Equality is intentionally loose here as any of the state nodes can be
     // invalidated at any time. We rely upon the start/anchor of the line
     // staying the same.
@@ -539,8 +477,8 @@ export class EditableLine {
         otherLine.localLineEndContainerOffset_ ===
             this.localLineEndContainerOffset_;
     const recoveryNodeAndOffsetMatch =
-        otherLine.lineStartContainerRecovery_.node ===
-            this.lineStartContainerRecovery_.node &&
+        otherLine.lineStartContainerRecovery_?.node ===
+            this.lineStartContainerRecovery_?.node &&
         otherLine.localLineStartContainerOffset_ ===
             this.localLineStartContainerOffset_;
 
@@ -552,21 +490,15 @@ export class EditableLine {
   /**
    * Returns true if |otherLine| surrounds the same line as |this| and has the
    * same selection.
-   * @param {EditableLine} otherLine
-   * @return {boolean}
    */
-  isSameLineAndSelection(otherLine) {
+  isSameLineAndSelection(otherLine: EditableLine): boolean {
     return this.isSameLine(otherLine) &&
         this.startOffset === otherLine.startOffset &&
         this.endOffset === otherLine.endOffset;
   }
 
-  /**
-   * Returns whether this line comes before |otherLine| in document order.
-   * @param {!EditableLine} otherLine
-   * @return {boolean}
-   */
-  isBeforeLine(otherLine) {
+  /** Returns whether this line comes before |otherLine| in document order. */
+  isBeforeLine(otherLine: EditableLine): boolean {
     if (!this.lineStartContainer_ || !otherLine.lineStartContainer_) {
       return false;
     }
@@ -583,9 +515,8 @@ export class EditableLine {
   /**
    * Performs a validation that this line still refers to a line given its
    * internally tracked state.
-   * @return {boolean}
    */
-  isValidLine() {
+  isValidLine(): boolean {
     if (!this.lineStartContainer_ || !this.lineEndContainer_) {
       return false;
     }
@@ -636,23 +567,20 @@ export class EditableLine {
     return false;
   }
 
-  /**
-   * Speaks the line using text to speech.
-   * @param {EditableLine} prevLine
-   */
-  speakLine(prevLine) {
+  /** Speaks the line using text to speech. */
+  speakLine(prevLine: EditableLine): void {
     // Detect when the entire line is just a breaking space. This occurs on
     // Google Docs and requires that we speak it as a new line. However, we
     // still need to account for all of the possible rich output occurring from
     // ancestors of line nodes.
     const isLineBreakingSpace = this.text === '\u00a0';
 
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     const prev =
-        prevLine?.startContainer_.role ? prevLine.startContainer_ : null;
-    const lineNodes =
-        /** @type {Array<!AutomationNode>} */ (this.value_.getSpansInstanceOf(
-            /** @type {function()} */ (this.startContainer_.constructor)));
-    const speakNodeAtIndex = (index, prev) => {
+        prevLine?.startContainer_!.role ? prevLine.startContainer_ : null;
+    const lineNodes: AutomationNode[] =
+        this.value_.getSpansInstanceOf(this.startContainer_!.constructor);
+    const speakNodeAtIndex = (index: number, prev: AutomationNode): void => {
       const cur = lineNodes[index];
       if (!cur) {
         return;
@@ -685,15 +613,15 @@ export class EditableLine {
       }
     };
 
-    speakNodeAtIndex(0, prev);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    speakNodeAtIndex(0, prev!);
   }
 
   /**
    * Creates a range around the character to the right of the line's starting
    * position.
-   * @return {!CursorRange}
    */
-  createCharRange() {
+  createCharRange(): CursorRange {
     const start = this.start_;
     let end = start.move(Unit.CHARACTER, Movement.DIRECTIONAL, Dir.FORWARD);
 
@@ -708,11 +636,7 @@ export class EditableLine {
     return new CursorRange(start, end);
   }
 
-  /**
-   * @param {boolean} shouldMoveToPreviousWord
-   * @return {!CursorRange}
-   */
-  createWordRange(shouldMoveToPreviousWord) {
+  createWordRange(shouldMoveToPreviousWord: boolean): CursorRange {
     const pos = this.start_;
     // When movement goes to the end of a word, we actually want to
     // describe the word itself; this is considered the previous word so
@@ -726,12 +650,5 @@ export class EditableLine {
     return new CursorRange(start, end);
   }
 }
-
-/**
- * Controls whether line computations include offscreen inline text boxes. Note
- * that a caller should have this set prior to creating a line.
- * @public {boolean}
- */
-EditableLine.includeOffscreen = true;
 
 TestImportManager.exportForTesting(EditableLine);
