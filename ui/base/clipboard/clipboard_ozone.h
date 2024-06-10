@@ -103,22 +103,14 @@ class ClipboardOzone : public Clipboard {
   void WriteUploadCloudClipboard() override;
   void WriteConfidentialDataForPassword() override;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
-  void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
-
-  // Updates the source for the given buffer. It is used by
-  // `async_clipboard_ozone_` whenever some text is copied from Ash and pasted
-  // to Lacros.
-  void SetSource(ClipboardBuffer buffer,
-                 std::unique_ptr<DataTransferEndpoint> data_src);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS, or
+  // to put a source URL in the clipboard on other Ozone platforms.
+  void AddSourceToClipboard(const ClipboardBuffer buffer,
+                            std::unique_ptr<DataTransferEndpoint> data_src);
 
   class AsyncClipboardOzone;
 
   std::unique_ptr<AsyncClipboardOzone> async_clipboard_ozone_;
-  base::flat_map<ClipboardBuffer, std::unique_ptr<DataTransferEndpoint>>
-      data_src_;
 };
 
 }  // namespace ui
