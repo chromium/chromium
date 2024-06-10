@@ -174,6 +174,7 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
+  layer()->SetIsFastRoundedCorner(true);
 
   auto add_icon_to_container = [&container_view]() {
     auto icon = std::make_unique<views::ImageView>();
