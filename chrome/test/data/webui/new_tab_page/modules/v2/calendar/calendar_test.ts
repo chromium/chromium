@@ -42,4 +42,15 @@ suite('NewTabPageModulesCalendarTest', () => {
     assertTrue(!!firstEvent);
     assertTrue(firstEvent.hasAttribute('expanded'));
   });
+
+  test('see more link is displayed', async () => {
+    element.calendarLink = 'https://foo.com/';
+
+    // Assert.
+    assertTrue(isVisible(element.$.seeMore));
+    const anchor = element.$.seeMore.querySelector<HTMLAnchorElement>('a');
+    assertTrue(!!anchor);
+    assertEquals(anchor!.href, 'https://foo.com/');
+    assertEquals(anchor!.innerText, 'See More');
+  });
 });

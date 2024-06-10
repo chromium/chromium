@@ -486,6 +486,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesCalendarInProgress", IDS_NTP_MODULES_CALENDAR_IN_PROGRESS},
       {"modulesCalendarInXMin", IDS_NTP_MODULES_CALENDAR_IN_X_MIN},
       {"modulesCalendarInXHr", IDS_NTP_MODULES_CALENDAR_IN_X_HR},
+      {"modulesCalendarSeeMore", IDS_NTP_MODULES_CALENDAR_SEE_MORE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
       {"modulesPhotosInfo", IDS_NTP_MODULES_PHOTOS_INFO},
       {"modulesPhotosSentence", IDS_NTP_MODULES_PHOTOS_MEMORIES_TITLE},

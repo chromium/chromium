@@ -4,35 +4,73 @@
     padding: 0 8px;
   }
 
-  ntp-calendar-event {
+  .row {
     background-color: var(--color-new-tab-page-module-calendar-event-collapsed-background);
-    padding: 4px 16px;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
   }
 
-  ntp-calendar-event:first-of-type,
-  ntp-calendar-event[expanded] + ntp-calendar-event {
+  .row:first-child,
+  .row[expanded] + .row {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     margin-top: 8px;
-    padding-top: 16px;
+    padding-top: 12px;
   }
 
-  ntp-calendar-event:last-of-type,
-  ntp-calendar-event:has(+ ntp-calendar-event[expanded]) {
+  .row:last-child,
+  .row:has(+ .row[expanded]) {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     margin-bottom: 8px;
-    padding-bottom: 16px;
+    padding-bottom: 12px;
   }
 
-  ntp-calendar-event[expanded] {
+  .row[expanded] {
     background-color: var(--color-new-tab-page-module-calendar-event-expanded-background);
     border-radius: 12px;
     margin: 8px 0;
-    padding: 16px;
+    padding: 12px 0;
+  }
+
+  #seeMore a {
+    box-sizing: border-box;
+    color: var(--color-new-tab-page-link);
+    display: block;
+    font-size: var(--ntp-module-text-size);
+    font-weight: 500;
+    line-height: var(--ntp-module-line-height);
+    overflow: hidden;
+    padding: 4px 16px;
+    position: relative;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  #seeMore #hoverContainer {
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    display: none;
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  #seeMore:hover #hoverContainer {
+    display: block;
   }
 </style>
 <template is="dom-repeat" items="[[events]]">
-  <ntp-calendar-event expanded="[[isExpanded_(index)]]" event="[[item]]">
+  <ntp-calendar-event
+      class="row"
+      expanded="[[isExpanded_(index)]]"
+      event="[[item]]">
   </ntp-calendar-event>
 </template>
+<div id="seeMore" class="row">
+  <a href="[[calendarLink]]">
+    $i18n{modulesCalendarSeeMore}
+    <div id="hoverContainer"></div>
+  </a>
+</div>

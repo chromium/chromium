@@ -9,6 +9,12 @@ import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
 
 import {getTemplate} from './calendar.html.js';
 
+export interface CalendarElement {
+  $: {
+    seeMore: HTMLDivElement,
+  };
+}
+
 /**
  * The calendar element for displaying the user's list of events. .
  */
@@ -23,17 +29,19 @@ export class CalendarElement extends PolymerElement {
 
   static get properties() {
     return {
+      calendarLink: String,
+      events: Object,
       expandedEventIndex_: {
         type: Number,
         value: 0,
       },
-      events: Object,
     };
   }
 
-  private expandedEventIndex_: number;
-
+  calendarLink: string;
   events: CalendarEvent[];
+
+  private expandedEventIndex_: number;
 
   private isExpanded_(index: number) {
     return index === this.expandedEventIndex_;

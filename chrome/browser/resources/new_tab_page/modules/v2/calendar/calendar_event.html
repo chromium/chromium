@@ -1,23 +1,33 @@
 <style include="cr-icons cr-hidden-style">
-  :host {
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-  }
-
   :host([expanded]) #header {
     color: var(--color-new-tab-page-primary-foreground);
     font-weight: 500;
   }
 
   #header {
+    box-sizing: border-box;
     column-gap: 4px;
     color: var(--color-new-tab-page-secondary-foreground);
     display: flex;
     font-size: var(--ntp-module-text-size);
     line-height: var(--ntp-module-line-height);
+    padding: 4px 16px;
+    position: relative;
     text-decoration: none;
     width: 100%;
+  }
+
+  #header #hoverContainer {
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    display: none;
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  #header:hover #hoverContainer {
+    display: block;
   }
 
   #startTime {
@@ -54,10 +64,14 @@
     width: 16px;
   }
 
+  #expandedInfo {
+    padding: 0 16px;
+  }
+
   #attachments, #location {
     column-gap: 8px;
     display: flex;
-    margin-top: 8px;
+    padding: 4px 0;
     width: 100%;
   }
 
@@ -106,35 +120,39 @@
   }
 
   #conference {
-    margin-top: 16px;
+    margin-top: 12px;
   }
 </style>
 <a id="header" href="[[event.url.url]]">
   <span id="startTime">[[formattedStartTime_]]</span>
   <span id="title">[[event.title]]</span>
   <span id="timeStatus" hidden$="[[!timeStatus_]]">[[timeStatus_]]</span>
+  <div id="hoverContainer"></div>
 </a>
 <template is="dom-if" if="[[expanded]]">
-  <div id="location" hidden$="[[!showLocation_(event.location)]]">
-    <div id="location-icon" class="cr-icon"></div>
-    <p>[[event.location]]</p>
-  </div>
-  <div id="attachments" hidden$="[[!showAttachments_(event.attachments)]]">
-    <div id="attachment-icon" class="cr-icon"></div>
-    <template is="dom-repeat" items="[[event.attachments]]">
-      <cr-chip on-click="openAttachment_" chip-role="link">
-        <img is="cr-auto-img"
-            auto-src="[[item.iconUrl.url]]" alt=""></img>
-        [[item.title]]
-      </cr-chip>
-    </template>
-    <div id="fade"></div>
-  </div>
-  <div id="conference" hidden="[[!showConferenceButton_(event.conferenceUrl)]]">
-    <cr-button role="link"
-        on-click="openVideoConference_"
-        class="action-button">
-      $i18n{modulesCalendarJoinMeetingButtonText}
-    </cr-button>
+  <div id="expandedInfo">
+    <div id="location" hidden$="[[!showLocation_(event.location)]]">
+      <div id="location-icon" class="cr-icon"></div>
+      <p>[[event.location]]</p>
+    </div>
+    <div id="attachments" hidden$="[[!showAttachments_(event.attachments)]]">
+      <div id="attachment-icon" class="cr-icon"></div>
+      <template is="dom-repeat" items="[[event.attachments]]">
+        <cr-chip on-click="openAttachment_" chip-role="link">
+          <img is="cr-auto-img"
+              auto-src="[[item.iconUrl.url]]" alt=""></img>
+          [[item.title]]
+        </cr-chip>
+      </template>
+      <div id="fade"></div>
+    </div>
+    <div id="conference"
+        hidden="[[!showConferenceButton_(event.conferenceUrl)]]">
+      <cr-button role="link"
+          on-click="openVideoConference_"
+          class="action-button">
+        $i18n{modulesCalendarJoinMeetingButtonText}
+      </cr-button>
+    </div>
   </div>
 </template>
