@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.junit.Assert.assertEquals;
-
 import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -17,11 +15,12 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
@@ -38,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabActivityIncognitoMetricTest {
     private static final String UMA_KEY = "CustomTabs.IncognitoCCTCallerId";
+    private static final String IS_TRUSTED_UMA_KEY = "CustomTabs.IncognitoCCTCallerIsTrusted";
     private static final String FIRST_PARTY_UMA_KEY = "CustomTabs.ClientAppId.Incognito";
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
 
@@ -65,62 +65,78 @@ public class CustomTabActivityIncognitoMetricTest {
     @Test
     @MediumTest
     public void recordsHistogram_1P() {
-        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        Intent intent = createMinimalIncognitoCustomTabIntent();
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        UMA_KEY, IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS));
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(UMA_KEY, IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS)
+                        .expectBooleanRecord(IS_TRUSTED_UMA_KEY, true)
+                        .build()) {
+            Intent intent = createMinimalIncognitoCustomTabIntent();
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        }
     }
 
     @Test
     @MediumTest
     public void recordsHistogram_ReaderMode_WithExtra() {
-        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        Intent intent = createMinimalIncognitoCustomTabIntent();
-        CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
-        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(UMA_KEY, IncognitoCCTCallerId.READER_MODE)
+                        .expectBooleanRecord(IS_TRUSTED_UMA_KEY, true)
+                        .build()) {
+            Intent intent = createMinimalIncognitoCustomTabIntent();
+            CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
+            IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
+                    intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        UMA_KEY, IntentHandler.IncognitoCCTCallerId.READER_MODE));
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        }
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
     public void recordsHistogram_Other() {
-        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        Intent intent = createMinimalIncognitoCustomTabIntent();
-        // Remove the first party override to emulate third party
-        mCustomTabActivityTestRule.setRemoveFirstPartyOverride();
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(UMA_KEY, IncognitoCCTCallerId.OTHER_APPS)
+                        .expectNoRecords(IS_TRUSTED_UMA_KEY)
+                        .build()) {
+            Intent intent = createMinimalIncognitoCustomTabIntent();
+            // Remove the first party override to emulate third party.
+            mCustomTabActivityTestRule.setRemoveFirstPartyOverride();
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        UMA_KEY, IntentHandler.IncognitoCCTCallerId.OTHER_APPS));
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void recordsHistogram_OtherUntrusted() {
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(UMA_KEY)
+                        .expectBooleanRecord(IS_TRUSTED_UMA_KEY, false)
+                        .build()) {
+            Intent intent = createMinimalIncognitoCustomTabIntent();
+            // Remove the first party override to emulate third party.
+            mCustomTabActivityTestRule.setRemoveFirstPartyOverride();
+
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        }
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
     public void doesNotRecordThirdPartySpecificHistogram() {
-        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(FIRST_PARTY_UMA_KEY));
-        Intent intent = createMinimalIncognitoCustomTabIntent();
+        try (var ignored =
+                HistogramWatcher.newBuilder().expectNoRecords(FIRST_PARTY_UMA_KEY).build()) {
+            Intent intent = createMinimalIncognitoCustomTabIntent();
 
-        // Remove the first party override to emulate third party
-        mCustomTabActivityTestRule.setRemoveFirstPartyOverride();
+            // Remove the first party override to emulate third party
+            mCustomTabActivityTestRule.setRemoveFirstPartyOverride();
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(FIRST_PARTY_UMA_KEY));
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        }
     }
 }

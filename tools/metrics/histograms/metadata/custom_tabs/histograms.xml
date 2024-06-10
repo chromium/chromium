@@ -364,6 +364,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.IncognitoCCTCallerIsTrusted" enum="Boolean"
+    expires_after="2024-11-10">
+  <owner>dullweber@google.com</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    This metrics records whether a caller who requested Incognito CCT is
+    considered trusted. Only recorded when CCTIncognitoAvailableToThirdParty is
+    false.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.IntentToFirstCommitNavigationTime3" units="ms"
     expires_after="2024-09-01">
   <owner>lizeb@chromium.org</owner>

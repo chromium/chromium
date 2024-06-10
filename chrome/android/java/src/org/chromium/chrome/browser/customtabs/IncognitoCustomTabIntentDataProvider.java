@@ -25,6 +25,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
@@ -69,14 +70,15 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final @CustomTabsUiType int mUiType;
 
     /** Constructs a {@link IncognitoCustomTabIntentDataProvider}. */
-    public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
+    public IncognitoCustomTabIntentDataProvider(
+            Intent intent, Context context, int colorScheme, boolean isIncognitoBranded) {
         assert intent != null;
         mIntent = intent;
         mUrlToLoad = resolveUrlToLoad(intent);
         mSendersPackageName = getSendersPackageNameFromIntent(intent);
         mSession = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
-        mIsIncognitoBranded = isValidIncognitoIntent(intent);
+        mIsIncognitoBranded = isIncognitoBranded;
         mAnimationBundle =
                 IntentUtils.safeGetBundleExtra(
                         intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
@@ -238,12 +240,13 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         }
     }
 
-    // TODO(crbug.com/40107157): Remove this function and enable
-    // incognito CCT request for all apps.
     public static boolean isValidIncognitoIntent(Intent intent) {
+        if (!isIncognitoRequested(intent)) return false;
+        if (isIntentFromThirdPartyAllowed()) return true;
         var session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        return isIncognitoRequested(intent)
-                && (isTrustedCustomTab(intent, session) || isIntentFromThirdPartyAllowed());
+        boolean isTrusted = isTrustedCustomTab(intent, session);
+        RecordHistogram.recordBooleanHistogram("CustomTabs.IncognitoCCTCallerIsTrusted", isTrusted);
+        return isTrusted;
     }
 
     public static boolean isValidEphemeralTabIntent(Intent intent) {
