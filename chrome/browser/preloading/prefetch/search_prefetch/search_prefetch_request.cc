@@ -116,41 +116,7 @@ const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
       return "PrerenderActivated";
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/345275145): remove this block.
-
-bool is_test = false;
-
-bool CheckPrefetchParameterExistence(const GURL& url, int throttle_position) {
-  std::string_view query_piece = url.query_piece();
-  url::Component query(0, url.query_piece().length());
-  url::Component key, value;
-  while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
-    if (query_piece.substr(key.begin, key.len) == "pf" && !value.is_empty()) {
-      return true;
-    }
-  }
-  // It is quite common that a test does not specify the parameter.
-  if (!is_test) {
-    SCOPED_CRASH_KEY_NUMBER("Bug_345275145", "throttle", throttle_position);
-    base::debug::DumpWithoutCrashing();
-    return false;
-  }
-  // Let tests continue fetching.
-  return true;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace
-
-#if BUILDFLAG(IS_ANDROID)
-// static
-void SearchPrefetchRequest::SetIsTest() {
-  CHECK_IS_TEST();
-  is_test = true;
-}
-#endif
 
 SearchPrefetchRequest::SearchPrefetchRequest(
     const GURL& canonical_search_url,
@@ -306,12 +272,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
     TRACE_EVENT0(
         "loading",
         "SearchPrefetchRequest::StartPrefetchRequest.ExecuteThrottles");
-#if BUILDFLAG(IS_ANDROID)
-    if (!CheckPrefetchParameterExistence(resource_request->url, -1)) {
-      return false;
-    }
-    size_t throttle_id = 0;
-#endif
 
     for (auto& throttle : throttles) {
       CheckForCancelledOrPausedDelegate cancel_or_pause_delegate;
@@ -323,13 +283,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
             "SearchPrefetchRequest::StartPrefetchRequest.WillStartRequest");
         throttle->WillStartRequest(resource_request.get(), &should_defer);
       }
-#if BUILDFLAG(IS_ANDROID)
-      if (!CheckPrefetchParameterExistence(resource_request->url,
-                                           throttle_id++)) {
-        return false;
-      }
-#endif
-
       // Make sure throttles are deleted before |cancel_or_pause_delegate| in
       // case they call into the delegate in the destructor.
       throttle.reset();
