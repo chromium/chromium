@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -166,6 +167,8 @@ HatsNotificationController::HatsNotificationController(
     base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
   }
 
+  profile_observation_.Observe(profile_);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&IsNewDevice, hats_config.new_device_threshold),
@@ -303,6 +306,7 @@ void HatsNotificationController::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_) << "Profile must NOT be null.";
 
   UpdateLastInteractionTime();
 
@@ -356,6 +360,7 @@ void HatsNotificationController::PortalStateChanged(
     const NetworkState* default_network,
     NetworkState::PortalState portal_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_) << "Profile must NOT be null.";
   VLOG(1) << "PortalStateChanged: default_network="
           << (default_network ? default_network->path() : "")
           << ", portal_state=" << portal_state;
@@ -388,6 +393,12 @@ void HatsNotificationController::PortalStateChanged(
 
 void HatsNotificationController::OnShuttingDown() {
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+}
+
+void HatsNotificationController::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
 }
 
 // TODO(jackshira): Migrate this to a manager class.
@@ -435,6 +446,7 @@ std::string HatsNotificationController::GetFormattedSiteContext(
 
 void HatsNotificationController::UpdateLastInteractionTime() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_) << "Profile must NOT be null.";
 
   PrefService* pref_service = profile_->GetPrefs();
   if (!hats_config_->global_cap_opt_out) {
