@@ -84,7 +84,11 @@ public class HubNewTabGroupDialogFacility extends Facility<HubTabSwitcherBaseSta
         elements.declareView(DIALOG);
         elements.declareView(DIALOG_TITLE);
 
-        mTitleInputElement = viewElement(allOf(TITLE_INPUT_MATCHER, withText(mTitle)));
+        String inputElementId = "Tab group title input showing " + mTitle;
+        mTitleInputElement =
+                viewElement(
+                        allOf(TITLE_INPUT_MATCHER, withText(mTitle)),
+                        ViewElement.newOptions().elementId(inputElementId).build());
         elements.declareView(mTitleInputElement);
 
         elements.declareView(COLOR_PICKER_CONTAINER);
