@@ -269,7 +269,6 @@ interface Attr : Node
     setter value
 interface AttributePart : NodePart
     attribute @@toStringTag
-    getter automatic
     getter localName
     method constructor
 interface Audio

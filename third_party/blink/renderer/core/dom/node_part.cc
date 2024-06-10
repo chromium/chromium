@@ -28,14 +28,11 @@ NodePart* NodePart::Create(PartRootUnion* root_union,
 
 NodePart::NodePart(PartRoot& root,
                    Node& node,
-                   bool add_to_parts_list,
                    Vector<String> metadata)
     : Part(root, std::move(metadata)), node_(node) {
   CHECK(IsAcceptableNodeType(node));
   node.AddDOMPart(*this);
-  if (add_to_parts_list) {
-    root.AddPart(*this);
-  }
+  root.AddPart(*this);
 }
 
 void NodePart::disconnect() {

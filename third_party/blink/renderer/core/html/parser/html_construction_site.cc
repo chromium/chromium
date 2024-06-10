@@ -1432,8 +1432,7 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
     Element& element = To<Element>(last_node);
     for (auto attribute_name : dom_parts_needed.needs_attribute_parts) {
       MakeGarbageCollected<AttributePart>(*CurrentPartRoot(), element,
-                                          attribute_name,
-                                          /*automatic*/ true, metadata);
+                                          attribute_name, metadata);
     }
   }
 }

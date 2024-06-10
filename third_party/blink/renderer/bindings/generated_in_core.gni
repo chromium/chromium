@@ -324,8 +324,6 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_part_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_part_init.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_part_root_clone_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_part_root_clone_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_entry_filter_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_entry_filter_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.cc",

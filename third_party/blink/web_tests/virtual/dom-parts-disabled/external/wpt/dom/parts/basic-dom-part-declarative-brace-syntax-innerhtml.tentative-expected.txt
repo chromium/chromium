@@ -17,7 +17,7 @@ This is a testharness.js-based test.
   contextEl.content.getPartRoot is not a function
 [FAIL] Basic NodePart parsing
   tmpl.content.getPartRoot is not a function
-[FAIL] Basic AttributePart cloning with values
+[FAIL] Basic AttributePart parsing with multiple attributes
   tmpl.content.getPartRoot is not a function
 Harness: the test ran to completion.
 

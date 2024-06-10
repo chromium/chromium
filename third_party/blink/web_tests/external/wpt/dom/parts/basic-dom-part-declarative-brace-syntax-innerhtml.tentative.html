@@ -81,7 +81,7 @@ test((t) => {
     tmpl.remove();
     root.getParts().forEach(part => part.disconnect());
   });
-  assert_equals(root.getParts().length,0,'Declarative AttributeParts should be automatic, and should not show up in getParts()');
+  assertEqualParts(root.getParts(),[{type:'AttributePart',metadata:[]},{type:'AttributePart',metadata:[]}],0,'Declarative AttributePart should be present');
   function checkBasics(checkContent,expectId,expectClass) {
     const innerDiv = checkContent.firstElementChild;
     assert_equals(innerDiv.localName,'div');
@@ -93,9 +93,7 @@ test((t) => {
   checkBasics(tmpl.content);
   const clone = root.clone();
   const clonedDiv = checkBasics(clone.rootContainer);
-  const cloneWithValues = root.clone({attributeValues: ['foo','bar']});
-  const clonedDiv2 = checkBasics(cloneWithValues.rootContainer,'foo','bar');
-}, `Basic AttributePart cloning with values`);
+}, `Basic AttributePart parsing with multiple attributes`);
 
 </script>
 

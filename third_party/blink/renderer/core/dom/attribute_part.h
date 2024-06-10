@@ -25,38 +25,31 @@ class CORE_EXPORT AttributePart : public NodePart {
   static AttributePart* Create(PartRootUnion* root_union,
                                Node* node,
                                AtomicString local_name,
-                               bool automatic,
                                const PartInit* init,
                                ExceptionState& exception_state);
   AttributePart(PartRoot& root,
                 Element& element,
                 AtomicString local_name,
-                bool automatic,
                 const PartInit* init)
       : AttributePart(root,
                       element,
                       local_name,
-                      automatic,
                       init && init->hasMetadata() ? init->metadata()
                                                   : Vector<String>()) {}
   AttributePart(PartRoot& root,
                 Element& element,
                 AtomicString local_name,
-                bool automatic,
                 Vector<String> metadata);
   AttributePart(const AttributePart&) = delete;
   ~AttributePart() override = default;
 
   Part* ClonePart(NodeCloningData&, Node&) const override;
-  bool IncludeInPartsList() const override { return !automatic_; }
 
   // AttributePart API
   AtomicString localName() const { return local_name_; }
-  bool automatic() const { return automatic_; }
 
  private:
   AtomicString local_name_;
-  bool automatic_;
 };
 
 }  // namespace blink

@@ -23,11 +23,9 @@ void DocumentPartRoot::Trace(Visitor* visitor) const {
   PartRoot::Trace(visitor);
 }
 
-PartRootUnion* DocumentPartRoot::clone(PartRootCloneOptions* options,
-                                       ExceptionState&) {
+PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
   NodeCloningData data{CloneOption::kIncludeDescendants,
                        CloneOption::kPreserveDOMParts};
-  data.SetPartRootCloneOptions(options);
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data,
                                        /*append_to*/ nullptr);
   // http://crbug.com/1467847: clone may be null and can be hit by clusterfuzz.

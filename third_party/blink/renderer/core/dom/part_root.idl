@@ -18,15 +18,11 @@ interface mixin PartRootMixin {
   // document tree is cloned. In the case of a ChildPartRoot, only the children
   // between `previous_node` and `next_node` are included, inclusive. The
   // `clone()` method returns the cloned PartRoot.
-  [RaisesException] PartRoot clone(optional PartRootCloneOptions options);
+  [RaisesException] PartRoot clone();
   // Return the root container for the PartRoot, which is the Document or
   // DocumentFragment for a DocumentPartRoot, or the parent ContainerNode of
   // a ChildNodePart.
   readonly attribute Node rootContainer;
-};
-
-dictionary PartRootCloneOptions {
-  sequence<DOMString> attributeValues;
 };
 
 DocumentPartRoot includes PartRootMixin;

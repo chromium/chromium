@@ -7,8 +7,7 @@
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface AttributePart : NodePart {
-  [RaisesException] constructor(PartRoot root, Element element, DOMString localName, boolean automatic, optional PartInit init = {});
+  [RaisesException] constructor(PartRoot root, Element element, DOMString localName, optional PartInit init = {});
   // For now, HTML only, don't deal with prefix or namespaceURI.
   readonly attribute DOMString localName;
-  readonly attribute boolean automatic;
 };
