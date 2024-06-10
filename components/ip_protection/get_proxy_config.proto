@@ -34,4 +34,18 @@ message GetProxyConfigResponse {
 
   // Proxy chain each request should be routed through.
   repeated ProxyChain proxy_chain = 3;
+
+  // Geohints represent a coarse user location matching RFC 8805 geolocation
+  // parts minus the ip prefix and postal code.
+  message GeoHint {
+    // Country code of the geo. Example: "US".
+    string country_code = 1;
+    // ISO region of the geo. Example: "US-CA".
+    string iso_region = 2;
+    // City name of the geo. Example: "MOUNTAIN VIEW".
+    string city_name = 3;
+  }
+
+  // Represents the most recent Geo of the client.
+  GeoHint geo_hint = 4;
 }
