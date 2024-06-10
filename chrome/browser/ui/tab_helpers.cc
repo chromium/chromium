@@ -675,8 +675,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (companion::IsCompanionFeatureEnabled()) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
   }
-  if (features::IsReadAnythingEnabled() &&
-      features::IsReadAnythingLocalSidePanelEnabled()) {
+  if (features::IsReadAnythingLocalSidePanelEnabled()) {
     ReadAnythingTabHelper::CreateForWebContents(web_contents);
   }
   if (base::FeatureList::IsEnabled(

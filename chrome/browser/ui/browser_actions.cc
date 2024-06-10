@@ -156,13 +156,11 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  if (features::IsReadAnythingEnabled()) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
-                        IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
-                        kActionSidePanelShowReadAnything, browser, true)
-            .Build());
-  }
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
+                      IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
+                      kActionSidePanelShowReadAnything, browser, true)
+          .Build());
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceControlsSidePanel)) {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/test/base/testing_profile.h"
@@ -14,7 +13,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "read_anything_side_panel_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/accessibility/accessibility_features.h"
 
 class MockReadAnythingSidePanelControllerObserver
     : public ReadAnythingSidePanelController::Observer {
@@ -27,7 +25,6 @@ class ReadAnythingSidePanelControllerTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnything);
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
@@ -61,7 +58,6 @@ class ReadAnythingSidePanelControllerTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler rvh_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ReadAnythingSidePanelControllerTest, RegisterReadAnythingEntry) {

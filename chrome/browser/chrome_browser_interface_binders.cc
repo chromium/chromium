@@ -1408,11 +1408,9 @@ void PopulateChromeWebUIFrameBinders(
         CustomizeChromeUI>(map);
   }
 
-  if (features::IsReadAnythingEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        read_anything::mojom::UntrustedPageHandlerFactory,
-        ReadAnythingUntrustedUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      read_anything::mojom::UntrustedPageHandlerFactory,
+      ReadAnythingUntrustedUI>(map);
 
   if (base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature)) {
@@ -1971,8 +1969,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()
         .Add<side_panel::mojom::CompanionPageHandlerFactory>();
   }
-  if (features::IsReadAnythingEnabled() &&
-      features::IsReadAnythingWebUIToolbarEnabled()) {
+  if (features::IsReadAnythingWebUIToolbarEnabled()) {
     registry.ForWebUI<ReadAnythingUntrustedUI>()
         .Add<color_change_listener::mojom::PageHandler>();
   }

@@ -32,8 +32,6 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
     side_panel_ui->Close();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{features::kReadAnything};
 };
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;

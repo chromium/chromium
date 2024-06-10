@@ -233,12 +233,6 @@ AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kPdfOcr);
 AX_BASE_EXPORT bool IsPdfOcrEnabled();
 
-// Include the Read Anything feature. (Note: This feature shows
-// users websites, such as articles, in a comfortable reading experience in a
-// side panel)
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnything);
-AX_BASE_EXPORT bool IsReadAnythingEnabled();
-
 // Make the Read Anything Side Panel local (don't persist when opening a new
 // tab)
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLocalSidePanel);

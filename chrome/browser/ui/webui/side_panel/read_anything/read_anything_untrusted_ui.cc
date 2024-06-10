@@ -41,11 +41,6 @@ ReadAnythingUIUntrustedConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<ReadAnythingUntrustedUI>(web_ui);
 }
 
-bool ReadAnythingUIUntrustedConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return features::IsReadAnythingEnabled();
-}
-
 ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

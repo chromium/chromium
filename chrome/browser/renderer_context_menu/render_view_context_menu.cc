@@ -1212,8 +1212,7 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   // ITEM_GROUP_SMART_SELECTION is for selected text that is not a link.
-  if (features::IsReadAnythingEnabled() &&
-      content_type_->SupportsGroup(
+  if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION)) {
     AppendReadingModeItem();
   }
@@ -2204,9 +2203,7 @@ void RenderViewContextMenu::AppendPageItems() {
   if (IsRegionSearchEnabled()) {
     AppendRegionSearchItem();
   }
-  if (features::IsReadAnythingEnabled()) {
-    AppendReadingModeItem();
-  }
+  AppendReadingModeItem();
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -2549,9 +2546,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
                                     IDS_CONTENT_CONTEXT_SELECTALL);
   }
 
-  if (features::IsReadAnythingEnabled()) {
-    AppendReadingModeItem();
-  }
+  AppendReadingModeItem();
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 

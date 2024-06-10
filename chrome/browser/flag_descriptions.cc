@@ -4925,12 +4925,6 @@ const char kPressAndHoldEscToExitBrowserFullscreenName[] =
 const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =
     "Allows users to press and hold Esc key to exit browser fullscreen.";
 
-const char kReadAnythingName[] = "Reading Mode";
-const char kReadAnythingDescription[] =
-    "Enables the Reading Mode feature which generates a reader-friendly view "
-    "of web pages. Open the side panel and select Reading Mode to try the "
-    "feature.";
-
 const char kReadAnythingWithScreen2xName[] = "Reading Mode with Screen2x";
 const char kReadAnythingWithScreen2xDescription[] =
     "Have Reading Mode use a local machine learning model for web page "

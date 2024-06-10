@@ -21,7 +21,7 @@ class ReadAnythingAppE2ETest : public InProcessBrowserTest {
  public:
   ReadAnythingAppE2ETest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kReadAnythingLocalSidePanel}, {});
+        {features::kReadAnythingLocalSidePanel}, {});
   }
   ~ReadAnythingAppE2ETest() override = default;
   ReadAnythingAppE2ETest(const ReadAnythingAppE2ETest&) = delete;

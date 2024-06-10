@@ -742,10 +742,6 @@
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) || !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/accessibility/accessibility_features.h"
-#endif
-
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
@@ -5369,10 +5365,8 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (features::IsReadAnythingEnabled()) {
-    MaybeAddThrottle(ReadAnythingSidePanelNavigationThrottle::CreateFor(handle),
-                     &throttles);
-  }
+  MaybeAddThrottle(ReadAnythingSidePanelNavigationThrottle::CreateFor(handle),
+                   &throttles);
 
   if (lens::features::IsLensOverlayEnabled()) {
     if (profile) {

@@ -70,7 +70,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/accessibility/read_anything_app_controller.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -330,9 +329,8 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
   // url, which is chrome-untrusted. ReadAnythingAppController installs v8
   // bindings in the chrome.readingMode namespace which are consumed by
   // read_anything/app.ts, the resource of the Read Anything WebUI.
-  if (features::IsReadAnythingEnabled() &&
-      render_frame()->GetWebFrame()->GetDocument().Url() ==
-          chrome::kChromeUIUntrustedReadAnythingSidePanelURL) {
+  if (render_frame()->GetWebFrame()->GetDocument().Url() ==
+      chrome::kChromeUIUntrustedReadAnythingSidePanelURL) {
     ReadAnythingAppController::Install(render_frame());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

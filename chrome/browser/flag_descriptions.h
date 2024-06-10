@@ -2865,9 +2865,6 @@ extern const char kKeyboardAndPointerLockPromptDescription[];
 extern const char kPressAndHoldEscToExitBrowserFullscreenName[];
 extern const char kPressAndHoldEscToExitBrowserFullscreenDescription[];
 
-extern const char kReadAnythingName[];
-extern const char kReadAnythingDescription[];
-
 extern const char kReadAnythingWithScreen2xName[];
 extern const char kReadAnythingWithScreen2xDescription[];
 

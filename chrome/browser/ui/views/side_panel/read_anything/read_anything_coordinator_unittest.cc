@@ -51,7 +51,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kReadAnythingDocsIntegration,
+        {features::kReadAnythingDocsIntegration,
          features::kReadAnythingLocalSidePanel,
          features::kReadAnythingWebUIToolbar},
         {});
@@ -270,7 +270,7 @@ class ReadAnythingCoordinatorWebUIToolbarTest : public TestWithBrowserView {
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything}, {features::kReadAnythingWebUIToolbar});
+        {}, {features::kReadAnythingWebUIToolbar});
     TestWithBrowserView::SetUp();
 
     read_anything_coordinator_ =
@@ -303,7 +303,7 @@ class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kDataCollectionModeForScreen2x},
+        {features::kDataCollectionModeForScreen2x},
         {features::kReadAnythingWebUIToolbar});
     TestWithBrowserView::SetUp();
 

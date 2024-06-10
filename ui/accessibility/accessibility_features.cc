@@ -313,11 +313,6 @@ bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
 }
 
-BASE_FEATURE(kReadAnything, "ReadAnything", base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnything);
-}
-
 BASE_FEATURE(kReadAnythingLocalSidePanel,
              "ReadAnythingLocalSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);

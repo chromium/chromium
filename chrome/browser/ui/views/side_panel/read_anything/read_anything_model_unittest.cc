@@ -42,7 +42,7 @@ class ReadAnythingModelTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything}, {features::kReadAnythingWebUIToolbar});
+        {}, {features::kReadAnythingWebUIToolbar});
     TestWithBrowserView::SetUp();
 
     model_ = std::make_unique<ReadAnythingModel>();
