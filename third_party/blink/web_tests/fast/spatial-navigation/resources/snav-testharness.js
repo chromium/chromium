@@ -1,8 +1,28 @@
-(function() {
+(function(global_scope) {
   "use strict";
 
   let gAsyncTest;
   let gPostAssertsFunc;
+
+
+  /** Returns the <title> or filename or "Untitled" */
+  function get_title() {
+    if ('document' in global_scope) {
+      //Don't use document.title to work around an Opera/Presto bug in XHTML documents
+      var title = document.getElementsByTagName("title")[0];
+      if (title && title.firstChild && title.firstChild.data) {
+        return title.firstChild.data;
+      }
+    }
+    if ('META_TITLE' in global_scope && META_TITLE) {
+      return META_TITLE;
+    }
+    if ('location' in global_scope && 'pathname' in location) {
+      let lastSlash = location.pathname.lastIndexOf('/');
+      return location.pathname.substring(lastSlash + 1, location.pathname.indexOf('.', lastSlash));
+    }
+    return "Untitled";
+  }
 
   // TODO: Use WebDriver's API instead of eventSender.
   //       Hopefully something like:
@@ -123,7 +143,7 @@
         snav.assertSnavEnabledAndTestable();
       if (postAssertsFunc)
         gPostAssertsFunc = postAssertsFunc;
-      gAsyncTest = async_test("Focus movements:\n" +
+      gAsyncTest = async_test("["+ get_title() + "] Focus movements:\n" +
           JSON.stringify(expectedMoves).replace(/],/g, ']\n') + '\n');
 
       // All iframes must be loaded before trying to navigate to them.
@@ -138,4 +158,4 @@
       });
     }
   }
-})();
+})(self);
