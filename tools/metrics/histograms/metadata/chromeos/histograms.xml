@@ -1853,7 +1853,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys"
-    units="keys" expires_after="2024-07-21">
+    units="keys" expires_after="2025-01-21">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -1896,7 +1896,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType"
-    enum="KeyboardTopRowLayoutWithExtraSublayout" expires_after="2024-07-21">
+    enum="KeyboardTopRowLayoutWithExtraSublayout" expires_after="2025-01-21">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
