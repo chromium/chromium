@@ -15,13 +15,8 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common/context_result.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -117,12 +112,6 @@ void AdjustParamsForCurrentConfig(media::VideoCaptureParams* params) {
   params->buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
 }
 #endif
-
-// Whether to use per-plane sampling rather than external sampling.
-bool UsePerPlaneSampling() {
-  return base::FeatureList::IsEnabled(
-      media::kMultiPlaneVideoCaptureSharedImages);
-}
 
 bool IsFatalError(media::VideoCaptureError error) {
   switch (error) {
@@ -356,7 +345,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 #if BUILDFLAG(IS_OZONE)
     // If format is not multiplanar it must be used for testing.
     CHECK(format.is_multi_plane() || g_force_use_gpu_memory_buffer_for_test);
-    if (!UsePerPlaneSampling() && format.is_multi_plane()) {
+    if (format.is_multi_plane()) {
       format.SetPrefersExternalSampler();
     }
 #endif
@@ -416,16 +405,13 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       return frame;
     }
 
-    auto format = GetSharedImageFormat();
+    auto format = shared_image_->format();
     // If format is not multiplanar it must be used for testing.
     CHECK(format.is_multi_plane() || g_force_use_gpu_memory_buffer_for_test);
-    if (!UsePerPlaneSampling() && format.is_multi_plane()) {
-      frame->set_shared_image_format_type(
-          media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-    } else {
-      frame->set_shared_image_format_type(
-          media::SharedImageFormatType::kSharedImageFormat);
-    }
+    frame->set_shared_image_format_type(
+        format.PrefersExternalSampler()
+            ? media::SharedImageFormatType::kSharedImageFormatExternalSampler
+            : media::SharedImageFormatType::kSharedImageFormat);
 
     if (frame_info->color_space.IsValid()) {
       frame->set_color_space(frame_info->color_space);
@@ -446,9 +432,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle_;
 
   const raw_ptr<ui::ContextFactory> context_factory_;
-
-  // Used to create a GPU memory buffer from its handle.
-  gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
 

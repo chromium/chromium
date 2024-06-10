@@ -14,8 +14,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "ui/gl/gl_bindings.h"

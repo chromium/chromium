@@ -34,7 +34,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/limits.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -583,28 +582,11 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
 #endif
 
-  // kMultiPlaneVideoCaptureSharedImages controls whether planes are sampled
-  // individually rather than using external sampling.
-  bool use_per_plane_sampling =
-      base::FeatureList::IsEnabled(media::kMultiPlaneVideoCaptureSharedImages);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // External sampling isn't supported on Windows/Mac with Multiplane SI.
-  // NOTE: This CHECK would ideally be done if !BUILDFLAG(IS_OZONE), but this
-  // codepath is entered in tests for Android, which does not have
-  // kMultiPlaneVideoCaptureSharedImages set. This codepath is not entered in
-  // production for Android (see
-  // https://chromium-review.googlesource.com/c/chromium/src/+/4640009/comment/29c99ef9_587e49dc/
-  // for a detailed discussion).
-  CHECK(use_per_plane_sampling);
-#endif
-
   if (should_recreate_shared_image ||
       !video_frame_init_data.buffer_context->gmb_resources()->shared_image) {
     auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
 #if BUILDFLAG(IS_OZONE)
-    if (!use_per_plane_sampling) {
-      multiplanar_si_format.SetPrefersExternalSampler();
-    }
+    multiplanar_si_format.SetPrefersExternalSampler();
 #endif
     CHECK_EQ(gpu_memory_buffer->GetFormat(),
              gfx::BufferFormat::YUV_420_BIPLANAR);
@@ -648,15 +630,16 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
                   gpu_memory_buffer->GetFormat());
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
-  DCHECK(video_frame_init_data.buffer_context->gmb_resources()->shared_image);
+  auto& shared_image =
+      video_frame_init_data.buffer_context->gmb_resources()->shared_image;
+  DCHECK(shared_image);
 
   const auto gmb_size = gpu_memory_buffer->GetSize();
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
-          gmb_size, std::move(gpu_memory_buffer),
-          video_frame_init_data.buffer_context->gmb_resources()->shared_image,
-          sync_token, texture_target,
+          gmb_size, std::move(gpu_memory_buffer), shared_image, sync_token,
+          texture_target,
           base::BindOnce(&BufferContext::MailboxHolderReleased,
                          video_frame_init_data.buffer_context),
           video_frame_init_data.ready_buffer->info->timestamp);
@@ -667,11 +650,11 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   // For a single multiplanar image, inform the VideoFrame that it
   // should go down the normal SharedImageFormat codepath or the one with
-  // ExternalSampler is not using per plane sampling..
+  // ExternalSampler.
   frame->set_shared_image_format_type(
-      use_per_plane_sampling
-          ? media::SharedImageFormatType::kSharedImageFormat
-          : media::SharedImageFormatType::kSharedImageFormatExternalSampler);
+      shared_image->format().PrefersExternalSampler()
+          ? media::SharedImageFormatType::kSharedImageFormatExternalSampler
+          : media::SharedImageFormatType::kSharedImageFormat);
 
   frame->metadata().allow_overlay = true;
   frame->metadata().read_lock_fences_enabled = true;
