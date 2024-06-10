@@ -4033,21 +4033,6 @@
             ]
         }
     ],
-    "ChromeOSAmbientModeThrottleAnimation": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeOSAmbientModeThrottleAnimation"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSBoostUrgentVariables": [
         {
             "platforms": [
@@ -21729,21 +21714,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ThrottleUnimportantFrameTimers"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TimeOfDayDlc": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TimeOfDayDlc"
                     ]
                 }
             ]
