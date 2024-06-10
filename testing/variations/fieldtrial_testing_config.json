@@ -2969,6 +2969,26 @@
             ]
         }
     ],
+    "BatchNativeEventsInMessagePumpEpoll": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "android_webview",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BatchNativeEventsInMessagePumpEpoll"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatchNativeEventsInMessagePumpKqueue": [
         {
             "platforms": [
