@@ -47,6 +47,7 @@ source_set("browser") {
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
+    "//components/plus_addresses",
     "//components/prefs:prefs",
     "//components/prefs/ios",
     "//components/resources:components_resources_grit",

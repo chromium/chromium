@@ -61,6 +61,7 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/grit/components_resources.h"
+#import "components/plus_addresses/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -1137,8 +1138,13 @@ constexpr CGFloat kSuggestionIconWidth = 32;
           autofill::SuggestionType::kCreateNewPlusAddress) {
     return nil;
   }
-  // TODO(crbug.com/40276862): Finalize icons, including in the unbranded case.
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUIRedesign)) {
+    return nil;
+  }
+
   if (plus_address_suggestion.icon !=
       autofill::Suggestion::Icon::kPlusAddress) {
     return nil;
