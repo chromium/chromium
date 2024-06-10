@@ -57,6 +57,23 @@ NSAttributedString* DescriptionMessage() {
                                             link_attributes);
 }
 
+// Generates the description to be displayed in the bottomsheet.
+NSAttributedString* DescriptionMessageWithEmail(NSString* primaryEmailAddress) {
+  // Create and format the text.
+  NSDictionary* text_attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+  };
+
+  NSString* message =
+      l10n_util::GetNSStringF(IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS,
+                              base::SysNSStringToUTF16(primaryEmailAddress));
+
+  return [[NSMutableAttributedString alloc] initWithString:message
+                                                attributes:text_attributes];
+}
+
 // Generate the error message with link to report error for displaying on the
 // bottom sheet.
 NSAttributedString* ErrorMessage() {
@@ -207,37 +224,10 @@ UIImage* PlusAddressesLogo() {
   self.customSpacingBeforeImageIfNoNavigationBar =
       kPlusAddressSheetBeforeImageTopMargin;
   self.customSpacingAfterImage = kPlusAddressSheetAfterImageMargin;
-  if (_plusAddressUIRedesignEnabled) {
-    // Set up the view that will indicate the reserved plus address to the user
-    // for confirmation.
-    _reservedPlusAddressTableView = [self reservedPlusAddressView];
-  } else {
-    // Set up the label that will indicate the reserved plus address to the
-    // user.
-    _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
-  }
 
-  NSString* primaryEmailAddress = [_delegate primaryEmailAddress];
-  UILabel* primaryAddressLabel =
-      [self primaryEmailAddressView:primaryEmailAddress];
-  _description = [self descriptionView:DescriptionMessage()];
-  _errorMessage = [self errorMessageViewWithMessage:ErrorMessage()];
-  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _description, primaryAddressLabel,
-    (_plusAddressUIRedesignEnabled ? _reservedPlusAddressTableView
-                                   : _reservedPlusAddressLabel),
-    _errorMessage
-  ]];
-  _errorMessage.hidden = YES;
-  verticalStack.axis = UILayoutConstraintAxisVertical;
-  verticalStack.spacing = 0;
-  verticalStack.distribution = UIStackViewDistributionFill;
-  verticalStack.layoutMarginsRelativeArrangement = YES;
-  verticalStack.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
-  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
-  [verticalStack setCustomSpacing:kPlusAddressSheetPrimaryAddressBottomMargin
-                        afterView:primaryAddressLabel];
-  self.underTitleView = verticalStack;
+  self.underTitleView = _plusAddressUIRedesignEnabled
+                            ? [self setUpUnderTitleViewForUiRedesign]
+                            : [self setUpUnderTitleView];
   [super viewDidLoad];
   [self setUpBottomSheetDetents];
   self.actionHandler = self;
@@ -489,6 +479,60 @@ UIImage* PlusAddressesLogo() {
   container.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(container, _activityIndicator);
   self.aboveTitleView = container;
+}
+
+- (UIView*)setUpUnderTitleView {
+  CHECK(!_plusAddressUIRedesignEnabled);
+
+  // Set up the label that will indicate the reserved plus address to the
+  // user.
+  _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
+  NSString* primaryEmailAddress = [_delegate primaryEmailAddress];
+  UILabel* primaryAddressLabel =
+      [self primaryEmailAddressView:primaryEmailAddress];
+
+  _description = [self descriptionView:DescriptionMessage()];
+  _errorMessage = [self errorMessageViewWithMessage:ErrorMessage()];
+
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _description, primaryAddressLabel, _reservedPlusAddressLabel, _errorMessage
+  ]];
+  _errorMessage.hidden = YES;
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.spacing = 0;
+  verticalStack.distribution = UIStackViewDistributionFill;
+  verticalStack.layoutMarginsRelativeArrangement = YES;
+  verticalStack.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  [verticalStack setCustomSpacing:kPlusAddressSheetPrimaryAddressBottomMargin
+                        afterView:primaryAddressLabel];
+
+  return verticalStack;
+}
+
+- (UIView*)setUpUnderTitleViewForUiRedesign {
+  CHECK(_plusAddressUIRedesignEnabled);
+
+  // Set up the view that will indicate the reserved plus address to the user
+  // for confirmation.
+  _reservedPlusAddressTableView = [self reservedPlusAddressView];
+  _description = [self descriptionView:DescriptionMessageWithEmail(
+                                           [_delegate primaryEmailAddress])];
+  _errorMessage = [self errorMessageViewWithMessage:ErrorMessage()];
+
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _description, _reservedPlusAddressTableView, _errorMessage
+  ]];
+  _errorMessage.hidden = YES;
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.spacing = 0;
+  verticalStack.distribution = UIStackViewDistributionFill;
+  verticalStack.layoutMarginsRelativeArrangement = YES;
+  verticalStack.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  [verticalStack setCustomSpacing:kPlusAddressSheetPrimaryAddressBottomMargin
+                        afterView:_description];
+  return verticalStack;
 }
 
 - (void)dismiss {
