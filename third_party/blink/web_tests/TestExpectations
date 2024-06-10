@@ -7519,12 +7519,8 @@ crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/co
 
 # Gardener 2024-06-06
 crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
-crbug.com/325323464 [ Mac13 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
-crbug.com/325323464 [ Mac14 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
+crbug.com/325323464 [ Mac ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/325323464 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass Timeout ]
-
-# Gardener 2024-06-07
-crbug.com/325323464 [ Mac12 ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure ]
 
 # Gardener 2024-06-10
 crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failure ]
