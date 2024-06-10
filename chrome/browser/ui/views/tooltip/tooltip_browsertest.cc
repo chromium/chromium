@@ -273,19 +273,12 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // https://crbug.com/1212403. Flaky on linux-chromeos-rel.
 // https://crbug.com/1241736. Flaky on Win.
 // TODO(elkurin): Keyboard triggered tooltip needs command line switch on server
 // side while Lacros cannot set Ash flag.
-#define MAYBE_ShowTooltipFromIFrameWithKeyboard \
-  DISABLED_ShowTooltipFromIFrameWithKeyboard
-#else
-#define MAYBE_ShowTooltipFromIFrameWithKeyboard \
-  ShowTooltipFromIFrameWithKeyboard
-#endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
-                       MAYBE_ShowTooltipFromIFrameWithKeyboard) {
+                       DISABLED_ShowTooltipFromIFrameWithKeyboard) {
   // There are two tooltips in this file: one above the iframe and one inside
   // the iframe.
   NavigateToURL("/tooltip_in_iframe.html");
