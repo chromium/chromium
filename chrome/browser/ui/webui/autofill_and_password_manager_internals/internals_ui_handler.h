@@ -88,6 +88,7 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void OnLoaded(const base::Value::List& args);
   void OnResetCache(const base::Value::List& args);
   void OnResetUpmEviction(const base::Value::List& args);
+  void OnResetAccountStorageNotice(const base::Value::List& args);
 
   void OnResetCacheDone(const std::string& message);
 
