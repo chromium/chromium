@@ -61,9 +61,12 @@ namespace plus_addresses {
 
 namespace {
 const float kDescriptionWidthPercent = 0.8;
+const int kProposedPlusAddressBackgroundCornerRadius = 8;
 const int kPlusAddressIconWidth = 24;
-const int kGoogleGLogoWidth = 50;
-const int kPlusAddressLogoWidth = 100;
+// TODO(b/342330801): Figure out the correct size for the refresh icon.
+const int kRefreshButtonIconWidth = 16;
+const int kGoogleGLogoWidth = 48;
+const int kPlusAddressLogoWidth = 96;
 const int kPlusAddressIconColumnWidth = 64;
 const int kPlusAddressRefreshColumnWidth = 48;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -71,11 +74,14 @@ const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
 const gfx::VectorIcon& kDarkGoogleGLogoIcon =
     vector_icons::kGoogleGLogoMonochromeIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon =
+    plus_addresses::kPlusAddressesLogoIcon;
+const gfx::VectorIcon& kPlusAddressLogoLargeIcon =
     vector_icons::kPlusAddressLogoLargeIcon;
 #else
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kDarkGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kProductIcon;
+const gfx::VectorIcon& kPlusAddressLogoLargeIcon = vector_icons::kProductIcon;
 #endif
 
 int GetPlusAddressLabelVerticalMargin() {
@@ -106,6 +112,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                                   views::BubbleBorder::Arrow::NONE),
       controller_(controller),
       web_contents_(web_contents) {
+  const bool redesign_enabled =
+      base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign);
   // This delegate is owned & deleted by the PlusAddressCreationController.
   SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(base::BindOnce(
@@ -116,8 +124,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   SetModalType(ui::MODAL_TYPE_CHILD);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  SetShowCloseButton(
-      !base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign));
+  SetShowCloseButton(!redesign_enabled);
 
   std::unique_ptr<views::View> primary_view =
       views::Builder<views::BoxLayoutView>()
@@ -126,7 +133,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   // Create hero image.
   std::unique_ptr<views::ImageView> logo_image;
-  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+  if (redesign_enabled) {
     logo_image = std::make_unique<views::ThemeTrackingImageView>(
         ui::ImageModel::FromVectorIcon(kGoogleGLogoIcon, gfx::kPlaceholderColor,
                                        kGoogleGLogoWidth),
@@ -147,9 +154,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   primary_view->AddChildView(std::move(logo_image));
 
   // Add title view.
-  primary_view->AddChildView(
+  views::StyledLabel* modal_title = primary_view->AddChildView(
       views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
           .SetTextContext(views::style::STYLE_PRIMARY)
           .SetText(l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE))
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
@@ -162,24 +168,24 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .Build());
 
-  // Split the difference on both sides of the description.
-  int horizontal_margin = (1 - kDescriptionWidthPercent) *
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) /
-                          2;
-  description_paragraph->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));
   description_paragraph->SetProperty(views::kElementIdentifierKey,
                                      kPlusAddressDescriptionTextElementId);
 
   const std::u16string u16_primary_email_address =
       base::UTF8ToUTF16(primary_email_address);
 
-  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+  if (redesign_enabled) {
+    modal_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    description_paragraph->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     description_paragraph->SetText(l10n_util::GetStringFUTF16(
         IDS_PLUS_ADDRESS_MODAL_DESCRIPTION, {u16_primary_email_address}));
+    description_paragraph->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+                          0, 0, 0));
   } else {
+    modal_title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     // Set the description text & update the styling.
     std::vector<size_t> description_offsets;
     // Prepend the settings link text with a newline to render it on one line.
@@ -189,6 +195,16 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     description_paragraph->SetText(l10n_util::GetStringFUTF16(
         IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_START, {settings_text},
         &description_offsets));
+    description_paragraph->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
+    // Split the difference on both sides of the description.
+    int horizontal_margin = (1 - kDescriptionWidthPercent) *
+                            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) /
+                            2;
+    description_paragraph->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));
 
     gfx::Range settings_text_range(
         description_offsets[0],
@@ -226,20 +242,24 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // Create a bubble for the plus address to be displayed in.
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int kRectangleRadius =
-      provider->GetCornerRadiusMetric(views::ShapeContextTokens::kDialogRadius);
+      redesign_enabled ? kProposedPlusAddressBackgroundCornerRadius
+                       : provider->GetCornerRadiusMetric(
+                             views::ShapeContextTokens::kDialogRadius);
 
   std::unique_ptr<views::Background> background =
       views::CreateThemedRoundedRectBackground(
-          // TODO(crbug.com/40276862) - Replace with color from the mocks.
-          ui::kColorSubtleEmphasisBackground, kRectangleRadius);
+          // TODO(b/342330801): Figure out the correct color for the background
+          // and move the definition to the mixer.
+          redesign_enabled ? ui::kColorSysHeaderContainer
+                           : ui::kColorSubtleEmphasisBackground,
+          kRectangleRadius);
 
   views::TableLayoutView* label_container =
       primary_view->AddChildView(views::Builder<views::TableLayoutView>()
                                      .SetBackground(std::move(background))
                                      .Build());
 
-  const bool add_plus_address_icon =
-      base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign);
+  const bool add_plus_address_icon = redesign_enabled;
   label_container->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
@@ -271,9 +291,9 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   if (add_plus_address_icon) {
     label_container->AddChildView(
         views::Builder<views::ImageView>()
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                // TODO(b/342330801): Use plus address icon when it's designed.
-                kPlusAddressLogoIcon, ui::kColorIcon, kPlusAddressIconWidth))
+            .SetImage(ui::ImageModel::FromVectorIcon(kPlusAddressLogoLargeIcon,
+                                                     ui::kColorIcon,
+                                                     kPlusAddressIconWidth))
             .Build());
   }
 
@@ -284,7 +304,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .SetTextStyle(views::style::STYLE_PRIMARY)
           .Build());
-  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+  if (redesign_enabled) {
     plus_address_label_->SetTextContext(views::style::CONTEXT_LABEL);
     plus_address_label_->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
   }
@@ -299,9 +319,9 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
         views::CreateVectorImageButton(base::BindRepeating(
             &PlusAddressCreationDialogDelegate::OnRefreshClicked,
             base::Unretained(this))));
-    views::SetImageFromVectorIconWithColorId(refresh_button_,
-                                             vector_icons::kReloadIcon,
-                                             ui::kColorIcon, ui::kColorIcon);
+    views::SetImageFromVectorIconWithColorId(
+        refresh_button_, vector_icons::kReloadIcon, ui::kColorIcon,
+        ui::kColorIcon, kRefreshButtonIconWidth);
     refresh_button_->SetProperty(views::kElementIdentifierKey,
                                  kPlusAddressRefreshButtonElementId);
     refresh_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
@@ -357,9 +377,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
               &PlusAddressCreationDialogDelegate::HandleButtonPress,
               // Safe because this delegate outlives the Widget (and this view).
               base::Unretained(this), PlusAddressViewButtonType::kCancel),
-          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)
-
-              ));
+          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)));
   cancel_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
   cancel_button_->GetViewAccessibility().SetName(
@@ -367,6 +385,9 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   cancel_button_->SizeToPreferredSize();
   cancel_button_->SetProperty(views::kElementIdentifierKey,
                               kPlusAddressCancelButtonElementId);
+  if (redesign_enabled) {
+    cancel_button_->SetStyle(ui::ButtonStyle::kTonal);
+  }
 
   confirm_button_ =
       buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
