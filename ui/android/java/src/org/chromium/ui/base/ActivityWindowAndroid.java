@@ -13,6 +13,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
@@ -99,7 +100,17 @@ public class ActivityWindowAndroid extends WindowAndroid
 
         activityKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(
                 LazyOneshotSupplier.fromSupplier(
-                        () -> getInsetObserver().getSupplierForKeyboardInset()));
+                        () -> {
+                            // `getInsetObserver()` implicitly checks for a window and for the
+                            // activity to not be finishing.
+                            var insetObserver = getInsetObserver();
+                            if (insetObserver == null) {
+                                // An InsetObserver can no longer be created. Stub this out so
+                                // calls continue to succeed.
+                                return new ObservableSupplierImpl<Integer>();
+                            }
+                            return insetObserver.getSupplierForKeyboardInset();
+                        }));
         setKeyboardDelegate(activityKeyboardVisibilityDelegate);
         setAndroidPermissionDelegate(activityAndroidPermissionDelegate);
     }
