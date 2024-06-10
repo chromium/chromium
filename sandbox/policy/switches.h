@@ -67,6 +67,7 @@ SANDBOX_POLICY_EXPORT extern const char kHardwareVideoEncodingSandbox[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kNearbySandbox[];
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 SANDBOX_POLICY_EXPORT extern const char kLibassistantSandbox[];
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

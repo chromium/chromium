@@ -126,6 +126,8 @@ component("policy") {
     sources += [
       "linux/bpf_ime_policy_linux.cc",
       "linux/bpf_ime_policy_linux.h",
+      "linux/bpf_nearby_policy_linux.cc",
+      "linux/bpf_nearby_policy_linux.h",
       "linux/bpf_tts_policy_linux.cc",
       "linux/bpf_tts_policy_linux.h",
     ]

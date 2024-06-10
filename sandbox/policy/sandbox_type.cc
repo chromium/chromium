@@ -69,6 +69,7 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case Sandbox::kIme:
     case Sandbox::kTts:
+    case Sandbox::kNearby:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -150,6 +151,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case Sandbox::kIme:
     case Sandbox::kTts:
+    case Sandbox::kNearby:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -307,6 +309,8 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return switches::kImeSandbox;
     case Sandbox::kTts:
       return switches::kTtsSandbox;
+    case Sandbox::kNearby:
+      return switches::kNearbySandbox;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case Sandbox::kLibassistant:
       return switches::kLibassistantSandbox;
@@ -407,6 +411,9 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kIme;
   if (sandbox_string == switches::kTtsSandbox)
     return Sandbox::kTts;
+  if (sandbox_string == switches::kNearbySandbox) {
+    return Sandbox::kNearby;
+  }
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   if (sandbox_string == switches::kLibassistantSandbox)
     return Sandbox::kLibassistant;

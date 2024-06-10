@@ -64,6 +64,7 @@ const char kHardwareVideoEncodingSandbox[] = "hardware_video_encoding";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kImeSandbox[] = "ime";
 const char kTtsSandbox[] = "tts";
+const char kNearbySandbox[] = "nearby";
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 const char kLibassistantSandbox[] = "libassistant";
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
