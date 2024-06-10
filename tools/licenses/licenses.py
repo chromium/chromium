@@ -343,11 +343,11 @@ SPECIAL_CASES = {
 # README.chromium files are under third_party/libc*/.
 # So we do not include licensing metadata for these directories.
 # See crbug.com/1458042 for more details.
-THIRD_PARTY_FOR_BUILD_FILES_ONLY = {
+PRUNE_PATHS.update([
     os.path.join('buildtools', 'third_party', 'libc++'),
     os.path.join('buildtools', 'third_party', 'libc++abi'),
     os.path.join('buildtools', 'third_party', 'libunwind'),
-}
+])
 
 # The mandatory metadata fields for a single dependency.
 MANDATORY_FIELDS = {
@@ -638,16 +638,6 @@ def ParseDir(path,
   Returns: A tuple with a list of directory metadata, and accrued parsing errors
 
   """
-  if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
-    return [], []
-
-  # gclient creates empty directories for conditionally downloaded submodules.
-  try:
-    if not os.listdir(os.path.join(root, path)):
-      return [], []
-  except FileNotFoundError: #This gets thrown if directory is missing instead of empty.
-    return [], []
-
   # Get the metadata values, from
   # (a) looking up the path in SPECIAL_CASES; or
   # (b) parsing the metadata from a README.chromium file.
@@ -740,10 +730,10 @@ def process_license_files(
   return license_paths
 
 
-def ContainsFiles(path, root):
+def _ContainsFiles(path):
   """Determines whether any files exist in a directory or in any of its
     subdirectories."""
-  for _, dirs, files in os.walk(os.path.join(root, path)):
+  for _, dirs, files in os.walk(path):
     if files:
       return True
     for vcs_metadata in VCS_METADATA_DIRS:
@@ -752,32 +742,44 @@ def ContainsFiles(path, root):
   return False
 
 
-def FilterDirsWithFiles(dirs_list, root):
-  # If a directory contains no files, assume it's a DEPS directory for a
-  # project not used by our current configuration and skip it.
-  return [x for x in dirs_list if ContainsFiles(x, root)]
+def _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs):
+  """Adds |dirpath| to |third_party_dirs| and processes
+  additional_readme_paths.json."""
+  # Prune paths and guard against cycles.
+  if dirpath in PRUNE_PATHS or dirpath in third_party_dirs:
+    return
+  # Guard against missing / empty dirs (gclient creates empty directories for
+  # conditionally downloaded submodules).
+  resolved_path = os.path.join(root, dirpath)
+  if not os.path.exists(resolved_path) or not _ContainsFiles(resolved_path):
+    return
+  third_party_dirs.add(dirpath)
+
+  additional_paths_file = os.path.join(root, dirpath, ADDITIONAL_PATHS_FILENAME)
+  if not os.path.exists(additional_paths_file):
+    return
+  with codecs.open(additional_paths_file, encoding='utf-8') as paths_file:
+    additional_paths = json.load(paths_file)
+  for p in additional_paths:
+    subpath = os.path.normpath(os.path.join(dirpath, p))
+    _MaybeAddThirdPartyPath(root, subpath, third_party_dirs)
 
 
-def ProcessAdditionalReadmePathsJson(root, dirname, third_party_dirs):
-  """For a given directory, process the additional readme paths, and add to
-    third_party_dirs."""
-  additional_paths_file = os.path.join(root, dirname, ADDITIONAL_PATHS_FILENAME)
-  if os.path.exists(additional_paths_file):
-    with codecs.open(additional_paths_file, encoding='utf-8') as paths_file:
-      extra_paths = json.load(paths_file)
-      third_party_dirs.update([os.path.join(dirname, p) for p in extra_paths])
-
-
-def FindThirdPartyDirs(prune_paths, root, extra_third_party_dirs=None):
+def FindThirdPartyDirs(root, extra_third_party_dirs=None):
   """Find all third_party directories underneath the source root."""
   third_party_dirs = set()
   for path, dirs, files in os.walk(root):
     path = path[len(root) + 1:]  # Pretty up the path.
 
     # .gitignore ignores /out*/, so do the same here.
-    if path in prune_paths or path.startswith('out'):
+    if path in PRUNE_PATHS or path.startswith('out'):
       dirs[:] = []
       continue
+
+    # Don't recurse into paths in ADDITIONAL_PATHS, like we do with regular
+    # third_party/foo paths.
+    if path in ADDITIONAL_PATHS:
+      dirs[:] = []
 
     # Prune out directories we want to skip.
     # (Note that we loop over PRUNE_DIRS so we're not iterating over a
@@ -788,34 +790,19 @@ def FindThirdPartyDirs(prune_paths, root, extra_third_party_dirs=None):
 
     if os.path.basename(path) == 'third_party':
       # Add all subdirectories that are not marked for skipping.
-      for dir in dirs:
-        dirpath = os.path.join(path, dir)
-        if dirpath not in prune_paths:
-          third_party_dirs.add(dirpath)
+      for d in dirs:
+        dirpath = os.path.join(path, d)
+        _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs)
 
-        ProcessAdditionalReadmePathsJson(root, dirpath, third_party_dirs)
-
-    # Don't recurse into paths in ADDITIONAL_PATHS, like we do with regular
-    # third_party/foo paths.
-    if path in ADDITIONAL_PATHS:
-      dirs[:] = []
 
   extra_paths = set(ADDITIONAL_PATHS)
   if extra_third_party_dirs:
     extra_paths.update(extra_third_party_dirs)
 
-  for dir in extra_paths:
-    # They might not exist due to gclient conditions.
-    if dir not in prune_paths and os.path.exists(os.path.join(root, dir)):
-      third_party_dirs.add(dir)
-      ProcessAdditionalReadmePathsJson(root, dir, third_party_dirs)
+  for path in extra_paths:
+    _MaybeAddThirdPartyPath(root, path, third_party_dirs)
 
   return sorted(third_party_dirs)
-
-
-def FindThirdPartyDirsWithFiles(root):
-  third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, root)
-  return FilterDirsWithFiles(third_party_dirs, root)
 
 
 # Many builders do not contain 'gn' in their PATH, so use the GN binary from
@@ -946,7 +933,7 @@ def ScanThirdPartyDirs(root=None):
   """Scan a list of directories and report on any problems we find."""
   if root is None:
     root = os.getcwd()
-  third_party_dirs = FindThirdPartyDirsWithFiles(root)
+  third_party_dirs = FindThirdPartyDirs(root)
 
   errors = []
   for path in sorted(third_party_dirs):
@@ -1009,7 +996,7 @@ def GenerateCredits(file_template_file,
     if not third_party_dirs:
       raise RuntimeError("No deps found.")
   else:
-    third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, _REPOSITORY_ROOT,
+    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT,
                                           extra_third_party_dirs)
 
   if not file_template_file:
@@ -1157,7 +1144,7 @@ def GenerateLicenseFile(args: argparse.Namespace):
       raise RuntimeError("No deps found.")
 
   else:
-    third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, _REPOSITORY_ROOT,
+    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT,
                                           extra_third_party_dirs)
 
   metadatas = {}
