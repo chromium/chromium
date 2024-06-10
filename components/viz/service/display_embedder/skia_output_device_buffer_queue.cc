@@ -244,9 +244,6 @@ SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
   }
 
   FreeAllSurfaces();
-  // Clear and cancel swap_completion_callbacks_ to free all resource bind to
-  // callbacks.
-  swap_completion_callbacks_.clear();
 }
 
 OutputPresenter::Image* SkiaOutputDeviceBufferQueue::GetNextImage() {
@@ -284,7 +281,8 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
   }
 
   displayed_image_ = image;
-  swap_completion_callbacks_.pop_front();
+  DCHECK_GT(num_pending_swap_completion_callbacks_for_testing_, 0u);
+  num_pending_swap_completion_callbacks_for_testing_--;
 
   // If there is no displayed image, then purge one available image.
   if (base::FeatureList::IsEnabled(features::kBufferQueueImageSetPurgeable)) {
@@ -510,16 +508,16 @@ void SkiaOutputDeviceBufferQueue::Present(
   // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
   // be released due to reshape() or destruction.
   auto data = frame.data;
-  swap_completion_callbacks_.emplace_back(
-      std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
-          &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
-          submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
-          std::move(committed_overlay_mailboxes_))));
-  committed_overlay_mailboxes_.clear();
 
-  presenter_->Present(swap_completion_callbacks_.back()->callback(),
-                      std::move(feedback), data);
+  num_pending_swap_completion_callbacks_for_testing_++;
+  presenter_->Present(
+      base::BindOnce(
+          &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
+          weak_ptr_.GetWeakPtr(), GetSwapBuffersSize(), std::move(frame),
+          submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
+          std::move(committed_overlay_mailboxes_)),
+      std::move(feedback), data);
+  committed_overlay_mailboxes_.clear();
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 

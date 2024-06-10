@@ -75,9 +75,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
  private:
   friend class SkiaOutputDeviceBufferQueueTest;
 
-  using CancelableSwapCompletionCallback =
-      base::CancelableOnceCallback<void(gfx::SwapCompletionResult)>;
-
   OutputPresenter::Image* GetNextImage();
   void PageFlipComplete(OutputPresenter::Image* image,
                         gfx::GpuFenceHandle release_fence);
@@ -129,12 +126,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   raw_ptr<OutputPresenter::Image, DanglingUntriaged> displayed_image_ = nullptr;
   // These are free for use, and are not nullptr.
   base::circular_deque<OutputPresenter::Image*> available_images_;
-  // These cancelable callbacks bind images that have been scheduled to display
-  // but are not displayed yet. This deque will be cleared when represented
-  // frames are destroyed. Use CancelableOnceCallback to prevent resources
-  // from being destructed outside SkiaOutputDeviceBufferQueue life span.
-  base::circular_deque<std::unique_ptr<CancelableSwapCompletionCallback>>
-      swap_completion_callbacks_;
   // Mailboxes of scheduled overlays for the next SwapBuffers call.
   std::vector<gpu::Mailbox> pending_overlay_mailboxes_;
   // Mailboxes of committed overlays for the last SwapBuffers call.
@@ -170,6 +161,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   base::TimeTicks last_swap_time_;
   base::OneShotTimer reclaim_overlays_timer_;
   static constexpr base::TimeDelta kDelayForOverlaysReclaim = base::Seconds(1);
+
+  size_t num_pending_swap_completion_callbacks_for_testing_ = 0u;
+
+  base::WeakPtrFactory<SkiaOutputDeviceBufferQueue> weak_ptr_{this};
 };
 
 }  // namespace viz
