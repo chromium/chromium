@@ -20955,7 +20955,8 @@
                         "FledgeEnableWALForInterestGroupStorage",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SqlWALModeOnSegmentationDatabase",
+                        "SqlWALModeOnWebDatabase"
                     ]
                 }
             ]

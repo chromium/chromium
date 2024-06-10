@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -43,6 +44,10 @@ const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
     FILE_PATH_LITERAL(":memory");
 
 namespace {
+
+BASE_FEATURE(kSqlWALModeOnWebDatabase,
+             "SqlWALModeOnWebDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged as histogram buckets and most not be changed nor
 // reused.
@@ -94,7 +99,8 @@ sql::InitStatus FailedMigrationTo(int version_num) {
 }  // namespace
 
 WebDatabase::WebDatabase()
-    : db_({// We don't store that much data in the tables so use a small page
+    : db_({.wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase),
+           // We don't store that much data in the tables so use a small page
            // size. This provides a large benefit for empty tables (which is
            // very likely with the tables we create).
            .page_size = 2048,
