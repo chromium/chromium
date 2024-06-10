@@ -839,7 +839,6 @@ void IndexedDBBucketContext::AddReceiver(
         this, std::move(pending_receiver),
         ReceiverContext(std::move(client_state_checker_remote), client_token));
   } else {
-    CHECK(base::FeatureList::IsEnabled(features::kIndexedDBShardBackingStores));
     delegate().on_receiver_bounced.Run(std::move(client_state_checker_remote),
                                        client_token,
                                        std::move(pending_receiver));
@@ -1352,9 +1351,6 @@ void IndexedDBBucketContext::HandleBackingStoreCorruption(
   // In order to successfully delete the corrupted DB, the open handle must
   // first be closed.
   ResetBackingStore();
-
-  // NB: `this` will be synchronously deleted here while
-  // kIndexedDBShardBackingStores is false.
 
   // Note: DestroyDB only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
