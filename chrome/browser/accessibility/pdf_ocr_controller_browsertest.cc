@@ -152,21 +152,23 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
 #endif
 };
 
-// TODO(crbug.com/341856144): Verify test and enable.
-// Enabling PDF OCR should affect the accessibility mode of a new WebContents
-// of PDF Viewer Mimehandler.
+// Enabling screen reader should affect the accessibility mode of a new
+// WebContents of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
-                       DISABLED_OpenPDFAfterTurningOnPdfOcr) {
-  EnableScreenReader(true);
+                       OpenPDFAfterTurningOnScreenReader) {
+  // Forced accessibility contradicts with turning off the screen reader.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility)) {
+    GTEST_SKIP();
+  }
+
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->set_ocr_ready_for_testing();
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 
-  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
-      ->set_ocr_ready_for_testing();
-  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
-      ->Activate();
-
+  EnableScreenReader(true);
   // Load test PDF.
   content::WebContents* active_web_contents = GetActiveWebContents();
   WebContentsLoadWaiter load_waiter(active_web_contents);
@@ -183,12 +185,15 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   }
 }
 
-// TODO(crbug.com/341856144): Verify test and enable.
-// Enabling PDF OCR should affect the accessibility mode of an exiting
+// Enabling screen reader should affect the accessibility mode of an exiting
 // WebContents of PDF Viewer Mimehandler.
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
-                       DISABLED_OpenPDFBeforeTurningOnPdfOcr) {
-  EnableScreenReader(true);
+                       OpenPDFBeforeTurningOnScreenReader) {
+  // Forced accessibility contradicts with turning off the screen reader.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility)) {
+    GTEST_SKIP();
+  }
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
@@ -210,8 +215,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
       ->set_ocr_ready_for_testing();
-  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
-      ->Activate();
+  EnableScreenReader(true);
 
   html_web_contents_vector =
       screen_ai::PdfOcrController::GetAllPdfWebContentsesForTesting(
@@ -222,13 +226,13 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
-                       NotEnabledWithoutScreenReader) {
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithoutScreenReader) {
   // Forced accessibility contradicts with turning off the screen reader.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceRendererAccessibility)) {
     GTEST_SKIP();
   }
+
   EnableScreenReader(false);
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
@@ -265,8 +269,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, DownloadRetry) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
-                       NotEnabledWithoutSelectToSpeak) {
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithoutSelectToSpeak) {
   EnableSelectToSpeak(false);
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
@@ -278,6 +281,20 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   content::WebContents* pdf_contents = GetActiveWebContents();
   ui::AXMode ax_mode = pdf_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
+}
+
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithSelectToSpeak) {
+  EnableSelectToSpeak(true);
+
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->set_ocr_ready_for_testing();
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->Activate();
+
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+  content::WebContents* pdf_contents = GetActiveWebContents();
+  ui::AXMode ax_mode = pdf_contents->GetAccessibilityMode();
+  EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
