@@ -603,18 +603,6 @@ void LayerTreeImpl::Draw(Layer& layer,
     return;
   }
 
-  // Compute new clip in layer space.
-  const bool mask_to_bounds =
-      layer.masks_to_bounds() || layer.HasNonTrivialMaskFilterInfo();
-  gfx::RectF clip_in_layer = transform_from_parent->MapRect(clip_in_parent);
-  if (mask_to_bounds) {
-    clip_in_layer.Intersect(
-        gfx::RectF(layer.bounds().width(), layer.bounds().height()));
-  }
-  if (clip_in_layer.IsEmpty()) {
-    return;
-  }
-
   gfx::Transform transform_to_target = parent_transform_to_target;
   gfx::Transform transform_to_root = parent_transform_to_root;
   {
@@ -622,6 +610,49 @@ void LayerTreeImpl::Draw(Layer& layer,
     const gfx::Transform transform_to_parent = layer.ComputeTransformToParent();
     transform_to_target.PreConcat(transform_to_parent);
     transform_to_root.PreConcat(transform_to_parent);
+  }
+
+  // Compute new clip in layer space.
+  gfx::RectF clip_in_layer;
+  if (layer.offset_tag()) {
+    // A layer can't have a different offset tag than it's ancestor.
+    CHECK(!data.offset_tag);
+
+    // If `layer` has an offset tag then the position `layer` will be drawn at
+    // isn't fixed and `transform_to_target` and `transform_to_parent` might be
+    // inaccurate. Any required clipping from ancestor layers is already part of
+    // `parent_clip_in_target` if the ancestor layer has an axis-aligned
+    // transform to target render pass. Otherwise the ancestor layer will have
+    // introduced a new render pass to perform clipping. In either case, the
+    // ancestor clipping is handled and we could discard parent clipping in
+    // layer space without issues.
+    //
+    // A valid `clip_in_layer` is still needed so take `parent_clip_in_target`,
+    // expand it by the maximum movement of current layer based on offset tag
+    // constraints and transform it back to current layers coordinate space.
+    // This represents the area of `layer` that can be visible for any possible
+    // `transform_to_target` at draw time aka it clips any part of the current
+    // layer that isn't possible to be visible.
+    gfx::RectF expanded_parent_clip_in_target =
+        parent_clip_in_target ? *parent_clip_in_target
+                              : gfx::RectF(parent_pass.output_rect);
+    auto tag_constraints = registered_offset_tags_[layer.offset_tag()]
+                               ->GetOffsetTagDefinition(layer.offset_tag())
+                               .constraints;
+    tag_constraints.ExpandVisibleRect(expanded_parent_clip_in_target);
+    clip_in_layer = transform_to_target.GetCheckedInverse().MapRect(
+        expanded_parent_clip_in_target);
+  } else {
+    clip_in_layer = transform_from_parent->MapRect(clip_in_parent);
+  }
+
+  const bool mask_to_bounds =
+      layer.masks_to_bounds() || layer.HasNonTrivialMaskFilterInfo();
+  if (mask_to_bounds) {
+    clip_in_layer.Intersect(gfx::RectF(layer.bounds()));
+  }
+  if (clip_in_layer.IsEmpty()) {
+    return;
   }
 
   {
@@ -647,7 +678,12 @@ void LayerTreeImpl::Draw(Layer& layer,
       // Compute new clip in target space.
       gfx::RectF new_clip_in_target(gfx::SizeF(layer.bounds()));
       const gfx::RectF* clip_in_target = parent_clip_in_target;
-      if (mask_to_bounds) {
+
+      // If `layer`, or an ancestor layer, has an OffsetTag then it's not known
+      // where it will be drawn in target render pass coordinate space. Don't
+      // add layer bounds to `clip_in_target` and rely on layer space clipping
+      // in `clip_in_layer`.
+      if (mask_to_bounds && !data.offset_tag) {
         new_clip_in_target = transform_to_target.MapRect(new_clip_in_target);
         if (parent_clip_in_target) {
           new_clip_in_target.Intersect(*parent_clip_in_target);
@@ -840,8 +876,6 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
 
   std::optional<base::AutoReset<viz::OffsetTag>> offset_tag_reset;
   if (layer.offset_tag()) {
-    // A child layer can't have a different OffsetTag.
-    CHECK(!data.offset_tag);
     // The OffsetTag must be registered with a SurfaceLayer before tagging
     // layers.
     CHECK(registered_offset_tags_.contains(layer.offset_tag()));

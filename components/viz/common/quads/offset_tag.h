@@ -11,6 +11,7 @@
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
@@ -78,6 +79,16 @@ struct VIZ_COMMON_EXPORT OffsetTagConstraints {
 
   // Clamps `offset` so it satisfies constraints.
   gfx::Vector2dF Clamp(gfx::Vector2dF offset) const;
+
+  // This function takes a rect that contains visible parts of content with no
+  // offset, in the target render pass coordinate space that an offset will be
+  // applied in, and expands it based on max possible offsets in each direction.
+  //
+  // This expansion is "backwards" from what you might expect. For example if
+  // constraints allow shifting the content down, that outsets the visible_rect
+  // at the top, since content that was previously above the top of the visible
+  // rect is moved lower and becomes visible.
+  void ExpandVisibleRect(gfx::RectF& visible_rect_in_target) const;
 
   // Validates that constrains include 0,0 offset and that min is smaller max.
   bool IsValid() const;

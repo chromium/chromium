@@ -129,6 +129,12 @@ testing::Matcher<const DrawQuad*> AreContentsOpaque(bool opaque) {
       testing::Eq(opaque)));
 }
 
+testing::Matcher<const DrawQuad*> HasClipRect(
+    std::optional<gfx::Rect> clip_rect) {
+  return HasSharedQuadState(testing::Field(
+      "clip_rect", &SharedQuadState::clip_rect, testing::Eq(clip_rect)));
+}
+
 testing::Matcher<const DrawQuad*> HasOffsetTag(OffsetTag offset_tag) {
   return HasSharedQuadState(testing::Field(
       "offset_tag", &SharedQuadState::offset_tag, testing::Eq(offset_tag)));

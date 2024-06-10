@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/stringprintf.h"
+#include "ui/gfx/geometry/outsets_f.h"
 
 namespace viz {
 
@@ -41,6 +42,13 @@ gfx::Vector2dF OffsetTagConstraints::Clamp(gfx::Vector2dF value) const {
   DCHECK(IsValid());
   return gfx::Vector2dF(std::clamp(value.x(), min_offset.x(), max_offset.x()),
                         std::clamp(value.y(), min_offset.y(), max_offset.y()));
+}
+
+void OffsetTagConstraints::ExpandVisibleRect(
+    gfx::RectF& visible_rect_in_target) const {
+  DCHECK(IsValid());
+  visible_rect_in_target.Outset(gfx::OutsetsF::TLBR(
+      max_offset.y(), max_offset.x(), -min_offset.y(), -min_offset.x()));
 }
 
 bool OffsetTagConstraints::IsValid() const {

@@ -69,6 +69,10 @@ testing::Matcher<const DrawQuad*> HasOpacity(float opacity);
 // Matches a DrawQuad with expected SharedQuadState::are_contents_opaque.
 testing::Matcher<const DrawQuad*> AreContentsOpaque(bool opaque);
 
+// Matches a DrawQuad with expected SharedQuadState::clip_rect.
+testing::Matcher<const DrawQuad*> HasClipRect(
+    std::optional<gfx::Rect> clip_rect);
+
 // Matches a DrawQuad with expected SharedQuadState::offset_tag.
 testing::Matcher<const DrawQuad*> HasOffsetTag(OffsetTag offset_tag);
 
