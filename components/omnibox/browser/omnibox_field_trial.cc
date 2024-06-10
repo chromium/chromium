@@ -1023,6 +1023,30 @@ MLConfig::MLConfig() {
           mapped_search_blending_grouping_threshold)
           .Get();
 
+  // `kMlUrlPiecewiseMappedSearchBlending` parameters.
+  piecewise_mapped_search_blending =
+      base::FeatureParam<bool>(&omnibox::kMlUrlPiecewiseMappedSearchBlending,
+                               "MlUrlPiecewiseMappedSearchBlending",
+                               piecewise_mapped_search_blending)
+          .Get();
+  piecewise_mapped_search_blending_grouping_threshold =
+      base::FeatureParam<int>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold",
+          piecewise_mapped_search_blending_grouping_threshold)
+          .Get();
+  piecewise_mapped_search_blending_break_points =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints", "")
+          .Get();
+  piecewise_mapped_search_blending_relevance_bias =
+      base::FeatureParam<int>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_RelevanceBias",
+          piecewise_mapped_search_blending_relevance_bias)
+          .Get();
+
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
 
   ml_url_score_caching =
@@ -1085,6 +1109,26 @@ bool IsUrlScoringModelEnabled() {
 }
 bool IsMlUrlScoreCachingEnabled() {
   return GetMLConfig().ml_url_score_caching;
+}
+
+std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints() {
+  std::vector<std::pair<double, int>> break_points;
+
+  std::string param_value = OmniboxFieldTrial::GetMLConfig()
+                                .piecewise_mapped_search_blending_break_points;
+  base::StringPairs pairs;
+  if (base::SplitStringIntoKeyValuePairs(param_value, ',', ';', &pairs)) {
+    for (const auto& p : pairs) {
+      double ml_score;
+      base::StringToDouble(p.first, &ml_score);
+      int relevance;
+      base::StringToInt(p.second, &relevance);
+
+      break_points.push_back(std::make_pair(ml_score, relevance));
+    }
+  }
+
+  return break_points;
 }
 
 // <- ML Relevance Scoring

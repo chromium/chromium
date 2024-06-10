@@ -6466,6 +6466,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-ml-url-piecewise-mapped-search-blending",
+    "owners": ["khalidpeer@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-ml-url-score-caching",
     "owners": [ "khalidpeer@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 130

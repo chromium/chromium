@@ -1439,6 +1439,9 @@ extern const char kOmniboxGroupingFrameworkDescription[];
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
+extern const char kOmniboxMlUrlPiecewiseMappedSearchBlendingName[];
+extern const char kOmniboxMlUrlPiecewiseMappedSearchBlendingDescription[];
+
 extern const char kOmniboxMlUrlScoreCachingName[];
 extern const char kOmniboxMlUrlScoreCachingDescription[];
 

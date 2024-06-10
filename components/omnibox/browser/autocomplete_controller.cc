@@ -1284,7 +1284,9 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
     return;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (OmniboxFieldTrial::GetMLConfig().mapped_search_blending) {
+  if (OmniboxFieldTrial::GetMLConfig().piecewise_mapped_search_blending) {
+    RunBatchUrlScoringModelPiecewiseMappedSearchBlending(old_result);
+  } else if (OmniboxFieldTrial::GetMLConfig().mapped_search_blending) {
     RunBatchUrlScoringModelMappedSearchBlending(old_result);
   } else {
     RunBatchUrlScoringModel(old_result);
@@ -2069,8 +2071,6 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   // This is needed in order to ensure that the relevance score assignment logic
   // can properly break ties when two (or more) URL suggestions have the same ML
   // score.
-  // TODO(crbug.com/40062540): Replace `Sort` with `DeduplicateMatches` for
-  //   better stability of matches.
   internal_result_.Sort(input_, template_url_service_,
                         old_result.default_match_to_preserve);
 
@@ -2095,15 +2095,17 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
     scored_positions.push_back(i);
   }
 
-  if (batch_scoring_signals.empty())
+  if (batch_scoring_signals.empty()) {
     return;
+  }
 
   auto elapsed_timer = base::ElapsedTimer();
   const auto results = provider_client_->GetAutocompleteScoringModelService()
                            ->BatchScoreAutocompleteUrlMatchesSync(
                                std::move(batch_scoring_signals));
-  if (results.empty())
+  if (results.empty()) {
     return;
+  }
 
   // Record how many eligible matches the model was executed for.
   base::UmaHistogramCounts1000("Omnibox.URLScoringModelExecuted.Matches",
@@ -2118,8 +2120,9 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
       metrics::OmniboxEventProto_Feature_ML_URL_SCORING);
 
-  if (OmniboxFieldTrial::IsMlUrlScoringCounterfactual())
+  if (OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
     return;
+  }
 
   const int min = OmniboxFieldTrial::GetMLConfig().mapped_search_blending_min;
   const int max = OmniboxFieldTrial::GetMLConfig().mapped_search_blending_max;
@@ -2137,6 +2140,164 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
     match.RecordAdditionalInfo("ml legacy relevance", match.relevance);
     match.RecordAdditionalInfo("ml model output", p_value);
     match.relevance = min + p_value * (max - min);
+    match.shortcut_boosted = match.relevance > grouping_threshold;
+  }
+
+  // Record the percentage of matches that were assigned non-null scores by
+  // the ML scoring model.
+  RecordMlScoreCoverage(score_coverage_count, results.size());
+
+  // Following the initial relevance assignment, build a sorted list of
+  // values which will contain the finalized set of relevance scores for URL
+  // suggestions.
+  std::vector<int> scores_pool;
+  for (size_t i = 0; i < internal_result_.size(); ++i) {
+    const auto& match = internal_result_.matches_[i];
+    if (!match.IsUrlScoringEligible() ||
+        (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+         match.relevance == 0)) {
+      continue;
+    }
+    scores_pool.push_back(match.relevance);
+  }
+  base::ranges::sort(scores_pool, std::greater<>());
+
+  // Avoid duplicate scores by ensuring that no two URL suggestions are assigned
+  // the same score.
+  int max_score = INT_MAX;
+  for (auto& score : scores_pool) {
+    score = std::min(score, max_score - 1);
+    max_score = score;
+  }
+
+  std::vector<std::pair<float, size_t>> prediction_and_position_heap;
+  for (size_t i = 0; i < results.size(); ++i) {
+    const auto& prediction = results[i];
+    prediction_and_position_heap.push_back(
+        {prediction.value_or(0), scored_positions[i]});
+  }
+  base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
+                            [](const auto& pair) { return pair.first; });
+
+  // Assign the finalized relevance scores to each URL suggestion in order of
+  // priority (i.e. ML score).
+  for (size_t i = 0; i < prediction_and_position_heap.size(); ++i) {
+    auto& match =
+        internal_result_.matches_[prediction_and_position_heap[i].second];
+    match.relevance = scores_pool[i];
+  }
+
+  for (Observer& obs : observers_) {
+    obs.OnMlScored(this, internal_result_);
+  }
+}
+
+int AutocompleteController::ApplyPiecewiseScoringTransform(
+    double ml_score,
+    std::vector<std::pair<double, int>> break_points) {
+  // Start and end points for the line segment whose domain contains `ml_score`.
+  std::pair<double, int> start;
+  std::pair<double, int> end;
+  for (size_t i = 0; i < break_points.size() - 1; i++) {
+    start = break_points[i];
+    end = break_points[i + 1];
+    if (ml_score <= end.first) {
+      double m = (end.second - start.second) / (end.first - start.first);
+      double b = end.second - m * end.first;
+      return m * ml_score + b;
+    }
+  }
+  return 0;
+}
+
+void AutocompleteController::
+    RunBatchUrlScoringModelPiecewiseMappedSearchBlending(
+        OldResult& old_result) {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::"
+               "RunBatchUrlScoringModelPiecewiseMappedSearchBlending");
+
+  const auto break_points = OmniboxFieldTrial::GetPiecewiseMappingBreakPoints();
+  if (break_points.empty()) {
+    return;
+  }
+
+  // Sort according to traditional scores.
+  // This is needed in order to ensure that the relevance score assignment logic
+  // can properly break ties when two (or more) URL suggestions have the same ML
+  // score.
+  internal_result_.Sort(input_, template_url_service_,
+                        old_result.default_match_to_preserve);
+
+  // Run the model for the eligible matches.
+  std::vector<const ScoringSignals*> batch_scoring_signals;
+  std::vector<size_t> scored_positions;
+  for (size_t i = 0; i < internal_result_.size(); ++i) {
+    const auto& match = internal_result_.matches_[i];
+    // Do not attempt to score matches that are generally ineligible for ML
+    // scoring nor any stale suggestions sourced from the DocumentProvider
+    // cache.
+    if (!match.IsUrlScoringEligible() ||
+        (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+         match.relevance == 0)) {
+      continue;
+    }
+
+    RecordScoringSignalCoverageForProvider(match.scoring_signals.value(),
+                                           match.provider.get());
+
+    batch_scoring_signals.push_back(&match.scoring_signals.value());
+    scored_positions.push_back(i);
+  }
+
+  if (batch_scoring_signals.empty()) {
+    return;
+  }
+
+  auto elapsed_timer = base::ElapsedTimer();
+  const auto results = provider_client_->GetAutocompleteScoringModelService()
+                           ->BatchScoreAutocompleteUrlMatchesSync(
+                               std::move(batch_scoring_signals));
+  if (results.empty()) {
+    return;
+  }
+
+  // Record how many eligible matches the model was executed for.
+  base::UmaHistogramCounts1000("Omnibox.URLScoringModelExecuted.Matches",
+                               results.size());
+
+  // Record how long it took to execute the model for all eligible matches.
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Omnibox.URLScoringModelExecuted.ElapsedTime", elapsed_timer.Elapsed(),
+      base::Microseconds(1), base::Milliseconds(3), 100);
+
+  // Record whether the model was executed for at least one eligible match.
+  provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+      metrics::OmniboxEventProto_Feature_ML_URL_SCORING);
+
+  if (OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
+    return;
+  }
+
+  const int grouping_threshold =
+      OmniboxFieldTrial::GetMLConfig()
+          .piecewise_mapped_search_blending_grouping_threshold;
+  const int relevance_bias =
+      OmniboxFieldTrial::GetMLConfig()
+          .piecewise_mapped_search_blending_relevance_bias;
+
+  int score_coverage_count = 0;
+  for (size_t i = 0; i < results.size(); ++i) {
+    const auto& prediction = results[i];
+    float p_value = prediction.value_or(0);
+    if (prediction.has_value()) {
+      score_coverage_count++;
+    }
+    auto& match = internal_result_.matches_[scored_positions[i]];
+    match.RecordAdditionalInfo("ml legacy relevance", match.relevance);
+    match.RecordAdditionalInfo("ml model output", p_value);
+    match.relevance =
+        ApplyPiecewiseScoringTransform(p_value, break_points) + relevance_bias;
     match.shortcut_boosted = match.relevance > grouping_threshold;
   }
 

@@ -420,6 +420,13 @@ BASE_FEATURE(kLogUrlScoringSignals,
              "LogUrlScoringSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, (floating-point) ML model scores are mapped to (integral)
+// relevance scores by means of a piecewise function. This allows for the
+// integration of URL model scores with search traditional scores.
+BASE_FEATURE(kMlUrlPiecewiseMappedSearchBlending,
+             "MlUrlPiecewiseMappedSearchBlending",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the ML scoring service will make use of an in-memory ML score
 // cache in order to speed up the overall scoring process.
 BASE_FEATURE(kMlUrlScoreCaching,

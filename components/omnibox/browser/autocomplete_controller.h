@@ -428,9 +428,18 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Given an `ml_score` in the range [0, 1], computes the corresponding
+  // relevance score using the piecewise function described by the given
+  // `break_points`.
+  int ApplyPiecewiseScoringTransform(
+      double ml_score,
+      std::vector<std::pair<double, int>> break_points);
+
   // Runs the batch scoring for all the eligible matches in `results_.matches_`.
   void RunBatchUrlScoringModel(OldResult& old_result);
   void RunBatchUrlScoringModelMappedSearchBlending(OldResult& old_result);
+  void RunBatchUrlScoringModelPiecewiseMappedSearchBlending(
+      OldResult& old_result);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Constructs a destination URL from supplied search terms args.
