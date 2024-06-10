@@ -126,10 +126,24 @@ std::u16string GetSuggestionA11yString(const Suggestion& suggestion,
   return base::JoinString(text, u". ");
 }
 
-bool CanHaveExpandControlVisibilityDynamic(const Suggestion& suggestion) {
-  return GetFillingProductFromSuggestionType(suggestion.type) ==
+// Returns whether the expand subpopup icon can have its visibility updated on
+// hover/select. This method will return true when the following
+// conditions are met:
+// 1. The suggestion has children (otherwise a subpopup does not exist for it).
+// 2. A suggestion is acceptable.
+// 3. The `FillingProduct` is `FillingProduct::kAddress` (to avoid interfering
+// with `FillingProduct::kCompose` suggestions).
+// 4. The respective feature and feature param is enabled. This is currently
+// done as part of an experiment arm to understand users behaviour.
+//
+// Note that when a suggestion is not acceptable, the only
+// possible action the user can take is opening the subpopup and accepting a
+// suggestion in it, therefore the icon is always visible in this case.
+bool CanUpdateOpenSubPopupIconVisibilityOnHover(const Suggestion& suggestion) {
+  CHECK(suggestion.children.size() > 0);
+  return suggestion.is_acceptable &&
+         GetFillingProductFromSuggestionType(suggestion.type) ==
              FillingProduct::kAddress &&
-         suggestion.type != SuggestionType::kDevtoolsTestAddresses &&
          base::FeatureList::IsEnabled(
              features::kAutofillGranularFillingAvailable) &&
          features::
@@ -272,7 +286,7 @@ PopupRowView::PopupRowView(
         CellType::kControl, *expand_child_suggestions_view_);
     layout->SetFlexForView(expand_child_suggestions_view_.get(), 0);
 
-    UpdateExpandControlVisibility();
+    UpdateOpenSubPopupIconVisibility();
   }
 }
 
@@ -448,7 +462,7 @@ bool PopupRowView::HandleKeyPressEvent(
 
 void PopupRowView::UpdateUI() {
   UpdateBackground();
-  UpdateExpandControlVisibility();
+  UpdateOpenSubPopupIconVisibility();
 }
 
 void PopupRowView::UpdateBackground() {
@@ -467,10 +481,11 @@ void PopupRowView::UpdateBackground() {
                               views::Emphasis::kMedium)));
 }
 
-void PopupRowView::UpdateExpandControlVisibility() {
+void PopupRowView::UpdateOpenSubPopupIconVisibility() {
   if (!expand_child_suggestions_view_icon_ ||
       line_number_ >= controller_->GetLineCount() ||
-      !CanHaveExpandControlVisibilityDynamic(
+      controller_->GetSuggestionAt(line_number_).children.size() == 0 ||
+      !CanUpdateOpenSubPopupIconVisibilityOnHover(
           controller_->GetSuggestionAt(line_number_))) {
     return;
   }

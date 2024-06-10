@@ -87,9 +87,11 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 
   void ShowView(int line_number,
                 bool has_control,
+                bool is_acceptable = true,
                 SuggestionType type = SuggestionType::kAddressEntry) {
     std::vector<Suggestion> suggestions(line_number + 1);
     suggestions[line_number].type = type;
+    suggestions[line_number].is_acceptable = is_acceptable;
     suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
       suggestions[line_number].children = {Suggestion()};
@@ -506,7 +508,11 @@ TEST_P(PopupRowExpandVisibilityNonEligibleSuggestionsTest, All) {
                 .name,
         "true"}});
 
-  ShowView(/*line_number=*/0, /*has_control=*/true, GetParam());
+  // `SuggestionType::kDevtoolsTestAddresses` suggestions are not acceptable.
+  ShowView(
+      /*line_number=*/0, /*has_control=*/true,
+      /*is_acceptable=*/GetParam() != SuggestionType::kDevtoolsTestAddresses,
+      GetParam());
   ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
   ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
 

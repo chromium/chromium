@@ -141,13 +141,14 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // Updates the background according to the control cell highlighting state.
   void UpdateBackground();
 
-  // Updates the expand control icon visibility: if any cell is selected or
-  // the sub-popup is open it is visible, otherwise - hidden. This is done for
-  // experimentation purposes only. When the corresponding feature param is
-  // disabled, this method is noop.
-  // TODO(crbug.com/40274514): Remove when the field-by-field filling eperiments
-  // are over.
-  void UpdateExpandControlVisibility();
+  // Updates the expand subpopup icon visibility. By default the icon is
+  // always visible in the case children suggestion exist. The exception is when
+  // `CanUpdateOpenSubPopupIconVisibilityOnHover()` returns true. In this case
+  // the icon is visible only when a cell is selected (e.g. when the row is
+  // hovered) or the sub-popup is open.
+  // TODO(crbug.com/40274514): Maybe remove this method once experiment is
+  // complete.
+  void UpdateOpenSubPopupIconVisibility();
 
   // The delegate used for accessibility announcements (implemented by the
   // parent view).

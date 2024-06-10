@@ -1012,7 +1012,12 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
           &feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature;
     }
-    if (base::FeatureList::IsEnabled(
+    const bool should_offer_manual_fallback_on_unclassified_fields =
+        !IsAddressType(trigger_field_type) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillForUnclassifiedFieldsAvailable);
+    if (should_offer_manual_fallback_on_unclassified_fields ||
+        base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
       // TODO(crbug.com/40942505): Make the granular filling options vary
       // depending on the locale.

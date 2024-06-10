@@ -147,12 +147,47 @@ void FormatLabel(views::Label& label,
   }
 }
 
-int GetMaxPopupAddressProfileWidth() {
-  // TODO(crbug.com/40274514): Remove feature check as part of the clean up.
-  return base::FeatureList::IsEnabled(
-             features::kAutofillGranularFillingAvailable)
+int GetMaxPopupAddressProfileWidth(bool should_use_new_popup_max_size) {
+  return should_use_new_popup_max_size
              ? kAutofillPopupAddressProfileGranularFillingEnabledMaxWidth
              : kAutofillSuggestionMaxWidth;
+}
+
+// Returns true when `features::kAutofillGranularFillingAvailable` is true or
+// the user is using manual fallbacks for unclassified address or payments
+// fields. Note that `is_suggestion_acceptable` is not enough because
+// suggestions like `SuggestionType::kDevtoolsTestAddresses` are also not
+// acceptable. This method will always return the same values for all
+// suggestions in a popup because:
+// 1. If the user triggers address manual fallback on an unclassified field, all
+// available suggestions will be of such type (address filling product, not
+// acceptable and not a `SuggestionType::kDevtoolsTestAddresses` suggestion).
+// 2. Same goes for credit card manual fallback suggestions. They will not be
+// mixed with other ones.
+// 3. If `features::kAutofillGranularFillingAvailable` is true, then this method
+// also returns true regardless of the `FillingProduct` and whether a suggestion
+// is acceptable.
+//
+// Note `SuggestionType::kDevtoolsTestAddresses` is not
+// acceptable, and is the parent of `SuggestionType::kDevtoolsTestAddressEntry`
+// (which can be accepted). We specifically remove it because its filling
+// product is also `FillingProduct::kAddress`.
+// TODO(crbug.com/40274514): Remove once clean up happens.
+bool ShouldApplyNewPopupMaxWidth(SuggestionType suggestion_type,
+                                 bool is_suggestion_acceptable) {
+  FillingProduct filling_product =
+      GetFillingProductFromSuggestionType(suggestion_type);
+  const bool is_address_unclassified_field_manual_fallback =
+      !is_suggestion_acceptable &&
+      filling_product == FillingProduct::kAddress &&
+      suggestion_type != SuggestionType::kDevtoolsTestAddresses;
+  const bool is_credit_card_unclassified_field_manual_fallback =
+      !is_suggestion_acceptable &&
+      filling_product == FillingProduct::kCreditCard;
+  return is_address_unclassified_field_manual_fallback ||
+         is_credit_card_unclassified_field_manual_fallback ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillGranularFillingAvailable);
 }
 
 // Creates a label for the suggestion's main text.
@@ -225,17 +260,18 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               kMinorTextStyle));
       label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-      // TODO(crbug.com/40274514): Remove feature check as part of the clean up.
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillGranularFillingAvailable)) {
-        FormatLabel(*label, label_text, main_filling_product,
-                    GetMaxPopupAddressProfileWidth());
-      } else {
-        // To make sure the popup width will not exceed its maximum value,
-        // divide the maximum label width by the number of labels.
-        FormatLabel(*label, label_text, main_filling_product,
-                    GetMaxPopupAddressProfileWidth() / label_row.size());
-      }
+      // To make sure the popup width will not exceed its maximum value,
+      // divide the maximum label width by the number of labels.
+      // TODO(crbug.com/40274514): Keep new behaviour where the max
+      // popup size cannot be exceeded once clean up happens.
+      const bool should_apply_new_popup_max_width = ShouldApplyNewPopupMaxWidth(
+          suggestion.type, suggestion.is_acceptable);
+      int shrink_formatted_label_by =
+          should_apply_new_popup_max_width ? label_row.size() : 1;
+      FormatLabel(
+          *label, label_text, main_filling_product,
+          GetMaxPopupAddressProfileWidth(should_apply_new_popup_max_width) /
+              shrink_formatted_label_by);
     }
     result.push_back(std::move(label_row_container_view));
   }
@@ -411,7 +447,8 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
   }
 
   FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
-              GetMaxPopupAddressProfileWidth());
+              GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
+                  suggestion.type, suggestion.is_acceptable)));
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
@@ -432,7 +469,8 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       CreateMainTextLabel(kSuggestion);
   FormatLabel(*main_text_label, kSuggestion.main_text,
               controller->GetMainFillingProduct(),
-              GetMaxPopupAddressProfileWidth());
+              GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
+                  kSuggestion.type, kSuggestion.is_acceptable)));
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       CreateMinorTextLabel(kSuggestion),

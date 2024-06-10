@@ -1578,8 +1578,7 @@ class AutofillNonAddressFieldsSuggestionGeneratorTest
   void SetUp() override {
     AutofillChildrenSuggestionGeneratorTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillGranularFillingAvailable,
-                              features::
+        /*enabled_features=*/{features::
                                   kAutofillForUnclassifiedFieldsAvailable},
         /*disabled_features=*/{});
   }
