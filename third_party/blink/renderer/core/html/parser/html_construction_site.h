@@ -362,7 +362,6 @@ class HTMLConstructionSite final {
     void Trace(Visitor*) const;
 
    private:
-    Member<Comment> pending_node_part_comment_node_;
     Vector<String> pending_node_part_metadata_;
     HeapVector<Member<PartRoot>> part_root_stack_;
   };

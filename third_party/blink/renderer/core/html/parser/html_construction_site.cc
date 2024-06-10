@@ -291,9 +291,6 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
     if (pending_dom_parts_) {
       pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
                                                     task.dom_parts_needed);
-      // TODO(crbug.com/1453291) This is only used by the old style declarative
-      // DOM Part syntax, and should be removed.
-      pending_dom_parts_->MaybeConstructNodePart(*task.child);
     }
     return;
   }
@@ -303,9 +300,6 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
     if (pending_dom_parts_) {
       pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
                                                     task.dom_parts_needed);
-      // TODO(crbug.com/1453291) This is only used by the old style declarative
-      // DOM Part syntax, and should be removed.
-      pending_dom_parts_->MaybeConstructNodePart(*task.child);
     }
     return;
   }
@@ -792,61 +786,11 @@ void HTMLConstructionSite::InsertDoctype(AtomicHTMLToken* token) {
   }
 }
 
-namespace {
-Vector<String> ParseMetadataString(String metadata_string) {
-  Vector<String> tokens;
-  metadata_string.Split(' ', tokens);
-  return tokens;
-}
-
-// Check whether the comment starts with the given token string, and if so,
-// truncate the comment to the point after the token string.
-bool StartsWithDeclarativeDOMPart(String& trimmed_comment, String token_start) {
-  if (!trimmed_comment.StartsWithIgnoringASCIICase(token_start)) {
-    return false;
-  }
-  // The token must be followed by whitespace, or the end of the string.
-  if (trimmed_comment.length() == token_start.length()) {
-    trimmed_comment = WTF::g_empty_string;
-    return true;
-  }
-  if (IsHTMLSpace<UChar>(trimmed_comment[token_start.length()])) {
-    trimmed_comment = trimmed_comment.Substring(token_start.length() + 1);
-    return true;
-  }
-  return false;
-}
-}  // namespace
-
 void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
   auto comment = token->Comment();
   Comment& comment_node =
       *Comment::Create(OwnerDocumentForCurrentNode(), comment);
-  if (pending_dom_parts_) {
-    // TODO(crbug.com/1453291) This is the OLD STYLE comment-based DOM Parts
-    // syntax, and should be removed.
-    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-    // This strips HTML whitespace from the front and back, and replaces
-    // repeated whitespace with a single ' '.
-    auto trimmed_comment = comment.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
-    if (trimmed_comment.EndsWith("?")) {
-      trimmed_comment.Truncate(trimmed_comment.length() - 1);
-      const String kChildNodePartStart = "?child-node-part";
-      const String kChildNodePartEnd = "?/child-node-part";
-      const String kNodePart = "?node-part";
-      if (StartsWithDeclarativeDOMPart(trimmed_comment, kChildNodePartStart)) {
-        pending_dom_parts_->AddChildNodePartStart(
-            comment_node, ParseMetadataString(trimmed_comment));
-      } else if (StartsWithDeclarativeDOMPart(trimmed_comment,
-                                              kChildNodePartEnd)) {
-        pending_dom_parts_->AddChildNodePartEnd(comment_node);
-      } else if (StartsWithDeclarativeDOMPart(trimmed_comment, kNodePart)) {
-        pending_dom_parts_->AddNodePart(comment_node,
-                                        ParseMetadataString(trimmed_comment));
-      }
-    }
-  }
   AttachLater(CurrentNode(), &comment_node);
 }
 
@@ -1442,17 +1386,6 @@ HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
   }
 }
 
-// TODO(crbug.com/1453291) This is only used by the old style declarative DOM
-// Part syntax, and should be removed.
-void HTMLConstructionSite::PendingDOMParts::AddNodePart(
-    Comment& node_part_comment,
-    Vector<String> metadata) {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  pending_node_part_comment_node_ = &node_part_comment;
-  pending_node_part_metadata_ = metadata;
-  // Nothing to construct yet - wait for the next Node.
-}
-
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
     Node& previous_sibling,
     Vector<String> metadata) {
@@ -1482,22 +1415,6 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
   part_root_stack_.pop_back();
 }
 
-// TODO(crbug.com/1453291) This is only used by the old style declarative DOM
-// Part syntax, and should be removed.
-void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
-    Node& last_node) {
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (!pending_node_part_comment_node_) {
-    return;
-  }
-  if (&last_node != pending_node_part_comment_node_) {
-    MakeGarbageCollected<NodePart>(*CurrentPartRoot(), last_node,
-                                   pending_node_part_metadata_);
-    pending_node_part_comment_node_ = nullptr;
-    pending_node_part_metadata_.clear();
-  }
-}
-
 void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
     Node& last_node,
     const DOMPartsNeeded& dom_parts_needed) {
@@ -1505,7 +1422,6 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
     return;
   }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  DCHECK(!pending_node_part_comment_node_);
   DCHECK(pending_node_part_metadata_.empty());
   // For now, there's no syntax for metadata, so just use empty.
   Vector<String> metadata;
@@ -1544,7 +1460,6 @@ void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
 }
 
 void HTMLConstructionSite::PendingDOMParts::Trace(Visitor* visitor) const {
-  visitor->Trace(pending_node_part_comment_node_);
   visitor->Trace(part_root_stack_);
 }
 
