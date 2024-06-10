@@ -839,12 +839,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                     const gfx::Rect& visible_rect,
                                     const gfx::Size& natural_size);
 
-  void set_data(size_t plane, const uint8_t* ptr) {
-    DCHECK(IsValidPlane(format(), plane));
-    DCHECK(ptr);
-    data_[plane] = ptr;
-  }
-
  private:
   // The constructor of VideoFrame should use IsValidConfigInternal()
   // instead of the public IsValidConfig() to check the config, because we can
