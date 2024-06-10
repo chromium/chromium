@@ -8669,7 +8669,7 @@
             ]
         }
     ],
-    "EstablishGpuChannelAsync": [
+    "EstablishGpuChannelChanges": [
         {
             "platforms": [
                 "chromeos",
@@ -8680,8 +8680,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EstablishGpuChannelAsync",
+                    "name": "EstablishGpuChannelChanges",
                     "enable_features": [
+                        "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync"
                     ]
                 }
