@@ -2338,7 +2338,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_SECTION_HEADER" desc="Header of a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device). Try to avoid long strings because this is a header in large font size.">
         In your Google Account
       </message>
-      <message name="IDS_SETTINGS_SYNC_TYPE_DISABLED_BY_ADMINISTRATOR"  desc="Subtitle for when the toggle to save a specific data type to the user's Google Account is disabled as per an Enterprise policy">
+      <message name="IDS_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR"  desc="Subtitle for when the toggle to save a specific data type to the user's Google Account is disabled as per an Enterprise policy">
         Managed by your administrator
       </message>
       <message name="IDS_ACCOUNT_SECTION_HISTORY_TOGGLE" desc="History and tabs, one of the data types that we allow syncing. Shown on next to the toggle that controls whether history should be saved in the Google Account and synced across devices.">

@@ -134,8 +134,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private static final String PREF_ADVANCED_CATEGORY = "advanced_category";
 
     @VisibleForTesting
-    private static final String PREF_SETTINGS_SYNC_TYPE_DISABLED_BY_ADMINISTRATOR =
-            "settings_sync_type_disabled_by_administrator";
+    private static final String PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR =
+            "settings_sync_disabled_by_administrator";
 
     @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_HISTORY_TOGGLE =
@@ -263,11 +263,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             identityErrorCardPreference.initialize(profile, this);
 
             if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
-                ChromeBasePreference settingsSyncTypeDisabledByAdministrator =
+                ChromeBasePreference settingsSyncDisabledByAdministrator =
                         (ChromeBasePreference)
-                                findPreference(PREF_SETTINGS_SYNC_TYPE_DISABLED_BY_ADMINISTRATOR);
-                settingsSyncTypeDisabledByAdministrator.setDividerAllowedAbove(false);
-                settingsSyncTypeDisabledByAdministrator.setVisible(true);
+                                findPreference(PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
+                settingsSyncDisabledByAdministrator.setDividerAllowedAbove(false);
+                settingsSyncDisabledByAdministrator.setVisible(true);
             }
 
             mSyncTypeSwitchPreferencesMap = new HashMap<>();

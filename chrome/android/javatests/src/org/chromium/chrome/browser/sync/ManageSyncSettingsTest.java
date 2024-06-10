@@ -1495,7 +1495,7 @@ public class ManageSyncSettingsTest {
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        onView(withText(R.string.settings_sync_type_disabled_by_administrator))
+        onView(withText(R.string.settings_sync_disabled_by_administrator))
                 .check(matches(isDisplayed()));
 
         // All datatype toggles should be unchecked and disabled.

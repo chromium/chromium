@@ -22,8 +22,8 @@ found in the LICENSE file.
         android:title="@string/account_section_header"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="settings_sync_type_disabled_by_administrator"
-        android:title="@string/settings_sync_type_disabled_by_administrator"
+        android:key="settings_sync_disabled_by_administrator"
+        android:title="@string/settings_sync_disabled_by_administrator"
         android:icon="@drawable/ic_business_small"
         app:isPreferenceVisible="false"/>
 
