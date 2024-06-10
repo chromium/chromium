@@ -19,6 +19,7 @@ proto_library("optimization_guide_proto") {
     "features/common_quality_data.proto",
     "features/compose.proto",
     "features/default.proto",
+    "features/history_answer.proto",
     "features/history_document.proto",
     "features/history_query.proto",
     "features/tab_organization.proto",

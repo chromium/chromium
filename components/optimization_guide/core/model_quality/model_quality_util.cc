@@ -13,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -33,6 +35,11 @@ std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
   switch (feature) {
     case proto::LogAiDataRequest::FeatureCase::kCompose:
       return UserVisibleFeatureKey::kCompose;
+    case proto::LogAiDataRequest::FeatureCase::
+        kHistoryAnswer:  // Not implemented yet.
+      // TODO(b/345562875): Add a UserVisibleFeatureKey for HistoryAnswer, or
+      // use the same UserVisibleFeatureKey as HistoryQuery.
+      return std::nullopt;
     case proto::LogAiDataRequest::FeatureCase::
         kHistoryQuery:  // Not implemented yet.
       // TODO(b/335659433): Add a UserVisibleFeatureKey for HistoryQuery.
