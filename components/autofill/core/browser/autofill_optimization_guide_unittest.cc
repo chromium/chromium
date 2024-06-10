@@ -135,12 +135,16 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
                                                personal_data_manager_.get());
 }
 
-// Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is registered
-// when we have seen a credit card form, and meet all of the pre-requisites for
-// the Visa merchant opt-out use-case.
+// Test that the corresponding optimization types are registered in the VCN
+// merchant opt-out case when a credit card form is seen, and VCNs that have an
+// associated optimization guide blocklist are present.
 TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       GetVcnEnrolledCardForMerchantOptOut());
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      GetVcnEnrolledCardForMerchantOptOut(kDiscoverCard));
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      GetVcnEnrolledCardForMerchantOptOut(kMasterCard));
 
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
@@ -151,7 +155,9 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
 
   EXPECT_CALL(*decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA)));
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA,
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_DISCOVER,
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
@@ -348,9 +354,9 @@ TEST_F(
 }
 
 // Test that blocking a virtual card suggestion works correctly in the VCN
-// merchant opt-out use-case.
+// merchant opt-out use-case for Visa.
 TEST_F(AutofillOptimizationGuideTest,
-       ShouldBlockFormFieldSuggestion_VcnMerchantOptOut) {
+       ShouldBlockFormFieldSuggestion_VcnMerchantOptOutVisa) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCardForMerchantOptOut();
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
@@ -360,6 +366,52 @@ TEST_F(AutofillOptimizationGuideTest,
           CanApplyOptimization(
               testing::Eq(url),
               testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  EXPECT_TRUE(
+      autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(url, card));
+}
+
+// Test that blocking a virtual card suggestion works correctly in the VCN
+// merchant opt-out use-case for Discover.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockFormFieldSuggestion_VcnMerchantOptOutDiscover) {
+  GURL url("https://example.com/");
+  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(kDiscoverCard);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      card);
+
+  ON_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_DISCOVER),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  EXPECT_TRUE(
+      autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(url, card));
+}
+
+// Test that blocking a virtual card suggestion works correctly in the VCN
+// merchant opt-out use-case for Mastercard.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockFormFieldSuggestion_VcnMerchantOptOutMastercard) {
+  GURL url("https://example.com/");
+  CreditCard card = GetVcnEnrolledCardForMerchantOptOut(kMasterCard);
+  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
+      card);
+
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(url),
+              testing::Eq(
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD),
               testing::Matcher<optimization_guide::OptimizationMetadata*>(
                   testing::Eq(nullptr))))
       .WillByDefault(testing::Return(
@@ -423,7 +475,7 @@ TEST_F(
     ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_NetworkDoesNotHaveBlocklist) {
   GURL url("https://example.com/");
   CreditCard card =
-      GetVcnEnrolledCardForMerchantOptOut(/*network=*/kMasterCard);
+      GetVcnEnrolledCardForMerchantOptOut(/*network=*/kAmericanExpressCard);
   personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
       card);
 
@@ -597,8 +649,8 @@ TEST_F(AutofillOptimizationGuideTest,
           optimization_guide::proto::
               CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
           optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS,
-          optimization_guide::proto::
-              CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED)));
+          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED,
+          optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
@@ -658,16 +710,12 @@ TEST_F(AutofillOptimizationGuideTest,
           CreditCard::VirtualCardEnrollmentType::kNetwork,
           /*issuer_id=*/kCapitalOneCardIssuerId));
 
-  EXPECT_CALL(
-      *decider_,
-      RegisterOptimizationTypes(testing::UnorderedElementsAre(
-          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS,
-          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS,
-          optimization_guide::proto::
-              CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
-          optimization_guide::proto::
-              CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS)))
-      .Times(0);
+  // Since the experiment is disabled, there should be no benefits-related
+  // optimization types registered.
+  EXPECT_CALL(*decider_,
+              RegisterOptimizationTypes(testing::UnorderedElementsAre(
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)))
+      .Times(1);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());

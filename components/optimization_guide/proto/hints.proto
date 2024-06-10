@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29;
+  reserved 11, 12, 16, 29, 58;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -253,6 +253,12 @@ enum OptimizationType {
   // This optimization provides information about URLs that should be blocked
   // from displaying Capital One credit card benefits.
   CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED = 55;
+  // This optimization provides information about whether a merchant is
+  // opted-out of Discover virtual cards for a URL.
+  VCN_MERCHANT_OPT_OUT_DISCOVER = 56;
+  // This optimization provides information about whether a merchant is
+  // opted-out of Mastercard virtual cards for a URL.
+  VCN_MERCHANT_OPT_OUT_MASTERCARD = 57;
 }
 
 // Presents semantics for how page load URLs should be matched.

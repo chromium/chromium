@@ -115,6 +115,10 @@ std::string GetStringNameForOptimizationType(
       return "AmericanExpressCreditCardSubscriptionBenefits";
     case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED:
       return "CapitalOneCreditCardBenefitsBlocked";
+    case proto::OptimizationType::VCN_MERCHANT_OPT_OUT_DISCOVER:
+      return "VcnMerchantOptOutDiscover";
+    case proto::OptimizationType::VCN_MERCHANT_OPT_OUT_MASTERCARD:
+      return "VcnMerchantOptOutMastercard";
   }
 
   // The returned string is used to record histograms for the optimization type.

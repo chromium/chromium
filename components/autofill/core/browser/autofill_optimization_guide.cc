@@ -37,11 +37,14 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard& card) {
     return optimization_guide::proto::TYPE_UNSPECIFIED;
   }
 
-  // Now that we know this card is enrolled into VCN and is a network-level
-  // enrollment, if it is a network that we have an optimization type for then
+  // If there is an optimization type present for the card's network, then
   // return that optimization type.
   if (card.network() == kVisaCard) {
     return optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA;
+  } else if (card.network() == kMasterCard) {
+    return optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD;
+  } else if (card.network() == kDiscoverCard) {
+    return optimization_guide::proto::VCN_MERCHANT_OPT_OUT_DISCOVER;
   }
 
   // No conditions to return an optimization type were found, so return that we

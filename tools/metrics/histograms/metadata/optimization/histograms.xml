@@ -238,6 +238,12 @@ chromium-metrics-reviews@google.com.
   <variant name="V8CompileHints"
       summary="Information about which JavaScript functions should be eager
                compiled."/>
+  <variant name="VcnMerchantOptOutDiscover"
+      summary="This optimization provides information about whether a
+               merchant is opted-out of Discover virtual cards for a URL."/>
+  <variant name="VcnMerchantOptOutMastercard"
+      summary="This optimization provides information about whether a
+               merchant is opted-out of Mastercard virtual cards for a URL."/>
   <variant name="VcnMerchantOptOutVisa"
       summary="This optimization provides information about whether a
                merchant is opted-out of Visa virtual cards for a URL."/>
