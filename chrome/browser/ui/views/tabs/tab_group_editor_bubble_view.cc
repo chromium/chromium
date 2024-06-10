@@ -96,8 +96,6 @@ namespace {
 
 constexpr base::TimeDelta kTemporaryBookmarkBarDuration = base::Seconds(15);
 constexpr int kDialogWidth = 240;
-constexpr const char kLearnMoreURL[] =
-    "https://support.google.com/chrome/answer/165139";
 static constexpr int kDefaultIconSize = 20;
 // The maximum number of times we will show the footer section with the learn
 // more link.
@@ -770,13 +768,13 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
           : IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_DISABLED));
 
   // Learn more link for the footer.
-  footer_text_substr.push_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  footer_text_substr.push_back(
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_LEARN_MORE));
 
   std::vector<size_t> offsets;
   std::u16string styled_text =
       base::ReplaceStringPlaceholders(u"$1 $2", footer_text_substr, &offsets);
   footer_label->SetText(styled_text);
-  footer_label->SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_5);
   footer_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);
 
   gfx::Range details_range(offsets[1], styled_text.length());
@@ -805,8 +803,8 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
 // static
 void TabGroupEditorBubbleView::Footer::OpenLearnMorePage(
     const Browser* browser) {
-  browser->tab_strip_model()->delegate()->AddTabAt(GURL(kLearnMoreURL), -1,
-                                                   true);
+  browser->tab_strip_model()->delegate()->AddTabAt(
+      GURL(chrome::kTabGroupsLearnMoreURL), -1, true);
 }
 
 BEGIN_METADATA(TabGroupEditorBubbleView, Footer)
