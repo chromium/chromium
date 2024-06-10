@@ -227,6 +227,12 @@ BASE_FEATURE(kFeatureManagementContainerAppPreinstall,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// Controls enabling / disabling the history embedding feature from the
+// feature management module.
+BASE_FEATURE(kFeatureManagementHistoryEmbedding,
+             "FeatureManagementHistoryEmbedding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the orca feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementOrca,
