@@ -206,6 +206,12 @@ class PermissionsClient {
   virtual std::optional<url::Origin> GetAutoApprovalOrigin(
       content::BrowserContext* browser_context);
 
+  // If the embedder returns whether the requesting origin should be able to
+  // access browser permissions. The browser permissions would be auto approved.
+  virtual std::optional<PermissionAction> GetAutoApprovalStatus(
+      content::BrowserContext* browser_context,
+      const GURL& origin);
+
   // Allows the embedder to bypass checking the embedding origin when performing
   // permission availability checks. This is used for example when a permission
   // should only be available on secure origins. Return true to bypass embedding

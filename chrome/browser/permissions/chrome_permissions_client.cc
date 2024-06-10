@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -483,6 +484,29 @@ std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin(
   }
 #endif
   return std::nullopt;
+}
+
+std::optional<permissions::PermissionAction>
+ChromePermissionsClient::GetAutoApprovalStatus(
+    content::BrowserContext* browser_context,
+    const GURL& origin) {
+  std::optional<url::Origin> auto_approval_origin =
+      GetAutoApprovalOrigin(browser_context);
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kAllowMultipleOriginsForWebKioskPermissions)) {
+    // TODO(b/343010457): Add logic for reading origins allowlist.
+  }
+
+  if (!auto_approval_origin.has_value()) {
+    return std::nullopt;
+  }
+
+  if (url::Origin::Create(origin) == auto_approval_origin.value()) {
+    return permissions::PermissionAction::GRANTED;
+  }
+
+  return permissions::PermissionAction::IGNORED;
 }
 
 bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(

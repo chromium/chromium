@@ -110,6 +110,12 @@ std::optional<url::Origin> PermissionsClient::GetAutoApprovalOrigin(
   return std::nullopt;
 }
 
+std::optional<PermissionAction> PermissionsClient::GetAutoApprovalStatus(
+    content::BrowserContext* browser_context,
+    const GURL& origin) {
+  return std::nullopt;
+}
+
 std::optional<bool> PermissionsClient::HasPreviouslyAutoRevokedPermission(
     content::BrowserContext* browser_context,
     const GURL& origin,
