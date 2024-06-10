@@ -103,7 +103,7 @@ void SavedTabGroupUtils::UngroupSavedGroup(const Browser* browser,
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         tab_groups::DeletionDialogController::DialogType::UngroupSingle,
-        std::move(ungroup_callback));
+        std::move(ungroup_callback), group->saved_tabs().size(), 1);
   } else {
     std::move(ungroup_callback).Run();
   }
@@ -119,7 +119,10 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
     return;
   }
 
-  if (!saved_tab_group_service->model()->Contains(saved_group_guid)) {
+  const SavedTabGroup* saved_group =
+      saved_tab_group_service->model()->Get(saved_group_guid);
+
+  if (!saved_group) {
     return;
   }
 
@@ -149,13 +152,13 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         tab_groups::DeletionDialogController::DialogType::DeleteSingle,
-        std::move(close_callback));
+        std::move(close_callback), saved_group->saved_tabs().size(), 1);
   } else {
     std::move(close_callback).Run();
   }
 }
 
-// See comment for TabStripModelDelegate::ConfirmDestroyingGroups
+// See comment for TabStripModelDelegate::ConfirmGroupDeletion
 bool SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     Browser* browser,
     DeletionDialogController::DialogType type,
@@ -178,11 +181,23 @@ bool SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   }
 
   // Check to see if any of the groups are saved. If so then show the dialog,
-  // else, just perform the callback.
+  // else, just perform the callback. Also count the number of group and tabs.
+  int num_saved_tabs = 0;
+  int num_saved_groups = 0;
   for (const auto& group : group_ids) {
-    if (saved_tab_group_service->model()->Contains(group)) {
-      return !dialog_controller->MaybeShowDialog(type, std::move(callback));
+    const SavedTabGroup* const saved_group =
+        saved_tab_group_service->model()->Get(group);
+    if (!saved_group) {
+      continue;
     }
+
+    num_saved_tabs += saved_group->saved_tabs().size();
+    ++num_saved_groups;
+  }
+
+  if (num_saved_groups > 0) {
+    return !dialog_controller->MaybeShowDialog(
+        type, std::move(callback), num_saved_tabs, num_saved_groups);
   }
   return true;
 }

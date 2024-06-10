@@ -11374,19 +11374,29 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Your tab groups now automatically save
         </message>
 
-    <!-- Tab Group Editor Bubble -->
-      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
-        This will delete the group from all devices signed into Chrome with this Google Account.
+    <!-- Tab Group Deletion Dialog -->
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_MISSING_EMAIL" desc="The email address used in the deletion dialog body when an email is missing.">
+        Chrome with this Google Account
       </message>
-      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_UNGROUP" desc="The body text for ungrouping. Displayed in the Tab Group Deletion Dialog.">
-        The tabs will remain open on this device but the group will be deleted from all devices signed into Chrome with this Google Account.
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE" desc="The body text for deleting a synced group or groups. Displayed in the Tab Group Deletion Dialog.">
+        {GROUP_COUNT, plural,
+              =1 {This will delete the group from all devices signed into <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>}
+              other {This will delete the groups from all devices signed into <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>}}
       </message>
-
-      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
-        This will permanently delete the group from your device.
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_UNGROUP" desc="The body text for ungrouping a synced group or groups. Displayed in the Tab Group Deletion Dialog.">
+        {GROUP_COUNT, plural,
+          =1 {The tabs will remain open on this device but the group will be deleted from all devices signed into <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>}
+          other {The tabs will remain open on this device but the groups will be deleted from all devices signed into <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>}}
       </message>
-      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_UNGROUP" desc="The body text for ungrouping. Displayed in the Tab Group Deletion Dialog.">
-        The tabs will remain open on this device but the group will be permanently deleted.
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_DELETE" desc="The body text for deleting an unsynced group or groups. Displayed in the Tab Group Deletion Dialog.">
+        {GROUP_COUNT, plural,
+          =1 {This will permanently delete the group from your device.}
+          other {This will permanently delete the groups from your device.}}
+      </message>
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_UNGROUP" desc="The body text for ungrouping an unsynced group or groups. Displayed in the Tab Group Deletion Dialog.">
+        {GROUP_COUNT, plural,
+          =1 {The tabs will remain open on this device but the group will be permanently deleted.}
+          other {The tabs will remain open on this device but the groups will be permanently deleted.}}
       </message>
 
       <if expr="use_titlecase">
@@ -11396,20 +11406,38 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <!-- Title -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_DELETE" desc="The title for deleting. Displayed in the Tab Group Deletion Dialog.">
-          Delete Tab Group?
+          {GROUP_COUNT, plural,
+              =1 {Delete Tab Group?}
+              other {Delete Tab Groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_UNGROUP" desc="The title for ungrouping. Displayed in the Tab Group Deletion Dialog.">
-          Ungroup Tab Group?
+          {GROUP_COUNT, plural,
+              =1 {Ungroup Tab Group?}
+              other {Ungroup Tab Groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          Close Tab(s) and Delete Group?
+          {TAB_COUNT, plural,
+            =1 {{GROUP_COUNT, plural,
+              =1 {Close Tab and Delete Group?}
+              other {Close Tab and Delete Groups?}}}
+            other {{GROUP_COUNT, plural,
+              =1 {Close Tabs and Delete Group?}
+              other {Close Tabs and Delete Groups?}}}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          Remove Tab(s) and Delete Group?
+          {TAB_COUNT, plural,
+            =1 {{GROUP_COUNT, plural,
+              =1 {Remove Tab and Delete Group?}
+              other {Remove Tab and Delete Groups?}}}
+            other {{GROUP_COUNT, plural,
+              =1 {Remove Tabs and Delete Group?}
+              other {Remove Tabs and Delete Groups?}}}}
         </message>
         <!-- OK Text -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
-          Delete Group
+          {GROUP_COUNT, plural,
+              =1 {Delete Group}
+              other {Delete Groups}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_UNGROUP" desc="The text displayed on the ok button for ungrouping. Displayed in the Tab Group Deletion Dialog.">
           Ungroup
@@ -11422,20 +11450,38 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <!-- Title -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_DELETE" desc="The title for deleting. Displayed in the Tab Group Deletion Dialog.">
-          Delete tab group?
+          {GROUP_COUNT, plural,
+              =1 {Delete tab group?}
+              other {Delete tab groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_UNGROUP" desc="The title for ungrouping. Displayed in the Tab Group Deletion Dialog.">
-          Ungroup tab group?
+          {GROUP_COUNT, plural,
+              =1 {Ungroup tab group?}
+              other {Ungroup tab groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          Close tab(s) and delete group?
+          {TAB_COUNT, plural,
+            =1 {{GROUP_COUNT, plural,
+              =1 {Close tab and delete group?}
+              other {Close tab and delete groups?}}}
+            other {{GROUP_COUNT, plural,
+              =1 {Close tabs and delete group?}
+              other {Close tabs and delete groups?}}}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          Remove tab(s) and delete group?
+          {TAB_COUNT, plural,
+            =1 {{GROUP_COUNT, plural,
+              =1 {Remove tab and delete group?}
+              other {Remove tab and delete groups?}}}
+            other {{GROUP_COUNT, plural,
+              =1 {Remove tabs and delete group?}
+              other {Remove tabs and delete groups?}}}}
         </message>
         <!-- OK Text -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
-          Delete group
+          {GROUP_COUNT, plural,
+              =1 {Delete group}
+              other {Delete groups}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_UNGROUP" desc="The text displayed on the ok button for ungrouping. Displayed in the Tab Group Deletion Dialog.">
           Ungroup
