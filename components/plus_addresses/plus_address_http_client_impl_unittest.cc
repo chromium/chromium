@@ -52,25 +52,25 @@ constexpr char kEmailAddress[] = "foo@plus.plus";
 constexpr base::TimeDelta kLatency = base::Milliseconds(2400);
 
 constexpr char kPlusAddressOauthErrorHistogram[] =
-    "Autofill.PlusAddresses.NetworkRequest.OauthError";
+    "PlusAddresses.NetworkRequest.OauthError";
 
 std::string LatencyHistogramFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.NetworkRequest.$1.Latency",
+      "PlusAddresses.NetworkRequest.$1.Latency",
       {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
 
 std::string ResponseCodeHistogramFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.NetworkRequest.$1.ResponseCode",
+      "PlusAddresses.NetworkRequest.$1.ResponseCode",
       {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
 
 std::string ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.NetworkRequest.$1.ResponseByteSize",
+      "PlusAddresses.NetworkRequest.$1.ResponseByteSize",
       {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }

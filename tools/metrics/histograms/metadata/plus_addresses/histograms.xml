@@ -22,6 +22,117 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PlusAddressModalCompletionStatus">
+  <variant name="Canceled" summary="Modal canceled"/>
+  <variant name="Confirmed" summary="Modal confirmed"/>
+  <variant name="ConfirmError" summary="Confirm error occured"/>
+  <variant name="ReserveError" summary="Reserve error occured"/>
+</variants>
+
+<variants name="PlusAddressNetworkRequestType">
+  <variant name="Create" summary="Create a Plus Address after reservation"/>
+  <variant name="GetOrCreate" summary="Get or create a Plus Address"/>
+  <variant name="List" summary="Retrieve all Plus Addresses"/>
+  <variant name="Reserve" summary="Reserve a Plus Address"/>
+</variants>
+
+<histogram name="PlusAddresses.Modal.Events" enum="PlusAddressModalEvent2"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records user interactions with the plus address modal, which provides
+    context for new plus addresses and gives the user a chance to opt out if
+    desired. Written when the user clicks either of the cancel or ok buttons,
+    and when the modal is presented to the user.
+  </summary>
+</histogram>
+
+<histogram name="PlusAddresses.Modal.{Status}.Refreshes" units="refreshes"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Records number of times a user refreshes the proposed plus addresses during
+    the lifetime of a creation dialog (modal or bottomsheet). Emitted once per
+    creation dialog including error states.
+  </summary>
+  <token key="Status" variants="PlusAddressModalCompletionStatus"/>
+</histogram>
+
+<histogram name="PlusAddresses.Modal.{Status}.ShownDuration" units="ms"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <owner>minap@chromium.org</owner>
+  <summary>
+    Records the duration of time the user takes to interact with the plus
+    addresses modal/bottomsheet, providing insight on the user experience with
+    it. The duration is the span between when the modal/bottomsheet is shown and
+    when the user decides to confirm or cancel the plus address. An error status
+    is recorded if the user cancels after an error occurs.
+  </summary>
+  <token key="Status" variants="PlusAddressModalCompletionStatus"/>
+</histogram>
+
+<histogram name="PlusAddresses.NetworkRequest.OauthError"
+    enum="GoogleServiceAuthError" expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records any OAuth error. This is recorded when the PlusAddressHttpClient
+    needs to fetch an OAuth token to make a network request. This enum also
+    captures the non-error case with NONE.
+  </summary>
+</histogram>
+
+<histogram name="PlusAddresses.NetworkRequest.{Type}.Latency" units="ms"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Measures the latency of network requests. Latency is measured as the
+    difference between when the PlusAddressHttpClient issues the request and
+    when it receives a response. The PlusAddressHttpClient records this whenever
+    it gets a response for the network requests it makes.
+  </summary>
+  <token key="Type" variants="PlusAddressNetworkRequestType"/>
+</histogram>
+
+<histogram name="PlusAddresses.NetworkRequest.{Type}.ResponseByteSize"
+    units="bytes" expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records the response body size of network requests. PlusAddressHttpClient
+    records this whenever it gets a response for the network requests it makes.
+  </summary>
+  <token key="Type" variants="PlusAddressNetworkRequestType"/>
+</histogram>
+
+<histogram name="PlusAddresses.NetworkRequest.{Type}.ResponseCode"
+    enum="HttpResponseCode" expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records HTTP response codes of network requests. PlusAddressHttpClient
+    records this whenever it gets a response for the network requests it makes.
+  </summary>
+  <token key="Type" variants="PlusAddressNetworkRequestType"/>
+</histogram>
+
 <histogram name="PlusAddresses.Submission{Segment}" enum="PlusAddressOrGaia"
     expires_after="2024-12-31">
   <owner>jkeitel@google.com</owner>
@@ -53,6 +164,20 @@ chromium-metrics-reviews@google.com.
                  renderer form and a user whose Chrome profile is not
                  managed."/>
   </token>
+</histogram>
+
+<histogram name="PlusAddresses.Suggestion.Events"
+    enum="PlusAddressSuggestionEvent2" expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records user interactions with the experimental plus addresses feature in
+    autofill. Includes suggestions and clicks of both new plus address creation
+    suggestions and existing plus address filling suggestions. Recorded when the
+    suggestions are shown, and when they are chosen.
+  </summary>
 </histogram>
 
 </histograms>

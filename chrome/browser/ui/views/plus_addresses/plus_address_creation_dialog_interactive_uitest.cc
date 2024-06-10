@@ -54,12 +54,11 @@ constexpr char kFakePlusAddressRefresh[] = "plus-refresh@plus.plus";
 constexpr char16_t kFakePlusAddressRefreshU16[] = u"plus-refresh@plus.plus";
 
 // Histogram names and formatting.
-constexpr char kPlusAddressModalEventHistogram[] =
-    "Autofill.PlusAddresses.Modal.Events";
+constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
 
 std::string FormatHistogramNameFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.NetworkRequest.$1.ResponseCode",
+      "PlusAddresses.NetworkRequest.$1.ResponseCode",
       {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
@@ -67,7 +66,7 @@ std::string FormatHistogramNameFor(PlusAddressNetworkRequestType type) {
 std::string FormatDurationHistogramNameFor(
     metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.Modal.$1.ShownDuration",
+      "PlusAddresses.Modal.$1.ShownDuration",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
@@ -75,7 +74,7 @@ std::string FormatDurationHistogramNameFor(
 std::string FormatRefreshHistogramNameFor(
     metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.Modal.$1.Refreshes",
+      "PlusAddresses.Modal.$1.Refreshes",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }

@@ -26,9 +26,22 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="PlusAddressModalEvent2">
+  <int value="0" label="Modal shown"/>
+  <int value="1" label="Modal canceled"/>
+  <int value="2" label="Modal confirmed"/>
+</enum>
+
 <enum name="PlusAddressOrGaia">
   <int value="0" label="GAIA email"/>
   <int value="1" label="Plus address"/>
+</enum>
+
+<enum name="PlusAddressSuggestionEvent2">
+  <int value="0" label="Existing plus address suggested"/>
+  <int value="1" label="Create new plus address suggested"/>
+  <int value="2" label="Existing plus address suggestion chosen"/>
+  <int value="3" label="Create new plus address suggestion chosen"/>
 </enum>
 
 </enums>

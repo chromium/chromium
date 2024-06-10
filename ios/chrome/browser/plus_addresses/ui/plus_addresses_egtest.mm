@@ -40,7 +40,7 @@ void ExpectModalHistogram(
   NSError* error =
       [MetricsAppInterface expectCount:count
                              forBucket:static_cast<int>(event_type)
-                          forHistogram:@"Autofill.PlusAddresses.Modal.Events"];
+                          forHistogram:@"PlusAddresses.Modal.Events"];
   GREYAssertNil(error, @"Failed to record modal event histogram");
 }
 
@@ -54,8 +54,7 @@ void ExpectModalTimeSample(
                                PlusAddressModalCompletionStatusToString(status)
                                    .c_str()];
   NSString* name = [NSString
-      stringWithFormat:@"Autofill.PlusAddresses.Modal.%@.ShownDuration",
-                       modalStatus];
+      stringWithFormat:@"PlusAddresses.Modal.%@.ShownDuration", modalStatus];
 
   NSError* error = [MetricsAppInterface expectTotalCount:count
                                             forHistogram:name];

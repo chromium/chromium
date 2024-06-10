@@ -20,13 +20,12 @@
 
 namespace {
 
-const char kPlusAddressModalEventHistogram[] =
-    "Autofill.PlusAddresses.Modal.Events";
+const char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
 const base::TimeDelta kDuration = base::Milliseconds(3600);
 std::string FormatModalDurationMetrics(
     plus_addresses::metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.Modal.$1.ShownDuration",
+      "PlusAddresses.Modal.$1.ShownDuration",
       {plus_addresses::metrics::PlusAddressModalCompletionStatusToString(
           status)},
       /*offsets=*/nullptr);
@@ -35,7 +34,7 @@ std::string FormatModalDurationMetrics(
 std::string FormatRefreshHistogramNameFor(
     plus_addresses::metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.Modal.$1.Refreshes",
+      "PlusAddresses.Modal.$1.Refreshes",
       {plus_addresses::metrics::PlusAddressModalCompletionStatusToString(
           status)},
       /*offsets=*/nullptr);

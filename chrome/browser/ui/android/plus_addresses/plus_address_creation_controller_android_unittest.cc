@@ -29,15 +29,14 @@ namespace plus_addresses {
 
 namespace {
 
-constexpr char kPlusAddressModalEventHistogram[] =
-    "Autofill.PlusAddresses.Modal.Events";
+constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
 constexpr base::TimeDelta kDuration = base::Milliseconds(3600);
 constexpr base::Time kStartTime = base::Time::FromSecondsSinceUnixEpoch(1);
 
 std::string FormatModalDurationMetrics(
     metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.Modal.$1.ShownDuration",
+      "PlusAddresses.Modal.$1.ShownDuration",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
@@ -45,7 +44,7 @@ std::string FormatModalDurationMetrics(
 std::string FormatRefreshHistogramNameFor(
     metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
-      "Autofill.PlusAddresses.Modal.$1.Refreshes",
+      "PlusAddresses.Modal.$1.Refreshes",
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }

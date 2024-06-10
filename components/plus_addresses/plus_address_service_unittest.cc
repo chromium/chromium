@@ -1103,7 +1103,7 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
 
  protected:
   static constexpr std::string_view kPlusAddressSuggestionMetric =
-      "Autofill.PlusAddresses.Suggestion.Events";
+      "PlusAddresses.Suggestion.Events";
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
