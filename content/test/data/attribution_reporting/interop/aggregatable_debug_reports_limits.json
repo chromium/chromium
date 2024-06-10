@@ -79,7 +79,7 @@
           }
         ]
       },
-      // Insufficent budget as the required budget is 11, creates a null report.
+      // Insufficient budget as the required budget is 11, creates a null report.
       {
         "timestamp": "2000",
         "registration_request": {
