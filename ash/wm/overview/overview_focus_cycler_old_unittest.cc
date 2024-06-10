@@ -39,7 +39,7 @@
 namespace ash {
 
 class OverviewFocusCyclerOldTest : public OverviewTestBase,
-                                public testing::WithParamInterface<bool> {
+                                   public testing::WithParamInterface<bool> {
  public:
   OverviewFocusCyclerOldTest() = default;
   OverviewFocusCyclerOldTest(const OverviewFocusCyclerOldTest&) = delete;
@@ -169,7 +169,6 @@ TEST_P(OverviewFocusCyclerOldTest, BasicArrowKeyNavigation) {
 
 // Tests that when an item is removed while focused, the focus ring disappears,
 // and when we tab again we pick up where we left off.
-// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, ItemClosed) {
   auto widget1 =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -326,7 +325,6 @@ TEST_P(OverviewFocusCyclerOldTest, FocusOverviewWindowWithReturnKey) {
 
 // Tests that the location of the overview focus ring is as expected while
 // dragging an overview item.
-// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, FocusLocationWhileDragging) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
@@ -566,7 +564,6 @@ TEST_P(DesksOverviewFocusCyclerOldTest, TabbingReverse) {
 
 // Tests that we can tab and chromevox interchangeably through the desk mini
 // views and new desk button in the correct order.
-// TODO(http://b/325335020): Port this test to `DesksOverviewFocusCyclerTest`.
 TEST_P(DesksOverviewFocusCyclerOldTest, TabbingChromevox) {
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
   ToggleOverview();

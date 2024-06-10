@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_focus_cycler.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
@@ -20,6 +21,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "overview_focus_cycler.h"
 
 namespace ash {
 
@@ -33,6 +35,10 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
 
   // Helper to make tests more readable.
   bool AreDeskTemplatesEnabled() const { return GetParam(); }
+
+  views::View* GetFocusedView() {
+    return GetOverviewSession()->focus_cycler()->GetOverviewFocusedView();
+  }
 
   // OverviewTestBase:
   void SetUp() override {
@@ -197,6 +203,43 @@ TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
+// Tests that the location of the overview focus ring is as expected while
+// dragging an overview item.
+TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window3 = CreateAppWindow();
+
+  ToggleOverview();
+
+  // Tab once to show the focus ring.
+  auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  OverviewItemBase* item3 = GetOverviewItemForWindow(window3.get());
+  EXPECT_EQ(item3->item_widget()->GetContentsView(), GetFocusedView());
+
+  // Tests that the there is no focused view while dragging. Drag the item in a
+  // way which does not enter splitview, or close overview.
+  const gfx::PointF start_point = item3->target_bounds().CenterPoint();
+  const gfx::PointF end_point(20.f, 20.f);
+  GetOverviewSession()->InitiateDrag(item3, start_point,
+                                     /*is_touch_dragging=*/true,
+                                     /*event_source_item=*/item3);
+  EXPECT_FALSE(GetFocusedView());
+
+  GetOverviewSession()->Drag(item3, end_point);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(GetFocusedView());
+
+  GetOverviewSession()->Drag(item3, start_point);
+  GetOverviewSession()->CompleteDrag(item3, start_point);
+  EXPECT_FALSE(GetFocusedView());
+
+  // Tests that tabbing after dragging works as expected.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(item3->item_widget()->GetContentsView(), GetFocusedView());
+}
+
 // ----------------------------------------------------------------------------
 // DesksOverviewFocusCyclerTest:
 
@@ -207,10 +250,6 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
   DesksOverviewFocusCyclerTest& operator=(const DesksOverviewFocusCyclerTest&) =
       delete;
   ~DesksOverviewFocusCyclerTest() override = default;
-
-  views::View* GetHighlightedView() {
-    return GetOverviewSession()->focus_cycler()->GetOverviewFocusedView();
-  }
 
   const OverviewDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     OverviewGrid* grid =
@@ -265,28 +304,28 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   PressAndReleaseKey(ui::VKEY_TAB);
   auto* item2 = GetOverviewItemForWindow(window2.get())
                     ->GetLeafItemForWindow(window2.get());
-  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
+  EXPECT_EQ(item2->overview_item_view(), GetFocusedView());
   CheckDeskBarViewSize(desk_bar_view, "overview item");
 
   // Tests that the first focused desk item is the first desk preview view.
   DeskMiniView* first_mini_view = desk_bar_view->mini_views()[0];
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(first_mini_view->desk_preview(), GetHighlightedView());
+  EXPECT_EQ(first_mini_view->desk_preview(), GetFocusedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
 
   // Tests that the combine desks and close all buttons of the first desk
   // preview is focused next.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(first_mini_view->desk_action_view()->combine_desks_button(),
-            GetHighlightedView());
+            GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(first_mini_view->desk_action_view()->close_all_button(),
-            GetHighlightedView());
+            GetFocusedView());
 
   // Test that one more tab focuses the desks name view.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(first_mini_view->desk_name_view(), GetHighlightedView());
+  EXPECT_EQ(first_mini_view->desk_name_view(), GetFocusedView());
 
   // Tab three times through the second mini view (it has no windows so there is
   // no combine desks button). The next tab should focus the new desk button.
@@ -294,7 +333,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->new_desk_button(), GetFocusedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
   // Tests that tabbing past the new desk button, we focus the save to a new
@@ -303,14 +342,14 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   if (AreDeskTemplatesEnabled()) {
     PressAndReleaseKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
-              GetHighlightedView());
+              GetFocusedView());
   }
 
   // Tests that after the save desk as template button (if the feature was
   // enabled), focus goes to the save desk for later button.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-            GetHighlightedView());
+            GetFocusedView());
 
   OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
       false);
@@ -334,67 +373,102 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   // later button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-            GetHighlightedView());
+            GetFocusedView());
 
   // Tests that after the save desk for later button, we get the save desk as
   // template button, if the feature is enabled.
   if (AreDeskTemplatesEnabled()) {
     PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
-              GetHighlightedView());
+              GetFocusedView());
   }
 
   // Tests that after the desks templates button (if the feature was enabled),
   // we get to the new desk button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->new_desk_button(), GetFocusedView());
 
   // Tests that after the new desk button comes the preview views, desk action
   // buttons, and the desk name views in reverse order.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   DeskMiniView* second_mini_view = desk_bar_view->mini_views()[1];
-  EXPECT_EQ(second_mini_view->desk_name_view(), GetHighlightedView());
+  EXPECT_EQ(second_mini_view->desk_name_view(), GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(second_mini_view->desk_action_view()->close_all_button(),
-            GetHighlightedView());
+            GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(second_mini_view->desk_preview(), GetHighlightedView());
+  EXPECT_EQ(second_mini_view->desk_preview(), GetFocusedView());
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   DeskMiniView* first_mini_view = desk_bar_view->mini_views()[0];
-  EXPECT_EQ(first_mini_view->desk_name_view(), GetHighlightedView());
+  EXPECT_EQ(first_mini_view->desk_name_view(), GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(first_mini_view->desk_action_view()->close_all_button(),
-            GetHighlightedView());
+            GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(first_mini_view->desk_action_view()->combine_desks_button(),
-            GetHighlightedView());
+            GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(first_mini_view->desk_preview(), GetHighlightedView());
+  EXPECT_EQ(first_mini_view->desk_preview(), GetFocusedView());
 
   // Tests that the next focused item when reversing is the last overview item.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   auto* item1 = GetOverviewItemForWindow(window1.get())
                     ->GetLeafItemForWindow(window1.get());
-  EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
+  EXPECT_EQ(item1->overview_item_view(), GetFocusedView());
 
   // Tests that the next focused item when reversing is the save desk for later
   // button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
-            GetHighlightedView());
+            GetFocusedView());
 
   // Tests that we return to the save desk as template button after reverse
   // tabbing through the save desk for later button if the feature is enabled.
   if (AreDeskTemplatesEnabled()) {
     PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
-              GetHighlightedView());
+              GetFocusedView());
   }
 
   OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
       false);
+}
+
+// Tests that we can tab and chromevox interchangeably through the desk mini
+// views and new desk button in the correct order.
+TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+  ToggleOverview();
+  const auto* desk_bar_view =
+      GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(2u, desk_bar_view->mini_views().size());
+
+  auto* mini_view1 = desk_bar_view->mini_views()[0].get();
+  auto* mini_view2 = desk_bar_view->mini_views()[1].get();
+
+  // Alternate between tabbing and chromevoxing through the 2 desk preview views
+  // and name views.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(mini_view1->desk_preview(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(mini_view1->desk_action_view()->close_all_button(),
+            GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(mini_view1->desk_name_view(), GetFocusedView());
+
+  PressAndReleaseKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(mini_view2->desk_preview(), GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(mini_view2->desk_action_view()->close_all_button(),
+            GetFocusedView());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(mini_view2->desk_name_view(), GetFocusedView());
+
+  // Check for the new desk button.
+  PressAndReleaseKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(desk_bar_view->new_desk_button(), GetFocusedView());
 }
 
 TEST_P(DesksOverviewFocusCyclerTest, MiniViewAccelerator) {
@@ -412,8 +486,7 @@ TEST_P(DesksOverviewFocusCyclerTest, MiniViewAccelerator) {
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  ASSERT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
-            GetHighlightedView());
+  ASSERT_EQ(desk_bar_view->mini_views()[1]->desk_preview(), GetFocusedView());
 
   // Tests that after hitting the space key on the focused preview view
   // associated with desk 2, we switch to desk 2.
@@ -439,7 +512,7 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseDeskWithMiniViewAccelerator) {
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  ASSERT_EQ(mini_view2->desk_preview(), GetHighlightedView());
+  ASSERT_EQ(mini_view2->desk_preview(), GetFocusedView());
 
   // Tests that after hitting ctrl-w on the focused preview view associated with
   // `desk2`, `desk2` is destroyed.
@@ -466,7 +539,7 @@ TEST_P(DesksOverviewFocusCyclerTest, DeskNameView) {
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
+  EXPECT_EQ(desk_name_view_1, GetFocusedView());
   EXPECT_TRUE(desk_name_view_1->HasFocus());
   EXPECT_TRUE(desk_bar_view->IsDeskNameBeingModified());
 
@@ -478,7 +551,7 @@ TEST_P(DesksOverviewFocusCyclerTest, DeskNameView) {
   // to move the text caret.
   PressAndReleaseKey(ui::VKEY_RIGHT);
   PressAndReleaseKey(ui::VKEY_LEFT);
-  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
+  EXPECT_EQ(desk_name_view_1, GetFocusedView());
   EXPECT_TRUE(desk_name_view_1->HasFocus());
 
   // Tests ctrl + A and backspace to select all and delete.
@@ -513,19 +586,18 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameFocused) {
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
+  EXPECT_EQ(desk_name_view_1, GetFocusedView());
 
   // Desks bar never goes back to zero state after it's initialized.
   const auto* desks_controller = DesksController::Get();
   auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   RemoveDesk(desk_1);
-  EXPECT_EQ(nullptr, GetHighlightedView());
+  EXPECT_EQ(nullptr, GetFocusedView());
   EXPECT_FALSE(desk_bar_view->IsZeroState());
 
   // Tabbing again should cause no crashes.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
-            GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(), GetFocusedView());
 }
 
 // Tests the overview focus cycler behavior when a user uses the new desk
@@ -547,7 +619,7 @@ TEST_P(DesksOverviewFocusCyclerTest, NewDesksWithKeyboard) {
         desk_bar_view->mini_views()[index]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
     if (desks_controller->CanCreateDesks()) {
-      EXPECT_EQ(desk_name_view, GetHighlightedView());
+      EXPECT_EQ(desk_name_view, GetFocusedView());
     }
     EXPECT_EQ(std::u16string(), desk_name_view->GetText());
   };
@@ -557,7 +629,7 @@ TEST_P(DesksOverviewFocusCyclerTest, NewDesksWithKeyboard) {
   for (int i = 0; i < 7; ++i) {
     PressAndReleaseKey(ui::VKEY_TAB);
   }
-  ASSERT_EQ(new_desk_button, GetHighlightedView());
+  ASSERT_EQ(new_desk_button, GetFocusedView());
 
   // Keep adding new desks until we reach the maximum allowed amount. Verify the
   // amount of desks is indeed the maximum allowed and that the new desk button
@@ -600,15 +672,15 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
                        ->desks_bar_view();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desks_bar_view->default_desk_button(), GetHighlightedView());
+  EXPECT_EQ(desks_bar_view->default_desk_button(), GetFocusedView());
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desks_bar_view->new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(desks_bar_view->new_desk_button(), GetFocusedView());
 
   // Test that when we create a new desk, we focus the desk name view of that
   // desk.
   PressAndReleaseKey(ui::VKEY_SPACE);
   EXPECT_EQ(desks_bar_view->mini_views()[1]->desk_name_view(),
-            GetHighlightedView());
+            GetFocusedView());
 }
 
 TEST_P(DesksOverviewFocusCyclerTest, ClickingNameViewMovesFocus) {
@@ -620,8 +692,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ClickingNameViewMovesFocus) {
 
   // Tab to first mini desk view's preview view.
   PressAndReleaseKey(ui::VKEY_TAB);
-  ASSERT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
-            GetHighlightedView());
+  ASSERT_EQ(desk_bar_view->mini_views()[0]->desk_preview(), GetFocusedView());
   CheckDeskBarViewSize(desk_bar_view, "tabbed once");
 
   // Click on the second mini desk item's name view.
@@ -633,7 +704,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ClickingNameViewMovesFocus) {
   EXPECT_FALSE(desk_bar_view->IsZeroState());
 
   // Verify that focus has moved to the clicked desk item.
-  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
+  EXPECT_EQ(desk_name_view_1, GetFocusedView());
 }
 
 // Tests that there is no crash when tabbing after we switch to the zero state
@@ -646,8 +717,7 @@ TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
 
   // Tab to first mini desk view's preview view.
   PressAndReleaseKey(ui::VKEY_TAB);
-  ASSERT_EQ(desks_bar_view->mini_views()[0]->desk_preview(),
-            GetHighlightedView());
+  ASSERT_EQ(desks_bar_view->mini_views()[0]->desk_preview(), GetFocusedView());
 
   // Remove one desk to have only one desk left.
   auto* mini_view = desks_bar_view->mini_views()[1].get();

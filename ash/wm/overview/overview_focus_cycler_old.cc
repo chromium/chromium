@@ -140,8 +140,9 @@ void OverviewFocusCyclerOld::UpdateA11yFocusWindow(
       name_view->GetView()->GetWidget()->GetNativeWindow());
 }
 
-void OverviewFocusCyclerOld::MoveFocusToView(OverviewFocusableView* target_view,
-                                          bool suppress_accessibility_event) {
+void OverviewFocusCyclerOld::MoveFocusToView(
+    OverviewFocusableView* target_view,
+    bool suppress_accessibility_event) {
   const std::vector<OverviewFocusableView*> traversable_views =
       GetTraversableViews();
   DCHECK(base::Contains(traversable_views, target_view));
@@ -297,8 +298,9 @@ std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews(
   return traversable_views;
 }
 
-void OverviewFocusCyclerOld::UpdateFocus(OverviewFocusableView* view_to_be_focused,
-                                      bool suppress_accessibility_event) {
+void OverviewFocusCyclerOld::UpdateFocus(
+    OverviewFocusableView* view_to_be_focused,
+    bool suppress_accessibility_event) {
   if (focused_view_ == view_to_be_focused) {
     return;
   }

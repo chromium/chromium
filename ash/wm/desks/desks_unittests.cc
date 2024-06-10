@@ -12091,17 +12091,9 @@ INSTANTIATE_TEST_SUITE_P(
     DeskButtonTest,
     ValuesIn(kDeskButtonTestParamCombinations),
     [](const testing::TestParamInfo<DeskButtonTestParams>& info) {
-      switch (info.param.alignment) {
-        case ShelfAlignment::kBottom:
-          return "ShelfBottom";
-        case ShelfAlignment::kLeft:
-          return "ShelfLeft";
-        case ShelfAlignment::kRight:
-          return "ShelfRight";
-        case ShelfAlignment::kBottomLocked:
-          NOTREACHED_NORETURN();
-          return "ShelfBottomLocked";
-      }
+      std::stringstream sstream;
+      sstream << "Shelf" << info.param.alignment;
+      return sstream.str();
     });
 
 }  // namespace

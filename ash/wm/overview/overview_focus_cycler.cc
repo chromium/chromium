@@ -137,6 +137,20 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   const int previous_index = std::distance(widgets.begin(), it);
   const int size = static_cast<int>(widgets.size());
 
+  // Jump to the desk removal toast if it exists. We introduce special logic
+  // here since it's not an overview UI.
+  if ((reverse && previous_index == 0) ||
+      (!reverse && previous_index == size - 1)) {
+    bool ignore_activations = overview_session_->ignore_activations();
+    overview_session_->set_ignore_activations(true);
+    bool focused_toast =
+        DesksController::Get()->RequestFocusOnUndoDeskRemovalToast();
+    overview_session_->set_ignore_activations(ignore_activations);
+    if (focused_toast) {
+      return;
+    }
+  }
+
   // Focus the last focusable view of the previous widget if `reverse`, or the
   // first focusable view of the next widget otherwise.
   const int next_index = AdvanceIndex(previous_index, size, reverse);
@@ -198,7 +212,7 @@ void OverviewFocusCycler::UpdateAccessibilityFocus() {
 std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
     bool for_accessibility) const {
   std::vector<views::Widget*> traversable_widgets;
-  traversable_widgets.reserve(10);  // Conservative default.
+  traversable_widgets.reserve(40);  // Conservative default.
 
   auto maybe_add_widget = [for_accessibility,
                            &traversable_widgets](views::Widget* widget) {
@@ -234,7 +248,6 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
   maybe_add_widget(primary_grid->desks_widget());
   maybe_add_widget(primary_grid->save_desk_button_container_widget());
   maybe_add_widget(primary_grid->pine_widget());
-  maybe_add_widget(primary_grid->feedback_widget());
   maybe_add_widget(primary_grid->birch_bar_widget());
   maybe_add_widget(primary_grid->saved_desk_library_widget());
   maybe_add_widget(primary_grid->faster_splitview_widget());

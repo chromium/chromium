@@ -675,6 +675,9 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
   if (focus_cycler_old_) {
     focus_cycler_old_->SetFocusVisibility(false);
   }
+  if (focus_cycler_) {
+    item->item_widget()->GetFocusManager()->ClearFocus();
+  }
   window_drag_controller_ = std::make_unique<OverviewWindowDragController>(
       this, item, is_touch_dragging, event_source_item);
   window_drag_controller_->InitiateDrag(location_in_screen);

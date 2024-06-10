@@ -2051,7 +2051,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
         base::BindOnce(&DesksController::MaybeCommitPendingDeskRemoval,
                        base::Unretained(this),
                        temporary_removed_desk_->toast_id()),
-        temporary_removed_desk_->is_toast_persistent(), !in_overview);
+        temporary_removed_desk_->is_toast_persistent(),
+        !in_overview || features::IsOverviewNewFocusEnabled());
 
     // This method will be invoked on both undo and expired toast.
     base::UmaHistogramBoolean(kCloseAllTotalHistogramName, true);

@@ -87,7 +87,7 @@ void DeskTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   SystemTextfield::OnBlur();
   // Give user indication for the quick activatable view.
-  if (!use_default_focus_manager_) {
+  if (!use_default_focus_manager_ && !features::IsOverviewNewFocusEnabled()) {
     SetShowBackground(true);
   }
   // Avoid having the focus restored to the same DeskNameView when the desk bar
