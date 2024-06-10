@@ -151,15 +151,27 @@ public class HomeModulesConfigManagerUnitTest {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
         assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(0, sharedPreferencesManager.readInt(moduleFreshnessCountPreferenceKey, 0));
+        assertEquals(
+                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
+                sharedPreferencesManager.readInt(
+                        moduleFreshnessCountPreferenceKey,
+                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
 
         int count = 5;
         mHomeModulesConfigManager.increaseFreshnessCount(moduleType, count);
-        assertEquals(count, sharedPreferencesManager.readInt(moduleFreshnessCountPreferenceKey, 0));
+        assertEquals(
+                count,
+                sharedPreferencesManager.readInt(
+                        moduleFreshnessCountPreferenceKey,
+                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
 
         mHomeModulesConfigManager.resetFreshnessCount(moduleType);
         assertTrue(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(0, sharedPreferencesManager.readInt(moduleFreshnessCountPreferenceKey, 0));
+        assertEquals(
+                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
+                sharedPreferencesManager.readInt(
+                        moduleFreshnessCountPreferenceKey,
+                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
     }
 
     private void registerModuleConfigChecker(int size) {

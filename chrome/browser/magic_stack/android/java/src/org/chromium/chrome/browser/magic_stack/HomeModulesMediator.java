@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class HomeModulesMediator {
     static final String USE_FRESHNESS_SCORE_PARAM = "use_freshness_score";
     private static final int INVALID_INDEX = -1;
+    @VisibleForTesting static final int INVALID_FRESHNESS_SCORE = -1;
 
     /** Time to wait before rejecting any module response in milliseconds. */
     public static final long MODULE_FETCHING_TIMEOUT_MS = 5000L;
@@ -615,7 +616,7 @@ public class HomeModulesMediator {
         mSegmentationPlatformService.getClassificationResult(
                 "android_home_module_ranker",
                 options,
-                /* inputContext= */ createInputContext(filteredEnabledModuleSet),
+                /* inputContext= */ createInputContext(),
                 result -> {
                     // It is possible that the result is received after the magic stack has been
                     // hidden, exit now.
@@ -633,36 +634,40 @@ public class HomeModulesMediator {
                 });
     }
 
+    /**
+     * Creates an instance of InputContext. Each module in the set will have a freshness score,
+     * whose default value is {@link INVALID_FRESHNESS_SCORE} if hasn't been set.
+     */
     @VisibleForTesting
-    InputContext createInputContext(Set<Integer> filteredEnabledModuleSet) {
-        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+    InputContext createInputContext() {
+        InputContext inputContext = new InputContext();
+        boolean useFreshnessScore =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
                         USE_FRESHNESS_SCORE_PARAM,
-                        false)
-                || filteredEnabledModuleSet.isEmpty()) {
-            return null;
+                        false);
+
+        for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
+            inputContext.addEntry(
+                    HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
+                    ProcessedValue.fromInt(getFreshnessScore(useFreshnessScore, moduleType)));
         }
 
-        InputContext inputContext = new InputContext();
-        boolean isEntryAdded = false;
-        for (Integer moduleType : filteredEnabledModuleSet) {
-            long timeStamp = mHomeModulesConfigManager.getFreshnessScoreTimeStamp(moduleType);
-            if (timeStamp == HomeModulesConfigManager.INVALID_TIMESTAMP
-                    || SystemClock.elapsedRealtime() - timeStamp
-                            >= HomeModulesMediator.FRESHNESS_THRESHOLD_MS) {
-                continue;
-            }
+        return inputContext;
+    }
 
-            int count = mHomeModulesConfigManager.getFreshnessCount(moduleType);
-            if (count != HomeModulesConfigManager.INVALID_FRESHNESS_SCORE) {
-                inputContext.addEntry(
-                        HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
-                        ProcessedValue.fromInt(count));
-                isEntryAdded = true;
-            }
+    /** Returns the freshness score of a module if valid. */
+    private int getFreshnessScore(boolean useFreshnessScore, @ModuleType int moduleType) {
+        if (!useFreshnessScore) return INVALID_FRESHNESS_SCORE;
+
+        long timeStamp = mHomeModulesConfigManager.getFreshnessScoreTimeStamp(moduleType);
+        if (timeStamp == HomeModulesConfigManager.INVALID_TIMESTAMP
+                || SystemClock.elapsedRealtime() - timeStamp
+                        >= HomeModulesMediator.FRESHNESS_THRESHOLD_MS) {
+            return INVALID_FRESHNESS_SCORE;
         }
 
-        return isEntryAdded ? inputContext : null;
+        return mHomeModulesConfigManager.getFreshnessCount(moduleType);
     }
 
     @VisibleForTesting
