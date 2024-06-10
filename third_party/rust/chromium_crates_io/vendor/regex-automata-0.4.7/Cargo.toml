@@ -13,12 +13,16 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex-automata"
-version = "0.4.6"
+version = "0.4.7"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
 ]
+build = false
+autobins = false
 autoexamples = false
+autotests = false
+autobenches = false
 description = "Automata construction and matching using regular expressions."
 documentation = "https://docs.rs/regex-automata"
 readme = "README.md"
@@ -34,6 +38,8 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang/regex/tree/master/regex-automata"
 
 [lib]
+name = "regex_automata"
+path = "src/lib.rs"
 bench = false
 
 [[test]]

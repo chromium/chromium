@@ -982,6 +982,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.4.5 -> 0.4.6"
 notes = "Reviewed in https://crrev.com/c/5362200"
 
+[[audits.regex-automata]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.6 -> 0.4.7"
+
 [[audits.regex-syntax]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

@@ -699,7 +699,7 @@ impl ByteClassSet {
         ByteClassSet(ByteSet::empty())
     }
 
-    /// Indicate the the range of byte given (inclusive) can discriminate a
+    /// Indicate the range of byte given (inclusive) can discriminate a
     /// match between it and all other bytes outside of the range.
     pub(crate) fn set_range(&mut self, start: u8, end: u8) {
         debug_assert!(start <= end);

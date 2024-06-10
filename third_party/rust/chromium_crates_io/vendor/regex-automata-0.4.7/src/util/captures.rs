@@ -1643,7 +1643,7 @@ impl GroupInfo {
     ///
     /// This also returns `None` for all inputs if these captures are empty
     /// (e.g., built from an empty [`GroupInfo`]). To check whether captures
-    /// are are present for a specific pattern, use [`GroupInfo::group_len`].
+    /// are present for a specific pattern, use [`GroupInfo::group_len`].
     ///
     /// # Example
     ///
@@ -1695,7 +1695,7 @@ impl GroupInfo {
     ///
     /// This also returns `None` for all inputs if these captures are empty
     /// (e.g., built from an empty [`GroupInfo`]). To check whether captures
-    /// are are present for a specific pattern, use [`GroupInfo::group_len`].
+    /// are present for a specific pattern, use [`GroupInfo::group_len`].
     ///
     /// # Example
     ///

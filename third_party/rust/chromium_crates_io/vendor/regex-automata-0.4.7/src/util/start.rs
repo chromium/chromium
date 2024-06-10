@@ -323,7 +323,7 @@ impl core::fmt::Debug for StartByteMap {
 
 /// Represents the six possible starting configurations of a DFA search.
 ///
-/// The starting configuration is determined by inspecting the the beginning
+/// The starting configuration is determined by inspecting the beginning
 /// of the haystack (up to 1 byte). Ultimately, this along with a pattern ID
 /// (if specified) and the type of search (anchored or not) is what selects the
 /// start state to use in a DFA.

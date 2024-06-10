@@ -693,7 +693,7 @@ impl NextInsert {
 /// handle:
 ///
 /// 1. The part where the two ranges actually overlap. i.e., The intersection.
-/// 2. The part of the existing range that is not in the the new range.
+/// 2. The part of the existing range that is not in the new range.
 /// 3. The part of the new range that is not in the old range.
 ///
 /// (1) is guaranteed to always occur since all overlapping ranges have a

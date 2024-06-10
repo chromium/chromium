@@ -2498,7 +2498,7 @@ impl OwnedDFA {
         self.tt.set(from, byte, to);
     }
 
-    /// An an empty state (a state where all transitions lead to a dead state)
+    /// An empty state (a state where all transitions lead to a dead state)
     /// and return its identifier. The identifier returned is guaranteed to
     /// not point to any other existing state.
     ///

@@ -190,7 +190,7 @@ assert_eq!(matches, vec![
 ```
 
 Note that unlike dense DFAs, sparse DFAs have no alignment requirements.
-Conversely, dense DFAs must be be aligned to the same alignment as a
+Conversely, dense DFAs must be aligned to the same alignment as a
 [`StateID`](crate::util::primitives::StateID).
 
 # Support for `no_std` and `alloc`-only
