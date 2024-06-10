@@ -78,4 +78,19 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         }
         return station;
     }
+
+    /**
+     * Hop onto Public Transit when the test has already started the ChromeTabbedActivity in a blank
+     * page.
+     *
+     * @return the active entry {@link WebPageStation}
+     */
+    public WebPageStation alreadyStartedOnBlankPageNonBatched() {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        WebPageStation entryPageStation =
+                WebPageStation.newWebPageStationBuilder().withEntryPoint().build();
+        return sentinel.travelToSync(entryPageStation, /* trigger= */ null);
+    }
 }
