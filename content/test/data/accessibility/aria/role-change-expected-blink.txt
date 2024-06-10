@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++grid
-++++++++row
+++++++++row name='Cell Cell'
 ++++++++++gridCell name='Cell'
 ++++++++++++staticText name='Cell'
 ++++++++++++++inlineTextBox name='Cell'

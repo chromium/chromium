@@ -56,7 +56,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++++++++IA2_ROLE_SECTION
 ++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Sa'
 ++++++++++++++++IA2_ROLE_SECTION
-++++++++++++++++++ROLE_SYSTEM_ROW name='Sunday, August 31, 2008 Monday, September 1, 2008 Tuesday, September 2, 2008 Wednesday, September 3, 2008 Thursday, September 4, 2008 Friday, September 5, 2008 Saturday, September 6, 2008'
+++++++++++++++++++ROLE_SYSTEM_ROW
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Sunday, August 31, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='31'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Monday, September 1, 2008' SELECTED FOCUSABLE
@@ -71,7 +71,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='5'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Saturday, September 6, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='6'
-++++++++++++++++++ROLE_SYSTEM_ROW name='Sunday, September 7, 2008 Monday, September 8, 2008 Tuesday, September 9, 2008 Wednesday, September 10, 2008 Thursday, September 11, 2008 Friday, September 12, 2008 Saturday, September 13, 2008'
+++++++++++++++++++ROLE_SYSTEM_ROW
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Sunday, September 7, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='7'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Monday, September 8, 2008' FOCUSABLE
@@ -86,7 +86,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='12'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Saturday, September 13, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='13'
-++++++++++++++++++ROLE_SYSTEM_ROW name='Sunday, September 14, 2008 Monday, September 15, 2008 Tuesday, September 16, 2008 Wednesday, September 17, 2008 Thursday, September 18, 2008 Friday, September 19, 2008 Saturday, September 20, 2008'
+++++++++++++++++++ROLE_SYSTEM_ROW
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Sunday, September 14, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='14'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Monday, September 15, 2008' FOCUSABLE
@@ -101,7 +101,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='19'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Saturday, September 20, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='20'
-++++++++++++++++++ROLE_SYSTEM_ROW name='Sunday, September 21, 2008 Monday, September 22, 2008 Tuesday, September 23, 2008 Wednesday, September 24, 2008 Thursday, September 25, 2008 Friday, September 26, 2008 Saturday, September 27, 2008'
+++++++++++++++++++ROLE_SYSTEM_ROW
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Sunday, September 21, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='21'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Monday, September 22, 2008' FOCUSABLE
@@ -116,7 +116,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='26'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Saturday, September 27, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='27'
-++++++++++++++++++ROLE_SYSTEM_ROW name='Sunday, September 28, 2008 Monday, September 29, 2008 Tuesday, September 30, 2008 Wednesday, October 1, 2008 Thursday, October 2, 2008 Friday, October 3, 2008 Saturday, October 4, 2008'
+++++++++++++++++++ROLE_SYSTEM_ROW
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Sunday, September 28, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='28'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Monday, September 29, 2008' FOCUSABLE
@@ -131,7 +131,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='3'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Saturday, October 4, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='4'
-++++++++++++++++++ROLE_SYSTEM_ROW name='Sunday, October 5, 2008 Monday, October 6, 2008 Tuesday, October 7, 2008 Wednesday, October 8, 2008 Thursday, October 9, 2008 Friday, October 10, 2008 Saturday, October 11, 2008'
+++++++++++++++++++ROLE_SYSTEM_ROW
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Sunday, October 5, 2008' FOCUSABLE
 ++++++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='5'
 ++++++++++++++++++++ROLE_SYSTEM_CELL name='Monday, October 6, 2008' FOCUSABLE

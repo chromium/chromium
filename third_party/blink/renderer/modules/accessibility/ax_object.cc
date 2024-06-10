@@ -7552,30 +7552,30 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     // ----- role="row" -------
     // Spec says we should always expose the name on rows,
     // but for performance reasons we only do it
-    // if the row is focusable or is the active descendant of a grid/treegrid.
+    // if the row is potentially focusable and the descendant of a
+    // grid/treegrid.
     case ax::mojom::blink::Role::kRow: {
-      if (CanSetFocusAttribute())
+      if (IsVirtualObject()) {
         return true;
+      }
+      Element* elem = GetElement();
+      DCHECK(elem);
+      if (!elem->SupportsFocus(
+              Element::UpdateBehavior::kNoneForAccessibility) &&
+          elem->GetIdAttribute().empty()) {
+        // The element is not directly focusable, and not the potential target
+        // of an aria-activedescendant relation.
+        return false;
+      }
+
+      // Check for relevant ancestor.
       AXObject* ancestor = ParentObjectUnignored();
       while (ancestor) {
-        // If an ancestor has aria-activedescendant consider it focusable.
-        if (ancestor->GetAOMPropertyOrARIAAttribute(
-                AOMRelationProperty::kActiveDescendant)) {
-          return true;
-        }
         // If in a grid/treegrid that's after a combobox textfield using
         // aria-activedescendant, then consider the row focusable.
         if (ancestor->RoleValue() == ax::mojom::blink::Role::kGrid ||
             ancestor->RoleValue() == ax::mojom::blink::Role::kTreeGrid) {
-          if (AXObject* ax_prev =
-                  ancestor->CachedPreviousSiblingIncludingIgnored()) {
-            if (ax_prev->RoleValue() ==
-                    ax::mojom::blink::Role::kTextFieldWithComboBox &&
-                ax_prev->GetAOMPropertyOrARIAAttribute(
-                    AOMRelationProperty::kActiveDescendant)) {
-              return true;
-            }
-          }
+          return true;
         }
         if (ancestor->RoleValue() !=
                 ax::mojom::blink::Role::kGenericContainer &&

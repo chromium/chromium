@@ -56,7 +56,7 @@
 ++++++++++++++++++[section]
 ++++++++++++++++++++[static] name='S'
 ++++++++++++++++[section]
-++++++++++++++++++[table row] name='Sunday, August 31, 2008 Monday, September 1, 2008 Tuesday, September 2, 2008 Wednesday, September 3, 2008 Thursday, September 4, 2008 Friday, September 5, 2008 Saturday, September 6, 2008'
+++++++++++++++++++[table row]
 ++++++++++++++++++++[table cell] name='Sunday, August 31, 2008' selectable (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='31'
 ++++++++++++++++++++[table cell] name='Monday, September 1, 2008' selectable selected (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
@@ -71,7 +71,7 @@
 ++++++++++++++++++++++[static] name='5'
 ++++++++++++++++++++[table cell] name='Saturday, September 6, 2008' selectable (row=0, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='6'
-++++++++++++++++++[table row] name='Sunday, September 7, 2008 Monday, September 8, 2008 Tuesday, September 9, 2008 Wednesday, September 10, 2008 Thursday, September 11, 2008 Friday, September 12, 2008 Saturday, September 13, 2008'
+++++++++++++++++++[table row]
 ++++++++++++++++++++[table cell] name='Sunday, September 7, 2008' selectable (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='7'
 ++++++++++++++++++++[table cell] name='Monday, September 8, 2008' selectable (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
@@ -86,7 +86,7 @@
 ++++++++++++++++++++++[static] name='12'
 ++++++++++++++++++++[table cell] name='Saturday, September 13, 2008' selectable (row=1, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='13'
-++++++++++++++++++[table row] name='Sunday, September 14, 2008 Monday, September 15, 2008 Tuesday, September 16, 2008 Wednesday, September 17, 2008 Thursday, September 18, 2008 Friday, September 19, 2008 Saturday, September 20, 2008'
+++++++++++++++++++[table row]
 ++++++++++++++++++++[table cell] name='Sunday, September 14, 2008' selectable (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='14'
 ++++++++++++++++++++[table cell] name='Monday, September 15, 2008' selectable (row=2, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
@@ -101,7 +101,7 @@
 ++++++++++++++++++++++[static] name='19'
 ++++++++++++++++++++[table cell] name='Saturday, September 20, 2008' selectable (row=2, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='20'
-++++++++++++++++++[table row] name='Sunday, September 21, 2008 Monday, September 22, 2008 Tuesday, September 23, 2008 Wednesday, September 24, 2008 Thursday, September 25, 2008 Friday, September 26, 2008 Saturday, September 27, 2008'
+++++++++++++++++++[table row]
 ++++++++++++++++++++[table cell] name='Sunday, September 21, 2008' selectable (row=3, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='21'
 ++++++++++++++++++++[table cell] name='Monday, September 22, 2008' selectable (row=3, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
@@ -116,7 +116,7 @@
 ++++++++++++++++++++++[static] name='26'
 ++++++++++++++++++++[table cell] name='Saturday, September 27, 2008' selectable (row=3, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='27'
-++++++++++++++++++[table row] name='Sunday, September 28, 2008 Monday, September 29, 2008 Tuesday, September 30, 2008 Wednesday, October 1, 2008 Thursday, October 2, 2008 Friday, October 3, 2008 Saturday, October 4, 2008'
+++++++++++++++++++[table row]
 ++++++++++++++++++++[table cell] name='Sunday, September 28, 2008' selectable (row=4, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='28'
 ++++++++++++++++++++[table cell] name='Monday, September 29, 2008' selectable (row=4, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
@@ -131,7 +131,7 @@
 ++++++++++++++++++++++[static] name='3'
 ++++++++++++++++++++[table cell] name='Saturday, October 4, 2008' selectable (row=4, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='4'
-++++++++++++++++++[table row] name='Sunday, October 5, 2008 Monday, October 6, 2008 Tuesday, October 7, 2008 Wednesday, October 8, 2008 Thursday, October 9, 2008 Friday, October 10, 2008 Saturday, October 11, 2008'
+++++++++++++++++++[table row]
 ++++++++++++++++++++[table cell] name='Sunday, October 5, 2008' selectable (row=5, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++[static] name='5'
 ++++++++++++++++++++[table cell] name='Monday, October 6, 2008' selectable (row=5, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)

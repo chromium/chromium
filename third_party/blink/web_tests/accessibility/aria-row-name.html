@@ -43,6 +43,13 @@
         </div>
     </div>
 </div>
+
+<div role="treegrid" id="row-container-will-change-role">
+    <div id="treegrid7-row1" role="row">
+        <div role="gridcell">Hello</div>
+    </div>
+</div>
+
 </body>
 
 <script>
@@ -62,8 +69,8 @@ test(function(t) {
 
 test(function(t) {
     var axRow = axElementById("treegrid3-row1");
-    assert_equals(axRow.name, '');
-}, "The row's name must empty when the parent is not focusable and there is no other labelling markup (for performance reasons)");
+    assert_equals(axRow.name, 'row head data');
+}, "The row's name must concatenate the children if the row is inside a grid or treegrid");
 
 test(function(t) {
     var axRow = axElementById("treegrid4-row1");
@@ -80,4 +87,13 @@ test(function(t) {
     var axRow = axElementById("treegrid6-row1");
     assert_equals(axRow.name, 'data');
 }, "The row's name must concatenate the children if the grid has a previous unignored sibling input with a late-added aria-activedescendant");
+
+test(function(t) {
+    var axRow = axElementById('treegrid7-row1');
+    assert_equals(axRow.name, 'Hello');
+    document.getElementById('row-container-will-change-role').role = 'grid';
+    axRow = axElementById('treegrid7-row1');
+    assert_equals(axRow.name, 'Hello');
+}, "The row's name must concatenate the children if its inside a grid or tree grid, even after changing role");
+
 </script>

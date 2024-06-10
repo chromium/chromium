@@ -57,7 +57,7 @@ Document
 ++++++++++++++++++++Group IsControlElement=false
 ++++++++++++++++++++++Text Name='Sa'
 ++++++++++++++++++Group IsControlElement=false
-++++++++++++++++++++DataItem Name='Sunday, August 31, 2008 Monday, September 1, 2008 Tuesday, September 2, 2008 Wednesday, September 3, 2008 Thursday, September 4, 2008 Friday, September 5, 2008 Saturday, September 6, 2008'
+++++++++++++++++++++DataItem
 ++++++++++++++++++++++DataItem Name='Sunday, August 31, 2008' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='31' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Monday, September 1, 2008' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=true
@@ -72,7 +72,7 @@ Document
 ++++++++++++++++++++++++Text Name='5' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Saturday, September 6, 2008' GridItem.Column=6 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='6' IsControlElement=false
-++++++++++++++++++++DataItem Name='Sunday, September 7, 2008 Monday, September 8, 2008 Tuesday, September 9, 2008 Wednesday, September 10, 2008 Thursday, September 11, 2008 Friday, September 12, 2008 Saturday, September 13, 2008'
+++++++++++++++++++++DataItem
 ++++++++++++++++++++++DataItem Name='Sunday, September 7, 2008' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='7' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Monday, September 8, 2008' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1 SelectionItem.IsSelected=false
@@ -87,7 +87,7 @@ Document
 ++++++++++++++++++++++++Text Name='12' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Saturday, September 13, 2008' GridItem.Column=6 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='13' IsControlElement=false
-++++++++++++++++++++DataItem Name='Sunday, September 14, 2008 Monday, September 15, 2008 Tuesday, September 16, 2008 Wednesday, September 17, 2008 Thursday, September 18, 2008 Friday, September 19, 2008 Saturday, September 20, 2008'
+++++++++++++++++++++DataItem
 ++++++++++++++++++++++DataItem Name='Sunday, September 14, 2008' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='14' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Monday, September 15, 2008' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1 SelectionItem.IsSelected=false
@@ -102,7 +102,7 @@ Document
 ++++++++++++++++++++++++Text Name='19' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Saturday, September 20, 2008' GridItem.Column=6 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='20' IsControlElement=false
-++++++++++++++++++++DataItem Name='Sunday, September 21, 2008 Monday, September 22, 2008 Tuesday, September 23, 2008 Wednesday, September 24, 2008 Thursday, September 25, 2008 Friday, September 26, 2008 Saturday, September 27, 2008'
+++++++++++++++++++++DataItem
 ++++++++++++++++++++++DataItem Name='Sunday, September 21, 2008' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='21' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Monday, September 22, 2008' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1 SelectionItem.IsSelected=false
@@ -117,7 +117,7 @@ Document
 ++++++++++++++++++++++++Text Name='26' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Saturday, September 27, 2008' GridItem.Column=6 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='27' IsControlElement=false
-++++++++++++++++++++DataItem Name='Sunday, September 28, 2008 Monday, September 29, 2008 Tuesday, September 30, 2008 Wednesday, October 1, 2008 Thursday, October 2, 2008 Friday, October 3, 2008 Saturday, October 4, 2008'
+++++++++++++++++++++DataItem
 ++++++++++++++++++++++DataItem Name='Sunday, September 28, 2008' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=4 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='28' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Monday, September 29, 2008' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=4 GridItem.RowSpan=1 SelectionItem.IsSelected=false
@@ -132,7 +132,7 @@ Document
 ++++++++++++++++++++++++Text Name='3' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Saturday, October 4, 2008' GridItem.Column=6 GridItem.ColumnSpan=1 GridItem.Row=4 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='4' IsControlElement=false
-++++++++++++++++++++DataItem Name='Sunday, October 5, 2008 Monday, October 6, 2008 Tuesday, October 7, 2008 Wednesday, October 8, 2008 Thursday, October 9, 2008 Friday, October 10, 2008 Saturday, October 11, 2008'
+++++++++++++++++++++DataItem
 ++++++++++++++++++++++DataItem Name='Sunday, October 5, 2008' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=5 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++Text Name='5' IsControlElement=false
 ++++++++++++++++++++++DataItem Name='Monday, October 6, 2008' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=5 GridItem.RowSpan=1 SelectionItem.IsSelected=false
