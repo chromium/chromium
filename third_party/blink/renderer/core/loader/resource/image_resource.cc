@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -229,40 +231,25 @@ ImageResource::GetDataForTransparentPlaceholderImageIndex(wtf_size_t index) {
   return known_transparent_encoded_gifs[index];
 }
 
-ImageResource*
-ImageResource::CreateResourceAndResponseForTransparentPlaceholderImage(
-    wtf_size_t image_index,
-    KURL image_url,
-    FetchParameters& fetch_params) {
-  DCHECK_NE(image_index, kNotFound);
-
-  scoped_refptr<BitmapImage> image = BitmapImage::Create();
-  scoped_refptr<SharedBuffer> image_data =
-      GetDataForTransparentPlaceholderImageIndex(image_index);
-  image->SetData(image_data, true);
-
-  // This is similar to the code in
-  // ResourceFetcher::CreateResourceForStaticData.
-  ResourceResponse response;
-  response.SetHttpStatusCode(200);
-  response.SetHttpStatusText(AtomicString("OK"));
-  response.SetCurrentRequestUrl(image_url);
-  response.SetExpectedContentLength(image_data->size());
-  response.SetTextEncodingName(WebString::FromUTF8(""));
-  response.SetMimeType(WebString::FromUTF8("image/gif"));
-  response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
-                              WebString::FromUTF8("image/gif"));
-
+std::tuple<ImageResource*, scoped_refptr<SharedBuffer>>
+ImageResource::MaybeCreateResourceForTransparentPlaceholderImage(
+    const FetchParameters& fetch_params) {
+  scoped_refptr<Image> image;
+  KURL url = fetch_params.Url();
+  const wtf_size_t index = FindTransparentPlaceholderIndex(url);
+  if (index != kNotFound) {
+    CHECK(index >= 0 && index < 2);
+    image = BitmapImage::Create();
+    image->SetData(GetDataForTransparentPlaceholderImageIndex(index), true);
+  }
+  if (!image) {
+    return {nullptr, nullptr};
+  }
   auto* image_content = ImageResourceContent::CreateLoaded(image);
   auto* resource = MakeGarbageCollected<ImageResource>(
       fetch_params.GetResourceRequest(), fetch_params.Options(), image_content);
-  // FIXME: We should provide a body stream here.
-  resource->ResponseReceived(response);
-  resource->SetDataBufferingPolicy(kBufferData);
-  if (image_data->size()) {
-    resource->SetResourceBuffer(image_data);
-  }
-  return resource;
+  resource->SetStatus(ResourceStatus::kCached);
+  return {resource, image->Data()};
 }
 
 ImageResource* ImageResource::Fetch(FetchParameters& params,
@@ -281,34 +268,8 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
         network::mojom::CSPDisposition::DO_NOT_CHECK);
   }
 
-  ImageResource* resource = nullptr;
-  const KURL& url = params.Url();
-  if (base::FeatureList::IsEnabled(
-          features::kSimplifyLoadingTransparentPlaceholderImage) &&
-      url.ProtocolIsData()) {
-    wtf_size_t index = FindTransparentPlaceholderIndex(url);
-    // We should create/return the right Resource corresponding to the image
-    // url.
-    if (index != kNotFound) {
-      if (index == 0) {
-        DEFINE_STATIC_LOCAL(
-            Persistent<ImageResource>, cached_resource,
-            (CreateResourceAndResponseForTransparentPlaceholderImage(index, url,
-                                                                     params)));
-        resource = cached_resource.Get();
-      } else if (index == 1) {
-        DEFINE_STATIC_LOCAL(
-            Persistent<ImageResource>, cached_resource,
-            (CreateResourceAndResponseForTransparentPlaceholderImage(index, url,
-                                                                     params)));
-        resource = cached_resource.Get();
-      }
-    }
-  }
-  if (!resource) {
-    resource = To<ImageResource>(
-        fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
-  }
+  auto* resource = To<ImageResource>(
+      fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
 
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.

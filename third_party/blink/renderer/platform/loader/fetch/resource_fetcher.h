@@ -462,6 +462,9 @@ class PLATFORM_EXPORT ResourceFetcher
       const ResourceFactory&,
       WebScopedVirtualTimePauser& virtual_time_pauser);
 
+  static scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
+      wtf_size_t index);
+
   Resource* CreateResourceForStaticData(const FetchParameters&,
                                         const ResourceFactory&);
   Resource* ResourceForBlockedRequest(const FetchParameters&,

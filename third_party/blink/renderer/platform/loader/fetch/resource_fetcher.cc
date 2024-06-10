@@ -973,16 +973,39 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
 
   ResourceResponse response;
   scoped_refptr<SharedBuffer> data;
+  Resource* resource = nullptr;
   if (url.ProtocolIsData()) {
-    int result;
-    std::tie(result, response, data) = network_utils::ParseDataURL(
-        url, params.GetResourceRequest().HttpMethod());
-    if (result != net::OK) {
-      return nullptr;
+    if (base::FeatureList::IsEnabled(
+            features::kSimplifyLoadingTransparentPlaceholderImage) &&
+        factory.GetType() == ResourceType::kImage) {
+      std::tie(resource, data) =
+          Context().MaybeCreateResourceForKnownDataUrl(params);
+      if (resource) {
+        use_counter_->CountUse(
+            WebFeature::kSimplifyLoadingTransparentPlaceholderImage);
+        DCHECK(data);
+
+        response.SetHttpStatusCode(200);
+        response.SetHttpStatusText(AtomicString("OK"));
+        response.SetCurrentRequestUrl(url);
+        response.SetExpectedContentLength(data->size());
+        response.SetTextEncodingName(WebString::FromUTF8(""));
+        response.SetMimeType(WebString::FromUTF8("image/gif"));
+        response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
+                                    WebString::FromUTF8("image/gif"));
+      }
     }
-    // TODO(yhirano): Consider removing this.
-    if (!IsSupportedMimeType(response.MimeType().Utf8())) {
-      return nullptr;
+    if (response.IsNull() || !data) {
+      int result;
+      std::tie(result, response, data) = network_utils::ParseDataURL(
+          url, params.GetResourceRequest().HttpMethod());
+      if (result != net::OK) {
+        return nullptr;
+      }
+      // TODO(yhirano): Consider removing this.
+      if (!IsSupportedMimeType(response.MimeType().Utf8())) {
+        return nullptr;
+      }
     }
   } else {
     ArchiveResource* archive_resource =
@@ -998,16 +1021,22 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
     response.SetFromArchive(true);
   }
 
-  Resource* resource = factory.Create(
-      params.GetResourceRequest(), params.Options(), params.DecoderOptions());
-  resource->NotifyStartLoad();
+  bool factory_created_resource = false;
+  if (!resource) {
+    factory_created_resource = true;
+    resource = factory.Create(params.GetResourceRequest(), params.Options(),
+                              params.DecoderOptions());
+    resource->NotifyStartLoad();
+  }
   // FIXME: We should provide a body stream here.
   resource->ResponseReceived(response);
   resource->SetDataBufferingPolicy(kBufferData);
   if (data->size())
     resource->SetResourceBuffer(data);
   resource->SetCacheIdentifier(cache_identifier);
-  resource->Finish(base::TimeTicks(), freezable_task_runner_.get());
+  if (factory_created_resource) {
+    resource->Finish(base::TimeTicks(), freezable_task_runner_.get());
+  }
 
   AddToMemoryCacheIfNeeded(params, resource);
   return resource;

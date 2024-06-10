@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
@@ -245,12 +246,12 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   void SetTransparentPlaceholderImageAndPaint(const char* id) {
     Element* element = GetDocument().getElementById(AtomicString(id));
     KURL url = url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE);
-    wtf_size_t index = ImageResource::FindTransparentPlaceholderIndex(url);
     FetchParameters params =
         FetchParameters::CreateForTest(ResourceRequest(url));
-    ImageResource* resource =
-        ImageResource::CreateResourceAndResponseForTransparentPlaceholderImage(
-            index, url, params);
+    ImageResource* resource;
+    std::tie(resource, std::ignore) =
+        ImageResource::MaybeCreateResourceForTransparentPlaceholderImage(
+            params);
     To<HTMLImageElement>(element)->SetImageForTest(resource->GetContent());
   }
 
