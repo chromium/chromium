@@ -1207,11 +1207,9 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       supports_multiplanar_rendering = true;
     }
 #endif
-    caps.supports_yuv_to_rgb_conversion = true;
     caps.supports_rgb_to_yuv_conversion = supports_multiplanar_rendering;
     caps.supports_yuv_readback = supports_multiplanar_rendering;
   } else {
-    caps.supports_yuv_to_rgb_conversion = true;
     caps.supports_rgb_to_yuv_conversion = true;
     caps.supports_yuv_readback = true;
   }

@@ -51,12 +51,6 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   if (!holder_)
     holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
 
-  // All platforms except android have shipped passthrough command decoder which
-  // supports it. On Android this code path should always use RasterDecoder
-  // which also supports this.
-  CHECK(raster_context_provider->ContextCapabilities()
-            .supports_yuv_to_rgb_conversion);
-
   // The RasterInterface path does not support flip_y.
   if (gr_params) {
     DCHECK(!gr_params->flip_y);

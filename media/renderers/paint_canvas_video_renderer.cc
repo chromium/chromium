@@ -1609,10 +1609,6 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
-  // All platforms except Android (on which this code does not run) exclusively
-  // use the passthrough decoder, which supports YUV->RGB conversion.
-  CHECK(destination_gl_capabilities.supports_yuv_to_rgb_conversion);
-
   CHECK(video_frame->HasTextures());
 
   // Trigger resource allocation for dst texture to back SkSurface.
