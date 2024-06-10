@@ -14,6 +14,7 @@ import {HotspotAllowStatus, HotspotInfo, HotspotState, WiFiBand, WiFiSecurityMod
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -1163,14 +1164,16 @@ suite('<settings-internet-page>', () => {
         });
   });
 
-  [true, false].forEach(isApnRevampAndPoliciesEnabled => {
+  [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
     test(
-        `Managed APN UI states when isApnRevampAndPoliciesEnabled is ${
-            isApnRevampAndPoliciesEnabled}`,
+        `Managed APN UI states when ` +
+            `isApnRevampAndAllowApnModificationPolicyEnabled is ${
+                isApnRevampAndAllowApnModificationPolicyEnabled}`,
         async () => {
           loadTimeData.overrideValues({
             isApnRevampEnabled: true,
-            isApnRevampAndPoliciesEnabled: isApnRevampAndPoliciesEnabled,
+            isApnRevampAndAllowApnModificationPolicyEnabled:
+                isApnRevampAndAllowApnModificationPolicyEnabled,
           });
           await navigateToApnSubpage();
 
@@ -1206,11 +1209,14 @@ suite('<settings-internet-page>', () => {
           } as GlobalPolicy;
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushTasks();
-          assertEquals(isApnRevampAndPoliciesEnabled, !!getApnManagedIcon());
           assertEquals(
-              isApnRevampAndPoliciesEnabled, apnActionMenuButton.disabled);
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              !!getApnManagedIcon());
           assertEquals(
-              isApnRevampAndPoliciesEnabled,
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              apnActionMenuButton.disabled);
+          assertEquals(
+              isApnRevampAndAllowApnModificationPolicyEnabled,
               apnSubpage.shouldDisallowApnModification);
         });
   });

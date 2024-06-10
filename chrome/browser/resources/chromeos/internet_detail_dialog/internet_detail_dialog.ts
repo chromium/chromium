@@ -128,11 +128,13 @@ export class InternetDetailDialogElement extends
         },
       },
 
-      isApnRevampAndPoliciesEnabled_: {
+      isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.valueExists('isApnRevampAndPoliciesEnabled') &&
-              loadTimeData.getBoolean('isApnRevampAndPoliciesEnabled');
+          return loadTimeData.valueExists(
+                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
+              loadTimeData.getBoolean(
+                  'isApnRevampAndAllowApnModificationPolicyEnabled');
         },
       },
 
@@ -166,7 +168,7 @@ export class InternetDetailDialogElement extends
   private globalPolicy_: GlobalPolicy;
   private apnExpanded_: boolean;
   private isApnRevampEnabled_: boolean;
-  private isApnRevampAndPoliciesEnabled_: boolean;
+  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private errorToastMessage_: string;
   private didSetFocus_: boolean = false;
@@ -453,7 +455,7 @@ export class InternetDetailDialogElement extends
   }
 
   private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
-    if (!this.isApnRevampAndPoliciesEnabled_) {
+    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
       return false;
     }
     if (!globalPolicy) {
@@ -770,7 +772,7 @@ export class InternetDetailDialogElement extends
       return true;
     }
 
-    if (!this.isApnRevampAndPoliciesEnabled_) {
+    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
       return this.isNumCustomApnsLimitReached_;
     }
 

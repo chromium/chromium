@@ -3427,10 +3427,11 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
 TEST_F(CrosNetworkConfigTest,
        ApnOperationsDisallowApnModificationFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
-                                       {features::kApnRevamp},
-                                       /*disabled_features=*/{
-                                           chromeos::features::kApnPolicies});
+  scoped_feature_list
+      .InitWithFeatures(/*enabled_features=*/
+                        {features::kApnRevamp},
+                        /*disabled_features=*/{
+                            features::kAllowApnModificationPolicy});
 
   // Register an observer to capture values sent to Shill.
   TestNetworkConfigurationObserver network_config_observer(
@@ -3443,7 +3444,7 @@ TEST_F(CrosNetworkConfigTest,
   // Set AllowAPNModification to false.
   SetAllowApnModification(false);
 
-  // Create APN with kApnPolicies flag disabled should succeed.
+  // Create APN with kAllowApnModificationPolicy flag disabled should succeed.
   TestApnData test_apn1;
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
@@ -3474,7 +3475,7 @@ TEST_F(CrosNetworkConfigTest, ApnOperationsDisallowApnModification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(/*enabled_features=*/
                                        {features::kApnRevamp,
-                                        chromeos::features::kApnPolicies},
+                                        features::kAllowApnModificationPolicy},
                                        /*disabled_features=*/{});
 
   // Register an observer to capture values sent to Shill.
@@ -4216,7 +4217,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(/*enabled_features=*/
                                        {features::kApnRevamp,
-                                        chromeos::features::kApnPolicies},
+                                        features::kAllowApnModificationPolicy},
                                        /*disabled_features=*/{});
   policy = GetGlobalPolicy();
   EXPECT_FALSE(policy->allow_apn_modification);

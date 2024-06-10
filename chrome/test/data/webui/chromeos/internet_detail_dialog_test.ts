@@ -486,14 +486,16 @@ suite('internet-detail-dialog', () => {
     });
   });
 
-  [true, false].forEach(isApnRevampAndPoliciesEnabled => {
+  [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
     test(
-        `Managed APN UI states when isApnRevampAndPoliciesEnabled is ${
-            isApnRevampAndPoliciesEnabled}`,
+        `Managed APN UI states when ` +
+            `isApnRevampAndAllowApnModificationPolicyEnabled is ${
+                isApnRevampAndAllowApnModificationPolicyEnabled}`,
         async () => {
           loadTimeData.overrideValues({
             apnRevamp: true,
-            isApnRevampAndPoliciesEnabled: isApnRevampAndPoliciesEnabled,
+            isApnRevampAndAllowApnModificationPolicyEnabled:
+                isApnRevampAndAllowApnModificationPolicyEnabled,
           });
           await setupCellularNetwork(
               /* isPrimary= */ true, /* isInhibited= */ false);
@@ -535,14 +537,18 @@ suite('internet-detail-dialog', () => {
           } as GlobalPolicy;
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushAsync();
-          assertEquals(isApnRevampAndPoliciesEnabled, !!getApnManagedIcon());
           assertEquals(
-              isApnRevampAndPoliciesEnabled,
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              !!getApnManagedIcon());
+          assertEquals(
+              isApnRevampAndAllowApnModificationPolicyEnabled,
               apnList.shouldDisallowApnModification);
           assertEquals(
-              isApnRevampAndPoliciesEnabled, createCustomApnButton().disabled);
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              createCustomApnButton().disabled);
           assertEquals(
-              isApnRevampAndPoliciesEnabled, discoverMoreApnsButton().disabled);
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              discoverMoreApnsButton().disabled);
         });
   });
 

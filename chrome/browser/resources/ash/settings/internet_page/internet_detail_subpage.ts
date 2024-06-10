@@ -329,11 +329,13 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      isApnRevampAndPoliciesEnabled_: {
+      isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.valueExists('isApnRevampAndPoliciesEnabled') &&
-              loadTimeData.getBoolean('isApnRevampAndPoliciesEnabled');
+          return loadTimeData.valueExists(
+                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
+              loadTimeData.getBoolean(
+                  'isApnRevampAndAllowApnModificationPolicyEnabled');
         },
       },
 
@@ -424,7 +426,7 @@ export class SettingsInternetDetailPageElement extends
   private suppressTextMessagesOverride_: boolean;
   private isCellularCarrierLockEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
-  private isApnRevampAndPoliciesEnabled_: boolean;
+  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
@@ -1296,7 +1298,7 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
-    if (!this.isApnRevampAndPoliciesEnabled_) {
+    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
       return false;
     }
     if (!globalPolicy) {

@@ -2154,7 +2154,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowApnModification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(/*enabled_features=*/
                                        {features::kApnRevamp,
-                                        chromeos::features::kApnPolicies},
+                                        features::kAllowApnModificationPolicy},
                                        /*disabled_features=*/{});
 
   // TODO(b/333100319): When feature is fully enabled, test
