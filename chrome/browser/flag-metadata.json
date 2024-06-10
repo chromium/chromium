@@ -6568,11 +6568,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "omnibox-shortcuts-database-ios",
-    "owners": [ "christianxu@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "omnibox-square-suggest-icons",
     "owners": [
       "manukh@chromium.org", "chrome-omnibox-team@google.com"

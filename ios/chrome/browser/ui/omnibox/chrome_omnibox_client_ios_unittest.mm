@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/test_tracker.h"
@@ -14,7 +13,6 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/test_web_location_bar.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/testing/nserror_util.h"
@@ -156,10 +154,6 @@ void ChromeOmniboxClientIOSTest::RedirectNavigationWithBackButton() {
 
 // Tests that successful navigations are added to the shortcuts database.
 TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kOmniboxPopulateShortcutsDatabase);
-
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
@@ -183,10 +177,6 @@ TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
 // Tests that unfinished navigations or failed navigations are not added in the
 // shortcuts database.
 TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kOmniboxPopulateShortcutsDatabase);
-
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
@@ -226,10 +216,6 @@ TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
 // Tests that non omnibox successful navigation are not added in the shortcuts
 // database.
 TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNonOmniboxDontAddShortcut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kOmniboxPopulateShortcutsDatabase);
-
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =

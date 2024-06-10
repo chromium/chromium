@@ -705,10 +705,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
-// Title and description for storing query/match in the shortcuts database.
-extern const char kOmniboxPopulateShortcutsDatabaseName[];
-extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
-
 // Title and description for using content configuration in omnibox popup row.
 extern const char kOmniboxPopupRowContentConfigurationName[];
 extern const char kOmniboxPopupRowContentConfigurationDescription[];

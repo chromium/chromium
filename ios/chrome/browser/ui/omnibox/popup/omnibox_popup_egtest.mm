@@ -523,11 +523,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that selecting a suggestion in the omnibox and successfully navigating
 // to it adds an entry in the shortcuts database.
 - (void)testShortcutsDatabasePopulation {
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:
-          {omnibox::kOmniboxPopulateShortcutsDatabase}
-                                  disabled:{}
-                            relaunchPolicy:NoForceRelaunchAndResetState];
   [ChromeEarlGrey clearBrowsingHistory];
   // Ensure the database is initialized and empty.
   [OmniboxEarlGrey waitForShortcutsBackendInitialization];

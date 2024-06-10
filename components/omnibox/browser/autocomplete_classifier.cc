@@ -80,14 +80,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
          AutocompleteProvider::TYPE_HISTORY_QUICK |
          AutocompleteProvider::TYPE_HISTORY_URL |
          AutocompleteProvider::TYPE_SEARCH |
-#if BUILDFLAG(IS_IOS)
-         (base::FeatureList::IsEnabled(
-              omnibox::kOmniboxPopulateShortcutsDatabase)
-              ? AutocompleteProvider::TYPE_SHORTCUTS
-              : 0) |
-#else
          AutocompleteProvider::TYPE_SHORTCUTS |
-#endif
          AutocompleteProvider::TYPE_HISTORY_FUZZY |
          AutocompleteProvider::TYPE_CALCULATOR
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

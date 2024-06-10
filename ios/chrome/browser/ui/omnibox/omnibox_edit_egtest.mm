@@ -44,8 +44,6 @@
   // Enable flags for rich inline autocomplete tests.
   if ([self isRunningTest:@selector(testRichInlineDefaultSuggestion)]) {
     config.features_enabled.push_back(omnibox::kRichAutocompletion);
-    config.features_enabled.push_back(
-        omnibox::kOmniboxPopulateShortcutsDatabase);
   }
 
   // Disable AutocompleteProvider types: TYPE_SEARCH and TYPE_ON_DEVICE_HEAD.
@@ -189,8 +187,6 @@
       [self isRunningTest:@selector(testRichInlineRemovedByDelete)] ||
       [self isRunningTest:@selector(testRichInlineRemovedWithArrowKey)]) {
     config.features_enabled.push_back(omnibox::kRichAutocompletion);
-    config.features_enabled.push_back(
-        omnibox::kOmniboxPopulateShortcutsDatabase);
   }
 
   // Disable AutocompleteProvider type TYPE_ON_DEVICE_HEAD.
