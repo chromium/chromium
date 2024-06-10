@@ -642,13 +642,10 @@ void AXObject::SetHasDirtyDescendants(bool dirty) {
 
 void AXObject::SetAncestorsHaveDirtyDescendants() {
   CHECK(!IsDetached());
-  CHECK(!AXObjectCache().HasBeenDisposed());
-  if (AXObjectCache().IsFrozen()) {
-    // TODO(accessibility): Restore as CHECK(), remove early return.
-    DCHECK(false) << "Attempt to update frozen tree: " << this;
-    return;
-  }
-  CHECK(!AXObjectCache().UpdatingTree());
+  CHECK(AXObjectCache()
+            .lifecycle()
+            .StateAllowsAXObjectsToGainFinalizationNeededBit())
+      << AXObjectCache();
 
   // Set the dirty bit for the root AX object when created. For all other
   // objects, this is set by a descendant needing to be updated, and
@@ -703,18 +700,15 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
 #if DCHECK_IS_ON()
   // Walk up the tree looking for dirty bits that failed to be set. If any
   // are found, this is a bug.
-  if (!AXObjectCache().UpdatingTree()) {
-    bool fail = false;
-    for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
-      if (obj->CachedIsIncludedInTree() &&
-          !obj->has_dirty_descendants_) {
-        fail = true;
-        break;
-      }
+  bool fail = false;
+  for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
+    if (obj->CachedIsIncludedInTree() && !obj->has_dirty_descendants_) {
+      fail = true;
+      break;
     }
-    DCHECK(!fail) << "Failed to set dirty bits on some ancestors:\n"
-                  << ParentChainToStringHelper(this);
   }
+  DCHECK(!fail) << "Failed to set dirty bits on some ancestors:\n"
+                << ParentChainToStringHelper(this);
 #endif
 }
 
@@ -868,7 +862,7 @@ void AXObject::SetParent(AXObject* new_parent) {
 
 #endif
   parent_ = new_parent;
-  if (AXObjectCache().UpdatingTree()) {
+  if (AXObjectCache().IsUpdatingTree()) {
     // If updating tree, tell the newly included parent to iterate through
     // all of its children to look for the has dirty descendants flag.
     // However, we do not set the flag on higher ancestors since
@@ -3129,8 +3123,9 @@ void AXObject::CheckCanAccessCachedValues() const {
 }
 
 void AXObject::InvalidateCachedValues() {
+  CHECK(AXObjectCache().lifecycle().StateAllowsAXObjectsToBeDirtied())
+      << AXObjectCache();
 #if DCHECK_IS_ON()
-  DCHECK(!AXObjectCache().IsFrozen());
   DCHECK(!is_updating_cached_values_)
       << "Should not invalidate cached values while updating them.";
 #endif
@@ -3152,11 +3147,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   cached_values_need_update_ = false;
 
-  CHECK(!AXObjectCache().IsFrozen())
-      << "All cached values must be updated before the tree is frozen "
-         "serialization, because changes to the ignored state could cause tree "
-         "structure changes.";
-  CHECK(AXObjectCache().IsProcessingDeferredEvents());
+  CHECK(AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates())
+      << AXObjectCache();
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
   DCHECK(!is_computing_role_)
@@ -3297,7 +3289,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
         // ParentObjectUnignored()->SetNeedsToUpdateChildren();
         AXObjectCache().ChildrenChangedOnAncestorOf(this);
       }
-    } else if (included_in_tree_changed && AXObjectCache().UpdatingTree()) {
+    } else if (included_in_tree_changed && AXObjectCache().IsUpdatingTree()) {
       // In some cases changes to inherited properties can cause an object
       // inclusion change in the tree updating phase, where it's too late to use
       // the usual dirty object mechanisms, but we can still queue the dirty
@@ -3365,7 +3357,7 @@ void AXObject::OnInheritedCachedValuesChanged() {
     return;
   }
 
-  if (AXObjectCache().UpdatingTree()) {
+  if (AXObjectCache().IsUpdatingTree()) {
     // When already in the middle of updating the tree, we know we are building
     // from the top down, and that its ok to mark things below (descendants) as
     // dirty and alter/rebuild them, but at this point we must not alter
@@ -6039,9 +6031,8 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
 #endif
 
 void AXObject::SetNeedsToUpdateChildren(bool update) {
-  CHECK(!IsDetached()) << "Cannot update children on a detached node: " << this;
-  CHECK(!AXObjectCache().IsFrozen());
-  CHECK(!AXObjectCache().HasBeenDisposed());
+  CHECK(AXObjectCache().lifecycle().StateAllowsAXObjectsToBeDirtied())
+      << AXObjectCache();
 
   if (!update) {
     children_dirty_ = false;
@@ -6058,8 +6049,6 @@ void AXObject::SetNeedsToUpdateChildren(bool update) {
     return;
   }
 
-  CHECK(!AXObjectCache().UpdatingTree());
-
   children_dirty_ = true;
   SetAncestorsHaveDirtyDescendants();
 }
@@ -6072,7 +6061,8 @@ bool AXObject::CanSafelyUseFlatTreeTraversalNow(Document& document) {
 
 bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
   // Do not interfere with the destruction loop in AXObjectCacheImpl::Dispose().
-  if (IsDetached() || AXObjectCache().HasBeenDisposed()) {
+  if (IsDetached() || AXObjectCache().IsDisposing() ||
+      AXObjectCache().IsDisposing()) {
     return false;
   }
 
@@ -7874,7 +7864,7 @@ String AXObject::ToString(bool verbose) const {
 
   bool cached_values_only = !AXObjectCache().IsFrozen();
 
-  if (AXObjectCache().HasBeenDisposed()) {
+  if (AXObjectCache().HasBeenDisposed() || AXObjectCache().IsDisposing()) {
     return string_builder + " (doc shutdown) #" + String::Number(AXObjectID());
   }
 

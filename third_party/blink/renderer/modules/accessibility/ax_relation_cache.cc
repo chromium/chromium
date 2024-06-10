@@ -307,7 +307,7 @@ void AXRelationCache::UpdateReverseTextRelations(
     if (Element* target = scope.getElementById(AtomicString(id))) {
       // Mark root of label dirty so that we can change inclusion states as
       // necessary (label subtrees are included in the tree even if hidden).
-      if (object_cache_->IsProcessingDeferredEvents()) {
+      if (object_cache_->lifecycle().StateAllowsImmediateTreeUpdates()) {
         // WHen the relation cache is first initialized, we are already in
         // processing deferred events, and must manually invalidate the
         // cached values (is_used_for_label_or_description may have changed).
@@ -802,7 +802,7 @@ void AXRelationCache::GetReverseRelated(
 }
 
 AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
-  CHECK(object_cache_->IsProcessingDeferredEvents());
+  CHECK(object_cache_->lifecycle().StateAllowsImmediateTreeUpdates());
 
   if (!IsA<Element>(node)) {
     return nullptr;
@@ -953,11 +953,11 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
     // node.
     // TODO(jdapena@igalia.com): explore if we can skip all processing of the
     // mappings in AXRelationCache in dispose case.
-    if (!object_cache_->HasBeenDisposed()) {
+    if (!object_cache_->IsDisposing()) {
       for (const auto& child_axid : child_axids) {
         if (AXObject* owned_child = ObjectFromAXID(child_axid)) {
           owned_child->DetachFromParent();
-          DUMP_WILL_BE_CHECK(!object_cache_->UpdatingTree())
+          CHECK(object_cache_->lifecycle().StateAllowsReparentingAXObjects())
               << "Removing owned child at a bad time, which leads to "
                  "parentless objects at a bad time: "
               << owned_child;
@@ -974,7 +974,7 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
 void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
   // Another id owned |obj_id|.
   if (aria_owned_child_to_owner_mapping_.Contains(obj_id)) {
-    DUMP_WILL_BE_CHECK(!object_cache_->UpdatingTree());
+    CHECK(object_cache_->lifecycle().StateAllowsReparentingAXObjects());
     // Previous owner no longer relevant to this child.
     // Also, remove |obj_id| from previous owner's owned child list:
     AXID owner_id = aria_owned_child_to_owner_mapping_.Take(obj_id);
@@ -987,7 +987,7 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
       }
     }
     if (AXObject* owner = ObjectFromAXID(owner_id)) {
-      if (object_cache_->IsProcessingDeferredEvents()) {
+      if (object_cache_->lifecycle().StateAllowsImmediateTreeUpdates()) {
         object_cache_->ChildrenChangedWithCleanLayout(owner);
       } else {
         object_cache_->ChildrenChanged(owner);

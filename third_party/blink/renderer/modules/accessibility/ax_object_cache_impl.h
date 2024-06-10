@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_lifecycle.h"
 #include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -126,6 +127,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* FocusedObject();
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
+
+  const AXObjectCacheLifecycle& lifecycle() const { return lifecycle_; }
 
   // When the accessibility tree view is open in DevTools, we listen for changes
   // to the tree by registering an InspectorAccessibilityAgent here and notify
@@ -575,18 +578,22 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MarkElementDirty(const Node*) override;
   void MarkElementDirtyWithCleanLayout(const Node*);
 
-  // TODO(accessibility) Create an a11y lifecycle that encompasses these.
-  // Layout is clean and the cache is processing callbacks.
-  bool IsProcessingDeferredEvents() const {
-    return processing_deferred_events_;
+  // Returns true if FinalizeTree() has been called and has not finished.
+  bool IsUpdatingTree() {
+    return lifecycle_.GetState() == AXObjectCacheLifecycle::kFinalizingTree;
   }
+  // The cache is in the tear-down phase.
+  bool IsDisposing() const {
+    return lifecycle_.GetState() == AXObjectCacheLifecycle::kDisposing;
+  }
+  // The cache has released all data and is no longer processing updates.
+  bool HasBeenDisposed() const {
+    return lifecycle_.GetState() == AXObjectCacheLifecycle::kDisposed;
+  }
+
   bool EntireDocumentIsDirty() const { return mark_all_dirty_; }
-  // Returns true if UpdateTreeIfNeeded has been called and has not finished.
-  bool UpdatingTree() { return updating_tree_; }
-  // The document/cache are in the tear-down phase.
-  bool HasBeenDisposed() const { return has_been_disposed_; }
   // Assert that tree is completely up-to-date.
-  void CheckTreeIsUpdated();
+  void CheckTreeIsFinalized();
   void CheckStyleIsComplete(Document& document) const;
 
   bool SerializeUpdatesAndEvents();
@@ -787,7 +794,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // to an eager (as opposed to lazy) AX tree update pattern. See
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1342801#c12 for more
   // details.
-  void UpdateTreeIfNeeded();
+  void FinalizeTree();
 
   // Make sure a relation cache exists and is initialized. Must be called with
   // clean layout.
@@ -927,15 +934,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   std::unique_ptr<AXRelationCache> relation_cache_;
 
   // Stages of cache/tree.
-  // If all of these are false, the cache can collect updates to-be-processed
-  // via callbacks from DOM/layout.
-  // TODO(accessibility) Replace these with something like a document lifecycle.
-  // Tree is being updated.
-  bool processing_deferred_events_ = false;
-  // If > 0, tree is frozen and beign serialized.
+  AXObjectCacheLifecycle lifecycle_;
+  // If > 0, tree is frozen.
   int frozen_count_ = 0;  // Used with Freeze(), Thaw() and IsFrozen() above.
-  // Tree and cache are being destroyed.
-  bool has_been_disposed_ = false;
 
 #if DCHECK_IS_ON()
   bool updating_layout_and_ax_ = false;
@@ -1191,7 +1192,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   HashMap<DOMNodeId, bool> whitespace_ignored_map_;
 
-  bool updating_tree_ = false;
   // Make sure the next serialization sends everything.
   bool mark_all_dirty_ = false;
 
@@ -1235,6 +1235,9 @@ template <>
 struct DowncastTraits<AXObjectCacheImpl> {
   static bool AllowFrom(const AXObjectCache& cache) { return true; }
 };
+
+MODULES_EXPORT std::ostream& operator<<(std::ostream&,
+                                        const AXObjectCacheImpl&);
 
 }  // namespace blink
 

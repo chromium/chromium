@@ -24,6 +24,8 @@ blink_modules_sources("accessibility") {
     "ax_object.h",
     "ax_object_cache_impl.cc",
     "ax_object_cache_impl.h",
+    "ax_object_cache_lifecycle.cc",
+    "ax_object_cache_lifecycle.h",
     "ax_position.cc",
     "ax_position.h",
     "ax_progress_indicator.cc",

@@ -5337,7 +5337,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
 
   // If the work was deferred via ChildrenChanged(), update accessibility
   // to force that work to be performed now.
-  if (!AXObjectCache().IsProcessingDeferredEvents()) {
+  if (!AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates()) {
     AXObjectCache().UpdateAXForAllDocuments();
   }
 }
@@ -5353,7 +5353,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
   always_load_inline_text_boxes_ = true;
 #endif
 
-  if (AXObjectCache().IsProcessingDeferredEvents()) {
+  if (AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates()) {
     // Can only add new objects while processing deferred events.
     AddInlineTextBoxChildren();
     // Avoid adding these children twice.
@@ -5382,7 +5382,8 @@ void AXNodeObject::AddInlineTextBoxChildren() {
   CHECK(!AXObjectCache().GetAXMode().HasExperimentalFlags(
       ui::AXMode::kExperimentalFormControls))
       << "Form controls mode should not have inline text boxes turned on.";
-  CHECK(AXObjectCache().IsProcessingDeferredEvents());
+  CHECK(AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates())
+      << AXObjectCache();
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
