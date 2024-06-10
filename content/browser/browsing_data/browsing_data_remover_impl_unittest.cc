@@ -1936,6 +1936,40 @@ TEST_F(BrowsingDataRemoverImplTest, NonDefaultStoragePartitionInFilter) {
   RegisterStoragePartition(non_default_storage_partition_config, nullptr);
 }
 
+TEST_F(BrowsingDataRemoverImplTest, DeleteInterestGroupsWhenClearingCookies) {
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                /*include_protected_origins=*/false);
+
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(
+      removal_data.remove_mask &
+          (StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL |
+           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE),
+      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS);
+}
+
+TEST_F(BrowsingDataRemoverImplTest,
+       IfPartitionedCookiesOnlyDontDeleteInterestGroupsWhenClearingCookies) {
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve));
+  builder->SetPartitionedCookiesOnly(true);
+
+  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                              BrowsingDataRemover::DATA_TYPE_COOKIES,
+                              std::move(builder));
+
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(
+      removal_data.remove_mask &
+          (StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL |
+           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE),
+      0u);
+}
+
 class BrowsingDataRemoverImplSharedStorageTest
     : public BrowsingDataRemoverImplTest {
  public:
