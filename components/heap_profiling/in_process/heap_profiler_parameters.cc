@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -19,6 +20,10 @@
 #include "components/variations/variations_switches.h"
 
 namespace heap_profiling {
+
+BASE_FEATURE(kHeapProfilerCentralControl,
+             "HeapProfilerCentralControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -165,15 +170,52 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
 
   HeapProfilerParameters params = kDefaultHeapProfilerParameters;
 
+  // Apply per-process defaults.
+  switch (process_type) {
+    case Process::kBrowser:
+      params.is_supported = true;
+      break;
+    case Process::kNetworkService:
+      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+        params.is_supported = true;
+      }
+      break;
+    case Process::kGpu:
+      // Only enabled by default on Mac.
+#if BUILDFLAG(IS_MAC)
+      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+        params.is_supported = true;
+        // Use half the threshold used in the browser process, because last time
+        // it was validated the GPU process allocated a bit over half as much
+        // memory at the median.
+        params.sampling_rate_bytes = params.sampling_rate_bytes / 2;
+      }
+#endif
+      break;
+    case Process::kRenderer:
+    case Process::kUtility:
+      // Not enabled by default on any platform.
+      break;
+    case Process::kUnknown:
+    default:
+      // Do nothing. Profiler hasn't been tested in these process types.
+      break;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac, child processes may not set the channel correctly
+  // (https://crbug.com/329286893) so the profiler must only be enabled in the
+  // browser process unless kHeapProfilerCentralControl is set.
+  CHECK(process_type == Process::kBrowser || !params.is_supported ||
+        base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
+#endif
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           variations::switches::kEnableBenchmarking) ||
       !base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
     params.is_supported = false;
     return params;
   }
-
-  // By default only the browser process is supported.
-  params.is_supported = (process_type == Process::kBrowser);
 
   // Override with field trial parameters if any are set.
   if (!params.UpdateFromJSON(kDefaultParameters.Get())) {

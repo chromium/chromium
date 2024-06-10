@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,10 +24,6 @@ class CommandLine;
 }
 
 namespace heap_profiling {
-
-// If this is enabled, heap profiling in subprocesses is controlled centrally
-// from the browser process.
-BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
 
 class BrowserProcessSnapshotController;
 class ChildProcessSnapshotController;

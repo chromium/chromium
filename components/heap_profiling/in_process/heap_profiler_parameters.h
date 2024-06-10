@@ -14,6 +14,10 @@
 
 namespace heap_profiling {
 
+// If this is enabled, heap profiling in subprocesses is controlled centrally
+// from the browser process.
+BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
+
 // If this is disabled, the client will not collect heap profiles. If it is
 // enabled, the client may enable the sampling heap profiler (with probability
 // based on the "stable-probability" parameter if the client is on the stable

@@ -49,10 +49,6 @@
 
 namespace heap_profiling {
 
-BASE_FEATURE(kHeapProfilerCentralControl,
-             "HeapProfilerCentralControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 using ProcessType = metrics::CallStackProfileParams::Process;

@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
+#include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
