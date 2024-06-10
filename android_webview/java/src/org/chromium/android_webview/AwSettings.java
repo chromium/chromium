@@ -178,9 +178,12 @@ public class AwSettings {
     private int mSpeculativeLoadingAllowedFlags =
             SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED;
 
+    private boolean mHasCalledSetSpeculativeLoadingAllowedBefore;
+
     // Enabling this setting or the kWebViewBackForwardCache feature will enable BFCache
     // in WebView.
     private boolean mBackForwardCacheEnabled;
+    private boolean mHasCalledSetBackForwardCacheEnabledBefore;
 
     private boolean mCSSHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
@@ -395,7 +398,9 @@ public class AwSettings {
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
             mSpeculativeLoadingAllowedFlags =
                     SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED;
+            mHasCalledSetSpeculativeLoadingAllowedBefore = false;
             mBackForwardCacheEnabled = false;
+            mHasCalledSetBackForwardCacheEnabledBefore = false;
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }
@@ -1781,8 +1786,13 @@ public class AwSettings {
 
     public void setSpeculativeLoadingAllowed(@SpeculativeLoadingAllowedFlags int flags) {
         synchronized (mAwSettingsLock) {
-            if (mSpeculativeLoadingAllowedFlags != flags) {
+            // Only trigger an update if the value changed, or this is the first time we call this
+            // function. The latter is important to make sure every embedder that calls this
+            // function explicitly will be assigned a synthetic field trial group.
+            if (mSpeculativeLoadingAllowedFlags != flags
+                    || !mHasCalledSetSpeculativeLoadingAllowedBefore) {
                 mSpeculativeLoadingAllowedFlags = flags;
+                mHasCalledSetSpeculativeLoadingAllowedBefore = true;
                 mEventHandler.updateSpeculativeLoadingAllowedLocked();
             }
         }
@@ -1799,8 +1809,13 @@ public class AwSettings {
     public void setBackForwardCacheEnabled(boolean enabled) {
         if (TRACE) Log.i(TAG, "setBackForwardCacheEnabled = " + enabled);
         synchronized (mAwSettingsLock) {
-            if (mBackForwardCacheEnabled != enabled) {
+            // Only trigger an update if the value changed, or this is the first time we call this
+            // function. The latter is important to make sure every embedder that calls this
+            // function explicitly will be assigned a synthetic field trial group.
+            if (mBackForwardCacheEnabled != enabled
+                    || !mHasCalledSetBackForwardCacheEnabledBefore) {
                 mBackForwardCacheEnabled = enabled;
+                mHasCalledSetBackForwardCacheEnabledBefore = true;
                 mEventHandler.updateBackForwardCacheEnabled();
             }
         }

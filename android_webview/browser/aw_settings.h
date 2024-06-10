@@ -182,13 +182,15 @@ class AwSettings : public content::WebContentsObserver {
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
   AttributionBehavior attribution_behavior_;
-  SpeculativeLoadingAllowedFlags spculative_loading_allowed_flags_{
+  SpeculativeLoadingAllowedFlags speculative_loading_allowed_flags_{
       SpeculativeLoadingAllowedFlags::SPECULATIVE_LOADING_DISABLED};
   bool bfcache_enabled_in_java_settings_{false};
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   JavaObjectWeakGlobalRef aw_settings_;
+
+  bool in_update_everything_locked_{false};
 };
 
 }  // namespace android_webview

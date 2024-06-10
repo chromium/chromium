@@ -14,6 +14,8 @@
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_dark_mode.h"
 #include "android_webview/browser/aw_user_agent_metadata.h"
+#include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_features.h"
@@ -144,7 +146,7 @@ AwSettings::AttributionBehavior AwSettings::GetAttributionBehavior() {
 }
 
 bool AwSettings::IsPrerender2Allowed() {
-  return (spculative_loading_allowed_flags_ & PRERENDER_ENABLED);
+  return (speculative_loading_allowed_flags_ & PRERENDER_ENABLED);
 }
 
 bool AwSettings::IsBackForwardCacheEnabled() {
@@ -214,6 +216,7 @@ void AwSettings::UpdateEverything() {
 
 void AwSettings::UpdateEverythingLocked(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj) {
+  base::AutoReset<bool> auto_reset(&in_update_everything_locked_, true);
   UpdateInitialPageScaleLocked(env, obj);
   UpdateWebkitPreferencesLocked(env, obj);
   UpdateUserAgentLocked(env, obj);
@@ -443,11 +446,31 @@ void AwSettings::UpdateAttributionBehaviorLocked(
 void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  SpeculativeLoadingAllowedFlags previous = spculative_loading_allowed_flags_;
-  spculative_loading_allowed_flags_ =
+  SpeculativeLoadingAllowedFlags previous = speculative_loading_allowed_flags_;
+  speculative_loading_allowed_flags_ =
       static_cast<SpeculativeLoadingAllowedFlags>(
           Java_AwSettings_getSpeculativeLoadingAllowed(env, obj));
-  if (previous == spculative_loading_allowed_flags_) {
+
+  if (!in_update_everything_locked_) {
+    // The setting was explicitly updated, since this is not part of the
+    // UpdateEverythingLocked call. Register a synthetic field trial so that
+    // even if we do experiments that are not run via Finch, we can still
+    // identify the "Prerender enabled" vs "Prerender disabled" groups for UMA
+    // and crash comparison. Note that we only register when the setting was
+    // explicitly updated, to exclude cases that are not part of any experiment
+    // groups at all (e.g. when we're on a version of the WebView embedder that
+    // doesn't have the experiment at all).
+    static constexpr char kPrerenderTrial[] = "WebViewPrerenderSynthetic";
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        AwMetricsServiceClient::GetInstance()->GetMetricsService(),
+        kPrerenderTrial,
+        (speculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)
+            ? "Enabled"
+            : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kNextLog);
+  }
+
+  if (previous == speculative_loading_allowed_flags_) {
     return;
   }
 
@@ -461,7 +484,7 @@ void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
   // preloading is disabled.
 
   if ((previous & AwSettings::PRERENDER_ENABLED) &&
-      !(spculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
+      !(speculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
     web_contents()->CancelAllPrerendering();
   }
 }
@@ -483,6 +506,24 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
     contents->FlushBackForwardCache(
         env, static_cast<int>(content::BackForwardCache::NotRestoredReason::
                                   kWebViewSettingsChanged));
+  }
+
+  if (!in_update_everything_locked_) {
+    // The setting was explicitly updated, since this is not part of the
+    // UpdateEverythingLocked call. Register a synthetic field trial so that
+    // even if we do experiments that are not run via Finch, we can still
+    // identify the "BFCache enabled" vs "BFCache disabled" groups for UMA and
+    // crash comparison. Note that we only register when the setting was
+    // explicitly updated, to exclude cases that are not part of any experiment
+    // groups at all (e.g. when we're on a version of the WebView embedder that
+    // doesn't have the experiment at all).
+    static constexpr char kBackForwardCacheTrial[] =
+        "WebViewBackForwardCacheSynthetic";
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        AwMetricsServiceClient::GetInstance()->GetMetricsService(),
+        kBackForwardCacheTrial,
+        bfcache_enabled_in_java_settings_ ? "Enabled" : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kNextLog);
   }
 }
 
