@@ -1325,15 +1325,15 @@ Called by update_protocol_commands_enum.py.-->
 
 <enum name="DevToolsLegacyResourceTypeFilterItemSelected">
   <int value="0" label="All"/>
-  <int value="1" label="Documents"/>
-  <int value="2" label="Scripts"/>
-  <int value="3" label="XHR and Fetch"/>
-  <int value="4" label="Stylesheets"/>
-  <int value="5" label="Fonts"/>
-  <int value="6" label="Images"/>
+  <int value="1" label="Document"/>
+  <int value="2" label="JavaScript"/>
+  <int value="3" label="Fetch and XHR"/>
+  <int value="4" label="CSS"/>
+  <int value="5" label="Font"/>
+  <int value="6" label="Image"/>
   <int value="7" label="Media"/>
   <int value="8" label="Manifest"/>
-  <int value="9" label="WebSockets"/>
+  <int value="9" label="WebSocket"/>
   <int value="10" label="WebAssembly"/>
   <int value="11" label="Other"/>
 </enum>
@@ -1722,15 +1722,15 @@ Called by update_protocol_commands_enum.py.-->
 
 <enum name="DevToolsResourceTypeFilterItemSelected">
   <int value="0" label="All"/>
-  <int value="1" label="Documents"/>
-  <int value="2" label="Scripts"/>
-  <int value="3" label="XHR and Fetch"/>
-  <int value="4" label="Stylesheets"/>
-  <int value="5" label="Fonts"/>
-  <int value="6" label="Images"/>
+  <int value="1" label="Document"/>
+  <int value="2" label="JavaScript"/>
+  <int value="3" label="Fetch and XHR"/>
+  <int value="4" label="CSS"/>
+  <int value="5" label="Font"/>
+  <int value="6" label="Image"/>
   <int value="7" label="Media"/>
   <int value="8" label="Manifest"/>
-  <int value="9" label="WebSockets"/>
+  <int value="9" label="WebSocket"/>
   <int value="10" label="WebAssembly"/>
   <int value="11" label="Other"/>
 </enum>
