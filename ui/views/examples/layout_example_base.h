@@ -13,6 +13,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -40,7 +41,9 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // time the "Add" button is pressed. It also will display Textfield controls
   // when the mouse is pressed over the view. These Textfields allow the user to
   // interactively set each margin and the "flex" for the given view.
-  class ChildPanel : public View, public TextfieldController {
+  class ChildPanel : public View,
+                     public TextfieldController,
+                     public LayoutDelegate {
     METADATA_HEADER(ChildPanel, View)
 
    public:
@@ -50,8 +53,11 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
     ~ChildPanel() override;
 
     // View:
-    void Layout(PassKey) override;
     bool OnMousePressed(const ui::MouseEvent& event) override;
+
+    // Overridden from LayoutDelegate:
+    ProposedLayout CalculateProposedLayout(
+        const SizeBounds& size_bounds) const override;
 
     void SetSelected(bool value);
     bool selected() const { return selected_; }

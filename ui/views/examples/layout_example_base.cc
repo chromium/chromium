@@ -102,39 +102,63 @@ LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
   margin_.bottom = CreateTextfield(u"Bottom margin");
   flex_ = CreateTextfield(u"Flex");
   flex_->SetText(std::u16string());
+  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 }
 
 LayoutExampleBase::ChildPanel::~ChildPanel() = default;
-
-void LayoutExampleBase::ChildPanel::Layout(PassKey) {
-  constexpr int kSpacing = 2;
-  if (selected_) {
-    const gfx::Rect client = GetContentsBounds();
-    margin_.top->SizeToPreferredSize();
-    margin_.top->SetPosition(
-        gfx::Point((client.width() - margin_.top->width()) / 2, kSpacing));
-    margin_.left->SizeToPreferredSize();
-    margin_.left->SetPosition(
-        gfx::Point(kSpacing, (client.height() - margin_.left->height()) / 2));
-    margin_.bottom->SizeToPreferredSize();
-    margin_.bottom->SetPosition(
-        gfx::Point((client.width() - margin_.bottom->width()) / 2,
-                   client.height() - margin_.bottom->height() - kSpacing));
-    margin_.right->SizeToPreferredSize();
-    margin_.right->SetPosition(
-        gfx::Point(client.width() - margin_.right->width() - kSpacing,
-                   (client.height() - margin_.right->height()) / 2));
-    flex_->SizeToPreferredSize();
-    flex_->SetPosition(gfx::Point((client.width() - flex_->width()) / 2,
-                                  (client.height() - flex_->height()) / 2));
-  }
-}
 
 bool LayoutExampleBase::ChildPanel::OnMousePressed(
     const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton())
     SetSelected(true);
   return true;
+}
+
+ProposedLayout LayoutExampleBase::ChildPanel::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layout;
+  if (!size_bounds.is_fully_bounded()) {
+    layout.host_size = gfx::Size();
+    return layout;
+  } else {
+    layout.host_size =
+        gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  }
+
+  constexpr int kSpacing = 2;
+  if (selected_) {
+    gfx::Size preferred_size = margin_.top->GetPreferredSize({});
+    layout.child_layouts.emplace_back(
+        margin_.top.get(), margin_.top->GetVisible(),
+        gfx::Rect((layout.host_size.width() - preferred_size.width()) / 2,
+                  kSpacing, preferred_size.width(), preferred_size.height()));
+    preferred_size = margin_.left->GetPreferredSize({});
+    layout.child_layouts.emplace_back(
+        margin_.left.get(), margin_.left->GetVisible(),
+        gfx::Rect(kSpacing,
+                  (layout.host_size.height() - preferred_size.height()) / 2,
+                  preferred_size.width(), preferred_size.height()));
+    preferred_size = margin_.bottom->GetPreferredSize({});
+    layout.child_layouts.emplace_back(
+        margin_.bottom.get(), margin_.bottom->GetVisible(),
+        gfx::Rect(
+            (layout.host_size.width() - preferred_size.width()) / 2,
+            layout.host_size.height() - preferred_size.height() - kSpacing,
+            preferred_size.width(), preferred_size.height()));
+    preferred_size = margin_.right->GetPreferredSize({});
+    layout.child_layouts.emplace_back(
+        margin_.right.get(), margin_.right->GetVisible(),
+        gfx::Rect(layout.host_size.width() - preferred_size.width() - kSpacing,
+                  (layout.host_size.height() - preferred_size.height()) / 2,
+                  preferred_size.width(), preferred_size.height()));
+    preferred_size = flex_->GetPreferredSize({});
+    layout.child_layouts.emplace_back(
+        flex_.get(), flex_->GetVisible(),
+        gfx::Rect((layout.host_size.width() - preferred_size.width()) / 2,
+                  (layout.host_size.height() - preferred_size.height()) / 2,
+                  preferred_size.width(), preferred_size.height()));
+  }
+  return layout;
 }
 
 void LayoutExampleBase::ChildPanel::SetSelected(bool value) {

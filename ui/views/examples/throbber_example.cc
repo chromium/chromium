@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
@@ -19,13 +20,14 @@ namespace views::examples {
 
 namespace {
 
-class ThrobberView : public View {
+class ThrobberView : public View, public LayoutDelegate {
   METADATA_HEADER(ThrobberView, View)
 
  public:
   ThrobberView() {
     throbber_ = AddChildView(std::make_unique<Throbber>());
     throbber_->Start();
+    SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
   }
 
   ThrobberView(const ThrobberView&) = delete;
@@ -38,11 +40,23 @@ class ThrobberView : public View {
                      available_size.height().value_or(height()));
   }
 
-  void Layout(PassKey) override {
-    int diameter = 16;
-    throbber_->SetBounds((width() - diameter) / 2, (height() - diameter) / 2,
-                         diameter, diameter);
-    SizeToPreferredSize();
+  // Overridden from LayoutDelegate:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override {
+    constexpr int kDiameter = 16;
+    ProposedLayout layout;
+    if (!size_bounds.is_fully_bounded()) {
+      layout.host_size = GetPreferredSize();
+    } else {
+      layout.host_size =
+          gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+    }
+    layout.child_layouts.emplace_back(
+        throbber_.get(), throbber_->GetVisible(),
+        gfx::Rect((layout.host_size.width() - kDiameter) / 2,
+                  (layout.host_size.height() - kDiameter) / 2, kDiameter,
+                  kDiameter));
+    return layout;
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
