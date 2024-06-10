@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -13,6 +16,7 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
@@ -42,6 +46,13 @@ using testing::AnyNumber;
 using testing::Mock;
 using testing::NiceMock;
 
+namespace {
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    web::BrowserState* browser_state) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+}  // namespace
+
 class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  public:
   DefaultBrowserPromoSceneAgentTest() : PlatformTest() {}
@@ -56,6 +67,9 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     browser_state_ = builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -79,6 +93,10 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     while (app_state_.initStage < InitStageFinal) {
       [app_state_ queueTransitionToNextInitStage];
     }
+
+    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            browser_state_.get()));
   }
 
   void TearDown() override {
@@ -179,6 +197,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   id dispatcher_;
   FakeStartupInformation* startup_information_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
 
 // Tests that DefaultBrowser was registered with the promo manager when user is
@@ -449,4 +468,32 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
       (base::Time::Now() - base::Days(50) + base::Minutes(10)).ToNSDate();
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, fifty_days_ago);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaExperiment) {
+  scoped_feature_list_.InitAndEnableFeature(
+      feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
+
+  // FET shouldn't be notified if the experiment has just been started.
+  EXPECT_CALL(*mock_tracker_,
+              NotifyEvent(feature_engagement::events::
+                              kDefaultBrowserPromoTriggerCriteriaConditionsMet))
+      .Times(0);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(mock_tracker_);
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // FET should be notified because it has been 21 days since the experiment
+  // started.
+  NSDate* over_twenty_one_days_ago =
+      (base::Time::Now() - base::Days(21) - base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kTimestampTriggerCriteriaExperimentStarted,
+                             over_twenty_one_days_ago);
+  EXPECT_CALL(
+      *mock_tracker_,
+      NotifyEvent(feature_engagement::events::
+                      kDefaultBrowserPromoTriggerCriteriaConditionsMet));
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(mock_tracker_);
+  scene_state_.activationLevel = SceneActivationLevelBackground;
 }

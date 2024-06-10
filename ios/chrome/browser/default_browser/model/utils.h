@@ -139,6 +139,10 @@ extern NSString* const kGenericPromoInteractionCount;
 // promo has been displayed.
 extern NSString* const kTailoredPromoInteractionCount;
 
+// Key in storage containing the timestamp of when trigger criteria experiment
+// started.
+extern NSString* const kTimestampTriggerCriteriaExperimentStarted;
+
 // Loads from NSUserDefaults the time of the non-expired events for the
 // given promo type.
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type);
@@ -177,6 +181,16 @@ bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled();
 // Returns true if client is in Default Browser promo trigger criteria
 // experiment.
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
+
+// Sets trigger criteria experiment start timestamp to now.
+void SetTriggerCriteriaExperimentStartTimestamp();
+
+// Returns true if trigger criteria experiment has been started.
+bool HasTriggerCriteriaExperimentStarted();
+
+// Returns true if trigger criteria experiment has been started for at least 21
+// days.
+bool HasTriggerCriteriaExperimentStarted21days();
 
 // Returns true if the default browser promo generic tailored experiment is
 // enabled.

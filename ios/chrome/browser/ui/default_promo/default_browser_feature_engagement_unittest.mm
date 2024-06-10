@@ -397,6 +397,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
       {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
        feature_engagement::kDefaultBrowserTriggerCriteriaExperiment});
   std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+  tracker->NotifyEvent(feature_engagement::events::
+                           kDefaultBrowserPromoTriggerCriteriaConditionsMet);
 
   // Promo shouldn't trigger because the group preconditions are not satistfied.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(

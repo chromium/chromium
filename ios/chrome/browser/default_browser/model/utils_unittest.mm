@@ -1126,4 +1126,33 @@ TEST_F(DefaultBrowserUtilsTest, GetTailoredDefaultBrowserPromoTimestampTest) {
   EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
   EXPECT_NE(base::Time::UnixEpoch(), GetTailoredDefaultBrowserPromoTimestamp());
 }
+
+// Check trigger critera experiment help functions.
+TEST_F(DefaultBrowserUtilsTest, TestTriggerCriteriaHelpFunctions) {
+  EXPECT_FALSE(HasTriggerCriteriaExperimentStarted());
+  EXPECT_FALSE(HasTriggerCriteriaExperimentStarted21days());
+
+  SetTriggerCriteriaExperimentStartTimestamp();
+
+  // Experiment started but it hasn't been 21 days.
+  EXPECT_TRUE(HasTriggerCriteriaExperimentStarted());
+  EXPECT_FALSE(HasTriggerCriteriaExperimentStarted21days());
+
+  NSDate* under_twenty_one_days_ago =
+      (base::Time::Now() - base::Days(21) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kTimestampTriggerCriteriaExperimentStarted,
+                             under_twenty_one_days_ago);
+  // Experiment started but it hasn't been 21 days.
+  EXPECT_TRUE(HasTriggerCriteriaExperimentStarted());
+  EXPECT_FALSE(HasTriggerCriteriaExperimentStarted21days());
+
+  // After 21 days both should return true.
+  NSDate* over_twenty_one_days_ago =
+      (base::Time::Now() - base::Days(21) - base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kTimestampTriggerCriteriaExperimentStarted,
+                             over_twenty_one_days_ago);
+  EXPECT_TRUE(HasTriggerCriteriaExperimentStarted());
+  EXPECT_TRUE(HasTriggerCriteriaExperimentStarted21days());
+}
+
 }  // namespace

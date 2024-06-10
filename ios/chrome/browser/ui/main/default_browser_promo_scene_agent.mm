@@ -135,6 +135,29 @@
       feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
 }
 
+- (void)maybeSetTriggerCriteriaExperimentStartTimestamp {
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
+      !HasTriggerCriteriaExperimentStarted()) {
+    SetTriggerCriteriaExperimentStartTimestamp();
+  }
+}
+
+- (void)maybeNotifyFETTriggerCriteriaExperimentConditionMet {
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
+      HasTriggerCriteriaExperimentStarted21days()) {
+    Browser* browser =
+        self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    if (!browser || !browser->GetBrowserState()) {
+      return;
+    }
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            browser->GetBrowserState());
+    tracker->NotifyEvent(feature_engagement::events::
+                             kDefaultBrowserPromoTriggerCriteriaConditionsMet);
+  }
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -154,6 +177,8 @@
     [self updateGenericPromoRegistration];
 
     [self notifyFETSigninStatus];
+    [self maybeSetTriggerCriteriaExperimentStartTimestamp];
+    [self maybeNotifyFETTriggerCriteriaExperimentConditionMet];
   }
 }
 

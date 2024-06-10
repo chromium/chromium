@@ -430,6 +430,8 @@ NSString* const kPromoInterestEventMigrationDone =
     @"promo_interest_event_migration_done";
 NSString* const kPromoImpressionsMigrationDone =
     @"promo_impressions_migration_done";
+NSString* const kTimestampTriggerCriteriaExperimentStarted =
+    @"TimestampTriggerCriteriaExperimentStarted";
 
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
@@ -497,6 +499,22 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
   return base::FeatureList::IsEnabled(
       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
+}
+
+void SetTriggerCriteriaExperimentStartTimestamp() {
+  SetObjectIntoStorageForKey(kTimestampTriggerCriteriaExperimentStarted,
+                             [NSDate date]);
+}
+
+bool HasTriggerCriteriaExperimentStarted() {
+  NSDate* date = GetObjectFromStorageForKey<NSDate>(
+      kTimestampTriggerCriteriaExperimentStarted);
+  return date != nil;
+}
+
+bool HasTriggerCriteriaExperimentStarted21days() {
+  return HasRecordedEventForKeyMoreThanDelay(
+      kTimestampTriggerCriteriaExperimentStarted, base::Days(21));
 }
 
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {

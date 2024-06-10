@@ -296,6 +296,10 @@ extern const char kStaySafePromoTrigger[];
 // The tailored default browser promo group was triggered.
 extern const char kTailoredDefaultBrowserPromosGroupTrigger[];
 
+// The user has met the conditions for default browser trigger criteria
+// experiment.
+extern const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.
