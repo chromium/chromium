@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_device_orientation_permission_state.h"
+#include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -76,6 +78,8 @@ void DeviceOrientationController::DidAddEventListener(
     return;
 
   UseCounter::Count(GetWindow(), WebFeature::kDeviceOrientationSecureOrigin);
+  Dactyloscoper::RecordDirectSurface(
+      &GetWindow(), WebFeature::kDeviceOrientationSecureOrigin, String());
 
   if (!has_requested_permission_) {
     UseCounter::Count(
