@@ -10,6 +10,7 @@
 #include "ash/components/arc/compat_mode/arc_window_property_util.h"
 #include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 #include "ash/components/arc/compat_mode/metrics.h"
+#include "ash/components/arc/compat_mode/overlay_dialog.h"
 #include "ash/components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -25,6 +26,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/public/activation_client.h"
@@ -220,6 +222,16 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
 void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
                                                    const void* key,
                                                    intptr_t old) {
+  // TODO(b/344640055): Replace below simple fix.
+  // The overlay layer might be added before `chromeos::kIsGameKey` is set for
+  // splash screen dialog. Once `chromeos::kIsGameKey` is set to true, remove
+  // the overlay layer.
+  if (key == chromeos::kIsGameKey &&
+      window->GetProperty(chromeos::kIsGameKey)) {
+    OverlayDialog::CloseIfAny(window);
+    return;
+  }
+
   if (key != ash::kArcResizeLockTypeKey)
     return;
 
