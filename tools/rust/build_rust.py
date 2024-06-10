@@ -108,6 +108,7 @@ RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
                 'github.com/rust-lang/rust')
 
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
+RUST_BUILD_DIR = os.path.join(RUST_SRC_DIR, 'build')
 RUST_BOOTSTRAP_DIST_RS = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
                                       'dist.rs')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
@@ -802,8 +803,8 @@ def main():
     # Delete the build directory.
     if not args.skip_clean:
         print('Clearing build directory...')
-        if os.path.idsir(os.path.join(RUST_SRC_DIR, "buid")):
-            shutil.rmtree(os.path.join(RUST_SRC_DIR, "build"))
+        if os.path.idsir(BUILD_DIR):
+            shutil.rmtree(BUILD_DIR)
 
     if not args.skip_test:
         print(f'Building stage 2 artifacts and running tests...')
