@@ -65,10 +65,12 @@ class LensOverlayQueryController {
   // returning the response to the full image callback. Should be called
   // exactly once. Override these methods to stub out network requests for
   // testing.
-  virtual void StartQueryFlow(const SkBitmap& screenshot,
-                              std::optional<GURL> page_url,
-                              std::optional<std::string> page_title,
-                              float ui_scale_factor);
+  virtual void StartQueryFlow(
+      const SkBitmap& screenshot,
+      std::optional<GURL> page_url,
+      std::optional<std::string> page_title,
+      std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      float ui_scale_factor);
 
   // Clears the state and resets stored values.
   void EndQuery();
@@ -231,6 +233,10 @@ class LensOverlayQueryController {
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;
+
+  // Bounding boxes for significant regions identified in the original
+  // screenshot image.
+  std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
 
   // The UI Scaling Factor of the underlying page, if it has been passed in.
   // Else 0.

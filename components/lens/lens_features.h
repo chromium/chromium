@@ -427,6 +427,17 @@ extern double GetLensOverlaySelectTextOverRegionTriggerThreshold();
 // Api.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlayUseShimmerCanvas();
+
+// Minimum area (in device-independent pixels) for significant regions to send
+// with the screenshot.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlaySignificantRegionMinArea();
+
+// Maximum number of significant regions to send with the screenshot. If
+// negative, no maximum will be imposed.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayMaxSignificantRegions();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

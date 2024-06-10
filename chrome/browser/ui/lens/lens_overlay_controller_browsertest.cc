@@ -74,6 +74,7 @@
 namespace {
 
 constexpr char kDocumentWithNamedElement[] = "/select.html";
+constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 
 using State = LensOverlayController::State;
@@ -265,10 +266,12 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
                                    invocation_source,
                                    use_dark_mode) {}
 
-  void StartQueryFlow(const SkBitmap& screenshot,
-                      std::optional<GURL> page_url,
-                      std::optional<std::string> page_title,
-                      float ui_scale_factor) override {
+  void StartQueryFlow(
+      const SkBitmap& screenshot,
+      std::optional<GURL> page_url,
+      std::optional<std::string> page_title,
+      std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
     test_objects.push_back(kTestOverlayObject->Clone());
@@ -2358,6 +2361,49 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   const auto& received_theme =
       fake_controller->fake_overlay_page_.last_received_theme_.value();
   EXPECT_EQ(received_theme->primary, expected_theme->primary);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
+                       ViewportImageBoundingBoxes) {
+  WaitForPaint(kDocumentWithImage);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_screenshot_data_uri_.empty());
+
+  // Showing UI should change the state to screenshot and eventually to starting
+  // WebUI.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kStartingWebUI; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
+
+  auto& boxes = controller->GetSignificantRegionBoxesForTesting();
+  EXPECT_EQ(boxes.size(), 1UL);
+  EXPECT_GT(boxes[0]->box.x(), 0);
+  EXPECT_LT(boxes[0]->box.x(), 1);
+  EXPECT_GT(boxes[0]->box.y(), 0);
+  EXPECT_LT(boxes[0]->box.y(), 1);
+  EXPECT_GT(boxes[0]->box.width(), 0);
+  EXPECT_LT(boxes[0]->box.width(), 1);
+  EXPECT_GT(boxes[0]->box.height(), 0);
+  EXPECT_LT(boxes[0]->box.height(), 1);
+  EXPECT_EQ(boxes[0]->rotation, 0);
+  EXPECT_EQ(boxes[0]->coordinate_type,
+            lens::mojom::CenterRotatedBox_CoordinateType::kNormalized);
 }
 
 }  // namespace

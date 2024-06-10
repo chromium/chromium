@@ -177,11 +177,13 @@ void LensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
+    std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     float ui_scale_factor) {
   DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
   original_screenshot_ = screenshot;
   page_url_ = page_url;
   page_title_ = page_title;
+  significant_region_boxes_ = std::move(significant_region_boxes);
   ui_scale_factor_ = ui_scale_factor;
 
   PrepareAndFetchFullImageRequest();
@@ -191,14 +193,11 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   DCHECK(query_controller_state_ !=
          QueryControllerState::kAwaitingFullImageResponse);
   query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
-  base::ThreadPool::PostTask(
-      base::BindOnce(&DownscaleAndEncodeBitmap, original_screenshot_,
-                     ui_scale_factor_)
-          .Then(base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&LensOverlayQueryController::FetchFullImageRequest,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             request_id_generator_->GetNextRequestId()))));
+
+  lens::ImageData image_data =
+      DownscaleAndEncodeBitmap(original_screenshot_, ui_scale_factor_);
+  AddSignificantRegions(image_data, std::move(significant_region_boxes_));
+  FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data);
 }
 
 lens::LensOverlayClientContext

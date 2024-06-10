@@ -168,6 +168,12 @@ constexpr base::FeatureParam<double>
     kLensOverlaySelectTextOverRegionTriggerThreshold{
         &kLensOverlay, "select-text-over-region-trigger-threshold", 0.03};
 
+constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
+    &kLensOverlay, "significant-regions-min-area", 500};
+
+constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
+    &kLensOverlay, "max-significant-regions", 100};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -482,6 +488,14 @@ double GetLensOverlaySelectTextOverRegionTriggerThreshold() {
 
 bool GetLensOverlayUseShimmerCanvas() {
   return kLensOverlayUseShimmerCanvas.Get();
+}
+
+int GetLensOverlaySignificantRegionMinArea() {
+  return kLensOverlaySignificantRegionMinArea.Get();
+}
+
+int GetLensOverlayMaxSignificantRegions() {
+  return kLensOverlayMaxSignificantRegions.Get();
 }
 
 }  // namespace lens::features

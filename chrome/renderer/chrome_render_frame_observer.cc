@@ -523,6 +523,40 @@ void ChromeRenderFrameObserver::RequestBitmapForContextNodeWithBoundsDiagnostic(
   std::move(callback).Run(image, bounds);
 }
 
+void ChromeRenderFrameObserver::RequestBoundsForAllImagesDiagnostic(
+    RequestBoundsForAllImagesDiagnosticCallback callback) {
+  std::vector<blink::WebElement> image_elements;
+  std::vector<gfx::Rect> all_bounds;
+  const blink::WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
+  if (doc.IsNull() || doc.Body().IsNull()) {
+    return;
+  }
+  FindImageElements(doc.Body(), image_elements);
+
+  for (auto& element : image_elements) {
+    all_bounds.emplace_back(
+        render_frame()->ConvertViewportToWindow(element.BoundsInWidget()));
+  }
+  std::move(callback).Run(all_bounds);
+}
+
+// Depth-first search for recursively traversing DOM elements and pulling out
+// references for images.
+void ChromeRenderFrameObserver::FindImageElements(
+    blink::WebElement element,
+    std::vector<blink::WebElement>& images) {
+  if (element.ImageContents().isNull()) {
+    for (blink::WebNode child = element.FirstChild(); !child.IsNull();
+         child = child.NextSibling()) {
+      if (child.IsElementNode()) {
+        FindImageElements(child.To<blink::WebElement>(), images);
+      }
+    }
+  } else {
+    images.emplace_back(element);
+  }
+}
+
 void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // TODO(dglazkov): This code is clearly in the wrong place. Need

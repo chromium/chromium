@@ -220,6 +220,21 @@ lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image,
   return image_data;
 }
 
+void AddSignificantRegions(
+    lens::ImageData& image_data,
+    std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes) {
+  for (auto& bounding_box : significant_region_boxes) {
+    auto* region = image_data.add_significant_regions();
+    auto box = bounding_box->box;
+    region->mutable_bounding_box()->set_center_x(box.x());
+    region->mutable_bounding_box()->set_center_y(box.y());
+    region->mutable_bounding_box()->set_width(box.width());
+    region->mutable_bounding_box()->set_height(box.height());
+    region->mutable_bounding_box()->set_coordinate_type(
+        lens::CoordinateType::NORMALIZED);
+  }
+}
+
 std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     const SkBitmap& image,
     lens::mojom::CenterRotatedBoxPtr region,

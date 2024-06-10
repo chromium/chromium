@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "components/lens/lens_features.h"
+#include "lens_overlay_image_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
@@ -185,6 +186,26 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapWidthTooLarge) {
   ASSERT_EQ(kImageMaxWidth, image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeight / scale, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensOverlayImageHelperTest, AddSignificantRegions) {
+  lens::ImageData image_data;
+  std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes;
+  gfx::Rect view_bounds(100, 150, 200, 100);
+  gfx::Rect image_bounds(125, 25, 50, 50);
+  significant_region_boxes.emplace_back(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(view_bounds, view_bounds,
+                                                   image_bounds));
+
+  AddSignificantRegions(image_data, std::move(significant_region_boxes));
+
+  ASSERT_EQ(1, image_data.significant_regions_size());
+  ASSERT_EQ(0.75, image_data.significant_regions(0).bounding_box().center_x());
+  ASSERT_EQ(0.5, image_data.significant_regions(0).bounding_box().center_y());
+  ASSERT_EQ(0.25, image_data.significant_regions(0).bounding_box().width());
+  ASSERT_EQ(0.5, image_data.significant_regions(0).bounding_box().height());
+  ASSERT_EQ(lens::CoordinateType::NORMALIZED,
+            image_data.significant_regions(0).bounding_box().coordinate_type());
 }
 
 TEST_F(LensOverlayImageHelperTest,

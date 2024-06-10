@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -24,11 +25,13 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -375,6 +378,11 @@ class LensOverlayController : public LensSearchboxClient,
     return initialization_data_->currently_loaded_search_query_;
   }
 
+  const std::vector<lens::mojom::CenterRotatedBoxPtr>&
+  GetSignificantRegionBoxesForTesting() {
+    return initialization_data_->significant_region_boxes_;
+  }
+
   lens::LensPermissionBubbleController*
   GetLensPermissionBubbleControllerForTesting() {
     return permission_bubble_controller_.get();
@@ -411,6 +419,8 @@ class LensOverlayController : public LensSearchboxClient,
         lens::PaletteId color_palette,
         std::optional<GURL> page_url,
         std::optional<std::string> page_title,
+        std::vector<lens::mojom::CenterRotatedBoxPtr> significant_regions_ =
+            std::vector<lens::mojom::CenterRotatedBoxPtr>(),
         std::vector<lens::mojom::OverlayObjectPtr> objects =
             std::vector<lens::mojom::OverlayObjectPtr>(),
         lens::mojom::TextPtr text = lens::mojom::TextPtr(),
@@ -438,6 +448,9 @@ class LensOverlayController : public LensSearchboxClient,
 
     // The page title, if it is allowed to be shared.
     std::optional<std::string> page_title_;
+
+    // Bounding boxes for significant regions identified in the screenshot.
+    std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
 
     // The latest stored interaction response from the server.
     lens::proto::LensOverlayInteractionResponse interaction_response_;
@@ -476,12 +489,26 @@ class LensOverlayController : public LensSearchboxClient,
   // Takes a screenshot of the current viewport.
   void CaptureScreenshot();
 
+  // Fetches the bounding boxes of all images within the current viewport.
+  void FetchViewportImageBoundingBoxes(const SkBitmap& bitmap);
+
   // Called once a screenshot has been captured. This should trigger transition
   // to kOverlay. As this process is asynchronous, there are edge cases that can
   // result in multiple in-flight screenshot attempts. We record the
   // `attempt_id` for each attempt so we can ignore all but the most recent
   // attempt.
-  void DidCaptureScreenshot(int attempt_id, const SkBitmap& bitmap);
+  // `chrome_render_frame` is added to keep the InterfacePtr alive during the
+  // IPC call in FetchViewportImageBoundingBoxes().
+  void DidCaptureScreenshot(
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
+      int attempt_id,
+      const SkBitmap& bitmap,
+      const std::vector<gfx::Rect>& bounds);
+
+  // Adds bounding boxes to the initialization data.
+  void AddBoundingBoxesToInitializationData(
+      const std::vector<gfx::Rect>& bounds);
 
   // Called when the UI needs to create the overlay widget.
   void ShowOverlayWidget();
