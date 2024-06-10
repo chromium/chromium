@@ -16,7 +16,7 @@ inline constexpr char kScreenshotOnShutdownStatus[] =
     "Ash.Pine.ScreenshotOnShutdownStatus";
 inline constexpr char kDialogScreenshotVisibility[] =
     "Ash.Pine.DialogScreenshotVisibility";
-inline constexpr char kPineOnboardingHistogram[] =
+inline constexpr char kInformedRestoreOnboardingHistogram[] =
     "Ash.Pine.OnboardingDialog.TurnRestoreOn";
 
 // Enumeration of the status for taking the screenshot on shutdown.

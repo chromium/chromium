@@ -472,7 +472,7 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   // Verify initial histogram counts.
-  histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 0);
+  histogram_tester.ExpectTotalCount(kInformedRestoreOnboardingHistogram, 0);
 
   // Press "Accept". Test we increment `true`.
   auto* pine_controller = Shell::Get()->pine_controller();
@@ -480,7 +480,7 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   auto* dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
-  histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
+  histogram_tester.ExpectBucketCount(kInformedRestoreOnboardingHistogram,
                                      /*sample=*/true,
                                      /*expected_count=*/1);
   GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
@@ -491,13 +491,13 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetCancelButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
-  histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
+  histogram_tester.ExpectBucketCount(kInformedRestoreOnboardingHistogram,
                                      /*sample=*/false,
                                      /*expected_count=*/1);
   GetTestPrefService()->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
 
   // Verify total counts.
-  histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
+  histogram_tester.ExpectTotalCount(kInformedRestoreOnboardingHistogram, 2);
 
   // Show the onboarding dialog with 'Restore' on. Test we don't record.
   pine_controller->MaybeShowInformedRestoreOnboarding(
@@ -505,7 +505,7 @@ TEST_F(InformedRestoreTest, OnboardingMetrics) {
   dialog = InformedRestoreTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
-  histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
+  histogram_tester.ExpectTotalCount(kInformedRestoreOnboardingHistogram, 2);
 }
 
 // Tests that the metric which records the time between when the user clicks

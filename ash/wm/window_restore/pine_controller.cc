@@ -111,14 +111,17 @@ void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
   auto dialog =
       views::Builder<SystemDialogDelegateView>()
           .SetTitleText(l10n_util::GetStringUTF16(
-              restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_TITLE
-                         : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_TITLE))
+              restore_on
+                  ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_TITLE
+                  : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_TITLE))
           .SetDescription(l10n_util::GetStringUTF16(
-              restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_DESCRIPTION
-                         : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_DESCRIPTION))
+              restore_on
+                  ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_DESCRIPTION
+                  : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_DESCRIPTION))
           .SetAcceptButtonText(l10n_util::GetStringUTF16(
-              restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_ACCEPT
-                         : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_ACCEPT))
+              restore_on
+                  ? IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT
+                  : IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_ACCEPT))
           .SetAcceptCallback(
               base::BindOnce(&PineController::OnOnboardingAcceptPressed,
                              base::Unretained(this), restore_on))
@@ -136,7 +139,7 @@ void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
       views::Builder<views::ImageView>()
           .SetImage(
               ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-                  IDR_PINE_ONBOARDING_IMAGE))
+                  IDR_INFORMED_RESTORE_ONBOARDING_IMAGE))
           .Build());
   dialog->SetProperty(
       views::kFlexBehaviorKey,
@@ -147,8 +150,8 @@ void PineController::MaybeShowInformedRestoreOnboarding(bool restore_on) {
     // Cancel button.
     dialog->SetCancelButtonVisible(false);
   } else {
-    dialog->SetCancelButtonText(
-        l10n_util::GetStringUTF16(IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_CANCEL));
+    dialog->SetCancelButtonText(l10n_util::GetStringUTF16(
+        IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL));
     // `this` is guaranteed to outlive the dialog.
     dialog->SetCancelCallback(base::BindOnce(
         &PineController::OnOnboardingCancelPressed, base::Unretained(this)));
@@ -300,13 +303,14 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   }
 
   AnchoredNudgeData nudge_data(
-      pine::kSuggestionsNudgeId, NudgeCatalogName::kPineEducationNudge,
-      l10n_util::GetStringUTF16(IDS_ASH_PINE_EDUCATION_NUDGE));
+      pine::kSuggestionsNudgeId,
+      NudgeCatalogName::kInformedRestoreEducationNudge,
+      l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE));
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-              ? IDR_PINE_NUDGE_IMAGE_DM
-              : IDR_PINE_NUDGE_IMAGE_LM);
+              ? IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM
+              : IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM);
   nudge_data.fill_image_size = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
@@ -399,9 +403,9 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
 
   // Show toast letting users know the pref change will affect them next
   // session.
-  Shell::Get()->toast_manager()->Show(
-      ToastData(pine::kOnboardingToastId, ToastCatalogName::kPineOnboarding,
-                l10n_util::GetStringUTF16(IDS_ASH_PINE_ONBOARDING_TOAST)));
+  Shell::Get()->toast_manager()->Show(ToastData(
+      pine::kOnboardingToastId, ToastCatalogName::kInformedRestoreOnboarding,
+      l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_ONBOARDING_TOAST)));
 
   // We only record the action taken if the user had Restore off.
   RecordOnboardingAction(/*restore=*/true);

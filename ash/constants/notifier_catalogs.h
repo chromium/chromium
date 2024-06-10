@@ -239,7 +239,7 @@ enum class NudgeCatalogName {
   // [Deprecated] kWebsiteTelemetryReportingNudge = 26,
   kStandaloneWindowMigrationUx = 27,
   kFocusModeEndingMomentNudge = 28,
-  kPineEducationNudge = 29,
+  kInformedRestoreEducationNudge = 29,
   kGrowthCampaignNudge = 30,
   kSearchTopRowKeyPressed = 31,
   kSixPackRemappingPressed = 32,
@@ -303,8 +303,8 @@ enum class ToastCatalogName {
   kVideoConferenceTraySpeakOnMuteOptInConfirmation = 48,
   kAppNotClosable = 49,
   kGameDashboardEnterTablet = 50,
-  kPineOnboarding = 51,
-  kMaxValue = kPineOnboarding
+  kInformedRestoreOnboarding = 51,
+  kMaxValue = kInformedRestoreOnboarding
 };
 
 }  // namespace ash

@@ -8200,31 +8200,31 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO" translateable="false" desc="Text in the pine dialog's context menu. Gives users some information about the full restore setting.">
         Change will be applied next time when you sign in. You can also change settings in Settings > System preferences > On startup.
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_ON_TITLE" translateable="false" desc="Title of the onboarding message if the user had Restore set to Ask every time.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_TITLE" translateable="false" desc="Title of the onboarding message if the user had Restore set to Ask every time.">
         A start page personalized for you
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_ON_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore set to Ask every time.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore set to Ask every time.">
         Get started with options to resume your last opened windows and tabs along with personalized suggestions.
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_ON_ACCEPT" translateable="false" desc="Label of the accept button if the user had Restore set to Ask every time.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT" translateable="false" desc="Label of the accept button if the user had Restore set to Ask every time.">
       Continue
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_TITLE" translateable="false" desc="Title of the onboarding message if the user had Restore off.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_TITLE" translateable="false" desc="Title of the onboarding message if the user had Restore off.">
       Try a new start page personalized for you?
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore off.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore off.">
       Set your Restore options to "Ask every time" to see and resume your last opened windows along with personalized suggestions.
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_ACCEPT" translateable="false" desc="Label of the accept button if the user had Restore off.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_ACCEPT" translateable="false" desc="Label of the accept button if the user had Restore off.">
       Turn on restore
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_CANCEL" translateable="false" desc="Label of the cancel button if the user had Restore off.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL" translateable="false" desc="Label of the cancel button if the user had Restore off.">
       Keep restore off
       </message>
-      <message name="IDS_ASH_PINE_ONBOARDING_TOAST" translateable="false" desc="Label of the toast the user sees, if the user had Restore off and they clicked accept in the onboarding dialog.">
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_TOAST" translateable="false" desc="Label of the toast the user sees, if the user had Restore off and they clicked accept in the onboarding dialog.">
       Your windows and apps will be restored next time when you sign in
       </message>
-      <message name="IDS_ASH_PINE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
+      <message name="IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
         You can go back to Overview at anytime to get back to suggestions
       </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">

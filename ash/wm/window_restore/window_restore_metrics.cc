@@ -61,7 +61,7 @@ void RecordTimeToAction(base::TimeDelta duration, bool showing_listview) {
 }
 
 void RecordOnboardingAction(bool restore) {
-  base::UmaHistogramBoolean(kPineOnboardingHistogram, restore);
+  base::UmaHistogramBoolean(kInformedRestoreOnboardingHistogram, restore);
 }
 
 }  // namespace ash
