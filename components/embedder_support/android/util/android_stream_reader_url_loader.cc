@@ -264,21 +264,12 @@ void AndroidStreamReaderURLLoader::OnInputStreamOpened(
   input_stream_reader_wrapper_ = base::MakeRefCounted<InputStreamReaderWrapper>(
       std::move(input_stream), std::move(input_stream_reader));
 
-  if (base::FeatureList::IsEnabled(features::kInputStreamOptimizations) &&
-      !byte_range_.IsValid()) {
-    // If the byte range is invalid, this means there was no range header and
-    // the whole response is wanted. In this case, no blocking calls are made to
-    // the underlying input stream, so it should be safe to do this without
-    // posting to a background thread.
-    OnReaderSeekCompleted(input_stream_reader_wrapper_->Seek(byte_range_));
-  } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&InputStreamReaderWrapper::Seek,
-                       input_stream_reader_wrapper_, byte_range_),
-        base::BindOnce(&AndroidStreamReaderURLLoader::OnReaderSeekCompleted,
-                       weak_factory_.GetWeakPtr()));
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&InputStreamReaderWrapper::Seek,
+                     input_stream_reader_wrapper_, byte_range_),
+      base::BindOnce(&AndroidStreamReaderURLLoader::OnReaderSeekCompleted,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AndroidStreamReaderURLLoader::OnReaderSeekCompleted(int result) {

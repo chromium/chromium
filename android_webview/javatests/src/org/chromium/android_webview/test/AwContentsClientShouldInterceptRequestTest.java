@@ -24,12 +24,14 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.TestFileUtil;
@@ -684,6 +686,38 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(mAwContents));
         Assert.assertEquals(0, mWebServer.getRequestCount("/" + CommonResources.ABOUT_FILENAME));
         histogramExpectation.assertExpected();
+    }
+
+    // Regression test for b/345306067.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    // Disable this to make sure the cookie call hits the IO thread.
+    @CommandLineFlags.Add({"disable-features=NetworkServiceDedicatedThread"})
+    public void testGetCookieInAvailable() throws Throwable {
+        final String syncGetUrl = mWebServer.getResponseUrl("/intercept_me");
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
+
+        // This will intercept the call to `syncGetUrl` in `getHeaderValue()` below.
+        final String encoding = "UTF-8";
+        mShouldInterceptRequestHelper.setReturnValue(
+                new WebResourceResponseInfo(
+                        "text/html",
+                        encoding,
+                        new ByteArrayInputStream("foo".getBytes(encoding)) {
+                            @Override
+                            public synchronized int available() {
+                                new AwCookieManager().setCookie(aboutPageUrl, "foo");
+                                return super.available();
+                            }
+                        }));
+        Assert.assertEquals(
+                "3", getHeaderValue(mAwContents, mContentsClient, syncGetUrl, "Content-Length"));
+        Assert.assertEquals(1, mShouldInterceptRequestHelper.getRequestCountForUrl(syncGetUrl));
     }
 
     @Test
