@@ -14,11 +14,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.visited_url_ranking.ScoredURLUserAction;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -82,6 +84,7 @@ public class TabResumptionModuleMediator {
      */
     private class Session {
         private final TabResumptionDataProvider mDataProvider;
+        private MultiTabObserver mLocalTabClosureObserver;
 
         private boolean mIsAlive;
         private Handler mHandler;
@@ -105,6 +108,16 @@ public class TabResumptionModuleMediator {
                 @NonNull Runnable statusChangedCallback) {
             mDataProvider = dataProvider;
             mDataProvider.setStatusChangedCallback(statusChangedCallback);
+            mLocalTabClosureObserver =
+                    new MultiTabObserver() {
+                        @Override
+                        public void onClosingStateChanged(Tab tab, boolean closing) {
+                            if (closing) {
+                                mReloadSessionCallback.run();
+                            }
+                        }
+                    };
+
             mStrength = ResultStrength.TENTATIVE;
             mIsAlive = true;
         }
@@ -114,6 +127,7 @@ public class TabResumptionModuleMediator {
                 recordSeenActionForEntries(mBundle.entries);
             }
 
+            mLocalTabClosureObserver.destroy();
             mDataProvider.setStatusChangedCallback(null);
             mDataProvider.destroy();
             if (mHandler != null) {
@@ -308,6 +322,17 @@ public class TabResumptionModuleMediator {
                 ensureStabilityAndLogMetrics(
                         /* recordStabilityDelay= */ false, prevModuleShowConfig);
             }
+
+            if (mBundle != null) {
+                mLocalTabClosureObserver.clear();
+                for (SuggestionEntry entry : mBundle.entries) {
+                    if (entry.isLocalTab()) {
+                        Tab tab = mTabModel.getTabById(entry.localTabId);
+                        assert tab != null; // isSuggestionValid() filtering ensures this.
+                        mLocalTabClosureObserver.add(tab);
+                    }
+                }
+            }
         }
     }
 
@@ -317,9 +342,11 @@ public class TabResumptionModuleMediator {
 
     private final Context mContext;
     private final ModuleDelegate mModuleDelegate;
+    private final TabModel mTabModel;
     private final PropertyModel mModel;
 
     protected final UrlImageProvider mUrlImageProvider;
+    protected final Runnable mReloadSessionCallback;
     protected final Runnable mStatusChangedCallback;
     protected final SuggestionClickCallback mSuggestionClickCallback;
     private final ShowHideHelper mShowHideHelper;
@@ -329,15 +356,19 @@ public class TabResumptionModuleMediator {
     public TabResumptionModuleMediator(
             @NonNull Context context,
             @NonNull ModuleDelegate moduleDelegate,
+            @NonNull TabModel tabModel,
             @NonNull PropertyModel model,
             @NonNull UrlImageProvider urlImageProvider,
+            @NonNull Runnable reloadSessionCallback,
             @NonNull Runnable statusChangedCallback,
             @NonNull Runnable seeMoreLinkClickCallback,
             @NonNull SuggestionClickCallback suggestionClickCallback) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
+        mTabModel = tabModel;
         mModel = model;
         mUrlImageProvider = urlImageProvider;
+        mReloadSessionCallback = reloadSessionCallback;
         mStatusChangedCallback = statusChangedCallback;
         mSuggestionClickCallback =
                 (SuggestionEntry entry) -> {
@@ -383,8 +414,12 @@ public class TabResumptionModuleMediator {
     /**
      * @return Whether the given suggestion is qualified to be shown in UI.
      */
-    private static boolean isSuggestionValid(SuggestionEntry entry) {
-        return (entry.isLocalTab()) || !TextUtils.isEmpty(entry.title);
+    private boolean isSuggestionValid(SuggestionEntry entry) {
+        if (entry.isLocalTab()) {
+            return mTabModel.getTabById(entry.localTabId) != null;
+        }
+
+        return !TextUtils.isEmpty(entry.title);
     }
 
     /**

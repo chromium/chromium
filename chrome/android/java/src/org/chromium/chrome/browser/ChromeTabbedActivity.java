@@ -2411,7 +2411,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
             TabResumptionModuleBuilder tabResumptionModuleBuilder =
                     new TabResumptionModuleBuilder(
-                            this, mTabModelProfileSupplier, getTabContentManagerSupplier());
+                            this,
+                            mTabModelProfileSupplier,
+                            getTabModelSelectorSupplier(),
+                            getTabContentManagerSupplier());
             moduleRegistry.registerModule(ModuleType.TAB_RESUMPTION, tabResumptionModuleBuilder);
         }
 

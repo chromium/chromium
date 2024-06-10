@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -34,6 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TabResumptionModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final boolean mUseSalientImage;
 
@@ -47,9 +50,11 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
     public TabResumptionModuleBuilder(
             @NonNull Context context,
             @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mUseSalientImage = TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue();
     }
@@ -69,6 +74,13 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             return false;
         }
 
+        assert mTabModelSelectorSupplier.hasValue();
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        TabModel tabModel =
+                tabModelSelector.getModel(
+                        /** incognito= */
+                        false);
+
         TabResumptionDataProviderFactory dataProviderFactory =
                 () -> makeDataProvider(profile, moduleDelegate);
 
@@ -82,7 +94,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
-                        mContext, moduleDelegate, dataProviderFactory, urlImageProvider);
+                        mContext, moduleDelegate, tabModel, dataProviderFactory, urlImageProvider);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
