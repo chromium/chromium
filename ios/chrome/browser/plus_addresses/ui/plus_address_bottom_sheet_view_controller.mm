@@ -350,7 +350,12 @@ UIImage* PlusAddressesLogo() {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   [cell setLeadingIconImage:DefaultSymbolTemplateWithPointSize(
-                                kMailFillSymbol, kPlusAddressSheetCellImageSize)
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+                                kGooglePlusAddressSymbol,
+#else
+                                kMailFillSymbol,
+#endif
+                                kPlusAddressSheetCellImageSize)
               withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
   if ([_delegate isRefreshEnabled]) {
     [cell setTrailingButtonImage:CustomSymbolTemplateWithPointSize(
