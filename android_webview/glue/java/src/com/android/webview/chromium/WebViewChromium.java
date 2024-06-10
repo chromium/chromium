@@ -2184,9 +2184,6 @@ class WebViewChromium
             recordWebViewApiCall(ApiCall.SET_WEBVIEW_CLIENT);
             mSharedWebViewChromium.setWebViewClient(client);
             mContentsClientAdapter.setWebViewClient(mSharedWebViewChromium.getWebViewClient());
-            if (client != null) {
-                ApiImplementationLogger.logWebViewClientImplementation(client);
-            }
         }
     }
 
@@ -2261,9 +2258,6 @@ class WebViewChromium
             mWebSettings.getAwSettings().setFullscreenSupported(doesSupportFullscreen(client));
             mSharedWebViewChromium.setWebChromeClient(client);
             mContentsClientAdapter.setWebChromeClient(mSharedWebViewChromium.getWebChromeClient());
-            if (client != null) {
-                ApiImplementationLogger.logWebChromeClientImplementation(client);
-            }
         }
     }
 
