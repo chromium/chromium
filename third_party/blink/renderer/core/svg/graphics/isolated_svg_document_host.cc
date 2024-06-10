@@ -230,9 +230,9 @@ void IsolatedSVGDocumentHost::LoadCompleted() {
       // Document::ImplicitClose(), we defer AsyncLoadCompleted() to avoid
       // potential bugs and timing dependencies around ImplicitClose() and
       // to make LoadEventFinished() true when AsyncLoadCompleted() is called.
-      GetFrame()
-          ->GetTaskRunner(TaskType::kInternalLoading)
-          ->PostTask(FROM_HERE, std::move(async_load_callback_));
+      async_load_task_handle_ = PostCancellableTask(
+          *GetFrame()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
+          std::move(async_load_callback_));
       break;
 
     case kNotStarted:
@@ -253,6 +253,9 @@ void IsolatedSVGDocumentHost::Shutdown() {
   // Sever the link from the frame client back to us to prevent any pending
   // loads from completing.
   frame_client_->ClearHost();
+
+  // Cancel any in-flight async load task.
+  async_load_task_handle_.Cancel();
 
   // It is safe to allow UA events within this scope, because event
   // dispatching inside the isolated document doesn't trigger JavaScript
