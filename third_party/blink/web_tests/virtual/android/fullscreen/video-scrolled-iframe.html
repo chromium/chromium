@@ -9,7 +9,7 @@
     window.onmessage = function(messageEvent) {
         if (!initialized) {
              window.scrollTo(0, 100);
-            // video has been loaded and messaged us.
+            // video frame has been painted.
             // Send click to iframe (not the center since this will hit the overlay play button).
             iframe = document.getElementById("frame");
             x = iframe.offsetLeft + 10;
@@ -27,11 +27,9 @@
             // The video has been fullscreened.
             consoleWrite(messageEvent.data);
             fullscreened = true;
+            endTest();
             return;
         }
-
-        // A third message is received when the video has painted a frame.
-        endTest();
     }
 </script>
 <iframe id="frame" src="../../../fullscreen/resources/video.html" width="320" height="240" allowfullscreen></iframe>

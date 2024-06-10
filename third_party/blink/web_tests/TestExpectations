@@ -3950,13 +3950,8 @@ crbug.com/908347 media/autoplay/webaudio-audio-context-resume.html [ Failure Pas
 crbug.com/911515 [ Mac ] transforms/shadows.html [ Failure Pass ]
 crbug.com/911782 [ Mac ] paint/invalidation/forms/submit-focus-by-mouse-then-keydown.html [ Failure Pass ]
 
-# Sheriff 2018-12-06
-crbug.com/912793 crbug.com/899087 virtual/android/fullscreen/full-screen-iframe-allowed-video.html [ Crash Failure Pass Timeout ]
-
 # Sheriff 2018-12-13
 crbug.com/910452 media/controls/buttons-after-reset.html [ Failure Pass ]
-
-
 
 # Sheriff 2019-01-07
 crbug.com/919587 [ Linux ] virtual/threaded/fast/idle-callback/idle_periods.html [ Failure Pass ]
@@ -4513,7 +4508,6 @@ crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables
 
 #Sheriff 2020-11-24
 crbug.com/1087242 crbug.com/1271141 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Timeout ]
-crbug.com/1149771 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Timeout ]
 crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Timeout ]
 
 #Sheriff 2020-11-26
@@ -4914,9 +4908,6 @@ crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origi
 # We want to make fieldsets not disableable due to crbug.com/1422096 and crbug.com/1422547
 # which breaks this exhaustive test, but it will be updated after whatwg/html resolution.
 crbug.com/588760 [ Release Win ] external/wpt/html/semantics/disabled-elements/event-propagate-disabled.tentative.html [ Failure ]
-
-# Sheriff 2021-06-15
-crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass Timeout ]
 
 # Sheriff
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Crash Failure Pass Timeout ]
