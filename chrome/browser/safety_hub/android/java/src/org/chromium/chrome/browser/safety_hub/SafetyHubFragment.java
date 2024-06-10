@@ -105,6 +105,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                        .with(
+                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
+                                () ->
+                                        mSettingsLauncher.launchSettingsActivity(
+                                                getContext(), SafetyHubNotificationsFragment.class))
                         .build();
 
         PropertyModelChangeProcessor.create(

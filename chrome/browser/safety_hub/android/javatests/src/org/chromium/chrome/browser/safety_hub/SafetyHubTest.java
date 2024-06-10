@@ -75,6 +75,10 @@ public final class SafetyHubTest {
             new SettingsActivityTestRule<>(SafetyHubPermissionsFragment.class);
 
     @Rule
+    public SettingsActivityTestRule<SafetyHubNotificationsFragment> mNotificationsFragmentTestRule =
+            new SettingsActivityTestRule<>(SafetyHubNotificationsFragment.class);
+
+    @Rule
     public SettingsActivityTestRule<SafetyHubFragment> mSafetyHubFragmentTestRule =
             new SettingsActivityTestRule<>(SafetyHubFragment.class);
 
@@ -105,6 +109,16 @@ public final class SafetyHubTest {
         mRenderTestRule.render(
                 settingsActivity.findViewById(android.R.id.content).getRootView(),
                 "permissions_subpage");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testNotificationsSubpageAppearance() throws IOException {
+        SettingsActivity settingsActivity = mPermissionsFragmentTestRule.startSettingsActivity();
+        mRenderTestRule.render(
+                settingsActivity.findViewById(android.R.id.content).getRootView(),
+                "notifications_subpage");
     }
 
     @Test

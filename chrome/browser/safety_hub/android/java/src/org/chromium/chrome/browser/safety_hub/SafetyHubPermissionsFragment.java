@@ -5,69 +5,31 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.ui.widget.ButtonCompat;
 
-public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
+/**
+ * Safety Hub subpage that displays a list of all revoked permissions alongside their supported
+ * actions.
+ */
+public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
         implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
-    private static final String PERMISSIONS_LIST_PREFERENCE = "permissions_list";
-
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private LargeIconBridge mLargeIconBridge;
-    private PreferenceCategory mPermissionsListCategory;
-    private ButtonCompat mBottomButton;
     private boolean mPermissionsRevocationConfirmed;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
-        SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_permissions_preferences);
-        getActivity().setTitle(R.string.safety_hub_permissions_page_title);
+        super.onCreatePreferences(bundle, s);
 
         mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mUnusedSitePermissionsBridge.addObserver(this);
-        mPermissionsListCategory = findPreference(PERMISSIONS_LIST_PREFERENCE);
-    }
-
-    @NonNull
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        LinearLayout view =
-                (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
-        LinearLayout bottomView =
-                (LinearLayout) inflater.inflate(R.layout.safety_hub_bottom_elements, view, false);
-        mBottomButton = bottomView.findViewById(R.id.safety_hub_permissions_button);
-        mBottomButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mPermissionsRevocationConfirmed = true;
-                        getActivity().finish();
-                    }
-                });
-        view.addView(bottomView);
-        return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updatePreferenceList();
     }
 
     @Override
@@ -127,11 +89,12 @@ public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
         updatePreferenceList();
     }
 
-    private void updatePreferenceList() {
+    @Override
+    protected void updatePreferenceList() {
         if (mLargeIconBridge == null) {
             mLargeIconBridge = new LargeIconBridge(getProfile());
         }
-        mPermissionsListCategory.removeAll();
+        mPreferenceList.removeAll();
 
         PermissionsData[] permissionsDataList =
                 mUnusedSitePermissionsBridge.getRevokedPermissions();
@@ -140,7 +103,23 @@ public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
                     new SafetyHubPermissionsPreference(
                             getContext(), permissionsData, mLargeIconBridge);
             preference.setOnPreferenceClickListener(this);
-            mPermissionsListCategory.addPreference(preference);
+            mPreferenceList.addPreference(preference);
         }
+    }
+
+    @Override
+    protected int getTitleId() {
+        return R.string.safety_hub_permissions_page_title;
+    }
+
+    @Override
+    protected int getHeaderId() {
+        return R.string.safety_hub_permissions_page_header;
+    }
+
+    @Override
+    protected void onBottomButtonClicked() {
+        mPermissionsRevocationConfirmed = true;
+        getActivity().finish();
     }
 }

@@ -9,11 +9,11 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:summary="@string/safety_hub_permissions_page_header"
+        android:key="header"
         app:allowDividerBelow="false" />
 
     <PreferenceCategory
-        android:key="permissions_list"
+        android:key="preference_list"
         android:title="@string/page_info_permissions_title"/>
 
 </PreferenceScreen>

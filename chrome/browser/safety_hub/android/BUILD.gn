@@ -28,8 +28,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
   ]
   deps = [
@@ -179,8 +181,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/safety_hub_bottom_elements.xml",
     "java/res/layout/safety_hub_button_widget.xml",
-    "java/res/xml/safety_hub_permissions_preferences.xml",
     "java/res/xml/safety_hub_preferences.xml",
+    "java/res/xml/safety_hub_subpage_preferences.xml",
   ]
   deps = [
     "//chrome/android:chrome_app_java_resources",

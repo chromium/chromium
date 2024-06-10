@@ -1694,6 +1694,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_TITLE" translateable="false">
         {NUM_SITES, plural, =1 {1 site recently sent a lot of notifications} other {# sites recently sent a lot of notifications}}
       </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_TITLE" translateable="false">
+        Review notifications
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_HEADER" translateable="false">
+        You can review sites that send a lot of notifications and stop them from sending more in the future
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
