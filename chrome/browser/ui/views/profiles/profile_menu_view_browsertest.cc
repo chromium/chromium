@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -80,6 +81,8 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
@@ -1600,6 +1603,82 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
   RunTest();
 }
+
+// The kHideGuestModeForSupervisedUsers does not exist on Lacros, as Guest mode
+// hiding for supervised users is inherited from OS-level signals.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_GuestProfileButtonAvailable_SignedInNotSupervised[] = {
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+        ProfileMenuViewBase::ActionableItem::kAddressesButton,
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_GuestProfileButtonAvailable_SignedInNotSupervised,
+    ProfileMenuClickTest_GuestProfileButtonAvailable_SignedInNotSupervised,
+    /*enabled_features=*/{supervised_user::kHideGuestModeForSupervisedUsers},
+    /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop}) {
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "adult@gmail.com", signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account_info, identity_manager(),
+      /*is_subject_to_parental_controls=*/false);
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+
+  // Check setup.
+  ASSERT_EQ(account_info.account_id, identity_manager()->GetPrimaryAccountId(
+                                         signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(profiles::IsGuestModeEnabled(*GetProfile()));
+
+  RunTest();
+}
+
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised[] = {
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+        ProfileMenuViewBase::ActionableItem::kAddressesButton,
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The kGuestProfileButton entry is not present.
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised,
+    ProfileMenuClickTest_GuestProfileButtonNotAvailable_SignedInSupervised,
+    /*enabled_features=*/{supervised_user::kHideGuestModeForSupervisedUsers},
+    /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop}) {
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "child@gmail.com", signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account_info, identity_manager(),
+      /*is_subject_to_parental_controls=*/true);
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+
+  // Check setup.
+  ASSERT_EQ(account_info.account_id, identity_manager()->GetPrimaryAccountId(
+                                         signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(profiles::IsGuestModeEnabled(*GetProfile()));
+
+  RunTest();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // List of actionable items in the correct order as they appear in the menu.

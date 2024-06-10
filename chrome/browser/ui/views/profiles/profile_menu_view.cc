@@ -272,7 +272,7 @@ void ProfileMenuView::OnGuestProfileButtonClicked() {
   RecordClick(ActionableItem::kGuestProfileButton);
   if (!perform_menu_actions())
     return;
-  DCHECK(profiles::IsGuestModeEnabled());
+  DCHECK(profiles::IsGuestModeEnabled(*browser()->profile()));
   profiles::SwitchToGuestProfile();
 }
 
@@ -904,7 +904,7 @@ void ProfileMenuView::BuildAvailableProfiles() {
                         profile_entries.size() > 1);
 
   if (!browser()->profile()->IsGuestSession() &&
-      profiles::IsGuestModeEnabled() &&
+      profiles::IsGuestModeEnabled(*browser()->profile()) &&
       !web_app::AppBrowserController::IsWebApp(browser())) {
     AddAvailableProfile(
         profiles::GetGuestAvatar(),
