@@ -114,6 +114,118 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="errSecSuccess"/>
 </enum>
 
+<!-- Generated from macOS 14 SDK: <sys/errno.h> -->
+
+<enum name="MacErrno">
+  <int value="0" label="OK"/>
+  <int value="1" label="EPERM"/>
+  <int value="2" label="ENOENT"/>
+  <int value="3" label="ESRCH"/>
+  <int value="4" label="EINTR"/>
+  <int value="5" label="EIO"/>
+  <int value="6" label="ENXIO"/>
+  <int value="7" label="E2BIG"/>
+  <int value="8" label="ENOEXEC"/>
+  <int value="9" label="EBADF"/>
+  <int value="10" label="ECHILD"/>
+  <int value="11" label="EDEADLK"/>
+  <int value="12" label="ENOMEM"/>
+  <int value="13" label="EACCES"/>
+  <int value="14" label="EFAULT"/>
+  <int value="15" label="ENOTBLK"/>
+  <int value="16" label="EBUSY"/>
+  <int value="17" label="EEXIST"/>
+  <int value="18" label="EXDEV"/>
+  <int value="19" label="ENODEV"/>
+  <int value="20" label="ENOTDIR"/>
+  <int value="21" label="EISDIR"/>
+  <int value="22" label="EINVAL"/>
+  <int value="23" label="ENFILE"/>
+  <int value="24" label="EMFILE"/>
+  <int value="25" label="ENOTTY"/>
+  <int value="26" label="ETXTBSY"/>
+  <int value="27" label="EFBIG"/>
+  <int value="28" label="ENOSPC"/>
+  <int value="29" label="ESPIPE"/>
+  <int value="30" label="EROFS"/>
+  <int value="31" label="EMLINK"/>
+  <int value="32" label="EPIPE"/>
+  <int value="33" label="EDOM"/>
+  <int value="34" label="ERANGE"/>
+  <int value="35" label="EAGAIN"/>
+  <int value="36" label="EINPROGRESS"/>
+  <int value="37" label="EALREADY"/>
+  <int value="38" label="ENOTSOCK"/>
+  <int value="39" label="EDESTADDRREQ"/>
+  <int value="40" label="EMSGSIZE"/>
+  <int value="41" label="EPROTOTYPE"/>
+  <int value="42" label="ENOPROTOOPT"/>
+  <int value="43" label="EPROTONOSUPPORT"/>
+  <int value="44" label="ESOCKTNOSUPPORT"/>
+  <int value="45" label="ENOTSUP"/>
+  <int value="46" label="EPFNOSUPPORT"/>
+  <int value="47" label="EAFNOSUPPORT"/>
+  <int value="48" label="EADDRINUSE"/>
+  <int value="49" label="EADDRNOTAVAIL"/>
+  <int value="50" label="ENETDOWN"/>
+  <int value="51" label="ENETUNREACH"/>
+  <int value="52" label="ENETRESET"/>
+  <int value="53" label="ECONNABORTED"/>
+  <int value="54" label="ECONNRESET"/>
+  <int value="55" label="ENOBUFS"/>
+  <int value="56" label="EISCONN"/>
+  <int value="57" label="ENOTCONN"/>
+  <int value="58" label="ESHUTDOWN"/>
+  <int value="59" label="ETOOMANYREFS"/>
+  <int value="60" label="ETIMEDOUT"/>
+  <int value="61" label="ECONNREFUSED"/>
+  <int value="62" label="ELOOP"/>
+  <int value="63" label="ENAMETOOLONG"/>
+  <int value="64" label="EHOSTDOWN"/>
+  <int value="65" label="EHOSTUNREACH"/>
+  <int value="66" label="ENOTEMPTY"/>
+  <int value="67" label="EPROCLIM"/>
+  <int value="68" label="EUSERS"/>
+  <int value="69" label="EDQUOT"/>
+  <int value="70" label="ESTALE"/>
+  <int value="71" label="EREMOTE"/>
+  <int value="72" label="EBADRPC"/>
+  <int value="73" label="ERPCMISMATCH"/>
+  <int value="74" label="EPROGUNAVAIL"/>
+  <int value="75" label="EPROGMISMATCH"/>
+  <int value="76" label="EPROCUNAVAIL"/>
+  <int value="77" label="ENOLCK"/>
+  <int value="78" label="ENOSYS"/>
+  <int value="79" label="EFTYPE"/>
+  <int value="80" label="EAUTH"/>
+  <int value="81" label="ENEEDAUTH"/>
+  <int value="82" label="EPWROFF"/>
+  <int value="83" label="EDEVERR"/>
+  <int value="84" label="EOVERFLOW"/>
+  <int value="85" label="EBADEXEC"/>
+  <int value="86" label="EBADARCH"/>
+  <int value="87" label="ESHLIBVERS"/>
+  <int value="88" label="EBADMACHO"/>
+  <int value="89" label="ECANCELED"/>
+  <int value="90" label="EIDRM"/>
+  <int value="91" label="ENOMSG"/>
+  <int value="92" label="EILSEQ"/>
+  <int value="93" label="ENOATTR"/>
+  <int value="94" label="EBADMSG"/>
+  <int value="95" label="EMULTIHOP"/>
+  <int value="96" label="ENODATA"/>
+  <int value="97" label="ENOLINK"/>
+  <int value="98" label="ENOSR"/>
+  <int value="99" label="ENOSTR"/>
+  <int value="100" label="EPROTO"/>
+  <int value="101" label="ETIME"/>
+  <int value="102" label="EOPNOTSUPP"/>
+  <int value="103" label="ENOPOLICY"/>
+  <int value="104" label="ENOTRECOVERABLE"/>
+  <int value="105" label="EOWNERDEAD"/>
+  <int value="106" label="EQFULL"/>
+</enum>
+
 <enum name="MacFileSystemType">
   <int value="0" label="HFS+"/>
   <int value="1" label="APFS"/>

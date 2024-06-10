@@ -22,7 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Mac.App.CodeSignCloneCreationTime" units="ms"
+<histogram name="Mac.AppClonefileError" enum="MacErrno"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The `errno` from the `clonefile` syscall. This histogram is emitted once at
+    browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
     expires_after="2025-03-06">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
@@ -39,6 +49,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The file system type where the running instance of Chrome is installed. This
     histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppHardLinkError" enum="MacErrno"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The `errno` from the `link` syscall. This histogram is emitted once at
+    browser startup.
   </summary>
 </histogram>
 

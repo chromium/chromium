@@ -305,6 +305,10 @@ base::FilePath GetAbsoluteUniqueCloneTempDirForSuffix(
       clone_temp_dir.Append(base::StrCat({kCodeSignClone, ".", suffix})));
 }
 
+void RecordHardLinkError(int error) {
+  base::UmaHistogramSparse("Mac.AppHardLinkError", error);
+}
+
 // Unlink the destination main executable and replace it with a hard link to
 // source main executable.
 bool HardLinkMainExecutable(const base::FilePath& source_path,
@@ -322,18 +326,23 @@ bool HardLinkMainExecutable(const base::FilePath& source_path,
       source_path.Append(kContentsMacOS).Append(main_executable_name);
   if (link(source_main_executable_path.value().c_str(),
            destination_main_executable_path.value().c_str()) != 0) {
+    RecordHardLinkError(errno);
     DPLOG(ERROR) << "link " << std::quoted(source_main_executable_path.value())
                  << ", "
                  << std::quoted(destination_main_executable_path.value());
     return false;
   }
+  RecordHardLinkError(0);
   return true;
+}
+
+void RecordClonefileError(int error) {
+  base::UmaHistogramSparse("Mac.AppClonefileError", error);
 }
 
 // Copy-on-write clones `source_path` to `destination_path`. The `source_path`
 // main executable is then hard linked within the the corresponding
 // `destination_path` directory.
-// TODO(https://crbug.com/343931233): Add `clonefile` and `link` result metrics.
 bool CloneApp(const base::FilePath& source_path,
               const base::FilePath& destination_path,
               const base::FilePath& main_executable_name) {
@@ -346,10 +355,12 @@ bool CloneApp(const base::FilePath& source_path,
   // FB13814551: clonefile directories
   if (clonefile(source_path.value().c_str(), destination_path.value().c_str(),
                 0) != 0) {
+    RecordClonefileError(errno);
     DPLOG(ERROR) << "clonefile " << std::quoted(source_path.value()) << ", "
                  << std::quoted(destination_path.value());
     return false;
   }
+  RecordClonefileError(0);
 
   // The top top level directory created by `clonefile` has the quarantine
   // attribute set. The rest of the directory tree does not have the attribute
@@ -489,7 +500,6 @@ CodeSignCloneManager::~CodeSignCloneManager() {
   // called, Chrome is in the process of shutting down and new background tasks
   // can not be posted. Instead of blocking, perform the unlinking from a child
   // helper process.
-  // TODO(https://crbug.com/343924839): Thread safely disarm cleanup.
   DeleteUniqueTempDirRecursivelyFromHelperProcess(unique_temp_dir_suffix_);
 }
 
@@ -551,7 +561,7 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
   }
 
   base::TimeDelta delta = base::TimeTicks::Now() - start_time;
-  base::UmaHistogramTimes("Mac.App.CodeSignCloneCreationTime", delta);
+  base::UmaHistogramTimes("Mac.AppCodeSignCloneCreationTime", delta);
 
   // Let `~CodeSignCloneManager` know it needs to clean up. `Clone` is run from
   // a posted task which is guaranteed to finish once it has started. It will
