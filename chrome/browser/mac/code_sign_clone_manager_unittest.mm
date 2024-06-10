@@ -107,6 +107,8 @@ TEST(CodeSignCloneManagerTest, Clone) {
   EXPECT_EQ(src_stat.st_ino, tmp_stat.st_ino);
   EXPECT_GT(src_stat.st_nlink, 1);
 
+  EXPECT_TRUE(clone_manager.get_needs_cleanup_for_testing());
+
   // The clone is typically cleaned up by a helper child process when
   // `clone_manager` goes out of scope. In the test environment that does not
   // happen so manually clean up.
@@ -140,6 +142,7 @@ TEST(CodeSignCloneManagerTest, InvalidDirhelperPath) {
 
   // Ensure there was a failure.
   EXPECT_TRUE(tmp_app_path.empty());
+  EXPECT_FALSE(clone_manager.get_needs_cleanup_for_testing());
 
   CodeSignCloneManager::ClearDirhelperPathForTesting();
 }
@@ -168,6 +171,7 @@ TEST(CodeSignCloneManagerTest, FailedHardLink) {
 
   // Ensure there was a failure.
   EXPECT_TRUE(tmp_app_path.empty());
+  EXPECT_FALSE(clone_manager.get_needs_cleanup_for_testing());
 }
 
 TEST(CodeSignCloneManagerTest, FailedClone) {
@@ -197,6 +201,7 @@ TEST(CodeSignCloneManagerTest, FailedClone) {
 
   // Ensure there was a failure.
   EXPECT_TRUE(tmp_app_path.empty());
+  EXPECT_FALSE(clone_manager.get_needs_cleanup_for_testing());
 }
 
 TEST(CodeSignCloneManagerTest, ChromeCodeSignCloneCleanupMain) {

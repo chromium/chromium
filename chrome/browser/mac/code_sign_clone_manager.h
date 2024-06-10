@@ -111,6 +111,7 @@ class CodeSignCloneManager {
   static void SetDirhelperPathForTesting(const base::FilePath& path);
   static void ClearDirhelperPathForTesting();
   static base::FilePath GetCloneTemporaryDirectoryForTesting();
+  bool get_needs_cleanup_for_testing() { return needs_cleanup_; }
 
  private:
   void Clone(const base::FilePath& src_path,
@@ -118,7 +119,7 @@ class CodeSignCloneManager {
              CloneCallback callback);
 
   std::string unique_temp_dir_suffix_;
-  bool is_clone_enabled_;
+  bool needs_cleanup_ = false;
   base::WeakPtrFactory<CodeSignCloneManager> weak_factory_{this};
 };
 

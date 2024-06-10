@@ -459,23 +459,29 @@ BASE_FEATURE(kMacAppCodeSignClone,
 CodeSignCloneManager::CodeSignCloneManager(
     const base::FilePath& src_path,
     const base::FilePath& main_executable_name,
-    CloneCallback callback)
-    : is_clone_enabled_(base::FeatureList::IsEnabled(kMacAppCodeSignClone)) {
-  if (!is_clone_enabled_) {
+    CloneCallback callback) {
+  if (!base::FeatureList::IsEnabled(kMacAppCodeSignClone)) {
     return;
   }
 
+  // Post a background task to perform the clone. If the task has not yet
+  // started and Chrome is shutdown, the `SKIP_ON_SHUTDOWN` behavior will drop
+  // the task. This is okay. If Chrome is shutting down, there is no need for a
+  // code-sign-clone. If the task does not run, `needs_cleanup_` will be `false`
+  // which will stop `~CodeSignCloneManager` from unnecessarily launching the
+  // cleanup helper. If the task does run, it is guaranteed to complete before
+  // `ThreadPoolInstance::Shutdown` returns, which is run before
+  // `~CodeSignCloneManager`. It is safe to read `needs_cleanup_` from
+  // `~CodeSignCloneManager` without any explicit synchronization.
   base::ThreadPool::PostTask(
       FROM_HERE,
-      // If Chrome is launched and immediately shut down, don't bother with
-      // creating the clone.
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&CodeSignCloneManager::Clone, weak_factory_.GetWeakPtr(),
                      src_path, main_executable_name, std::move(callback)));
 }
 
 CodeSignCloneManager::~CodeSignCloneManager() {
-  if (!is_clone_enabled_) {
+  if (!needs_cleanup_) {
     return;
   }
 
@@ -546,6 +552,13 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
 
   base::TimeDelta delta = base::TimeTicks::Now() - start_time;
   base::UmaHistogramTimes("Mac.App.CodeSignCloneCreationTime", delta);
+
+  // Let `~CodeSignCloneManager` know it needs to clean up. `Clone` is run from
+  // a posted task which is guaranteed to finish once it has started. It will
+  // block shutdown until complete. `ThreadPoolInstance::Shutdown` is run before
+  // `~CodeSignCloneManager`. `Clone` and ` ~CodeSignCloneManager` will never
+  // overlap, it is safe to set `needs_cleanup_` from this task.
+  needs_cleanup_ = true;
 
   std::move(callback).Run(clone_app_path);
 
