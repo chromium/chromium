@@ -154,6 +154,12 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     return Array.from(this.shadowRoot!.querySelectorAll('reading-list-item'));
   }
 
+  // Override `queryMatchingItem` from CrSelectableMixin.
+  override queryMatchingItem(selector: string) {
+    return this.shadowRoot!.querySelector<HTMLElement>(
+        `reading-list-item${selector}`);
+  }
+
   /**
    * Fetches the latest reading list entries from the browser.
    */

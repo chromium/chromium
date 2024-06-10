@@ -154,6 +154,11 @@ suite('cr-scrollable-mixin overrides', function() {
       return Array.from(this.shadowRoot!.querySelectorAll('a'));
     }
 
+    // Override `queryMatchingItem` from CrSelectableMixin.
+    override queryMatchingItem(selector: string) {
+      return this.shadowRoot!.querySelector<HTMLElement>(`a${selector}`);
+    }
+
     override connectedCallback() {
       super.connectedCallback();
       this.itemsChanged();

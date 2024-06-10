@@ -7,10 +7,8 @@ import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup
 
 /**
  * CrSelectableMixin maintains a collection of selectable elements. The
- * elements are queried from a <slot>'s assignedElements, and are identified
- * using a |selectable| CSS selector, if specified. dom-if, dom-repeat,
- * dom-bind, and template children are excluded regardless of the value of
- * |selectable|.
+ * elements are queried from the light DOM, and are identified using a
+ * |selectable| CSS selector, if specified.
  *
  * The mixin observes click events on its children, and selects an item when
  * clicked. Items can also be selected using the select* methods, or by
@@ -102,7 +100,8 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
 
       if (changedProperties.has('attrForSelected')) {
         if (this.selectedItem_) {
-          const value = this.valueForItem_(this.selectedItem_);
+          assert(this.attrForSelected);
+          const value = this.selectedItem_.getAttribute(this.attrForSelected);
           assert(value !== null);
           this.selected = value;
         }
@@ -158,18 +157,23 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     // Override this method in client code to modify this logic, for example to
     // grab children that don't reside in a <slot>.
     queryItems(): Element[] {
-      const elements = this.getSlot_().assignedElements();
-      const excluded = ['template', 'dom-bind', 'dom-if', 'dom-repeat'];
-      return elements.filter(el => {
-        if (excluded.includes(el.tagName)) {
-          return false;
-        }
-        return !this.selectable || el.matches(this.selectable);
-      });
+      const selectable = this.selectable === undefined ? '*' : this.selectable;
+      return Array.from(this.querySelectorAll(`:scope > ${selectable}`));
+    }
+
+    // If overriding queryItems(), override this method to return the list item
+    // element matching the CSS selector string |selector|.
+    queryMatchingItem(selector: string): HTMLElement|null {
+      const selectable = this.selectable || '*';
+      return this.querySelector<HTMLElement>(
+          `:scope > :is(${selectable})${selector}`);
     }
 
     private updateItems_() {
       this.items_ = this.queryItems();
+      this.items_.forEach(
+          (item, index) =>
+              item.setAttribute('data-selection-index', index.toString()));
     }
 
     get selectedItem(): Element|null {
@@ -210,7 +214,9 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
         return Number(value);
       }
 
-      return this.items_.findIndex(item => this.valueForItem_(item) === value);
+      const match =
+          this.queryMatchingItem(`[${this.attrForSelected}="${value}"]`);
+      return match ? Number(match.dataset['selectionIndex']) : -1;
     }
 
     private indexToValue_(index: number): string|number {
@@ -223,20 +229,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
         return index;
       }
 
-      const value = this.valueForItem_(item);
-      return value === null ? index : value;
-    }
-
-    private valueForItem_(item: Element|null): string|number|null {
-      if (!item || (!this.attrForSelected && !this.items_)) {
-        return null;
-      }
-      if (!this.attrForSelected) {
-        const index = this.items_.indexOf(item);
-        return index === -1 ? null : index;
-      }
-
-      return item.getAttribute(this.attrForSelected);
+      return item.getAttribute(this.attrForSelected) || index;
     }
 
     itemsChanged() {
@@ -282,4 +275,5 @@ export interface CrSelectableMixinInterface {
   // Methods to override to modify default behavior.
   observeItems(): void;
   queryItems(): Element[];
+  queryMatchingItem(selector: string): HTMLElement|null;
 }
