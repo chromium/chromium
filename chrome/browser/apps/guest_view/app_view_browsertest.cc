@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,7 @@
 #include "extensions/browser/guest_view/app_view/app_view_constants.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -267,4 +269,30 @@ IN_PROC_BROWSER_TEST_F(AppViewTest,
   EXPECT_FALSE(bad_app_obs.did_exit_normally());
   // Now ask the guest to continue embedding.
   ContinueEmbedding(guest_app, true);
+}
+
+// Load an AppView which loads a WebView with a text field. The embedding app
+// calls `focus()` on the AppView. The AppView calls `focus()` on the WebView.
+// This should be enough to focus the content of the WebView without further
+// user input like needing to click on the WebView.
+IN_PROC_BROWSER_TEST_F(AppViewTest, FocusWebViewInAppView) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testFocusWebViewInAppView", "app_view/shim", skeleton_app->id(),
+             NO_TEST_SERVER);
+
+  extensions::WebViewGuest* webview_guest = nullptr;
+  content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::RenderFrameHost* focused =
+        embedder_web_contents->GetFocusedFrame();
+    webview_guest = extensions::WebViewGuest::FromRenderFrameHost(focused);
+    return !!webview_guest;
+  })) << "Timeout waiting for webview focus";
+
+  content::SimulateKeyPress(embedder_web_contents,
+                            ui::DomKey::FromCharacter('F'), ui::DomCode::US_F,
+                            ui::VKEY_F, false, false, false, false);
+  EXPECT_TRUE(
+      content::ExecJs(webview_guest->GetGuestMainFrame(), "waitForInput();"));
 }
