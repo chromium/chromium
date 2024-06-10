@@ -85,15 +85,6 @@ void AffiliationPrefetcher::OnResultFromAllSourcesReceived(
     return;
   }
 
-  // If no calls to `RegisterSource` happened before
-  // `kInitializationDelayOnStartup`, don't do anything.
-  if (results.empty()) {
-    is_ready_ = true;
-    // TODO(b/328037758): Drop early return to support resetting the cache when
-    // no affiliations are requested.
-    return;
-  }
-
   std::vector<FacetURI> facets;
   for (const auto& result_per_source : results) {
     for (const FacetURI& facet_uri : result_per_source) {
@@ -110,6 +101,10 @@ void AffiliationPrefetcher::OnResultFromAllSourcesReceived(
 
 void AffiliationPrefetcher::Initialize() {
   if (pending_initializations_.empty()) {
+    // Reset the cache if no sources have been registered.
+    DCHECK(initialized_sources_.empty());
+    affiliation_service_->KeepPrefetchForFacets({});
+    affiliation_service_->TrimUnusedCache({});
     is_ready_ = true;
     return;
   }
