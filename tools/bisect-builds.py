@@ -1467,6 +1467,8 @@ def Bisect(context,
       min_str, max_str = 'bad', 'good'
     else:
       min_str, max_str = 'good', 'bad'
+    print('You have about %d more steps left.' %
+          ((maxrev - minrev).bit_length() - 1))
     print('Bisecting range [%s (%s), %s (%s)].' %
           (revlist[minrev], min_str, revlist[maxrev], max_str))
 
