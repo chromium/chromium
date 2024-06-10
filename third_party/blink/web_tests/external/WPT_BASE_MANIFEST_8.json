@@ -2561,6 +2561,17 @@
        {}
       ]
      ],
+     "initial-letter": {
+      "crashtests": {
+       "initial-letter-dynamic-crash.html": [
+        "f20f6733114c95f48f010462ec85ccae3a236e7b",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "inline-002-crash.html": [
       "a10eee9907f3ca27b3265452aeb19e2b9710b55d",
       [
@@ -130923,7 +130934,7 @@
       ]
      ],
      "empty-grid-within-flexbox.html": [
-      "1941800cb187428ebecf56cbbd2ca9d1bbdfd563",
+      "ee67486474a9e06e6418aa71e6a3d283ae9c5dbc",
       [
        null,
        [
@@ -218571,7 +218582,7 @@
       ]
      ],
      "box-sizing-007.html": [
-      "c51f4318db4ed1e37213078db89db09e110f42e2",
+      "8e3c5a632555785b59999bc631262dcaf37558b3",
       [
        null,
        [
@@ -218584,7 +218595,7 @@
       ]
      ],
      "box-sizing-008.html": [
-      "3e79e29bcdcf81a02a70edd602b29056ee5e0397",
+      "f44096038999a0d49a6770f9c61fab5d851d6b92",
       [
        null,
        [
@@ -218597,7 +218608,7 @@
       ]
      ],
      "box-sizing-009.html": [
-      "69d526d63d3557adbe3c78d1e83a9863b8c4816b",
+      "b13b64c0f838929e31ec501df105783a0ecec77b",
       [
        null,
        [
@@ -248968,7 +248979,7 @@
       ]
      ],
      "mongolian-orientation-002.html": [
-      "66dde36ac09fd0ac28369593c789124dd858417e",
+      "82dabab9c2fd8eef8c1a1ebb11ddc67afdbddac3",
       [
        null,
        [
@@ -488339,28 +488350,21 @@
     },
     "parts": {
      "basic-dom-part-declarative-brace-syntax-innerhtml.tentative.html": [
-      "58db5cd04ff3d6b211f0f84552203fa03aa61404",
+      "ba29136b5d4be9eed1df4196493d885e997b687b",
       [
        null,
        {}
       ]
      ],
      "basic-dom-part-declarative-brace-syntax.tentative.html": [
-      "001ac24a445d890ec47fbf9d81cb11ec10b2ffe4",
-      [
-       null,
-       {}
-      ]
-     ],
-     "basic-dom-part-declarative-pi-syntax.tentative.html": [
-      "f6460353949a9c4984dccacc36e54c05bad17f53",
+      "3a4370387373a364a8ac818aee6cbb0e97fe0c6d",
       [
        null,
        {}
       ]
      ],
      "basic-dom-part-objects.tentative.html": [
-      "d7834fe69b0118eac16a372dd7b9c14cdd57e575",
+      "f2199362c4d734b24d3f5edc4a2a0c8aec5ea32f",
       [
        null,
        {}
