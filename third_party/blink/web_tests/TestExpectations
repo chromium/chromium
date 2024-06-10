@@ -2570,6 +2570,17 @@ crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTra
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Skip Timeout ]
+[ Mac14 ] external/wpt/import-maps/bare-specifiers.sub.html [ Skip Timeout ]
+[ Mac14 ] external/wpt/xhr/access-control-basic-cors-safelisted-response-headers.htm [ Timeout ]
+[ Mac14 ] external/wpt/xhr/event-loadstart.any.html [ Timeout ]
+[ Mac14 ] external/wpt/xhr/send-data-blob.htm [ Timeout ]
+[ Mac14 ] external/wpt/xhr/send-usp.any.worker.html [ Timeout ]
+[ Mac14 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?22-22 [ Timeout ]
+[ Mac14 ] virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-lighting-no-light.tentative.html [ Failure Timeout ]
+[ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/concat.https.any.worker.html?cpu [ Skip Timeout ]
+[ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_unary.https.any.html?cpu [ Skip Timeout ]
+[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/345585682 external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
 crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
 crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
@@ -3499,6 +3510,7 @@ crbug.com/1097992 external/wpt/css/css-pseudo/marker-font-variant-numeric-normal
 crbug.com/1060007 external/wpt/css/css-pseudo/marker-text-combine-upright.html [ Failure ]
 
 crbug.com/1498015 [ Mac11 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
+crbug.com/1498015 [ Mac14 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
 # iframe tests time out if the request is blocked as mixed content.
