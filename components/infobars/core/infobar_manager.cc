@@ -10,22 +10,35 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobars_switches.h"
 #include "ui/gfx/switches.h"
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobars_switches.h"
+#endif
 
 namespace infobars {
 
 namespace {
 
-bool DisableInfoBars() {
-  const auto* const command_line = base::CommandLine::ForCurrentProcess();
-  // Infobars can only be disabled when Chrome is running in headless mode and
-  // in Chrome for Testing.
-  return command_line->HasSwitch(::switches::kDisableInfoBars) &&
-         (BUILDFLAG(CHROME_FOR_TESTING) ||
-          command_line->HasSwitch(::switches::kHeadless));
+bool ShouldEnableInfoBars() {
+  // In headless mode info bars are not visible and cause unexpected layout
+  // changes which are often very confusing for headless users.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kHeadless)) {
+    return false;
+  }
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Chrome for Testing users are allowed to disable info bars with a switch.
+  if (command_line->HasSwitch(switches::kDisableInfoBars)) {
+    return false;
+  }
+#endif
+
+  return true;
 }
 
 }  // namespace
@@ -123,7 +136,7 @@ void InfoBarManager::RemoveObserver(Observer* obs) {
   observer_list_.RemoveObserver(obs);
 }
 
-InfoBarManager::InfoBarManager() : infobars_enabled_(!DisableInfoBars()) {}
+InfoBarManager::InfoBarManager() : infobars_enabled_(ShouldEnableInfoBars()) {}
 
 InfoBarManager::~InfoBarManager() = default;
 
@@ -175,12 +188,19 @@ bool InfoBarManager::ShouldShowInfoBar(const InfoBar* infobar) const {
     return true;
   }
 
-  // Only buttonless infobars should be disabled. The ones with buttons are
-  // semantically message boxes and must be shown because certain functionality
-  // depends on them, see crbug.com/333945848 and crbug.com/341947684.
-  const auto* const delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
-  return delegate &&
-         delegate->GetButtons() != ConfirmInfoBarDelegate::BUTTON_NONE;
+  // Chrome for Testing can hide infobars that do not require confirmation using
+  // --disable-infobars command line switch.
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  ConfirmInfoBarDelegate* delegate =
+      infobar->delegate()->AsConfirmInfoBarDelegate();
+  if (delegate &&
+      delegate->GetButtons() != ConfirmInfoBarDelegate::BUTTON_NONE) {
+    return true;
+  }
+#endif
+
+  // Headless mode and non confirmational Chrome for Testing are not shown.
+  return false;
 }
 
 }  // namespace infobars

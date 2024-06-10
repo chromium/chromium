@@ -25,20 +25,17 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/clipboard/headless_clipboard.h"     // nogncheck
 #include "components/infobars/content/content_infobar_manager.h"  // nogncheck
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobars_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,6 +59,8 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+using testing::Ge;
+using testing::SizeIs;
 using views::Widget;
 
 namespace headless {
@@ -161,74 +160,17 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserWindowIsActive) {
   EXPECT_TRUE(browser()->window()->IsActive());
 }
 
-// Infobar tests -------------------------------------------------------------
-
-class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
- public:
-  TestInfoBarDelegate(const TestInfoBarDelegate&) = delete;
-  TestInfoBarDelegate& operator=(const TestInfoBarDelegate&) = delete;
-
-  static void Create(infobars::ContentInfoBarManager* infobar_manager,
-                     int buttons) {
-    infobar_manager->AddInfoBar(
-        CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
-            new TestInfoBarDelegate(buttons))));
-  }
-
-  // ConfirmInfoBarDelegate:
-  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
-    return TEST_INFOBAR;
-  }
-  std::u16string GetMessageText() const override {
-    return buttons_ ? u"BUTTON" : u"";
-  }
-  int GetButtons() const override { return buttons_; }
-
- private:
-  explicit TestInfoBarDelegate(int buttons) : buttons_(buttons) {}
-  ~TestInfoBarDelegate() override = default;
-
-  int buttons_;
-};
-
-class HeadlessModeInfobarBrowserTest
-    : public HeadlessModeBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  HeadlessModeInfobarBrowserTest() = default;
-  ~HeadlessModeInfobarBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
-    if (disable_infobars()) {
-      command_line->AppendSwitch(::switches::kDisableInfoBars);
-    }
-  }
-
-  bool disable_infobars() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         HeadlessModeInfobarBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(HeadlessModeInfobarBrowserTest, InfoBarsCanBeDisabled) {
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, NoInfoBarInHeadless) {
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   ASSERT_TRUE(infobar_manager);
-  ASSERT_THAT(infobar_manager->infobars(), testing::IsEmpty());
 
-  TestInfoBarDelegate::Create(infobar_manager,
-                              ConfirmInfoBarDelegate::BUTTON_NONE);
-  TestInfoBarDelegate::Create(infobar_manager,
-                              ConfirmInfoBarDelegate::BUTTON_OK);
+  PageInfoInfoBarDelegate::Create(infobar_manager);
 
-  // The infobar with a button should appear even if infobars are disabled.
-  EXPECT_THAT(infobar_manager->infobars(),
-              testing::SizeIs(disable_infobars() ? 1 : 2));
+  EXPECT_THAT(infobar_manager->infobars(), testing::IsEmpty());
 }
 
 // UserAgent tests -----------------------------------------------------------
