@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -123,6 +124,7 @@ class BoundSessionCookieRefreshServiceImpl
   // supported.
   BoundSessionCookieController* cookie_controller() const;
 
+  void StartRegistrationRequest();
   void OnRegistrationRequestComplete(
       std::optional<bound_session_credentials::BoundSessionParams>
           bound_session_params);
@@ -182,8 +184,9 @@ class BoundSessionCookieRefreshServiceImpl
   mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledHandler>
       renderer_request_throttled_handler_;
 
-  // There is only one active session registration at a time.
-  std::unique_ptr<BoundSessionRegistrationFetcher> active_registration_request_;
+  // Only one session registration is active at a time.
+  base::queue<std::unique_ptr<BoundSessionRegistrationFetcher>>
+      registration_requests_;
 
   base::ObserverList<BoundSessionCookieRefreshService::Observer> observers_;
 

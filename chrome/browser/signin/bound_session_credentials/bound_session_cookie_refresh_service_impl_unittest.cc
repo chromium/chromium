@@ -53,9 +53,13 @@ using testing::ElementsAreArray;
 using testing::Eq;
 using testing::Field;
 using testing::IsEmpty;
+using testing::IsFalse;
+using testing::IsNull;
+using testing::IsTrue;
 using testing::Not;
 using testing::NotNull;
 using testing::Property;
+using testing::ResultOf;
 using testing::UnorderedPointwise;
 
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
@@ -168,8 +172,11 @@ class FakeBoundSessionRegistrationFetcher
 
   // BoundSessionRegistrationFetcher:
   void Start(RegistrationCompleteCallback callback) override {
+    CHECK(callback);
     callback_ = std::move(callback);
   }
+
+  bool HasStarted() { return !!callback_; }
 
  private:
   BoundSessionRegistrationFetcherParam params_;
@@ -178,8 +185,8 @@ class FakeBoundSessionRegistrationFetcher
       this};
 };
 
-// Matchers below have to appear after `FakeBoundSessionCookieController` as
-// they depend on the class definition.
+// Matchers below have to appear after `FakeBoundSessionCookieController` and
+// `FakeBoundSessionRegistrationFetcher` as they depend on the class definition.
 
 // Matches a bound session cookie controller against bound session params.
 // `arg` type is FakeBoundSessionCookieController*.
@@ -219,6 +226,27 @@ MATCHER(IsBoundSessionKeyAndControllerPair, "") {
          testing::ExplainMatchResult(
              IsBoundSessionCookieController(bound_session_params),
              controller.get(), result_listener);
+}
+
+// Matches a bound session registration fetcher against the registration path
+// and whether the registration fetch has started.
+// `arg` type is base::WeakPtr<FakeBoundSessionRegistrationFetcher>.
+// `registration_path` type is std::string.
+// `has_started` type is bool.
+MATCHER_P2(IsBoundSessionRegistrationFetcher,
+           registration_path,
+           has_started,
+           "") {
+  auto get_registration_path = [](const auto& fetcher) {
+    return fetcher->params().registration_endpoint().path_piece();
+  };
+  auto fetcher_has_started = [](const auto& fetcher) {
+    return fetcher->HasStarted();
+  };
+  return testing::ExplainMatchResult(
+      AllOf(ResultOf(get_registration_path, Eq(registration_path)),
+            ResultOf(fetcher_has_started, has_started)),
+      arg, result_listener);
 }
 
 class MockObserver : public BoundSessionCookieRefreshService::Observer {
@@ -879,6 +907,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, CreateRegistrationRequest) {
   service->CreateRegistrationRequest(
       CreateTestRegistrationFetcherParams(kDefaultRegistrationPath));
   ASSERT_TRUE(registration_fetcher());
+  EXPECT_THAT(registration_fetcher(), IsBoundSessionRegistrationFetcher(
+                                          kDefaultRegistrationPath, true));
   bound_session_credentials::BoundSessionParams params =
       CreateTestBoundSessionParams();
   registration_fetcher()->SimulateRegistrationFetchCompleted(params);
@@ -896,27 +926,32 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        CreateRegistrationRequestExclusivePathOff) {
+  const std::string kNonDefaultRegistrationPath = "/NonDefaultPath";
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       switches::kEnableBoundSessionCredentials,
       {{"exclusive-registration-path", ""}});
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams("/NonDefaultPath"));
-  EXPECT_TRUE(registration_fetcher());
+      CreateTestRegistrationFetcherParams(kNonDefaultRegistrationPath));
+  ASSERT_TRUE(registration_fetcher());
+  EXPECT_THAT(registration_fetcher(), IsBoundSessionRegistrationFetcher(
+                                          kNonDefaultRegistrationPath, true));
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        CreateRegistrationRequestOverriddenExclusivePathMatchingPath) {
-  base::test::ScopedFeatureList scoped_feature_list;
   const std::string kCustomPath = "/CustomPath";
+  base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       switches::kEnableBoundSessionCredentials,
       {{"exclusive-registration-path", kCustomPath}});
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->CreateRegistrationRequest(
       CreateTestRegistrationFetcherParams(kCustomPath));
-  EXPECT_TRUE(registration_fetcher());
+  ASSERT_TRUE(registration_fetcher());
+  EXPECT_THAT(registration_fetcher(),
+              IsBoundSessionRegistrationFetcher(kCustomPath, true));
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -949,9 +984,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   service->CreateRegistrationRequest(
       CreateTestRegistrationFetcherParams(kSecondPath));
   ASSERT_TRUE(registration_fetcher());
-  EXPECT_EQ(
-      registration_fetcher()->params().registration_endpoint().path_piece(),
-      kFirstPath);
+  EXPECT_THAT(registration_fetcher(),
+              IsBoundSessionRegistrationFetcher(kFirstPath, true));
 
   // Verify that a request can complete normally.
   bound_session_credentials::BoundSessionParams params =
@@ -984,7 +1018,7 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
       BoundSessionRegistrationFetcherParam fetcher_params) override {
     auto fetcher = std::make_unique<FakeBoundSessionRegistrationFetcher>(
         std::move(fetcher_params));
-    registration_fetcher_ = fetcher->GetWeakPtr();
+    registration_fetchers_.push_back(fetcher->GetWeakPtr());
     return fetcher;
   }
 
@@ -1017,15 +1051,17 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
                                    all_expected_params));
   }
 
-  base::WeakPtr<FakeBoundSessionRegistrationFetcher> registration_fetcher() {
-    return registration_fetcher_;
+  std::vector<base::WeakPtr<FakeBoundSessionRegistrationFetcher>>&
+  registration_fetchers() {
+    return registration_fetchers_;
   }
 
  private:
   base::flat_map<BoundSessionKey,
                  base::WeakPtr<FakeBoundSessionCookieController>>
       cookie_controllers_;
-  base::WeakPtr<FakeBoundSessionRegistrationFetcher> registration_fetcher_;
+  std::vector<base::WeakPtr<FakeBoundSessionRegistrationFetcher>>
+      registration_fetchers_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       kMultipleBoundSessionsEnabled};
@@ -1042,4 +1078,47 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, Initialize) {
   }
   GetCookieRefreshServiceImpl();
   VerifyBoundSessions(all_params);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       CreateRegistrationRequest) {
+  // Turn path restrictions off to test with two different paths.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableBoundSessionCredentials,
+      {{"exclusive-registration-path", ""}});
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  const std::string kFirstPath = "/First";
+  const std::string kSecondPath = "/Second";
+
+  service->CreateRegistrationRequest(
+      CreateTestRegistrationFetcherParams(kFirstPath));
+  service->CreateRegistrationRequest(
+      CreateTestRegistrationFetcherParams(kSecondPath));
+  EXPECT_THAT(
+      registration_fetchers(),
+      ElementsAre(IsBoundSessionRegistrationFetcher(kFirstPath, true),
+                  IsBoundSessionRegistrationFetcher(kSecondPath, false)));
+  // The test cannot continue if `registration_fetchers()` doesn't contain two
+  // elements.
+  ASSERT_EQ(registration_fetchers().size(), 2U);
+
+  // Verify that the second registration request starts after the first one
+  // completes.
+  bound_session_credentials::BoundSessionParams first_params =
+      CreateBoundSessionParams(kTestGoogleURL, "session_one",
+                               {"cookieA", "cookieB"});
+  registration_fetchers()[0]->SimulateRegistrationFetchCompleted(first_params);
+  EXPECT_THAT(registration_fetchers(),
+              ElementsAre(IsNull(), IsBoundSessionRegistrationFetcher(
+                                        kSecondPath, true)));
+  VerifyBoundSessions({first_params});
+
+  // The second request can complete normally.
+  bound_session_credentials::BoundSessionParams second_params =
+      CreateBoundSessionParams(kTestGoogleURL, "session_two", {"cookieC"});
+  registration_fetchers()[1]->SimulateRegistrationFetchCompleted(second_params);
+  EXPECT_THAT(registration_fetchers(), ElementsAre(IsNull(), IsNull()));
+  VerifyBoundSessions({first_params, second_params});
 }

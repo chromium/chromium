@@ -254,25 +254,25 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
     return;
   }
 
-  if (active_registration_request_) {
+  if (!registration_requests_.empty() &&
+      !base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
     // If there are multiple racing registration requests, only one will be
     // processed and it will contain the most up-to-date set of cookies.
     return;
   }
 
-  active_registration_request_ =
+  registration_requests_.push(
       registration_fetcher_factory_for_testing_.is_null()
           ? std::make_unique<BoundSessionRegistrationFetcherImpl>(
                 std::move(registration_params),
                 storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
                 key_service_.get(), is_off_the_record_profile_)
           : registration_fetcher_factory_for_testing_.Run(
-                std::move(registration_params));
-  // `base::Unretained(this)` is safe here because `this` owns the fetcher via
-  // `active_registration_requests_`
-  active_registration_request_->Start(base::BindOnce(
-      &BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete,
-      base::Unretained(this)));
+                std::move(registration_params)));
+
+  if (registration_requests_.size() == 1U) {
+    StartRegistrationRequest();
+  }
 }
 
 base::WeakPtr<BoundSessionCookieRefreshService>
@@ -298,6 +298,14 @@ BoundSessionCookieRefreshServiceImpl::cookie_controller() const {
   return cookie_controllers_.begin()->second.get();
 }
 
+void BoundSessionCookieRefreshServiceImpl::StartRegistrationRequest() {
+  // `base::Unretained(this)` is safe here because `this` owns the fetcher via
+  // `registration_requests_`
+  registration_requests_.front()->Start(base::BindOnce(
+      &BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete,
+      base::Unretained(this)));
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
     std::optional<bound_session_credentials::BoundSessionParams>
         bound_session_params) {
@@ -305,7 +313,10 @@ void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
     RegisterNewBoundSession(*bound_session_params);
   }
 
-  active_registration_request_.reset();
+  registration_requests_.pop();
+  if (!registration_requests_.empty()) {
+    StartRegistrationRequest();
+  }
 }
 
 void BoundSessionCookieRefreshServiceImpl::
