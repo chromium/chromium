@@ -368,8 +368,10 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
 #endif
 }
 
-void ProfileMenuView::OnSigninButtonClicked(CoreAccountInfo account,
-                                            ActionableItem button_type) {
+void ProfileMenuView::OnSigninButtonClicked(
+    CoreAccountInfo account,
+    ActionableItem button_type,
+    signin_metrics::AccessPoint access_point) {
   RecordClick(button_type);
 
   if (!perform_menu_actions())
@@ -378,15 +380,13 @@ void ProfileMenuView::OnSigninButtonClicked(CoreAccountInfo account,
 
   if (button_type == ActionableItem::kSigninReauthButton) {
     // The reauth button does not trigger a sync opt in.
-    signin_ui_util::ShowReauthForAccount(
-        browser()->profile(), account.email,
-        signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+    signin_ui_util::ShowReauthForAccount(browser()->profile(), account.email,
+                                         access_point);
     return;
   }
 
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser()->profile(), account,
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+  signin_ui_util::EnableSyncFromSingleAccountPromo(browser()->profile(),
+                                                   account, access_point);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -702,6 +702,8 @@ void ProfileMenuView::BuildSyncInfo() {
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   bool show_sync_badge = false;
   bool show_account_card = false;
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
 
   if (!account_info.IsEmpty()) {
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
@@ -726,6 +728,8 @@ void ProfileMenuView::BuildSyncInfo() {
              !account_info_for_promos.IsEmpty()) {
     // Web-only signed-in state.
     account_info = account_info_for_promos;
+    access_point = signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
     description = l10n_util::GetStringUTF16(
         switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
             ? IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION
@@ -744,6 +748,8 @@ void ProfileMenuView::BuildSyncInfo() {
 #else
     // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      access_point = signin_metrics::AccessPoint::
+          ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
       description =
           l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
       button_text =
@@ -761,7 +767,8 @@ void ProfileMenuView::BuildSyncInfo() {
   BuildSyncInfoWithCallToAction(
       description, button_text,
       base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
-                          base::Unretained(this), account_info, button_type),
+                          base::Unretained(this), account_info, button_type,
+                          access_point),
       show_sync_badge,
       show_account_card ? account_info_for_promos : AccountInfo());
 }

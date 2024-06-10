@@ -712,7 +712,8 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
                  signin_metrics::AccessPoint access_point,
                  signin_metrics::PromoAction promo_action,
                  const CoreAccountId& account_id,
-                 TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
+                 TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+                 bool is_sync_promo),
                 ());
   };
 
@@ -750,7 +751,8 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSigninButtonClicked(
             account_info(),
-            ProfileMenuViewBase::ActionableItem::kSigninAccountButton);
+            ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+            signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
         ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
@@ -786,7 +788,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
           signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
           account_info().account_id,
-          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT))
+          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+          /*sync_promo=*/false))
       .WillOnce([&loop]() { loop.Quit(); });
 
   // Complete reauth.
@@ -847,7 +850,8 @@ class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSigninButtonClicked(
             account_info(),
-            ProfileMenuViewBase::ActionableItem::kSigninReauthButton);
+            ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
+            signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton,

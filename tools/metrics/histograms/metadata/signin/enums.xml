@@ -456,6 +456,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="NTP Identity Disc"/>
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
+  <int value="66" label="Avatar bubble sign in with sync promo"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

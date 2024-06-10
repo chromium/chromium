@@ -169,7 +169,8 @@ AccountInfo FillAccountInfo(
 
 GURL GetSyncConfirmationURL() {
   return AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                           SyncConfirmationStyle::kWindow);
+                                           SyncConfirmationStyle::kWindow,
+                                           /*is_sync_promo=*/true);
 }
 
 class BrowserAddedWaiter : public BrowserListObserver {

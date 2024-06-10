@@ -20,9 +20,10 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/window/dialog_delegate.h"
 
+struct AccountInfo;
 class Browser;
 class GURL;
-struct AccountInfo;
+enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
@@ -56,7 +57,8 @@ class SigninViewControllerDelegateViews
 
   static std::unique_ptr<views::WebView> CreateSyncConfirmationWebView(
       Browser* browser,
-      bool is_signin_intercept = false);
+      SyncConfirmationStyle style,
+      bool is_sync_promo);
 
   static std::unique_ptr<views::WebView> CreateSigninErrorWebView(
       Browser* browser);

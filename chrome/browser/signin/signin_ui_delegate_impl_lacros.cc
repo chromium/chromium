@@ -169,7 +169,8 @@ void SigninUiDelegateImplLacros::OnAccountAdded(
   ShowTurnSyncOnUI(profile, access_point, promo_action, account_id,
                    is_reauth
                        ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
-                       : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+                       : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
+                   /*is_sync_promo=*/false);
 }
 
 void SigninUiDelegateImplLacros::OnReauthComplete(

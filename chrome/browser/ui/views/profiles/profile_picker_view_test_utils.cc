@@ -353,7 +353,8 @@ void CompleteLacrosFirstRun(
       GetPickerWebContents()->GetURL(), "continueWithAccount", std::move(args));
 
   WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
+      /*is_sync_promo=*/true));
 
   if (result == LoginUIService::UI_CLOSED) {
     // `UI_CLOSED` is not provided via webui handlers. Instead, it gets sent

@@ -36428,6 +36428,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromAvatarBubbleSigninWithSyncPromo">
+  <owner>droger@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromBookmarkBubble">
   <owner>gogerald@chromium.org</owner>
   <description>

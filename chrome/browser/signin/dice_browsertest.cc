@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   content::TestNavigationObserver sync_confirmation_url_observer(
-      GURL("chrome://sync-confirmation"));
+      GURL("chrome://sync-confirmation?style=0"));
   sync_confirmation_url_observer.StartWatchingNewWebContents();
 
   // Receive token.

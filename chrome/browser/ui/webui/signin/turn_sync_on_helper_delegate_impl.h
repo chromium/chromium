@@ -28,7 +28,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
                                      public BrowserListObserver,
                                      public LoginUIService::Observer {
  public:
-  explicit TurnSyncOnHelperDelegateImpl(Browser* browser);
+  explicit TurnSyncOnHelperDelegateImpl(Browser* browser, bool is_sync_promo);
 
   TurnSyncOnHelperDelegateImpl(const TurnSyncOnHelperDelegateImpl&) = delete;
   TurnSyncOnHelperDelegateImpl& operator=(const TurnSyncOnHelperDelegateImpl&) =
@@ -93,6 +93,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
+  const bool is_sync_promo_;
 
   base::WeakPtrFactory<TurnSyncOnHelperDelegateImpl> weak_ptr_factory_{this};
 };

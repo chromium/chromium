@@ -81,8 +81,11 @@ void OnEmailConfirmation(signin::SigninChoiceCallback callback,
 
 }  // namespace
 
-TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(Browser* browser)
-    : browser_(browser), profile_(browser_->profile()) {
+TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(Browser* browser,
+                                                           bool is_sync_promo)
+    : browser_(browser),
+      profile_(browser_->profile()),
+      is_sync_promo_(is_sync_promo) {
   DCHECK(browser);
   DCHECK(profile_);
   BrowserList::AddObserver(this);
@@ -136,7 +139,8 @@ void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
   browser_ = EnsureBrowser(browser_, profile_);
-  browser_->signin_view_controller()->ShowModalSyncConfirmationDialog();
+  browser_->signin_view_controller()->ShowModalSyncConfirmationDialog(
+      /*is_signin_intercept=*/false, is_sync_promo_);
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(

@@ -13,9 +13,10 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-class Browser;
 struct AccountInfo;
+class Browser;
 struct CoreAccountId;
+enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
@@ -50,7 +51,8 @@ class SigninViewControllerDelegate {
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncConfirmationDelegate(
       Browser* browser,
-      bool is_signin_intercept = false);
+      SyncConfirmationStyle style,
+      bool is_sync_promo);
 
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the modal sign in error dialog. The returned object should delete

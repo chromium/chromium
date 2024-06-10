@@ -148,7 +148,12 @@ class SigninViewController {
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
   // of the |browser_|'s window.
-  void ShowModalSyncConfirmationDialog(bool is_signin_intercept = false);
+  // `is_signin_intercept` is true if the confirmation dialog is shown after
+  // signin intercept, which has a slightly different UI.
+  // `is_sync_promo` is true if the sync confirmation dialog is offered as an
+  // option. It is false if the user explicitly initiated the flow.
+  void ShowModalSyncConfirmationDialog(bool is_signin_intercept,
+                                       bool is_sync_promo);
 
   // Shows the modal managed user notice dialog as a browser-modal dialog on
   // top of the `browser_`'s window. `domain_name` is the domain of the

@@ -147,12 +147,15 @@ class TurnSyncOnHelper {
                    base::OnceClosure callback);
 
   // Convenience constructor using the default delegate and empty callback.
+  // `is_sync_promo` is true if the sync confirmation dialog is offered as an
+  // option. It is false if the user explicitly initiated the flow.
   TurnSyncOnHelper(Profile* profile,
                    Browser* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
                    const CoreAccountId& account_id,
-                   SigninAbortedMode signin_aborted_mode);
+                   SigninAbortedMode signin_aborted_mode,
+                   bool is_sync_promo);
 
   TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
   TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;

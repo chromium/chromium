@@ -243,7 +243,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
  protected:
   const GURL kSyncConfirmationUrl = AppendSyncConfirmationQueryParams(
       GURL("chrome://sync-confirmation"),
-      SyncConfirmationStyle::kSigninInterceptModal);
+      SyncConfirmationStyle::kSigninInterceptModal,
+      /*is_sync_promo=*/true);
   const GURL kProfileCustomizationUrl = GURL("chrome://profile-customization");
   const GURL kSyncSettingsUrl = GURL("chrome://settings/syncSetup");
 

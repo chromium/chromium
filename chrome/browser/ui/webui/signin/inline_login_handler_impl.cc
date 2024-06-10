@@ -121,7 +121,7 @@ class ForcedSigninTurnSyncOnHelperDelegate
     : public TurnSyncOnHelperDelegateImpl {
  public:
   explicit ForcedSigninTurnSyncOnHelperDelegate(Browser* browser)
-      : TurnSyncOnHelperDelegateImpl(browser) {}
+      : TurnSyncOnHelperDelegateImpl(browser, /*is_sync_promo=*/false) {}
 
  protected:
   void ShouldEnterpriseConfirmationPromptForNewProfile(

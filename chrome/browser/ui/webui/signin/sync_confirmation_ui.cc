@@ -174,7 +174,8 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
                     IDS_SYNC_LOADING_CONFIRMATION_TITLE);
 
   if (is_sync_allowed) {
-    InitializeForSyncConfirmation(source, GetSyncConfirmationStyle(url));
+    InitializeForSyncConfirmation(source, GetSyncConfirmationStyle(url),
+                                  IsSyncConfirmationPromo(url));
   } else {
     InitializeForSyncDisabled(source);
   }
@@ -200,7 +201,8 @@ void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
 
 void SyncConfirmationUI::InitializeForSyncConfirmation(
     content::WebUIDataSource* source,
-    SyncConfirmationStyle style) {
+    SyncConfirmationStyle style,
+    bool is_sync_promo) {
   int info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
   int info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
   int confirm_label_id = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
@@ -231,19 +233,15 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   // TODO(crbug.com/40242558): Refactor SyncConfirmationStyle based on the
   // purpose instead of what kind of container the page is displayed in.
   bool is_modal_dialog;
-  bool is_promo;
   switch (style) {
     case SyncConfirmationStyle::kDefaultModal:
       is_modal_dialog = true;
-      is_promo = false;
       break;
     case SyncConfirmationStyle::kSigninInterceptModal:
       is_modal_dialog = true;
-      is_promo = true;
       break;
     case SyncConfirmationStyle::kWindow:
       is_modal_dialog = false;
-      is_promo = true;
       break;
   }
 
@@ -278,7 +276,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2;
     confirm_label_id = IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL;
   }
-  if (is_promo) {
+  if (is_sync_promo) {
     undo_label_id = IDS_NO_THANKS;
   }
 

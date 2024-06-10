@@ -77,6 +77,7 @@ struct SyncConfirmationTestParam {
   AccountManagementStatus account_management_status =
       AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
+  bool is_sync_promo = false;
   MinorModeRestrictions minor_mode_restrictions;
 };
 
@@ -120,13 +121,18 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
 // The sign-in intercept feature isn't enabled on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "SigninInterceptStyle"},
-     .sync_style = SyncConfirmationStyle::kSigninInterceptModal},
+     .sync_style = SyncConfirmationStyle::kSigninInterceptModal,
+     .is_sync_promo = true},
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+    {.pixel_test_param = {.test_suffix = "Promo"},
+     .sync_style = SyncConfirmationStyle::kDefaultModal,
+     .is_sync_promo = true},
+
 // TODO(crbug.com/336964850): this test is flaky on windows.
 #if !BUILDFLAG(IS_WIN)
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
@@ -151,7 +157,8 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
 GURL BuildSyncConfirmationWindowURL() {
   std::string url_string = chrome::kChromeUISyncConfirmationURL;
   return AppendSyncConfirmationQueryParams(GURL(url_string),
-                                           SyncConfirmationStyle::kWindow);
+                                           SyncConfirmationStyle::kWindow,
+                                           /*is_sync_promo=*/true);
 }
 
 // Creates a step to represent the sync-confirmation.
@@ -296,9 +303,8 @@ class SyncConfirmationUIDialogPixelTest
                       signin::ConsentLevel::kSignin,
                       GetParam().minor_mode_restrictions.capability);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
-    if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
-      url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);
-    }
+    url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style,
+                                            GetParam().is_sync_promo);
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
@@ -311,7 +317,8 @@ class SyncConfirmationUIDialogPixelTest
 
     auto* controller = browser()->signin_view_controller();
     controller->ShowModalSyncConfirmationDialog(
-        GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal);
+        GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal,
+        GetParam().is_sync_promo);
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }

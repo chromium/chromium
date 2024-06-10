@@ -583,7 +583,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   ui_test_utils::BrowserChangeObserver browser_added_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   GURL sync_confirmation_url = AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow);
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
+      /*is_sync_promo=*/true);
   profiles::testing::WaitForPickerLoadStop(sync_confirmation_url);
   LoginUIServiceFactory::GetForProfile(new_profile)
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);

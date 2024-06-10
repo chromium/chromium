@@ -626,7 +626,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   SimulateSignIn(kTestEmail, kTestGivenName);
 
   GURL sync_page_url = AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow);
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
+      /*is_sync_promo=*/true);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
@@ -751,7 +752,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       WaitForWebContentsNavigation(
           kWebContentsId,
           AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                            SyncConfirmationStyle::kWindow)),
+                                            SyncConfirmationStyle::kWindow,
+                                            /*is_sync_promo=*/true)),
 
       // Button is visible once capabilities are loaded or defaulted.
       WaitForButtonVisible(kWebContentsId, kDontSyncButton),
@@ -822,7 +824,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
       WaitForWebContentsNavigation(
           kWebContentsId,
           AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                            SyncConfirmationStyle::kWindow)),
+                                            SyncConfirmationStyle::kWindow,
+                                            /*is_sync_promo=*/true)),
 
       // Wait for opt-in button to appear for all test cases except for
       // kButtonsStillLoadings.
@@ -974,7 +977,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
           AppendSyncConfirmationQueryParams(
               GURL(chrome::kChromeUISyncConfirmationURL)
                   .Resolve(chrome::kChromeUISyncConfirmationLoadingPath),
-              SyncConfirmationStyle::kWindow)),
+              SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true)),
 
       // The FakeUserPolicySigninService resolves, indicating the the account
       // is managed and requiring to show the enterprise management opt-in.

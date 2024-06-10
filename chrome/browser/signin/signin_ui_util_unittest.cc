@@ -107,7 +107,8 @@ class MockSigninUiDelegate : public SigninUiDelegate {
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action,
                const CoreAccountId& account_id,
-               TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
+               TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+               bool is_sync_promo),
               ());
 };
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -121,7 +122,8 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
                signin_metrics::AccessPoint access_point,
                signin_metrics::PromoAction promo_action,
                const CoreAccountId& account_id,
-               TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
+               TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+               bool is_sync_promo),
               ());
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -159,14 +161,15 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
     SignInFromSingleAccountPromo(profile(), account_info, access_point_);
   }
 
-  void ExpectTurnSyncOn(
-      signin_metrics::AccessPoint access_point,
-      signin_metrics::PromoAction promo_action,
-      const CoreAccountId& account_id,
-      TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-    EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(profile(), access_point, promo_action,
-                                 account_id, signin_aborted_mode));
+  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
+                        signin_metrics::PromoAction promo_action,
+                        const CoreAccountId& account_id,
+                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+                        bool is_sync_promo) {
+    EXPECT_CALL(
+        mock_delegate_,
+        ShowTurnSyncOnUI(profile(), access_point, promo_action, account_id,
+                         signin_aborted_mode, is_sync_promo));
   }
 
   void ExpectNoSigninStartedHistograms(
@@ -276,7 +279,8 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
             : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
     ExpectTurnSyncOn(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
                      expected_promo_action, account_id,
-                     TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+                     TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                     /*is_sync_promo=*/false);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
@@ -841,7 +845,8 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
     ExpectTurnSyncOn(
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
         expected_promo_action, account_id,
-        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY);
+        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
+        /*is_sync_promo=*/false);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
@@ -906,9 +911,10 @@ class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
       signin_metrics::PromoAction promo_action,
       const CoreAccountId& account_id,
       TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-    EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(profile(), access_point, promo_action,
-                                 account_id, signin_aborted_mode));
+    EXPECT_CALL(
+        mock_delegate_,
+        ShowTurnSyncOnUI(profile(), access_point, promo_action, account_id,
+                         signin_aborted_mode, /*is_sync_promo=*/false));
   }
 
  protected:

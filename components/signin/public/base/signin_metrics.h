@@ -225,6 +225,9 @@ enum class AccessPoint : int {
   // reauthentication is necessary to sign in with or save a passkey from the
   // Google Password Manager.
   ACCESS_POINT_WEBAUTHN_MODAL_DIALOG = 65,
+  // Signin button from the profile menu that is labelled as a "Signin" button,
+  // but is followed by a Sync confirmation screen as a promo.
+  ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO = 66,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

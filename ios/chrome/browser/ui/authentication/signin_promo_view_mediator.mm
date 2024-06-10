@@ -125,6 +125,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::
         ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -218,6 +220,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
                                 << static_cast<int>(access_point);
@@ -313,6 +317,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
                                 << static_cast<int>(access_point);
@@ -408,6 +414,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
                                 << static_cast<int>(access_point);
@@ -492,6 +500,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -574,6 +584,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

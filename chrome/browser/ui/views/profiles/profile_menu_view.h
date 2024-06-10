@@ -21,7 +21,12 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/controls/styled_label.h"
+
+namespace signin_metrics {
+enum class AccessPoint;
+}
 
 namespace views {
 class Button;
@@ -67,7 +72,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnSyncSettingsButtonClicked();
   void OnSyncErrorButtonClicked(AvatarSyncErrorType error);
   void OnSigninButtonClicked(CoreAccountInfo account,
-                             ActionableItem button_type);
+                             ActionableItem button_type,
+                             signin_metrics::AccessPoint access_point);
   void OnCookiesClearedOnExitLinkClicked();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnSignoutButtonClicked();

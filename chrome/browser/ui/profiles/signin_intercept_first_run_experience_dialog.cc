@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -325,7 +326,8 @@ void SigninInterceptFirstRunExperienceDialog::DoSyncConfirmation() {
   RecordDialogEvent(DialogEvent::kShowSyncConfirmation);
   SetDialogDelegate(
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          browser_, /*is_signin_intercept=*/true));
+          browser_, SyncConfirmationStyle::kSigninInterceptModal,
+          /*is_sync_promo=*/true));
   PreloadProfileCustomizationUI();
 }
 

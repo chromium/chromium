@@ -476,6 +476,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromOidcRedirectionInterception"));
       break;
+    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromAvatarBubbleSigninWithSyncPromo"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -639,6 +643,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
     case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Signin_Impression_From* user actions"
                                 << " are not recorded for access point "

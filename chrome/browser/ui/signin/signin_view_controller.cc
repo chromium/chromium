@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/signin/signin_modal_dialog_impl.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -319,11 +320,15 @@ SigninViewController::ShowReauthPrompt(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void SigninViewController::ShowModalSyncConfirmationDialog(
-    bool is_signin_intercept) {
+    bool is_signin_intercept,
+    bool is_sync_promo) {
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          browser_, is_signin_intercept),
+          browser_,
+          is_signin_intercept ? SyncConfirmationStyle::kSigninInterceptModal
+                              : SyncConfirmationStyle::kDefaultModal,
+          is_sync_promo),
       GetOnModalDialogClosedCallback());
 }
 

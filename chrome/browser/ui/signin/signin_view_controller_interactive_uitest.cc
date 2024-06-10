@@ -153,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content::TestNavigationObserver content_observer(
       GURL("chrome://sync-confirmation/"));
   content_observer.StartWatchingNewWebContents();
-  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog();
+  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog(
+      /*is_signin_intercept=*/false, /*is_sync_promo=*/false);
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
   content_observer.Wait();
 

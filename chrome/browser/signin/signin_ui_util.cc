@@ -417,17 +417,18 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // signing out the account from the profile and keeping it on the web only,
   // unless the source is the Profile menu, for which we would still want the
   // user to be signed in, having sync as optional.
-  //  Aborting the sync confirmation for a secondary account reverts the
-  //  original primary account
-  // as primary, and keeps the secondary account.
+  // Aborting the sync confirmation for a secondary account reverts the original
+  // primary account as primary, and keeps the secondary account.
+  bool is_sync_promo = access_point ==
+                       signin_metrics::AccessPoint::
+                           ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
               account.account_id !=
                   identity_manager
                       ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                       .account_id &&
-              access_point != signin_metrics::AccessPoint::
-                                  ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN
+              !is_sync_promo
           ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
           : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
   signin_metrics::LogSigninAccessPointStarted(access_point,
@@ -435,7 +436,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   GetSigninUiDelegate()->ShowTurnSyncOnUI(
       profile, access_point, existing_account_promo_action, account.account_id,
-      signin_aborted_mode);
+      signin_aborted_mode, is_sync_promo);
 #else
   DUMP_WILL_BE_NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
