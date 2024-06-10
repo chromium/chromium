@@ -79,8 +79,17 @@ class AutofillStructuredAddress : public testing::Test {
  public:
   AutofillStructuredAddress() {
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers},
+        {features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers,
+         features::kAutofillEnableSupportForAddressOverflow,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
+         features::kAutofillUseMXAddressModel,
+         features::kAutofillUseDEAddressModel},
         {});
   }
 
@@ -90,7 +99,8 @@ class AutofillStructuredAddress : public testing::Test {
 
 void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
   AddressComponentsStore address =
-      i18n_model_definition::CreateAddressComponentModel();
+      i18n_model_definition::CreateAddressComponentModel(
+          AddressCountryCode(test_case.country_code));
   const AddressComponentTestValues test_value = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = test_case.street_address,
@@ -109,7 +119,7 @@ void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_STREET_LOCATION,
        .value = test_case.street_location,
-       .status = VerificationStatus::kParsed},
+       .status = VerificationStatus::kFormatted},
       {.type = ADDRESS_HOME_STREET_NAME,
        .value = test_case.street_name,
        .status = VerificationStatus::kParsed},
@@ -133,7 +143,8 @@ void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
 
 void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
   AddressComponentsStore store =
-      i18n_model_definition::CreateAddressComponentModel();
+      i18n_model_definition::CreateAddressComponentModel(
+          AddressCountryCode(test_case.country_code));
   AddressComponent* root = store.Root();
 
   const AddressComponentTestValues test_value = {
@@ -152,6 +163,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
       {.type = ADDRESS_HOME_APT_NUM,
        .value = test_case.apartment_num,
        .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_APT_TYPE,
+       .value = test_case.apartment_type,
+       .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_LANDMARK,
        .value = test_case.landmark,
        .status = VerificationStatus::kObserved},
@@ -160,6 +174,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADMIN_LEVEL2,
        .value = test_case.admin_level_2,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_OVERFLOW,
+       .value = test_case.overflow,
        .status = VerificationStatus::kObserved}};
 
   SetTestValues(root, test_value);
@@ -185,6 +202,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
       {.type = ADDRESS_HOME_APT_NUM,
        .value = test_case.apartment_num,
        .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_APT_TYPE,
+       .value = test_case.apartment_type,
+       .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_FLOOR,
        .value = test_case.floor,
        .status = VerificationStatus::kObserved},
@@ -196,6 +216,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADMIN_LEVEL2,
        .value = test_case.admin_level_2,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_OVERFLOW,
+       .value = test_case.overflow,
        .status = VerificationStatus::kObserved}};
   VerifyTestValues(root, expectation);
 }
@@ -215,83 +238,89 @@ TEST_F(AutofillStructuredAddress, ParseStreetAddress) {
        .street_name = "Implerstr.",
        .house_number = "73a"},
       {.street_address = "Implerstr. 73a Obergeschoss 2 Wohnung 3",
-       .street_location = "Implerstr. 73a ",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a",
        .floor = "2",
        .apartment_num = "3"},
       {.street_address = "Implerstr. 73a OG 2",
-       .street_location = "Implerstr. 73a ",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a",
        .floor = "2"},
       {.street_address = "Implerstr. 73a 2. OG",
-       .street_location = "Implerstr. 73a ",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a",
        .floor = "2"},
       {.street_address = "Implerstr. no 73a",
-       .street_location = "Implerstr. no 73a",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a"},
       {.street_address = "Implerstr. °73a",
-       .street_location = "Implerstr. °73a",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a"},
       {.street_address = "Implerstr. number 73a",
-       .street_location = "Implerstr. number 73a",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a"},
       {.street_address = "1600 Amphitheatre Parkway",
-       .street_location = "1600 Amphitheatre Parkway",
+       // TODO(crbug.com/346336404) Add country and get number on the left hand
+       // side.
+       .street_location = "Amphitheatre Parkway 1600",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600"},
       {.street_address = "1600 Amphitheatre Parkway, Floor 6 Apt 12",
-       .street_location = "1600 Amphitheatre Parkway, ",
+       // TODO(crbug.com/346336404) Add country and get number on the left hand
+       // side.
+       .street_location = "Amphitheatre Parkway 1600",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600",
        .floor = "6",
        .apartment_num = "12"},
       {.street_address = "Av. Paulista, 1098, 1º andar, apto. 101",
-       .street_location = "Av. Paulista, 1098, ",
+       // TODO(crbug.com/346336404) Add country "ES" and introduce a rule that
+       // adds a comma between the street and the house number.
+       .street_location = "Av. Paulista 1098",
        .street_name = "Av. Paulista",
        .house_number = "1098",
        .floor = "1",
        .apartment_num = "101"},
       // Examples for Mexico.
       {.street_address = "Street Name 12 - Piso 13 - 14",
-       .street_location = "Street Name 12 ",
+       .street_location = "Street Name 12",
        .street_name = "Street Name",
        .house_number = "12",
        .floor = "13",
        .apartment_num = "14"},
       {.street_address = "Street Name 12 - 14",
-       .street_location = "Street Name 12 ",
+       .street_location = "Street Name 12",
        .street_name = "Street Name",
        .house_number = "12",
        .floor = "",
        .apartment_num = "14"},
       {.street_address = "Street Name 12 - Piso 13",
-       .street_location = "Street Name 12 ",
+       .street_location = "Street Name 12",
        .street_name = "Street Name",
        .house_number = "12",
        .floor = "13",
        .apartment_num = ""},
       // Examples for Spain.
       {.street_address = "Street Name 1, 2º, 3ª",
-       .street_location = "Street Name 1, ",
+       .street_location = "Street Name 1",
        .street_name = "Street Name",
        .house_number = "1",
        .floor = "2",
        .apartment_num = "3"},
       {.street_address = "Street Name 1, 2º",
-       .street_location = "Street Name 1, ",
+       .street_location = "Street Name 1",
        .street_name = "Street Name",
        .house_number = "1",
        .floor = "2",
        .apartment_num = ""},
       {.street_address = "Street Name 1, 3ª",
-       .street_location = "Street Name 1, ",
+       .street_location = "Street Name 1",
        .street_name = "Street Name",
        .house_number = "1",
        .floor = "",
@@ -306,7 +335,7 @@ TEST_F(AutofillStructuredAddress, ParseStreetAddress) {
 TEST_F(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.street_address = "Implerstr. 73a\nObergeschoss 2 Wohnung 3",
-       .street_location = "Implerstr. 73a\n",
+       .street_location = "Implerstr. 73a",
        .street_name = "Implerstr.",
        .house_number = "73a",
        .floor = "2",
@@ -316,17 +345,23 @@ TEST_F(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
        .street_name = "Implerstr.",
        .house_number = "73a"},
       {.street_address = "1600 Amphitheatre Parkway\nFloor 6 Apt 12",
-       .street_location = "1600 Amphitheatre Parkway\n",
+       // TODO(crbug.com/40275657) Add country and get number on the left hand
+       // side.
+       .street_location = "Amphitheatre Parkway 1600",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600",
        .floor = "6",
        .apartment_num = "12"},
       {.street_address = "1600 Amphitheatre Parkway\nSome UnparsableText",
-       .street_location = "1600 Amphitheatre Parkway",
+       // TODO(crbug.com/40275657) Add country and get number on the left hand
+       // side.
+       .street_location = "Amphitheatre Parkway 1600",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600"},
       {.street_address = "Av. Paulista, 1098\n1º andar, apto. 101",
-       .street_location = "Av. Paulista, 1098\n",
+       // TODO(crbug.com/346336404) Add country "ES" and introduce a rule that
+       // adds a comma between the street and the house number.
+       .street_location = "Av. Paulista 1098",
        .street_name = "Av. Paulista",
        .house_number = "1098",
        .floor = "1",
@@ -339,28 +374,38 @@ TEST_F(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
 
 TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
   std::vector<AddressLineParsingTestCase> test_cases = {
-      {
-          .country_code = "BR",
-          .street_address = "Av. Brigadeiro Faria Lima, 3477, 1º andar, apto 2",
-          .street_location = "Av. Brigadeiro Faria Lima 3477",
-          .street_name = "Av. Brigadeiro Faria Lima",
-          .house_number = "3477",
-          .floor = "1",
-          .apartment_num = "2",
-      },
+      {.country_code = "BR",
+       .street_address = "Av. Brigadeiro Faria Lima, 3477\nAndar 1, Apto 2",
+       .street_location = "Av. Brigadeiro Faria Lima, 3477",
+       .street_name = "Av. Brigadeiro Faria Lima",
+       .house_number = "3477",
+       .floor = "1",
+       .apartment_type = "Apto",
+       .apartment_num = "2",
+       .overflow = "Andar 1, Apto 2"},
+      // TODO(crbug.com/40275657): Build conditional address formatting to
+      // support cases where the apt_type is not present.
+      {.country_code = "BR",
+       .street_address = "Av. Brigadeiro Faria Lima, 3477\nAndar 1, 2",
+       .street_location = "Av. Brigadeiro Faria Lima, 3477",
+       .street_name = "Av. Brigadeiro Faria Lima",
+       .house_number = "3477",
+       .floor = "1",
+       .apartment_num = "2",
+       .overflow = "Andar 1, 2"},
       {.country_code = "DE",
        .street_address = "Erika-Mann-Str. 33",
        .street_location = "Erika-Mann-Str. 33",
        .street_name = "Erika-Mann-Str.",
        .house_number = "33"},
       {.country_code = "DE",
-       .street_address = "Erika-Mann-Str. 33, 2. Stock, 12. Wohnung",
+       .street_address = "Erika-Mann-Str. 33\n2. Stock, 12. Wohnung",
        .street_location = "Erika-Mann-Str. 33",
        .street_name = "Erika-Mann-Str.",
        .house_number = "33",
-       .floor = "2",
-       .apartment_num = "12"},
-      {.street_address = "1600 Amphitheatre Parkway FL 6 APT 12",
+       .overflow = "2. Stock, 12. Wohnung"},
+      {.country_code = "XX",
+       .street_address = "Amphitheatre Parkway 1600\nApt. 12, Floor 6",
        .street_location = "Amphitheatre Parkway 1600",
        .street_name = "Amphitheatre Parkway",
        .house_number = "1600",
@@ -368,15 +413,16 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .apartment_num = "12"},
       // Examples for Mexico.
       {.country_code = "MX",
-       .street_address = "StreetName 12 - Piso 13 - 14",
+       .street_address = "StreetName 12, Piso 13, Apto 14",
        .street_location = "StreetName 12",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "13",
+       .apartment_type = "Apto",
        .apartment_num = "14",
        .admin_level_2 = "Guanajuato"},
       {.country_code = "MX",
-       .street_address = "StreetName 12 - 14",
+       .street_address = "StreetName 12, 14",
        .street_location = "StreetName 12",
        .street_name = "StreetName",
        .house_number = "12",
@@ -384,7 +430,7 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .apartment_num = "14",
        .admin_level_2 = "Oaxaca"},
       {.country_code = "MX",
-       .street_address = "StreetName 12 - Piso 13",
+       .street_address = "StreetName 12, Piso 13",
        .street_location = "StreetName 12",
        .street_name = "StreetName",
        .house_number = "12",
@@ -393,21 +439,22 @@ TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .admin_level_2 = "Puebla"},
       // Examples for Spain.
       {.country_code = "ES",
-       .street_address = "Street Name 1, 3ª",
+       .street_address = "Street Name 1\nApt. 3",
        .street_location = "Street Name 1",
        .street_name = "Street Name",
        .house_number = "1",
        .floor = "",
        .apartment_num = "3"},
       {.country_code = "ES",
-       .street_address = "Street Name 1, 2º",
+       .street_address = "Street Name 1\nFloor 2",
        .street_location = "Street Name 1",
        .street_name = "Street Name",
        .house_number = "1",
        .floor = "2",
        .apartment_num = ""},
       {.country_code = "ES",
-       .street_address = "Street Name 1, 2º, 3ª",
+       // TODO(crbug.com/346336404) Localize Apt and Floor for "ES".
+       .street_address = "Street Name 1\nApt. 3, Floor 2",
        .street_location = "Street Name 1",
        .street_name = "Street Name",
        .house_number = "1",
@@ -544,12 +591,14 @@ TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponent* root = store.Root();
 
+  // The test uses Great Britain as its address model contains all the address
+  // tokens described below.
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "123 Street name",
        .status = VerificationStatus::kNoStatus},
       {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
+       .value = "GB",
        .status = VerificationStatus::kNoStatus},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
@@ -566,7 +615,7 @@ TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .value = "123 Street name",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
+       .value = "GB",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
@@ -589,13 +638,13 @@ TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .value = "123 Street name",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
+       .value = "GB",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
-       .value = "123 Street name CA US",
+       .value = "123 Street name\nCA",
        .status = VerificationStatus::kFormatted},
       {.type = ADDRESS_HOME_CITY,
        .value = "",

@@ -309,6 +309,7 @@ std::u16string GetFormattingExpression(FieldType field_type,
                  ? std::u16string(it->second)
                  : u"";
     }
+    // TODO(crbug.com/346336404): Rationalize street location.
 
     // Otherwise return a legacy formatting expression that exists.
     auto legacy_it = kAutofillFormattingRulesMap.find(
