@@ -60,6 +60,12 @@
   #seeMore:hover #hoverContainer {
     display: block;
   }
+
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
 </style>
 <template is="dom-repeat" items="[[events]]">
   <ntp-calendar-event

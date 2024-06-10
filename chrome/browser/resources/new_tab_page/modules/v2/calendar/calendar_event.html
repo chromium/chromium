@@ -30,6 +30,12 @@
     display: block;
   }
 
+  :host-context(.focus-outline-visible) #header:focus,
+  #header:focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
   #startTime {
     display: inline-block;
     width: 56px;
