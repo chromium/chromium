@@ -42,10 +42,16 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
         GetDocument().QuerySelector(AtomicString("video")));
   }
 
-  MediaVideoVisibilityTracker* CreateAndAttachVideoVisibilityTracker(
-      float visibility_threshold) {
+  MediaVideoVisibilityTracker* CreateTracker(float visibility_threshold) {
+    DCHECK(!tracker_);
     tracker_ = MakeGarbageCollected<MediaVideoVisibilityTracker>(
         *VideoElement(), visibility_threshold, ReportVisibilityCb().Get());
+    return tracker_;
+  }
+
+  MediaVideoVisibilityTracker* CreateAndAttachVideoVisibilityTracker(
+      float visibility_threshold) {
+    CreateTracker(visibility_threshold);
     tracker_->Attach();
     return tracker_;
   }
@@ -77,6 +83,12 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
       DisplayItemClientId start_after_display_item_client_id) const {
     DCHECK(tracker_);
     return tracker_->GetClientIdsSet(start_after_display_item_client_id);
+  }
+
+  const MediaVideoVisibilityTracker::TrackerAttachedToDocument TrackerAttached()
+      const {
+    DCHECK(tracker_);
+    return tracker_->tracker_attached_to_document_;
   }
 
  private:
@@ -1012,6 +1024,17 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   const auto set = GetClientIdsSet(VideoElement()->GetLayoutObject()->Id());
 
   EXPECT_EQ(0u, set.size());
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest,
+       ComputeVisibilityOnDemandReturnsFalseWhenTrackerNotAttached) {
+  GetDocument().CreateRawElement(html_names::kVideoTag);
+
+  // Create tracker and verify that: it is not attached and,
+  // `ComputeVisibilityOnDemand` returns false.
+  auto* tracker = CreateTracker(0.5);
+  ASSERT_FALSE(TrackerAttached());
+  EXPECT_FALSE(tracker->ComputeVisibilityOnDemand());
 }
 
 }  // namespace blink

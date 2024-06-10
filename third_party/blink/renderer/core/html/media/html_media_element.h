@@ -112,6 +112,17 @@ class CORE_EXPORT HTMLMediaElement
   USING_PRE_FINALIZER(HTMLMediaElement, Dispose);
 
  public:
+  // TODO(crbug.com/40275580): Replace with mojo definition once available.
+  //
+  // `RequestVisibilityCallback` is used to enable computing video visibility
+  // on-demand. The callback is passed to the MediaVideoVisibilityTracker, where
+  // the on-demand visibility computation will take place.
+  //
+  // The boolean parameter represents whether a video element meets a given
+  // visibility threshold. This threshold (`kVisibilityThreshold`) is defined by
+  // the HTMLVideoElement.
+  using RequestVisibilityCallback = base::OnceCallback<void(bool)>;
+
   // Limits the range of media playback rate.
   static constexpr double kMinPlaybackRate = 0.0625;
   static constexpr double kMaxPlaybackRate = 16.0;
@@ -610,6 +621,10 @@ class CORE_EXPORT HTMLMediaElement
   void SetAudioSinkId(const String&) override;
   void SuspendForFrameClosed() override;
   void RequestMediaRemoting() override {}
+
+  // TODO(crbug.com/40275580): Replace with mojo definition once available.
+  virtual void RequestVisibility(
+      RequestVisibilityCallback request_visibility_cb) {}
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired();

@@ -311,6 +311,16 @@ void MediaVideoVisibilityTracker::Detach() {
   tracker_attached_to_document_ = nullptr;
 }
 
+bool MediaVideoVisibilityTracker::ComputeVisibilityOnDemand() {
+  if (!tracker_attached_to_document_) {
+    return false;
+  }
+
+  // TODO(crbug.com/40275580): Implement logic for computing visibility
+  // on-demand.
+  return false;
+}
+
 void MediaVideoVisibilityTracker::UpdateVisibilityTrackerState() {
   const auto& video_element = VideoElement();
 

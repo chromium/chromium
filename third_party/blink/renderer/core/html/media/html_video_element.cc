@@ -398,6 +398,17 @@ void HTMLVideoElement::RequestMediaRemoting() {
   GetWebMediaPlayer()->RequestMediaRemoting();
 }
 
+void HTMLVideoElement::RequestVisibility(
+    RequestVisibilityCallback request_visibility_cb) {
+  if (!visibility_tracker_) {
+    std::move(request_visibility_cb).Run(false);
+    return;
+  }
+
+  std::move(request_visibility_cb)
+      .Run(visibility_tracker_->ComputeVisibilityOnDemand());
+}
+
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
                                          const gfx::Rect& dest_rect,
                                          const cc::PaintFlags* flags) const {

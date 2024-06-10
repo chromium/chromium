@@ -139,6 +139,39 @@ class FullscreenMockChromeClient : public EmptyChromeClient {
   }
 };
 
+// Helper class to mock `RequestVisibility` callbacks.
+class RequestVisibilityWaiter {
+ public:
+  RequestVisibilityWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
+
+  RequestVisibilityWaiter(const RequestVisibilityWaiter&) = delete;
+  RequestVisibilityWaiter(RequestVisibilityWaiter&&) = delete;
+  RequestVisibilityWaiter& operator=(const RequestVisibilityWaiter&) = delete;
+
+  HTMLMediaElement::RequestVisibilityCallback VisibilityCallback() {
+    // base::Unretained() is safe since no further tasks can run after
+    // RunLoop::Run() returns.
+    return base::BindOnce(&RequestVisibilityWaiter::RequestVisibility,
+                          base::Unretained(this));
+  }
+
+  void WaitUntilDone() {
+    run_loop_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  bool MeetsVisibility() { return meets_visibility_; }
+
+ private:
+  void RequestVisibility(bool meets_visibility) {
+    meets_visibility_ = meets_visibility;
+    run_loop_->Quit();
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  bool meets_visibility_ = false;
+};
+
 // Helper class that provides an implementation of the MediaPlayerObserver mojo
 // interface to allow checking that messages sent over mojo are received with
 // the right values in the other end.
@@ -407,6 +440,11 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   VideoVisibilityTrackerAttachedToDocument(HTMLVideoElement* video) const {
     DCHECK(video->visibility_tracker_for_tests());
     return video->visibility_tracker_for_tests()->tracker_attached_to_document_;
+  }
+
+  void RequestVisibility(HTMLMediaElement::RequestVisibilityCallback
+                             request_visibility_callback) const {
+    Media()->RequestVisibility(std::move(request_visibility_callback));
   }
 
   void ClearMediaPlayer() { Media()->ClearMediaPlayer(); }
@@ -2193,6 +2231,62 @@ TEST_P(HTMLMediaElementTest,
   EXPECT_FALSE(HasEventListenerRegistered(
       video->GetDocument(), event_type_names::kFullscreenchange,
       video->visibility_tracker_for_tests()));
+}
+
+TEST_P(HTMLMediaElementTest,
+       RequestVisibilityReturnsFalseWhenTrackerDoesNotExist) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  // Request visibility and verify that the returned visibility is false.
+  RequestVisibilityWaiter request_visibility_waiter;
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+  RequestVisibility(request_visibility_waiter.VisibilityCallback());
+  request_visibility_waiter.WaitUntilDone();
+  EXPECT_FALSE(request_visibility_waiter.MeetsVisibility());
+}
+
+TEST_P(HTMLMediaElementTest,
+       RequestVisibilityReturnsFalseWhenTrackerIsNotAttached) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+  video->Play();
+  EXPECT_TRUE(video->GetWebMediaPlayer());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+
+  // Clear media player, to cause the visibility tracker to detach.
+  ClearMediaPlayer();
+  EXPECT_FALSE(Media()->GetWebMediaPlayer());
+  EXPECT_TRUE(MediaIsPlaying());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+
+  // Request visibility and verify that the returned visibility is false.
+  RequestVisibilityWaiter request_visibility_waiter;
+  RequestVisibility(request_visibility_waiter.VisibilityCallback());
+  request_visibility_waiter.WaitUntilDone();
+  EXPECT_FALSE(request_visibility_waiter.MeetsVisibility());
 }
 
 }  // namespace blink

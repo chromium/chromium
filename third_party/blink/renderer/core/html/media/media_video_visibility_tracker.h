@@ -79,6 +79,9 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   void MaybeAddFullscreenEventListeners();
   void MaybeRemoveFullscreenEventListeners();
 
+  // Allows the visibility tracker to compute video visibility on demand.
+  bool ComputeVisibilityOnDemand();
+
   void Trace(Visitor*) const override;
 
  private:
