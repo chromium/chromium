@@ -14,14 +14,14 @@ found in the LICENSE file.
     $i18n{selectAll}
 </cr-checkbox>
 
-<iron-list class="data-collector-list" items="[[dataCollectors_]]">
-  <template>
+<div class="data-collector-list">
+  <template is="dom-repeat" items="[[dataCollectors_]]">
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
         tabindex="0">
       [[item.name]]
     </cr-checkbox>
   </template>
-</iron-list>
+</div>
 
 <template is="dom-if" if="[[enableScreenshot_]]" restamp>
   <screenshot-element id="screenshot"></screenshot-element>

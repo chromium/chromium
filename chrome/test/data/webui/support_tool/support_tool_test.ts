@@ -236,7 +236,7 @@ suite('SupportToolTest', function() {
     // Check the contents of data collectors page.
     const ironListItems =
         supportTool.$.dataCollectors.shadowRoot!.querySelector(
-                                                    'iron-list')!.items!;
+                                                    'dom-repeat')!.items!;
     assertEquals(ironListItems.length, DATA_COLLECTORS.length);
     for (let i = 0; i < ironListItems.length; i++) {
       const listItem = ironListItems[i];
