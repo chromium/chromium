@@ -640,6 +640,10 @@ prefs when the profile is loaded.  -->
     stale and cookie refresh hasn't completed. This histogram records what
     triggered resuming a throttled request. Recorded for every throttled request
     that eventually completed {Result}.
+
+    If a request was throttled by multiple bound sessions, this histogram will
+    record the most &quot;important&quot; value determined by the
+    `GetResumeBlockedRequestsTriggerPriority()` function.
   </summary>
   <token key="Result">
     <variant name="Failure" summary="with an error"/>

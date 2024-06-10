@@ -4,11 +4,13 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -29,6 +31,44 @@
 
 namespace {
 const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
+
+// Determines the precedence order of
+// `chrome::mojom::ResumeBlockedRequestsTrigger` when recording metrics.
+size_t GetResumeBlockedRequestsTriggerPriority(
+    chrome::mojom::ResumeBlockedRequestsTrigger trigger) {
+  using chrome::mojom::ResumeBlockedRequestsTrigger;
+  switch (trigger) {
+    case ResumeBlockedRequestsTrigger::kCookieAlreadyFresh:
+      return 0;
+    case ResumeBlockedRequestsTrigger::kObservedFreshCookies:
+      return 1;
+    case ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess:
+      return 2;
+    case ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination:
+      return 3;
+    case ResumeBlockedRequestsTrigger::kRendererDisconnected:
+      return 4;
+    case ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure:
+      return 5;
+    case ResumeBlockedRequestsTrigger::kTimeout:
+      return 6;
+  }
+}
+
+// Computes a trigger value that should be used for metrics recording based on a
+// list of triggers received from multiple controllers.
+chrome::mojom::ResumeBlockedRequestsTrigger AggregateMultipleTriggers(
+    std::vector<chrome::mojom::ResumeBlockedRequestsTrigger> triggers) {
+  CHECK(!triggers.empty());
+  return *std::max_element(
+      triggers.begin(), triggers.end(),
+      [](chrome::mojom::ResumeBlockedRequestsTrigger lhs,
+         chrome::mojom::ResumeBlockedRequestsTrigger rhs) {
+        return GetResumeBlockedRequestsTriggerPriority(lhs) <
+               GetResumeBlockedRequestsTriggerPriority(rhs);
+      });
+}
+
 }  // namespace
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
@@ -151,10 +191,18 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
                  kShutdownOrSessionTermination);
     return;
   }
-  // TODO(http://b/325450696): propagate the callback to all relevant
-  // controllers.
-  cookie_controller()->HandleRequestBlockedOnCookie(
-      std::move(resume_blocked_request));
+
+  // TODO(http://b/325450696): figure out which controllers are blocking for the
+  // request and pass the callback only to them.
+  base::RepeatingCallback<void(chrome::mojom::ResumeBlockedRequestsTrigger)>
+      barrier_callback =
+          base::BarrierCallback<chrome::mojom::ResumeBlockedRequestsTrigger>(
+              cookie_controllers_.size(),
+              base::BindOnce(&AggregateMultipleTriggers)
+                  .Then(std::move(resume_blocked_request)));
+  for (auto& [key, controller] : cookie_controllers_) {
+    controller->HandleRequestBlockedOnCookie(barrier_callback);
+  }
 }
 
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
