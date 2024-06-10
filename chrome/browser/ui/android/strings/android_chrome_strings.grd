@@ -3365,13 +3365,16 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
       </message>
       <message name="IDS_SIGNIN_FRE_TITLE" desc="This string is the the title of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
-      Make Chrome your own
+        Make Chrome your own
       </message>
       <message name="IDS_SIGNIN_FRE_SUBTITLE_LEGACY" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to get more useful features when they're signed in across multiple devices (like phones and computers). Try to limit translations to 50 characters. Do not exceed 75 characters.">
         Sign in to browse easier across devices
       </message>
       <message name="IDS_SIGNIN_FRE_SUBTITLE" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Sign in to get your bookmarks, passwords and more on all your devices
+      </message>
+      <message name="IDS_SIGNIN_FRE_SUBTITLE_WITHOUT_SYNC" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). However, we introduce a caveat, because the user has a managed account (such as Enterprise); this means that, depending on their organization's settings, the user might not be able to save all types of data in their Google Account. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
+        Sign in to get the most out of Chrome
       </message>
       <message name="IDS_FRE_SIGNING_IN" desc="Text to show below a progress spinner in the signin FRE to notify the user that signing in is in progress.">
         Signing in\u2026

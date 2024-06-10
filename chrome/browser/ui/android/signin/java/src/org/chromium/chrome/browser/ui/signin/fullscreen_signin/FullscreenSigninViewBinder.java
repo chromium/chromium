@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
@@ -81,6 +82,12 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateVisibility(view, model);
+        } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
+            @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);
+            view.getTitle().setText(textId);
+        } else if (propertyKey == FullscreenSigninProperties.SUBTITLE_STRING_ID) {
+            @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
+            view.getSubtitle().setText(textId);
         } else if (propertyKey == FullscreenSigninProperties.FOOTER_STRING) {
             final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
             if (footerText == null) {
@@ -152,9 +159,6 @@ class FullscreenSigninViewBinder {
                                         && !showManagementNotice
                                 ? View.VISIBLE
                                 : View.GONE);
-        if (!showInitialLoadProgressSpinner) {
-            updateTitleAndSubtitleText(view, model);
-        }
 
         final int selectedAccountVisibility =
                 !showInitialLoadProgressSpinner
@@ -183,23 +187,6 @@ class FullscreenSigninViewBinder {
         final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
         view.getFooterView()
                 .setVisibility(footerText == null ? View.GONE : otherElementsVisibility);
-    }
-
-    private static void updateTitleAndSubtitleText(FullscreenSigninView view, PropertyModel model) {
-        boolean isSigninSupported = model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED);
-        boolean replaceSyncUi =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-        view.getTitle()
-                .setText(
-                        (replaceSyncUi && isSigninSupported)
-                                ? R.string.signin_fre_title
-                                : R.string.fre_welcome);
-        view.getSubtitle()
-                .setText(
-                        replaceSyncUi
-                                ? R.string.signin_fre_subtitle
-                                : R.string.signin_fre_subtitle_legacy);
     }
 
     private static void updateVisibilityOnButtonClick(

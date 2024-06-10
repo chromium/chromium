@@ -19,12 +19,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
@@ -39,6 +41,8 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -49,6 +53,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FullscreenSigninMediator
@@ -115,6 +120,8 @@ public class FullscreenSigninMediator
                         this::onDismissClicked,
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !disableSignInForAutomotiveDevice(),
+                        R.string.fre_welcome,
+                        R.string.signin_fre_subtitle_legacy,
                         getFooterString(false));
 
         mDelegate
@@ -215,11 +222,11 @@ public class FullscreenSigninMediator
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
+        Profile profile = mDelegate.getProfileSupplier().get().getOriginalProfile();
         if (hasPolicies) {
             isSigninDisabledByPolicy =
                     IdentityServicesProvider.get()
-                            .getSigninManager(
-                                    mDelegate.getProfileSupplier().get().getOriginalProfile())
+                            .getSigninManager(profile)
                             .isSigninDisabledByPolicy();
             Log.i(
                     TAG,
@@ -238,6 +245,22 @@ public class FullscreenSigninMediator
                         && !disableSignInForAutomotiveDevice();
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            if (isSigninSupported) {
+                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, R.string.signin_fre_title);
+            }
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            boolean isSyncDataManaged =
+                    IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
+                            .anyMatch(syncService::isTypeManagedByPolicy);
+            mModel.set(
+                    FullscreenSigninProperties.SUBTITLE_STRING_ID,
+                    isSyncDataManaged
+                            ? R.string.signin_fre_subtitle_without_sync
+                            : R.string.signin_fre_subtitle);
+        }
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
         mModel.set(
