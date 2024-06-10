@@ -9,11 +9,18 @@
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
 
+inline constexpr char kCfmChromeLogFile[] = "/var/log/chrome/chrome";
+inline constexpr char kCfmCrosEcLogFile[] = "/var/log/cros_ec.log";
+inline constexpr char kCfmFwupdLogFile[] = "/var/log/fwupd.log";
+inline constexpr char kCfmPowerdLogFile[] = "/var/log/powerd.out";
 inline constexpr char kCfmSyslogLogFile[] = "/var/log/messages";
+inline constexpr char kCfmUiLogFile[] = "/var/log/ui/ui.LATEST";
+inline constexpr char kCfmUpdateEngineLogFile[] = "/var/log/update_engine.log";
 
 // Dummy value for when a call to stat() fails to obtain
 // a valid inode. Unlikely to be used, but be defensive.

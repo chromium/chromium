@@ -31,13 +31,20 @@ constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
 constexpr size_t kServiceAdaptorRetryMaxTries = 5;
 
 const char* kLocalCommandSources[] = {
+    "df -h",
+    "free -m",
     "ip -brief address",
+    "lspci",
+    "lsusb -t",
+    // Hide kernelspace processes and show limited columns.
+    "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
 };
 
 const char* kLocalLogSources[] = {
-    kCfmAuditLogFile,
-    kCfmBiosInfoLogFile,
-    kCfmSyslogLogFile,
+    kCfmAuditLogFile,  kCfmBiosInfoLogFile,     kCfmChromeLogFile,
+    kCfmCrosEcLogFile, kCfmEventlogLogFile,     kCfmFwupdLogFile,
+    kCfmLacrosLogFile, kCfmPowerdLogFile,       kCfmSyslogLogFile,
+    kCfmUiLogFile,     kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
 };
 
 }  // namespace
