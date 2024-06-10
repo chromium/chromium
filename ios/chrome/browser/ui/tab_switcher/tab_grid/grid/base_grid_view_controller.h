@@ -138,6 +138,11 @@ class WebStateID;
 // of a scrollview, they don't all get the correct information when being laid
 // out. To that end, contentInsets are manually added.
 @property(nonatomic, assign) UIEdgeInsets contentInsets;
+// A Boolean value that controls whether the scroll-to-top gesture is enabled.
+// It is a wrapper around the inner `collectionView.scrollsToTop` property.
+// The default value of this property is YES.
+@property(nonatomic, assign, getter=isGridScrollsToTopEnabled)
+    BOOL gridScrollsToTopEnabled;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;

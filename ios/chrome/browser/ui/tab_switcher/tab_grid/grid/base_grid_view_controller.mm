@@ -303,6 +303,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return IsScrollViewScrolledToBottom(self.collectionView);
 }
 
+- (BOOL)isGridScrollsToTopEnabled {
+  return self.collectionView.scrollsToTop;
+}
+
+- (void)setGridScrollsToTopEnabled:(BOOL)gridScrollsToTopEnabled {
+  self.collectionView.scrollsToTop = gridScrollsToTopEnabled;
+}
+
 - (void)setEmptyStateView:(UIView<GridEmptyView>*)emptyStateView {
   if (_emptyStateView) {
     [_emptyStateView removeFromSuperview];

@@ -173,10 +173,19 @@
   if (_tabGroupCoordinator) {
     [self hideTabGroup];
   }
+
+  // When entering the tab group, disable scrolls-to-top gesture for the
+  // view controller that is going to stay behind the screen being presented.
+  self.gridViewController.gridScrollsToTopEnabled = NO;
+
   [self showTabGroup:tabGroup forTabGridOpening:NO];
 }
 
 - (void)hideTabGroup {
+  // When the tab group is hidden, re-enable the scrolls-to-top gesture on the
+  // regular grid view controller.
+  self.gridViewController.gridScrollsToTopEnabled = YES;
+
   [_tabGroupCoordinator stop];
   _tabGroupCoordinator = nil;
 }
