@@ -1331,6 +1331,17 @@ class BottomSheet extends FrameLayout
         mContentWidth = right - left;
         invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
+
+        // If the sheet height changes mid-animation, make sure we animate to that height.
+        // TODO(330357665): This animation will look rough in most cases, we should investigate a
+        //                  way to smooth this.
+        if (isRunningSettleAnimation() && isFullHeightWrapContent()) {
+            @SheetState int target = getTargetSheetState();
+            if (target != SheetState.NONE) {
+                cancelAnimation();
+                setSheetState(target, /* animate= */ true);
+            }
+        }
     }
 
     private void ensureContentIsWrapped(boolean animate) {
