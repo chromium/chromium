@@ -69,6 +69,10 @@ constexpr char kNoActiveWindowFound[] =
     "Could not find an active browser window.";
 constexpr char kNoActivePopup[] =
     "Extension does not have a popup on the active tab.";
+constexpr char kOpenPopupInactiveWindow[] =
+    "Cannot show popup for an inactive window. To show the popup for this "
+    "window, first call `chrome.windows.update` with `focused` set to "
+    "true.";
 
 bool g_report_error_for_invisible_icon = false;
 
@@ -677,6 +681,10 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
   if (!browser) {
     DCHECK(!error.empty());
     return RespondNow(Error(std::move(error)));
+  }
+
+  if (!browser->window()->IsActive()) {
+    return RespondNow(Error(kOpenPopupInactiveWindow));
   }
 
   if (!HasPopupOnActiveTab(browser, browser_context(), *extension()))

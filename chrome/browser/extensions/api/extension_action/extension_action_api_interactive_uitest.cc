@@ -120,9 +120,6 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInSpecifiedWindow) {
   ASSERT_TRUE(second_browser);
   ui_test_utils::BrowserActivationWaiter(second_browser).WaitForActivation();
 
-  // TODO(crbug.com/40057101): We should allow extensions to open a
-  // popup in an inactive window. Currently, this fails, so try to open the
-  // popup in the active window (but with a specified ID).
   EXPECT_FALSE(browser()->window()->IsActive());
   EXPECT_TRUE(second_browser->window()->IsActive());
 
@@ -143,6 +140,35 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInSpecifiedWindow) {
     EXPECT_EQ(extension->GetResourceURL("popup.html"),
               host->main_frame_host()->GetLastCommittedURL());
   }
+
+  EXPECT_FALSE(BrowserHasPopup(browser()));
+}
+
+// Tests displaying a popup in an inactive window specified in the API call.
+IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInInactiveWindow) {
+  const Extension* extension = LoadStubExtension();
+  ASSERT_TRUE(extension);
+
+  Browser* second_browser = CreateBrowser(profile());
+  ASSERT_TRUE(second_browser);
+  ui_test_utils::BrowserActivationWaiter(second_browser).WaitForActivation();
+
+  // TODO(crbug.com/40057101): We should allow extensions to open a
+  // popup in an inactive window. Currently, this fails, so try to open the
+  // popup in the active window (but with a specified ID).
+  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(second_browser->window()->IsActive());
+
+  int inactive_window_id = ExtensionTabUtil::GetWindowId(browser());
+
+  // The popup should fail to show on the first (inactive) browser.
+  constexpr char kFailureScript[] =
+      R"(await chrome.test.assertPromiseRejects(
+         chrome.action.openPopup({windowId: %d}),
+         /Error: Cannot show popup for an inactive window./);
+       chrome.test.succeed();)";
+  WrapAndRunScript(base::StringPrintf(kFailureScript, inactive_window_id),
+                   *extension);
 
   EXPECT_FALSE(BrowserHasPopup(browser()));
 }
