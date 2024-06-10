@@ -46,22 +46,6 @@ inline constexpr char kTrackingProtectionOnboardingAcked[] =
 inline constexpr char kTrackingProtectionOnboardingAckAction[] =
     "tracking_protection.tracking_protection_onboarding_ack_action";
 
-// Offboarding
-
-// Unsynced boolean that indicates whether or not the user has been offboarded
-// (After being onboarded previously).
-inline constexpr char kTrackingProtectionOffboarded[] =
-    "tracking_protection.tracking_protection_offboarded";
-
-// Unsynced pref that indicates when the profile was offboarded.
-inline constexpr char kTrackingProtectionOffboardedSince[] =
-    "tracking_protection.tracking_protection_offboarded_since";
-
-// Unsynced pref that indicates the action taken to acknowledge the Offboarding
-// Notice.
-inline constexpr char kTrackingProtectionOffboardingAckAction[] =
-    "tracking_protection.tracking_protection_offboarding_ack_action";
-
 // Silent onboarding
 
 // Unsynced pref that indicates what status the profile is at with regards to

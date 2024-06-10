@@ -1127,6 +1127,14 @@ inline constexpr char kAccessibilityPdfOcrAlwaysActive[] =
     "settings.a11y.pdf_ocr_always_active";
 #endif
 
+// Deprecated 06/2024.
+inline constexpr char kTrackingProtectionOffboarded[] =
+    "tracking_protection.tracking_protection_offboarded";
+inline constexpr char kTrackingProtectionOffboardedSince[] =
+    "tracking_protection.tracking_protection_offboarded_since";
+inline constexpr char kTrackingProtectionOffboardingAckAction[] =
+    "tracking_protection.tracking_protection_offboarding_ack_action";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1636,6 +1644,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   registry->RegisterBooleanPref(kAccessibilityPdfOcrAlwaysActive, true);
 #endif
+
+  // Deprecated 06/2024.
+  registry->RegisterBooleanPref(kTrackingProtectionOffboarded, false);
+  registry->RegisterTimePref(kTrackingProtectionOffboardedSince, base::Time());
+  registry->RegisterIntegerPref(kTrackingProtectionOffboardingAckAction, 0);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -3029,6 +3042,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   profile_prefs->ClearPref(kAccessibilityPdfOcrAlwaysActive);
 #endif
+
+  // Added 06/2024.
+  profile_prefs->ClearPref(kTrackingProtectionOffboarded);
+  profile_prefs->ClearPref(kTrackingProtectionOffboardedSince);
+  profile_prefs->ClearPref(kTrackingProtectionOffboardingAckAction);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
