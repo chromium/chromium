@@ -208,7 +208,7 @@ export class ActionDispatcher {
     }
   }
 
-  #dispatchPointerDownAction(
+  async #dispatchPointerDownAction(
     source: PointerSource,
     keyState: KeySource,
     action: Readonly<Input.PointerDownAction>
@@ -224,11 +224,12 @@ export class ActionDispatcher {
 
     // --- Platform-specific code begins here ---
     const {modifiers} = keyState;
+    const {radiusX, radiusY} = getRadii(width ?? 1, height ?? 1);
     switch (pointerType) {
       case Input.PointerType.Mouse:
       case Input.PointerType.Pen:
         // TODO: Implement width and height when available.
-        return this.#context.cdpTarget.cdpClient.sendCommand(
+        await this.#context.cdpTarget.cdpClient.sendCommand(
           'Input.dispatchMouseEvent',
           {
             type: 'mousePressed',
@@ -249,8 +250,9 @@ export class ActionDispatcher {
             force: pressure,
           }
         );
+        break;
       case Input.PointerType.Touch:
-        return this.#context.cdpTarget.cdpClient.sendCommand(
+        await this.#context.cdpTarget.cdpClient.sendCommand(
           'Input.dispatchTouchEvent',
           {
             type: 'touchStart',
@@ -258,7 +260,8 @@ export class ActionDispatcher {
               {
                 x,
                 y,
-                ...getRadii(width ?? 1, height ?? 1),
+                radiusX,
+                radiusY,
                 tangentialPressure,
                 tiltX,
                 tiltY,
@@ -270,7 +273,11 @@ export class ActionDispatcher {
             modifiers,
           }
         );
+        break;
     }
+    source.radiusX = radiusX;
+    source.radiusY = radiusY;
+    source.force = pressure;
     // --- Platform-specific code ends here ---
   }
 
@@ -284,7 +291,7 @@ export class ActionDispatcher {
       return;
     }
     source.pressed.delete(button);
-    const {x, y, subtype: pointerType} = source;
+    const {x, y, force, radiusX, radiusY, subtype: pointerType} = source;
 
     // --- Platform-specific code begins here ---
     const {modifiers} = keyState;
@@ -315,6 +322,9 @@ export class ActionDispatcher {
                 x,
                 y,
                 id: source.pointerId,
+                force,
+                radiusX,
+                radiusY,
               },
             ],
             modifiers,
@@ -342,6 +352,7 @@ export class ActionDispatcher {
       duration = this.#tickDuration,
     } = action;
     const {tiltX, tiltY} = getTilt(action);
+    const {radiusX, radiusY} = getRadii(width ?? 1, height ?? 1);
 
     const {targetX, targetY} = await this.#getCoordinateFromOrigin(
       origin,
@@ -433,7 +444,8 @@ export class ActionDispatcher {
                     {
                       x,
                       y,
-                      ...getRadii(width ?? 1, height ?? 1),
+                      radiusX,
+                      radiusY,
                       tangentialPressure,
                       tiltX,
                       tiltY,
@@ -452,6 +464,9 @@ export class ActionDispatcher {
 
         source.x = x;
         source.y = y;
+        source.radiusX = radiusX;
+        source.radiusY = radiusY;
+        source.force = pressure;
       }
     } while (!last);
   }

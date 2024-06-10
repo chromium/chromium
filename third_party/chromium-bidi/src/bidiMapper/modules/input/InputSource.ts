@@ -78,6 +78,9 @@ export class PointerSource {
   pressed = new Set<number>();
   x = 0;
   y = 0;
+  radiusX?: number;
+  radiusY?: number;
+  force?: number;
 
   constructor(id: number, subtype: Input.PointerType) {
     this.pointerId = id;
