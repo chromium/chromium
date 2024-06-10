@@ -1298,18 +1298,19 @@ void AutofillAgent::QueryAutofillSuggestions(
   // TODO crbug.com/1007974 - Can we bake this into
   // FindFormAndFieldForFormControlElement()?
   std::optional<FormAndField> form_and_field =
-      FindFormAndFieldForFormControlElement(
+      form_util::FindFormAndFieldForFormControlElement(
           element, field_data_manager(),
-          MaybeExtractDatalist({form_util::ExtractOption::kBounds}));
+          {form_util::ExtractOption::kDatalist,
+           form_util::ExtractOption::kBounds});
   if (!form_and_field) {
     // If we couldn't extract the form, at least let autocomplete have a shot at
     // providing suggestions.
     FormData form_for_single_field;
     FormFieldData field;
-    WebFormControlElementToFormField(
+    form_util::WebFormControlElementToFormField(
         form_util::GetOwningForm(element), element, nullptr,
-        MaybeExtractDatalist({form_util::ExtractOption::kValue,
-                              form_util::ExtractOption::kBounds}),
+        {form_util::ExtractOption::kDatalist, form_util::ExtractOption::kValue,
+         form_util::ExtractOption::kBounds},
         &field);
     form_for_single_field.set_fields({std::move(field)});
     form_and_field.emplace(std::move(form_for_single_field),
@@ -1322,24 +1323,6 @@ void AutofillAgent::QueryAutofillSuggestions(
     LOG(WARNING) << "Autofill suggestions are disabled because the document "
                     "isn't a secure context.";
     return;
-  }
-
-  if (!config_.extract_all_datalists) {
-    if (const WebInputElement input_element =
-            element.DynamicTo<WebInputElement>()) {
-      // Find the datalist values and send them to the browser process.
-      std::vector<SelectOption> datalist_options;
-      form_util::GetDataListSuggestions(input_element, &datalist_options);
-      // TODO crbug.com/40232021 - Eliminate const_cast. Some options are:
-      // - Introduce a new ExtractOption.
-      // - Set ExtractOption::kDatalist in the above
-      //   FindFormAndFieldForFormControlElement() and
-      //   WebFormControlElementToFormField() calls.
-      // - Retrieve `field` in `form.mutable_fields()`.
-      // - Let FindFormAndFieldForFormControlElement() return only a FormData.
-      const_cast<FormFieldData&>(*field).set_datalist_options(
-          std::move(datalist_options));
-    }
   }
 
   is_popup_possibly_visible_ = true;
