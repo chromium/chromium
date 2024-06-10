@@ -163,7 +163,10 @@ bool PersonalizationAppAmbientProviderImpl::
 
 void PersonalizationAppAmbientProviderImpl::
     NotifyGeolocationPermissionChanged() {
-  CHECK(ambient_observer_remote_.is_bound());
+  if (!ambient_observer_remote_.is_bound()) {
+    return;
+  }
+
   ambient_observer_remote_->OnGeolocationPermissionForSystemServicesChanged(
       IsGeolocationEnabledForSystemServices());
 }
