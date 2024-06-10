@@ -229,6 +229,15 @@ found in the LICENSE file.
     width: 100%;
     height: 100%;
   }
+
+  :host-context(html:not([tablet])) #chromeVoxHintContentTablet {
+    display: none;
+  }
+
+  :host-context(html[tablet]) #chromeVoxHintContentClamshell {
+    display: none;
+  }
+
 </style>
 <div id="dialog" class="layout vertical">
   <h1 id="title" class="welcome-header-text">
@@ -329,8 +338,12 @@ found in the LICENSE file.
       icon2x="oobe-40:welcome-accessibility"></hd-iron-icon>
     <p>[[i18nDynamic(locale, 'chromevoxHintTitle')]]</p>
   </div>
-  <div id="chromeVoxHintContent"
-    slot="content">[[i18nDynamic(locale, 'chromeVoxHintTextExpanded')]]</div>
+  <div slot="content">
+    <div id="chromeVoxHintContentClamshell">[[i18nDynamic(locale,
+        'chromeVoxHintAnnouncementTextLaptopExpanded')]]</div>
+    <div id="chromeVoxHintContentTablet">[[i18nDynamic(locale,
+        'chromeVoxHintAnnouncementTextTabletExpanded')]]</div>
+  </div>
   <div slot="buttons">
     <oobe-text-button
       id="dismissChromeVoxButton"
