@@ -64,6 +64,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
+                    .setRevision(1)
                     .build();
 
     @Rule
