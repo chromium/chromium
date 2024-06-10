@@ -989,10 +989,16 @@ var defaultTests = [
     });
   },
   function startSmoothnessTrackingExplicitThroughputInterval() {
-    chrome.autotestPrivate.startSmoothnessTracking(100, async function() {
+    chrome.autotestPrivate.startSmoothnessTracking(10, async function() {
       chrome.test.assertNoLastError();
 
+      // Let test run a bit to collect a few data points.
+      // Minimizing/unminimizing to generate some screen changes.
+      await sleep(100);
+      await promisify(minimizeBrowserWindow);
+
       await sleep(200);
+      await promisify(unminimizeBrowserWindow);
 
       chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
         chrome.test.assertNoLastError();
