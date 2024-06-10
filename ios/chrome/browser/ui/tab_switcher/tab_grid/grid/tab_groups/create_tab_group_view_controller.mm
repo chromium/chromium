@@ -312,14 +312,12 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
 // Returns the cancel button.
 - (UIButton*)configuredCancelButtonCompacted:(BOOL)isCompact {
-  UIButton* cancelButton = [[UIButton alloc] init];
+  UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
   cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIColor* textColor = isCompact ? [UIColor colorNamed:kBlue600Color]
                                  : [UIColor colorNamed:kSolidBlackColor];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
   NSDictionary* attributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
@@ -329,9 +327,9 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
       [[NSMutableAttributedString alloc]
           initWithString:l10n_util::GetNSString(IDS_CANCEL)
               attributes:attributes];
-  buttonConfiguration.attributedTitle = attributedString;
+  [cancelButton setAttributedTitle:attributedString
+                          forState:UIControlStateNormal];
 
-  cancelButton.configuration = buttonConfiguration;
   cancelButton.accessibilityIdentifier = kCreateTabGroupCancelButtonIdentifier;
   [cancelButton addTarget:self
                    action:@selector(cancelButtonTapped)
@@ -346,21 +344,12 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
 // Returns the cancel button.
 - (UIButton*)configuredCreateGroupButtonCompacted:(BOOL)isCompact {
-  UIButton* creationButton = [[UIButton alloc] init];
+  UIButton* creationButton = [UIButton buttonWithType:UIButtonTypeSystem];
   creationButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration filledButtonConfiguration];
-  if (isCompact) {
-    buttonConfiguration.baseBackgroundColor = [UIColor clearColor];
-  } else {
-    buttonConfiguration.baseBackgroundColor =
-        [UIColor colorNamed:kBlue600Color];
-  }
-  buttonConfiguration.background.cornerRadius = kButtonBackgroundCornerRadius;
 
   UIColor* textColor = isCompact ? [UIColor colorNamed:kBlue600Color]
                                  : [UIColor colorNamed:kSolidWhiteColor];
+
   UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
       preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
       fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
@@ -376,9 +365,22 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
                                    : l10n_util::GetNSString(
                                          IDS_IOS_TAB_GROUP_CREATION_BUTTON)
               attributes:attributes];
-  buttonConfiguration.attributedTitle = attributedString;
 
-  creationButton.configuration = buttonConfiguration;
+  if (isCompact) {
+    // The compact button adheres to the style of the iOS system buttons.
+    creationButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [creationButton setAttributedTitle:attributedString
+                              forState:UIControlStateNormal];
+  } else {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration filledButtonConfiguration];
+    buttonConfiguration.baseBackgroundColor =
+        [UIColor colorNamed:kBlue600Color];
+    buttonConfiguration.background.cornerRadius = kButtonBackgroundCornerRadius;
+    buttonConfiguration.attributedTitle = attributedString;
+    creationButton.configuration = buttonConfiguration;
+  }
+
   creationButton.accessibilityIdentifier =
       kCreateTabGroupCreateButtonIdentifier;
   [creationButton addTarget:self
