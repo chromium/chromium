@@ -2102,6 +2102,9 @@ targets.binaries.script(
         "apks/SystemWebView.apk",
         "--use-apk-under-test-flags-file",
         "-v",
+        # Required for stack.py to find build artifacts for symbolization.
+        "--output-directory",
+        ".",
     ],
 )
 
@@ -2119,6 +2122,9 @@ targets.binaries.script(
         "apks/TrichromeWebView.apk",
         "--use-apk-under-test-flags-file",
         "-v",
+        # Required for stack.py to find build artifacts for symbolization.
+        "--output-directory",
+        ".",
     ],
 )
 
@@ -2136,6 +2142,9 @@ targets.binaries.script(
         "apks/TrichromeWebView64.apk",
         "--use-apk-under-test-flags-file",
         "-v",
+        # Required for stack.py to find build artifacts for symbolization.
+        "--output-directory",
+        ".",
     ],
 )
 
@@ -2168,6 +2177,9 @@ targets.binaries.script(
         "apks/SystemWebView64.apk",
         "--use-apk-under-test-flags-file",
         "-v",
+        # Required for stack.py to find build artifacts for symbolization.
+        "--output-directory",
+        ".",
     ],
 )
 

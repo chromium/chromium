@@ -1947,6 +1947,8 @@
       "apks/SystemWebView64.apk",
       "--use-apk-under-test-flags-file",
       "-v",
+      "--output-directory",
+      ".",
     ],
   },
   "webview_cts_tests": {
@@ -1961,6 +1963,8 @@
       "apks/SystemWebView.apk",
       "--use-apk-under-test-flags-file",
       "-v",
+      "--output-directory",
+      ".",
     ],
   },
   "webview_instrumentation_test_apk": {
@@ -1997,6 +2001,8 @@
       "apks/TrichromeWebView64.apk",
       "--use-apk-under-test-flags-file",
       "-v",
+      "--output-directory",
+      ".",
     ],
   },
   "webview_trichrome_cts_tests": {
@@ -2013,6 +2019,8 @@
       "apks/TrichromeWebView.apk",
       "--use-apk-under-test-flags-file",
       "-v",
+      "--output-directory",
+      ".",
     ],
   },
   "webview_ui_test_app_test_apk": {
