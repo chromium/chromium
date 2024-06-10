@@ -529,6 +529,7 @@ source_set("unit_tests") {
     "mock_password_sync_controller_delegate_bridge.cc",
     "mock_password_sync_controller_delegate_bridge.h",
     "password_generation_controller_impl_unittest.cc",
+    "password_infobar_utils_unittest.cc",
     "password_manager_android_util_unittest.cc",
     "password_manager_error_message_delegate_unittest.cc",
     "password_manager_eviction_util_unittest.cc",

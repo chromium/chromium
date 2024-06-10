@@ -18,6 +18,9 @@
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -294,8 +297,11 @@ bool PasswordGenerationControllerImpl::ShowBottomSheet(
     PasswordGenerationType type) {
   touch_to_fill_generation_controller_ =
       create_touch_to_fill_generation_controller_.Run();
-  std::string account =
-      password_manager::GetDisplayableAccountName(&GetWebContents());
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  std::string account = password_manager::GetDisplayableAccountName(
+      SyncServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
   if (!touch_to_fill_generation_controller_->ShowTouchToFill(
           std::move(account), type, client_->GetPrefs())) {
     return false;
