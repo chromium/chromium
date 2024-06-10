@@ -29,6 +29,16 @@ void LayoutNGBlockFlow::StyleDidChange(StyleDifference diff,
 
   if (diff.NeedsReshape()) {
     SetNeedsCollectInlines();
+
+    // The `initial-letter` creates a special `InlineItem`. When it's turned
+    // on/off, its parent IFC should run `CollectInlines()`.
+    const ComputedStyle& new_style = StyleRef();
+    if (UNLIKELY(old_style->InitialLetter().IsNormal() !=
+                 new_style.InitialLetter().IsNormal())) {
+      if (LayoutObject* parent = Parent()) {
+        parent->SetNeedsCollectInlines();
+      }
+    }
   }
 }
 
