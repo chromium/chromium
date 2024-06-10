@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.22](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.21...chromium-bidi-v0.5.22) (2024-06-10)
+
+
+### Bug Fixes
+
+* keep radius and force of input ([#2299](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2299)) ([3b473c3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3b473c3222d28ead9af4d39a286e0eaeea7b09a9))
+
 ## [0.5.21](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.20...chromium-bidi-v0.5.21) (2024-06-07)
 
 
