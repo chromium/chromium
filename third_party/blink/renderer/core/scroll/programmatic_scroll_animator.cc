@@ -57,14 +57,24 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   if (run_state_ == RunState::kPostAnimationCleanup)
     ResetAnimationState();
 
-  start_time_ = base::TimeTicks();
-  target_offset_ = offset;
   is_sequenced_scroll_ = is_sequenced_scroll;
   if (on_finish_) {
     std::move(on_finish_)
         .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
   }
   on_finish_ = std::move(on_finish);
+  // Ideally, if an ongoing animation exists when we receive a request to
+  // animate to a different offset, instead of cancelling the current
+  // animation, we could retarget the current animation to the new
+  // scroll offset, keeping the velocity of the current animation.
+  // When doing this, we'd need to be careful to handle the possibility
+  // of repeatedly retargeting to a drastically different location such that
+  // the scroll never settles.
+  if (animation_curve_ && target_offset_ == offset) {
+    return;
+  }
+  start_time_ = base::TimeTicks();
+  target_offset_ = offset;
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_),
       cc::ScrollOffsetAnimationCurveFactory::ScrollType::kProgrammatic);
