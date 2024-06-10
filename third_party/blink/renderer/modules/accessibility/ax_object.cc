@@ -280,6 +280,9 @@ HashSet<ax::mojom::blink::Role> GetExpectedParentRole(
       return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
               ax::mojom::blink::Role::kRowGroup,
               ax::mojom::blink::Role::kTreeGrid};
+    case ax::mojom::blink::Role::kRowGroup:
+      return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
+              ax::mojom::blink::Role::kTreeGrid};
     default:
       return {};
   }
