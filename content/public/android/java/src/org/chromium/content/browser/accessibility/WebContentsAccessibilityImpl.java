@@ -1130,8 +1130,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
-            WebContentsAccessibilityImplJni.get().deleteEarly(mNativeAssistDataObj);
-            mNativeAssistDataObj = 0;
+            // In some cases (e.g. testing) the full engine may also be running, so don't delete.
+            if (!isNativeInitialized()) {
+                WebContentsAccessibilityImplJni.get().deleteEarly(mNativeAssistDataObj);
+                mNativeAssistDataObj = 0;
+            }
         }
     }
 
