@@ -156,7 +156,9 @@ public final class FeedItemDecorationTest {
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(2)));
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(3)));
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(4)));
-        verify(mBottomRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(5)));
+        Rect bounds5 = new Rect(mBoundsList.get(5));
+        bounds5.bottom += feedItemDecoration.getAdditionalBottomCardPaddingForTesting();
+        verify(mBottomRoundedDrawable, times(1)).setBounds(eq(bounds5));
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
@@ -212,6 +214,7 @@ public final class FeedItemDecorationTest {
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds3));
 
         Rect bounds5 = new Rect(mBoundsList.get(5));
+        bounds5.bottom += feedItemDecoration.getAdditionalBottomCardPaddingForTesting();
         verify(mBottomRightRoundedDrawable, times(1)).setBounds(eq(bounds5));
 
         Rect bounds4 = new Rect(mBoundsList.get(4));
@@ -235,9 +238,9 @@ public final class FeedItemDecorationTest {
         // * view2 * view3 * <- view2: not rounded
         // *       * view3 * <- view3: not rounded
         // *****************
-        // *     view1     * <- not rounded
+        // *     view4     * <- not rounded
         // *****************
-        // *     view1     * <- bottom rounded
+        // *     view5     * <- bottom rounded
         // *****************
         // *     view6     * special bottom view
         // *****************
@@ -281,6 +284,7 @@ public final class FeedItemDecorationTest {
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds4));
 
         Rect bounds5 = new Rect(mBoundsList.get(5));
+        bounds5.bottom += feedItemDecoration.getAdditionalBottomCardPaddingForTesting();
         verify(mBottomRoundedDrawable, times(1)).setBounds(eq(bounds5));
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
@@ -333,7 +337,9 @@ public final class FeedItemDecorationTest {
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(2)));
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(3)));
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(4)));
-        verify(mBottomRoundedDrawable, times(1)).setBounds(eq(mBoundsList.get(5)));
+        Rect bounds5 = new Rect(mBoundsList.get(5));
+        bounds5.bottom += feedItemDecoration.getAdditionalBottomCardPaddingForTesting();
+        verify(mBottomRoundedDrawable, times(1)).setBounds(eq(bounds5));
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));

@@ -26,6 +26,7 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     private final Drawable mBottomRightRoundedBackground;
     private final Drawable mNotRoundedBackground;
     private final int mGutterPadding;
+    private final int mAdditionalBottomCardPadding;
 
     public FeedItemDecoration(
             Context context,
@@ -52,6 +53,9 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
             mBottomRightRoundedBackground = null;
         }
         mGutterPadding = gutterPadding;
+        mAdditionalBottomCardPadding =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.feed_containment_bottom_card_padding);
     }
 
     @Override
@@ -77,6 +81,13 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
 
             Rect bounds = new Rect();
             parent.getDecoratedBoundsWithMargins(child, bounds);
+
+            // The last card comes with the divider which may overlap the bottom edge of
+            // the feed containment. To work around this, we add an additional bottom padding to
+            // the card.
+            if (isLastViewInFeedContainment(position)) {
+                bounds.bottom += mAdditionalBottomCardPadding;
+            }
 
             // Draw the background for the view.
             Drawable background = getBackgroundDrawable(position);
@@ -185,12 +196,26 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
                             && bounds.bottom == minBottom) {
                         bounds.bottom += maxBottom - minBottom;
                     }
+
+                    // The last card comes with the divider which may overlap the bottom edge of
+                    // the feed containment if the last card is in the longer column. To work around
+                    // this, we add an additional bottom padding to both bottom cards.
+                    if (reachLastViewInFeedContainment && bounds.bottom == maxBottom) {
+                        bounds.bottom += mAdditionalBottomCardPadding;
+                    }
                 }
+            }
+
+            // Add an additional bottom padding for the last card that takes the full span.
+            if ((columnIndex == -1 || !multiColumn) && isLastViewInFeedContainment(position)) {
+                bounds.bottom += mAdditionalBottomCardPadding;
             }
 
             // Draw the background for the extended bounds.
             Drawable background;
-            if (multiColumn && reachLastViewInFeedContainment && bounds.bottom == maxBottom) {
+            if (multiColumn
+                    && reachLastViewInFeedContainment
+                    && bounds.bottom == maxBottom + mAdditionalBottomCardPadding) {
                 background =
                         (columnIndex == 0)
                                 ? mBottomLeftRoundedBackground
@@ -228,5 +253,9 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
         } else {
             return mNotRoundedBackground;
         }
+    }
+
+    int getAdditionalBottomCardPaddingForTesting() {
+        return mAdditionalBottomCardPadding;
     }
 }

@@ -1161,12 +1161,17 @@ public class FeedStream implements Stream {
             // be always visible since the beginning.
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
                 TextView bottomGapView = new TextView(mActivity);
+                int bottomMargin =
+                        mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(R.dimen.feed_containment_margin)
+                                + mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.feed_containment_bottom_card_padding);
                 ViewGroup.LayoutParams bottomGapParams =
                         new ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                mActivity
-                                        .getResources()
-                                        .getDimensionPixelSize(R.dimen.feed_containment_margin));
+                                ViewGroup.LayoutParams.MATCH_PARENT, bottomMargin);
                 bottomGapView.setLayoutParams(bottomGapParams);
                 FeedListContentManager.NativeViewContent bottomGapViewContent =
                         new FeedListContentManager.NativeViewContent(
