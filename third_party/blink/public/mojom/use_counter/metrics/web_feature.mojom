@@ -4363,6 +4363,7 @@ enum WebFeature {
   kRubyPositionInterCharacter = 4993,
   kTextSizeAdjustNotAuto = 4994,
   kTextSizeAdjustPercentNot100 = 4995,
+  kServiceWorkerAutoPreload = 4996,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

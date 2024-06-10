@@ -502,6 +502,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
 
   bool result = StartRaceNetworkRequest(context, version);
   if (result) {
+    version->CountFeature(blink::mojom::WebFeature::kServiceWorkerAutoPreload);
     SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
     // When the AutoPreload is triggered, set the commit responsibility
     // because the response is always committed by the fetch handler
