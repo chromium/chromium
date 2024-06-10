@@ -48,6 +48,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -337,6 +338,12 @@ public class SearchActivityTest {
         verify(mHandler)
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return WarmupManager.getInstance().hasSpareWebContents()
+                            || WarmupManager.getInstance()
+                                    .hasSpareTab(ProfileManager.getLastUsedRegularProfile());
+                });
     }
 
     @Test

@@ -8,9 +8,10 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNa
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
@@ -77,7 +78,7 @@ public class CloseButtonNavigator {
     }
 
     /** Handles navigation and Tab closures that should occur when the close button is pressed. */
-    public void navigateOnClose(FinishHandler finishActivity) {
+    public void navigateOnClose(Callback<@FinishReason Integer> finishCallback) {
         // If the tab is a child tab and |mButtonClosesChildTab| == true, close the child tab.
         Tab currentTab = mTabProvider.getTab();
         boolean isFromChildTab =
@@ -106,7 +107,7 @@ public class CloseButtonNavigator {
             if (mTabController.onlyOneTabRemaining() && !isMinimized) {
                 // If we call mTabController.closeTab() and wait for the Activity to close as a
                 // result, we have a blank screen flashing before closing. https://crbug.com/1518767
-                finishActivity.onFinish(USER_NAVIGATION);
+                finishCallback.onResult(USER_NAVIGATION);
                 ++numTabsClosed;
                 break;
             }

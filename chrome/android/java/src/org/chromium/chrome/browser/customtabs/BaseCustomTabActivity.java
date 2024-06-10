@@ -25,6 +25,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -64,6 +66,7 @@ import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -105,6 +108,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
+    private boolean mWarmupOnDestroy;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -320,9 +324,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         CustomTabActivityClientConnectionKeeper connectionKeeper =
                 component.resolveConnectionKeeper();
         mNavigationController.setFinishHandler(
-                (reason) -> {
+                (reason, warmupOnFinish) -> {
                     if (reason == USER_NAVIGATION) connectionKeeper.recordClientConnectionStatus();
-                    handleFinishAndClose();
+                    handleFinishAndClose(warmupOnFinish);
                 });
         if (BackPressManager.isEnabled()) {
             mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
@@ -422,6 +426,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             if (minimizationManager != null) {
                 minimizationManager.removeObserver(mMinimizationObserver);
             }
+        }
+
+        if (mWarmupOnDestroy) {
+            Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> CustomTabsConnection.createSpareWebContents(profile));
         }
 
         super.onDestroyInternal();
@@ -615,7 +626,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
      * Internal implementation that finishes the activity and removes the references from Android
      * recents.
      */
-    protected void handleFinishAndClose() {
+    protected void handleFinishAndClose(boolean warmupOnFinish) {
+        // Delay until we're destroyed to avoid jank in the transition animation when closing the
+        // tab.
+        mWarmupOnDestroy = warmupOnFinish;
         Runnable defaultBehavior =
                 () -> {
                     if (useSeparateTask()) {

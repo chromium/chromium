@@ -41,32 +41,29 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        Statement statement =
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        // TODO(crbug.com/342240475): Find a better way to deal with IPH in tests.
-                        Log.w(
-                                TAG,
-                                "A mock Tracker is set in CustomTabActivityTestRule. This will"
-                                    + " prevent any IPH from showing. See crbug.com/342240475.");
-                        Tracker tracker = Mockito.mock(Tracker.class);
-                        // Disable IPH to prevent it from interfering with the tests.
-                        when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
-                        TrackerFactory.setTrackerForTests(tracker);
-                        try {
-                            base.evaluate();
-                        } finally {
-                            TestThreadUtils.runOnUiThreadBlocking(
-                                    () -> {
-                                        WarmupManager.getInstance().destroySpareTab();
-                                        // Prevent further async spare tab creation.
-                                        CustomTabsConnection.sSkipTabPrewarmingForTesting = true;
-                                    });
-                        }
-                    }
-                };
-        return super.apply(statement, description);
+        Statement superStatement = super.apply(base, description);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                // TODO(crbug.com/342240475): Find a better way to deal with IPH in tests.
+                Log.w(
+                        TAG,
+                        "A mock Tracker is set in CustomTabActivityTestRule. This will"
+                                + " prevent any IPH from showing. See crbug.com/342240475.");
+                Tracker tracker = Mockito.mock(Tracker.class);
+                // Disable IPH to prevent it from interfering with the tests.
+                when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
+                TrackerFactory.setTrackerForTests(tracker);
+                try {
+                    superStatement.evaluate();
+                } finally {
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                WarmupManager.getInstance().destroySpareTab();
+                            });
+                }
+            }
+        };
     }
 
     public static void putCustomTabIdInIntent(Intent intent) {

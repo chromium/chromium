@@ -239,9 +239,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    protected void handleFinishAndClose() {
+    protected void handleFinishAndClose(boolean warmupOnFinish) {
         if (mOpenTimeRecorder != null) mOpenTimeRecorder.updateCloseCause();
-        super.handleFinishAndClose();
+        super.handleFinishAndClose(warmupOnFinish);
     }
 
     @Override

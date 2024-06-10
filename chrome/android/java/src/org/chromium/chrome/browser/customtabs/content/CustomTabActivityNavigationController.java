@@ -25,8 +25,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -42,7 +40,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -55,8 +52,10 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -71,6 +70,7 @@ public class CustomTabActivityNavigationController
         FinishReason.OTHER,
         FinishReason.OPEN_IN_BROWSER
     })
+    @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     public @interface FinishReason {
         int USER_NAVIGATION = 0;
@@ -96,7 +96,7 @@ public class CustomTabActivityNavigationController
 
     /** Interface encapsulating the process of handling the custom tab closing. */
     public interface FinishHandler {
-        void onFinish(@FinishReason int reason);
+        void onFinish(@FinishReason int reason, boolean warmupOnFinish);
     }
 
     /** Interface which gets the package name of the default web browser on the device. */
@@ -404,23 +404,15 @@ public class CustomTabActivityNavigationController
         if (mIsFinishing) return;
         mIsFinishing = true;
         mFinishReason = reason;
-
-        if (reason != REPARENTING) {
-            assert mProfileProviderSupplier.hasValue();
-            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
-            // Closing the activity destroys the renderer as well. Re-create a spare renderer some
-            // time after, so that we have one ready for the next tab open. This does not increase
-            // memory consumption, as the current renderer goes away. We create a renderer as a lot
-            // of users open several Custom Tabs in a row. The delay is there to avoid jank in the
-            // transition animation when closing the tab.
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> CustomTabsConnection.createSpareWebContents(profile),
-                    500);
-        }
+        // Closing the activity destroys the renderer as well. Re-create a spare renderer some
+        // time after, so that we have one ready for the next tab open. This does not increase
+        // memory consumption, as the current renderer goes away. We create a renderer as a lot
+        // of users open several Custom Tabs in a row. The delay is there to avoid jank in the
+        // transition animation when closing the tab.
+        boolean warmupOnFinish = reason != REPARENTING;
 
         if (mFinishHandler != null) {
-            mFinishHandler.onFinish(reason);
+            mFinishHandler.onFinish(reason, warmupOnFinish);
         }
     }
 
