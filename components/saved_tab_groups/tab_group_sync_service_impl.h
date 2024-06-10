@@ -126,8 +126,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void HandleTabGroupUpdated(const base::Uuid& group_guid,
                              const std::optional<base::Uuid>& tab_guid,
                              TriggerSource source);
-  void HandleTabGroupRemoved(const SavedTabGroup* removed_group,
-                             TriggerSource source);
+  void HandleTabGroupRemoved(
+      std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
+      TriggerSource source);
 
   // Wrapper function that calls all metric recording functions.
   void RecordMetrics();

@@ -306,7 +306,10 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
-  HandleTabGroupAdded(guid, TriggerSource::REMOTE);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupAdded,
+                                weak_ptr_factory_.GetWeakPtr(), guid,
+                                TriggerSource::REMOTE));
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
@@ -317,7 +320,10 @@ void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  HandleTabGroupUpdated(group_guid, tab_guid, TriggerSource::REMOTE);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupUpdated,
+                                weak_ptr_factory_.GetWeakPtr(), group_guid,
+                                tab_guid, TriggerSource::REMOTE));
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupUpdatedLocally(
@@ -328,12 +334,22 @@ void TabGroupSyncServiceImpl::SavedTabGroupUpdatedLocally(
 
 void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
     const SavedTabGroup* removed_group) {
-  HandleTabGroupRemoved(removed_group, TriggerSource::REMOTE);
+  std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair;
+  id_pair.first = removed_group->saved_guid();
+  id_pair.second = removed_group->local_group_id();
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupRemoved,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(id_pair), TriggerSource::REMOTE));
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupRemovedLocally(
     const SavedTabGroup* removed_group) {
-  HandleTabGroupRemoved(removed_group, TriggerSource::LOCAL);
+  std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair;
+  id_pair.first = removed_group->saved_guid();
+  id_pair.second = removed_group->local_group_id();
+  HandleTabGroupRemoved(std::move(id_pair), TriggerSource::LOCAL);
 }
 
 void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
@@ -376,14 +392,14 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
 }
 
 void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
-    const SavedTabGroup* removed_group,
+    std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
     TriggerSource source) {
   VLOG(2) << __func__;
   for (auto& observer : observers_) {
-    observer.OnTabGroupRemoved(removed_group->saved_guid(), source);
+    observer.OnTabGroupRemoved(id_pair.first, source);
   }
 
-  auto local_id = removed_group->local_group_id();
+  auto local_id = id_pair.second;
   if (!local_id.has_value()) {
     return;
   }

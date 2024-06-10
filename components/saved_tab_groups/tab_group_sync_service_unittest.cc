@@ -528,6 +528,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {
                                           Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->AddedFromSync(group_4);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
@@ -544,6 +545,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->UpdatedVisualDataFromSync(group_1_.saved_guid(), &visual_data);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
@@ -591,6 +593,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
               OnTabGroupAdded(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
       .Times(0);
   model_->AddedFromSync(group_4);
+  task_environment_.RunUntilIdle();
 
   // Update visuals. Observers still won't be notified.
   EXPECT_CALL(*observer_,
@@ -601,6 +604,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
       .Times(0);
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   model_->UpdatedVisualDataFromSync(group_id, &visual_data);
+  task_environment_.RunUntilIdle();
 
   // Add a tab to the group. Observers will be notified as an Add event.
   EXPECT_CALL(*observer_,
@@ -612,6 +616,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
   SavedTabGroupTab tab =
       test::CreateSavedTabGroupTab("A_Link", u"Tab", group_id);
   model_->AddTabToGroupFromSync(group_id, tab);
+  task_environment_.RunUntilIdle();
 
   // Update visuals. Observers will be notified as an Update event.
   EXPECT_CALL(*observer_,
@@ -621,6 +626,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
               OnTabGroupUpdated(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->UpdatedVisualDataFromSync(group_id, &visual_data);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
@@ -635,6 +641,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->RemovedFromSync(group_1_.saved_guid());
+  task_environment_.RunUntilIdle();
 
   // Remove a group with no local ID.
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
@@ -642,6 +649,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->RemovedFromSync(group_2_.saved_guid());
+  task_environment_.RunUntilIdle();
 
   // Try removing a group that doesn't exist.
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
@@ -649,6 +657,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
                                             Eq(TriggerSource::REMOTE)))
       .Times(0);
   model_->RemovedFromSync(group_1_.saved_guid());
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
