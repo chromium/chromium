@@ -267,16 +267,16 @@
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'identifier': 'Lacros version skew testing ash canary',
-    'description': 'Run with ash-chrome version 127.0.6530.0',
+    'description': 'Run with ash-chrome version 127.0.6531.0',
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v127.0.6530.0/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v127.0.6531.0/test_ash_chrome',
     ],
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v127.0.6530.0',
-          'revision': 'version:127.0.6530.0',
+          'location': 'lacros_version_skew_tests_v127.0.6531.0',
+          'revision': 'version:127.0.6531.0',
         },
       ],
     },
