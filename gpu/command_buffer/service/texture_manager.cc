@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
@@ -2615,13 +2616,12 @@ void TextureManager::DoCubeMapWorkaround(
     }
   }
   DoTexImageArguments new_args = args;
-  std::unique_ptr<char[]> zero(new char[args.pixels_size]);
-  memset(zero.get(), 0, args.pixels_size);
+  auto zero = base::HeapArray<char>::WithSize(args.pixels_size);
   // Need to clear PIXEL_UNPACK_BUFFER and UNPACK params for data uploading.
   state->PushTextureUnpackState();
   for (GLenum face : undefined_faces) {
     new_args.target = face;
-    new_args.pixels = zero.get();
+    new_args.pixels = zero.data();
     DoTexImage(texture_state, state, error_state, framebuffer_state,
                function_name, texture_ref, new_args);
     texture->MarkLevelAsInternalWorkaround(face, args.level);
