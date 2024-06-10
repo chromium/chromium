@@ -2022,16 +2022,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // offer-to-save bubble does not appear on the fourth try. Then, ensures that no
 // strikes are added if the card already has max strikes.
 // TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_StrikeDatabase_Upload_FullFlowTest \
-  DISABLED_StrikeDatabase_Upload_FullFlowTest
-#else
-#define MAYBE_StrikeDatabase_Upload_FullFlowTest \
-  StrikeDatabase_Upload_FullFlowTest
-#endif
+// TODO(crbug.com/330571334): Resolve widespread flakes.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_StrikeDatabase_Upload_FullFlowTest) {
+    DISABLED_StrikeDatabase_Upload_FullFlowTest) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
