@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
@@ -129,7 +130,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
     }
 
     @VisibleForTesting
-    @CalledByNative
+    @CalledByNativeForTesting
     public static void createConnectedInstanceForTestingAsync(
             @NonNull IpProtectionAuthServiceCallback callback) {
         Intent intent = new Intent();

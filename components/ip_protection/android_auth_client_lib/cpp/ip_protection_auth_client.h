@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 
@@ -22,7 +23,8 @@ class IpProtectionAuthClient;
 // Used to return an IpProtectionAuthClient or error to the user.
 // Expected type won't change, error type will be updated.
 using CreateIpProtectionAuthClientCallback = base::OnceCallback<void(
-    base::expected<std::unique_ptr<IpProtectionAuthClient>, std::string>)>;
+    base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
+                   std::string>)>;
 
 // Used to return a GetInitialDataResponse or error to the user.
 // Expected type won't change, error type will be updated.
@@ -37,9 +39,9 @@ using AuthAndSignResponseCallback = base::OnceCallback<void(
 // Wrapper around the Java IpProtectionAuthClient that translates native
 // function calls into IPCs to the Android service implementing IP Protection.
 // TODO(b/328781171): replace std::string error messages with an ErrorCode enum
-class IpProtectionAuthClient {
+class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
  public:
-  ~IpProtectionAuthClient();
+  ~IpProtectionAuthClient() override;
   IpProtectionAuthClient(const IpProtectionAuthClient& other) = delete;
   IpProtectionAuthClient& operator=(const IpProtectionAuthClient& other) =
       delete;
@@ -58,12 +60,12 @@ class IpProtectionAuthClient {
   // Asynchronously send a GetInitialDataRequest to the signing server.
   // Callback will be invoked on a thread from the Binder thread pool.
   void GetInitialData(const privacy::ppn::GetInitialDataRequest& request,
-                      GetInitialDataResponseCallback callback) const;
+                      GetInitialDataResponseCallback callback) const override;
 
   // Asynchronously send an AuthAndSignRequest to the signing server.
   // Callback will be invoked on a thread from the Binder thread pool.
   void AuthAndSign(const privacy::ppn::AuthAndSignRequest& request,
-                   AuthAndSignResponseCallback callback) const;
+                   AuthAndSignResponseCallback callback) const override;
 
  private:
   // BindCallbackListener::OnResult calls IpProtectionAuthClient's constructor.

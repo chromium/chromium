@@ -7,9 +7,10 @@ include_rules = [
   "+services/network/test",
 ]
 
+# time.h and statusor.h are required for quiche integration
 specific_include_rules = {
-  # time.h is required to convert from absl::Time exposed by quiche
   ".*\.cc": [
     "+third_party/abseil-cpp/absl/time/time.h",
+    "+third_party/abseil-cpp/absl/status/statusor.h",
   ]
 }

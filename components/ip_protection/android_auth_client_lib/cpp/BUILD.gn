@@ -23,6 +23,7 @@ source_set("native") {
     "byte_array_callback_listener.h",
     "ip_protection_auth_client.cc",
     "ip_protection_auth_client.h",
+    "ip_protection_auth_client_interface.h",
   ]
   deps = [
     ":jni_headers",

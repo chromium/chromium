@@ -4,9 +4,6 @@
 
 package org.chromium.components.ip_protection_auth;
 
-import androidx.annotation.VisibleForTesting;
-
-@VisibleForTesting
 public interface IpProtectionAuthServiceCallback {
     /**
      * Called if/when IpProtectionAuthClient.CreateConnectedInstance has completed.

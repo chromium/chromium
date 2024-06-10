@@ -4,9 +4,6 @@
 
 package org.chromium.components.ip_protection_auth;
 
-import androidx.annotation.VisibleForTesting;
-
-@VisibleForTesting
 public interface IpProtectionByteArrayCallback {
     // Result contains a serialized com.google.privacy.ppn.proto protobuf.
     public void onResult(byte[] result);
