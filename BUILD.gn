@@ -1287,8 +1287,12 @@ if (use_blink && !is_cronet_build) {
     _common_web_test_args += [ "--release" ]
     if (dcheck_always_on) {
       _common_web_test_args += [ "--timeout-ms=12000" ]
+    } else if (v8_enable_debugging_features) {
+      # In a pure release build with a debug V8, tests run slower.
+      _common_web_test_args += [ "--timeout-ms=30000" ]
     }
   }
+
   if (is_chrome_branded) {
     _common_web_test_args += [ "--chrome-branded" ]
   }
