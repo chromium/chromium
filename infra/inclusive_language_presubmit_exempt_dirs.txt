@@ -714,7 +714,7 @@ third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.203 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.117 6 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.117/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1 1 1
-third_party/rust/chromium_crates_io/vendor/skrifa-0.19.2/src 1 1
+third_party/rust/chromium_crates_io/vendor/skrifa-0.19.3/src 1 1
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0 5 2
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0/src 2 1
 third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1
