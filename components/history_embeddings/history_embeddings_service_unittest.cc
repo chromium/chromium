@@ -56,9 +56,20 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         page_content_annotations::TestPageContentAnnotationsService::Create(
             optimization_guide_model_provider_.get(), history_service_.get());
     CHECK(page_content_annotations_service_);
+
+    service_ = std::make_unique<HistoryEmbeddingsService>(
+        history_service_.get(), page_content_annotations_service_.get(),
+        optimization_guide_model_provider_.get(),
+        /*service_controller=*/nullptr);
   }
 
-  void TearDown() override { OSCryptMocker::TearDown(); }
+  void TearDown() override {
+    if (service_) {
+      service_->storage_.SynchronouslyResetForTest();
+      service_->Shutdown();
+    }
+    OSCryptMocker::TearDown();
+  }
 
   void OverrideVisibilityScoresForTesting(
       const base::flat_map<std::string, double>& visibility_scores_for_input) {
@@ -75,10 +86,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         &page_content_annotator_);
   }
 
-  size_t CountEmbeddingsRows(HistoryEmbeddingsService* service) {
+  size_t CountEmbeddingsRows() {
     size_t result = 0;
     base::RunLoop loop;
-    service->storage_.PostTaskWithThisObject(base::BindLambdaForTesting(
+    service_->storage_.PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](HistoryEmbeddingsService::Storage* storage) {
           std::unique_ptr<SqlDatabase::EmbeddingsIterator> iterator =
               storage->sql_database.MakeEmbeddingsIterator({});
@@ -95,19 +106,16 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     return result;
   }
 
-  void OnPassagesEmbeddingsComputed(HistoryEmbeddingsService* service,
-                                    UrlPassages url_passages,
+  void OnPassagesEmbeddingsComputed(UrlPassages url_passages,
                                     std::vector<std::string> passages,
                                     std::vector<Embedding> passages_embeddings,
                                     ComputeEmbeddingsStatus status) {
-    service->OnPassagesEmbeddingsComputed(
+    service_->OnPassagesEmbeddingsComputed(
         std::move(url_passages), std::move(passages),
         std::move(passages_embeddings), status);
   }
 
-  Answerer* GetAnswerer(HistoryEmbeddingsService* service) {
-    return service->answerer_.get();
-  }
+  Answerer* GetAnswerer() { return service_->answerer_.get(); }
 
  protected:
   void AddTestHistoryPage(const std::string& url) {
@@ -129,15 +137,15 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
+  std::unique_ptr<HistoryEmbeddingsService> service_;
 };
 
 TEST_F(HistoryEmbeddingsServiceTest, ConstructsAndInvalidatesWeakPtr) {
-  auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get(),
-      optimization_guide_model_provider_.get(), /*service_controller=*/nullptr);
-  auto weak_ptr = service->AsWeakPtr();
+  auto weak_ptr = service_->AsWeakPtr();
   EXPECT_TRUE(weak_ptr);
-  service.reset();
+  // This is required to synchronously reset storage on separate sequence.
+  TearDown();
+  service_.reset();
   EXPECT_FALSE(weak_ptr);
 }
 
@@ -146,37 +154,30 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
   AddTestHistoryPage("http://test2.com");
   AddTestHistoryPage("http://test3.com");
 
-  auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get(),
-      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
-
   // Add a fake set of passages for all visits.
   UrlPassages url_passages(/*url_id=*/1, /*visit_id=*/1, base::Time::Now());
   std::vector<std::string> passages = {"test passage 1", "test passage 2"};
   std::vector<Embedding> passages_embeddings = {
       Embedding(std::vector<float>(768, 1.0f)),
       Embedding(std::vector<float>(768, 1.0f))};
-  OnPassagesEmbeddingsComputed(service.get(), url_passages, passages,
-                               passages_embeddings,
+  OnPassagesEmbeddingsComputed(url_passages, passages, passages_embeddings,
                                ComputeEmbeddingsStatus::SUCCESS);
   url_passages.url_id = 2;
   url_passages.visit_id = 2;
-  OnPassagesEmbeddingsComputed(service.get(), url_passages, passages,
-                               passages_embeddings,
+  OnPassagesEmbeddingsComputed(url_passages, passages, passages_embeddings,
                                ComputeEmbeddingsStatus::SUCCESS);
   url_passages.url_id = 3;
   url_passages.visit_id = 3;
-  OnPassagesEmbeddingsComputed(service.get(), url_passages, passages,
-                               passages_embeddings,
+  OnPassagesEmbeddingsComputed(url_passages, passages, passages_embeddings,
                                ComputeEmbeddingsStatus::SUCCESS);
 
   // Verify that we find all three passages initially.
-  EXPECT_EQ(CountEmbeddingsRows(service.get()), 3U);
+  EXPECT_EQ(CountEmbeddingsRows(), 3U);
 
   // Verify that we can delete indivdiual URLs.
   history_service_->DeleteURLs({GURL("http://test2.com")});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  EXPECT_EQ(CountEmbeddingsRows(service.get()), 2U);
+  EXPECT_EQ(CountEmbeddingsRows(), 2U);
 
   // Verify that we can delete all of History at once.
   base::CancelableTaskTracker tracker;
@@ -185,18 +186,14 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
       /*begin_time=*/base::Time(), /*end_time=*/base::Time(),
       /*user_initiated=*/true, base::BindLambdaForTesting([] {}), &tracker);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  EXPECT_EQ(CountEmbeddingsRows(service.get()), 0U);
+  EXPECT_EQ(CountEmbeddingsRows(), 0U);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
   base::HistogramTester histogram_tester;
-  auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get(),
-      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
-
   base::test::TestFuture<SearchResult> future;
   OverrideVisibilityScoresForTesting({{"", 0.99}});
-  service->Search("", {}, 1, future.GetCallback());
+  service_->Search("", {}, 1, future.GetCallback());
   EXPECT_TRUE(future.Take().scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample("History.Embeddings.Search.Completed",
@@ -208,28 +205,21 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
-  auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get(),
-      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
-
   // Put results in to be found.
   AddTestHistoryPage("http://test1.com");
   AddTestHistoryPage("http://test2.com");
   AddTestHistoryPage("http://test3.com");
-  OnPassagesEmbeddingsComputed(service.get(),
-                               UrlPassages(1, 1, base::Time::Now()),
+  OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
                                {"test passage 1", "test passage 2"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
                                ComputeEmbeddingsStatus::SUCCESS);
-  OnPassagesEmbeddingsComputed(service.get(),
-                               UrlPassages(2, 2, base::Time::Now()),
+  OnPassagesEmbeddingsComputed(UrlPassages(2, 2, base::Time::Now()),
                                {"test passage 3", "test passage 4"},
                                {Embedding(std::vector<float>(768, -1.0f)),
                                 Embedding(std::vector<float>(768, -1.0f))},
                                ComputeEmbeddingsStatus::SUCCESS);
-  OnPassagesEmbeddingsComputed(service.get(),
-                               UrlPassages(3, 3, base::Time::Now()),
+  OnPassagesEmbeddingsComputed(UrlPassages(3, 3, base::Time::Now()),
                                {"test passage 5", "test passage 6"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
@@ -246,7 +236,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
       {"test passage 5", 0.99},
       {"test passage 6", 0.99},
   });
-  service->Search("test query", {}, 3, future.GetCallback());
+  service_->Search("test query", {}, 3, future.GetCallback());
   SearchResult result = future.Take();
 
   EXPECT_EQ(result.query, "test query");
@@ -275,11 +265,7 @@ TEST_F(HistoryEmbeddingsServiceTest, CountWords) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
-  auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get(),
-      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
-
-  auto* answerer = GetAnswerer(service.get());
+  auto* answerer = GetAnswerer();
   EXPECT_EQ(answerer->GetModelVersion(), 1);
   base::test::TestFuture<AnswererResult> future;
   answerer->ComputeAnswer("test query", {}, future.GetCallback());

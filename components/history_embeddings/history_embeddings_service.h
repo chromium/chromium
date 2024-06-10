@@ -159,6 +159,11 @@ class HistoryEmbeddingsService : public KeyedService,
                                 history::URLRows deleted_rows,
                                 std::set<history::VisitID> deleted_visit_ids);
 
+    // Gathers URL and passage data from the database where corresponding
+    // embeddings are absent. This is used to rebuild the embeddings table
+    // when the model changes.
+    std::vector<UrlPassages> CollectPassagesWithoutEmbeddings();
+
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;
 
@@ -215,6 +220,9 @@ class HistoryEmbeddingsService : public KeyedService,
       std::vector<ScoredUrl> scored_urls,
       const std::vector<page_content_annotations::BatchAnnotationResult>&
           annotation_results);
+
+  // Rebuild absent embeddings from source passages.
+  void RebuildAbsentEmbeddings(std::vector<UrlPassages> all_url_passages);
 
   // The history service is used to fill in details about URLs and visits
   // found via search. It strictly outlives this due to the dependency

@@ -185,6 +185,12 @@ void HistoryEmbeddingsService::OnEmbedderMetadataReady(
     EmbedderMetadata metadata) {
   embedder_metadata_ = metadata;
   storage_.AsyncCall(&Storage::SetEmbedderMetadata).WithArgs(metadata);
+
+  if (kRebuildEmbeddings.Get()) {
+    storage_.AsyncCall(&Storage::CollectPassagesWithoutEmbeddings)
+        .Then(base::BindOnce(&HistoryEmbeddingsService::RebuildAbsentEmbeddings,
+                             weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void HistoryEmbeddingsService::RetrievePassages(
@@ -453,6 +459,11 @@ void HistoryEmbeddingsService::Storage::HandleHistoryDeletions(
   }
 }
 
+std::vector<UrlPassages>
+HistoryEmbeddingsService::Storage::CollectPassagesWithoutEmbeddings() {
+  return sql_database.GetUrlPassagesWithoutEmbeddings();
+}
+
 QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
   // This requires some Chrome machinery to upload the log entry, so it's
   // implemented in ChromeHistoryEmbeddingsService.
@@ -577,6 +588,22 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
       &FinishSearchResultWithHistory,
       base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback),
       std::move(result), std::move(scored_urls)));
+}
+
+void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
+    std::vector<UrlPassages> all_url_passages) {
+  VLOG(3) << "Rebuilding embeddings for " << all_url_passages.size() << " rows";
+  for (UrlPassages& url_passages : all_url_passages) {
+    std::vector<std::string> passages(url_passages.passages.passages().begin(),
+                                      url_passages.passages.passages().end());
+    VLOG(3) << "Rebuild scheduled for url_id " << url_passages.url_id
+            << " with " << passages.size() << " passages";
+    embedder_->ComputePassagesEmbeddings(
+        PassageKind::REBUILD_PASSAGE, std::move(passages),
+        base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(url_passages)));
+  }
 }
 
 }  // namespace history_embeddings

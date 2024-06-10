@@ -88,14 +88,15 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
     const Job& job = jobs_.at(job_index);
     size_t accept = std::min(scheduled_max_ - passages.size(),
                              job.passages.size() - job.embeddings.size());
+    VLOG(3) << "Batching range [" << job.embeddings.size() << ','
+            << job.embeddings.size() + accept << ") of " << job.passages.size()
+            << " passages from job " << job_index << '/' << jobs_.size();
     for (size_t i = job.embeddings.size();
          i < job.passages.size() && accept > 0; i++, accept--) {
       passages.push_back(job.passages[i]);
     }
     job_index++;
   }
-  VLOG(3) << passages.size() << " passages from " << job_index
-          << " jobs submitted to embedder";
   embedder_->ComputePassagesEmbeddings(
       kind, std::move(passages),
       base::BindOnce(&SchedulingEmbedder::OnEmbeddingsComputed,

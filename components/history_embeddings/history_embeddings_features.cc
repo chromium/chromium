@@ -84,4 +84,12 @@ const base::FeatureParam<int> kEmbedderCacheSize(&kHistoryEmbeddings,
 const base::FeatureParam<int> kMaxPassagesPerPage(&kHistoryEmbeddings,
                                                   "MaxPassagesPerPage",
                                                   30);
+
+const base::FeatureParam<bool> kDeleteEmbeddings(&kHistoryEmbeddings,
+                                                 "DeleteEmbeddings",
+                                                 false);
+const base::FeatureParam<bool> kRebuildEmbeddings(&kHistoryEmbeddings,
+                                                  "RebuildEmbeddings",
+                                                  true);
+
 }  // namespace history_embeddings

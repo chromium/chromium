@@ -78,6 +78,15 @@ extern const base::FeatureParam<int> kEmbedderCacheSize;
 // this limit will be dropped by passage extraction.
 extern const base::FeatureParam<int> kMaxPassagesPerPage;
 
+// These parameters control deletion and rebuilding of the embeddings
+// database. If `kDeleteEmbeddings` is true, the embeddings table will
+// be cleared on startup, effectively simulating a model version change.
+// If `kRebuildEmbeddings` is true (the default) then any rows in
+// the passages table without a corresponding row in the embeddings
+// table (keyed on url_id) will be queued for reprocessing by the embedder.
+extern const base::FeatureParam<bool> kDeleteEmbeddings;
+extern const base::FeatureParam<bool> kRebuildEmbeddings;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_
