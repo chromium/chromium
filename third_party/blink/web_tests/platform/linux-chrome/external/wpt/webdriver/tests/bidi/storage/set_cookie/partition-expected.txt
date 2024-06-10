@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_partition_storage_key_source_origin
-  webdriver.bidi.error.UnableToSetCookieException: unable to set cookie ([object Object])
-Harness: the test ran to completion.
