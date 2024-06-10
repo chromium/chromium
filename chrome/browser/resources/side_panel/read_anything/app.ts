@@ -2136,6 +2136,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.enabledLanguagesInPref.includes(toggledLanguage);
 
     if (!currentlyEnabled) {
+      this.autoSwitchVoice_(toggledLanguage);
       this.installVoicePackIfPossible(
           toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ true);
