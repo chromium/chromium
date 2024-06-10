@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/gclient_args.gni")
 import("//tools/metrics/histograms/histograms_xml_files.gni")
 
 action("histograms_xml") {
@@ -28,9 +29,17 @@ copy("ukm_xml") {
 group("metrics_metadata") {
   deps = [
     ":actions_xml",
-    ":histograms_xml",
     ":ukm_xml",
   ]
+
+  # Only include histograms_xml if we have access to dirmd data, which
+  # is used to populate ownership information. This is only set to false
+  # for non-git checkouts.
+  # TODO(crbug.com/329080012): Remove this once dirmd works in non-git
+  # checkouts.
+  if (generate_location_tags) {
+    deps += [ ":histograms_xml" ]
+  }
 }
 
 # This group defines the isolate files needed to run metrics_python_tests.py on
