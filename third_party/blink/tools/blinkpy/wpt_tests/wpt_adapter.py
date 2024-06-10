@@ -462,9 +462,6 @@ class WPTAdapter:
                 'config': {
                     'binary_args': subsuite_args,
                 },
-                'run_info': {
-                    'virtual_suite': subsuite_name,
-                },
                 'include': tests,
             }
             subsuite_json[subsuite_name] = subsuite
@@ -541,7 +538,8 @@ class WPTAdapter:
             runner_options.run_info = tmp_dir
             self._initialize_tmp_dir(tmp_dir, tests_root)
 
-            TestLoader.install(self.port, self._expectations)
+            TestLoader.install(self.port, self._expectations,
+                               runner_options.include)
             stack.enter_context(
                 self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import json
 import textwrap
 import unittest
@@ -16,8 +17,9 @@ from blinkpy.wpt_tests.test_loader import (
 )
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import wptlogging, wpttest
 from tools.manifest.manifest import load_and_update
+from wptrunner import wptlogging, wpttest
+from wptrunner.testloader import Subsuite
 
 
 class TestLoaderTestCase(unittest.TestCase):
@@ -54,7 +56,8 @@ class TestLoaderTestCase(unittest.TestCase):
             }))
         wptlogging.setup({}, {})
 
-    def _load_metadata(self, test_path: str, virtual_suite: str = ''):
+    @contextlib.contextmanager
+    def _make_loader(self, **kwargs):
         port = self.host.port_factory.get('test-linux-trusty')
         with self.fs.patch_builtins():
             manifest = load_and_update(
@@ -63,10 +66,20 @@ class TestLoaderTestCase(unittest.TestCase):
                 '/',
                 update=False,
                 parallel=False)
-            loader = TestLoader(port, {'/': manifest},
-                                ['testharness', 'reftest'],
-                                base_run_info={})
+            test_root = {
+                'url_base': manifest.url_base,
+                'tests_path': manifest.tests_root,
+                'metadata_path': manifest.tests_root,
+            }
+            yield TestLoader(port, {manifest: test_root},
+                             ['testharness', 'reftest'],
+                             base_run_info={},
+                             **kwargs)
+
+    def _load_metadata(self, test_path: str, virtual_suite: str = ''):
+        with self._make_loader() as loader:
             run_info = {**loader.base_run_info, 'virtual_suite': virtual_suite}
+            manifest, *_ = loader.manifests
             inherit_metadata, test_metadata = loader.load_metadata(
                 run_info, manifest, manifest.tests_root, test_path)
         self.assertEqual(inherit_metadata, [])
@@ -356,3 +369,24 @@ class TestLoaderTestCase(unittest.TestCase):
         self.assertEqual(subtest_result.known_intermittent, [])
         self.assertIsNone(subtest_result.message)
         test.expected_fail_message.assert_not_called()
+
+    def test_load_tests(self):
+        subsuites = {
+            '':
+            Subsuite('', config={}),
+            'fake-vts':
+            Subsuite('fake-vts',
+                     config={},
+                     include=['/variant.html?foo=baz',
+                              '/does-not-exist.html']),
+        }
+        with self._make_loader(subsuites=subsuites,
+                               include=['reftest.html']) as loader:
+            self.assertEqual(set(loader.tests), {'', 'fake-vts'})
+            self.assertEqual(set(loader.tests['']), {'reftest'})
+            self.assertEqual(set(loader.tests['fake-vts']), {'testharness'})
+            (base_test, ) = loader.tests['']['reftest']
+            (virtual_test, ) = loader.tests['fake-vts']['testharness']
+            self.assertEqual(base_test.id, '/reftest.html')
+            self.assertEqual(virtual_test.id, '/variant.html?foo=baz')
+            self.assertEqual(loader.disabled_tests, {'': {}, 'fake-vts': {}})

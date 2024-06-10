@@ -12,10 +12,11 @@ translation to the metadata serialization format and dealing with character
 escaping.
 """
 
+import collections
 import contextlib
 import functools
 import logging
-from typing import Container, List, Optional, Tuple
+from typing import Collection, List, Mapping, Optional, Tuple
 from urllib.parse import urlsplit
 
 from blinkpy.common import path_finder
@@ -38,6 +39,7 @@ from blinkpy.web_tests.models.typ_types import Expectation, ResultType
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
+from manifest.item import ManifestItem
 from tools.manifest.manifest import Manifest
 from wptrunner import manifestexpected, testloader, testrunner, wpttest
 from wptrunner.wptmanifest import node as wptnode
@@ -53,12 +55,58 @@ class TestLoader(testloader.TestLoader):
                  port: Port,
                  *args,
                  expectations: Optional[TestExpectations] = None,
+                 include: Optional[Collection[str]] = None,
                  **kwargs):
         self._port = port
         self._expectations = expectations or TestExpectations(port)
+        self._include = include
         # Invoking the superclass constructor will immediately load tests, so
         # set `_port` and `_expectations` first.
         super().__init__(*args, **kwargs)
+
+    def _load_tests(self):
+        # Override the default implementation to provide a faster one that only
+        # handles test URLs (i.e., not files, directories, or globs).
+        # `WebTestFinder` already resolves files/directories to URLs.
+        self.tests, self.disabled_tests = {}, {}
+        items_by_url = self._load_items_by_url()
+        manifests_by_url_base = {
+            manifest.url_base: manifest
+            for manifest in self.manifests
+        }
+
+        for subsuite_name, subsuite in self.subsuites.items():
+            self.tests[subsuite_name] = collections.defaultdict(list)
+            self.disabled_tests[subsuite_name] = collections.defaultdict(list)
+
+            test_urls = subsuite.include or self._include or set(items_by_url)
+            for test_url in test_urls:
+                if not test_url.startswith('/'):
+                    test_url = f'/{test_url}'
+                item = items_by_url.get(test_url)
+                # Skip items excluded by `run_wpt_tests.py --no-wpt-internal`.
+                if not item:
+                    continue
+                manifest = manifests_by_url_base[item.url_base]
+                test_root = self.manifests[manifest]
+                inherit_metadata, test_metadata = self.load_metadata(
+                    subsuite.run_info, manifest, test_root['metadata_path'],
+                    item.path)
+                test = self.get_test(manifest, item, inherit_metadata,
+                                     test_metadata)
+                # `WebTestFinder` should have already filtered out skipped
+                # tests, but add to `disabled_tests` anyway just in case.
+                tests = self.disabled_tests if test.disabled() else self.tests
+                tests[subsuite_name][item.item_type].append(test)
+
+    def _load_items_by_url(self) -> Mapping[str, ManifestItem]:
+        items_by_url = {}
+        for manifest, test_root in self.manifests.items():
+            items = manifest.itertypes(*self.test_types)
+            for test_type, test_path, tests in items:
+                for test in tests:
+                    items_by_url[test.id] = test
+        return items_by_url
 
     def load_dir_metadata(
         self,
@@ -165,11 +213,13 @@ class TestLoader(testloader.TestLoader):
         return test_ast
 
     @classmethod
-    def install(cls, port: Port, expectations: TestExpectations):
+    def install(cls, port: Port, expectations: TestExpectations,
+                include: List[str]):
         """Patch overrides into the wptrunner API (may be unstable)."""
         testloader.TestLoader = functools.partial(cls,
                                                   port,
-                                                  expectations=expectations)
+                                                  expectations=expectations,
+                                                  include=include)
 
         # Ideally, we would patch `executorchrome.*.convert_result`, but changes
         # to the executor classes here in the main process don't persist to
@@ -214,7 +264,7 @@ def allow_any_subtests_on_timeout(test: wpttest.Test,
 
 
 def _build_expectation_ast(name: str,
-                           statuses: Container[str],
+                           statuses: Collection[str],
                            message: Optional[str] = None) -> wptnode.DataNode:
     """Build an in-memory syntax tree representing part of a metadata file:
 
