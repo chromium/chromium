@@ -567,6 +567,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
   CHECK(suggestion.is_acceptable);
+  base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
+                                suggestion.type);
+
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kFillFullAddress:
@@ -595,13 +598,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress: {
-      const FillingProduct main_filling_product = GetMainFillingProduct();
-      CHECK(main_filling_product == FillingProduct::kAddress ||
-            main_filling_product == FillingProduct::kPlusAddresses ||
-            main_filling_product == FillingProduct::kCreditCard ||
-            main_filling_product == FillingProduct::kIban);
-      // TODO(crubg.com/40274514): Remove recording this metric.
-      autofill_metrics::LogAutofillSelectedManageEntry(main_filling_product);
       manager_->client().ShowAutofillSettings(suggestion.type);
       break;
     }

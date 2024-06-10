@@ -2701,6 +2701,22 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
                        1)));
 }
 
+TEST_F(AutofillExternalDelegateUnitTest,
+       RecordSuggestionTypeOnSuggestionAccepted) {
+  base::HistogramTester histogram_tester;
+  IssueOnQuery();
+
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().address_data_manager().AddProfile(profile);
+
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry),
+      SuggestionPosition{.row = 0});
+
+  histogram_tester.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
+                                      SuggestionType::kAddressEntry, 1);
+}
+
 // TODO(crbug.com/41483208): Add test case where 'Show cards from your Google
 // account' button is clicked. Encountered issues with test sync setup when
 // attempting to make it.

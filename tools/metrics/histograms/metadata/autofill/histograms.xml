@@ -5435,6 +5435,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Suggestions.AcceptedType" enum="SuggestionType"
+    expires_after="2024-12-12">
+  <owner>theocristea@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of an accepted Autofill suggestion. The metric is recorded
+    every time a user accepts an autofill suggestion (no submission needed).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SuggestionsCount{SuggestionType}" units="units"
     expires_after="2024-12-12">
   <owner>jihadghanna@chromium.org</owner>

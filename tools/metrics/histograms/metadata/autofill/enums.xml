@@ -4654,6 +4654,60 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Button clicked"/>
 </enum>
 
+<enum name="SuggestionType">
+  <int value="0" label="Autocomplete entry"/>
+  <int value="1" label="Address entry"/>
+  <int value="2" label="Fill full address"/>
+  <int value="3" label="Fill full name"/>
+  <int value="4" label="Fill everything"/>
+  <int value="5" label="Fill full phone number"/>
+  <int value="6" label="Fill full email"/>
+  <int value="7" label="Address field-by-field filling"/>
+  <int value="8" label="Edit address profile"/>
+  <int value="9" label="Delete address profile"/>
+  <int value="10" label="Manage address"/>
+  <int value="11" label="Manage credit card"/>
+  <int value="12" label="Manage IBAN"/>
+  <int value="13" label="Manage plus address"/>
+  <int value="14" label="Compose proactive nudge"/>
+  <int value="15" label="Compose resume nudge"/>
+  <int value="16" label="Compose saved state notification"/>
+  <int value="17" label="Compose disable"/>
+  <int value="18" label="Compose go to settings"/>
+  <int value="19" label="Compose never show on this site again"/>
+  <int value="20" label="Datalist entry"/>
+  <int value="21" label="Password entry"/>
+  <int value="22" label="All saved passwords entry"/>
+  <int value="23" label="Generate password entry"/>
+  <int value="24" label="Show account cards"/>
+  <int value="25" label="Password account storage opt-in"/>
+  <int value="26" label="Password account storage opt-in and generate"/>
+  <int value="27" label="Account storage password entry"/>
+  <int value="28" label="Password account storage re-sign-in"/>
+  <int value="29" label="Password account storage empty"/>
+  <int value="30" label="Password field-by-field filling"/>
+  <int value="31" label="Fill password"/>
+  <int value="32" label="View password details"/>
+  <int value="33" label="Credit card entry"/>
+  <int value="34" label="Insecure context payment disabled message"/>
+  <int value="35" label="Scan credit card"/>
+  <int value="36" label="Virtual credit card entry"/>
+  <int value="37" label="Credit card field-by-field filling"/>
+  <int value="38" label="Iban entry"/>
+  <int value="39" label="Create new plus address"/>
+  <int value="40" label="Fill existing plus address"/>
+  <int value="41" label="Merchant promo code entry"/>
+  <int value="42" label="See promo code details"/>
+  <int value="43" label="Webauthn credential"/>
+  <int value="44" label="Webauthn sign-in with another device"/>
+  <int value="45" label="Title"/>
+  <int value="46" label="Separator"/>
+  <int value="47" label="Clear form"/>
+  <int value="48" label="Mixed form message"/>
+  <int value="49" label="Devtools test addresses"/>
+  <int value="50" label="Devtools test address entry"/>
+</enum>
+
 <enum name="TouchToFill.CreditCard.Outcome">
   <int value="0"
       label="Credit card selected from the sheet (either local or server one)"/>

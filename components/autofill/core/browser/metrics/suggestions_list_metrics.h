@@ -17,6 +17,7 @@ namespace autofill_metrics {
 // Keep enum up to date with AutofillSuggestionManageType in
 // tools/metrics/histograms/enums.xml.
 // Used by LogAutofillSelectedManageEntry().
+// TODO(crbug.com/40274514): Remove this enum and the associated histogram.
 enum class ManageSuggestionType {
   kOther = 0,
   // kPersonalInformation 1 is deprecated, see b/316345315.
@@ -51,6 +52,7 @@ void LogSuggestionAcceptedIndex(int index,
                                 bool off_the_record);
 
 // Logs that the user selected 'Manage...' settings entry in the popup.
+// TODO(crbug.com/40274514): Remove this method.
 void LogAutofillSelectedManageEntry(FillingProduct filling_product);
 
 // Logs the 'Show cards from your Google Account" button events.
