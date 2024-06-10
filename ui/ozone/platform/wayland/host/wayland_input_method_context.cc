@@ -548,9 +548,15 @@ void WaylandInputMethodContext::OnPreeditString(
         /* type= */ style->first, *start_offset, *end_offset,
         /* thickness = */ style->second);
   }
-
   if (preedit_cursor < 0) {
-    composition_text.selection = gfx::Range::InvalidRange();
+    // This is the case if a preceding preedit_cursor event in text-input-v1 was
+    // not received or an explicit negative value was requested to hide the
+    // cursor.
+    // TODO (crbug.com/40263583) Evaluate if InvalidRange should be set here and
+    // make surrounding text tracker handle that. Currently surrounding text
+    // tracker does not support invalid ranges and would result in a crash if
+    // so. So set the cursor at the end of composition text as a fallback.
+    composition_text.selection = gfx::Range(composition_text.text.length());
   } else {
     auto cursor =
         OffsetFromUTF8Offset(text, static_cast<uint32_t>(preedit_cursor));

@@ -1279,6 +1279,72 @@ TEST_P(WaylandInputMethodContextTest, OnCommit) {
             gfx::Range(0));
 }
 
+// Regression test for crbug.com/40263583
+TEST_P(WaylandInputMethodContextTest,
+       OnCommitAfterEmptyPreeditStringWithoutCursor) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v1_send_preedit_string(
+        server->text_input_manager_v1()->text_input()->resource(),
+        server->GetNextSerial(), "", "");
+  });
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0, 0));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(0));
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v1_send_commit_string(
+        server->text_input_manager_v1()->text_input()->resource(),
+        server->GetNextSerial(), "CommitString");
+  });
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"CommitString");
+  // On commit string, selection is placed next to the last character unless the
+  // cursor position is specified by OnCursorPosition.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(12));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0));
+}
+
+TEST_P(WaylandInputMethodContextTest, OnCommitAfterPreeditStringWithoutCursor) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v1_send_preedit_string(
+        server->text_input_manager_v1()->text_input()->resource(),
+        server->GetNextSerial(), "PreeditString", "");
+  });
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"PreeditString");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0, 13));
+  // Cursor should be at the end of preedit when cursor position is not
+  // specified.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(13));
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v1_send_commit_string(
+        server->text_input_manager_v1()->text_input()->resource(),
+        server->GetNextSerial(), "CommitString");
+  });
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"CommitString");
+  // On commit string, selection is placed next to the last character unless the
+  // cursor position is specified by OnCursorPosition.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(12));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
   constexpr char16_t text[] = u"ab😀cあdef";
