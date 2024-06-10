@@ -41,6 +41,7 @@
 #include "chrome/browser/apps/app_shim/code_signature_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/notifications/mac/notification_platform_bridge_mac.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1544,6 +1545,10 @@ void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
   DCHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
   DCHECK(app_state);
+
+  auto* notification_bridge = static_cast<NotificationPlatformBridgeMac*>(
+      g_browser_process->notification_platform_bridge());
+  notification_bridge->AppShimWillTerminate(host->GetAppId());
 
   DCHECK(!app_state->did_save_last_active_profiles_on_terminate);
   app_state->MaybeSaveLastActiveProfiles();

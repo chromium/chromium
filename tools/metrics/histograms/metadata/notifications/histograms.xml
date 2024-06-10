@@ -553,12 +553,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.macOS.AppShimProcess.UptimeOnDisconnect"
+    units="ms" expires_after="2025-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The uptime of the notification service in an app shim (PWA) process. Logged
+    when the connection to the service in an app shim process is lost, either on
+    purpose or because the connection was lost unexpectedly.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.macOS.AppShimProcess.UptimeOnUnexpectedDisconnect"
+    units="ms" expires_after="2025-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The uptime of the notification service in an app shim (PWA) process before
+    it got killed unexpectedly (for example crashed). Logged when the connection
+    to the notification service in the app shim process dies, and this wasn't
+    because the user closed the app nor because chrome initiated the disconnect.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
     expires_after="2024-08-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
-    The runtime of the macOS notification service process to display alerts
+    The uptime of the macOS notification service process to display alerts
     before it got killed unexpectedly. Logged when the service process dies.
 
     This histogram was expired between 2022-08-07 and 2023-09-06. Data might be
@@ -571,7 +595,7 @@ chromium-metrics-reviews@google.com.
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
-    The runtime of the macOS notification service process to display alerts.
+    The uptime of the macOS notification service process to display alerts.
     Logged when we close the connection to the service process either on purpose
     or after it got killed unexpectedly.
 

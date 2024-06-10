@@ -54,14 +54,26 @@ class NotificationDispatcherMojo
       GetDisplayedNotificationsCallback callback) override;
   void GetAllDisplayedNotifications(
       GetAllDisplayedNotificationsCallback callback) override;
+  void UserInitiatedShutdown() override;
 
   // mac_notifications::mojom::MacNotificationActionHandler:
   void OnNotificationAction(
       mac_notifications::mojom::NotificationActionInfoPtr info) override;
 
  private:
+  enum ShutdownType {
+    // The service was shutdown because Chrome no longer needed it to alive.
+    kChromeInitiated,
+    // The service was shutdown because the user initiated the shutdown; for
+    // example when the service lives in an app shim process, the user closed
+    // the application.
+    kUserInitiated,
+    // Connection to the service was lost unexpectedly.
+    kUnexpected
+  };
+
   void CheckIfServiceCanBeTerminated();
-  void OnServiceDisconnectedGracefully(bool gracefully);
+  void OnServiceDisconnectedGracefully(ShutdownType shutdown_type);
   bool HasNoDisplayedNotifications() const;
 
   mac_notifications::mojom::MacNotificationService* GetOrCreateService();

@@ -78,6 +78,10 @@ class NotificationDispatcherMac {
   // Get all currently displayed notifications for all profiles.
   virtual void GetAllDisplayedNotifications(
       GetAllDisplayedNotificationsCallback callback) = 0;
+
+  // Informs the dispatcher that the user has initiated a (clean) shutdown of
+  // this notification service.
+  virtual void UserInitiatedShutdown() = 0;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_DISPATCHER_MAC_H_

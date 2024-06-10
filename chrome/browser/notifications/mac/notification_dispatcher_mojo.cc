@@ -87,7 +87,7 @@ void NotificationDispatcherMojo::CloseAllNotifications() {
 
   if (service_)
     service_->CloseAllNotifications();
-  OnServiceDisconnectedGracefully(/*gracefully=*/true);
+  OnServiceDisconnectedGracefully(ShutdownType::kChromeInitiated);
 }
 
 void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
@@ -149,10 +149,14 @@ void NotificationDispatcherMojo::OnNotificationAction(
   CheckIfServiceCanBeTerminated();
 }
 
+void NotificationDispatcherMojo::UserInitiatedShutdown() {
+  OnServiceDisconnectedGracefully(ShutdownType::kUserInitiated);
+}
+
 void NotificationDispatcherMojo::CheckIfServiceCanBeTerminated() {
   no_notifications_checker_.Reset(base::BindOnce(
       &NotificationDispatcherMojo::OnServiceDisconnectedGracefully,
-      base::Unretained(this), /*gracefully=*/true));
+      base::Unretained(this), ShutdownType::kChromeInitiated));
 
   // The service will indicate it is okay to be terminated if there are no
   // displayed notifications left, and (in the case of the UNNotification API)
@@ -169,21 +173,35 @@ void NotificationDispatcherMojo::CheckIfServiceCanBeTerminated() {
 }
 
 void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
-    bool gracefully) {
+    ShutdownType shutdown_type) {
   base::TimeDelta elapsed = base::TimeTicks::Now() - service_start_time_;
 
   // Log utility process runtime metrics to UMA.
-  if (service_ && provider_factory_->notification_style() ==
-                      mac_notifications::NotificationStyle::kAlert) {
-    base::UmaHistogramCustomTimes("Notifications.macOS.ServiceProcessRuntime",
-                                  elapsed, base::Milliseconds(100),
-                                  base::Hours(8),
-                                  /*buckets=*/50);
-    if (!gracefully) {
-      base::UmaHistogramCustomTimes("Notifications.macOS.ServiceProcessKilled",
-                                    elapsed, base::Milliseconds(100),
+  if (service_) {
+    auto emit_time_histogram = [elapsed](const char* name) {
+      base::UmaHistogramCustomTimes(name, elapsed, base::Milliseconds(100),
                                     base::Hours(8),
                                     /*buckets=*/50);
+    };
+    switch (provider_factory_->notification_style()) {
+      case mac_notifications::NotificationStyle::kBanner:
+        // No need to collect metrics for in-process notifications.
+        break;
+      case mac_notifications::NotificationStyle::kAlert:
+        emit_time_histogram("Notifications.macOS.ServiceProcessRuntime");
+        if (shutdown_type == ShutdownType::kUnexpected) {
+          emit_time_histogram("Notifications.macOS.ServiceProcessKilled");
+        }
+        break;
+      case mac_notifications::NotificationStyle::kAppShim:
+        emit_time_histogram(
+            "Notifications.macOS.AppShimProcess.UptimeOnDisconnect");
+        if (shutdown_type == ShutdownType::kUnexpected) {
+          emit_time_histogram(
+              "Notifications.macOS.AppShimProcess."
+              "UptimeOnUnexpectedDisconnect");
+        }
+        break;
     }
   }
 
@@ -191,12 +209,15 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
   // restore the next delay to the initial value. If it failed sooner than that
   // then double the next time until we hit a maximum value so we don't end up
   // restarting it a lot.
-  if (elapsed > kServiceRestartTimerResetDelay || gracefully)
+  if (elapsed > kServiceRestartTimerResetDelay ||
+      shutdown_type == ShutdownType::kChromeInitiated) {
     next_service_restart_timer_delay_ = kInitialServiceRestartTimerDelay;
-  else if (next_service_restart_timer_delay_ < kMaximumServiceRestartTimerDelay)
+  } else if (next_service_restart_timer_delay_ <
+             kMaximumServiceRestartTimerDelay) {
     next_service_restart_timer_delay_ = next_service_restart_timer_delay_ * 2;
+  }
 
-  if (!gracefully) {
+  if (shutdown_type == ShutdownType::kUnexpected) {
     // Calling CheckIfServiceCanBeTerminated() will force a new connection
     // attempt. base::Unretained(this) is safe here because |this| owns
     // |service_restart_timer_|.
@@ -227,7 +248,7 @@ NotificationDispatcherMojo::GetOrCreateService() {
     provider_ = provider_factory_->LaunchProvider();
     provider_.set_disconnect_handler(base::BindOnce(
         &NotificationDispatcherMojo::OnServiceDisconnectedGracefully,
-        base::Unretained(this), /*gracefully=*/false));
+        base::Unretained(this), ShutdownType::kUnexpected));
     provider_->BindNotificationService(service_.BindNewPipeAndPassReceiver(),
                                        handler_.BindNewPipeAndPassRemote());
   }

@@ -51,6 +51,11 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
+  // Called when an app shim for `web_app_id` is terminating gracefully. This
+  // is used by NotificationDispatcherMac to correctly distinguish graceful from
+  // ungraceful shutdowns in metrics.
+  void AppShimWillTerminate(const webapps::AppId& web_app_id);
+
  private:
   // Closes the notification with the given `notification_id` and `profile` in
   // every dispatcher except `excluded_dispatcher`. Pass nullptr to

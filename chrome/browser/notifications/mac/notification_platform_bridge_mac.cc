@@ -242,6 +242,15 @@ void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {
     CloseAllNotificationsForProfile(profile);
 }
 
+void NotificationPlatformBridgeMac::AppShimWillTerminate(
+    const webapps::AppId& web_app_id) {
+  auto it = app_specific_dispatchers_.find(web_app_id);
+  if (it == app_specific_dispatchers_.end()) {
+    return;
+  }
+  it->second->UserInitiatedShutdown();
+}
+
 void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
     Profile* profile) {
   DCHECK(profile);
