@@ -60,13 +60,19 @@ class AutofillAblationStudyTestInUTC : public AutofillAblationStudyTest {
   ~AutofillAblationStudyTestInUTC() override = default;
 
   void SetUp() override {
-    icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("GMT"));
+    previousZone.reset(icu::TimeZone::createDefault());
 
+    icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("GMT"));
     std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
     ASSERT_EQ(0, zone->getRawOffset());
   }
 
-  void TearDown() override { icu::TimeZone::adoptDefault(nullptr); }
+  void TearDown() override {
+    icu::TimeZone::adoptDefault(previousZone.release());
+  }
+
+ private:
+  std::unique_ptr<icu::TimeZone> previousZone;
 };
 
 TEST_F(AutofillAblationStudyTestInUTC, DaysSinceLocalWindowsEpoch) {
@@ -98,13 +104,19 @@ class AutofillAblationStudyTestInEST : public AutofillAblationStudyTest {
   ~AutofillAblationStudyTestInEST() override = default;
 
   void SetUp() override {
-    icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("EST"));
+    previousZone.reset(icu::TimeZone::createDefault());
 
+    icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("EST"));
     std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
     ASSERT_EQ(-18000000, zone->getRawOffset());
   }
 
-  void TearDown() override { icu::TimeZone::adoptDefault(nullptr); }
+  void TearDown() override {
+    icu::TimeZone::adoptDefault(previousZone.release());
+  }
+
+ private:
+  std::unique_ptr<icu::TimeZone> previousZone;
 };
 
 TEST_F(AutofillAblationStudyTestInEST, DaysSinceLocalWindowsEpoch) {
