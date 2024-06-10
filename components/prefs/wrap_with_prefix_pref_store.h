@@ -31,6 +31,8 @@
 //
 // This can be used to merge separate pref stores into one single storage under
 // separate dictionary items.
+//
+// NOTE: Users are responsible for ensuring the prefix is not an existing pref.
 class COMPONENTS_PREFS_EXPORT WrapWithPrefixPrefStore
     : public PersistentPrefStore,
       public PrefStore::Observer {

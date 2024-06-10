@@ -155,7 +155,6 @@ void WrapWithPrefixPrefStore::OnInitializationCompleted(bool succeeded) {
 
 std::string WrapWithPrefixPrefStore::AddDottedPrefix(
     std::string_view path) const {
-  CHECK(!HasDottedPrefix(path));
   return base::StrCat({dotted_prefix_, path});
 }
 

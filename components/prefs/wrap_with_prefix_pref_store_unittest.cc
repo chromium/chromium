@@ -394,6 +394,23 @@ TEST_F(WrapWithPrefixPrefStoreTest, HasReadErrorDelegateWithNullDelegate) {
   EXPECT_TRUE(store().HasReadErrorDelegate());
 }
 
+TEST_F(WrapWithPrefixPrefStoreTest, GetValueForPrefixedKeyIfNonExisting) {
+  target_store().SetString(kPrefixedTestPref, "value");
+  EXPECT_FALSE(store().GetValue(kPrefixedTestPref, nullptr));
+}
+
+TEST_F(WrapWithPrefixPrefStoreTest, GetValueForExistingIfExisting) {
+  target_store().SetString("prefixed.prefixed.test.pref", "value");
+  EXPECT_TRUE(ValueInStoreIs(store(), kPrefixedTestPref, "value"));
+}
+
+TEST_F(WrapWithPrefixPrefStoreTest, SetValueForPrefixedKey) {
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPrefixedTestPref));
+
+  store().SetValue(kPrefixedTestPref, base::Value("value"), /*flags=*/0);
+  EXPECT_TRUE(ValueInStoreIs(store(), kPrefixedTestPref, "value"));
+}
+
 using WrapWithPrefixPrefStoreDeathTest = WrapWithPrefixPrefStoreTest;
 
 TEST_F(WrapWithPrefixPrefStoreDeathTest,
