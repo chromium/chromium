@@ -184,7 +184,8 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
     return;
   }
   std::optional<LcppStat> lcpp_stat =
-      predictor.resource_prefetch_predictor()->GetLcppStat(navigation_url);
+      predictor.resource_prefetch_predictor()->GetLcppStat(
+          navigation_handle.GetInitiatorOrigin(), navigation_url);
   if (!lcpp_stat) {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
@@ -222,7 +223,8 @@ void MaybePrewarmMainResourceAndSubresourcesOnNavigation(
       navigation_handle.IsSameDocument()) {
     return;
   }
-  predictor.MaybePrewarmResources(navigation_handle.GetURL());
+  predictor.MaybePrewarmResources(navigation_handle.GetInitiatorOrigin(),
+                                  navigation_handle.GetURL());
 }
 
 NavigationId GetNextId() {
@@ -352,7 +354,8 @@ void LoadingPredictorTabHelper::DidStartNavigation(
           page_data.navigation_id_,
           ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
                                  ukm::SourceIdType::NAVIGATION_ID),
-          navigation_handle->GetURL(), navigation_handle->NavigationStart());
+          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
+          navigation_handle->NavigationStart());
   if (page_data.has_local_preconnect_predictions_for_current_navigation_ &&
       !features::ShouldAlwaysRetrieveOptimizationGuidePredictions()) {
     return;
@@ -375,7 +378,7 @@ void LoadingPredictorTabHelper::DidStartNavigation(
       base::BindOnce(
           &LoadingPredictorTabHelper::OnOptimizationGuideDecision,
           weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(&page_data),
-          navigation_handle->GetURL(),
+          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
           !page_data.has_local_preconnect_predictions_for_current_navigation_));
 }
 
@@ -419,7 +422,7 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
       base::BindOnce(
           &LoadingPredictorTabHelper::OnOptimizationGuideDecision,
           weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(page_data),
-          navigation_handle->GetURL(),
+          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
           !(page_data
                 ->has_local_preconnect_predictions_for_current_navigation_ &&
             is_same_origin_redirect)));
@@ -516,6 +519,7 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
     scoped_refptr<PageData> page_data,
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& main_frame_url,
     bool should_add_preconnects_to_prediction,
     optimization_guide::OptimizationGuideDecision decision,
@@ -622,7 +626,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
   // use the predictions to pre* subresources.
   if (!page_data->document_page_data_holder_ &&
       features::ShouldUseOptimizationGuidePredictions()) {
-    predictor_->PrepareForPageLoad(main_frame_url,
+    predictor_->PrepareForPageLoad(initiator_origin, main_frame_url,
                                    HintOrigin::OPTIMIZATION_GUIDE,
                                    /*preconnectable=*/false, prediction);
   }

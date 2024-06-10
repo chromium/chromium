@@ -1721,6 +1721,7 @@ ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 
 void ContentBrowserClient::MaybePrewarmHttpDiskCache(
     BrowserContext& browser_context,
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& navigation_url) {}
 
 void ContentBrowserClient::NotifyMultiCaptureStateChanged(

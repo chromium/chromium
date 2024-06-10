@@ -1036,8 +1036,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       blink::WebMediaDeviceInfoArray& infos) override;
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;
-  void MaybePrewarmHttpDiskCache(content::BrowserContext& browser_context,
-                                 const GURL& navigation_url) override;
+  void MaybePrewarmHttpDiskCache(
+      content::BrowserContext& browser_context,
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& navigation_url) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void NotifyMultiCaptureStateChanged(
       content::GlobalRenderFrameHostId capturer_rfh_id,

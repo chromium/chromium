@@ -256,7 +256,8 @@ void MostVisitedHandler::PreconnectMostVisitedTile(
   auto* loading_predictor =
       predictors::LoadingPredictorFactory::GetForProfile(profile_);
   if (loading_predictor) {
-    loading_predictor->PrepareForPageLoad(tile->url,
+    loading_predictor->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
+                                          tile->url,
                                           predictors::HintOrigin::NEW_TAB_PAGE,
                                           /*preconnectable=*/true);
   }

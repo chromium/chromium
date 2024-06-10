@@ -1089,8 +1089,10 @@ GetRenderFrameHostForBackForwardCacheRestore(FrameTreeNode* frame_tree_node,
   return restored_rfh->GetSafeRef();
 }
 
-void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
-                               const GURL& url) {
+void MaybePrewarmHttpDiskCache(
+    BrowserContext& browser_context,
+    const GURL& url,
+    const std::optional<url::Origin>& initiator_origin) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kHttpDiskCachePrewarming) ||
       !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get()) {
@@ -1101,8 +1103,8 @@ void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
     return;
   }
 
-  GetContentClient()->browser()->MaybePrewarmHttpDiskCache(browser_context,
-                                                           url);
+  GetContentClient()->browser()->MaybePrewarmHttpDiskCache(
+      browser_context, initiator_origin, url);
 }
 
 // Returns true in cases where an attempted download will end up replacing the
@@ -2012,7 +2014,8 @@ NavigationRequest::NavigationRequest(
   }
 
   if (NeedsUrlLoader() && IsInOutermostMainFrame()) {
-    MaybePrewarmHttpDiskCache(*controller->GetBrowserContext(), GetURL());
+    MaybePrewarmHttpDiskCache(*controller->GetBrowserContext(), GetURL(),
+                              GetInitiatorOrigin());
   }
 
   // Checking OriginCanAccessServiceWorkers() is needed before calling

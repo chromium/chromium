@@ -965,7 +965,7 @@ class LcppDataMapTest : public testing::Test {
   }
 
   void LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
-    lcpp_data_map_->LearnLcpp(url, inputs);
+    lcpp_data_map_->LearnLcpp(std::nullopt, url, inputs);
   }
 
   void LearnElementLocator(
@@ -993,7 +993,7 @@ class LcppDataMapTest : public testing::Test {
   }
 
   std::optional<LcppStat> GetLcppStat(const GURL& url) {
-    return lcpp_data_map_->GetLcppStat(url);
+    return lcpp_data_map_->GetLcppStat(/*initiator_origin=*/std::nullopt, url);
   }
 
   void TestLearnLcppURL(
@@ -1005,7 +1005,8 @@ class LcppDataMapTest : public testing::Test {
       const std::string& key = url_key.second;
       LearnElementLocator(GURL(url), "/#a", {});
       // Confirm 'url' was learned as 'key'.
-      auto stat = lcpp_data_map_->GetLcppStat(GURL("http://" + key));
+      auto stat = lcpp_data_map_->GetLcppStat(/*initiator_origin=*/std::nullopt,
+                                              GURL("http://" + key));
       EXPECT_TRUE(stat) << location.ToString() << url;
       LcppData expected;
       InitializeLcpElementLocatorBucket(expected, "/#a", ++frequency[key]);

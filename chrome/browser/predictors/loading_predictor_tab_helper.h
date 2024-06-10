@@ -152,6 +152,7 @@ class LoadingPredictorTabHelper
   // required to decide if it has remote predictions for the page load.
   void OnOptimizationGuideDecision(
       scoped_refptr<PageData> page_helper,
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& main_frame_url,
       bool should_add_preconnects_to_prediction,
       optimization_guide::OptimizationGuideDecision decision,

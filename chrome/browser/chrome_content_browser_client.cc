@@ -8380,6 +8380,7 @@ ChromeContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 
 void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
     content::BrowserContext& browser_context,
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& navigation_url) {
   Profile* profile = Profile::FromBrowserContext(&browser_context);
   CHECK(profile);
@@ -8387,7 +8388,7 @@ void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
   // `loading_predictor` can be nullptr if the profile `IsOffTheRecord`.
   if (predictors::LoadingPredictor* loading_predictor =
           predictors::LoadingPredictorFactory::GetForProfile(profile)) {
-    loading_predictor->MaybePrewarmResources(navigation_url);
+    loading_predictor->MaybePrewarmResources(initiator_origin, navigation_url);
   }
 }
 

@@ -157,6 +157,7 @@ LoadingPredictor::~LoadingPredictor() {
 }
 
 bool LoadingPredictor::PrepareForPageLoad(
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& url,
     HintOrigin origin,
     bool preconnectable,
@@ -165,7 +166,7 @@ bool LoadingPredictor::PrepareForPageLoad(
     return true;
 
   // Prewarm disk cache before preconnecting network.
-  MaybePrewarmResources(url);
+  MaybePrewarmResources(initiator_origin, url);
 
   MaybeWarmUpServiceWorker(url, profile_);
 
@@ -219,7 +220,7 @@ bool LoadingPredictor::PrepareForPageLoad(
   if (base::FeatureList::IsEnabled(
           blink::features::kLCPPAutoPreconnectLcpOrigin)) {
     std::optional<LcppStat> lcpp_stat =
-        resource_prefetch_predictor()->GetLcppStat(url);
+        resource_prefetch_predictor()->GetLcppStat(initiator_origin, url);
     if (lcpp_stat) {
       auto network_anonymization_key =
           net::NetworkAnonymizationKey::CreateSameSite(
@@ -245,7 +246,7 @@ bool LoadingPredictor::PrepareForPageLoad(
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll) {
     std::optional<LcppStat> lcpp_stat =
-        resource_prefetch_predictor()->GetLcppStat(url);
+        resource_prefetch_predictor()->GetLcppStat(initiator_origin, url);
     if (lcpp_stat) {
       auto network_anonymization_key =
           net::NetworkAnonymizationKey::CreateSameSite(
@@ -323,10 +324,12 @@ void LoadingPredictor::Shutdown() {
   shutdown_ = true;
 }
 
-bool LoadingPredictor::OnNavigationStarted(NavigationId navigation_id,
-                                           ukm::SourceId ukm_source_id,
-                                           const GURL& main_frame_url,
-                                           base::TimeTicks creation_time) {
+bool LoadingPredictor::OnNavigationStarted(
+    NavigationId navigation_id,
+    ukm::SourceId ukm_source_id,
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& main_frame_url,
+    base::TimeTicks creation_time) {
   if (shutdown_)
     return true;
 
@@ -336,7 +339,8 @@ bool LoadingPredictor::OnNavigationStarted(NavigationId navigation_id,
   active_navigations_.emplace(navigation_id,
                               NavigationInfo{main_frame_url, creation_time});
   active_urls_to_navigations_[main_frame_url].insert(navigation_id);
-  return PrepareForPageLoad(main_frame_url, HintOrigin::NAVIGATION);
+  return PrepareForPageLoad(initiator_origin, main_frame_url,
+                            HintOrigin::NAVIGATION);
 }
 
 void LoadingPredictor::OnNavigationFinished(NavigationId navigation_id,
@@ -541,6 +545,7 @@ void LoadingPredictor::PreconnectURLIfAllowed(
 }
 
 void LoadingPredictor::MaybePrewarmResources(
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& top_frame_main_resource_url) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kHttpDiskCachePrewarming)) {
@@ -557,7 +562,8 @@ void LoadingPredictor::MaybePrewarmResources(
   }
 
   std::optional<LcppStat> lcpp_stat =
-      resource_prefetch_predictor()->GetLcppStat(top_frame_main_resource_url);
+      resource_prefetch_predictor()->GetLcppStat(initiator_origin,
+                                                 top_frame_main_resource_url);
 
   if (!lcpp_stat || !IsValidLcppStat(*lcpp_stat)) {
     return;

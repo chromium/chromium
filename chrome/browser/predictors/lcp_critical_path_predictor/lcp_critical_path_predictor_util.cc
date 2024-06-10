@@ -951,7 +951,10 @@ void LcppDataMap::InitializeOnDBSequence() {
 
 // Record LCP element locators after a page has finished loading and LCP has
 // been determined.
-bool LcppDataMap::LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
+// TODO(crbug.com/343093433): Update DB to use `initiator_origin`.
+bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
+                            const GURL& url,
+                            const LcppDataInputs& inputs) {
   if (!IsURLValidForLcpp(url)) {
     return false;
   }
@@ -996,7 +999,10 @@ bool LcppDataMap::LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
 }
 
 // Returns LcppStat for the `url`, or std::nullopt on failure.
-std::optional<LcppStat> LcppDataMap::GetLcppStat(const GURL& url) const {
+// TODO(crbug.com/343093433): Update DB to use `initiator_origin`.
+std::optional<LcppStat> LcppDataMap::GetLcppStat(
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& url) const {
   if (!IsURLValidForLcpp(url)) {
     return std::nullopt;
   }

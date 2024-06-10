@@ -12,6 +12,10 @@
 #include "components/sqlite_proto/key_value_data.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace predictors {
 class ResourcePrefetchPredictorTables;
 
@@ -140,10 +144,14 @@ class LcppDataMap {
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
   // Returns true if it was updated.
-  bool LearnLcpp(const GURL& url, const LcppDataInputs& inputs);
+  bool LearnLcpp(const std::optional<url::Origin>& initiator_origin,
+                 const GURL& url,
+                 const LcppDataInputs& inputs);
 
   // Returns LcppStat for the `url`, or std::nullopt on failure.
-  std::optional<LcppStat> GetLcppStat(const GURL& url) const;
+  std::optional<LcppStat> GetLcppStat(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& url) const;
 
   void DeleteUrls(const std::vector<GURL>& urls);
 

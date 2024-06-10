@@ -36,7 +36,8 @@ void MaybePrewarmHttpDiskCache(const GURL& url,
   }
 
   GetContentClient()->browser()->MaybePrewarmHttpDiskCache(
-      *render_frame_host.GetBrowserContext(), url);
+      *render_frame_host.GetBrowserContext(),
+      render_frame_host.GetLastCommittedOrigin(), url);
 }
 
 }  // namespace

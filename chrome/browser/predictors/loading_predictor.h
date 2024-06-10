@@ -61,6 +61,7 @@ class LoadingPredictor : public KeyedService,
   // preconnect. Returns true if no more preconnect actions should be taken by
   // the caller.
   bool PrepareForPageLoad(
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& url,
       HintOrigin origin,
       bool preconnectable = false,
@@ -86,6 +87,7 @@ class LoadingPredictor : public KeyedService,
   // were taken, such as preconnecting to known resource hosts, at that time.
   bool OnNavigationStarted(NavigationId navigation_id,
                            ukm::SourceId ukm_source_id,
+                           const std::optional<url::Origin>& initiator_origin,
                            const GURL& main_frame_url,
                            base::TimeTicks creation_time);
   void OnNavigationFinished(NavigationId navigation_id,
@@ -123,7 +125,8 @@ class LoadingPredictor : public KeyedService,
       bool allow_credentials,
       const net::NetworkAnonymizationKey& network_anonymization_key);
 
-  void MaybePrewarmResources(const GURL& top_frame_main_resource_url);
+  void MaybePrewarmResources(const std::optional<url::Origin>& initiator_origin,
+                             const GURL& top_frame_main_resource_url);
 
  private:
   // Stores the information necessary to keep track of the active navigations.

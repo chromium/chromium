@@ -10,6 +10,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/page_user_data.h"
+#include "url/origin.h"
 
 namespace internal {
 
@@ -118,6 +119,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
 
   // The URL of the last navigation commit.
   std::optional<GURL> commit_url_;
+  std::optional<url::Origin> initiator_origin_;
 
   // Flipped to true iff the navigation had associated non-empty LCPP hint data.
   bool is_lcpp_hinted_navigation_ = false;

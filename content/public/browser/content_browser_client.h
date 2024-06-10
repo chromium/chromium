@@ -2903,8 +2903,21 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Prewarms the HTTP disk cache entries for the given URL and the
   // subresources if possible.
-  virtual void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
-                                         const GURL& navigation_url);
+  // `initiator_origin` is the origin that triggers the prewarm request,
+  // if it exists. More precisely:
+  // - If the prewarm is triggered by navigation, `initiator_origin` is
+  //   the navigation's initiator origin.
+  // - If the prewarm is triggered by interactions with the contents of a
+  //   document (e.g. anchor links), `initiator_origin` is the document's
+  //   origin.
+  // - For all other triggers (e.g. interaction with browser UI),
+  //   `initiator_origin` is nullopt.
+  // `initiator_origin` will be used to key the entry, along with the URL
+  // for LCP prediction.
+  virtual void MaybePrewarmHttpDiskCache(
+      BrowserContext& browser_context,
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& navigation_url);
 
   enum class MultiCaptureChanged { kStarted, kStopped };
 

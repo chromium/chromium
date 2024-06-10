@@ -623,18 +623,22 @@ void ResourcePrefetchPredictor::LearnOrigins(
     origin_data_->UpdateData(host, data);
 }
 
-void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
-                                          const LcppDataInputs& inputs) {
+void ResourcePrefetchPredictor::LearnLcpp(
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& url,
+    const LcppDataInputs& inputs) {
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }
-  const bool data_updated = lcpp_data_->LearnLcpp(url, inputs);
+  const bool data_updated =
+      lcpp_data_->LearnLcpp(initiator_origin, url, inputs);
   if (data_updated && observer_) {
     observer_->OnLcppLearned();
   }
 }
 
 std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The `initialization_state_` can be not `INITIALIZED` in the very first
@@ -643,7 +647,7 @@ std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
   if (initialization_state_ != INITIALIZED) {
     return std::nullopt;
   }
-  return lcpp_data_->GetLcppStat(url);
+  return lcpp_data_->GetLcppStat(initiator_origin, url);
 }
 
 void ResourcePrefetchPredictor::OnHistoryDeletions(

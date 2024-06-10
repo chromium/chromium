@@ -87,6 +87,7 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
     is_lcpp_hinted_navigation_ = true;
   }
 
+  initiator_origin_ = navigation_handle->GetInitiatorOrigin();
   commit_url_ = navigation_handle->GetURL();
   if (!predictors::IsURLValidForLcpp(*commit_url_)) {
     return STOP_OBSERVING;
@@ -159,7 +160,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   // Take the learned LCPP here so that we can report it after overwriting it
   // with the new data below.
   std::optional<predictors::LcppStat> lcpp_stat_prelearn =
-      predictor ? predictor->GetLcppStat(*commit_url_) : std::nullopt;
+      predictor ? predictor->GetLcppStat(initiator_origin_, *commit_url_)
+                : std::nullopt;
 
   // TODO(crbug.com/40517495): kSpeculativePreconnectFeature flag can also
   // affect this. Unflag the feature.
@@ -170,7 +172,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
     RemoveFetchedSubresourceUrlsAfterLCP(
         lcpp_data_inputs_->subresource_urls,
         largest_contentful_paint.Time().value());
-    predictor->LearnLcpp(*commit_url_, *lcpp_data_inputs_);
+    predictor->LearnLcpp(initiator_origin_, *commit_url_, *lcpp_data_inputs_);
   }
 
   // * Emit LCPP breakdown PageLoad UMAs.

@@ -157,7 +157,8 @@ void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,
       predictors::LoadingPredictorFactory::GetForProfile(profile);
   if (loading_predictor) {
     loading_predictor->PrepareForPageLoad(
-        match.destination_url, predictors::HintOrigin::OMNIBOX,
+        /*initiator_origin=*/std::nullopt, match.destination_url,
+        predictors::HintOrigin::OMNIBOX,
         predictors::AutocompleteActionPredictor::IsPreconnectable(match));
   }
 }

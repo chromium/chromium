@@ -5959,7 +5959,7 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
 
     if (filtered_url.SchemeIsHTTPOrHTTPS()) {
       GetContentClient()->browser()->MaybePrewarmHttpDiskCache(
-          *GetBrowserContext(), filtered_url);
+          *GetBrowserContext(), GetLastCommittedOrigin(), filtered_url);
     }
 
     if (!OriginCanAccessServiceWorkers(filtered_url)) {

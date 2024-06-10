@@ -43,7 +43,8 @@ void ChromeNoStatePrefetchManagerDelegate::MaybePreconnect(const GURL& url) {
       predictors::LoadingPredictorFactory::GetForProfile(profile_);
   if (loading_predictor) {
     loading_predictor->PrepareForPageLoad(
-        url, predictors::HintOrigin::OMNIBOX_PRERENDER_FALLBACK, true);
+        /*initiator_origin=*/std::nullopt, url,
+        predictors::HintOrigin::OMNIBOX_PRERENDER_FALLBACK, true);
   }
 }
 

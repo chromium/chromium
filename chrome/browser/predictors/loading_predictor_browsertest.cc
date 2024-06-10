@@ -914,7 +914,8 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
       const GURL& url,
       size_t expected_locator_count) {
     auto lcpp_stat =
-        loading_predictor()->resource_prefetch_predictor()->GetLcppStat(url);
+        loading_predictor()->resource_prefetch_predictor()->GetLcppStat(
+            /*initiator_origin=*/std::nullopt, url);
     std::vector<std::string> locators;
     if (lcpp_stat) {
       std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -947,7 +948,8 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
 
   std::vector<std::string> GetLCPPFonts(const GURL& url) {
     auto lcpp_stat =
-        loading_predictor()->resource_prefetch_predictor()->GetLcppStat(url);
+        loading_predictor()->resource_prefetch_predictor()->GetLcppStat(
+            /*initiator_origin=*/std::nullopt, url);
     if (!lcpp_stat) {
       return std::vector<std::string>();
     }

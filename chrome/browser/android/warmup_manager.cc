@@ -34,7 +34,8 @@ static void JNI_WarmupManager_PreconnectUrlAndSubresources(
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(profile);
     if (loading_predictor) {
-      loading_predictor->PrepareForPageLoad(url,
+      loading_predictor->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
+                                            url,
                                             predictors::HintOrigin::EXTERNAL);
     }
   }

@@ -125,7 +125,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
         predictors::LoadingPredictorFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context()));
     std::optional<predictors::LcppStat> lcpp_stat =
-        loading_predictor->resource_prefetch_predictor()->GetLcppStat(url);
+        loading_predictor->resource_prefetch_predictor()->GetLcppStat(
+            /*initiator_origin=*/std::nullopt, url);
     EXPECT_EQ(learn_lcpp, lcpp_stat.has_value()) << location.ToString();
 
     base::Histogram::Count expected_count = record_uma ? 1 : 0;
@@ -201,7 +202,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     CHECK(predictor);
     predictors::LcppDataInputs lcpp_data_inputs;
     lcpp_data_inputs.lcp_element_locator = "lcp_previous";
-    predictor->LearnLcpp(main_frame_url, lcpp_data_inputs);
+    predictor->LearnLcpp(/*initiator_origin=*/std::nullopt, main_frame_url,
+                         lcpp_data_inputs);
 
     // Predict LCP with the learned result.
     NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);

@@ -576,7 +576,8 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
       predictors::LoadingPredictorFactory::GetForProfile(profile_);
   if (loading_predictor) {
     loading_predictor->PrepareForPageLoad(
-        match.destination_url, predictors::HintOrigin::OMNIBOX,
+        /*initiator_origin=*/std::nullopt, match.destination_url,
+        predictors::HintOrigin::OMNIBOX,
         predictors::AutocompleteActionPredictor::IsPreconnectable(match));
   }
   // We could prefetch the alternate nav URL, if any, but because there

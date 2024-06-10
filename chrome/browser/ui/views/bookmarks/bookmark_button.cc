@@ -235,7 +235,8 @@ void BookmarkButton::StartPreconnecting(GURL url) {
         predictors::LoadingPredictorFactory::GetForProfile(browser_->profile());
     if (loading_predictor) {
       loading_predictor->PrepareForPageLoad(
-          url, predictors::HintOrigin::BOOKMARK_BAR, true);
+          /*initiator_origin=*/std::nullopt, url,
+          predictors::HintOrigin::BOOKMARK_BAR, true);
     }
 
     preloading_timer_.Start(
