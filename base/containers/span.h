@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <array>
 #include <concepts>
+#include <iosfwd>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -109,6 +110,8 @@ template <class T, class U, size_t N, size_t M>
            std::three_way_comparable_with<T, U>)
 constexpr auto span_cmp(span<T, N> l, span<U, M> r)
     -> decltype(l[0u] <=> r[0u]);
+template <class T, size_t N>
+constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 
 }  // namespace internal
 
@@ -243,6 +246,7 @@ constexpr auto span_cmp(span<T, N> l, span<U, M> r)
 // - split_at() method.
 // - operator==() comparator function.
 // - operator<=>() comparator function.
+// - operator<<() printing function.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -1131,6 +1135,15 @@ span(R&& r) noexcept
 template <typename T, size_t N>
 span(const T (&)[N]) -> span<const T, N>;
 
+// span can be printed and will print each of its values, including in Gtests.
+//
+// TODO(danakj): This could move to a ToString() member method if gtest printers
+// were hooked up to base::ToString().
+template <class T, size_t N>
+constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
+  return internal::span_stream(l, r);
+}
+
 // [span.objectrep], views of object representation
 template <typename T, size_t X>
 constexpr auto as_bytes(span<T, X> s) noexcept {
@@ -1550,7 +1563,7 @@ constexpr bool span_eq(span<T, N> l, span<U, M> r) {
   return l.size() == r.size() && std::equal(l.begin(), l.end(), r.begin());
 }
 
-// Template helper for implementing operator<=>
+// Template helper for implementing operator<=>.
 template <class T, class U, size_t N, size_t M>
   requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
            std::three_way_comparable_with<T, U>)
@@ -1558,6 +1571,27 @@ constexpr auto span_cmp(span<T, N> l, span<U, M> r)
     -> decltype(l[0u] <=> r[0u]) {
   return std::lexicographical_compare_three_way(l.begin(), l.end(), r.begin(),
                                                 r.end());
+}
+
+// Template helper for implementing printing.
+template <class T, size_t N>
+constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
+  l << "[";
+  if constexpr (!std::same_as<std::remove_cvref_t<T>, char>) {
+    if (!r.empty()) {
+      l << base::ToString(r.front());
+      for (const T& e : r.subspan(1u)) {
+        l << ", ";
+        l << base::ToString(e);
+      }
+    }
+  } else {
+    l << '\"';
+    l << as_string_view(r);
+    l << '\"';
+  }
+  l << "]";
+  return l;
 }
 
 }  // namespace internal

@@ -18,17 +18,6 @@
 
 namespace blink {
 
-namespace {
-template <typename T, size_t E>
-std::ostream& operator<<(std::ostream& out, const base::span<T, E>& c) {
-#if DCHECK_IS_ON()
-  for (auto&& e : c)
-    out << e << " ";
-#endif
-  return out;
-}
-}  // namespace
-
 ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
     Type type)

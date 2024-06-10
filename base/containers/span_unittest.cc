@@ -2769,6 +2769,34 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
   }
 }
 
+TEST(SpanTest, Printing) {
+  struct S {
+    std::string ToString() const { return "S()"; }
+  };
+
+  // Gtest prints values in the spans. Chars are special.
+  EXPECT_EQ(testing::PrintToString(base::span({1, 2, 3})), "[1, 2, 3]");
+  EXPECT_EQ(testing::PrintToString(base::span({S(), S()})), "[S(), S()]");
+  EXPECT_EQ(testing::PrintToString(base::span({'a', 'b', 'c'})), "[\"abc\"]");
+  EXPECT_EQ(testing::PrintToString(base::span({'a', 'b', 'c', '\0'})),
+            std::string_view("[\"abc\0\"]", 8u));
+  EXPECT_EQ(testing::PrintToString(base::span({'a', 'b', '\0', 'c', '\0'})),
+            std::string_view("[\"ab\0c\0\"]", 9u));
+  EXPECT_EQ(testing::PrintToString(base::span<int>()), "[]");
+  EXPECT_EQ(testing::PrintToString(base::span<char>()), "[\"\"]");
+
+  // Base prints values in spans. Chars are special.
+  EXPECT_EQ(base::ToString(base::span({1, 2, 3})), "[1, 2, 3]");
+  EXPECT_EQ(base::ToString(base::span({S(), S()})), "[S(), S()]");
+  EXPECT_EQ(base::ToString(base::span({'a', 'b', 'c'})), "[\"abc\"]");
+  EXPECT_EQ(base::ToString(base::span({'a', 'b', 'c', '\0'})),
+            std::string_view("[\"abc\0\"]", 8u));
+  EXPECT_EQ(base::ToString(base::span({'a', 'b', '\0', 'c', '\0'})),
+            std::string_view("[\"ab\0c\0\"]", 9u));
+  EXPECT_EQ(base::ToString(base::span<int>()), "[]");
+  EXPECT_EQ(base::ToString(base::span<char>()), "[\"\"]");
+}
+
 }  // namespace base
 
 // Test for compatibility with std::span<>, in case some third-party
