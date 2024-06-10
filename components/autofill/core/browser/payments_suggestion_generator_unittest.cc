@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,16 +27,14 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/payments_suggestion_generator_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -45,7 +42,6 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/webdata/common/web_data_results.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
@@ -179,13 +175,13 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data().SetPrefService(autofill_client_.GetPrefs());
-    personal_data().SetSyncServiceForTest(&sync_service_);
+    payments_data().SetPrefService(autofill_client_.GetPrefs());
+    payments_data().SetSyncServiceForTest(&sync_service_);
     suggestion_generator_ =
         std::make_unique<PaymentsSuggestionGenerator>(autofill_client_);
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            &personal_data(),
+            autofill_client_.GetPersonalDataManager(),
             /*coupon_service_delegate=*/nullptr, /*shopping_service=*/nullptr));
   }
 
@@ -253,11 +249,12 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     return *suggestion_generator_.get();
   }
 
-  TestPersonalDataManager& personal_data() {
-    return *autofill_client_.GetPersonalDataManager();
+  TestPaymentsDataManager& payments_data() {
+    return autofill_client_.GetPersonalDataManager()
+        ->test_payments_data_manager();
   }
 
-  const std::string& app_locale() { return personal_data().app_locale(); }
+  const std::string& app_locale() { return payments_data().app_locale(); }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
@@ -304,16 +301,14 @@ class AutofillCreditCardBenefitsLabelTest
     if (absl::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
       CreditCardFlatRateBenefit benefit =
           absl::get<CreditCardFlatRateBenefit>(GetBenefit());
-      personal_data().payments_data_manager().AddCreditCardBenefitForTest(
-          benefit);
+      payments_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
     } else if (absl::holds_alternative<CreditCardMerchantBenefit>(
                    GetBenefit())) {
       CreditCardMerchantBenefit benefit =
           absl::get<CreditCardMerchantBenefit>(GetBenefit());
-      personal_data().payments_data_manager().AddCreditCardBenefitForTest(
-          benefit);
+      payments_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
       // Set the page URL in order to ensure that the merchant benefit is
@@ -329,8 +324,7 @@ class AutofillCreditCardBenefitsLabelTest
               CreditCardCategoryBenefit::BenefitCategory::kSubscription));
       CreditCardCategoryBenefit benefit =
           absl::get<CreditCardCategoryBenefit>(GetBenefit());
-      personal_data().payments_data_manager().AddCreditCardBenefitForTest(
-          benefit);
+      payments_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
     } else {
@@ -345,7 +339,7 @@ class AutofillCreditCardBenefitsLabelTest
         /*server_id=*/"server_id1",
         /*instrument_id=*/instrument_id);
     card_.set_issuer_id(std::get<1>(GetParam()));
-    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
+    payments_data().AddServerCreditCard(card_);
   }
 
   CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
@@ -546,7 +540,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       features::kAutofillForUnclassifiedFieldsAvailable);
   CreditCard card = test::GetIncompleteCreditCard();
   ASSERT_FALSE(card.HasRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  personal_data().payments_data_manager().AddCreditCard(card);
+  payments_data().AddCreditCard(card);
 
   bool with_offer;
   bool with_cvc;
@@ -600,12 +594,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
         credit_card.set_use_date(is_disused ? kDisuseTime : kNow);
         if (is_local) {
           credit_card.set_record_type(CreditCard::RecordType::kLocalCard);
-          personal_data().payments_data_manager().AddCreditCard(credit_card);
+          payments_data().AddCreditCard(credit_card);
         } else {
           credit_card.set_record_type(
               CreditCard::RecordType::kMaskedServerCard);
-          personal_data().test_payments_data_manager().AddServerCreditCard(
-              credit_card);
+          payments_data().AddServerCreditCard(credit_card);
         }
         credit_cards.push_back(credit_card);
       }
@@ -636,10 +629,10 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs);
   CreditCard card1 = test::GetCreditCard();
   card1.set_record_type(CreditCard::RecordType::kLocalCard);
-  personal_data().payments_data_manager().AddCreditCard(card1);
+  payments_data().AddCreditCard(card1);
   CreditCard card2 = test::GetCreditCard2();
   card2.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
+  payments_data().AddServerCreditCard(card2);
 
   auto get_cards = [&](std::u16string field_value) {
     FormFieldData field;
@@ -696,7 +689,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   local_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2000");
   local_card.set_use_date(AutofillClock::Now() - kDisusedDataModelTimeDelta -
                           base::Days(1));
-  personal_data().payments_data_manager().AddCreditCard(local_card);
+  payments_data().AddCreditCard(local_card);
 
   bool with_offer;
   bool with_cvc;
@@ -715,30 +708,25 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 TEST_F(PaymentsSuggestionGeneratorTest, GetServerCardForLocalCard) {
   CreditCard server_card = CreateServerCard();
   server_card.SetNumber(u"4111111111111111");
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
   CreditCard local_card =
       CreateLocalCard("00000000-0000-0000-0000-000000000002");
 
   // The server card should be returned if the local card is passed in.
   const CreditCard* result =
-      personal_data().payments_data_manager().GetServerCardForLocalCard(
-          &local_card);
+      payments_data().GetServerCardForLocalCard(&local_card);
   ASSERT_TRUE(result);
   EXPECT_EQ(server_card.guid(), result->guid());
 
   // Should return nullptr if a server card is passed in.
-  EXPECT_FALSE(
-      personal_data().payments_data_manager().GetServerCardForLocalCard(
-          &server_card));
+  EXPECT_FALSE(payments_data().GetServerCardForLocalCard(&server_card));
 
   // Should return nullptr if no server card has the same information as the
   // local card.
   server_card.SetNumber(u"5454545454545454");
-  personal_data().test_payments_data_manager().ClearCreditCards();
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  EXPECT_FALSE(
-      personal_data().payments_data_manager().GetServerCardForLocalCard(
-          &local_card));
+  payments_data().ClearCreditCards();
+  payments_data().AddServerCreditCard(server_card);
+  EXPECT_FALSE(payments_data().GetServerCardForLocalCard(&local_card));
 }
 
 // The suggestions of credit cards with card linked offers are moved to the
@@ -746,19 +734,16 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetServerCardForLocalCard) {
 TEST_F(PaymentsSuggestionGeneratorTest,
        GetSuggestionsForCreditCards_StableSortBasedOnOffer) {
   // Create three server cards.
-  personal_data().test_payments_data_manager().ClearCreditCards();
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard(
-          /*guid=*/"00000000-0000-0000-0000-000000000001",
-          /*server_id=*/"server_id1", /*instrument_id=*/1));
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard(
-          /*guid=*/"00000000-0000-0000-0000-000000000002",
-          /*server_id=*/"server_id2", /*instrument_id=*/2));
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard(
-          /*guid=*/"00000000-0000-0000-0000-000000000003",
-          /*server_id=*/"server_id3", /*instrument_id=*/3));
+  payments_data().ClearCreditCards();
+  payments_data().AddServerCreditCard(CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1));
+  payments_data().AddServerCreditCard(CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000002",
+      /*server_id=*/"server_id2", /*instrument_id=*/2));
+  payments_data().AddServerCreditCard(CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000003",
+      /*server_id=*/"server_id3", /*instrument_id=*/3));
 
   // Create a card linked offer and attach it to server_card2.
   AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
@@ -766,7 +751,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   offer_data.SetEligibleInstrumentIdForTesting({2});
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL("http://www.example1.com"));
-  personal_data().test_payments_data_manager().AddAutofillOfferData(offer_data);
+  payments_data().AddAutofillOfferData(offer_data);
 
   bool with_offer;
   bool with_cvc;
@@ -801,7 +786,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 TEST_F(PaymentsSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc) {
   CreditCard server_card = CreateServerCard();
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
@@ -822,8 +807,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 TEST_F(PaymentsSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc_UndoAutofill) {
   CreditCard server_card = CreateServerCard();
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard());
+  payments_data().AddServerCreditCard(CreateServerCard());
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
@@ -849,7 +833,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 // Ensures we appropriately generate suggestions for credit saved with CVC.
 TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
   CreditCard card = test::WithCvc(test::GetMaskedServerCard2());
-  personal_data().test_payments_data_manager().AddServerCreditCard(card);
+  payments_data().AddServerCreditCard(card);
 
   bool with_offer;
   bool with_cvc;
@@ -872,14 +856,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   // GPay logo should be displayed if suggestions were all for server cards;
   {
     // Create two server cards.
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        CreateServerCard(
-            /*guid=*/"00000000-0000-0000-0000-000000000001",
-            /*server_id=*/"server_id1", /*instrument_id=*/1));
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        CreateServerCard(
-            /*guid=*/"00000000-0000-0000-0000-000000000002",
-            /*server_id=*/"server_id2", /*instrument_id=*/2));
+    payments_data().AddServerCreditCard(CreateServerCard(
+        /*guid=*/"00000000-0000-0000-0000-000000000001",
+        /*server_id=*/"server_id1", /*instrument_id=*/1));
+    payments_data().AddServerCreditCard(CreateServerCard(
+        /*guid=*/"00000000-0000-0000-0000-000000000002",
+        /*server_id=*/"server_id2", /*instrument_id=*/2));
 
     bool with_offer;
     bool with_cvc;
@@ -896,7 +878,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
                 ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
   }
 
-  personal_data().test_payments_data_manager().ClearCreditCards();
+  payments_data().ClearCreditCards();
 
   // GPay logo should not be displayed if at least one local card was in the
   // suggestions.
@@ -905,11 +887,10 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     auto local_card = CreateLocalCard(
         /*guid=*/"00000000-0000-0000-0000-000000000001");
     local_card.SetNumber(u"5454545454545454");
-    personal_data().payments_data_manager().AddCreditCard(local_card);
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        CreateServerCard(
-            /*guid=*/"00000000-0000-0000-0000-000000000002",
-            /*server_id=*/"server_id2", /*instrument_id=*/2));
+    payments_data().AddCreditCard(local_card);
+    payments_data().AddServerCreditCard(CreateServerCard(
+        /*guid=*/"00000000-0000-0000-0000-000000000002",
+        /*server_id=*/"server_id2", /*instrument_id=*/2));
 
     bool with_offer;
     bool with_cvc;
@@ -926,7 +907,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
                 ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
   }
 
-  personal_data().test_payments_data_manager().ClearCreditCards();
+  payments_data().ClearCreditCards();
 
   // GPay logo should be displayed if there was an unused expired local card in
   // the suggestions.
@@ -937,11 +918,10 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     local_card.SetNumber(u"5454545454545454");
     local_card.SetExpirationYear(2020);
     local_card.set_use_date(AutofillClock::Now() - base::Days(365));
-    personal_data().payments_data_manager().AddCreditCard(local_card);
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        CreateServerCard(
-            /*guid=*/"00000000-0000-0000-0000-000000000002",
-            /*server_id=*/"server_id2", /*instrument_id=*/2));
+    payments_data().AddCreditCard(local_card);
+    payments_data().AddServerCreditCard(CreateServerCard(
+        /*guid=*/"00000000-0000-0000-0000-000000000002",
+        /*server_id=*/"server_id2", /*instrument_id=*/2));
 
     bool with_offer;
     bool with_cvc;
@@ -976,7 +956,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
-  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
+  payments_data().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -1000,7 +980,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
-  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
+  payments_data().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -1026,7 +1006,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(PaymentsSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
-  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
+  payments_data().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -1056,7 +1036,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -1078,7 +1058,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
   autofill_client()->ResetAutofillOptimizationGuide();
 
   // Create a local card with same information.
@@ -1102,7 +1082,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   // Create an enrolled server card.
   CreditCard server_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
 
   // Even if the URL is opted-out of virtual cards for `server_card`, display
   // the virtual card suggestion.
@@ -1126,7 +1106,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -1153,7 +1133,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnspecified);
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data().AddServerCreditCard(server_card);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -1887,8 +1867,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 // Verify that manual fallback credit card suggestions are not filtered.
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetSuggestionsForCreditCards_ManualFallbackSuggestionsNotFiltered) {
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard());
+  payments_data().AddServerCreditCard(CreateServerCard());
 
   FormFieldData field_data;
   field_data.set_value(u"$$$");
@@ -1919,9 +1898,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // We used last 4 to deduplicate local card and server card so we should set
   // local card with different last 4.
   local_card.SetNumber(u"5454545454545454");
-  personal_data().payments_data_manager().AddCreditCard(std::move(local_card));
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard());
+  payments_data().AddCreditCard(std::move(local_card));
+  payments_data().AddServerCreditCard(CreateServerCard());
 
   bool with_offer;
   bool with_cvc;
@@ -1956,9 +1934,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetSuggestionsForCreditCards_Duplicate_CvcField) {
   // Create 2 duplicate local and server card with same last 4.
-  personal_data().payments_data_manager().AddCreditCard(CreateLocalCard());
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      CreateServerCard());
+  payments_data().AddCreditCard(CreateLocalCard());
+  payments_data().AddServerCreditCard(CreateServerCard());
 
   bool with_offer;
   bool with_cvc;
@@ -1984,8 +1961,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   CreditCard server_card = CreateServerCard();
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      std::move(server_card));
+  payments_data().AddServerCreditCard(std::move(server_card));
 
   bool with_offer;
   bool with_cvc;
@@ -2024,9 +2000,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   CreditCard server_card = CreateServerCard();
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      std::move(server_card));
-  personal_data().payments_data_manager().AddCreditCard(CreateLocalCard());
+  payments_data().AddServerCreditCard(std::move(server_card));
+  payments_data().AddCreditCard(CreateLocalCard());
 
   bool with_offer;
   bool with_cvc;
@@ -2314,8 +2289,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data().test_payments_data_manager().AddCardArtImage(card_art_url,
-                                                               fake_image);
+  payments_data().AddCardArtImage(card_art_url, fake_image);
 
   Suggestion virtual_card_suggestion =
       test_api(suggestion_generator())
@@ -2375,9 +2349,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  personal_data().test_payments_data_manager().AddCardArtImage(card_art_url,
-                                                               fake_image);
+  payments_data().AddServerCreditCard(server_card);
+  payments_data().AddCardArtImage(card_art_url, fake_image);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -2423,8 +2396,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     if (card_has_capital_one_icon()) {
       server_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        server_card);
+    payments_data().AddServerCreditCard(server_card);
 
     bool with_offer;
     bool with_cvc;
@@ -2450,7 +2422,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
         expected_issuer_or_network_to_metadata_availability);
   }
 
-  personal_data().test_payments_data_manager().ClearCreditCards();
+  payments_data().ClearCreditCards();
 
   {
     // Create a server card with card product description & card art image.
@@ -2459,8 +2431,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     server_card_with_metadata.set_product_description(u"product_description");
     server_card_with_metadata.set_card_art_url(
         GURL("https://www.example.com/card-art.png"));
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        server_card_with_metadata);
+    payments_data().AddServerCreditCard(server_card_with_metadata);
 
     bool with_offer;
     bool with_cvc;
@@ -2506,9 +2477,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   gfx::Image fake_image = CustomIconForTest();
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  personal_data().test_payments_data_manager().AddCardArtImage(card_art_url,
-                                                               fake_image);
+  payments_data().AddServerCreditCard(server_card);
+  payments_data().AddCardArtImage(card_art_url, fake_image);
 
   bool unused_with_offer;
   bool unused_with_cvc;

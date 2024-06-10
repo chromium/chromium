@@ -14,15 +14,16 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillClient;
 class FormFieldData;
-class PersonalDataManager;
 
 // Helper class to generate Autofill suggestions, such as for credit card and
 // address profile Autofill.
@@ -145,15 +146,14 @@ class AddressSuggestionGenerator {
   // add suggestion for clearing all autofilled fields.
   std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) const;
 
-  // TODO(b/41484171): Return AddressDataManager directly.
-  const PersonalDataManager& personal_data() const {
+  const AddressDataManager& address_data() const {
     // The PDM outlives the ASG, hence this is safe.
-    return *autofill_client_->GetPersonalDataManager();
+    return autofill_client_->GetPersonalDataManager()->address_data_manager();
   }
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
-  base::raw_ref<AutofillClient> autofill_client_;
+  raw_ref<AutofillClient> autofill_client_;
 };
 
 }  // namespace autofill

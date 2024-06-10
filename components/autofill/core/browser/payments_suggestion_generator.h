@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -33,7 +34,7 @@ class AutofillOfferData;
 class CreditCard;
 class FormFieldData;
 class Iban;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Helper class to generate Autofill suggestions, such as for credit card and
 // address profile Autofill.
@@ -208,15 +209,14 @@ class PaymentsSuggestionGenerator {
   // `card`, false otherwise.
   bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card) const;
 
-  // TODO(b/41484171): Return PaymentsDataManager directly.
-  const PersonalDataManager& personal_data() const {
-    // The PDM outlives the ASG, hence this is safe.
-    return *autofill_client_->GetPersonalDataManager();
+  const PaymentsDataManager& payments_data() const {
+    // The PDM outlives the PaymentsSuggestionGenerator, hence this is safe.
+    return autofill_client_->GetPersonalDataManager()->payments_data_manager();
   }
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
-  base::raw_ref<AutofillClient> autofill_client_;
+  raw_ref<AutofillClient> autofill_client_;
 };
 
 }  // namespace autofill

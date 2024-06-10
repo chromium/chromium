@@ -880,11 +880,11 @@ AddressSuggestionGenerator::GetProfilesToSuggest(
     ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<const AutofillProfile*> sorted_profiles =
-      personal_data().address_data_manager().GetProfilesToSuggest();
+      address_data().GetProfilesToSuggest();
   if (options.require_non_empty_value_on_trigger_field) {
     std::erase_if(sorted_profiles, [&](const AutofillProfile* profile) {
-      return GetProfileSuggestionMainText(
-                 *profile, personal_data().app_locale(), trigger_field_type)
+      return GetProfileSuggestionMainText(*profile, address_data().app_locale(),
+                                          trigger_field_type)
           .empty();
     });
   }
@@ -899,7 +899,7 @@ AddressSuggestionGenerator::GetProfilesToSuggest(
   if (options.exclude_disused_addresses) {
     RemoveDisusedSuggestions(profiles_to_suggest);
   }
-  const AutofillProfileComparator comparator(personal_data().app_locale());
+  const AutofillProfileComparator comparator(address_data().app_locale());
   // It is important that deduplication is the last filtering strategy to be
   // executed, otherwise some profiles could be deduplicated in favor of another
   // profile that is later removed by another filtering strategy.
@@ -928,7 +928,7 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
     return {};
   }
   std::vector<Suggestion> suggestions;
-  std::string app_locale = personal_data().app_locale();
+  std::string app_locale = address_data().app_locale();
   std::vector<std::vector<Suggestion::Text>> labels =
       CreateSuggestionLabelsWithGranularFillingDetails(
           profiles, field_types, suggestion_type, trigger_field_type,
@@ -1027,7 +1027,7 @@ AddressSuggestionGenerator::DeduplicatedProfilesForSuggestions(
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
     suggestion_main_text.push_back(GetProfileSuggestionMainText(
-        *profile, personal_data().app_locale(), trigger_field_type));
+        *profile, address_data().app_locale(), trigger_field_type));
   }
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       unique_matched_profiles;
@@ -1106,7 +1106,7 @@ AddressSuggestionGenerator::GetPrefixMatchedProfiles(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
     std::u16string main_text = GetProfileSuggestionMainText(
-        *profile, personal_data().app_locale(), trigger_field_type);
+        *profile, address_data().app_locale(), trigger_field_type);
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
       continue;
@@ -1157,7 +1157,7 @@ void AddressSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
     Suggestion& suggestion) const {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  const std::string app_locale = personal_data().app_locale();
+  const std::string app_locale = address_data().app_locale();
   // The "Fill everything" suggestion is added at the top (even if the filling
   // mode is full form filling), in its own section of the sub-menu, if
   // `features::kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam`
