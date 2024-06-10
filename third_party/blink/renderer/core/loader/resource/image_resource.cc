@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -71,6 +72,88 @@ namespace {
 // been updated (in seconds). This effectively throttles invalidations that
 // result from new data arriving for this image.
 constexpr auto kFlushDelay = base::Seconds(1);
+
+wtf_size_t FindTransparentPlaceholderIndex(KURL image_url) {
+  CHECK(IsMainThread());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      Vector<String>, known_transparent_urls,
+      ({"data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+        "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
+        "data:image/gif;base64,R0lGODlhAQABAID/"
+        "AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="}));
+  return known_transparent_urls.Find(image_url);
+}
+
+scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
+    wtf_size_t index) {
+  CHECK(index >= 0 && index < 2);
+  CHECK(IsMainThread());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
+      ({SharedBuffer::Create(
+            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
+            "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
+            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b",
+            static_cast<size_t>(43)),
+        SharedBuffer::Create(
+            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
+            "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
+            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
+            static_cast<size_t>(43))}));
+  return known_transparent_encoded_gifs[index];
+}
+
+void MarkKnownTransparentPlaceholderResourceRequestIfNeeded(
+    ResourceRequest& resource_request) {
+  static const bool transparent_image_optimization_enabled =
+      base::FeatureList::IsEnabled(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
+
+  if (transparent_image_optimization_enabled) {
+    wtf_size_t index = FindTransparentPlaceholderIndex(resource_request.Url());
+    if (index != kNotFound) {
+      resource_request.SetKnownTransparentPlaceholderImageIndex(index);
+    }
+  }
+}
+
+ImageResource* CreateResourceForTransparentPlaceholderImage(
+    const ResourceRequest& request,
+    const ResourceLoaderOptions& options) {
+  const wtf_size_t index = request.GetKnownTransparentPlaceholderImageIndex();
+  CHECK_NE(index, kNotFound);
+  CHECK(index >= 0 && index < 2);
+  scoped_refptr<SharedBuffer> data =
+      GetDataForTransparentPlaceholderImageIndex(index);
+  CHECK(data->size());
+
+  scoped_refptr<Image> image = BitmapImage::Create();
+  image->SetData(data, true);
+  auto* image_content = ImageResourceContent::CreateLoaded(image);
+  auto* resource =
+      MakeGarbageCollected<ImageResource>(request, options, image_content);
+
+  // The below code is the same as in `network_utils::ParseDataURL()`.
+  ResourceResponse response;
+  response.SetHttpStatusCode(200);
+  response.SetHttpStatusText(AtomicString("OK"));
+  response.SetCurrentRequestUrl(request.Url());
+  response.SetExpectedContentLength(data->size());
+  response.SetTextEncodingName(WebString::FromUTF8(""));
+  response.SetMimeType(WebString::FromUTF8("image/gif"));
+  response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
+                              WebString::FromUTF8("image/gif"));
+
+  // The below code is the same as in
+  // `ResourceFetcher::CreateResourceForStaticData()`.
+  resource->ResponseReceived(response);
+  resource->SetDataBufferingPolicy(kBufferData);
+  resource->SetResourceBuffer(data);
+  resource->SetCacheIdentifier(MemoryCache::DefaultCacheIdentifier());
+  resource->SetStatus(ResourceStatus::kCached);
+
+  return resource;
+}
 
 }  // namespace
 
@@ -196,64 +279,20 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
 
   Resource* Create(const ResourceRequest& request,
                    const ResourceLoaderOptions& options) const override {
+    if (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound) {
+      return CreateResourceForTransparentPlaceholderImage(request, options);
+    }
+
     return MakeGarbageCollected<ImageResource>(
         request, options, ImageResourceContent::CreateNotStarted());
   }
 };
 
-wtf_size_t ImageResource::FindTransparentPlaceholderIndex(KURL image_url) {
-  CHECK(IsMainThread());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      Vector<String>, known_transparent_urls,
-      ({"data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
-        "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
-        "data:image/gif;base64,R0lGODlhAQABAID/"
-        "AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="}));
-  return known_transparent_urls.Find(image_url);
-}
-
-scoped_refptr<SharedBuffer>
-ImageResource::GetDataForTransparentPlaceholderImageIndex(wtf_size_t index) {
-  CHECK(index >= 0 && index < 2);
-  CHECK(IsMainThread());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
-      ({SharedBuffer::Create(
-            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
-            "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b",
-            static_cast<size_t>(43)),
-        SharedBuffer::Create(
-            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
-            "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
-            static_cast<size_t>(43))}));
-  return known_transparent_encoded_gifs[index];
-}
-
-std::tuple<ImageResource*, scoped_refptr<SharedBuffer>>
-ImageResource::MaybeCreateResourceForTransparentPlaceholderImage(
-    const FetchParameters& fetch_params) {
-  scoped_refptr<Image> image;
-  KURL url = fetch_params.Url();
-  const wtf_size_t index = FindTransparentPlaceholderIndex(url);
-  if (index != kNotFound) {
-    CHECK(index >= 0 && index < 2);
-    image = BitmapImage::Create();
-    image->SetData(GetDataForTransparentPlaceholderImageIndex(index), true);
-  }
-  if (!image) {
-    return {nullptr, nullptr};
-  }
-  auto* image_content = ImageResourceContent::CreateLoaded(image);
-  auto* resource = MakeGarbageCollected<ImageResource>(
-      fetch_params.GetResourceRequest(), fetch_params.Options(), image_content);
-  resource->SetStatus(ResourceStatus::kCached);
-  return {resource, image->Data()};
-}
-
 ImageResource* ImageResource::Fetch(FetchParameters& params,
                                     ResourceFetcher* fetcher) {
+  MarkKnownTransparentPlaceholderResourceRequestIfNeeded(
+      params.MutableResourceRequest());
+
   if (params.GetResourceRequest().GetRequestContext() ==
       mojom::blink::RequestContextType::UNSPECIFIED) {
     params.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
@@ -290,6 +329,8 @@ bool ImageResource::CanUseCacheValidator() const {
   return Resource::CanUseCacheValidator();
 }
 
+// TODO(crbug.com/41496436): Rename this to `CreateForImageDocument`,
+// or remove ImageDocument dependency to this function.
 ImageResource* ImageResource::Create(const ResourceRequest& request,
                                      const DOMWrapperWorld* world) {
   ResourceLoaderOptions options(world);
@@ -306,8 +347,11 @@ ImageResource* ImageResource::CreateForTest(const KURL& url) {
   request.SetReferrerPolicy(ReferrerUtils::MojoReferrerPolicyResolveDefault(
       request.GetReferrerPolicy()));
   request.SetPriority(WebURLRequest::Priority::kLow);
+  MarkKnownTransparentPlaceholderResourceRequestIfNeeded(request);
 
-  return Create(request, nullptr);
+  ImageResourceFactory factory;
+  return To<ImageResource>(
+      factory.Create(request, ResourceLoaderOptions(/* world=*/nullptr)));
 }
 
 ImageResource::ImageResource(const ResourceRequest& resource_request,
@@ -315,6 +359,7 @@ ImageResource::ImageResource(const ResourceRequest& resource_request,
                              ImageResourceContent* content)
     : Resource(resource_request, ResourceType::kImage, options),
       content_(content) {
+  DCHECK(content_);
   DCHECK(GetContent());
   RESOURCE_LOADING_DVLOG(1)
       << "MakeGarbageCollected<ImageResource>(ResourceRequest) " << this;

@@ -686,16 +686,6 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
       ->CreateWebSocketHandshakeThrottle();
 }
 
-std::tuple<Resource*, scoped_refptr<SharedBuffer>>
-FrameFetchContext::MaybeCreateResourceForKnownDataUrl(
-    const FetchParameters& params) {
-  Resource* resource;
-  scoped_refptr<SharedBuffer> data;
-  std::tie(resource, data) =
-      ImageResource::MaybeCreateResourceForTransparentPlaceholderImage(params);
-  return {resource, data};
-}
-
 bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
     network::mojom::blink::IPAddressSpace target_address_space,

@@ -642,6 +642,16 @@ class PLATFORM_EXPORT ResourceRequestHead {
     service_worker_race_network_request_token_ = token;
   }
 
+  void SetKnownTransparentPlaceholderImageIndex(wtf_size_t index) {
+    known_transparent_placeholder_image_index_ = index;
+  }
+
+  // TODO(crbug.com/41496436): Make the optimizations referencing the index
+  // applicable to all static resource loads.
+  wtf_size_t GetKnownTransparentPlaceholderImageIndex() const {
+    return known_transparent_placeholder_image_index_;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -787,6 +797,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // TODO(crbug.com/1413922): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled_ = false;
+
+  // The request is for a known transparent placeholder image, which enables us
+  // to bypass as much processing as possible.
+  // TODO(crbug.com/41496436): Make all the optimizations referencing the flag
+  // applicable to all static resource load.
+  wtf_size_t known_transparent_placeholder_image_index_ = kNotFound;
 
   std::optional<base::UnguessableToken>
       service_worker_race_network_request_token_;

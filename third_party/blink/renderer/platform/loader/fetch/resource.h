@@ -447,6 +447,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   virtual std::unique_ptr<BackgroundResponseProcessorFactory>
   MaybeCreateBackgroundResponseProcessorFactory();
 
+  virtual bool HasClientsOrObservers() const {
+    return !clients_.empty() || !clients_awaiting_callback_.empty() ||
+           !finished_clients_.empty() || !finish_observers_.empty();
+  }
+
  protected:
   Resource(const ResourceRequestHead&,
            ResourceType,
@@ -456,11 +461,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   virtual void NotifyFinished();
 
   void MarkClientFinished(ResourceClient*);
-
-  virtual bool HasClientsOrObservers() const {
-    return !clients_.empty() || !clients_awaiting_callback_.empty() ||
-           !finished_clients_.empty() || !finish_observers_.empty();
-  }
   virtual void DestroyDecodedDataForFailedRevalidation() {}
 
   void SetEncodedSize(size_t);

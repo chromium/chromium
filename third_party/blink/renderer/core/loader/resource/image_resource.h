@@ -105,9 +105,6 @@ class CORE_EXPORT ImageResource final
   void OnMemoryDump(WebMemoryDumpLevelOfDetail,
                     WebProcessMemoryDump*) const override;
 
-  static std::tuple<ImageResource*, scoped_refptr<SharedBuffer>>
-  MaybeCreateResourceForTransparentPlaceholderImage(const FetchParameters&);
-
   void Trace(Visitor*) const override;
 
  private:
@@ -136,10 +133,6 @@ class CORE_EXPORT ImageResource final
   void DestroyDecodedDataForFailedRevalidation() override;
 
   void FlushImageIfNeeded();
-
-  static wtf_size_t FindTransparentPlaceholderIndex(KURL image_url);
-  static scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
-      wtf_size_t index);
 
   Member<ImageResourceContent> content_;
 

@@ -890,22 +890,27 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                   resource->GetResponse());
   }
 
-  resource_load_observer_->WillSendRequest(
-      request, ResourceResponse() /* redirects */, resource->GetType(),
-      resource->Options(), render_blocking_behavior, resource);
-  resource_load_observer_->DidReceiveResponse(
-      request.InspectorId(), request, resource->GetResponse(), resource,
-      ResourceLoadObserver::ResponseSource::kFromMemoryCache);
-  if (resource->EncodedSize() > 0) {
-    resource_load_observer_->DidReceiveData(
-        request.InspectorId(),
-        base::make_span(static_cast<const char*>(nullptr),
-                        resource->EncodedSize()));
+  // Skip ResourceLoadObserver callbacks for placeholder images to get maximum
+  // performance.
+  // TODO(crbug.com/41496436): Explore skipping this in general for
+  // `is_static_data`.
+  if (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound) {
+    resource_load_observer_->WillSendRequest(
+        request, ResourceResponse() /* redirects */, resource->GetType(),
+        resource->Options(), render_blocking_behavior, resource);
+    resource_load_observer_->DidReceiveResponse(
+        request.InspectorId(), request, resource->GetResponse(), resource,
+        ResourceLoadObserver::ResponseSource::kFromMemoryCache);
+    if (resource->EncodedSize() > 0) {
+      resource_load_observer_->DidReceiveData(
+          request.InspectorId(),
+          base::make_span(static_cast<const char*>(nullptr),
+                          resource->EncodedSize()));
+    }
+    resource_load_observer_->DidFinishLoading(
+        request.InspectorId(), base::TimeTicks(), 0,
+        resource->GetResponse().DecodedBodyLength());
   }
-
-  resource_load_observer_->DidFinishLoading(
-      request.InspectorId(), base::TimeTicks(), 0,
-      resource->GetResponse().DecodedBodyLength());
 
   if (!is_static_data) {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -973,46 +978,33 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
 
   ResourceResponse response;
   scoped_refptr<SharedBuffer> data;
-  Resource* resource = nullptr;
-  if (url.ProtocolIsData()) {
-    if (base::FeatureList::IsEnabled(
-            features::kSimplifyLoadingTransparentPlaceholderImage) &&
-        factory.GetType() == ResourceType::kImage) {
-      std::tie(resource, data) =
-          Context().MaybeCreateResourceForKnownDataUrl(params);
-      if (resource) {
-        use_counter_->CountUse(
-            WebFeature::kSimplifyLoadingTransparentPlaceholderImage);
-        DCHECK(data);
+  if (params.GetResourceRequest().GetKnownTransparentPlaceholderImageIndex() !=
+      kNotFound) {
+    // Skip the construction of `data`, since we won't use it.
 
-        response.SetHttpStatusCode(200);
-        response.SetHttpStatusText(AtomicString("OK"));
-        response.SetCurrentRequestUrl(url);
-        response.SetExpectedContentLength(data->size());
-        response.SetTextEncodingName(WebString::FromUTF8(""));
-        response.SetMimeType(WebString::FromUTF8("image/gif"));
-        response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
-                                    WebString::FromUTF8("image/gif"));
-      }
+    // We can defer the construction of `response`, but that would result in
+    // `ImageResource` instantiation even in the data url parse failure
+    // cases. Probably that's okay.
+    // TODO(crbug.com/41496436): Revisit this.
+  } else if (url.ProtocolIsData()) {
+    int result;
+    std::tie(result, response, data) = network_utils::ParseDataURL(
+        url, params.GetResourceRequest().HttpMethod());
+    if (result != net::OK) {
+      return nullptr;
     }
-    if (response.IsNull() || !data) {
-      int result;
-      std::tie(result, response, data) = network_utils::ParseDataURL(
-          url, params.GetResourceRequest().HttpMethod());
-      if (result != net::OK) {
-        return nullptr;
-      }
-      // TODO(yhirano): Consider removing this.
-      if (!IsSupportedMimeType(response.MimeType().Utf8())) {
-        return nullptr;
-      }
+    // TODO(yhirano): Consider removing this.
+    if (!IsSupportedMimeType(response.MimeType().Utf8())) {
+      return nullptr;
     }
   } else {
     ArchiveResource* archive_resource =
         archive_->SubresourceForURL(params.Url());
-    // The archive doesn't contain the resource, the request must be aborted.
-    if (!archive_resource)
+    // The archive doesn't contain the resource, the request must be
+    // aborted.
+    if (!archive_resource) {
       return nullptr;
+    }
     data = archive_resource->Data();
     response.SetCurrentRequestUrl(url);
     response.SetMimeType(archive_resource->MimeType());
@@ -1021,21 +1013,50 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
     response.SetFromArchive(true);
   }
 
-  bool factory_created_resource = false;
-  if (!resource) {
-    factory_created_resource = true;
-    resource = factory.Create(params.GetResourceRequest(), params.Options(),
-                              params.DecoderOptions());
-    resource->NotifyStartLoad();
-  }
-  // FIXME: We should provide a body stream here.
-  resource->ResponseReceived(response);
-  resource->SetDataBufferingPolicy(kBufferData);
-  if (data->size())
-    resource->SetResourceBuffer(data);
-  resource->SetCacheIdentifier(cache_identifier);
-  if (factory_created_resource) {
-    resource->Finish(base::TimeTicks(), freezable_task_runner_.get());
+  Resource* resource = factory.Create(
+      params.GetResourceRequest(), params.Options(), params.DecoderOptions());
+  switch (resource->GetStatus()) {
+    case ResourceStatus::kNotStarted:
+      // We should not reach here on the transparent placeholder image
+      // fast-path.
+      CHECK_EQ(params.GetResourceRequest()
+                   .GetKnownTransparentPlaceholderImageIndex(),
+               kNotFound);
+
+      // The below code, with the exception of `NotifyStartLoad()` and
+      // `Finish()`, is the same as in
+      // `CreateResourceForTransparentPlaceholderImage()`.
+      resource->NotifyStartLoad();
+      // FIXME: We should provide a body stream here.
+      resource->ResponseReceived(response);
+      resource->SetDataBufferingPolicy(kBufferData);
+      if (data->size()) {
+        resource->SetResourceBuffer(data);
+      }
+      resource->SetCacheIdentifier(cache_identifier);
+      resource->Finish(base::TimeTicks(), freezable_task_runner_.get());
+      break;
+
+    case ResourceStatus::kCached:
+      // The constructed resource already has a synthetic response set.
+
+      // We should only reach here on the transparent placeholder image
+      // fast-path.
+      CHECK_NE(params.GetResourceRequest()
+                   .GetKnownTransparentPlaceholderImageIndex(),
+               kNotFound);
+
+      use_counter_->CountUse(
+          WebFeature::kSimplifyLoadingTransparentPlaceholderImage);
+
+      // There shouldn't be any `ResourceClient`s that need to be
+      // notified of synthetic response received steps.
+      CHECK(!resource->HasClientsOrObservers());
+      break;
+
+    default:
+      CHECK(false) << "Unexpected resource status: "
+                   << (int)resource->GetStatus();
   }
 
   AddToMemoryCacheIfNeeded(params, resource);
@@ -1158,6 +1179,16 @@ std::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     const ResourceFactory& factory,
     WebScopedVirtualTimePauser& virtual_time_pauser) {
   ResourceRequest& resource_request = params.MutableResourceRequest();
+  if (resource_request.GetKnownTransparentPlaceholderImageIndex() !=
+      kNotFound) {
+    // Since we are not actually sending the request to the server,
+    // we skip construction of the ResourceRequest for performance.
+    // TODO(crbug.com/41496436): This breaks all observers which were notified
+    // of the request previously, so we need additional work to expand to
+    // generic data urls.
+    return std::nullopt;
+  }
+
   ResourceType resource_type = factory.GetType();
   const ResourceLoaderOptions& options = params.Options();
 
