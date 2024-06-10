@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#endif
+
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
@@ -27,6 +33,13 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
       base::make_span(kPrivacySandboxInternalsResources,
                       kPrivacySandboxInternalsResourcesSize),
       IDR_PRIVACY_SANDBOX_INTERNALS_INDEX_HTML);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
+    source->AddResourcePath("related-website-sets",
+                            IDR_RELATED_WEBSITE_SETS_RELATED_WEBSITE_SETS_HTML);
+  }
+#endif
 }
 
 PrivacySandboxInternalsUI::~PrivacySandboxInternalsUI() {}
