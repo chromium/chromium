@@ -221,7 +221,7 @@ void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source,
                               weak_factory_.GetWeakPtr()));
 }
 
-void AppBannerManagerDesktop::OnWebAppInstalled(
+void AppBannerManagerDesktop::OnWebAppInstalledWithOsHooks(
     const webapps::AppId& installed_app_id) {
   if (!validated_url()) {
     return;

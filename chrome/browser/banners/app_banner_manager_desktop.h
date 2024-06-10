@@ -92,7 +92,7 @@ class AppBannerManagerDesktop
   web_app::WebAppRegistrar& registrar() const;
 
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppInstalled(const webapps::AppId& app_id) override;
+  void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppUninstalled(
       const webapps::AppId& app_id,
