@@ -515,6 +515,7 @@ chromium-metrics-reviews@google.com.
       summary="IPH for tab group closing adding them to a new location"/>
   <variant name="IPH_TabGroupsSaveV2Intro"
       summary="IPH for tab groups defaulting to saved"/>
+  <variant name="IPH_TabGroupsSurface" summary="IPH for tab groups surface"/>
   <variant name="IPH_TabGroupsSurfaceOnHide"
       summary="IPH for tab groups surface after hiding a tab group while on
                the GTS"/>

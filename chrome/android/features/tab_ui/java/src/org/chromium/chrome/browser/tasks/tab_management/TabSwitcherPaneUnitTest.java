@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -73,6 +74,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.function.DoubleConsumer;
 
@@ -99,6 +101,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private DoubleConsumer mOnAlphaChange;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mButton;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
 
     @Captor private ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
@@ -123,6 +126,7 @@ public class TabSwitcherPaneUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mHubContainerView.getContext()).thenReturn(mContext);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         mActionTester = new UserActionTester();
 
@@ -153,7 +157,8 @@ public class TabSwitcherPaneUnitTest {
                         any(),
                         mIsAnimatingSupplierCaptor.capture(),
                         mOnTabClickedCallbackCaptor.capture(),
-                        anyBoolean());
+                        anyBoolean(),
+                        any());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())
                 .thenReturn(mHandleBackPressChangeSupplier);
@@ -766,6 +771,85 @@ public class TabSwitcherPaneUnitTest {
         verify(mTabGroupModelFilter, times(1)).removeTabGroupObserver(any());
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         verify(mTabGroupModelFilter, times(2)).removeTabGroupObserver(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testIphOnCreation_shown() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
+        when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mButton);
+
+        mTabSwitcherPane.getOnTabGroupCreationRunnable().run();
+
+        verify(mUserEducationHelper).requestShowIPH(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testIphOnCreation_nullButton() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
+        when(mPaneHubController.getPaneButton(anyInt())).thenReturn(null);
+
+        mTabSwitcherPane.getOnTabGroupCreationRunnable().run();
+
+        verify(mUserEducationHelper, never()).requestShowIPH(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testIphOnCreation_noGroups() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mButton);
+
+        mTabSwitcherPane.getOnTabGroupCreationRunnable().run();
+
+        verify(mUserEducationHelper, never()).requestShowIPH(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testIphOnCreation_nullController() {
+        mTabSwitcherPane.setPaneHubController(null);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
+        when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mButton);
+
+        mTabSwitcherPane.getOnTabGroupCreationRunnable().run();
+
+        verify(mUserEducationHelper, never()).requestShowIPH(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testIphOnCreation_animating() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
+        when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mButton);
+        HubLayoutAnimationListener hubLayoutAnimationListener =
+                mTabSwitcherPane.getHubLayoutAnimationListener();
+        hubLayoutAnimationListener.beforeStart();
+
+        mTabSwitcherPane.getOnTabGroupCreationRunnable().run();
+        verify(mUserEducationHelper, never()).requestShowIPH(any());
+
+        hubLayoutAnimationListener.afterEnd();
+        mTabSwitcherPane.getOnTabGroupCreationRunnable().run();
+        verify(mUserEducationHelper).requestShowIPH(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testIphOnShown_shown() {
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
+        when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mButton);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mUserEducationHelper).requestShowIPH(any());
     }
 
     private void createSelectedTab() {

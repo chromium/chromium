@@ -243,6 +243,11 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         super.requestAccessibilityFocusOnCurrentTab();
     }
 
+    @Override
+    protected Runnable getOnTabGroupCreationRunnable() {
+        return null;
+    }
+
     private IncognitoTabModel getIncognitoTabModel() {
         if (!mIsNativeInitialized) return null;
 

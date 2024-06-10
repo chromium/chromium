@@ -20,6 +20,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
@@ -34,6 +35,7 @@ public class TabGroupCreationDialogManagerUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
+    @Mock private Runnable mOnTabGroupCreation;
 
     private Activity mActivity;
     private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
@@ -45,7 +47,8 @@ public class TabGroupCreationDialogManagerUnitTest {
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mTabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(mActivity, mModalDialogManager);
+                new TabGroupCreationDialogManager(
+                        mActivity, mModalDialogManager, mOnTabGroupCreation);
     }
 
     @Test
@@ -57,5 +60,16 @@ public class TabGroupCreationDialogManagerUnitTest {
                 mTabGroupCreationDialogManager.getDialogControllerForTesting();
         verify(mTabGroupVisualDataDialogManager)
                 .showDialog(TAB1_ID, mTabGroupModelFilter, controller);
+    }
+
+    @Test
+    public void testRunnableOnDismiss() {
+        mTabGroupCreationDialogManager.setDialogManagerForTesting(mTabGroupVisualDataDialogManager);
+
+        mTabGroupCreationDialogManager.showDialog(TAB1_ID, mTabGroupModelFilter);
+        ModalDialogProperties.Controller controller =
+                mTabGroupCreationDialogManager.getDialogControllerForTesting();
+        controller.onDismiss(null, DialogDismissalCause.UNKNOWN);
+        verify(mOnTabGroupCreation).run();
     }
 }

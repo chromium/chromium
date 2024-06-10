@@ -108,7 +108,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         any(),
                         any(),
                         mOnTabClickedCallbackCaptor.capture(),
-                        anyBoolean());
+                        anyBoolean(),
+                        any());
 
         when(mTabModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
         when(mTabModelFilter.isTabModelRestored()).thenReturn(true);

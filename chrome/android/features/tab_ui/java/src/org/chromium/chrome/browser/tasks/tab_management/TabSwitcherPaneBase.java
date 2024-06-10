@@ -434,6 +434,9 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     /** Returns whether to eagerly create the coordinator in the {@link LoadHint.WARM} state. */
     protected abstract boolean shouldEagerlyCreateCoordinator();
 
+    /** A runnable that will be invoked when delegate UI creates a tab group. */
+    protected abstract Runnable getOnTabGroupCreationRunnable();
+
     /** Requests accessibility focus on the currently selected tab in the tab switcher. */
     protected void requestAccessibilityFocusOnCurrentTab() {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
@@ -452,6 +455,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
      */
     protected ObservableSupplier<Boolean> getIsVisibleSupplier() {
         return mIsVisibleSupplier;
+    }
+
+    /**
+     * Holds whether there's an ongoing animation with this Pane and outside the hub. Care must be
+     * taken when reading this supplier as animations do not start synchronously with focus changes,
+     * and a Pane may be shown before the enter animation actually starts.
+     */
+    protected @NonNull ObservableSupplier<Boolean> getIsAnimatingSupplier() {
+        return mIsAnimatingSupplier;
     }
 
     /** Returns whether the pane is focused. */
@@ -484,7 +496,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         this::onTabClick,
-                        mIsIncognito);
+                        mIsIncognito,
+                        getOnTabGroupCreationRunnable());
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         mTabSwitcherCustomViewManager.setDelegate(
                 coordinator.getTabSwitcherCustomViewManagerDelegate());

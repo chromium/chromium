@@ -187,6 +187,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mOnTabClickedCallback,
                         TabListMode.GRID,
                         /* supportsEmptyState= */ true,
+                        /* onTabGroupCreation= */ null,
                         () -> {
                             mDestroyed = true;
                         });

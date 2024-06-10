@@ -232,7 +232,8 @@ public class TabSwitcherCoordinator
                             true,
                             emptyImageResId,
                             emptyHeadingStringResId,
-                            emptySubheadingStringResId);
+                            emptySubheadingStringResId,
+                            /* onTabGroupCreation= */ null);
 
             mTabListCoordinator.setOnLongPressTabItemEventListener(this);
 
@@ -256,7 +257,8 @@ public class TabSwitcherCoordinator
                             currentTabModelFilterSupplier,
                             tabContentManager,
                             mTabListCoordinator,
-                            mode);
+                            mode,
+                            /* onTabGroupCreation= */ null);
             mMediator.setTabListEditorControllerSupplier(
                     mTabListEditorManager.getControllerSupplier());
 

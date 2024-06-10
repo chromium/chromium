@@ -1350,7 +1350,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabActionState.CLOSABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -3111,7 +3112,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3144,7 +3146,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3576,7 +3579,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3620,7 +3624,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3664,7 +3669,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4010,7 +4016,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4263,7 +4270,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         tabActionState,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        /* onTabGroupCreation= */ null);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 

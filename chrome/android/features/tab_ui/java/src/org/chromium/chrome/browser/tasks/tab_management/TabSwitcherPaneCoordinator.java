@@ -100,6 +100,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
      * @param mode The {@link TabListMode} to use.
      * @param supportsEmptyState Whether empty state UI should be shown when the model is empty.
+     * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param onDestroyed A {@link Runnable} to execute when {@link #destroy()} is invoked.
      */
     public TabSwitcherPaneCoordinator(
@@ -120,6 +121,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull Callback<Integer> onTabClickCallback,
             @TabListMode int mode,
             boolean supportsEmptyState,
+            @Nullable Runnable onTabGroupCreation,
             @NonNull Runnable onDestroyed) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
@@ -219,7 +221,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     : Resources.ID_NULL,
                             supportsEmptyState
                                     ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
-                                    : Resources.ID_NULL);
+                                    : Resources.ID_NULL,
+                            onTabGroupCreation);
             mTabListCoordinator = tabListCoordinator;
 
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
@@ -242,7 +245,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabModelFilterSupplier,
                             tabContentManager,
                             tabListCoordinator,
-                            mode);
+                            mode,
+                            onTabGroupCreation);
             mTabListEditorManager = tabListEditorManager;
             mMediator.setTabListEditorControllerSupplier(
                     mTabListEditorManager.getControllerSupplier());

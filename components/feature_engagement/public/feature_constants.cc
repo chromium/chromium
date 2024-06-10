@@ -385,6 +385,9 @@ BASE_FEATURE(kIPHTabGroupsYourTabsAreTogetherFeature,
 BASE_FEATURE(kIPHTabGroupsDragAndDropFeature,
              "IPH_TabGroupsDragAndDrop",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabGroupsSurfaceFeature,
+             "IPH_TabGroupsSurface",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature,
              "IPH_TabGroupsSurfaceOnHide",
              base::FEATURE_DISABLED_BY_DEFAULT);

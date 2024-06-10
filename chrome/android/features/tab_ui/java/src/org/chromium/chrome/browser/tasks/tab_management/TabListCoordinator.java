@@ -183,7 +183,8 @@ public class TabListCoordinator
                 false,
                 0,
                 0,
-                0);
+                0,
+                /* onTabGroupCreation= */ null);
     }
 
     TabListCoordinator(
@@ -208,7 +209,8 @@ public class TabListCoordinator
             boolean hasEmptyView,
             int emptyImageResId,
             int emptyHeadingStringResId,
-            int emptySubheadingStringResId) {
+            int emptySubheadingStringResId,
+            @Nullable Runnable onTabGroupCreation) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mContext = context;
@@ -321,7 +323,8 @@ public class TabListCoordinator
                         priceWelcomeMessageControllerSupplier,
                         componentName,
                         initialTabActionState,
-                        actionConfirmationManager);
+                        actionConfirmationManager,
+                        onTabGroupCreation);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some contexts multiple TabListCoordinators are

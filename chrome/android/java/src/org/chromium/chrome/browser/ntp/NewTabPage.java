@@ -418,7 +418,8 @@ public class NewTabPage
         Profile profile = mTab.getProfile();
 
         var tabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(mActivity, modalDialogManager);
+                new TabGroupCreationDialogManager(
+                        mActivity, modalDialogManager, /* onTabGroupCreation= */ null);
         SuggestionsNavigationDelegate navigationDelegate =
                 new SuggestionsNavigationDelegate(
                         activity,

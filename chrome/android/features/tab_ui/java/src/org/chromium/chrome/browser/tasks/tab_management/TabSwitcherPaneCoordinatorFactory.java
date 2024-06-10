@@ -116,6 +116,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param isAnimatingSupplier Supplies animation information to the tab switcher.
      * @param onTabClickCallback Callback to be invoked with the tab ID of the selected tab.
      * @param isIncognito Whether this is for the incognito tab switcher.
+     * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
     TabSwitcherPaneCoordinator create(
@@ -124,7 +125,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
             @NonNull Callback<Integer> onTabClickCallback,
-            boolean isIncognito) {
+            boolean isIncognito,
+            @Nullable Runnable onTabGroupCreation) {
         int token = mMessageManagerTokenHolder.acquireToken();
         assert mMessageManager != null;
         return new TabSwitcherPaneCoordinator(
@@ -145,6 +147,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 onTabClickCallback,
                 mMode,
                 /* supportsEmptyState= */ !isIncognito,
+                onTabGroupCreation,
                 () -> mMessageManagerTokenHolder.releaseToken(token));
     }
 

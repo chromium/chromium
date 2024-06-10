@@ -1088,6 +1088,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+  if (kIPHTabGroupsSurfaceFeature.name == feature->name) {
+    // Allows an IPH for the tab groups surface through hub toolbar when:
+    // * Only once per week.
+    // * Up to 3 times per year.
+    // * And only as long as the user has never manually opened the tab groups
+    // surface from the hub toolbar.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger =
+        EventConfig("tab_groups_surface_triggered", Comparator(EQUAL, 0), 7, 7);
+    config->event_configs.insert(EventConfig(
+        "tab_groups_surface_triggered", Comparator(LESS_THAN, 3), 360, 360));
+    config->used = EventConfig("tab_groups_surface_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHTabGroupsSurfaceOnHideFeature.name == feature->name) {
     // Allows an IPH for the tab groups surface when hiding a tab group when:
     // * Only once per year.

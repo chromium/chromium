@@ -18,6 +18,8 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DrawableButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
@@ -32,6 +34,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -45,11 +48,14 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
+    private static final int ON_SHOWN_IPH_DELAY = 700;
+
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
@@ -76,6 +82,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     private final @NonNull UserEducationHelper mUserEducationHelper;
 
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
+    private @Nullable TabGroupSyncService mTabGroupSyncService;
 
     /**
      * @param context The activity context.
@@ -87,6 +94,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
      * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param userEducationHelper Used for showing IPHs.
+     * @param paneManager Dependency for conditional IPH after creation of groups.
      */
     TabSwitcherPane(
             @NonNull Context context,
@@ -198,7 +206,15 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         return true;
     }
 
+    @Override
+    protected Runnable getOnTabGroupCreationRunnable() {
+        return this::tryToTriggerTabGroupSurfaceIph;
+    }
+
     private void onProfileProviderAvailable(@NonNull ProfileProvider profileProvider) {
+        Profile profile = profileProvider.getOriginalProfile();
+        mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+
         if (!PriceTrackingFeatures.isPriceTrackingEnabled(profileProvider.getOriginalProfile())
                 && getTabListMode() == TabListMode.GRID) {
             return;
@@ -230,9 +246,44 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             if (filter instanceof TabGroupModelFilter groupFilter) {
                 groupFilter.addTabGroupObserver(mFilterObserver);
             }
+            postToTriggerTabGroupSurfaceIph();
         } else {
             removeObservers();
         }
+    }
+
+    private void postToTriggerTabGroupSurfaceIph() {
+        // TODO(crbug.com/346356139): Figure out a more elegant way of observing entering the hub as
+        // well as switching between panes. Knowing when these animations complete turns out to be
+        // fairly difficult, especially knowing when we're about to enter a transition.
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT, this::tryToTriggerTabGroupSurfaceIph, ON_SHOWN_IPH_DELAY);
+    }
+
+    private void tryToTriggerTabGroupSurfaceIph() {
+        // There are lot more reasons to bail out here than reasons this method may be invoked. In
+        // general because of the posted delay, most dependencies should be satisfied, and these
+        // checks should just add robustness. Once crbug.com/346356139 is fixed, we can revisit
+        // this approach.
+        @Nullable PaneHubController paneHubController = getPaneHubController();
+        if (paneHubController == null) return;
+        @Nullable View anchorView = paneHubController.getPaneButton(PaneId.TAB_GROUPS);
+        if (anchorView == null) return;
+
+        if (mTabGroupSyncService == null) return;
+        if (mTabGroupSyncService.getAllGroupIds().length == 0) return;
+
+        if (getIsAnimatingSupplier().get()) return;
+
+        IPHCommand command =
+                new IPHCommandBuilder(
+                                getRootView().getResources(),
+                                FeatureConstants.TAB_GROUPS_SURFACE,
+                                R.string.tab_group_surface_iph_with_sync,
+                                R.string.tab_group_surface_iph_with_sync)
+                        .setAnchorView(anchorView)
+                        .build();
+        mUserEducationHelper.requestShowIPH(command);
     }
 
     private void removeObservers() {

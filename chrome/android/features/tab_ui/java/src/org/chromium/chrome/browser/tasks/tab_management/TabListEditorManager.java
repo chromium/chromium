@@ -59,6 +59,7 @@ public class TabListEditorManager {
      * @param tabContentManager The {@link TabContentManager} for thumbnails.
      * @param tabListCoordinator The parent {@link TabListCoordinator}.
      * @param mode The {@link TabListMode} of the tab list (grid, list, etc.).
+     * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      */
     public TabListEditorManager(
             @NonNull Activity activity,
@@ -69,7 +70,8 @@ public class TabListEditorManager {
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabListCoordinator tabListCoordinator,
-            @TabListMode int mode) {
+            @TabListMode int mode,
+            @Nullable Runnable onTabGroupCreation) {
         mActivity = activity;
         mCoordinatorView = coordinatorView;
         mRootView = rootView;
@@ -79,7 +81,7 @@ public class TabListEditorManager {
         mTabListCoordinator = tabListCoordinator;
         mMode = mode;
         mTabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(activity, modalDialogManager);
+                new TabGroupCreationDialogManager(activity, modalDialogManager, onTabGroupCreation);
 
         // The snackbarManager used by mTabListEditorCoordinator. The rootView is the default
         // default parent view of the snackbar. When shown this will be re-parented inside the

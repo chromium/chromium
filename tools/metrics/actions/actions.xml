@@ -43638,6 +43638,7 @@ should be able to be added at any place in this file.
       label="For tab group closing adding them to a new location."/>
   <suffix name="TabGroupsSaveV2Intro"
       label="For the intro of tab groups that default to saved."/>
+  <suffix name="TabGroupsSurface" label="For tab group surface."/>
   <suffix name="TabGroupsSurfaceOnHide"
       label="For tab group surface after hiding a tab group while on the GTS."/>
   <suffix name="TabGroupsTapToSeeAnotherTab" label="For tab strip."/>

@@ -172,7 +172,10 @@ public class SelectableTabListEditorTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCreationDialogManager =
-                            new TabGroupCreationDialogManager(cta, cta.getModalDialogManager());
+                            new TabGroupCreationDialogManager(
+                                    cta,
+                                    cta.getModalDialogManager(),
+                                    /* onTabGroupCreation= */ null);
                     ViewGroup compositorViewHolder = cta.getCompositorViewHolderForTesting();
                     ViewGroup rootView =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)

@@ -88,7 +88,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mTabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(activity, mModalDialogManagerSupplier.get());
+                new TabGroupCreationDialogManager(
+                        activity,
+                        mModalDialogManagerSupplier.get(),
+                        /* onTabGroupCreation= */ null);
     }
 
     @Override

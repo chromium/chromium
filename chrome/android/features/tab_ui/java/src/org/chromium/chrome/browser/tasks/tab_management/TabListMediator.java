@@ -381,6 +381,7 @@ class TabListMediator {
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final Runnable mOnTabGroupCreation;
 
     private @Nullable Profile mProfile;
     private Size mDefaultGridCardSize;
@@ -937,6 +938,7 @@ class TabListMediator {
      * @param componentName This is a unique string to identify different components.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
      *     Must always be CLOSABLE for TabListMode.STRIP.
+     * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      */
     public TabListMediator(
             Context context,
@@ -954,7 +956,8 @@ class TabListMediator {
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @TabActionState int initialTabActionState,
-            @NonNull ActionConfirmationManager actionConfirmationManager) {
+            @NonNull ActionConfirmationManager actionConfirmationManager,
+            @Nullable Runnable onTabGroupCreation) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
@@ -972,6 +975,7 @@ class TabListMediator {
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
         mActionConfirmationManager = actionConfirmationManager;
+        mOnTabGroupCreation = onTabGroupCreation;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1231,7 +1235,7 @@ class TabListMediator {
                 };
 
         var tabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(context, modalDialogManager);
+                new TabGroupCreationDialogManager(context, modalDialogManager, mOnTabGroupCreation);
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         context,

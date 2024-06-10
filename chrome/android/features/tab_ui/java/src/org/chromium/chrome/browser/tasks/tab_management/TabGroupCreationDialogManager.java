@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
@@ -79,16 +80,23 @@ public class TabGroupCreationDialogManager {
             }
 
             mTabGroupVisualDataDialogManager.hideDialog();
+            if (mOnTabGroupCreation != null) {
+                mOnTabGroupCreation.run();
+            }
         }
     }
 
-    private final ModalDialogManager mModalDialogManager;
+    @NonNull private final ModalDialogManager mModalDialogManager;
+    @Nullable private final Runnable mOnTabGroupCreation;
     private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
     private ModalDialogProperties.Controller mTabGroupCreationDialogController;
 
     public TabGroupCreationDialogManager(
-            @NonNull Context context, @NonNull ModalDialogManager modalDialogManager) {
+            @NonNull Context context,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable Runnable onTabGroupCreation) {
         mModalDialogManager = modalDialogManager;
+        mOnTabGroupCreation = onTabGroupCreation;
         mTabGroupVisualDataDialogManager =
                 new TabGroupVisualDataDialogManager(
                         context,
