@@ -507,6 +507,7 @@ public abstract class ChromeFeatureList {
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR =
             "VerticalAutomotiveBackButtonToolbar";
+    public static final String VISITED_URL_RANKING_SERVICE = "VisitedURLRankingService";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String WEB_APK_ALLOW_ICON_UPDATE = "WebApkAllowIconUpdate";
     public static final String WEB_APK_BACKUP_AND_RESTORE_BACKEND = "WebApkBackupAndRestoreBackend";

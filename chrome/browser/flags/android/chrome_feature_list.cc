@@ -60,6 +60,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/common/content_features.h"
@@ -366,6 +367,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kAndroidTabGroupStableIds,
     &tab_groups::kTabGroupSyncAndroid,
     &webapps::features::kPwaUniversalInstallUi,
+    &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,
     &switches::kPersistentSearchEngineChoiceImport,

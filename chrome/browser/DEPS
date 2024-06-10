@@ -391,6 +391,7 @@ include_rules = [
   "+components/vector_icons",
   "+components/version_info",
   "+components/version_ui",
+  "+components/visited_url_ranking",
   "+components/viz/common",
   "+components/viz/host",
   "+components/web_cache/browser",

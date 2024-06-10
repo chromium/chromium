@@ -60,7 +60,8 @@ public class TabResumptionModuleEnablement {
         }
 
         static boolean isV2Enabled() {
-            return TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
+            return ChromeFeatureList.isEnabled(ChromeFeatureList.VISITED_URL_RANKING_SERVICE)
+                    && TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
         }
 
         static boolean isV2EnabledWithLocalTabs() {
