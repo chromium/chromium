@@ -53,6 +53,8 @@ BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
 BASE_DECLARE_FEATURE(kWebViewAsyncDns);
 BASE_DECLARE_FEATURE(kWebViewPreloadClasses);
+BASE_DECLARE_FEATURE(kWebViewSeparateResourceContext);
+BASE_DECLARE_FEATURE(kWebViewSeparateResourceContextMetrics);
 BASE_DECLARE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU);
 BASE_DECLARE_FEATURE(kCreateSpareRendererOnBrowserContextCreation);
 

@@ -19,6 +19,7 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/command_line.h"
@@ -131,6 +132,13 @@ std::vector<base::FeatureList::FeatureOverrideInfo>
 GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   std::vector<base::FeatureList::FeatureOverrideInfo> feature_overrides =
       content::GetSwitchDependentFeatureOverrides(command_line);
+
+  if (command_line.HasSwitch(switches::kWebViewContextExperimentationMetrics)) {
+    feature_overrides.emplace_back(std::make_pair(
+        std::cref(
+            android_webview::features::kWebViewSeparateResourceContextMetrics),
+        base::FeatureList::OVERRIDE_ENABLE_FEATURE));
+  }
 
   return feature_overrides;
 }

@@ -463,8 +463,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
                 "Enables establishing the GPU channel asnchronously when requesting a new "
                         + "layer tree frame sink."),
-        Flag.baseFeature(
-                BlinkFeatures.TEXT_SIZE_ADJUST_IMPROVEMENTS, "Improved text-size-adjust."),
+        Flag.baseFeature(BlinkFeatures.TEXT_SIZE_ADJUST_IMPROVEMENTS, "Improved text-size-adjust."),
         Flag.baseFeature(
                 BaseFeatures.OPTIMIZE_DATA_URLS, "Optimizes parsing and loading of data: URLs."),
         Flag.baseFeature(
@@ -1014,12 +1013,14 @@ public final class ProductionSupportedFlagList {
         Flag.commandLine(
                 CookieSwitches.DISABLE_PARTITIONED_COOKIES_SWITCH,
                 "Disables paritioned cookies in WebView"),
-        Flag.baseFeature(
-                ContentFeatures.DIPS, "Enables the Bounce Tracking Mitigations feature."),
+        Flag.baseFeature(ContentFeatures.DIPS, "Enables the Bounce Tracking Mitigations feature."),
         Flag.baseFeature(
                 "LevelDBProtoAsyncWrite",
                 "Makes writes to leveldb_proto databases asynchronous. This should reduce disk"
                     + " contention at the cost of potential lost writes on OS or power failure."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT,
+                "Use WebView's own Context for Resources rather than the embedding app's"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

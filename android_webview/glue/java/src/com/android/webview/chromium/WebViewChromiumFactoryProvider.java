@@ -58,7 +58,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
@@ -110,6 +109,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private static final String CHROMIUM_PREFS_NAME = "WebViewChromiumPrefs";
     private static final String VERSION_CODE_PREF = "lastVersionCodeUsed";
+    private static final String WEBVIEW_CONTEXT_EXPERIMENT_PREF = "useWebViewResourceContext";
 
     private static final String SUPPORT_LIB_GLUE_AND_BOUNDARY_INTERFACE_PREFIX =
             "org.chromium.support_lib_";
@@ -117,6 +117,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     // This is an ID hardcoded by WebLayer for resources stored in locale splits. See
     // WebLayerImpl.java for more info.
     private static final int SHARED_LIBRARY_MAX_ID = 36;
+
+    // When true, WebView will return Resources from its own Context rather than using the embedding
+    // app's.
+    private static boolean sUseWebViewContext;
 
     /**
      * This holds objects of classes that are defined in P and above to ensure that run-time class
@@ -246,11 +250,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 ScopedSysTraceEvent.scoped(
                         "WebViewChromiumFactoryProvider.deleteContentsOnPackageDowngrade")) {
             // Use shared preference to check for package downgrade.
-            // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
-            // causing a disk write.
-            mWebViewPrefs =
-                    ContextUtils.getApplicationContext()
-                            .getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
             int lastVersion = mWebViewPrefs.getInt(VERSION_CODE_PREF, 0);
             int currentVersion = packageInfo.versionCode;
             if (!versionCodeGE(currentVersion, lastVersion)) {
@@ -273,9 +272,20 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
-    /** This must not be called until {@link #initialize(WebViewDelegate)} has set mWebViewDelegate. */
+    /**
+     * This must not be called until {@link #initialize(WebViewDelegate)} has set mWebViewDelegate.
+     */
     public void addWebViewAssetPath(Context ctx) {
         mWebViewDelegate.addWebViewAssetPath(ctx);
+    }
+
+    void setWebViewContextExperimentValue(boolean enabled) {
+        if (enabled == sUseWebViewContext) return;
+        if (enabled) {
+            mWebViewPrefs.edit().putBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, true).apply();
+        } else {
+            mWebViewPrefs.edit().remove(WEBVIEW_CONTEXT_EXPERIMENT_PREF).apply();
+        }
     }
 
     @SuppressWarnings({"NoContextGetApplicationContext", "DiscouragedApi"})
@@ -317,14 +327,20 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 CommandLineUtil.initCommandLine();
             }
 
-            boolean useWebViewContext =
-                    CommandLine.getInstance()
-                            .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT);
-            if (VersionConstants.CHANNEL == Channel.CANARY
-                    && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                useWebViewContext = true;
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
+                // causing a disk write.
+                mWebViewPrefs = ctx.getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
+                // Read the experiment value and use it to determine which Context to use.
+                sUseWebViewContext =
+                        mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false)
+                                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
             }
-            if (useWebViewContext) {
+            boolean webViewContextWasApplied = false;
+
+            if (sUseWebViewContext
+                    || CommandLine.getInstance()
+                            .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)) {
                 try {
                     Context override =
                             ctx.createPackageContext(
@@ -342,12 +358,18 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             == 0x7f000000) {
                         ClassLoaderContextWrapperFactory.setWebViewResourceOverrideContext(
                                 override, R.style.WebViewBaseTheme);
+                        webViewContextWasApplied = true;
                     } else {
                         Log.w(TAG, "Attempted to use WebView's context in standalone WebView.");
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.e(TAG, "Could not get resource override context.");
                 }
+            }
+            // Use this to report the actual state of the feature at runtime.
+            if (webViewContextWasApplied) {
+                CommandLine.getInstance()
+                        .appendSwitch(AwSwitches.WEBVIEW_CONTEXT_EXPERIMENTATION_METRICS);
             }
 
             // WebView needs to make sure to always use the wrapped application context.

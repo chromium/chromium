@@ -305,6 +305,13 @@ public class WebViewChromiumAwInit {
                 logCommandLineAndActiveTrials();
             }
 
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT,
+                    () ->
+                            mFactory.setWebViewContextExperimentValue(
+                                    AwFeatureMap.isEnabled(
+                                            AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT)));
+
             // This runs all the pending tasks queued for after Chromium init is finished,
             // so should be the last thing that happens in startChromiumLocked.
             mFactory.getRunQueue().drainQueue();
