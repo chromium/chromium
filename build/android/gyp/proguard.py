@@ -323,6 +323,25 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
                                                      tmp_output)
     base_context = split_contexts_by_name['base']
 
+    # List of packages that R8 does not currently have in its API database:
+    # https://b/326252366
+    extension_packages = [
+        'android.car',
+        'android.car.hardware.property',
+        'android.car.input',
+        'android.car.media',
+        'android.car.remoteaccess',
+        'android.car.watchdog',
+        'androidx.window.extensions',
+        'androidx.window.extensions.area',
+        'androidx.window.extensions.core',
+        'androidx.window.extensions.core.util',
+        'androidx.window.extensions.core.util.function',
+        'androidx.window.extensions.layout',
+        'androidx.window.extensions.embedding',
+        'androidx.window.layout.adapter.extensions',
+    ]
+
     # R8 OOMs with the default xmx=1G.
     cmd = build_utils.JavaCmd(xmx='2G') + [
         # Allows -whyareyounotinlining, which we don't have by default, but
@@ -331,6 +350,9 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         # Restricts horizontal class merging to apply only to classes that
         # share a .java file (nested classes). https://crbug.com/1363709
         '-Dcom.android.tools.r8.enableSameFilePolicy=1',
+        # Enable API modelling for OS extensions.
+        '-Dcom.android.tools.r8.androidApiExtensionPackages=' +
+        ','.join(extension_packages),
     ]
     if options.dump_inputs:
       cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
