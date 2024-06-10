@@ -107,9 +107,8 @@ class PasswordManagerAndroidBrowserTest
   net::EmbeddedTestServer https_server_;
 };
 
-// Disabled due to flakiness, see crbug.com/40275666.
 IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
-                       DISABLED_TriggerFormSubmission) {
+                       TriggerFormSubmission) {
   base::HistogramTester uma_recorder;
 
   password_manager::PasswordStoreInterface* password_store =
