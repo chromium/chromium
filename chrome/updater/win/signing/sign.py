@@ -279,14 +279,19 @@ def main():
         help=('A dictionary of `{key1:value1, ...keyN:valueN}`. This script '
               'replaces the keys that it finds in the offline manifest .gup '
               'file with the corresponding values.'))
+    parser.add_argument('--sign_flags',
+                        action='append',
+                        default=[],
+                        help='Flags to pass to codesign.exe.')
     args = parser.parse_args()
+    sign_flags = args.sign_flags or [
+        '/v', '/tr', 'http://timestamp.digicert.com', '/td', 'SHA256', '/fd',
+        'SHA256'
+    ]
     with tempfile.TemporaryDirectory() as tmpdir:
         Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
                args.identity, args.certificate_file_path,
-               args.certificate_password, [[
-                   '/v', '/tr', 'http://timestamp.digicert.com', '/td',
-                   'SHA256', '/fd', 'SHA256'
-               ]]).sign_metainstaller(
+               args.certificate_password, [sign_flags]).sign_metainstaller(
                    args.in_file, args.out_file, args.appid,
                    args.installer_path, args.manifest_path,
                    ast.literal_eval(args.manifest_dict_replacements))
