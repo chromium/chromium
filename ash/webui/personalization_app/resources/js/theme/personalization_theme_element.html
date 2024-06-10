@@ -1,4 +1,8 @@
 <style include="cros-button-style">
+  :host {
+    --iron-icon-fill-color: var(--cros-sys-primary_container);
+  }
+
   cr-button {
     background-color: var(--cros-tab-slider-track-color);
     border: 0;
@@ -50,6 +54,7 @@
   }
 
   #selector {
+    position: relative;
     display: grid;
     gap: 8px;
     grid-template-columns: auto auto auto;
@@ -70,13 +75,13 @@
     overflow: visible;
   }
 
-  #infoIcon {
-    border-radius: 50%;
-    bottom: -2px;
+  .warning-tooltip {
+    --cr-tooltip-icon-fill-color: var(--cros-sys-primary_container);
     box-shadow: inset 0 0 0 3px var(--cros-sys-primary_container);
-    fill: var(--cros-sys-primary_container);
+    border-radius: 50%;
+    inset-block-end: -2px;
+    inset-inline-end: -2px;
     position: absolute;
-    right: -2px;
     stroke: var(--cros-text-color-primary);
   }
 </style>
@@ -111,14 +116,19 @@
         title="$i18n{tooltipAutoColorMode}"
         role="radio">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
-      <div class="text">$i18n{autoColorMode}</div>
-      <template is="dom-if"
-          if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
-          restamp>
-        <iron-icon id="infoIcon" icon="cr:error" title="$i18n{errorTooltipAutoColorMode}">
-        </iron-icon>
-      </template>
+      <div class="text" aria-hidden="true">$i18n{autoColorMode}</div>
     </cr-button>
+    <template is="dom-if"
+        if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
+        restamp>
+      <cr-tooltip-icon tabindex="-1"
+          id="infoIcon"
+          icon-class="cr:error"
+          tooltip-text="$i18n{errorTooltipAutoColorMode}"
+          icon-aria-label="$i18n{errorTooltipAutoColorMode}"
+          class="warning-tooltip">
+      </cr-tooltip-icon>
+    </template>
   </iron-selector>
 </div>
 
