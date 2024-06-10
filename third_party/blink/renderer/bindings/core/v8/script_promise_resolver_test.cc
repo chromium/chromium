@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -19,6 +20,8 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -267,6 +270,55 @@ TEST_F(ScriptPromiseResolverBaseTest, rejectUndefined) {
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ("undefined", on_rejected);
+}
+
+TEST_F(ScriptPromiseResolverBaseTest, OverrideScriptStateToCurrentContext) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  std::string base_url = "http://www.test.com/";
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
+      WebString::FromUTF8("single_iframe.html"));
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
+      WebString::FromUTF8("visible_iframe.html"));
+  WebViewImpl* web_view_impl =
+      web_view_helper.InitializeAndLoad(base_url + "single_iframe.html");
+
+  LocalFrame* main_frame = web_view_impl->MainFrameImpl()->GetFrame();
+  LocalFrame* iframe = To<LocalFrame>(main_frame->Tree().FirstChild());
+  ScriptState* main_script_state = ToScriptStateForMainWorld(main_frame);
+  ScriptState* iframe_script_state = ToScriptStateForMainWorld(iframe);
+
+  ScriptPromiseResolver<IDLString>* resolver = nullptr;
+  ScriptPromise<IDLString> promise;
+  {
+    ScriptState::Scope scope(main_script_state);
+    resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
+        main_script_state);
+    promise = resolver->Promise();
+  }
+
+  String on_fulfilled, on_rejected;
+  ASSERT_FALSE(promise.IsEmpty());
+  {
+    ScriptState::Scope scope(main_script_state);
+    promise.Then(MakeGarbageCollected<ScriptFunction>(
+                     main_script_state,
+                     MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),
+                 MakeGarbageCollected<ScriptFunction>(
+                     main_script_state,
+                     MakeGarbageCollected<TestHelperFunction>(&on_rejected)));
+  }
+
+  {
+    ScriptState::Scope scope(iframe_script_state);
+    iframe->DomWindow()->NotifyContextDestroyed();
+    resolver->ResolveOverridingToCurrentContext("hello");
+  }
+  PerformMicrotaskCheckpoint();
+
+  EXPECT_EQ(String(), on_fulfilled);
+  EXPECT_EQ(String(), on_rejected);
 }
 
 }  // namespace
