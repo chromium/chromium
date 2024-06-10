@@ -185,14 +185,16 @@ source_set("unit_tests") {
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_unittest.cc",
+    "shared_tab_group_data_sync_bridge_unittest.cc",
     "tab_group_store_unittest.cc",
     "tab_group_sync_service_unittest.cc",
   ]
   deps = [
     ":core",
+    ":model",
     ":saved_tab_group_bridge",
     ":saved_tab_group_bridge_unittests",
-    ":shared_tab_group_bridge_unittests",
+    ":shared_tab_group_bridge",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -299,23 +301,5 @@ source_set("shared_tab_group_bridge") {
     "//base",
     "//components/sync/base",
     "//components/sync/model",
-  ]
-}
-
-source_set("shared_tab_group_bridge_unittests") {
-  testonly = true
-
-  visibility = [ ":unit_tests" ]
-
-  sources = [ "shared_tab_group_data_sync_bridge_unittest.cc" ]
-
-  deps = [
-    ":shared_tab_group_bridge",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//components/sync",
-    "//components/sync:test_support",
-    "//testing/gtest",
   ]
 }

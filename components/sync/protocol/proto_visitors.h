@@ -1287,6 +1287,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDataSpecifics& proto) {
   VISIT(last_modification_author);
   VISIT(tab_group);
   VISIT(tab);
+  VISIT(update_time_windows_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics& proto) {

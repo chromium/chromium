@@ -30,6 +30,8 @@ message SharedTabGroupDataSpecifics {
     SharedTabGroup tab_group = 3;
     SharedTab tab = 4;
   }
+
+  optional int64 update_time_windows_epoch_micros = 5;
 }
 
 message SharedTabGroup {

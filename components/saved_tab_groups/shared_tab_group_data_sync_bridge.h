@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
@@ -21,6 +22,10 @@ namespace syncer {
 class MetadataChangeList;
 class ModelTypeChangeProcessor;
 }  // namespace syncer
+
+namespace sync_pb {
+class SharedTabGroupDataSpecifics;
+}  // namespace sync_pb
 
 namespace tab_groups {
 class SavedTabGroupModel;
@@ -74,7 +79,33 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
+  // React to store failures if a save was not successful.
+  void OnDatabaseSave(const std::optional<syncer::ModelError>& error);
+
+  // Adds `specifics` into local storage (SavedTabGroupModel, and
+  // ModelTypeStore) and resolves any conflicts if `specifics` already exists
+  // locally.  Additionally, the list of changes may not be complete and tabs
+  // may have been sent before their groups have arrived. In this case, the tabs
+  // are saved in the ModelTypeStore but not in the model (and instead cached in
+  // this class).
+  void AddGroupToLocalStorage(
+      const sync_pb::SharedTabGroupDataSpecifics& specifics,
+      syncer::MetadataChangeList* metadata_change_list,
+      syncer::ModelTypeStore::WriteBatch* write_batch);
+  void AddTabToLocalStorage(
+      const sync_pb::SharedTabGroupDataSpecifics& specifics,
+      syncer::MetadataChangeList* metadata_change_list,
+      syncer::ModelTypeStore::WriteBatch* write_batch);
+
+  // Removes all data assigned to `storage_key` from local storage
+  // (SavedTabGroupModel, and ModelTypeStore). If a group is removed, all its
+  // tabs will be removed in addition to the group.
+  void DeleteDataFromLocalStorage(
+      const std::string& storage_key,
+      syncer::ModelTypeStore::WriteBatch* write_batch);
+
   SEQUENCE_CHECKER(sequence_checker_);
+
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
