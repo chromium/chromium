@@ -115,6 +115,7 @@ export class StatsTable {
 
       table.appendChild($('trth-template').content.cloneNode(true));
       table.rows[0].cells[0].textContent = 'Statistics ' + report.id;
+      table['data-peerconnection-id'] = peerConnectionElement.id;
     }
     return table;
   }
@@ -180,19 +181,16 @@ export class StatsTable {
       trElement = document.createElement('tr');
       trElement.id = trId;
       statsTable.firstChild.appendChild(trElement);
-      const item = $('td2-template').content.cloneNode(true);
+      const item = $('statsrow-template').content.cloneNode(true);
       item.querySelector('td').textContent = rowName;
       trElement.appendChild(item);
     }
     trElement.cells[1].textContent = value;
-
-    // Highlights the table for the active connection.
-    if (rowName === 'googActiveConnection') {
-      if (value === true) {
-        statsTable.parentElement.classList.add(activeConnectionClass);
-      } else {
-        statsTable.parentElement.classList.remove(activeConnectionClass);
-      }
+    if (rowName.endsWith('Id')) {
+      // unicode link symbol
+      trElement.cells[2].children[0].textContent = ' \u{1F517}';
+      trElement.cells[2].children[0].href =
+        '#' + statsTable['data-peerconnection-id'] + '-table-' + value;
     }
   }
 
