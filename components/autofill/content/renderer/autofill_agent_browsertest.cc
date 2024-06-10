@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
@@ -619,6 +620,33 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
   autofill_agent().TriggerSuggestions(
       FieldRendererId(2),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+TEST_F(AutofillAgentTestWithFeatures,
+       TriggerSuggestionsForElementWithDatalist) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body><form>
+    <input id="ff" list="fruits">
+    <datalist id="fruits">
+      <option value="Strawberry">
+      <option value="Apple">
+    </datalist>
+  </form></body>)");
+  WaitForFormsSeen();
+
+  FormData form;
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  Field(&FormData::fields,
+                        ElementsAre(Property(
+                            &FormFieldData::datalist_options,
+                            ElementsAre(SelectOption{.value = u"Strawberry"},
+                                        SelectOption{.value = u"Apple"})))),
+                  _, _, _));
+  autofill_agent().TriggerSuggestions(
+      GetFieldRendererIdById("ff"),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  task_environment_.RunUntilIdle();
 }
 
 // Tests that `AutofillDriver::TriggerSuggestions()` works for contenteditables.
