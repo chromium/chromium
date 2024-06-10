@@ -18,6 +18,8 @@ include_rules = [
 ]
 specific_include_rules = {
   "headless_browser_browsertest.*": [
+    "+components/infobars/core",
+    "+components/infobars/content",
     "+storage/browser",
     "+ui/shell_dialogs",
   ],
