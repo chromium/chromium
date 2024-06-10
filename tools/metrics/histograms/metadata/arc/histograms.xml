@@ -1868,27 +1868,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Provisioning.CheckInError{ArcUserTypes}"
-    enum="ArcProvisioningCheckInError" expires_after="never">
+<histogram name="Arc.Provisioning.CheckinResult{ArcUserTypes}"
+    enum="ArcProvisioningCheckinResult" expires_after="never">
 <!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
 
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    The error that occurred during GMS check-in operation. Recorded when ARC++
-    provisioning flow fails. {ArcUserTypes}
-  </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes"/>
-</histogram>
-
-<histogram name="Arc.Provisioning.CloudFlowError{ArcUserTypes}"
-    enum="ArcProvisioningCloudFlowError" expires_after="never">
-<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
-
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    The result (success or the reason of failure) of Cloud DPC provisioning.
+    The result (success or the reason of failure) of GMS check-in operation.
     Recorded when ARC++ provisioning flow completes. {ArcUserTypes}
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
@@ -1903,6 +1890,19 @@ chromium-metrics-reviews@google.com.
     disallowed on unaffiliated devices depending on UnaffiliatedDeviceArcAllowed
     policy.
   </summary>
+</histogram>
+
+<histogram name="Arc.Provisioning.DpcResult{ArcUserTypes}"
+    enum="ArcProvisioningDpcResult" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    The result (success or the reason of failure) of Cloud DPC provisioning.
+    Recorded when ARC++ provisioning flow completes. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
 <histogram name="Arc.Provisioning.PreSignIn.TimeDelta{ArcUserTypes}" units="ms"
@@ -1921,15 +1921,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Arc.Provisioning.SignInError{ArcUserTypes}"
-    enum="ArcProvisioningSignInError" expires_after="never">
+<histogram name="Arc.Provisioning.SigninResult{ArcUserTypes}"
+    enum="ArcProvisioningSigninResult" expires_after="never">
 <!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
 
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    The error that occured during GMS sign-in operation. Recorded when ARC++
-    provisioning flow fails. {ArcUserTypes}
+    The result (success or the reason of failure) of GMS sign-in operation.
+    Recorded when ARC++ provisioning flow completes. {ArcUserTypes}
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>

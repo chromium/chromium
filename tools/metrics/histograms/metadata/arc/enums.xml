@@ -498,59 +498,35 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="enabledSystemAppPackageNames"/>
 </enum>
 
-<enum name="ArcProvisioningCheckInError">
-  <summary>Defines ARC GMS check-in failure reasons</summary>
-  <int value="1" label="Check-in failed"/>
+<enum name="ArcProvisioningCheckinResult">
+  <summary>Defines ARC GMS check-in success or failure reasons</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
   <int value="2" label="Timeout"/>
-  <int value="3" label="Internal error"/>
 </enum>
 
-<enum name="ArcProvisioningCloudFlowError">
-  <summary>Defines Arc Cloud DPC Provisioning failure reasons</summary>
-  <int value="0" label="Unknown or uncommon error"/>
-  <int value="1" label="Enrollment token provided was invalid"/>
-  <int value="2" label="Enterprise hit device quota"/>
-  <int value="3"
-      label="CloudDPS could not fulfill request because of a transient error"/>
-  <int value="4" label="Account could not be added"/>
-  <int value="5" label="Could not get Android ID"/>
-  <int value="6" label="Device got stuck in quarantine mode"/>
-  <int value="7" label="Setup step timed out"/>
-  <int value="8"
+<enum name="ArcProvisioningDpcResult">
+  <summary>Defines ARC DPC Provisioning success or failure reasons</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Enrollment token provided was invalid"/>
+  <int value="3" label="Account could not be added"/>
+  <int value="4" label="Setup step timed out"/>
+  <int value="5"
       label="There was no network, so device couldn't fulfill a request"/>
-  <int value="9" label="Enterprise is not registered with CloudDPx"/>
-  <int value="10" label="User cancelled the step"/>
-  <int value="11"
-      label="Either account migration failed or account was deleted by user
-             during provisioning"/>
-  <int value="12" label="Policy got stuck in invalid state"/>
-  <int value="13" label="Issues with DpcSupport"/>
-  <int value="14" label="Account wad not ready"/>
-  <int value="15" label="Checkin failed"/>
-  <int value="16" label="Issues with whitelisting work account"/>
-  <int value="17" label="Error parsing JSON, most likely policy JSON"/>
-  <int value="18" label="ManagedProvisioning failed"/>
-  <int value="19" label="Setup intent could not be parsed"/>
-  <int value="20" label="CloudDPS exception with an uncommon server code"/>
-  <int value="21"
-      label="Removing a previously existing unmanaged account failed"/>
-  <int value="22" label="Error with getting OAuth token"/>
-  <int value="23" label="AccountException with no exception details"/>
-  <int value="24"
+  <int value="6"
       label="Error with getting OAuth token due to AuthenticatorException"/>
-  <int value="25" label="Error with getting OAuth token due to IOException"/>
-  <int value="26"
-      label="Error with getting OAuth token due to OperationCanceledException"/>
+  <int value="7" label="Error with getting OAuth token due to IOException"/>
 </enum>
 
-<enum name="ArcProvisioningSignInError">
-  <summary>Defines ARC GMS sign-in failure reasons</summary>
-  <int value="1" label="Network error"/>
-  <int value="2" label="Sign-in service unavailble"/>
-  <int value="3" label="Bad authentication"/>
-  <int value="4" label="Unknown error"/>
+<enum name="ArcProvisioningSigninResult">
+  <summary>Defines ARC GMS sign-in success or failure reasons</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Network error"/>
+  <int value="3" label="Sign-in service unavailble"/>
+  <int value="4" label="Bad authentication"/>
   <int value="5" label="Timeout"/>
-  <int value="6" label="Internal error"/>
 </enum>
 
 <enum name="ArcProvisioningStatus">
