@@ -72,10 +72,10 @@ const CGFloat kSeparatorHeight = 0.5;
   UIStackView* _stackView;
   UIImageView* _placeholderImage;
   UIStackView* _titleStackView;
-    MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
-    NSLayoutConstraint* _containerHeightAnchor;
-    NSLayoutConstraint* _contentStackViewBottomMarginAnchor;
-    UIContextMenuInteraction* _contextMenuInteraction;
+  MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
+  NSLayoutConstraint* _containerHeightAnchor;
+  NSLayoutConstraint* _contentStackViewBottomMarginAnchor;
+  UIContextMenuInteraction* _contextMenuInteraction;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {

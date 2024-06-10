@@ -12,14 +12,12 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
-#import "components/commerce/core/mock_shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -127,12 +125,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<commerce::MockShoppingService>();
-            }));
     test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -328,6 +320,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [bvc_ shutdown];
     [bookmarks_coordinator_ stop];
     [tab_strip_coordinator_ stop];
+    [legacy_tab_strip_coordinator_ stop];
+    [toolbar_coordinator_ stop];
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
     [side_swipe_mediator_ disconnect];
@@ -560,5 +554,4 @@ TEST_F(BrowserViewControllerTest, ViewOnInsert) {
                                 })];
   InsertWebState(std::move(ntp_web_state2));
   EXPECT_OCMOCK_VERIFY(container_view_mock);
-  [NTPCoordinator_ stop];
 }
