@@ -351,7 +351,7 @@ impl RegexSet {
     ) -> bool {
         // This is pretty dumb. We should try to fix this, but the
         // regex-automata API doesn't provide a way to store matches in an
-        // arbitrary &mut [bool]. Thankfully, this API is is doc(hidden) and
+        // arbitrary &mut [bool]. Thankfully, this API is doc(hidden) and
         // thus not public... But regex-capi currently uses it. We should
         // fix regex-capi to use a PatternSet, maybe? Not sure... PatternSet
         // is in regex-automata, not regex. So maybe we should just accept a

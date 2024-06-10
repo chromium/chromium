@@ -961,6 +961,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.10.3 -> 1.10.4"
 notes = "Docs changes only."
 
+[[audits.regex]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.10.4 -> 1.10.5"
+
 [[audits.regex-automata]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

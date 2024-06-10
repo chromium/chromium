@@ -689,9 +689,9 @@ third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/read-fonts-0.19.3/src/tables 2 1
-third_party/rust/chromium_crates_io/vendor/regex-1.10.4 1 1
-third_party/rust/chromium_crates_io/vendor/regex-1.10.4/src 1 1
-third_party/rust/chromium_crates_io/vendor/regex-1.10.4/tests 7 6
+third_party/rust/chromium_crates_io/vendor/regex-1.10.5 1 1
+third_party/rust/chromium_crates_io/vendor/regex-1.10.5/src 1 1
+third_party/rust/chromium_crates_io/vendor/regex-1.10.5/tests 7 6
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7 2 2
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/src/util 1 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/dfa 11 1

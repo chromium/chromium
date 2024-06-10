@@ -13,16 +13,20 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex"
-version = "1.10.4"
+version = "1.10.5"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
 ]
+build = false
 exclude = [
     "/scripts/*",
     "/.github/*",
 ]
+autobins = false
+autoexamples = false
 autotests = false
+autobenches = false
 description = """
 An implementation of regular expressions for Rust. This implementation uses
 finite automata and guarantees linear time matching on all inputs.
@@ -54,6 +58,10 @@ debug = 2
 [profile.test]
 opt-level = 3
 debug = 2
+
+[lib]
+name = "regex"
+path = "src/lib.rs"
 
 [[test]]
 name = "integration"

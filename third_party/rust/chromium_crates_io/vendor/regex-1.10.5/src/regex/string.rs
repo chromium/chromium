@@ -1716,8 +1716,8 @@ impl<'h> Captures<'h> {
     ///
     /// This returns a tuple where the first element corresponds to the full
     /// substring of the haystack that matched the regex. The second element is
-    /// an array of substrings, with each corresponding to the to the substring
-    /// that matched for a particular capture group.
+    /// an array of substrings, with each corresponding to the substring that
+    /// matched for a particular capture group.
     ///
     /// # Panics
     ///

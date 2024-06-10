@@ -182,7 +182,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."regex-syntax:0.8.4"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."regex:1.10.4"]
+[policy."regex:1.10.5"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rstest:0.17.0"]
