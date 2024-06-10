@@ -719,7 +719,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mTabCreatorManagerSupplier.get(),
                             TabGroupSyncServiceFactory.getForProfile(originalProfile),
                             UserPrefs.get(originalProfile),
-                            () -> ApplicationStatus.getLastTrackedFocusedActivity() == mActivity);
+                            () -> {
+                                return MultiWindowUtils.getInstanceCount() <= 1
+                                        || ApplicationStatus.getLastTrackedFocusedActivity()
+                                                == mActivity;
+                            });
         }
     }
 
