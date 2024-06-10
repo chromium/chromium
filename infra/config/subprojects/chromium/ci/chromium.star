@@ -23,6 +23,7 @@ ci.defaults.set(
     builder_group = "chromium",
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
+    tree_closing = True,
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     gardener_rotations = gardener_rotations.CHROMIUM,
@@ -88,7 +89,6 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "rel",
@@ -146,7 +146,6 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "android|arm",
         short_name = "arm64",
@@ -383,7 +382,6 @@ ci.builder(
         additional_compile_targets = "chrome",
     ),
     cores = 32,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "lacros",
         short_name = "rel",
@@ -443,7 +441,6 @@ ci.builder(
         additional_compile_targets = "chrome",
     ),
     cores = 32,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "lacros",
         short_name = "arm",
@@ -554,7 +551,6 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "rel",
@@ -646,7 +642,6 @@ ci.builder(
     ),
     cores = 12,
     os = os.MAC_DEFAULT,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "rel",
@@ -698,7 +693,6 @@ ci.builder(
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "mac|arm",
         short_name = "rel",
@@ -789,7 +783,6 @@ ci.builder(
     builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
         short_name = "64",
@@ -843,7 +836,7 @@ ci.builder(
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     # TODO(crbug.com/335863313): Enable when verified.
-    # tree_closing = True,
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
         short_name = "arm64",
@@ -896,6 +889,9 @@ ci.builder(
     builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
+    # TODO(crbug.com/346263463): Enable tree-closing when the builder no
+    # longer flakily fails compile.
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "win|off",
         short_name = "64",
@@ -938,7 +934,6 @@ ci.builder(
     builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
         short_name = "32",
