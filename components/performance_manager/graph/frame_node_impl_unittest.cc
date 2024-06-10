@@ -28,14 +28,6 @@ namespace {
 
 using FrameNodeImplTest = GraphTestHarness;
 
-const FrameNode* ToPublic(FrameNodeImpl* frame_node) {
-  return frame_node;
-}
-
-const PageNode* ToPublic(PageNodeImpl* page_node) {
-  return page_node;
-}
-
 }  // namespace
 
 TEST_F(FrameNodeImplTest, SafeDowncast) {
@@ -609,32 +601,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 }
 
-TEST_F(FrameNodeImplTest, VisitChildFrameNodes) {
-  auto process = CreateNode<ProcessNodeImpl>();
-  auto page = CreateNode<PageNodeImpl>();
-  auto frame1 = CreateFrameNodeAutoId(process.get(), page.get());
-  auto frame2 = CreateFrameNodeAutoId(process.get(), page.get(), frame1.get());
-  auto frame3 = CreateFrameNodeAutoId(process.get(), page.get(), frame1.get());
-
-  std::set<const FrameNode*> visited;
-  EXPECT_TRUE(ToPublic(frame1.get())
-                  ->VisitChildFrameNodes([&visited](const FrameNode* frame) {
-                    EXPECT_TRUE(visited.insert(frame).second);
-                    return true;
-                  }));
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(frame2.get()),
-                                                     ToPublic(frame3.get())));
-
-  // Do an aborted visit.
-  visited.clear();
-  EXPECT_FALSE(ToPublic(frame1.get())
-                   ->VisitChildFrameNodes([&visited](const FrameNode* frame) {
-                     EXPECT_TRUE(visited.insert(frame).second);
-                     return false;
-                   }));
-  EXPECT_EQ(1u, visited.size());
-}
-
 namespace {
 
 class LenientMockPageObserver : public PageNode::ObserverDefaultImpl {
@@ -709,8 +675,8 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(EmbeddingType::kGuestView, ppageB->GetEmbeddingType());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, pframeA1->GetEmbeddedPageNodes().size());
-  EXPECT_EQ(1u, frameA1->embedded_page_nodes().count(pageB.get()));
-  EXPECT_EQ(1u, pframeA1->GetEmbeddedPageNodes().count(pageB.get()));
+  EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
+  EXPECT_TRUE(base::Contains(pframeA1->GetEmbeddedPageNodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Set an opener relationship.
@@ -719,35 +685,8 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA1.get(), pageC->opener_frame_node());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
-  EXPECT_EQ(1u, frameA1->embedded_page_nodes().count(pageB.get()));
+  EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
-
-  // Do an embedded page traversal.
-  std::set<const PageNode*> visited;
-  EXPECT_TRUE(ToPublic(frameA1.get())
-                  ->VisitEmbeddedPageNodes([&visited](const PageNode* page) {
-                    EXPECT_TRUE(visited.insert(page).second);
-                    return true;
-                  }));
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageB.get())));
-
-  // Do an opened page traversal.
-  visited.clear();
-  EXPECT_TRUE(ToPublic(frameA1.get())
-                  ->VisitOpenedPageNodes([&visited](const PageNode* page) {
-                    EXPECT_TRUE(visited.insert(page).second);
-                    return true;
-                  }));
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageC.get())));
-
-  // Do an aborted visit.
-  visited.clear();
-  EXPECT_FALSE(ToPublic(frameA1.get())
-                   ->VisitEmbeddedPageNodes([&visited](const PageNode* page) {
-                     EXPECT_TRUE(visited.insert(page).second);
-                     return false;
-                   }));
-  EXPECT_EQ(1u, visited.size());
 
   // Manually clear the embedder relationship (initiated from the page).
   EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA1.get(),
@@ -776,7 +715,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
   EXPECT_TRUE(frameA2->embedded_page_nodes().empty());
-  EXPECT_EQ(1u, frameA2->opened_page_nodes().count(pageB.get()));
+  EXPECT_TRUE(base::Contains(frameA2->opened_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Clear it with the helper, and expect it to be reparented to node A1.
@@ -784,7 +723,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   frameA2->SeverPageRelationshipsAndMaybeReparentForTesting();
   EXPECT_EQ(frameA1.get(), pageB->opener_frame_node());
   EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
-  EXPECT_EQ(1u, frameA1->opened_page_nodes().count(pageB.get()));
+  EXPECT_TRUE(base::Contains(frameA1->opened_page_nodes(), pageB.get()));
   EXPECT_TRUE(frameA2->opened_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
@@ -804,7 +743,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA2.get(), pageB->opener_frame_node());
   EXPECT_TRUE(frameA1->opened_page_nodes().empty());
   EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
-  EXPECT_EQ(1u, frameA2->opened_page_nodes().count(pageB.get()));
+  EXPECT_TRUE(base::Contains(frameA2->opened_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   {

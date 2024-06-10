@@ -12,7 +12,6 @@
 #include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/graph_impl_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
@@ -273,18 +272,17 @@ ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
   return hosted_content_types_;
 }
 
-const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
-ProcessNodeImpl::frame_nodes() const {
+ProcessNode::NodeSetView<FrameNodeImpl*> ProcessNodeImpl::frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return frame_nodes_;
+  return NodeSetView<FrameNodeImpl*>(frame_nodes_);
 }
 
-const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-ProcessNodeImpl::worker_nodes() const {
+ProcessNode::NodeSetView<WorkerNodeImpl*> ProcessNodeImpl::worker_nodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return worker_nodes_;
+  return NodeSetView<WorkerNodeImpl*>(worker_nodes_);
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
@@ -396,38 +394,16 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
   process_.SetAndNotify(this, std::move(process));
 }
 
-bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
+ProcessNode::NodeSetView<const FrameNode*> ProcessNodeImpl::GetFrameNodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (FrameNodeImpl* frame_impl : frame_nodes()) {
-    const FrameNode* frame = frame_impl;
-    if (!visitor(frame)) {
-      return false;
-    }
-  }
-  return true;
+  return NodeSetView<const FrameNode*>(frame_nodes_);
 }
 
-bool ProcessNodeImpl::VisitWorkerNodes(const WorkerNodeVisitor& visitor) const {
+ProcessNode::NodeSetView<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (WorkerNodeImpl* worker_impl : worker_nodes_) {
-    const WorkerNode* worker = worker_impl;
-    if (!visitor(worker)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-base::flat_set<const FrameNode*> ProcessNodeImpl::GetFrameNodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<FrameNode>(frame_nodes());
-}
-
-base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<WorkerNode>(worker_nodes_);
+  return NodeSetView<const WorkerNode*>(worker_nodes_);
 }
 
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {

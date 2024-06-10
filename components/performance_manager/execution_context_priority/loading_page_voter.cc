@@ -95,17 +95,15 @@ void LoadingPageVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
 }
 
 void LoadingPageVoter::OnPageNodeStartedLoading(const PageNode* page_node) {
-  page_node->VisitMainFrameNodes([this](const FrameNode* main_frame_node) {
+  for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
     SubmitVoteForSubtree(main_frame_node);
-    return true;
-  });
+  }
 }
 
 void LoadingPageVoter::OnPageNodeStoppedLoading(const PageNode* page_node) {
-  page_node->VisitMainFrameNodes([this](const FrameNode* main_frame_node) {
+  for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
     InvalidateVoteForSubtree(main_frame_node);
-    return true;
-  });
+  }
 }
 
 void LoadingPageVoter::SubmitVoteForSubtree(const FrameNode* frame_node) {
@@ -114,20 +112,18 @@ void LoadingPageVoter::SubmitVoteForSubtree(const FrameNode* frame_node) {
       Vote(base::TaskPriority::USER_VISIBLE, kPageIsLoadingReason));
 
   // Recurse through subtree.
-  frame_node->VisitChildFrameNodes([this](const FrameNode* frame_node) {
-    SubmitVoteForSubtree(frame_node);
-    return true;
-  });
+  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
+    SubmitVoteForSubtree(child_frame_node);
+  }
 }
 
 void LoadingPageVoter::InvalidateVoteForSubtree(const FrameNode* frame_node) {
   voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
 
   // Recurse through subtree.
-  frame_node->VisitChildFrameNodes([this](const FrameNode* frame_node) {
-    InvalidateVoteForSubtree(frame_node);
-    return true;
-  });
+  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
+    InvalidateVoteForSubtree(child_frame_node);
+  }
 }
 
 }  // namespace performance_manager::execution_context_priority

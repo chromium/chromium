@@ -115,12 +115,12 @@ void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
   auto& voting_channel = it->second;
 
   const std::optional<Vote> inherited_vote = GetVoteFromClient(frame_node);
-  frame_node->VisitChildWorkers([&](const WorkerNode* child_worker_node) {
+  for (const WorkerNode* child_worker_node :
+       frame_node->GetChildWorkerNodes()) {
     const ExecutionContext* child_execution_context =
         GetExecutionContext(child_worker_node);
     voting_channel.ChangeVote(child_execution_context, inherited_vote);
-    return true;
-  });
+  }
 }
 
 void InheritClientPriorityVoter::OnWorkerNodeAdded(
@@ -215,12 +215,11 @@ void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
   auto& voting_channel = it->second;
 
   const std::optional<Vote> inherited_vote = GetVoteFromClient(worker_node);
-  worker_node->VisitChildWorkers([&](const WorkerNode* child_worker_node) {
+  for (const WorkerNode* child_worker_node : worker_node->GetChildWorkers()) {
     const ExecutionContext* child_execution_context =
         GetExecutionContext(child_worker_node);
     voting_channel.ChangeVote(child_execution_context, inherited_vote);
-    return true;
-  });
+  }
 }
 
 }  // namespace execution_context_priority

@@ -421,20 +421,19 @@ FrameNodeImpl* PageNodeImpl::main_frame_node() const {
 
   // Return the current frame node if there is one. Iterating over this set is
   // fine because it is almost always of length 1 or 2.
-  for (FrameNodeImpl* frame : main_frame_nodes_) {
+  for (FrameNodeImpl* frame : main_frame_nodes()) {
     if (frame->IsCurrent()) {
       return frame;
     }
   }
 
   // Otherwise, return any old main frame node.
-  return *main_frame_nodes_.begin();
+  return *main_frame_nodes().begin();
 }
 
-const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
-PageNodeImpl::main_frame_nodes() const {
+PageNode::NodeSetView<FrameNodeImpl*> PageNodeImpl::main_frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return main_frame_nodes_;
+  return NodeSetView<FrameNodeImpl*>(main_frame_nodes_);
 }
 
 void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
@@ -570,23 +569,10 @@ const FrameNode* PageNodeImpl::GetMainFrameNode() const {
   return main_frame_node();
 }
 
-bool PageNodeImpl::VisitMainFrameNodes(const FrameNodeVisitor& visitor) const {
+PageNode::NodeSetView<const FrameNode*> PageNodeImpl::GetMainFrameNodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (FrameNodeImpl* frame_impl : main_frame_nodes_) {
-    const FrameNode* frame = frame_impl;
-    if (!visitor(frame)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>
-PageNodeImpl::GetMainFrameNodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> main_frame_nodes(
-      main_frame_nodes_.begin(), main_frame_nodes_.end());
-  return main_frame_nodes;
+  return NodeSetView<const FrameNode*>(main_frame_nodes_);
 }
 
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {

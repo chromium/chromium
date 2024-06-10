@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -78,12 +77,9 @@ class WorkerNodeImpl
   ProcessNodeImpl* process_node() const;
 
   // Getters for non-const properties. These are not thread safe.
-  const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>& client_frames()
-      const;
-  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-  client_workers() const;
-  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-  child_workers() const;
+  NodeSetView<FrameNodeImpl*> client_frames() const;
+  NodeSetView<WorkerNodeImpl*> client_workers() const;
+  NodeSetView<WorkerNodeImpl*> child_workers() const;
 
   base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
@@ -107,14 +103,9 @@ class WorkerNodeImpl
   // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
   const ProcessNode* GetProcessNode() const override;
-  const base::flat_set<const FrameNode*> GetClientFrames() const override;
-  bool VisitClientFrames(const FrameNodeVisitor& visitor) const override;
-  const base::flat_set<const WorkerNode*> GetClientWorkers() const override;
-  bool VisitClientWorkers(const WorkerNodeVisitor& visitor) const override;
-  const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
-  bool VisitChildWorkers(const WorkerNodeVisitor& visitor) const override;
-  bool VisitChildDedicatedWorkers(
-      const WorkerNodeVisitor& visitor) const override;
+  NodeSetView<const FrameNode*> GetClientFrames() const override;
+  NodeSetView<const WorkerNode*> GetClientWorkers() const override;
+  NodeSetView<const WorkerNode*> GetChildWorkers() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.
   void AddChildWorker(WorkerNodeImpl* worker_node);
@@ -145,18 +136,15 @@ class WorkerNodeImpl
   const url::Origin origin_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Frames that are clients of this worker.
-  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>> client_frames_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  NodeSet client_frames_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Other workers that are clients of this worker. See the declaration of
   // WorkerNode for a distinction between client workers and child workers.
-  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> client_workers_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  NodeSet client_workers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The child workers of this worker. See the declaration of WorkerNode for a
   // distinction between client workers and child workers.
-  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> child_workers_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  NodeSet child_workers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   uint64_t resident_set_kb_estimate_ = 0;
 

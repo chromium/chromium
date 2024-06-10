@@ -27,16 +27,14 @@ void RecursivelyFindClientPagesAndBrowsingInstances(
     // Already visited, halt recursion.
     return;
   }
-  worker_node->VisitClientFrames([&](const FrameNode* f) {
+  for (const FrameNode* f : worker_node->GetClientFrames()) {
     client_pages.insert(f->GetPageNode());
     client_browsing_instances.insert(f->GetBrowsingInstanceId());
-    return true;
-  });
-  worker_node->VisitClientWorkers([&](const WorkerNode* w) {
+  }
+  for (const WorkerNode* w : worker_node->GetClientWorkers()) {
     RecursivelyFindClientPagesAndBrowsingInstances(
         w, client_pages, client_browsing_instances, visited_workers);
-    return true;
-  });
+  }
 }
 
 }  // namespace

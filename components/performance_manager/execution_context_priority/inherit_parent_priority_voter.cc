@@ -106,12 +106,10 @@ void InheritParentPriorityVoter::OnPriorityAndReasonChanged(
   }
 
   // Maybe change the vote for every children.
-  frame_node->VisitChildFrameNodes(
-      [&, this](const FrameNode* child_frame_node) {
-        voting_channel_.ChangeVote(GetExecutionContext(child_frame_node),
-                                   GetVote(child_frame_node));
-        return true;
-      });
+  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
+    voting_channel_.ChangeVote(GetExecutionContext(child_frame_node),
+                               GetVote(child_frame_node));
+  }
 }
 
 }  // namespace performance_manager::execution_context_priority

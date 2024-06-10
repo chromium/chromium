@@ -133,8 +133,7 @@ class PageNodeImpl
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
   FrameNodeImpl* main_frame_node() const;
-  const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
-  main_frame_nodes() const;
+  NodeSetView<FrameNodeImpl*> main_frame_nodes() const;
 
   // Invoked to set/clear the opener of this page.
   void SetOpenerFrameNode(FrameNodeImpl* opener);
@@ -229,9 +228,7 @@ class PageNodeImpl
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
   const FrameNode* GetMainFrameNode() const override;
-  bool VisitMainFrameNodes(const FrameNodeVisitor& visitor) const override;
-  const base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>
-  GetMainFrameNodes() const override;
+  NodeSetView<const FrameNode*> GetMainFrameNodes() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;
@@ -254,8 +251,7 @@ class PageNodeImpl
   // in a page, among other reasons because during main frame navigation, the
   // pending navigation will coexist with the existing main frame until it's
   // committed.
-  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>> main_frame_nodes_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  NodeSet main_frame_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The total count of frames that tally up to this page.
   size_t frame_node_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

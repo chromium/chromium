@@ -412,19 +412,16 @@ double GetBrowsingInstanceV8BytesFraction(
     content::BrowsingInstanceId browsing_instance_id) {
   uint64_t bytes_used = 0;
   uint64_t total_bytes_used = 0;
-  process_node->VisitFrameNodes(
-      [&bytes_used, &total_bytes_used,
-       browsing_instance_id](const FrameNode* frame_node) {
-        const auto* data =
-            V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
-        if (data) {
-          if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
-            bytes_used += data->v8_bytes_used();
-          }
-          total_bytes_used += data->v8_bytes_used();
-        }
-        return true;
-      });
+  for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
+    const auto* data =
+        V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
+    if (data) {
+      if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
+        bytes_used += data->v8_bytes_used();
+      }
+      total_bytes_used += data->v8_bytes_used();
+    }
+  }
   DCHECK_LE(bytes_used, total_bytes_used);
   return total_bytes_used == 0
              ? 1
@@ -438,16 +435,13 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<const FrameNode*> top_frames;
-  main_process_node_->VisitFrameNodes(
-      [&top_frames,
-       browsing_instance_id = browsing_instance_id_](const FrameNode* node) {
-        if (node->GetBrowsingInstanceId() == browsing_instance_id &&
-            !node->GetParentFrameNode() && node->GetOrigin() &&
-            !node->GetOrigin()->opaque()) {
-          top_frames.push_back(node);
-        }
-        return true;
-      });
+  for (const FrameNode* node : main_process_node_->GetFrameNodes()) {
+    if (node->GetBrowsingInstanceId() == browsing_instance_id_ &&
+        !node->GetParentFrameNode() && node->GetOrigin() &&
+        !node->GetOrigin()->opaque()) {
+      top_frames.push_back(node);
+    }
+  }
 
   CHECK(!top_frames.empty());
   const url::Origin main_origin = top_frames.front()->GetOrigin().value();
@@ -488,42 +482,45 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   return aggregation_result;
 }
 
-bool WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
+void WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
                                      const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_node);
   if (frame_node->GetBrowsingInstanceId() != browsing_instance_id_) {
     // Ignore frames from other browsing contexts.
-    return true;
+    return;
   }
   ap_visitor->OnFrameEntered(frame_node);
-  frame_node->VisitChildDedicatedWorkers(
-      [this, ap_visitor](const WorkerNode* worker_node) {
-        return this->VisitWorker(ap_visitor, worker_node);
-      });
-  frame_node->VisitChildFrameNodes(
-      [this, ap_visitor](const FrameNode* frame_node) {
-        return this->VisitFrame(ap_visitor, frame_node);
-      });
+  for (const WorkerNode* child_worker_node :
+       frame_node->GetChildWorkerNodes()) {
+    if (child_worker_node->GetWorkerType() !=
+        WorkerNode::WorkerType::kDedicated) {
+      continue;
+    }
+    VisitWorker(ap_visitor, child_worker_node);
+  }
+  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
+    VisitFrame(ap_visitor, child_frame_node);
+  }
   ap_visitor->OnFrameExited(frame_node);
-
-  return true;
 }
 
-bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
+void WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
                                       const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40165276): Support service and shared workers.
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
 
   ap_visitor->OnWorkerEntered(worker_node);
-  worker_node->VisitChildDedicatedWorkers(
-      [this, ap_visitor](const WorkerNode* worker_node) {
-        return this->VisitWorker(ap_visitor, worker_node);
-      });
-  ap_visitor->OnWorkerExited(worker_node);
+  for (const WorkerNode* child_worker_node : worker_node->GetChildWorkers()) {
+    if (child_worker_node->GetWorkerType() !=
+        WorkerNode::WorkerType::kDedicated) {
+      continue;
+    }
 
-  return true;
+    VisitWorker(ap_visitor, child_worker_node);
+  }
+  ap_visitor->OnWorkerExited(worker_node);
 }
 
 // static

@@ -453,31 +453,6 @@ TEST_F(PageNodeImplTest, GetMainFrameNodes) {
                                                     ToPublic(frame2.get())));
 }
 
-TEST_F(PageNodeImplTest, VisitMainFrameNodes) {
-  auto process = CreateNode<ProcessNodeImpl>();
-  auto page = CreateNode<PageNodeImpl>();
-  auto frame1 = CreateFrameNodeAutoId(process.get(), page.get());
-  auto frame2 = CreateFrameNodeAutoId(process.get(), page.get());
-
-  std::set<const FrameNode*> visited;
-  EXPECT_TRUE(ToPublic(page.get())
-                  ->VisitMainFrameNodes([&visited](const FrameNode* frame) {
-                    EXPECT_TRUE(visited.insert(frame).second);
-                    return true;
-                  }));
-  EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(frame1.get()),
-                                                     ToPublic(frame2.get())));
-
-  // Do an aborted visit.
-  visited.clear();
-  EXPECT_FALSE(ToPublic(page.get())
-                   ->VisitMainFrameNodes([&visited](const FrameNode* frame) {
-                     EXPECT_TRUE(visited.insert(frame).second);
-                     return false;
-                   }));
-  EXPECT_EQ(1u, visited.size());
-}
-
 TEST_F(PageNodeImplTest, BackForwardCache) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();

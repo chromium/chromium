@@ -185,7 +185,7 @@ void V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable(
   using FrameAndData = std::pair<content::GlobalRenderFrameHostId,
                                  V8DetailedMemoryExecutionContextData>;
   std::vector<FrameAndData> all_frame_data;
-  process_node->VisitFrameNodes([&all_frame_data](const FrameNode* frame_node) {
+  for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
     const auto* frame_data =
         V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
     if (frame_data) {
@@ -193,8 +193,7 @@ void V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable(
           frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),
           *frame_data));
     }
-    return true;
-  });
+  }
 
   sequence_bound_callback.PostTaskWithThisObject(
       base::BindOnce(

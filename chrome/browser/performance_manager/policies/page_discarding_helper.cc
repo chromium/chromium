@@ -83,7 +83,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
   // Compute the resident set of each page by simply summing up the estimated
   // resident set of all its frames.
   for (const ProcessNode* process_node : process_nodes) {
-    base::flat_set<const FrameNode*> process_frames =
+    ProcessNode::NodeSetView<const FrameNode*> process_frames =
         process_node->GetFrameNodes();
     if (!process_frames.size()) {
       continue;

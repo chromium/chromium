@@ -150,7 +150,7 @@ FreezingPolicy::BrowsingInstanceState::~BrowsingInstanceState() = default;
 base::flat_set<content::BrowsingInstanceId>
 FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
   base::flat_set<content::BrowsingInstanceId> browsing_instances;
-  for (auto& frame_node : page->GetMainFrameNodes()) {
+  for (const FrameNode* frame_node : page->GetMainFrameNodes()) {
     browsing_instances.insert(frame_node->GetBrowsingInstanceId());
   }
   return browsing_instances;
@@ -425,7 +425,7 @@ void FreezingPolicy::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   // Early exit if another main frame is associated with the same browsing
   // instance (in other words, the set of browsing instances associated with the
   // removed frame's page doesn't change).
-  for (auto& other_frame_node :
+  for (const FrameNode* other_frame_node :
        frame_node->GetPageNode()->GetMainFrameNodes()) {
     if (other_frame_node != frame_node &&
         other_frame_node->GetBrowsingInstanceId() ==

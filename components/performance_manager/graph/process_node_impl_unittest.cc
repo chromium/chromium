@@ -249,23 +249,15 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   EXPECT_TRUE(process_node->GetMainThreadTaskLoadIsLow());
 
   // For properties returning nodes, simply test that the public interface impls
-  //  yield the same result as their private counterpart.
+  // yield the same result as their private counterpart.
 
-  const auto& frame_nodes = process_node->frame_nodes();
+  auto frame_nodes = process_node->frame_nodes();
   auto public_frame_nodes = public_process_node->GetFrameNodes();
   EXPECT_EQ(frame_nodes.size(), public_frame_nodes.size());
   for (const FrameNodeImpl* frame_node : frame_nodes) {
     const FrameNode* public_frame_node = frame_node;
     EXPECT_TRUE(base::Contains(public_frame_nodes, public_frame_node));
   }
-
-  decltype(public_frame_nodes) visited_frame_nodes;
-  public_process_node->VisitFrameNodes(
-      [&visited_frame_nodes](const FrameNode* frame_node) -> bool {
-        visited_frame_nodes.insert(frame_node);
-        return true;
-      });
-  EXPECT_EQ(public_frame_nodes, visited_frame_nodes);
 }
 
 namespace {

@@ -8,12 +8,11 @@
 #include <optional>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/function_ref.h"
 #include "base/observer_list_types.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
+#include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
@@ -65,11 +64,12 @@ using execution_context_priority::PriorityAndReason;
 // it.
 class FrameNode : public TypedNode<FrameNode> {
  public:
-  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
+  using NodeSet = base::flat_set<const Node*>;
+  template <class ReturnType>
+  using NodeSetView = NodeSetView<NodeSet, ReturnType>;
+
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
-  using PageNodeVisitor = base::FunctionRef<bool(const PageNode*)>;
-  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
 
   class ObserverDefaultImpl;
 
@@ -134,38 +134,16 @@ class FrameNode : public TypedNode<FrameNode> {
   // WebContents (Portal or Guest view), or if this is a <fencedframe>.
   virtual bool IsMainFrame() const = 0;
 
-  // Visits the frame nodes that are children of this frame. The iteration is
-  // halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const = 0;
+  // Returns the set of child frames associated with this frame.
+  virtual NodeSetView<const FrameNode*> GetChildFrameNodes() const = 0;
 
-  // Returns the set of child frame associated with this frame. Note that this
-  // incurs a full container copy of all child nodes. Please use
-  // VisitChildFrameNodes when that makes sense.
-  virtual const base::flat_set<const FrameNode*> GetChildFrameNodes() const = 0;
+  // Returns the set of opened pages associated with this frame. This can change
+  // over the lifetime of the frame.
+  virtual NodeSetView<const PageNode*> GetOpenedPageNodes() const = 0;
 
-  // Visits the page nodes that have been opened by this frame. The iteration
-  // is halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const = 0;
-
-  // Returns the set of opened pages associatted with this frame. Note that
-  // this incurs a full container copy all the opened nodes. Please use
-  // VisitOpenedPageNodes when that makes sense. This can change over the
-  // lifetime of the frame.
-  virtual const base::flat_set<const PageNode*> GetOpenedPageNodes() const = 0;
-
-  // Visits the page nodes that have been embedded by this frame. The iteration
-  // is halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitEmbeddedPageNodes(const PageNodeVisitor& visitor) const = 0;
-
-  // Returns the set of embedded pages associatted with this frame. Note that
-  // this incurs a full container copy all the embedded nodes. Please use
-  // VisitEmbeddedPageNodes when that makes sense. This can change over the
-  // lifetime of the frame.
-  virtual const base::flat_set<const PageNode*> GetEmbeddedPageNodes()
-      const = 0;
+  // Returns the set of embedded pages associated with this frame. This can
+  // change over the lifetime of the frame.
+  virtual NodeSetView<const PageNode*> GetEmbeddedPageNodes() const = 0;
 
   // Returns the current lifecycle state of this frame. See
   // FrameNodeObserver::OnFrameLifecycleStateChanged.
@@ -210,33 +188,8 @@ class FrameNode : public TypedNode<FrameNode> {
 
   // Returns the child workers of this frame. These are either dedicated workers
   // or shared workers created by this frame, or a service worker that handles
-  // this frame's network requests. Note that this incurs a full container copy
-  // of all child nodes. Please use VisitChildWorkers or
-  // VisitChildDedicatedWorkers when that makes sense.
-  virtual const base::flat_set<const WorkerNode*> GetChildWorkerNodes()
-      const = 0;
-
-  // Visits the child workers of this frame. The iteration is halted if the
-  // visitor returns false. Returns true if every call to the visitor returned
-  // true, false otherwise.
-  //
-  // Note: Unlike frames, workers do not conform to a tree-like structure
-  // so care must be taken to ensure worker nodes are not visited multiple
-  // times in a complete graph traversal. For example, it's possible to
-  // have a frame F and a dedicated worker W, where W is the child of F,
-  // and a service worker S, where S is the child of both F and W. Starting
-  // the graph traversal from F will cause S to be visited twice.
-  virtual bool VisitChildWorkers(const WorkerNodeVisitor& visitor) const = 0;
-
-  // Visits the child dedicated workers of this frame. The iteration is halted
-  // if the visitor returns false. Returns true if every call to the visitor
-  // returned true, false otherwise.
-  //
-  // The reason for this method is that a service/shared worker may appear as a
-  // child of multiple other nodes and thus may be visited multiple times, which
-  // is a situation that callers might want to avoid.
-  virtual bool VisitChildDedicatedWorkers(
-      const WorkerNodeVisitor& visitor) const = 0;
+  // this frame's network requests.
+  virtual NodeSetView<const WorkerNode*> GetChildWorkerNodes() const = 0;
 
   // Returns true if at least one form of the frame has been interacted with.
   virtual bool HadFormInteraction() const = 0;

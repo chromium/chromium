@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -116,14 +115,10 @@ class FrameNodeImpl
   int render_frame_id() const;
 
   // Getters for non-const properties. These are not thread safe.
-  const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
-  child_frame_nodes() const;
-  const base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>&
-  opened_page_nodes() const;
-  const base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>&
-  embedded_page_nodes() const;
-  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-  child_worker_nodes() const;
+  NodeSetView<FrameNodeImpl*> child_frame_nodes() const;
+  NodeSetView<PageNodeImpl*> opened_page_nodes() const;
+  NodeSetView<PageNodeImpl*> embedded_page_nodes() const;
+  NodeSetView<WorkerNodeImpl*> child_worker_nodes() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
@@ -186,16 +181,10 @@ class FrameNodeImpl
   const FrameNode* GetParentOrOuterDocumentOrEmbedder() const override;
   const PageNode* GetPageNode() const override;
   const ProcessNode* GetProcessNode() const override;
-  bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const override;
-  const base::flat_set<const FrameNode*> GetChildFrameNodes() const override;
-  bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const override;
-  const base::flat_set<const PageNode*> GetOpenedPageNodes() const override;
-  bool VisitEmbeddedPageNodes(const PageNodeVisitor& visitor) const override;
-  const base::flat_set<const PageNode*> GetEmbeddedPageNodes() const override;
-  const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
-  bool VisitChildWorkers(const WorkerNodeVisitor& visitor) const override;
-  bool VisitChildDedicatedWorkers(
-      const WorkerNodeVisitor& visitor) const override;
+  NodeSetView<const FrameNode*> GetChildFrameNodes() const override;
+  NodeSetView<const PageNode*> GetOpenedPageNodes() const override;
+  NodeSetView<const PageNode*> GetEmbeddedPageNodes() const override;
+  NodeSetView<const WorkerNode*> GetChildWorkerNodes() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -289,13 +278,13 @@ class FrameNodeImpl
   // UI thread.
   const RenderFrameHostProxy render_frame_host_proxy_;
 
-  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>> child_frame_nodes_;
+  NodeSet child_frame_nodes_;
 
   // The set of pages that have been opened by this frame.
-  base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>> opened_page_nodes_;
+  NodeSet opened_page_nodes_;
 
   // The set of pages that have been embedded by this frame.
-  base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>> embedded_page_nodes_;
+  NodeSet embedded_page_nodes_;
 
   uint64_t resident_set_kb_estimate_ = 0;
 
@@ -335,7 +324,7 @@ class FrameNodeImpl
   DocumentProperties document_;
 
   // The child workers of this frame.
-  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> child_worker_nodes_;
+  NodeSet child_worker_nodes_;
 
   // Frame priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

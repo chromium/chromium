@@ -197,22 +197,20 @@ ProcessNodeImpl* WorkerNodeImpl::process_node() const {
   return process_node_;
 }
 
-const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
-WorkerNodeImpl::client_frames() const {
+WorkerNode::NodeSetView<FrameNodeImpl*> WorkerNodeImpl::client_frames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return client_frames_;
+  return NodeSetView<FrameNodeImpl*>(client_frames_);
 }
 
-const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-WorkerNodeImpl::client_workers() const {
+WorkerNode::NodeSetView<WorkerNodeImpl*> WorkerNodeImpl::client_workers()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return client_workers_;
+  return NodeSetView<WorkerNodeImpl*>(client_workers_);
 }
 
-const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-WorkerNodeImpl::child_workers() const {
+WorkerNode::NodeSetView<WorkerNodeImpl*> WorkerNodeImpl::child_workers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return child_workers_;
+  return NodeSetView<WorkerNodeImpl*>(child_workers_);
 }
 
 base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtrOnUIThread() {
@@ -252,78 +250,22 @@ const ProcessNode* WorkerNodeImpl::GetProcessNode() const {
   return process_node();
 }
 
-const base::flat_set<const FrameNode*> WorkerNodeImpl::GetClientFrames() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const FrameNode*> client_frames;
-  for (FrameNodeImpl* client : client_frames_) {
-    client_frames.insert(static_cast<const FrameNode*>(client));
-  }
-  DCHECK_EQ(client_frames.size(), client_frames_.size());
-  return client_frames;
-}
-
-bool WorkerNodeImpl::VisitClientFrames(const FrameNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (FrameNodeImpl* node : client_frames_) {
-    if (!visitor(node)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetClientWorkers()
+WorkerNode::NodeSetView<const FrameNode*> WorkerNodeImpl::GetClientFrames()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const WorkerNode*> client_workers;
-  for (WorkerNodeImpl* client : client_workers_) {
-    client_workers.insert(static_cast<const WorkerNode*>(client));
-  }
-  DCHECK_EQ(client_workers.size(), client_workers_.size());
-  return client_workers;
+  return NodeSetView<const FrameNode*>(client_frames_);
 }
 
-bool WorkerNodeImpl::VisitClientWorkers(
-    const WorkerNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* node : client_workers_) {
-    if (!visitor(node)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
+WorkerNode::NodeSetView<const WorkerNode*> WorkerNodeImpl::GetClientWorkers()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const WorkerNode*> child_workers;
-  for (WorkerNodeImpl* child : child_workers_) {
-    child_workers.insert(static_cast<const WorkerNode*>(child));
-  }
-  DCHECK_EQ(child_workers.size(), child_workers_.size());
-  return child_workers;
+  return NodeSetView<const WorkerNode*>(client_workers_);
 }
 
-bool WorkerNodeImpl::VisitChildWorkers(const WorkerNodeVisitor& visitor) const {
+WorkerNode::NodeSetView<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* node : child_workers_) {
-    if (!visitor(node)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool WorkerNodeImpl::VisitChildDedicatedWorkers(
-    const WorkerNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* node : child_workers_) {
-    if (node->GetWorkerType() == WorkerType::kDedicated && !visitor(node)) {
-      return false;
-    }
-  }
-  return true;
+  return NodeSetView<const WorkerNode*>(child_workers_);
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

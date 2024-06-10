@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/graph_impl_util.h"
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -291,28 +291,27 @@ int FrameNodeImpl::render_frame_id() const {
   return render_frame_id_;
 }
 
-const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
-FrameNodeImpl::child_frame_nodes() const {
+FrameNode::NodeSetView<FrameNodeImpl*> FrameNodeImpl::child_frame_nodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return child_frame_nodes_;
+  return NodeSetView<FrameNodeImpl*>(child_frame_nodes_);
 }
 
-const base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>&
-FrameNodeImpl::opened_page_nodes() const {
+FrameNode::NodeSetView<PageNodeImpl*> FrameNodeImpl::opened_page_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return opened_page_nodes_;
+  return NodeSetView<PageNodeImpl*>(opened_page_nodes_);
 }
 
-const base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>&
-FrameNodeImpl::embedded_page_nodes() const {
+FrameNode::NodeSetView<PageNodeImpl*> FrameNodeImpl::embedded_page_nodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return embedded_page_nodes_;
+  return NodeSetView<PageNodeImpl*>(embedded_page_nodes_);
 }
 
-const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
-FrameNodeImpl::child_worker_nodes() const {
+FrameNode::NodeSetView<WorkerNodeImpl*> FrameNodeImpl::child_worker_nodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return child_worker_nodes_;
+  return NodeSetView<WorkerNodeImpl*>(child_worker_nodes_);
 }
 
 void FrameNodeImpl::SetIsCurrent(bool is_current) {
@@ -532,86 +531,28 @@ const ProcessNode* FrameNodeImpl::GetProcessNode() const {
   return process_node();
 }
 
-bool FrameNodeImpl::VisitChildFrameNodes(
-    const FrameNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (FrameNodeImpl* frame_impl : child_frame_nodes()) {
-    const FrameNode* frame = frame_impl;
-    if (!visitor(frame)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::flat_set<const FrameNode*> FrameNodeImpl::GetChildFrameNodes()
+FrameNode::NodeSetView<const FrameNode*> FrameNodeImpl::GetChildFrameNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return UpcastNodeSet<FrameNode>(child_frame_nodes());
+  return NodeSetView<const FrameNode*>(child_frame_nodes_);
 }
 
-bool FrameNodeImpl::VisitOpenedPageNodes(const PageNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (PageNodeImpl* page_impl : opened_page_nodes()) {
-    const PageNode* page = page_impl;
-    if (!visitor(page)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::flat_set<const PageNode*> FrameNodeImpl::GetOpenedPageNodes()
+FrameNode::NodeSetView<const PageNode*> FrameNodeImpl::GetOpenedPageNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<PageNode>(opened_page_nodes());
+  return NodeSetView<const PageNode*>(opened_page_nodes_);
 }
 
-bool FrameNodeImpl::VisitEmbeddedPageNodes(
-    const PageNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (PageNodeImpl* page_impl : embedded_page_nodes()) {
-    const PageNode* page = page_impl;
-    if (!visitor(page)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::flat_set<const PageNode*> FrameNodeImpl::GetEmbeddedPageNodes()
+FrameNode::NodeSetView<const PageNode*> FrameNodeImpl::GetEmbeddedPageNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<PageNode>(embedded_page_nodes());
+  return NodeSetView<const PageNode*>(embedded_page_nodes_);
 }
 
-const base::flat_set<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
+FrameNode::NodeSetView<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<WorkerNode>(child_worker_nodes());
-}
-
-bool FrameNodeImpl::VisitChildWorkers(const WorkerNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* node : child_worker_nodes()) {
-    if (!visitor(node)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool FrameNodeImpl::VisitChildDedicatedWorkers(
-    const WorkerNodeVisitor& visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (WorkerNodeImpl* node : child_worker_nodes()) {
-    if (node->GetWorkerType() == WorkerNode::WorkerType::kDedicated &&
-        !visitor(node)) {
-      return false;
-    }
-  }
-  return true;
+  return NodeSetView<const WorkerNode*>(child_worker_nodes_);
 }
 
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {
@@ -707,26 +648,26 @@ void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
   // relationship to be finally severed one of the frame trees must completely
   // disappear, or it must be explicitly severed (this can happen with
   // portals).
-  while (!opened_page_nodes_.empty()) {
-    auto* opened_node = (*opened_page_nodes_.begin()).get();
+  NodeSet opened_page_nodes_copy = opened_page_nodes_;
+  for (const Node* opened_page_node : opened_page_nodes_copy) {
+    PageNodeImpl* opened_page = PageNodeImpl::FromNode(opened_page_node);
     if (parent_frame_node_) {
-      opened_node->SetOpenerFrameNode(parent_frame_node_);
+      opened_page->SetOpenerFrameNode(parent_frame_node_);
     } else {
-      opened_node->ClearOpenerFrameNode();
+      opened_page->ClearOpenerFrameNode();
     }
-    DCHECK(!base::Contains(opened_page_nodes_, opened_node));
   }
 
-  while (!embedded_page_nodes_.empty()) {
-    auto* embedded_node = (*embedded_page_nodes_.begin()).get();
-    auto embedding_type = embedded_node->GetEmbeddingType();
+  NodeSet embedded_page_nodes_copy = embedded_page_nodes_;
+  for (const Node* embedded_page_node : embedded_page_nodes_copy) {
+    PageNodeImpl* embedded_page = PageNodeImpl::FromNode(embedded_page_node);
+    auto embedding_type = embedded_page->GetEmbeddingType();
     if (parent_frame_node_) {
-      embedded_node->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
+      embedded_page->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
                                                           embedding_type);
     } else {
-      embedded_node->ClearEmbedderFrameNodeAndEmbeddingType();
+      embedded_page->ClearEmbedderFrameNodeAndEmbeddingType();
     }
-    DCHECK(!base::Contains(embedded_page_nodes_, embedded_node));
   }
 
   // Expect each page node to have called RemoveEmbeddedPage(), and for this to
@@ -755,7 +696,7 @@ bool FrameNodeImpl::HasFrameNodeInAncestors(FrameNodeImpl* frame_node) const {
 
 bool FrameNodeImpl::HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (FrameNodeImpl* child : child_frame_nodes_) {
+  for (FrameNodeImpl* child : child_frame_nodes()) {
     if (child == frame_node || child->HasFrameNodeInDescendants(frame_node)) {
       return true;
     }
