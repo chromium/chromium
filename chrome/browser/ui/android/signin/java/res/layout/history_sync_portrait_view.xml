@@ -109,6 +109,13 @@ found in the LICENSE file.
         android:visibility="gone"/>
 
     <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/button_primary_minor_mode"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_secondary"
         style="@style/TextButton"
         android:layout_width="match_parent"

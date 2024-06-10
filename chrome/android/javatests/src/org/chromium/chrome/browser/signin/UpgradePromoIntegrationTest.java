@@ -21,6 +21,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -107,7 +109,7 @@ public class UpgradePromoIntegrationTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
-        mSigninTestRule.addAccountAndWaitForSeeding(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountAndWaitForSeeding(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
     }
 
@@ -141,11 +143,7 @@ public class UpgradePromoIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and refuse.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                withId(org.chromium.chrome.test.R.id.button_secondary),
-                                isCompletelyDisplayed()))
-                .perform(click());
+        onViewWaiting(withId(org.chromium.chrome.test.R.id.button_secondary)).perform(click());
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -166,7 +164,7 @@ public class UpgradePromoIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and accept.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+        onViewWaiting(withId(R.id.button_primary)).perform(click());
 
         SyncTestUtil.waitForHistorySyncEnabled();
 
@@ -187,7 +185,7 @@ public class UpgradePromoIntegrationTest {
         onView(withId(R.id.signin_fre_continue_button)).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         Assert.assertFalse(SyncTestUtil.isHistorySyncEnabled());
         verify(mHistorySyncHelperMock).recordHistorySyncNotShown(SigninAccessPoint.SIGNIN_PROMO);
     }
@@ -195,14 +193,14 @@ public class UpgradePromoIntegrationTest {
     @Test
     @MediumTest
     public void testUserAlreadySignedIn_onlyShowsHistorySync() {
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
 
         launchActivity(/* shouldReplaceProgressBars= */ false);
 
         // Verify that the history opt-in dialog is shown and accept.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+        onViewWaiting(withId(R.id.button_primary)).perform(click());
 
         SyncTestUtil.waitForHistorySyncEnabled();
 
@@ -291,7 +289,7 @@ public class UpgradePromoIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown and accept.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_continue_button)).perform(click());
-        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         // Verify that the history opt-in dialog is shown press back.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));

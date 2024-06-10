@@ -13,7 +13,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -53,14 +56,6 @@ public class HistorySyncCoordinator {
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
             @Nullable View view) {
-        mMediator =
-                new HistorySyncMediator(
-                        context,
-                        delegate,
-                        profile,
-                        accessPoint,
-                        showEmailInFooter,
-                        shouldSignOutOnDecline);
         mDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mUseLandscapeLayout =
@@ -71,13 +66,30 @@ public class HistorySyncCoordinator {
             mView = inflateView(inflater);
         } else {
             mView = (HistorySyncView) view;
-            mView.createButtons(mDelegate.isLargeScreen() || mUseLandscapeLayout);
         }
+
+        mMediator =
+                new HistorySyncMediator(
+                        context,
+                        delegate,
+                        profile,
+                        accessPoint,
+                        showEmailInFooter,
+                        shouldSignOutOnDecline,
+                        mUseLandscapeLayout);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, HistorySyncViewBinder::bind);
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX);
+
+        MinorModeHelper.resolveMinorMode(
+                IdentityServicesProvider.get().getSigninManager(profile).getIdentityManager(),
+                IdentityServicesProvider.get()
+                        .getSigninManager(profile)
+                        .getIdentityManager()
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                mMediator::onMinorModeRestrictionStatusUpdated);
     }
 
     public void destroy() {
@@ -101,10 +113,6 @@ public class HistorySyncCoordinator {
                                         : R.layout.history_sync_portrait_view,
                                 null,
                                 false);
-
-        // For phones in portrait mode, the UI shows two vertically stacked full-width buttons. In
-        // other cases, we use a horizontally stacked button bar.
-        view.createButtons(/* isButtonBar= */ mDelegate.isLargeScreen() || mUseLandscapeLayout);
         return view;
     }
 }

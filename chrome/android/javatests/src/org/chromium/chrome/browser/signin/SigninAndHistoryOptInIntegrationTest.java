@@ -122,15 +122,14 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        verifyCollapsedBottomSheetAndSignin(accountInfo);
+        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
@@ -154,8 +153,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
-
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -170,7 +168,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                                         isDisplayed(),
                                         withText(
                                                 containsString(
-                                                        AccountManagerTestRule.TEST_ACCOUNT_1
+                                                        AccountManagerTestRule.AADC_ADULT_ACCOUNT
                                                                 .getEmail())))));
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
@@ -180,15 +178,14 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_optOutHistorySync() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        verifyCollapsedBottomSheetAndSignin(accountInfo);
+        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         // Verify that the history opt-in dialog is shown and decline.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
@@ -203,7 +200,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                                                 withText(
                                                         containsString(
                                                                 AccountManagerTestRule
-                                                                        .TEST_ACCOUNT_1
+                                                                        .AADC_ADULT_ACCOUNT
                                                                         .getEmail()))))));
 
         onView(allOf(withId(R.id.button_secondary), isCompletelyDisplayed())).perform(click());
@@ -218,15 +215,14 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.OPTIONAL);
 
-        verifyCollapsedBottomSheetAndSignin(accountInfo);
+        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
@@ -313,9 +309,9 @@ public class SigninAndHistoryOptInIntegrationTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.setResultForNextAddAccountFlow(
+                Activity.RESULT_OK, AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -433,8 +429,8 @@ public class SigninAndHistoryOptInIntegrationTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
-        CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
+        mSigninTestRule.setResultForNextAddAccountFlow(
+                Activity.RESULT_OK, AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
 
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
@@ -493,8 +489,11 @@ public class SigninAndHistoryOptInIntegrationTest {
     }
 
     private void verifyNoAccountBottomSheetAndSignin() {
-        CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
+        mSigninTestRule.setResultForNextAddAccountFlow(
+                Activity.RESULT_OK,
+                AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail(),
+                /* isMinorModeEnabled= */ false);
+
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
@@ -502,7 +501,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                                 isCompletelyDisplayed()))
                 .perform(click());
 
-        mSigninTestRule.waitForSignin(accountInfo);
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
     }
 
     // `checkDialogRoot` should be set to true for tests that fail due to Espresso using the wrong
@@ -514,13 +513,11 @@ public class SigninAndHistoryOptInIntegrationTest {
         if (checkDialogRoot) {
             onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
                     .check(matches(isDisplayed()));
-            onViewWaiting(
-                            allOf(withId(R.id.button_primary), isCompletelyDisplayed()),
-                            /* checkRootDialog= */ true)
+            onViewWaiting(withId(R.id.button_primary), /* checkRootDialog= */ true)
                     .perform(click());
         } else {
             onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-            onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+            onViewWaiting(withId(R.id.button_primary)).perform(click());
         }
 
         // Verify history sync state.

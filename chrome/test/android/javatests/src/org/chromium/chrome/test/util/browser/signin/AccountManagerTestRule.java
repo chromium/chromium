@@ -301,7 +301,22 @@ public class AccountManagerTestRule implements TestRule {
      * @param newAccountName The account name to return when the intent is launched
      */
     public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
-        mFakeAccountManagerFacade.setResultForNextAddAccountFlow(result, newAccountName);
+        setResultForNextAddAccountFlow(result, newAccountName, false);
+    }
+
+    /**
+     * Sets the result for the next add account flow.
+     *
+     * @param result The activity result to return when the intent is launched
+     * @param newAccountName The account name to return when the intent is launched
+     * @param isMinorModeEnabled The account be subject to minor mode restrictions
+     */
+    public void setResultForNextAddAccountFlow(
+            int result, @Nullable String newAccountName, boolean isMinorModeEnabled) {
+        // TODO(crbug.com/343872217) To be replaced with a single method that takes {@link
+        // AccountInfo}
+        mFakeAccountManagerFacade.setResultForNextAddAccountFlow(
+                result, newAccountName, isMinorModeEnabled);
     }
 
     /** Removes an account with the given {@link CoreAccountId}. */

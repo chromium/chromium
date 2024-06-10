@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.View;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -40,7 +42,8 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             Profile profile,
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
-            boolean shouldSignOutOnDecline) {
+            boolean shouldSignOutOnDecline,
+            boolean mUseLandscapeLayout) {
         mAccessPoint = accessPoint;
         mDelegate = delegate;
         mShouldSignOutOnDecline = shouldSignOutOnDecline;
@@ -66,7 +69,11 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         : context.getString(R.string.history_sync_footer_without_email);
         mModel =
                 HistorySyncProperties.createModel(
-                        profileData, this::onAcceptClicked, this::onDeclineClicked, footerString);
+                        profileData,
+                        this::onAcceptClicked,
+                        this::onDeclineClicked,
+                        footerString,
+                        mUseLandscapeLayout);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -97,7 +104,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         return mModel;
     }
 
-    private void onAcceptClicked() {
+    private void onAcceptClicked(View view) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Completed", mAccessPoint, SigninAccessPoint.MAX);
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
@@ -106,7 +113,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mDelegate.dismissHistorySync();
     }
 
-    private void onDeclineClicked() {
+    private void onDeclineClicked(View view) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Declined", mAccessPoint, SigninAccessPoint.MAX);
         if (mShouldSignOutOnDecline) {
@@ -115,5 +122,16 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         }
         mHistorySyncHelper.recordHistorySyncDeclinedPrefs();
         mDelegate.dismissHistorySync();
+    }
+
+    /**
+     * This method will be called once MinorModeRestrictions has resolved. Buttons will be recreated
+     * according to the restrictionStatus and onClickListeners are updated.
+     */
+    public void onMinorModeRestrictionStatusUpdated(
+            @MinorModeHelper.ScreenMode int restrictionStatus) {
+        mModel.set(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS, restrictionStatus);
+        mModel.set(HistorySyncProperties.ON_ACCEPT_CLICKED, this::onAcceptClicked);
+        mModel.set(HistorySyncProperties.ON_DECLINE_CLICKED, this::onDeclineClicked);
     }
 }
