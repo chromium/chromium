@@ -10030,13 +10030,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(device::features::kWebBluetoothConfirmPairingSupport)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-    {"quick-intensive-throttling-after-loading",
-     flag_descriptions::kQuickIntensiveWakeUpThrottlingAfterLoadingName,
-     flag_descriptions::kQuickIntensiveWakeUpThrottlingAfterLoadingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kQuickIntensiveWakeUpThrottlingAfterLoading)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-fido-progress-dialog",
      flag_descriptions::kAutofillEnableFIDOProgressDialogName,

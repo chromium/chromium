@@ -7395,11 +7395,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "quick-intensive-throttling-after-loading",
-    "owners": [ "jiahe.zhang@intel.com", "fdoray@chromium.org" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "quick-settings-pwa-notifications",
     "owners": [ "yulunwu@chromium.org" ],
     "expiry_milestone": 100

@@ -3041,16 +3041,6 @@ const char kQuickAppAccessTestUIName[] = "Internal test: quick app access";
 const char kQuickAppAccessTestUIDescription[] =
     "Show an app in the quick app access area at the start of the session";
 
-const char kQuickIntensiveWakeUpThrottlingAfterLoadingName[] =
-    "Quick intensive throttling after loading";
-const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[] =
-    "For pages that are loaded when backgrounded, activates intensive "
-    "throttling after 1 minute instead of the default 5 minutes. Intensive "
-    "throttling will limit wake ups, from setTimeout and setInterval tasks "
-    "with a high nesting level and delayed scheduler.postTask tasks, to 1 per "
-    "minute. See https://chromestatus.com/feature/5580139453743104 for more "
-    "info.";
-
 const char kQuickDeleteForAndroidName[] = "Enable quick delete";
 const char kQuickDeleteForAndroidDescription[] =
     "When enabled, a new entrypoint to Clear Browsing Data appears in the "
