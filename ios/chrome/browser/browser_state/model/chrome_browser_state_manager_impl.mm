@@ -119,7 +119,10 @@ ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
 
 ChromeBrowserState*
 ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
-  return GetBrowserStateByPath(GetLastUsedBrowserStateDir(GetUserDataDir()));
+  ChromeBrowserState* browser_state = GetBrowserStateByPath(
+      GetUserDataDir().Append(GetLastUsedBrowserStateName()));
+  CHECK(browser_state);
+  return browser_state;
 }
 
 ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
@@ -134,18 +137,16 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
   return nullptr;
 }
 
-base::FilePath ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDir(
-    const base::FilePath& user_data_dir) {
+std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   DCHECK(local_state);
-  // TODO(crbug.com/325921947): Remove use of this key, kBrowserStatesLastActive
-  // should be used.
   std::string last_used_browser_state_name =
       local_state->GetString(prefs::kBrowserStateLastUsed);
   if (last_used_browser_state_name.empty()) {
     last_used_browser_state_name = kIOSChromeInitialBrowserState;
   }
-  return user_data_dir.AppendASCII(last_used_browser_state_name);
+  CHECK(!last_used_browser_state_name.empty());
+  return last_used_browser_state_name;
 }
 
 BrowserStateInfoCache*
@@ -178,10 +179,13 @@ void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
     }
   }
 
-  // If there is no last active browser state load the default one.
-  if (last_active_browser_states_set.size() == 0) {
-    last_active_browser_states_set.insert(kIOSChromeInitialBrowserState);
-  }
+  // Ensure that the last used BrowserState is loaded (since client code
+  // does not expect GetLastUsedBrowserStateDeprecatedDoNotUse() to return
+  // null).
+  //
+  // See https://crbug.com/345478758 for exemple of crashes happening when
+  // the last used BrowserState is not loaded.
+  last_active_browser_states_set.insert(GetLastUsedBrowserStateName());
 
   // Create and load test profiles if experiment enabling Switch Profile
   // developer UI is enabled.
