@@ -72,9 +72,15 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     }
   }
 
-  void Clean() const override { RunCommand("clean"); }
+  void Clean() const override {
+    RunCommand("clean");
+    updater::test::Clean(UpdaterScope::kUser);
+  }
 
-  void ExpectClean() const override { RunCommand("expect_clean"); }
+  void ExpectClean() const override {
+    RunCommand("expect_clean");
+    updater::test::ExpectClean(UpdaterScope::kUser);
+  }
 
   void Install(const base::Value::List& switches) const override {
     RunCommand(
