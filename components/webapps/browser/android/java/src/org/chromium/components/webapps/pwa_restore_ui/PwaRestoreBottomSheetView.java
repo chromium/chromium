@@ -41,10 +41,7 @@ public class PwaRestoreBottomSheetView {
     // The current context.
     private final Context mContext;
 
-    // The peek state for the bottom sheet.
-    private View mPreviewView;
-
-    // The details of the bottom sheet.
+    // The main view for the bottom sheet (preview and contents).
     private View mContentView;
 
     // The listener to notify when the Back button is clicked.
@@ -58,16 +55,13 @@ public class PwaRestoreBottomSheetView {
     }
 
     public void initialize(int backArrowId) {
-        mPreviewView =
-                LayoutInflater.from(mContext)
-                        .inflate(R.layout.pwa_restore_bottom_sheet_preview, /* root= */ null);
         mContentView =
                 LayoutInflater.from(mContext)
-                        .inflate(R.layout.pwa_restore_bottom_sheet_content, /* root= */ null);
+                        .inflate(R.layout.pwa_restore_bottom_sheet_dialog, /* root= */ null);
 
         int backgroundId = R.drawable.pwa_restore_icon;
-        mPreviewView.findViewById(R.id.icon).setBackgroundResource(backgroundId);
-        mPreviewView.findViewById(R.id.icon).setTag(backgroundId);
+        mContentView.findViewById(R.id.icon).setBackgroundResource(backgroundId);
+        mContentView.findViewById(R.id.icon).setTag(backgroundId);
         Drawable backArrow =
                 backArrowId != 0
                         ? ResourcesCompat.getDrawable(
@@ -82,13 +76,11 @@ public class PwaRestoreBottomSheetView {
         return mContentView;
     }
 
-    public View getPreviewView() {
-        return mPreviewView;
-    }
-
     public void setDisplayedView(@ViewState int viewState) {
-        mPreviewView.setVisibility(viewState == ViewState.VIEW_PWA_LIST ? View.GONE : View.VISIBLE);
-        mContentView.setVisibility(viewState == ViewState.PREVIEW ? View.GONE : View.VISIBLE);
+        ViewGroup previewView = mContentView.findViewById(R.id.preview_container);
+        ViewGroup contentView = mContentView.findViewById(R.id.content_container);
+        previewView.setVisibility(viewState == ViewState.VIEW_PWA_LIST ? View.GONE : View.VISIBLE);
+        contentView.setVisibility(viewState == ViewState.PREVIEW ? View.GONE : View.VISIBLE);
     }
 
     protected void setAppList(List<PwaRestoreProperties.AppInfo> appList, String appLabel) {
@@ -181,12 +173,5 @@ public class PwaRestoreBottomSheetView {
 
     protected void setSelectionToggleButtonListener(OnClickListener listener) {
         mSelectionToggleButtonListener = listener;
-    }
-
-    // Called through the {@link PwaRestoreBottomSheetViewBinder} bindings when the property model
-    // updates:
-
-    int getPeekHeight() {
-        return mPreviewView.getHeight();
     }
 }

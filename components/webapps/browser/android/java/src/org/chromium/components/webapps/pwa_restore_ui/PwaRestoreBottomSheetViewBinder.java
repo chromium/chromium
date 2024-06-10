@@ -23,19 +23,19 @@ class PwaRestoreBottomSheetViewBinder {
                     model.get(PwaRestoreProperties.APPS),
                     model.get(PwaRestoreProperties.APPS_TITLE));
         } else if (propertyKey.equals(PwaRestoreProperties.PEEK_DESCRIPTION)) {
-            ((TextView) view.getPreviewView().findViewById(R.id.description))
+            ((TextView) view.getContentView().findViewById(R.id.description_preview))
                     .setText(model.get(PwaRestoreProperties.PEEK_DESCRIPTION));
         } else if (propertyKey.equals(PwaRestoreProperties.PEEK_TITLE)) {
-            ((TextView) view.getPreviewView().findViewById(R.id.title))
+            ((TextView) view.getContentView().findViewById(R.id.title_preview))
                     .setText(model.get(PwaRestoreProperties.PEEK_TITLE));
         } else if (propertyKey.equals(PwaRestoreProperties.PEEK_BUTTON_LABEL)) {
-            ((Button) view.getPreviewView().findViewById(R.id.review_button))
+            ((Button) view.getContentView().findViewById(R.id.review_button))
                     .setText(model.get(PwaRestoreProperties.PEEK_BUTTON_LABEL));
         } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_DESCRIPTION)) {
-            ((TextView) view.getContentView().findViewById(R.id.description))
+            ((TextView) view.getContentView().findViewById(R.id.description_content))
                     .setText(model.get(PwaRestoreProperties.EXPANDED_DESCRIPTION));
         } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_TITLE)) {
-            ((TextView) view.getContentView().findViewById(R.id.title))
+            ((TextView) view.getContentView().findViewById(R.id.title_content))
                     .setText(model.get(PwaRestoreProperties.EXPANDED_TITLE));
         } else if (propertyKey.equals(PwaRestoreProperties.DESELECT_BUTTON_LABEL)) {
             ((Button) view.getContentView().findViewById(R.id.deselect_button))
@@ -53,10 +53,10 @@ class PwaRestoreBottomSheetViewBinder {
             view.setBackButtonListener(
                     model.get(PwaRestoreProperties.BACK_BUTTON_ON_CLICK_CALLBACK));
         } else if (propertyKey.equals(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK)) {
-            ((Button) view.getPreviewView().findViewById(R.id.review_button))
+            ((Button) view.getContentView().findViewById(R.id.review_button))
                     .setOnClickListener(
                             model.get(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK));
-            ((Button) view.getPreviewView().findViewById(R.id.review_button)).setEnabled(true);
+            ((Button) view.getContentView().findViewById(R.id.review_button)).setEnabled(true);
         } else if (propertyKey.equals(PwaRestoreProperties.DESELECT_BUTTON_ON_CLICK_CALLBACK)) {
             ((Button) view.getContentView().findViewById(R.id.deselect_button))
                     .setOnClickListener(

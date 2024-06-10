@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/preview_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -19,7 +20,7 @@ found in the LICENSE file.
         android:importantForAccessibility="no" />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/title_preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -30,7 +31,7 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/description_preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"

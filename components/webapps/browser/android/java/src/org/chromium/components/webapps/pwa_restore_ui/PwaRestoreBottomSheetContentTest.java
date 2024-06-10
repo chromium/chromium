@@ -49,7 +49,7 @@ public final class PwaRestoreBottomSheetContentTest {
                         (PwaRestoreBottomSheetView) mockedView, /* onOsBackButtonClicked= */ null);
 
         Assert.assertTrue(pwaRestoreBottomSheetContent.getContentView() != null);
-        Assert.assertTrue(pwaRestoreBottomSheetContent.getToolbarView() != null);
+        Assert.assertTrue(pwaRestoreBottomSheetContent.getToolbarView() == null);
 
         Assert.assertEquals(
                 BottomSheetContent.ContentPriority.LOW, pwaRestoreBottomSheetContent.getPriority());
@@ -60,9 +60,16 @@ public final class PwaRestoreBottomSheetContentTest {
 
         Assert.assertEquals(
                 BottomSheetContent.HeightMode.DISABLED,
+                pwaRestoreBottomSheetContent.getPeekHeight(),
+                0.0001);
+        Assert.assertEquals(
+                BottomSheetContent.HeightMode.DISABLED,
                 pwaRestoreBottomSheetContent.getHalfHeightRatio(),
                 0.0001);
-        Assert.assertEquals(1f, pwaRestoreBottomSheetContent.getFullHeightRatio(), 0.0001);
+        Assert.assertEquals(
+                BottomSheetContent.HeightMode.WRAP_CONTENT,
+                pwaRestoreBottomSheetContent.getFullHeightRatio(),
+                0.0001);
         Assert.assertEquals(0, pwaRestoreBottomSheetContent.getVerticalScrollOffset());
         Assert.assertFalse(pwaRestoreBottomSheetContent.swipeToDismissEnabled());
 

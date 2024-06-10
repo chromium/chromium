@@ -7,6 +7,7 @@ found in the LICENSE file.
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -23,7 +24,7 @@ found in the LICENSE file.
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/title_content"
         android:drawablePadding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +36,7 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/description_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="29dp"
@@ -44,7 +45,7 @@ found in the LICENSE file.
         android:paddingTop="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title_content"
         android:ellipsize="end"
         android:lineHeight="20sp"
         android:maxLines="7"
@@ -59,7 +60,7 @@ found in the LICENSE file.
         android:minHeight="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/description"
+        app:layout_constraintTop_toBottomOf="@id/description_content"
         app:layout_constraintBottom_toTopOf="@id/separator">
 
         <LinearLayout
@@ -70,6 +71,15 @@ found in the LICENSE file.
         </LinearLayout>
 
     </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <View
         android:id="@+id/separator"

@@ -98,13 +98,13 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);
 
-        View bottomSheetView = coordinator.getBottomSheetToolbarViewForTesting();
+        View bottomSheetView = coordinator.getBottomSheetViewForTesting();
         {
-            TextView title = bottomSheetView.findViewById(R.id.title);
+            TextView title = bottomSheetView.findViewById(R.id.title_preview);
             String expected = "Restore your web apps";
             Assert.assertEquals(expected, title.getText());
 
-            TextView description = bottomSheetView.findViewById(R.id.description);
+            TextView description = bottomSheetView.findViewById(R.id.description_preview);
             expected =
                     "Restore web apps you have recently used on devices connected to this account";
             Assert.assertEquals(expected, description.getText());
@@ -113,25 +113,24 @@ public class PwaRestoreBottomSheetCoordinatorTest {
             Assert.assertTrue(button.isEnabled());
         }
 
-        View contentSheetView = coordinator.getBottomSheetContentViewForTesting();
         {
-            TextView title = contentSheetView.findViewById(R.id.title);
+            TextView title = bottomSheetView.findViewById(R.id.title_content);
             String expected = "Review web apps";
             Assert.assertEquals(expected, title.getText());
 
-            TextView description = contentSheetView.findViewById(R.id.description);
+            TextView description = bottomSheetView.findViewById(R.id.description_content);
             expected =
                     "Choose web apps to restore on this device. Apps shown here are based on "
                             + "your Chrome history.";
             Assert.assertEquals(expected, description.getText());
 
-            View pwaList = contentSheetView.findViewById(R.id.pwa_list);
+            View pwaList = bottomSheetView.findViewById(R.id.pwa_list);
             Assert.assertTrue(pwaList.getVisibility() == View.VISIBLE);
 
-            View deselectButton = contentSheetView.findViewById(R.id.deselect_button);
+            View deselectButton = bottomSheetView.findViewById(R.id.deselect_button);
             Assert.assertTrue(deselectButton.isEnabled());
 
-            View restoreButton = contentSheetView.findViewById(R.id.restore_button);
+            View restoreButton = bottomSheetView.findViewById(R.id.restore_button);
             Assert.assertTrue(restoreButton.isEnabled());
         }
     }
@@ -163,7 +162,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         Assert.assertEquals(
                 ViewState.VIEW_PWA_LIST,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
-        verify(mBottomSheetControllerMock, times(1)).expandSheet();
 
         coordinator.onDialogBackButtonClicked();
 
@@ -171,7 +169,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         Assert.assertEquals(
                 ViewState.PREVIEW,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
-        verify(mBottomSheetControllerMock, times(1)).collapseSheet(eq(true));
 
         coordinator.onReviewButtonClicked();
 
@@ -179,7 +176,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         Assert.assertEquals(
                 ViewState.VIEW_PWA_LIST,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
-        verify(mBottomSheetControllerMock, times(2)).expandSheet();
 
         coordinator.onOsBackButtonClicked();
 
@@ -187,6 +183,5 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         Assert.assertEquals(
                 ViewState.PREVIEW,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
-        verify(mBottomSheetControllerMock, times(2)).collapseSheet(eq(true));
     }
 }

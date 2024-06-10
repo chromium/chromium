@@ -124,6 +124,7 @@ android_resources("java_resources") {
     "java/res/layout/image_zoom_view.xml",
     "java/res/layout/pwa_install_bottom_sheet_content.xml",
     "java/res/layout/pwa_restore_bottom_sheet_content.xml",
+    "java/res/layout/pwa_restore_bottom_sheet_dialog.xml",
     "java/res/layout/pwa_restore_bottom_sheet_preview.xml",
     "java/res/layout/pwa_restore_list_item_app.xml",
     "java/res/layout/pwa_restore_list_item_label.xml",

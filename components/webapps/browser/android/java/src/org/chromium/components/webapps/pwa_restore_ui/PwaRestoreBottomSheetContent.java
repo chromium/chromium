@@ -49,20 +49,22 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     @Nullable
     @Override
     public View getToolbarView() {
-        return mView.getPreviewView();
+        return null;
     }
 
     @Override
-    public float getFullHeightRatio() {
-        return 1f;
+    public int getPeekHeight() {
+        return BottomSheetContent.HeightMode.DISABLED;
     }
 
     @Override
     public float getHalfHeightRatio() {
-        // By default `expandSheet` will result in the sheet expanding only to half-full height.
-        // This disables that functionality so we can go straight to full screen (minus the top
-        // system toolbar).
         return BottomSheetContent.HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }
 
     @Override

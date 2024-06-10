@@ -133,7 +133,7 @@ public class PwaRestoreBottomSheetViewRenderTest {
                 () -> {
                     LinearLayout content = new LinearLayout(sActivity);
                     sActivity.setContentView(content);
-                    View view = mCoordinator.getBottomSheetToolbarViewForTesting();
+                    View view = mCoordinator.getBottomSheetViewForTesting();
                     View root = view.getRootView();
                     root.setBackgroundColor(mNightModeEnabled ? Color.BLACK : Color.WHITE);
 
@@ -150,7 +150,6 @@ public class PwaRestoreBottomSheetViewRenderTest {
     @Feature({"RenderTest"})
     public void testPeeking() throws Exception {
         initializeBottomSheet();
-        mRenderTestRule.render(
-                mCoordinator.getBottomSheetToolbarViewForTesting(), "pwa_restore_peeking");
+        mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "pwa_restore_peeking");
     }
 }
