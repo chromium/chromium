@@ -35,6 +35,16 @@ TelemetryProcessor::TelemetryProcessor() = default;
 
 TelemetryProcessor::~TelemetryProcessor() = default;
 
+::reporting::TelemetryData TelemetryProcessor::GenerateTelemetryData() {
+  ::reporting::TelemetryData telemetry_data;
+
+  // TODO(b/343029419): Use actual telemetry data.
+  telemetry_data.mutable_kiosk_vision_telemetry();
+  telemetry_data.mutable_kiosk_vision_status();
+
+  return telemetry_data;
+}
+
 std::vector<int> TelemetryProcessor::TakeIdsProcessed() {
   return base::ToVector(std::exchange(latest_ids_processed_, {}));
 }

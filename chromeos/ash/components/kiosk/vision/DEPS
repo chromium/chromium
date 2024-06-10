@@ -5,6 +5,7 @@ include_rules = [
   "+media/capture/video/chromeos/mojom",
   "+services/video_capture/public",
   "+components/capture_mode",
+  "+components/reporting/proto",
 ]
 
 specific_include_rules = {

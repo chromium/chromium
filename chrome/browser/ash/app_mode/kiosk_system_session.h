@@ -55,6 +55,8 @@ class KioskSystemSession {
     return device_weekly_scheduled_suspend_controller_.get();
   }
 
+  kiosk_vision::KioskVision& kiosk_vision() { return kiosk_vision_; }
+
  private:
   class LacrosWatcher;
 

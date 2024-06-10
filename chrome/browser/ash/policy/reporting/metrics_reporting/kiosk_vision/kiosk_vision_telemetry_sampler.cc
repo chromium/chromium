@@ -4,8 +4,15 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_vision/kiosk_vision_telemetry_sampler.h"
 
+#include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chromeos/ash/components/kiosk/vision/telemetry_processor.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
@@ -13,13 +20,18 @@ namespace reporting {
 
 void KioskVisionTelemetrySampler::MaybeCollect(
     OptionalMetricCallback callback) {
-  MetricData metric_data;
+  auto* telemetry_processor =
+      ash::KioskController::Get().GetKioskVisionTelemetryProcessor();
 
-  // TODO(b/342360588): Get telemetry data for kiosk vision from Kiosk Vision
-  // framework.
-  TelemetryData* telemetry_data = metric_data.mutable_telemetry_data();
-  telemetry_data->mutable_kiosk_vision_telemetry();
-  telemetry_data->mutable_kiosk_vision_status();
+  if (!telemetry_processor) {
+    LOG(WARNING) << "No telemetry processor. Cannot collect telemetry data.";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  reporting::MetricData metric_data;
+  *metric_data.mutable_telemetry_data() =
+      telemetry_processor->GenerateTelemetryData();
 
   std::move(callback).Run(std::move(metric_data));
 }

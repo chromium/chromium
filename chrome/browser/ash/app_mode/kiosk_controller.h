@@ -21,6 +21,10 @@ class KioskProfileLoadFailedObserver;
 class KioskSystemSession;
 class LoginDisplayHost;
 
+namespace kiosk_vision {
+class TelemetryProcessor;
+}
+
 // Public interface for Kiosk.
 class KioskController {
  public:
@@ -65,6 +69,15 @@ class KioskController {
   // Returns the `KioskSystemSession`. Can be `nullptr` if called outside a
   // Kiosk session, or before `InitializeSystemSession`.
   virtual KioskSystemSession* GetKioskSystemSession() = 0;
+
+  // Returns the `kiosk_vision::TelemetryProcessor`.
+  // Can be `nullptr` in the following cases:
+  // * Outside a Kiosk session.
+  // * Before `InitializeSystemSession`.
+  // * When the Kiosk Vision framework is disabled by policy.
+  // * When the Kiosk Vision framework is not yet initialized.
+  virtual kiosk_vision::TelemetryProcessor*
+  GetKioskVisionTelemetryProcessor() = 0;
 };
 
 }  // namespace ash

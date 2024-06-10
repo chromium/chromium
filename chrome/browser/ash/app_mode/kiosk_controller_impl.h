@@ -60,6 +60,9 @@ class KioskControllerImpl : public KioskController,
       const std::optional<std::string>& app_name) override;
 
   KioskSystemSession* GetKioskSystemSession() override;
+
+  kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
+
  private:
   // `user_manager::UserManager::Observer` implementation:
   void OnUserLoggedIn(const user_manager::User& user) override;

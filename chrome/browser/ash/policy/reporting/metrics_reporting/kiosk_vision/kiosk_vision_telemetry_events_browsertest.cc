@@ -4,18 +4,15 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
-#include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
+#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/kiosk/vision/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -23,7 +20,6 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/mock_clock.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,57 +67,33 @@ void EnableKioskVisionTelemetryPref() {
 }  // namespace
 
 // Browser test that validates Kiosk Vision telemetry reported by the
-// `KioskVisionTelemetrySampler`. Inheriting from
-// `DevicePolicyCrosBrowserTest` enables use of `AffiliationMixin` for setting
-// up profile/device affiliation. Only available in Ash.
-class KioskVisionEventsBrowserTest
-    : public ::policy::DevicePolicyCrosBrowserTest {
+// `KioskVisionTelemetrySampler`. Inheriting from `::ash::WebKioskBaseTest` to
+// setup a kiosk session and spawn KioskVision's TelemetryProcessor. Only
+// available in Ash.
+class KioskVisionEventsBrowserTest : public ::ash::WebKioskBaseTest {
  protected:
   KioskVisionEventsBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         reporting::kEnableKioskVisionTelemetry);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ::policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
-        command_line);
-    ::policy::DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     // Initialize the MockClock.
     test::MockClock::Get();
-    crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     ::policy::SetDMTokenForTesting(
         ::policy::DMToken::CreateValidToken(kDMToken));
-    ::policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
-    if (::content::IsPreTest()) {
-      // Preliminary setup - set up affiliated user.
-      ::policy::AffiliationTestHelper::PreLoginUser(
-          affiliation_mixin_.account_id());
-      return;
-    }
-
-    // Login as affiliated user otherwise and set up test environment.
-    ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
+    WebKioskBaseTest::SetUpOnMainThread();
   }
 
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ::base::test::ScopedFeatureList scoped_feature_list_;
-  ::policy::DevicePolicyCrosTestHelper test_helper_;
-  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
-  ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(KioskVisionEventsBrowserTest, PRE_ReportKioskVisions) {
-  // Simple case that sets up the affiliated user through SetUpOnMainThread
-  // PRE-condition.
-}
-
 IN_PROC_BROWSER_TEST_F(KioskVisionEventsBrowserTest, ReportKioskVisions) {
-  EnableKioskVisionTelemetryPref();
+  InitializeRegularOnlineKiosk();
+
   auto missive_observer = CreateKioskVisionEventsObserver();
+  EnableKioskVisionTelemetryPref();
 
   // Fast-forward so that a vision report should be enqueued.
   test::MockClock::Get().Advance(

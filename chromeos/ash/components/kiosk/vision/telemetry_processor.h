@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 
 namespace ash::kiosk_vision {
@@ -23,6 +24,13 @@ class COMPONENT_EXPORT(KIOSK_VISION) TelemetryProcessor
   TelemetryProcessor(const TelemetryProcessor&) = delete;
   TelemetryProcessor& operator=(const TelemetryProcessor&) = delete;
   ~TelemetryProcessor() override;
+
+  // Generates and returns a current representation of the accumulated
+  // detections and errors in the form of TelemetryData which can then be
+  // reported.
+  // Only new detections and errors since the last call to this function will be
+  // returned.
+  ::reporting::TelemetryData GenerateTelemetryData();
 
   // Returns the IDs detected since the last time this function was called.
   std::vector<int> TakeIdsProcessed();
