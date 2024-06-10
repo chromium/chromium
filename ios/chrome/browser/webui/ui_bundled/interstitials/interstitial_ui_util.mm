@@ -148,7 +148,6 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
 
   safe_browsing::SBThreatType threat_type = SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
-  GURL main_frame_url(request_url);
 
   // The SafeBrowsingBlockingPage requires the allow list to be instantiated.
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
@@ -180,7 +179,7 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
 
   security_interstitials::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = request_url != main_frame_url;
+  resource.is_subresource = false;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.weak_web_state = web_state->GetWeakPtr();

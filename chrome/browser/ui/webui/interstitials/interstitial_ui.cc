@@ -287,9 +287,6 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       request_url = GURL(url_param);
     }
   }
-  GURL main_frame_url(request_url);
-  // TODO(mattm): add flag to change main_frame_url or add dedicated flag to
-  // test subresource interstitials.
   std::string type_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
                                  &type_param)) {
@@ -311,7 +308,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = request_url != main_frame_url;
+  resource.is_subresource = false;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
@@ -333,7 +330,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       g_browser_process->safe_browsing_service()->ui_manager().get();
   return base::WrapUnique<security_interstitials::SecurityInterstitialPage>(
       ui_manager->CreateBlockingPage(
-          web_contents, main_frame_url, {resource},
+          web_contents, request_url, {resource},
           /*forward_extension_event=*/false,
           /*blocked_page_shown_timestamp=*/std::nullopt));
 }
@@ -390,7 +387,6 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
     if (GURL(url_param).is_valid())
       request_url = GURL(url_param);
   }
-  GURL main_frame_url(request_url);
   std::string type_param;
   bool is_giant_webview = false;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
@@ -413,7 +409,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = request_url != main_frame_url;
+  resource.is_subresource = false;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
@@ -434,7 +430,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   return base::WrapUnique<TestSafeBrowsingBlockingPageQuiet>(
       TestSafeBrowsingBlockingPageQuiet::CreateBlockingPage(
           g_browser_process->safe_browsing_service()->ui_manager().get(),
-          web_contents, main_frame_url, resource, is_giant_webview));
+          web_contents, request_url, resource, is_giant_webview));
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
