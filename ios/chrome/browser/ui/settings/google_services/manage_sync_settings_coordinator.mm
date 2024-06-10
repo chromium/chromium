@@ -495,6 +495,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     UINavigationController* navigationController =
         [[UINavigationController alloc]
             initWithRootViewController:controllerToPresent];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.viewController
         configureHandlersForRootViewController:controllerToPresent];
     [self.viewController presentViewController:navigationController
