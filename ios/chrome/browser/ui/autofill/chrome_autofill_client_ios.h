@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
@@ -93,8 +92,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-  void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
       const CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
@@ -179,7 +176,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
   std::unique_ptr<LogManager> log_manager_;
-  CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;

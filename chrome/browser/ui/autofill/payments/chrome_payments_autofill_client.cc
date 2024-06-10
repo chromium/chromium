@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
@@ -39,6 +40,8 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -47,8 +50,10 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
+#include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
+#include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
@@ -127,6 +132,16 @@ ChromePaymentsAutofillClient::GetAutofillSnackbarController() {
   }
 
   return autofill_snackbar_controller_impl_.get();
+}
+
+void ChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
+    base::OnceCallback<void(const std::u16string&)> callback) {
+  CardNameFixFlowViewAndroid* card_name_fix_flow_view_android =
+      new CardNameFixFlowViewAndroid(&card_name_fix_flow_controller_,
+                                     web_contents());
+  card_name_fix_flow_controller_.Show(
+      card_name_fix_flow_view_android, GetAccountHolderName(),
+      /*upload_save_card_callback=*/std::move(callback));
 }
 #else   // !BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
@@ -592,5 +607,24 @@ void ChromePaymentsAutofillClient::
       std::move(autofill_save_card_bottom_sheet_bridge);
 }
 #endif
+
+std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
+  if (!web_contents()) {
+    return nullptr;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (!profile) {
+    return std::u16string();
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return std::u16string();
+  }
+  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  return base::UTF8ToUTF16(primary_account_info.full_name);
+}
 
 }  // namespace autofill::payments

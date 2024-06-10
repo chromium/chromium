@@ -62,7 +62,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -276,22 +275,6 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
           AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
           std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
                                                      options))));
-}
-
-void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-  std::u16string account_name = base::UTF8ToUTF16(
-      identity_manager_
-          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .full_name);
-
-  card_name_fix_flow_controller_.Show(
-      // CardNameFixFlowViewBridge manages its own lifetime, so
-      // do not use std::unique_ptr<> here.
-      new CardNameFixFlowViewBridge(&card_name_fix_flow_controller_,
-                                    base_view_controller_),
-      account_name, std::move(callback));
 }
 
 void ChromeAutofillClientIOS::ConfirmExpirationDateFixFlow(

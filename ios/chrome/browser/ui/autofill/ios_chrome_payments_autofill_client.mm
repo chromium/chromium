@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -192,6 +193,23 @@ void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       NOTREACHED_IN_MIGRATION();
       return;
   }
+}
+
+void IOSChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
+    base::OnceCallback<void(const std::u16string&)> callback) {
+  std::u16string account_name = base::UTF8ToUTF16(
+      client_->GetIdentityManager()
+          ->FindExtendedAccountInfo(
+              client_->GetIdentityManager()->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin))
+          .full_name);
+
+  card_name_fix_flow_controller_.Show(
+      // CardNameFixFlowViewBridge manages its own lifetime, so
+      // do not use std::unique_ptr<> here.
+      new CardNameFixFlowViewBridge(&card_name_fix_flow_controller_,
+                                    client_->base_view_controller()),
+      account_name, std::move(callback));
 }
 
 VirtualCardEnrollmentManager*

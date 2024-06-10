@@ -153,6 +153,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Display the cardholder name fix flow prompt and run the |callback| if
+  // the card should be uploaded to payments with updated name from the user.
+  virtual void ConfirmAccountNameFixFlow(
+      base::OnceCallback<void(const std::u16string&)> callback);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   // Shows upload result to users. Called after credit card upload is finished.
   // `card_saved` indicates if the card is successfully saved.
   // `on_confirmation_closed_callback` should run after confirmation prompt is

@@ -73,6 +73,12 @@ void TestPaymentsAutofillClient::ConfirmUploadIbanToCloud(
 bool TestPaymentsAutofillClient::CloseWebauthnDialog() {
   return true;
 }
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void TestPaymentsAutofillClient::ConfirmAccountNameFixFlow(
+    base::OnceCallback<void(const std::u16string&)> callback) {
+  credit_card_name_fix_flow_bubble_was_shown_ = true;
+  std::move(callback).Run(std::u16string(u"Gaia Name"));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TestPaymentsNetworkInterface*

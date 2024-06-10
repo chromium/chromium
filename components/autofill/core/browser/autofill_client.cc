@@ -113,10 +113,6 @@ AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-void AutofillClient::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-}
-
 void AutofillClient::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
     base::OnceCallback<void(const std::u16string&, const std::u16string&)>

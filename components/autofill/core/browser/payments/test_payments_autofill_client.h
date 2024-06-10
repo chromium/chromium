@@ -59,7 +59,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       bool should_show_prompt,
       PaymentsAutofillClient::SaveIbanPromptCallback callback) override;
   bool CloseWebauthnDialog() override;
-
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  void ConfirmAccountNameFixFlow(
+      base::OnceCallback<void(const std::u16string&)> callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowAutofillProgressDialog(
@@ -197,6 +199,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 
   std::unique_ptr<MockIbanAccessManager> mock_iban_access_manager_;
+
+  // Populated if name fix flow was offered. True if bubble was shown, false
+  // otherwise.
+  bool credit_card_name_fix_flow_bubble_was_shown_ = false;
 };
 
 }  // namespace payments

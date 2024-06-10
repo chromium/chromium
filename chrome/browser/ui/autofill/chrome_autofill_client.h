@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
@@ -131,8 +130,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
 #if BUILDFLAG(IS_ANDROID)
-  void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
       const CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
@@ -238,7 +235,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
 
  private:
   Profile* GetProfile() const;
-  std::u16string GetAccountHolderName();
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(
       const PopupOpenArgs& open_args,
@@ -265,7 +261,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
 #if BUILDFLAG(IS_ANDROID)
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
-  CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
   TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
       this};

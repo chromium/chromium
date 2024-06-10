@@ -56,6 +56,11 @@ bool PaymentsAutofillClient::CloseWebauthnDialog() {
 void PaymentsAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {}
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void PaymentsAutofillClient::ConfirmAccountNameFixFlow(
+    base::OnceCallback<void(const std::u16string&)> callback) {}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 void PaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,
     std::optional<OnConfirmationClosedCallback>

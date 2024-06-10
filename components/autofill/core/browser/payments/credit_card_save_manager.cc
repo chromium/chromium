@@ -1116,9 +1116,10 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       // On mobile, requesting cardholder name is a two step flow.
       if (should_request_name_from_user_) {
-        client_->ConfirmAccountNameFixFlow(base::BindOnce(
-            &CreditCardSaveManager::OnUserDidAcceptAccountNameFixFlow,
-            weak_ptr_factory_.GetWeakPtr()));
+        client_->GetPaymentsAutofillClient()->ConfirmAccountNameFixFlow(
+            base::BindOnce(
+                &CreditCardSaveManager::OnUserDidAcceptAccountNameFixFlow,
+                weak_ptr_factory_.GetWeakPtr()));
         // On mobile, requesting expiration date is a two step flow.
       } else if (should_request_expiration_date_from_user_) {
         client_->ConfirmExpirationDateFixFlow(

@@ -136,13 +136,11 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
-#include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
-#include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
@@ -503,16 +501,6 @@ ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-  CardNameFixFlowViewAndroid* card_name_fix_flow_view_android =
-      new CardNameFixFlowViewAndroid(&card_name_fix_flow_controller_,
-                                     web_contents());
-  card_name_fix_flow_controller_.Show(
-      card_name_fix_flow_view_android, GetAccountHolderName(),
-      /*upload_save_card_callback=*/std::move(callback));
-}
-
 void ChromeAutofillClient::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
     base::OnceCallback<void(const std::u16string&, const std::u16string&)>
@@ -974,19 +962,6 @@ Profile* ChromeAutofillClient::GetProfile() const {
   if (!web_contents())
     return nullptr;
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-}
-
-std::u16string ChromeAutofillClient::GetAccountHolderName() {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return std::u16string();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager)
-    return std::u16string();
-  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  return base::UTF8ToUTF16(primary_account_info.full_name);
 }
 
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
