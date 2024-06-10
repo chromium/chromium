@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -263,5 +264,13 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testCanSuppressInAnyState() {
         assertTrue(mContent.canSuppressInAnyState());
+    }
+
+    @Test
+    public void testGetVerticalScrollOffset() {
+        ScrollView scrollView = mContentView.findViewById(R.id.scroll_view);
+        scrollView.setPadding(0, 100, 0, 100);
+        scrollView.scrollTo(0, 100);
+        assertEquals(100, mContent.getVerticalScrollOffset());
     }
 }

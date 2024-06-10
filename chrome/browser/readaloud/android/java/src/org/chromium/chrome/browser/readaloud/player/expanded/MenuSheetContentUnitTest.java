@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.widget.ScrollView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
@@ -85,7 +86,10 @@ public class MenuSheetContentUnitTest {
 
     @Test
     public void testGetVerticalScrollOffset() {
-        assertEquals(mContent.getVerticalScrollOffset(), 0);
+        ScrollView scrollView = mMenu.findViewById(R.id.items_scroll_view);
+        scrollView.setPadding(0, 100, 0, 100);
+        scrollView.scrollTo(0, 100);
+        assertEquals(100, mContent.getVerticalScrollOffset());
     }
 
     @Test
