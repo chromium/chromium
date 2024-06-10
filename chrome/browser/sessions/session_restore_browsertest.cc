@@ -554,8 +554,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
   CloseBrowserSynchronously(browser());
 
   // Create a new window, which should open NTP.
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(incognito_browser);
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* new_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
   EXPECT_NE(new_browser, incognito_browser);
 
   ASSERT_TRUE(new_browser);
@@ -2227,28 +2230,33 @@ class MultiBrowserObserver : public BrowserListObserver {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Create two profiles with two browsers each.
   Browser* first_profile_browser_one = browser();
+  // Open the second browser with the first profile and verify it becomes the
+  // active browser window.
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(first_profile_browser_one);
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
-  Browser* first_profile_browser_two =
-      BrowserList::GetInstance()->GetLastActive();
+  Browser* first_profile_browser_two = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(first_profile_browser_two);
   EXPECT_NE(first_profile_browser_one, first_profile_browser_two);
 
+  // Open the first browser window for the second profile and verify it becomes
+  // the active browser window.
   Profile* second_profile = CreateSecondaryProfile(1);
   base::FilePath second_profile_path = second_profile->GetPath();
   profiles::FindOrCreateNewWindowForProfile(
       second_profile, chrome::startup::IsProcessStartup::kNo,
       chrome::startup::IsFirstRun::kNo, false);
   Browser* second_profile_browser_one = ui_test_utils::WaitForBrowserToOpen();
-  ui_test_utils::WaitForBrowserSetLastActive(second_profile_browser_one);
+  ui_test_utils::WaitUntilBrowserBecomeActive(second_profile_browser_one);
+
+  // Open the second browser window for the second profile and verify it becomes
+  // the active browser window.
   ui_test_utils::BrowserChangeObserver second_profile_new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(second_profile_browser_one);
-  ui_test_utils::WaitForBrowserSetLastActive(
-      second_profile_new_browser_observer.Wait());
   Browser* second_profile_browser_two =
-      BrowserList::GetInstance()->GetLastActive();
+      second_profile_new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(second_profile_browser_two);
   EXPECT_NE(second_profile_browser_one, second_profile_browser_two);
 
   // Navigate the tab in each browser to a unique URL we can later reidentify.
