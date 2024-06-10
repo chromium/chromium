@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service_factory.h"
@@ -64,10 +66,19 @@ class CategoriesSelectionScreen : public BaseScreen {
   void ShowOverviewStep();
 
   // Called when the user selects categories on the screen.
-  void OnSelect(base::Value::List screens);
+  void OnSelect(base::Value::List selected_use_cases_ids);
 
   std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
   base::TimeDelta delay_overview_step_ = base::Seconds(2);
+
+  // The time when loading UI step started.
+  base::TimeTicks loading_start_time_;
+
+  size_t use_cases_total_count_ = 0;
+
+  // This map is used to store order for each use_case, so we can record it in
+  // UMA for the selected use-cases.
+  std::unordered_map<std::string, int> use_case_id_to_order_;
 
   base::WeakPtr<CategoriesSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;

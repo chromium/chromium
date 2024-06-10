@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -25,6 +27,9 @@ constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSkip[] = "skip";
 constexpr const char kUserActionLoaded[] = "loaded";
 
+// Current max amount of use-cases we should get from the server.
+constexpr const int kMaxUseCasesCount = 20;
+
 bool HasBeenSelected(std::string category_id) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const base::Value::List& selected_categories =
@@ -35,6 +40,36 @@ bool HasBeenSelected(std::string category_id) {
     }
   }
   return false;
+}
+
+void RecordUmaLoadingTime(base::TimeDelta delta) {
+  // The maximum is set to 60 seconds due to the fact that the screen is skipped
+  // if the loading time exceeds 60 seconds.
+  base::UmaHistogramCustomTimes("OOBE.CategoriesSelectionScreen.LoadingTime",
+                                delta, base::Milliseconds(1), base::Minutes(1),
+                                50);
+}
+
+void RecordUmaSelectedUseCasesCount(int selected_use_cases_count) {
+  base::UmaHistogramCustomCounts(
+      "OOBE.CategoriesSelectionScreen.SelectedUseCasesCount",
+      selected_use_cases_count,
+      /*min=*/0,
+      /*exclusive_max=*/kMaxUseCasesCount + 1,
+      /*buckets=*/kMaxUseCasesCount + 1);
+}
+
+void RecordUmaSelectedUseCasesPercentage(int selected_use_cases_percentage) {
+  base::UmaHistogramPercentage(
+      "OOBE.CategoriesSelectionScreen.SelectedUseCasesPercentage",
+      selected_use_cases_percentage);
+}
+
+void RecordUmaUseCaseID(int use_case_order_id) {
+  // Order is a zero-based index, so we can use ExactLinear histogram for now.
+  base::UmaHistogramExactLinear(
+      "OOBE.CategoriesSelectionScreen.SelectedUseCaseIDs", use_case_order_id,
+      kMaxUseCasesCount + 1);
 }
 
 }  // namespace
@@ -98,6 +133,8 @@ void CategoriesSelectionScreen::ShowImpl() {
   }
   view_->Show();
 
+  loading_start_time_ = base::TimeTicks::Now();
+
   raw_ptr<OobeAppsDiscoveryService> oobe_apps_discovery_service_ =
       OobeAppsDiscoveryServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
@@ -125,6 +162,8 @@ void CategoriesSelectionScreen::OnResponseReceived(
     return;
   }
 
+  use_case_id_to_order_.clear();
+
   base::Value::List categories_list;
   for (OOBEDeviceUseCase category : categories) {
     // Disregard the category with order 0, as it relates to a general,
@@ -132,6 +171,9 @@ void CategoriesSelectionScreen::OnResponseReceived(
     if (category.GetOrder() == 0) {
       continue;
     }
+
+    use_case_id_to_order_[category.GetID()] = category.GetOrder();
+
     base::Value::Dict category_dict;
     category_dict.Set("categoryId", base::Value(std::move(category.GetID())));
     category_dict.Set("title", base::Value(std::move(category.GetLabel())));
@@ -142,6 +184,14 @@ void CategoriesSelectionScreen::OnResponseReceived(
     categories_list.Append(std::move(category_dict));
   }
 
+  if (categories_list.empty()) {
+    LOG(ERROR) << "Empty set of use-cases received after filtering data";
+    exit_callback_.Run(Result::kDataMalformed);
+    return;
+  }
+
+  use_cases_total_count_ = categories_list.size();
+
   base::Value::Dict data;
   data.Set("categories", std::move(categories_list));
   if (view_) {
@@ -149,12 +199,31 @@ void CategoriesSelectionScreen::OnResponseReceived(
   }
 }
 
-void CategoriesSelectionScreen::OnSelect(base::Value::List categories) {
+void CategoriesSelectionScreen::OnSelect(
+    base::Value::List selected_use_cases_ids) {
+  int selected_use_cases_count =
+      static_cast<int>(selected_use_cases_ids.size());
+  RecordUmaSelectedUseCasesCount(selected_use_cases_count);
+
+  RecordUmaSelectedUseCasesPercentage(
+      (use_cases_total_count_ > 0)
+          ? (100 * selected_use_cases_count / use_cases_total_count_)
+          : 0);
+
+  for (const auto& selected_use_case_id : selected_use_cases_ids) {
+    auto it = use_case_id_to_order_.find(selected_use_case_id.GetString());
+    if (it != use_case_id_to_order_.end()) {
+      RecordUmaUseCaseID(it->second);
+    }
+  }
+
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetList(prefs::kOobeCategoriesSelected, std::move(categories));
+  prefs->SetList(prefs::kOobeCategoriesSelected,
+                 std::move(selected_use_cases_ids));
 }
 
 void CategoriesSelectionScreen::ShowOverviewStep() {
+  RecordUmaLoadingTime(base::TimeTicks::Now() - loading_start_time_);
   if (view_) {
     view_->SetOverviewStep();
   }

@@ -13,6 +13,8 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
@@ -44,6 +46,9 @@ constexpr const char kUserActionBack[] = "back";
 constexpr const char kUserActionLoaded[] = "loaded";
 constexpr const char kNoUseCasesSelectedIDName[] = "oobe_none";
 
+// Current max amount of apps we should get from the server.
+constexpr const int kMaxAppCount = 100;
+
 void WebAppInstallCallback(const std::string& package_id, bool success) {
   if (success) {
     LOG(WARNING) << "Web application '" << package_id
@@ -53,6 +58,57 @@ void WebAppInstallCallback(const std::string& package_id, bool success) {
                  << "' installation failed";
   }
 }
+
+void RecordUmaLoadingTime(base::TimeDelta delta) {
+  base::UmaHistogramCustomTimes("OOBE.PersonalizedAppsScreen.LoadingTime",
+                                delta, base::Milliseconds(1), base::Seconds(60),
+                                50);
+}
+
+void RecordUmaSelectedAppsTotalCount(int selected_apps_total_count) {
+  base::UmaHistogramCounts100(
+      "OOBE.PersonalizedAppsScreen.SelectedAppsTotalCount",
+      selected_apps_total_count);
+}
+
+void RecordUmaSelectedAppsTotalPercentage(int selected_apps_total_percentage) {
+  base::UmaHistogramPercentage(
+      "OOBE.PersonalizedAppsScreen.SelectedAppsTotalPercentage",
+      selected_apps_total_percentage);
+}
+
+void RecordUmaSelectedAppsCount(int selected_apps_count,
+                                apps::PackageType type) {
+  if (type == apps::PackageType::kArc) {
+    base::UmaHistogramCounts100(
+        "OOBE.PersonalizedAppsScreen.SelectedAppsCount.ARC",
+        selected_apps_count);
+  } else if (type == apps::PackageType::kWeb) {
+    base::UmaHistogramCounts100(
+        "OOBE.PersonalizedAppsScreen.SelectedAppsCount.Web",
+        selected_apps_count);
+  }
+}
+
+void RecordUmaSelectedAppsPercentage(int selected_apps_percentage,
+                                     apps::PackageType type) {
+  if (type == apps::PackageType::kArc) {
+    base::UmaHistogramPercentage(
+        "OOBE.PersonalizedAppsScreen.SelectedAppsPercentage.ARC",
+        selected_apps_percentage);
+  } else if (type == apps::PackageType::kWeb) {
+    base::UmaHistogramPercentage(
+        "OOBE.PersonalizedAppsScreen.SelectedAppsPercentage.Web",
+        selected_apps_percentage);
+  }
+}
+
+void RecordUmaAppID(int app_order_id) {
+  // Order is a zero-based index, so we can use ExactLinear histogram for now.
+  base::UmaHistogramExactLinear("OOBE.PersonalizedAppsScreen.SelectedAppIDs",
+                                app_order_id, kMaxAppCount);
+}
+
 }  // namespace
 
 // static
@@ -132,6 +188,8 @@ void PersonalizedRecommendAppsScreen::ShowImpl() {
   }
 
   view_->Show();
+
+  loading_start_time_ = base::TimeTicks::Now();
 
   raw_ptr<OobeAppsDiscoveryService> oobe_apps_discovery_service_ =
       OobeAppsDiscoveryServiceFactory::GetForProfile(
@@ -226,7 +284,13 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   std::unordered_map<std::string, std::vector<OOBEAppDefinition>>
       use_cases_to_apps;
 
+  app_package_id_to_order_.clear();
+
   for (const auto& app : app_infos) {
+    if (app.GetPackageId() != std::nullopt) {
+      app_package_id_to_order_[app.GetPackageId()->ToString()] = app.GetOrder();
+    }
+
     std::vector<std::string> tags = app.GetTags();
     for (const auto& tag : tags) {
       auto it = use_cases_to_apps.find(tag);
@@ -247,6 +311,10 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 
   base::Value::List apps_by_use_cases_list;
 
+  // Reset it on each filtering so it's not persisted between screen
+  // back/next flow.
+  filtered_apps_count_by_type_.clear();
+
   for (const auto& selected_use_case : selected_use_cases) {
     base::Value::List apps_list;
     // Handle case when server-side provided use-case that doesn't have any apps
@@ -264,6 +332,8 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
         continue;
       }
       used_apps_uuids.insert(app.GetAppGroupUUID());
+
+      filtered_apps_count_by_type_[app.GetPlatform()] += 1;
 
       base::Value::Dict app_dict(
           base::Value::Dict()
@@ -305,15 +375,37 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 void PersonalizedRecommendAppsScreen::HideImpl() {}
 
 void PersonalizedRecommendAppsScreen::OnInstall(
-    base::Value::List selected_apps_package_ids) const {
+    base::Value::List selected_apps_package_ids) {
   base::Value::List selected_arc_apps;
   std::vector<apps::PackageId> selected_web_apps;
+
+  int filtered_arc_apps_count =
+      filtered_apps_count_by_type_[apps::PackageType::kArc];
+  int filtered_web_apps_count =
+      filtered_apps_count_by_type_[apps::PackageType::kWeb];
+  int filtered_apps_total_count =
+      filtered_arc_apps_count + filtered_web_apps_count;
+
+  int selected_apps_total_count =
+      static_cast<int>(selected_apps_package_ids.size());
+  RecordUmaSelectedAppsTotalCount(selected_apps_total_count);
+
+  RecordUmaSelectedAppsTotalPercentage(
+      (filtered_apps_total_count > 0)
+          ? (100 * selected_apps_total_count / filtered_apps_total_count)
+          : 0);
 
   // We need to separate ARC and Web apps because they are installed
   // differently.
   // TODO(b/341309803): Unify installation logic by using AppInstallService for
   // all cases when available.
   for (const auto& selected_app_package_id : selected_apps_package_ids) {
+    auto it =
+        app_package_id_to_order_.find(selected_app_package_id.GetString());
+    if (it != app_package_id_to_order_.end()) {
+      RecordUmaAppID(it->second);
+    }
+
     std::optional<apps::PackageId> package_id =
         apps::PackageId::FromString(selected_app_package_id.GetString());
     if (!package_id.has_value()) {
@@ -326,6 +418,24 @@ void PersonalizedRecommendAppsScreen::OnInstall(
       selected_web_apps.emplace_back(std::move(*package_id));
     }
   }
+
+  int selected_arc_apps_count = selected_arc_apps.size();
+  RecordUmaSelectedAppsCount(selected_arc_apps_count, apps::PackageType::kArc);
+
+  RecordUmaSelectedAppsPercentage(
+      (filtered_arc_apps_count > 0)
+          ? (100 * selected_arc_apps_count / filtered_arc_apps_count)
+          : 0,
+      apps::PackageType::kArc);
+
+  int selected_web_apps_count = selected_web_apps.size();
+  RecordUmaSelectedAppsCount(selected_web_apps_count, apps::PackageType::kWeb);
+
+  RecordUmaSelectedAppsPercentage(
+      (filtered_web_apps_count > 0)
+          ? (100 * selected_web_apps_count / filtered_web_apps_count)
+          : 0,
+      apps::PackageType::kWeb);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
@@ -360,6 +470,7 @@ void PersonalizedRecommendAppsScreen::OnInstall(
 }
 
 void PersonalizedRecommendAppsScreen::ShowOverviewStep() {
+  RecordUmaLoadingTime(base::TimeTicks::Now() - loading_start_time_);
   if (view_) {
     view_->SetOverviewStep();
   }

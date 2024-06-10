@@ -425,6 +425,11 @@ chromium-metrics-reviews@google.com.
   <variant name="UserCreation" summary="User Creation Screen"/>
 </variants>
 
+<variants name="PersonalizedAppsType">
+  <variant name="ARC"/>
+  <variant name="Web"/>
+</variants>
+
 <variants name="UpdateStage">
   <variant name="Check"/>
   <variant name="Download"/>
@@ -457,6 +462,51 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2022-04-03 to 2023-04-04; data may
     be missing.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.CategoriesSelectionScreen.LoadingTime" units="ms"
+    expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Amount of time it took for screen to finish the loading UI step. Metric is
+    not recorded when screen is skipped due to the loading error. Current
+    timeout value is 60 seconds.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.CategoriesSelectionScreen.SelectedUseCaseIDs"
+    units="useCaseID" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Order number that we got from the server-side of a use-case that user
+    selected. Temporary solution before we use another approach to emit the
+    exact string IDs of the use-cases.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.CategoriesSelectionScreen.SelectedUseCasesCount"
+    units="use-cases" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    The number of use-cases user selected on the Device Use-Case screen. This
+    histogram is recorded only when at least one use-cases is selected. If user
+    pressed skip we will emit &quot;Skip&quot; exit code, so it can be used for
+    tracking.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.CategoriesSelectionScreen.SelectedUseCasesPercentage"
+    units="%" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Ratio of selected use-cases to the number of use-cases fetched from the
+    server. This histogram is recorded only when at least one use-cases is
+    selected.
   </summary>
 </histogram>
 
@@ -958,6 +1008,70 @@ chromium-metrics-reviews@google.com.
     the completion of the last onboarding screen for the first user (before the
     start of the first session). The time recorded includes the time while the
     device is turned off.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.PersonalizedAppsScreen.LoadingTime" units="ms"
+    expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Amount of time it took for screen to finish the loading UI step. Metric is
+    not recorded when screen is skipped due to the loading error. Current
+    timeout value is 60 seconds.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.PersonalizedAppsScreen.SelectedAppIDs" units="appID"
+    expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Ordering number that we got from the server-side of an app that user
+    selected to install. Temporary solution before we use another approach to
+    emit the exact string IDs of the selected apps.
+  </summary>
+</histogram>
+
+<histogram
+    name="OOBE.PersonalizedAppsScreen.SelectedAppsCount.{PersonalizedAppsType}"
+    units="apps" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    The number of {PersonalizedAppsType} apps selected to install.
+  </summary>
+  <token key="PersonalizedAppsType" variants="PersonalizedAppsType"/>
+</histogram>
+
+<histogram
+    name="OOBE.PersonalizedAppsScreen.SelectedAppsPercentage.{PersonalizedAppsType}"
+    units="%" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Ratio of selected apps to install to the number of apps of a type
+    {PersonalizedAppsType} fetched for the selected use-cases.
+  </summary>
+  <token key="PersonalizedAppsType" variants="PersonalizedAppsType"/>
+</histogram>
+
+<histogram name="OOBE.PersonalizedAppsScreen.SelectedAppsTotalCount"
+    units="apps" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    The total number of apps user selected on the Personalized App Recs screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.PersonalizedAppsScreen.SelectedAppsTotalPercentage"
+    units="%" expires_after="2024-12-31">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Ratio of total selected apps to install to the number of apps fetched for
+    the selected use-cases.
   </summary>
 </histogram>
 

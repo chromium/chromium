@@ -7,13 +7,16 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_types.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash {
 class PersonalizedRecommendAppsScreenView;
@@ -74,7 +77,7 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
                           const std::vector<OOBEDeviceUseCase>& use_cases,
                           AppsFetchingResult result);
 
-  void OnInstall(base::Value::List selected_apps_package_ids) const;
+  void OnInstall(base::Value::List selected_apps_package_ids);
 
   void ShowOverviewStep();
   void SetAppsAndUseCasesData(base::Value::List apps_with_use_cases_list);
@@ -84,6 +87,16 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
 
   std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
   base::TimeDelta delay_overview_step_ = base::Seconds(3);
+
+  // The time when loading UI step started.
+  base::TimeTicks loading_start_time_;
+
+  // Amount of apps for each type after filtering.
+  std::unordered_map<apps::PackageType, size_t> filtered_apps_count_by_type_;
+
+  // This map is used to store order for each app, so we can record it in UMA
+  // for the apps selected for installation.
+  std::unordered_map<std::string, int> app_package_id_to_order_;
 
   base::WeakPtr<PersonalizedRecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;
