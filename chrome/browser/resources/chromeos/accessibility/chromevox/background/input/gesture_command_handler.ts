@@ -15,7 +15,6 @@ import {EventSourceType} from '../../common/event_source_type.js';
 import {GestureCommandData, GestureGranularity} from '../../common/gesture_command_data.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
-import {ChromeVoxState} from '../chromevox_state.js';
 import {PointerHandler} from '../event/pointer_handler.js';
 import {EventSource} from '../event_source.js';
 import {ForcedActionPath} from '../forced_action_path.js';
@@ -24,23 +23,18 @@ import {Output} from '../output/output.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {GestureInterface} from './gesture_interface.js';
 
+type AutomationNode = chrome.automation.AutomationNode;
 const Gesture = chrome.accessibilityPrivate.Gesture;
+const StateType = chrome.automation.StateType;
 
 export class GestureCommandHandler {
-  /** @private */
-  constructor() {
-    /** @private {boolean} */
-    this.bypassed_ = false;
-    /** @private {GestureGranularity} */
-    this.granularity_ = GestureGranularity.LINE;
-    /** @private {!PointerHandler} */
-    this.pointerHandler_ = new PointerHandler();
+  private bypassed_ = false;
+  private granularity_ = GestureGranularity.LINE;
+  private pointerHandler_ = new PointerHandler();
 
-    this.init_();
-  }
+  static instance: GestureCommandHandler;
 
-  /** @private */
-  init_() {
+  private constructor() {
     chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
         (gesture, x, y) => this.onAccessibilityGesture_(gesture, x, y));
     GestureInterface.granularityGetter = () => this.granularity_;
@@ -48,39 +42,36 @@ export class GestureCommandHandler {
         granularity;
   }
 
-  static init() {
+  static init(): void {
     GestureCommandHandler.instance = new GestureCommandHandler();
 
     BridgeHelper.registerHandler(
         BridgeConstants.GestureCommandHandler.TARGET,
         BridgeConstants.GestureCommandHandler.Action.SET_BYPASS,
-        bypassed => GestureCommandHandler.setBypass(bypassed));
+        (bypassed: boolean) => GestureCommandHandler.setBypass(bypassed));
   }
 
-  /** @return {boolean} */
-  static getEnabled() {
+  static getEnabled(): boolean {
     return !GestureCommandHandler.instance.bypassed_;
   }
 
   /**
    * Used by LearnMode to capture the events and prevent the standard behavior,
    * in favor of reporting what that would behavior would be.
-   * @param {boolean} state
    */
-  static setBypass(state) {
+  static setBypass(state: boolean): void {
     GestureCommandHandler.instance.bypassed_ = state;
   }
 
 
   /**
    * Handles accessibility gestures from the touch screen.
-   * @param {string} gesture The gesture to handle, based on the
-   *     ax::mojom::Gesture enum defined in ui/accessibility/ax_enums.mojom
-   * @param {number} x coordinate of gesture
-   * @param {number} y coordinate of gesture
-   * @private
+   * @param gesture The gesture to handle, based on the ax::mojom::Gesture enum
+   *     defined in ui/accessibility/ax_enums.mojom
+   * @param x coordinate of gesture
+   * @param y coordinate of gesture
    */
-  onAccessibilityGesture_(gesture, x, y) {
+  private onAccessibilityGesture_(gesture: string, x: number, y: number): void {
     if (this.bypassed_) {
       return;
     }
@@ -126,10 +117,12 @@ export class GestureCommandHandler {
     let key;
     if (ChromeVoxRange.current?.start?.node) {
       let inMenu = false;
-      let node = ChromeVoxRange.current.start.node;
+      let node: AutomationNode | undefined = ChromeVoxRange.current.start.node;
       while (node) {
+        // TODO(b/314203187): Not null asserted, check that this is correct.
         if (AutomationPredicate.menuItem(node) ||
-            (AutomationPredicate.popUpButton(node) && node.state.expanded)) {
+            (AutomationPredicate.popUpButton(node) &&
+                node.state![StateType.EXPANDED])) {
           inMenu = true;
           break;
         }
@@ -153,8 +146,5 @@ export class GestureCommandHandler {
     }
   }
 }
-
-/** @type {GestureCommandHandler} */
-GestureCommandHandler.instance;
 
 TestImportManager.exportForTesting(GestureCommandHandler);
