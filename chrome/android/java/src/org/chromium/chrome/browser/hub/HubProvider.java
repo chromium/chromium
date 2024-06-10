@@ -14,8 +14,10 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -38,6 +40,7 @@ public class HubProvider {
 
     /**
      * @param context The Android {@link Context} for the Hub.
+     * @param profileProviderSupplier Used to fetch dependencies.
      * @param orderController The {@link PaneOrderController} for the Hub.
      * @param backPressManager The {@link BackPressManager} for the activity.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
@@ -49,6 +52,7 @@ public class HubProvider {
      */
     public HubProvider(
             @NonNull Context context,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull PaneOrderController orderController,
             @NonNull BackPressManager backPressManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
@@ -69,6 +73,7 @@ public class HubProvider {
                             assert snackbarManager != null;
                             return HubManagerFactory.createHubManager(
                                     context,
+                                    profileProviderSupplier,
                                     mPaneListBuilder,
                                     backPressManager,
                                     menuOrKeyboardActionController,

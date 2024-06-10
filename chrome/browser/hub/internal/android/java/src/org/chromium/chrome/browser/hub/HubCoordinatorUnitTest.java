@@ -34,11 +34,15 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link HubCoordinator}. */
@@ -60,6 +64,8 @@ public class HubCoordinatorUnitTest {
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private DisplayButtonData mReferenceButtonData;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private Tracker mTracker;
 
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
@@ -71,13 +77,17 @@ public class HubCoordinatorUnitTest {
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
+    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
 
     @Before
     public void setUp() {
+        TrackerFactory.setTrackerForTests(mTracker);
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
+        mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mTabSwitcherBackPressSupplier);
@@ -120,6 +130,7 @@ public class HubCoordinatorUnitTest {
 
         mHubCoordinator =
                 new HubCoordinator(
+                        mProfileProviderSupplier,
                         mRootView,
                         mPaneManager,
                         mHubLayoutController,

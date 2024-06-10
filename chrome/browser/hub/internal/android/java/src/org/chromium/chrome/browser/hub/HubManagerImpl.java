@@ -15,7 +15,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -36,6 +38,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
     private final @NonNull Context mContext;
+    private final @NonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final @NonNull PaneManagerImpl mPaneManager;
     private final @NonNull HubContainerView mHubContainerView;
     private final @NonNull BackPressManager mBackPressManager;
@@ -55,6 +58,7 @@ public class HubManagerImpl implements HubManager, HubController {
     /** See {@link HubManagerFactory#createHubManager}. */
     public HubManagerImpl(
             @NonNull Context context,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull PaneListBuilder paneListBuilder,
             @NonNull BackPressManager backPressManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
@@ -62,6 +66,7 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator) {
         mContext = context;
+        mProfileProviderSupplier = profileProviderSupplier;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
         mBackPressManager = backPressManager;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
@@ -181,6 +186,7 @@ public class HubManagerImpl implements HubManager, HubController {
 
         mHubCoordinator =
                 new HubCoordinator(
+                        mProfileProviderSupplier,
                         mHubContainerView,
                         mPaneManager,
                         mHubLayoutController,

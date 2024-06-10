@@ -35,14 +35,19 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link PaneManagerImpl}. */
@@ -70,19 +75,26 @@ public class HubManagerImplUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private DisplayButtonData mReferenceButtonData;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
 
     private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<FullButtonData> mActionButtonDataSupplier =
             new ObservableSupplierImpl<>();
+    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
 
     private Activity mActivity;
     private FrameLayout mRootView;
 
     @Before
     public void setUp() {
+        TrackerFactory.setTrackerForTests(mTracker);
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
+        mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
@@ -103,6 +115,7 @@ public class HubManagerImplUnitTest {
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mTab.getId()).thenReturn(TAB_ID);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         mActivityScenarioRule
                 .getScenario()
@@ -128,6 +141,7 @@ public class HubManagerImplUnitTest {
         HubManager hubManager =
                 HubManagerFactory.createHubManager(
                         mActivity,
+                        mProfileProviderSupplier,
                         builder,
                         mBackPressManager,
                         mMenuOrKeyboardActionController,
@@ -156,6 +170,7 @@ public class HubManagerImplUnitTest {
         HubManagerImpl hubManager =
                 new HubManagerImpl(
                         mActivity,
+                        mProfileProviderSupplier,
                         builder,
                         mBackPressManager,
                         mMenuOrKeyboardActionController,
@@ -215,6 +230,7 @@ public class HubManagerImplUnitTest {
         HubManagerImpl hubManager =
                 new HubManagerImpl(
                         mActivity,
+                        mProfileProviderSupplier,
                         builder,
                         mBackPressManager,
                         mMenuOrKeyboardActionController,
@@ -250,6 +266,7 @@ public class HubManagerImplUnitTest {
         HubManagerImpl hubManager =
                 new HubManagerImpl(
                         mActivity,
+                        mProfileProviderSupplier,
                         builder,
                         mBackPressManager,
                         mMenuOrKeyboardActionController,
@@ -289,6 +306,7 @@ public class HubManagerImplUnitTest {
         HubManagerImpl hubManager =
                 new HubManagerImpl(
                         mActivity,
+                        mProfileProviderSupplier,
                         builder,
                         mBackPressManager,
                         mMenuOrKeyboardActionController,
@@ -335,6 +353,7 @@ public class HubManagerImplUnitTest {
         HubManagerImpl hubManager =
                 new HubManagerImpl(
                         mActivity,
+                        mProfileProviderSupplier,
                         builder,
                         mBackPressManager,
                         mMenuOrKeyboardActionController,

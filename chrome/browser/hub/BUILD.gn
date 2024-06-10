@@ -65,6 +65,7 @@ android_library_factory("factory_java") {
     ":java",
     "//base:base_java",
     "//chrome/browser/back_press/android:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",

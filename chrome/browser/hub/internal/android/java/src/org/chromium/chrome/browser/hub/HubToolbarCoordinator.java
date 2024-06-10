@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -23,14 +24,16 @@ public class HubToolbarCoordinator {
      * @param hubToolbarView The root view of this component. Inserted into hierarchy for us.
      * @param paneManager Interact with the current and all {@link Pane}s.
      * @param menuButtonCoordinator Root component for the app menu.
+     * @param tracker Used to record user engagement events.
      */
     public HubToolbarCoordinator(
             @NonNull HubToolbarView hubToolbarView,
             @NonNull PaneManager paneManager,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
+            @NonNull MenuButtonCoordinator menuButtonCoordinator,
+            @NonNull Tracker tracker) {
         PropertyModel model = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
-        mMediator = new HubToolbarMediator(model, paneManager);
+        mMediator = new HubToolbarMediator(model, paneManager, tracker);
 
         MenuButton menuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
         menuButtonCoordinator.setMenuButton(menuButton);

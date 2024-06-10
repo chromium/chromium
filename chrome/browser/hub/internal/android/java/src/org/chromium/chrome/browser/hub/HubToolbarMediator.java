@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class HubToolbarMediator {
     private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
 
     private final @NonNull PaneManager mPaneManager;
+    private final @NonNull Tracker mTracker;
     // The order of entries in this map are the order the buttons should appear to the user. A null
     // value should not be shown to the user.
     private final ArrayList<Pair<Integer, DisplayButtonData>> mCachedPaneSwitcherButtonData =
@@ -54,9 +56,12 @@ public class HubToolbarMediator {
 
     /** Creates the mediator. */
     public HubToolbarMediator(
-            @NonNull PropertyModel propertyModel, @NonNull PaneManager paneManager) {
+            @NonNull PropertyModel propertyModel,
+            @NonNull PaneManager paneManager,
+            @NonNull Tracker tracker) {
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
+        mTracker = tracker;
 
         for (@PaneId int paneId : paneManager.getPaneOrderController().getPaneOrder()) {
             @Nullable Pane pane = paneManager.getPaneForId(paneId);
@@ -194,6 +199,10 @@ public class HubToolbarMediator {
             @PaneId int paneId, @NonNull DisplayButtonData referenceButtonData) {
         Runnable onPress =
                 () -> {
+                    // TODO(crbug.com/345492118): Move the event name into the tab group pane impl.
+                    if (paneId == PaneId.TAB_GROUPS) {
+                        mTracker.notifyEvent("tab_groups_surface_clicked");
+                    }
                     mPaneManager.focusPane(paneId);
                     RecordHistogram.recordEnumeratedHistogram(
                             "Android.Hub.PaneFocused.PaneSwitcher", paneId, PaneId.COUNT);

@@ -908,6 +908,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mHubProvider =
                 new HubProvider(
                         this,
+                        getProfileProviderSupplier(),
                         new DefaultPaneOrderController(),
                         mBackPressManager,
                         getMenuOrKeyboardActionController(),
