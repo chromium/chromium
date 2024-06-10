@@ -60,6 +60,8 @@ class SavedTabGroup {
     return originator_cache_guid_;
   }
 
+  bool is_remote_group() const { return is_remote_group_; }
+
   bool created_before_syncing_tab_groups() const {
     return created_before_syncing_tab_groups_;
   }
@@ -200,6 +202,9 @@ class SavedTabGroup {
   // will be null. The value could also be null if the group was created before
   // M127.
   std::optional<std::string> originator_cache_guid_;
+
+  // Whether the tab group was created from a remote device.
+  bool is_remote_group_ = false;
 
   // Whether the tab group was created when sync was disabled.
   bool created_before_syncing_tab_groups_;

@@ -73,6 +73,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
         Assert.assertNull(group.localId);
         Assert.assertEquals(TEST_GROUP_TITLE, group.title);
         Assert.assertEquals(TabGroupColorId.RED, group.color);
+        Assert.assertFalse(group.isRemoteGroup);
         Assert.assertEquals(3, group.savedTabs.size());
 
         SavedTabGroupTab tab1 = group.savedTabs.get(0);

@@ -58,7 +58,7 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
       env, group.local_group_id());
   return Java_TabGroupSyncConversionsBridge_createGroup(
       env, j_sync_id, j_local_id, ConvertUTF16ToJavaString(env, group.title()),
-      static_cast<int32_t>(group.color()),
+      static_cast<int32_t>(group.color()), group.is_remote_group(),
       group.creation_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
       group.update_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch());
 }

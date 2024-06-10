@@ -33,6 +33,9 @@ public class SavedTabGroup {
     /** The color of the tab group. */
     public @TabGroupColorId int color;
 
+    /** Whether the tab group was created on a remote device. */
+    public boolean isRemoteGroup;
+
     /** Timestamp for when the tab was created. */
     public long creationTimeMs;
 
@@ -53,6 +56,8 @@ public class SavedTabGroup {
         sb.append(title);
         sb.append(", color = ");
         sb.append(color);
+        sb.append(", isRemoteGroup = ");
+        sb.append(isRemoteGroup);
         sb.append(", # of Tabs = ");
         sb.append(savedTabs.size());
 

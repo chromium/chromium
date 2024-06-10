@@ -23,6 +23,7 @@ public class TabGroupSyncConversionsBridge {
             LocalTabGroupId localId,
             String title,
             int color,
+            boolean isRemoteGroup,
             long creationTimeMs,
             long updateTimeMs) {
         SavedTabGroup group = new SavedTabGroup();
@@ -30,6 +31,7 @@ public class TabGroupSyncConversionsBridge {
         group.localId = localId;
         group.title = title;
         group.color = color;
+        group.isRemoteGroup = isRemoteGroup;
         assert group.color != -1;
         group.creationTimeMs = creationTimeMs;
         group.updateTimeMs = updateTimeMs;

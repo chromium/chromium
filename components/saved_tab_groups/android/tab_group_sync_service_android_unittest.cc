@@ -165,7 +165,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, TabIdConversion) {
             tab_id);
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, SaveTabGroupConversion) {
+TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion) {
   auto* env = AttachCurrentThread();
   SavedTabGroup group = test::CreateTestSavedTabGroup();
   group.SetTitle(kTestGroupTitle);
