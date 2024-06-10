@@ -37,7 +37,8 @@ enum class AuthenticationResultStatusWin {
   kFailedToCreateFactory = 7,
   kFailedToCallAPI = 8,
   kFailedToPostTask = 9,
-  kMaxValue = kFailedToPostTask,
+  kUnknown = 10,
+  kMaxValue = kUnknown,
 };
 
 // This interface is need to simplify testing as windows authentication happens

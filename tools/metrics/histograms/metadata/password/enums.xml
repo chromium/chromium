@@ -96,6 +96,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed to create UserConsentVerifier factory."/>
   <int value="8" label="Failed to call UserConsentVerifier API."/>
   <int value="9" label="Failed to post authentication task."/>
+  <int value="10" label="Uknown return status"/>
 </enum>
 
 <enum name="AutofillSuggestionTriggerSource">

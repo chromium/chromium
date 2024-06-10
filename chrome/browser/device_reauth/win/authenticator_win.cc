@@ -84,6 +84,8 @@ AuthenticationResultStatusWin ConvertUserConsentVerificationResult(
       return AuthenticationResultStatusWin::kRetriesExhausted;
     case UserConsentVerificationResult_Canceled:
       return AuthenticationResultStatusWin::kCanceled;
+    default:
+      return AuthenticationResultStatusWin::kUnknown;
   }
 }
 
@@ -188,6 +190,7 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
     case AuthenticationResultStatusWin::kNotConfiguredForUser:
     case AuthenticationResultStatusWin::kDisabledByPolicy:
     case AuthenticationResultStatusWin::kDeviceBusy:
+    case AuthenticationResultStatusWin::kUnknown:
       // Windows Hello is not available so there should be a fallback to the old
       // API.
       AuthenticateWithLegacyApi(message, std::move(callback));
