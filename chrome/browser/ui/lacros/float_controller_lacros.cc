@@ -10,10 +10,11 @@
 
 namespace {
 
-ui::WaylandExtension* GetWaylandExtension(aura::Window* window) {
+ui::WaylandToplevelExtension* GetWaylandToplevelExtension(
+    aura::Window* window) {
   auto* wth_platform = aura::WindowTreeHostPlatform::GetHostForWindow(window);
   auto* wayland_extension =
-      ui::GetWaylandExtension(*wth_platform->platform_window());
+      ui::GetWaylandToplevelExtension(*wth_platform->platform_window());
   DCHECK(wayland_extension);
   return wayland_extension;
 }
@@ -29,16 +30,16 @@ void FloatControllerLacros::SetFloat(
     chromeos::FloatStartLocation float_start_location) {
   switch (float_start_location) {
     case chromeos::FloatStartLocation::kBottomRight:
-      GetWaylandExtension(window)->SetFloatToLocation(
+      GetWaylandToplevelExtension(window)->SetFloatToLocation(
           ui::WaylandFloatStartLocation::kBottomRight);
       break;
     case chromeos::FloatStartLocation::kBottomLeft:
-      GetWaylandExtension(window)->SetFloatToLocation(
+      GetWaylandToplevelExtension(window)->SetFloatToLocation(
           ui::WaylandFloatStartLocation::kBottomLeft);
       break;
   }
 }
 
 void FloatControllerLacros::UnsetFloat(aura::Window* window) {
-  GetWaylandExtension(window)->UnSetFloat();
+  GetWaylandToplevelExtension(window)->UnSetFloat();
 }

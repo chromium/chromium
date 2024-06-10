@@ -289,7 +289,7 @@ void ImmersiveFullscreenController::EnableForWidget(views::Widget* widget,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* wayland_extension = views::DesktopWindowTreeHostLacros::From(
                                 widget->GetNativeWindow()->GetHost())
-                                ->GetWaylandExtension();
+                                ->GetWaylandToplevelExtension();
   wayland_extension->SetImmersiveFullscreenStatus(enabled);
 #else
   widget->GetNativeWindow()->SetProperty(kImmersiveIsActive, enabled);

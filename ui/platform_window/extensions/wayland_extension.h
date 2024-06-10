@@ -42,6 +42,36 @@ enum class WaylandOrientationLockType {
 
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
+  // Waits for a Wayland roundtrip to ensure all side effects have been
+  // processed.
+  virtual void RoundTripQueue() = 0;
+
+  // Returns true if there are any in flight requests for state updates.
+  virtual bool HasInFlightRequestsForState() const = 0;
+
+  // Returns the latest viz sequence ID for the currently applied state.
+  virtual int64_t GetVizSequenceIdForAppliedState() const = 0;
+
+  // Returns the latest viz sequence ID for the currently latched state.
+  virtual int64_t GetVizSequenceIdForLatchedState() const = 0;
+
+  // Sets whether we should latch state requests immediately, or wait for the
+  // server to respond. See the comments on `latch_immediately_for_testing_` in
+  // `WaylandWindow` for more details.
+  virtual void SetLatchImmediately(bool latch_immediately) = 0;
+
+ protected:
+  virtual ~WaylandExtension();
+
+  // Sets the pointer to the extension as a property of the PlatformWindow.
+  void SetWaylandExtension(PlatformWindow* window, WaylandExtension* extension);
+};
+
+COMPONENT_EXPORT(PLATFORM_WINDOW)
+WaylandExtension* GetWaylandExtension(const PlatformWindow& window);
+
+class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
+ public:
   // Starts a window dragging session from the owning platform window triggered
   // by `event_source` (kMouse or kTouch) if it is not running yet. Under
   // Wayland, window dragging is backed by a platform drag-and-drop session.
@@ -72,24 +102,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   virtual void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) = 0;
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // Waits for a Wayland roundtrip to ensure all side effects have been
-  // processed.
-  virtual void RoundTripQueue() = 0;
-
-  // Returns true if there are any in flight requests for state updates.
-  virtual bool HasInFlightRequestsForState() const = 0;
-
-  // Returns the latest viz sequence ID for the currently applied state.
-  virtual int64_t GetVizSequenceIdForAppliedState() const = 0;
-
-  // Returns the latest viz sequence ID for the currently latched state.
-  virtual int64_t GetVizSequenceIdForLatchedState() const = 0;
-
-  // Sets whether we should latch state requests immediately, or wait for the
-  // server to respond. See the comments on `latch_immediately_for_testing_` in
-  // `WaylandWindow` for more details.
-  virtual void SetLatchImmediately(bool latch_immediately) = 0;
 
   // Signals the underneath platform to shows a preview for the given window
   // snap direction. `allow_haptic_feedback` indicates if it should send haptic
@@ -131,14 +143,16 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   virtual void UnSetFloat() = 0;
 
  protected:
-  virtual ~WaylandExtension();
+  virtual ~WaylandToplevelExtension();
 
   // Sets the pointer to the extension as a property of the PlatformWindow.
-  void SetWaylandExtension(PlatformWindow* window, WaylandExtension* extension);
+  void SetWaylandToplevelExtension(PlatformWindow* window,
+                                   WaylandToplevelExtension* extension);
 };
 
 COMPONENT_EXPORT(PLATFORM_WINDOW)
-WaylandExtension* GetWaylandExtension(const PlatformWindow& window);
+WaylandToplevelExtension* GetWaylandToplevelExtension(
+    const PlatformWindow& window);
 
 }  // namespace ui
 

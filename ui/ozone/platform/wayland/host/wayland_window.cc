@@ -883,6 +883,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     return false;
   }
 
+  SetWaylandExtension(this, this);
+
   PlatformWindowDelegate::State state;
   state.window_state = PlatformWindowState::kUnknown;
   state.bounds_dip = properties.bounds;
@@ -1627,6 +1629,29 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
 PlatformWindowDelegate::State WaylandWindow::GetLatestRequestedState() const {
   return in_flight_requests_.empty() ? applied_state_
                                      : in_flight_requests_.back().state;
+}
+
+void WaylandWindow::RoundTripQueue() {
+  connection()->RoundTripQueue();
+}
+
+bool WaylandWindow::HasInFlightRequestsForState() const {
+  CHECK(UseTestConfigForPlatformWindows());
+  return WaylandWindow::HasInFlightRequestsForStateForTesting();
+}
+
+int64_t WaylandWindow::GetVizSequenceIdForAppliedState() const {
+  CHECK(UseTestConfigForPlatformWindows());
+  return latest_applied_viz_seq_for_testing_;
+}
+
+int64_t WaylandWindow::GetVizSequenceIdForLatchedState() const {
+  CHECK(UseTestConfigForPlatformWindows());
+  return latest_latched_viz_seq_for_testing_;
+}
+
+void WaylandWindow::SetLatchImmediately(bool latch_immediately) {
+  latch_immediately_for_testing_ = latch_immediately;
 }
 
 void WaylandWindow::ForceApplyWindowStateDoNotUse(

@@ -62,7 +62,7 @@ void WebContentsCanGoBackObserver::UpdateLatestFocusedWebContentsStatus() {
     return;
 
   bool can_go_back = web_contents()->GetController().CanGoBack();
-  auto* wayland_extension = dwth_platform->GetWaylandExtension();
+  auto* wayland_extension = dwth_platform->GetWaylandToplevelExtension();
   wayland_extension->SetCanGoBack(can_go_back);
 }
 

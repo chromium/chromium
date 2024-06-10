@@ -40,7 +40,7 @@ class ShellToplevelWrapper;
 class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveResizeHandler,
                               public WmMoveLoopHandler,
-                              public WaylandExtension,
+                              public WaylandToplevelExtension,
                               public WorkspaceExtension,
                               public DeskExtension,
                               public PinnedModeExtension,
@@ -151,7 +151,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
   void EndMoveLoop() override;
 
-  // WaylandExtension:
+  // WaylandToplevelExtension:
   void StartWindowDraggingSessionIfNeeded(
       ui::mojom::DragEventSource event_source,
       bool allow_system_drag) override;
@@ -161,11 +161,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   gfx::RoundedCornersF GetWindowCornersRadii() override;
   void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  void RoundTripQueue() override;
-  bool HasInFlightRequestsForState() const override;
-  int64_t GetVizSequenceIdForAppliedState() const override;
-  int64_t GetVizSequenceIdForLatchedState() const override;
-  void SetLatchImmediately(bool latch_immediately) override;
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;

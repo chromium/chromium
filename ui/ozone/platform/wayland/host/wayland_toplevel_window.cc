@@ -708,7 +708,7 @@ bool WaylandToplevelWindow::OnInitialize(
 #else
   app_id_ = properties.wayland_app_id;
 #endif
-  SetWaylandExtension(this, static_cast<WaylandExtension*>(this));
+  SetWaylandToplevelExtension(this, this);
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
   SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));
   SetWorkspaceExtensionDelegate(properties.workspace_extension_delegate);
@@ -890,29 +890,6 @@ void WaylandToplevelWindow::SetShadowCornersRadii(
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-void WaylandToplevelWindow::RoundTripQueue() {
-  connection()->RoundTripQueue();
-}
-
-bool WaylandToplevelWindow::HasInFlightRequestsForState() const {
-  CHECK(UseTestConfigForPlatformWindows());
-  return WaylandWindow::HasInFlightRequestsForStateForTesting();
-}
-
-int64_t WaylandToplevelWindow::GetVizSequenceIdForAppliedState() const {
-  CHECK(UseTestConfigForPlatformWindows());
-  return latest_applied_viz_seq_for_testing_;
-}
-
-int64_t WaylandToplevelWindow::GetVizSequenceIdForLatchedState() const {
-  CHECK(UseTestConfigForPlatformWindows());
-  return latest_latched_viz_seq_for_testing_;
-}
-
-void WaylandToplevelWindow::SetLatchImmediately(bool latch_immediately) {
-  latch_immediately_for_testing_ = latch_immediately;
-}
 
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,

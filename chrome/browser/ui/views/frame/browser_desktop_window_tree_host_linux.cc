@@ -132,7 +132,7 @@ void BrowserDesktopWindowTreeHostLinux::FrameTypeChanged() {
 }
 
 bool BrowserDesktopWindowTreeHostLinux::SupportsMouseLock() {
-  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+  auto* wayland_extension = ui::GetWaylandToplevelExtension(*platform_window());
   if (!wayland_extension) {
     return false;
   }
@@ -144,7 +144,8 @@ void BrowserDesktopWindowTreeHostLinux::LockMouse(aura::Window* window) {
   DesktopWindowTreeHostLinux::LockMouse(window);
 
   if (SupportsMouseLock()) {
-    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    auto* wayland_extension =
+        ui::GetWaylandToplevelExtension(*platform_window());
     wayland_extension->LockPointer(true /*enabled*/);
   }
 }
@@ -153,7 +154,8 @@ void BrowserDesktopWindowTreeHostLinux::UnlockMouse(aura::Window* window) {
   DesktopWindowTreeHostLinux::UnlockMouse(window);
 
   if (SupportsMouseLock()) {
-    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    auto* wayland_extension =
+        ui::GetWaylandToplevelExtension(*platform_window());
     wayland_extension->LockPointer(false /*enabled*/);
   }
 }
@@ -177,7 +179,8 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     }
   }
 
-  if (auto* wayland_extension = ui::GetWaylandExtension(*platform_window())) {
+  if (auto* wayland_extension =
+          ui::GetWaylandToplevelExtension(*platform_window())) {
     if (tab_drag_kind != TabDragKind::kNone) {
       if (auto event_source = GetCurrentTabDragEventSource()) {
         const auto allow_system_drag = base::FeatureList::IsEnabled(
