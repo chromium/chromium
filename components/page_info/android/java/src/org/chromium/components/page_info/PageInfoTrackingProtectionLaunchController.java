@@ -21,7 +21,6 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.content_settings.TrackingProtectionFeatureType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -40,7 +39,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
 
     private boolean mCookieControlsVisible;
     private boolean mProtectionsOn;
-    private int mEnforcement;
+    private List<TrackingProtectionFeature> mFeatures;
     private boolean mIsEnforced;
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
@@ -115,7 +114,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         params.fixedExpirationForTesting = mFixedExpirationForTesting;
         mSubPage.setParams(params);
         mSubPage.setTrackingProtectionStatus(
-                mCookieControlsVisible, mProtectionsOn, mEnforcement, mExpiration);
+                mCookieControlsVisible, mProtectionsOn, mExpiration, mFeatures);
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
@@ -192,22 +191,13 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         mCookieControlsVisible = controlsVisible;
         mProtectionsOn = protectionsOn;
         mExpiration = expiration;
-
-        // Extract the 3PC enforcement from the feature vector.
-        boolean cookiesFeaturePresent = false;
-        for (TrackingProtectionFeature feature : features) {
-            if (feature.featureType == TrackingProtectionFeatureType.THIRD_PARTY_COOKIES) {
-                cookiesFeaturePresent = true;
-                mEnforcement = feature.enforcement;
-            }
-        }
-        assert cookiesFeaturePresent;
+        mFeatures = features;
 
         updateRowViewSubtitle();
 
         if (mSubPage != null) {
             mSubPage.setTrackingProtectionStatus(
-                    mCookieControlsVisible, mProtectionsOn, mEnforcement, expiration);
+                    controlsVisible, protectionsOn, expiration, features);
         }
     }
 

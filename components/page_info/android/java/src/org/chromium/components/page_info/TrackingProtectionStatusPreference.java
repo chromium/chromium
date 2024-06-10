@@ -7,11 +7,17 @@ package org.chromium.components.page_info;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
+
+import org.chromium.components.content_settings.TrackingProtectionFeatureType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrackingProtectionStatusPreference extends Preference {
     private TextView mCookieStatus;
@@ -20,10 +26,12 @@ public class TrackingProtectionStatusPreference extends Preference {
 
     private boolean mBlockAll3PC;
     private boolean mStatus;
+    private List<Integer> mElementsToShow;
 
     /** Creates a new object and sets the widget layout. */
     public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mElementsToShow = new ArrayList<Integer>();
         mBlockAll3PC = false;
         mStatus = true;
         setLayoutResource(R.layout.tracking_protection_status);
@@ -37,14 +45,42 @@ public class TrackingProtectionStatusPreference extends Preference {
         mIpStatus = (TextView) holder.findViewById(R.id.ip_status);
         mFingerprintStatus = (TextView) holder.findViewById(R.id.fingerprint_status);
         setTrackingProtectionStatus(mStatus);
+        for (Integer type : mElementsToShow) {
+            setVisible(type, true);
+        }
     }
 
     public void setBlockAll3PC(boolean block) {
         mBlockAll3PC = block;
     }
 
+    public void setVisible(@TrackingProtectionFeatureType int type, boolean visible) {
+        // View is not created completely. Delay this until it is.
+        if (mCookieStatus == null) {
+            // Initially everything is hidden, so only need to remember what to show.
+            if (!visible) return;
+            mElementsToShow.add(Integer.valueOf(type));
+            return;
+        }
+        int visibility = visible ? View.VISIBLE : View.GONE;
+        switch (type) {
+            case TrackingProtectionFeatureType.THIRD_PARTY_COOKIES:
+                mCookieStatus.setVisibility(visibility);
+                return;
+            case TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION:
+                mFingerprintStatus.setVisibility(visibility);
+                return;
+            case TrackingProtectionFeatureType.IP_PROTECTION:
+                mIpStatus.setVisibility(visibility);
+                return;
+            default:
+                assert false : "Invalid TrackingProtectionFeatureType";
+        }
+    }
+
     public void setTrackingProtectionStatus(boolean enabled) {
         mStatus = enabled;
+        // View is not created completely. Delay this until it is.
         if (mCookieStatus == null) return;
 
         Drawable cookieIcon =

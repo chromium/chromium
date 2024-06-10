@@ -25,10 +25,14 @@ import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment
 import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
+import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.components.content_settings.TrackingProtectionFeatureType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.AttrUtils;
+
+import java.util.List;
 
 /** View showing a toggle and a description for tracking protection for a site. */
 public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFragment {
@@ -182,8 +186,19 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     public void setTrackingProtectionStatus(
             boolean controlsVisible,
             boolean protectionsOn,
-            @CookieControlsEnforcement int enforcement,
-            long expiration) {
+            long expiration,
+            List<TrackingProtectionFeature> features) {
+        // Extract the 3PC enforcement from the feature vector.
+        @CookieControlsEnforcement int enforcement = CookieControlsEnforcement.NO_ENFORCEMENT;
+        boolean cookiesFeaturePresent = false;
+        for (TrackingProtectionFeature feature : features) {
+            if (feature.featureType == TrackingProtectionFeatureType.THIRD_PARTY_COOKIES) {
+                cookiesFeaturePresent = true;
+                enforcement = feature.enforcement;
+            }
+        }
+        assert cookiesFeaturePresent : "THIRD_PARTY_COOKIES must be in the features list";
+
         boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
 
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
@@ -222,6 +237,11 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         if (!controlsVisible) return;
 
         mTpSwitch.setChecked(protectionsOn);
+
+        // Update the tracking protection status visibility depending on which features are enabled.
+        for (TrackingProtectionFeature feature : features) {
+            mTpStatus.setVisible(feature.featureType, true);
+        }
         mTpStatus.setTrackingProtectionStatus(protectionsOn);
         mTpSwitch.setEnabled(!isEnforced);
         mTpSwitch.setManagedPreferenceDelegate(

@@ -18,7 +18,9 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:layout_marginBottom="12dp"
             android:drawablePadding="8dp"
+            android:visibility="gone"
             app:drawableWidth="20dp"
             app:drawableHeight="20dp"/>
     <!-- IP protection section. -->
@@ -28,9 +30,9 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
             android:drawablePadding="8dp"
+            android:visibility="gone"
             app:drawableWidth="20dp"
             app:drawableHeight="20dp"/>
     <!-- Fingerprinting -->
@@ -40,7 +42,9 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:layout_marginBottom="12dp"
             android:drawablePadding="8dp"
+            android:visibility="gone"
             app:drawableWidth="20dp"
             app:drawableHeight="20dp"/>
 </LinearLayout>
