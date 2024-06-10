@@ -27,6 +27,11 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     private final Context mContext;
     private TextView mPasswordView;
 
+    // Minimum password length that allows to label the password as strong in
+    // the UI. Must stay in sync with kLengthSufficientForStrongLabel in
+    // components/autofill/core/common/password_generation_util.h.
+    private static final int LENGTH_SUFFICIENT_FOR_STRONG_LABEL = 12;
+
     TouchToFillPasswordGenerationView(Context context, View content) {
         mContext = context;
         mContent = content;
@@ -37,6 +42,16 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
                         context,
                         PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
         mPasswordView = mContent.findViewById(R.id.password);
+    }
+
+    void setSheetTitle(String generatedPassword) {
+        TextView sheetSubtitleView = mContent.findViewById(R.id.touch_to_fill_sheet_title);
+        String sheetTitle =
+                generatedPassword.length() >= LENGTH_SUFFICIENT_FOR_STRONG_LABEL
+                        ? mContext.getString(R.string.password_generation_bottom_sheet_title)
+                        : mContext.getString(
+                                R.string.password_generation_bottom_sheet_title_without_strong);
+        sheetSubtitleView.setText(sheetTitle);
     }
 
     void setSheetSubtitle(String accountEmail) {

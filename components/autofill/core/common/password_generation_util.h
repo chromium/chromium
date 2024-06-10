@@ -17,7 +17,8 @@ namespace autofill {
 namespace password_generation {
 
 // Minimum password length that allows to label the password as strong in the
-// UI.
+// UI. Must stay in sync with LENGTH_SUFFICIENT_FOR_STRONG_LABEL in
+// TouchToFillPasswordGenerationView.java
 inline constexpr int kLengthSufficientForStrongLabel = 12;
 
 // Enumerates various events related to the password generation process.

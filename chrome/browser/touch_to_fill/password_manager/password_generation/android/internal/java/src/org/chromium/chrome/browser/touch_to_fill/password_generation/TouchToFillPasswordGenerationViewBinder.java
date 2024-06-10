@@ -28,6 +28,7 @@ class TouchToFillPasswordGenerationViewBinder {
         if (propertyKey == ACCOUNT_EMAIL) {
             view.setSheetSubtitle(model.get(ACCOUNT_EMAIL));
         } else if (propertyKey == GENERATED_PASSWORD) {
+            view.setSheetTitle(model.get(GENERATED_PASSWORD));
             view.setGeneratedPassword(model.get(GENERATED_PASSWORD));
         } else if (propertyKey == PASSWORD_ACCEPTED_CALLBACK) {
             view.setPasswordAcceptedCallback(model.get(PASSWORD_ACCEPTED_CALLBACK));
