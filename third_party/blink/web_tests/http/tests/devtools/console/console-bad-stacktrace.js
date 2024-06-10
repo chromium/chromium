@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
 import * as Console from 'devtools/panels/console/console.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
@@ -30,7 +31,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   };
   var badStackTraceMessage = new SDK.ConsoleModel.ConsoleMessage(
       TestRunner.runtimeModel,
-      SDK.ConsoleModel.FrontendMessageSource.ConsoleAPI,
+      Common.Console.FrontendMessageSource.ConsoleAPI,
       Protocol.Log.LogEntryLevel.Error, 'This should be visible', {
         type: Protocol.Runtime.ConsoleAPICalledEventType.Error,
         stackTrace: badStackTrace,

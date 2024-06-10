@@ -6972,10 +6972,6 @@ crbug.com/328719549 [ Linux ] inspector-protocol/memory/sampling-native-snapshot
 # Gardener 2023-03-18 (EMEA)
 crbug.com/330126415 [ Win ] http/tests/devtools/console/console-stack-overflow.js [ Failure Pass ]
 
-# Temporarily disable tests to land DevTools changes
-crbug.com/345187461 http/tests/devtools/console/console-bad-stacktrace.js [ Failure Pass Timeout ]
-crbug.com/345187461 http/tests/devtools/console/console-group-similar.js [ Failure Pass Timeout ]
-
 # Gardener 2023-03-18 (EST)
 crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/same-document-traverse-immediate.html [ Failure Pass ]
 
