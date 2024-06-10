@@ -68,29 +68,40 @@ class NdkMediaCodecWrapperTest : public ::testing::Test,
   void SimulateInputAvailable(NdkMediaCodecWrapper::BufferIndex index) {
     ASSERT_TRUE(wrapper_);
 
+// TODO(b/345303691): Remove the guard attribute from these lambda functions as
+// a workaround for -Wunguarded-availability.
+#pragma clang attribute pop
     SimulateAsyncCodecMessage(base::BindLambdaForTesting([&]() {
       NdkMediaCodecWrapper::OnAsyncInputAvailable(nullptr, wrapper_.get(),
                                                   index);
     }));
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
   }
 
   void SimulateOutputAvailable(NdkMediaCodecWrapper::BufferIndex index) {
     ASSERT_TRUE(wrapper_);
 
+#pragma clang attribute pop
     SimulateAsyncCodecMessage(base::BindLambdaForTesting([&]() {
       AMediaCodecBufferInfo buffer_info;
       NdkMediaCodecWrapper::OnAsyncOutputAvailable(nullptr, wrapper_.get(),
                                                    index, &buffer_info);
     }));
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
   }
 
   void SimulateError(media_status_t error) {
     ASSERT_TRUE(wrapper_);
 
+#pragma clang attribute pop
     SimulateAsyncCodecMessage(base::BindLambdaForTesting([&]() {
       NdkMediaCodecWrapper::OnAsyncError(nullptr, wrapper_.get(), error, 0,
                                          "Fake Error");
     }));
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
   }
 
   MOCK_METHOD(void, OnInputAvailable, ());
