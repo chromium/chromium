@@ -403,6 +403,19 @@ suite('LanguageMenu', () => {
         assertLanguageNotification(getNotificationItems()[1]!, '');
       });
 
+      test('shows generic error notification with internet', async () => {
+        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        setEnabledLanguages();
+        languagesToNotificationMap['it'] =
+            VoiceClientSideStatusCode.ERROR_INSTALLING;
+        setNotificationForLanguage();
+        assertEquals(getNotificationItems().length, 3);
+        assertLanguageNotification(getNotificationItems()[0]!, '');
+        assertLanguageNotification(getNotificationItems()[1]!, '');
+        assertLanguageNotification(
+            getNotificationItems()[2]!, 'Download failed');
+      });
+
 
       test(
           'with other voices it shows high quality allocation notification',
