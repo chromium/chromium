@@ -56,7 +56,6 @@ public class Features {
     static void resetCachedFlags() {
         // TODO(agrieve): Allow cached flags & field trials to be set in @BeforeClass.
         CachedFlagUtils.resetFlagsForTesting();
-        CachedFlag.resetDiskForTesting();
         FieldTrials.getInstance().reset();
         Flag.resetAllInMemoryCachedValuesForTesting();
         FeatureParam.resetAllInMemoryCachedValuesForTesting();

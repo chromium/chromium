@@ -58,12 +58,6 @@ public class AdvancedMockContext extends InMemorySharedPreferencesContext {
         getBaseContext().unregisterComponentCallbacks(callback);
     }
 
-    public void addSharedPreferences(String name, Map<String, Object> data) {
-        synchronized (mSharedPreferences) {
-            mSharedPreferences.put(name, new InMemorySharedPreferences(data));
-        }
-    }
-
     public void setFlag(String key) {
         mFlags.put(key, true);
     }

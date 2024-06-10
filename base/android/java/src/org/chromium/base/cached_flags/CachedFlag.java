@@ -169,11 +169,6 @@ public class CachedFlag extends Flag {
         }
     }
 
-    public static void resetDiskForTesting() {
-        CachedFlagsSharedPreferences.getInstance()
-                .removeKeysWithPrefix(CachedFlagsSharedPreferences.FLAGS_CACHED);
-    }
-
     /** Create a Map of feature names -> {@link CachedFlag} from multiple lists of CachedFlags. */
     public static Map<String, CachedFlag> createCachedFlagMap(
             List<List<CachedFlag>> allCachedFlagsLists) {

@@ -5,32 +5,119 @@
 package org.chromium.base.test.util;
 
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * An implementation of SharedPreferences that can be used in tests.
- * <p/>
- * It keeps all state in memory, and there is no difference between apply() and commit().
+ *
+ * <p>It keeps all state in memory, and there is no difference between apply() and commit().
  */
 public class InMemorySharedPreferences implements SharedPreferences {
+    private static final String TAG = "InMemorySharedPrefs";
+    // Enable this to log all shared prefs when saving & restoring snapshots.
+    private static final boolean VERBOSE_LOGGING = false;
 
-    // Guarded on its own monitor.
-    private final Map<String, Object> mData;
+    @GuardedBy("mData")
+    private final Map<String, Object> mData = new HashMap<>();
+
+    @GuardedBy("mObservers")
     private final List<OnSharedPreferenceChangeListener> mObservers = new ArrayList<>();
 
-    public InMemorySharedPreferences() {
-        mData = new HashMap<String, Object>();
+    @GuardedBy("mData")
+    @Nullable
+    private Map<String, Object> mDataSnapshot;
+
+    @GuardedBy("mObservers")
+    @Nullable
+    private List<OnSharedPreferenceChangeListener> mObserversSnapshot;
+
+    void reset() {
+        synchronized (mData) {
+            mData.clear();
+            mDataSnapshot = null;
+        }
+        synchronized (mObservers) {
+            mObservers.clear();
+            mObserversSnapshot = null;
+        }
     }
 
-    public InMemorySharedPreferences(Map<String, Object> data) {
-        mData = data;
+    Set<String> toDebugLines() {
+        if (!VERBOSE_LOGGING) {
+            return Collections.emptySet();
+        }
+        synchronized (mData) {
+            Set<String> ret = new TreeSet<>();
+            for (var entry : mData.entrySet()) {
+                ret.add(String.format("%s = %s", entry.getKey(), entry.getValue()));
+            }
+            return ret;
+        }
+    }
+
+    int size() {
+        synchronized (mData) {
+            return mData.size();
+        }
+    }
+
+    void createSnapshot() {
+        synchronized (mData) {
+            assert mDataSnapshot == null;
+            mDataSnapshot = new HashMap<>(mData);
+        }
+        synchronized (mObservers) {
+            mObserversSnapshot = new ArrayList<>(mObservers);
+        }
+    }
+
+    void restoreSnapshot(String name) {
+        synchronized (mData) {
+            if (mDataSnapshot == null) {
+                return;
+            }
+            Set<String> origDebugLines = toDebugLines();
+            mData.clear();
+            mData.putAll(mDataSnapshot);
+            Set<String> newDebugLines = toDebugLines();
+            Set<String> addedLines = new TreeSet<>(newDebugLines);
+            addedLines.removeAll(origDebugLines);
+            Set<String> removedLines = new TreeSet<>(origDebugLines);
+            removedLines.removeAll(newDebugLines);
+            if (!removedLines.isEmpty()) {
+                String joined = TextUtils.join("\n  ", removedLines);
+                Log.i(TAG, "Removed the following shared prefs from %s:\n  %s", name, joined);
+            }
+            if (!addedLines.isEmpty()) {
+                String joined = TextUtils.join("\n  ", addedLines);
+                Log.i(TAG, "Restored shared prefs for %s:\n  %s", name, joined);
+            }
+        }
+        synchronized (mObservers) {
+            int origCount = mObservers.size();
+            // Likely never want to re-add a removed listener, so just remove new listeners.
+            mObservers.retainAll(mObserversSnapshot);
+            int newCount = mObservers.size();
+            if (newCount != origCount) {
+                Log.i(TAG, "Removed %s shared prefs listeners for %s", newCount - origCount, name);
+            }
+        }
     }
 
     @Override
@@ -106,6 +193,8 @@ public class InMemorySharedPreferences implements SharedPreferences {
             SharedPreferences.OnSharedPreferenceChangeListener listener) {
         synchronized (mObservers) {
             mObservers.add(listener);
+            ResettersForTesting.register(
+                    () -> unregisterOnSharedPreferenceChangeListener(listener));
         }
     }
 

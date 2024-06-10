@@ -6,8 +6,6 @@ package org.chromium.base.cached_flags;
 
 import static org.junit.Assert.assertEquals;
 
-import org.chromium.base.test.util.BaseFlagTestRule;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +15,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.BaseFlagTestRule;
 
 import java.util.List;
 import java.util.Map;
@@ -100,9 +99,6 @@ public class CachedFieldTrialParameterUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        CachedFlagUtils.resetFlagsForTesting();
-        CachedFlag.resetDiskForTesting();
-
         TestValues testValues = new TestValues();
 
         testValues.addFieldTrialParamOverride(FEATURE_A, STRING_PARAM_NAME, STRING_PARAM_NATIVE);
@@ -121,13 +117,6 @@ public class CachedFieldTrialParameterUnitTest {
                 FEATURE_B, DOUBLE_PARAM_NAME, DOUBLE_PARAM_NATIVE_STRING);
 
         FeatureList.setTestValues(testValues);
-    }
-
-    @After
-    public void tearDown() {
-        CachedFlagUtils.resetFlagsForTesting();
-        CachedFlag.resetDiskForTesting();
-        FeatureList.setTestValues(null);
     }
 
     @Test

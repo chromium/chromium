@@ -28,6 +28,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ResettersForTesting.State;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
@@ -362,7 +363,15 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         TestTraceEvent.begin(method.getName());
 
         mTestStartTimeMs = SystemClock.uptimeMillis();
+        boolean firstTestMethod = ResettersForTesting.getState() != State.BETWEEN_METHODS;
         ResettersForTesting.beforeHooksWillExecute();
+        if (firstTestMethod) {
+            BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
+                    .createSharedPreferencesSnapshot();
+        } else {
+            BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
+                    .restoreSharedPreferencesSnapshot();
+        }
 
         // TODO: Might be slow to do this before every test.
         SharedPreferencesTestUtil.deleteOnDiskSharedPreferences(getApplication());
@@ -382,6 +391,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private void onBeforeTestClass() {
         Class<?> testClass = getTestClass().getJavaClass();
         ResettersForTesting.beforeClassHooksWillExecute();
+        BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
 
         CommandLineFlags.reset(testClass.getAnnotations(), null);
 

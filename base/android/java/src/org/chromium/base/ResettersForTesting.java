@@ -244,4 +244,15 @@ public class ResettersForTesting {
             sClassResetters = new LinkedHashSet<>();
         }
     }
+
+    /**
+     * Get the state of test run execution as known by ResettersForTesting. ResettersForTesting
+     * keeps track of the state by setting hooks after @BeforeClass and @AfterClass, and @Before
+     * and @After.
+     */
+    public static @State int getState() {
+        synchronized (sLock) {
+            return sState;
+        }
+    }
 }
