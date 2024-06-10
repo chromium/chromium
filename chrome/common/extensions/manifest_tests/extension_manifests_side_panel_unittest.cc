@@ -4,9 +4,6 @@
 
 #include <memory>
 
-#include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
@@ -14,7 +11,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
-#include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
