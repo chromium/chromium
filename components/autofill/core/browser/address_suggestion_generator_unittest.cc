@@ -9,9 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/rand_util.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -24,22 +21,19 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
-#include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/webdata/common/web_data_results.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -133,25 +127,22 @@ class AddressSuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data().SetPrefService(autofill_client_.GetPrefs());
-    personal_data().SetSyncServiceForTest(&sync_service_);
+    address_data().SetPrefService(autofill_client_.GetPrefs());
+    address_data().SetSyncServiceForTest(&sync_service_);
     suggestion_generator_ =
         std::make_unique<AddressSuggestionGenerator>(autofill_client_);
-    autofill_client_.set_autofill_offer_manager(
-        std::make_unique<AutofillOfferManager>(
-            &personal_data(),
-            /*coupon_service_delegate=*/nullptr, /*shopping_service=*/nullptr));
   }
 
   AddressSuggestionGenerator& suggestion_generator() {
     return *suggestion_generator_.get();
   }
 
-  TestPersonalDataManager& personal_data() {
-    return *autofill_client_.GetPersonalDataManager();
+  TestAddressDataManager& address_data() {
+    return autofill_client_.GetPersonalDataManager()
+        ->test_address_data_manager();
   }
 
-  const std::string& app_locale() { return personal_data().app_locale(); }
+  const std::string& app_locale() { return address_data().app_locale(); }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
@@ -172,10 +163,9 @@ TEST_F(AddressSuggestionGeneratorTest,
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
   profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
-  personal_data().address_data_manager().AddProfile(profile_1);
-  personal_data().address_data_manager().AddProfile(profile_2);
-  ASSERT_EQ(
-      personal_data().address_data_manager().GetProfilesToSuggest().size(), 2u);
+  address_data().AddProfile(profile_1);
+  address_data().AddProfile(profile_2);
+  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 2u);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> profiles =
       test_api(suggestion_generator())
@@ -209,10 +199,10 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
 
   // For easier results verification, make sure |profile| is suggested first.
   profile.set_use_count(5);
-  personal_data().address_data_manager().AddProfile(profile);
-  personal_data().address_data_manager().AddProfile(profile1);
-  personal_data().address_data_manager().AddProfile(profile2);
-  personal_data().address_data_manager().AddProfile(profile3);
+  address_data().AddProfile(profile);
+  address_data().AddProfile(profile1);
+  address_data().AddProfile(profile2);
+  address_data().AddProfile(profile3);
 
   // Simulate a form with street address, city and state.
   FieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
@@ -235,7 +225,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
                          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
                          "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                          "Hollywood", "CA", "91601", "US", "12345678910");
-    personal_data().address_data_manager().AddProfile(profile);
+    address_data().AddProfile(profile);
     profiles.push_back(profile);
   }
 
@@ -245,7 +235,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
               .GetProfilesToSuggest(NAME_FIRST, u"Ma", false, {});
 
   ASSERT_EQ(2 * kMaxDeduplicatedProfilesForSuggestion,
-            personal_data().address_data_manager().GetProfiles().size());
+            address_data().GetProfiles().size());
   ASSERT_EQ(kMaxDeduplicatedProfilesForSuggestion, suggested_profiles.size());
 }
 
@@ -267,7 +257,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
     profile.set_use_count(12);
     profile.set_use_date(AutofillClock::Now() - base::Days(1));
 
-    personal_data().address_data_manager().AddProfile(profile);
+    address_data().AddProfile(profile);
     profiles.push_back(profile);
   }
 
@@ -279,7 +269,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile.set_use_count(1);
   profile.set_use_date(AutofillClock::Now() - base::Days(7));
-  personal_data().address_data_manager().AddProfile(profile);
+  address_data().AddProfile(profile);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       suggested_profiles =
@@ -287,7 +277,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
               .GetProfilesToSuggest(NAME_FIRST, u"Ma", false, {});
 
   ASSERT_EQ(kMaxPrefixMatchedProfilesForSuggestion + 1,
-            personal_data().address_data_manager().GetProfiles().size());
+            address_data().GetProfiles().size());
   ASSERT_EQ(1U, suggested_profiles.size());
   EXPECT_EQ(suggested_profiles.front()->GetRawInfo(NAME_FIRST),
             profiles.front().GetRawInfo(NAME_FIRST));
@@ -305,7 +295,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile3.set_use_date(AutofillClock::Now() - base::Days(1));
   profile3.set_use_count(5);
-  personal_data().address_data_manager().AddProfile(profile3);
+  address_data().AddProfile(profile3);
 
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
@@ -314,7 +304,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
   profile1.set_use_count(10);
-  personal_data().address_data_manager().AddProfile(profile1);
+  address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
@@ -323,7 +313,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile2.set_use_date(AutofillClock::Now() - base::Days(15));
   profile2.set_use_count(300);
-  personal_data().address_data_manager().AddProfile(profile2);
+  address_data().AddProfile(profile2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       suggested_profiles =
@@ -344,21 +334,21 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  personal_data().address_data_manager().AddProfile(profile1);
+  address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  personal_data().address_data_manager().AddProfile(profile2);
+  address_data().AddProfile(profile2);
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  personal_data().address_data_manager().AddProfile(profile3);
+  address_data().AddProfile(profile3);
 
   // Verify that all the profiles are suggested.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -375,12 +365,12 @@ TEST_F(AddressSuggestionGeneratorTest,
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491601234567");
-  personal_data().address_data_manager().AddProfile(profile1);
+  address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491607654321");
-  personal_data().address_data_manager().AddProfile(profile2);
+  address_data().AddProfile(profile2);
 
   {
     std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -430,7 +420,7 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile1.set_use_date(AutofillClock::Now() - base::Days(200));
-  personal_data().address_data_manager().AddProfile(profile1);
+  address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
@@ -438,7 +428,7 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "456 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile2.set_use_date(AutofillClock::Now() - base::Days(20));
-  personal_data().address_data_manager().AddProfile(profile2);
+  address_data().AddProfile(profile2);
 
   // Query with empty string only returns profile2.
   {
@@ -489,8 +479,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SingleDedupe) {
   AutofillProfile profile_1 = test::GetFullProfile();
   profile_1.set_use_count(10);
   AutofillProfile profile_2 = test::GetFullProfile();
-  personal_data().address_data_manager().AddProfile(profile_1);
-  personal_data().address_data_manager().AddProfile(profile_2);
+  address_data().AddProfile(profile_1);
+  address_data().AddProfile(profile_2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -509,16 +499,16 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
   profiles[0].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[0].SetRawInfo(NAME_LAST, u"Morrison");
   profiles[0].set_use_count(10);
-  personal_data().address_data_manager().AddProfile(profiles[0]);
+  address_data().AddProfile(profiles[0]);
 
   profiles[1].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[1].SetRawInfo(NAME_LAST, u"Parker");
   profiles[1].set_use_count(5);
-  personal_data().address_data_manager().AddProfile(profiles[1]);
+  address_data().AddProfile(profiles[1]);
 
   profiles[2].SetRawInfo(NAME_FIRST, u"Mary");
   profiles[2].SetRawInfo(NAME_LAST, u"Parker");
-  personal_data().address_data_manager().AddProfile(profiles[2]);
+  address_data().AddProfile(profiles[2]);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -539,7 +529,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
                        base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
     profile.set_use_count(kMaxDeduplicatedProfilesForSuggestion + 10 - i);
     profiles.push_back(profile);
-    personal_data().address_data_manager().AddProfile(profile);
+    address_data().AddProfile(profile);
   }
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -572,7 +562,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(NAME_FULL, u"First Last");
   profile_1.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data().address_data_manager().AddProfile(profile_1);
+  address_data().AddProfile(profile_1);
 
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_2.SetRawInfo(NAME_FULL, u"First Last");
@@ -580,7 +570,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   // Set high use count for profile 2 so that it has greater ranking than
   // profile_1
   profile_2.set_use_count(100);
-  personal_data().address_data_manager().AddProfile(profile_2);
+  address_data().AddProfile(profile_2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -599,12 +589,12 @@ TEST_F(AddressSuggestionGeneratorTest,
   AutofillProfile marion_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
   marion_profile.SetRawInfo(NAME_FIRST, u"Marion");
-  personal_data().address_data_manager().AddProfile(marion_profile);
+  address_data().AddProfile(marion_profile);
 
   AutofillProfile bob_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
   bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
-  personal_data().address_data_manager().AddProfile(bob_profile);
+  address_data().AddProfile(bob_profile);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -620,7 +610,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_NoMatchingProfile) {
   AutofillProfile bob_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
   bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
-  personal_data().address_data_manager().AddProfile(bob_profile);
+  address_data().AddProfile(bob_profile);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -663,7 +653,7 @@ TEST_F(AddressSuggestionGeneratorTest,
     profiles[i].SetRawInfo(
         NAME_FULL, base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
     profiles[i].set_use_date(kCurrentTime - (i * k30Days));
-    personal_data().address_data_manager().AddProfile(profiles[i]);
+    address_data().AddProfile(profiles[i]);
   }
 
   base::HistogramTester histogram_tester;
@@ -700,8 +690,8 @@ TEST_F(AddressSuggestionGeneratorTest,
   profile_1.set_use_date(kDisusedTime);
   profile_2.set_use_count(1);
   profile_2.set_use_date(kDisusedTime);
-  personal_data().address_data_manager().AddProfile(profile_1);
-  personal_data().address_data_manager().AddProfile(profile_2);
+  address_data().AddProfile(profile_1);
+  address_data().AddProfile(profile_2);
 
   base::HistogramTester histogram_tester;
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -1600,8 +1590,8 @@ class AutofillNonAddressFieldsSuggestionGeneratorTest
 
 TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        AllProfilesGenerateSuggestions) {
-  personal_data().address_data_manager().AddProfile(test::GetFullProfile());
-  personal_data().address_data_manager().AddProfile(test::GetFullProfile2());
+  address_data().AddProfile(test::GetFullProfile());
+  address_data().AddProfile(test::GetFullProfile2());
 
   FormFieldData triggering_field;
 
@@ -1851,7 +1841,7 @@ TEST_F(AddressSuggestionGeneratorTest,
       features::kAutofillForUnclassifiedFieldsAvailable);
   AutofillProfile profile = test::GetIncompleteProfile1();
   ASSERT_FALSE(profile.HasRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  personal_data().address_data_manager().AddProfile(profile);
+  address_data().AddProfile(profile);
 
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
@@ -1873,8 +1863,8 @@ TEST_F(AddressSuggestionGeneratorTest,
 TEST_F(AddressSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = test::GetFullProfile2();
-  personal_data().address_data_manager().AddProfile(profile1);
-  personal_data().address_data_manager().AddProfile(profile2);
+  address_data().AddProfile(profile1);
+  address_data().AddProfile(profile2);
 
   // Create a triggering field those value prefix-matches `profile1`, but not
   // `profile2`.
@@ -1910,8 +1900,8 @@ TEST_F(AddressSuggestionGeneratorTest,
   AutofillProfile profile2 = test::GetFullProfile2();
   profile2.set_use_date(AutofillClock::Now() - kDisusedDataModelTimeDelta -
                         base::Days(1));
-  personal_data().address_data_manager().AddProfile(profile1);
-  personal_data().address_data_manager().AddProfile(profile2);
+  address_data().AddProfile(profile1);
+  address_data().AddProfile(profile2);
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest =
@@ -1936,7 +1926,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
-  personal_data().address_data_manager().AddProfile(test::GetFullProfile());
+  address_data().AddProfile(test::GetFullProfile());
   FormFieldData field;
   field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
