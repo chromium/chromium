@@ -90,9 +90,7 @@ arm64_asm_sources = [
   "libdav1d/src/arm/64/looprestoration_common.S",
   "libdav1d/src/arm/64/mc.S",
   "libdav1d/src/arm/64/mc16.S",
-  # Use a patched version of libdav1d/src/arm/64/mc_dotprod.S to test a
-  # proposed fix for bug 343965945.
-  "mc_dotprod.S",
+  "libdav1d/src/arm/64/mc_dotprod.S",
   "libdav1d/src/arm/64/msac.S",
   "libdav1d/src/arm/64/refmvs.S",
 ]
