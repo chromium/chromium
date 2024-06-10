@@ -4038,9 +4038,16 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
         const LineInfo& base_line = rewound_ruby_column.base_line;
         Rewind(i, line_info);
         HandleRuby(line_info, base_line.Width());
-        LayoutUnit new_width =
-            line_info->Results().back().ruby_column->base_line.Width();
+        const LineInfo& new_base_line =
+            line_info->Results().back().ruby_column->base_line;
+        LayoutUnit new_width = new_base_line.Width();
         if (new_width > LayoutUnit() && new_width != base_line.Width()) {
+          // We succeeded to shorten the ruby column.
+          state_ = LineBreakState::kDone;
+          return;
+        } else if (i == 0 && new_base_line.GetBreakToken()) {
+          // We couldn't shorten the ruby column and can't rewind more.
+          // We accept this result.
           state_ = LineBreakState::kDone;
           return;
         }

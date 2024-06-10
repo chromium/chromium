@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<style type="text/css">
+.CLASS8 {
+    columns: 9ex 16384;
+}
+</style>
+<body class="CLASS8">
+<ruby>
+<input/>B axbxc AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AxBxC
+<rt dir="rtl">C RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+</ruby>shape
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+// crbug.com/343749067. We had a crash when HandleRuby() from HandleOverflow()
+// failed to shorten a ruby column.
+test(() => {
+}, 'No crash');
+</script>
+</body>
