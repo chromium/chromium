@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.SyncFromNativeContextMicroseconds"
-    units="microseconds" expires_after="2024-06-01">
+    units="microseconds" expires_after="2024-09-01">
   <owner>blundell@chromium.org</owner>
   <owner>geofflang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -430,7 +430,8 @@ chromium-metrics-reviews@google.com.
     comparable at a high level). Recorded once per saving of HWUI state when
     drawing with GL. Recorded for all clients as ANGLE does not support checking
     for high-resolution clocks (in practice, all Android devices have
-    high-resolution clocks).
+    high-resolution clocks). Note: Expired on June 1 2024 and revived on June 10
+    2024.
   </summary>
 </histogram>
 
