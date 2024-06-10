@@ -1610,7 +1610,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 
   // Changing cookie settings should trigger the migration.
-
+  test_signin_client()->set_are_signin_cookies_deleted_on_exit(false);
   reconcilor->OnContentSettingChanged(
       /*primary_pattern=*/ContentSettingsPattern(),
       /*secondary_pattern=*/ContentSettingsPattern(),
