@@ -169,9 +169,9 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(ProcessingQueue$1, "__esModule", { value: true });
 	ProcessingQueue$1.ProcessingQueue = void 0;
-	const log_js_1$d = log$1;
+	const log_js_1$e = log$1;
 	class ProcessingQueue {
-	    static LOGGER_PREFIX = `${log_js_1$d.LogType.debug}:queue`;
+	    static LOGGER_PREFIX = `${log_js_1$e.LogType.debug}:queue`;
 	    #logger;
 	    #processor;
 	    #queue = [];
@@ -201,13 +201,13 @@ var mapperTab = (function () {
 	            await entryPromise
 	                .then((entry) => {
 	                if (entry.kind === 'error') {
-	                    this.#logger?.(log_js_1$d.LogType.debugError, 'Event threw before sending:', entry.error.message, entry.error.stack);
+	                    this.#logger?.(log_js_1$e.LogType.debugError, 'Event threw before sending:', entry.error.message, entry.error.stack);
 	                    return;
 	                }
 	                return this.#processor(entry.value);
 	            })
 	                .catch((error) => {
-	                this.#logger?.(log_js_1$d.LogType.debugError, 'Event was not processed:', error?.message);
+	                this.#logger?.(log_js_1$e.LogType.debugError, 'Event was not processed:', error?.message);
 	            });
 	        }
 	        this.#isProcessing = false;
@@ -1221,6 +1221,9 @@ var mapperTab = (function () {
 	    pressed = new Set();
 	    x = 0;
 	    y = 0;
+	    radiusX;
+	    radiusY;
+	    force;
 	    constructor(id, subtype) {
 	        this.pointerId = id;
 	        this.subtype = subtype;
@@ -2211,7 +2214,7 @@ var mapperTab = (function () {
 	            }
 	        }
 	    }
-	    #dispatchPointerDownAction(source, keyState, action) {
+	    async #dispatchPointerDownAction(source, keyState, action) {
 	        const { button } = action;
 	        if (source.pressed.has(button)) {
 	            return;
@@ -2222,11 +2225,12 @@ var mapperTab = (function () {
 	        const { tiltX, tiltY } = getTilt(action);
 	        // --- Platform-specific code begins here ---
 	        const { modifiers } = keyState;
+	        const { radiusX, radiusY } = getRadii(width ?? 1, height ?? 1);
 	        switch (pointerType) {
 	            case "mouse" /* Input.PointerType.Mouse */:
 	            case "pen" /* Input.PointerType.Pen */:
 	                // TODO: Implement width and height when available.
-	                return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
+	                await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
 	                    type: 'mousePressed',
 	                    x,
 	                    y,
@@ -2241,14 +2245,16 @@ var mapperTab = (function () {
 	                    twist,
 	                    force: pressure,
 	                });
+	                break;
 	            case "touch" /* Input.PointerType.Touch */:
-	                return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
+	                await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
 	                    type: 'touchStart',
 	                    touchPoints: [
 	                        {
 	                            x,
 	                            y,
-	                            ...getRadii(width ?? 1, height ?? 1),
+	                            radiusX,
+	                            radiusY,
 	                            tangentialPressure,
 	                            tiltX,
 	                            tiltY,
@@ -2259,7 +2265,11 @@ var mapperTab = (function () {
 	                    ],
 	                    modifiers,
 	                });
+	                break;
 	        }
+	        source.radiusX = radiusX;
+	        source.radiusY = radiusY;
+	        source.force = pressure;
 	        // --- Platform-specific code ends here ---
 	    }
 	    #dispatchPointerUpAction(source, keyState, action) {
@@ -2268,7 +2278,7 @@ var mapperTab = (function () {
 	            return;
 	        }
 	        source.pressed.delete(button);
-	        const { x, y, subtype: pointerType } = source;
+	        const { x, y, force, radiusX, radiusY, subtype: pointerType } = source;
 	        // --- Platform-specific code begins here ---
 	        const { modifiers } = keyState;
 	        switch (pointerType) {
@@ -2293,6 +2303,9 @@ var mapperTab = (function () {
 	                            x,
 	                            y,
 	                            id: source.pointerId,
+	                            force,
+	                            radiusX,
+	                            radiusY,
 	                        },
 	                    ],
 	                    modifiers,
@@ -2304,6 +2317,7 @@ var mapperTab = (function () {
 	        const { x: startX, y: startY, subtype: pointerType } = source;
 	        const { width, height, pressure, twist, tangentialPressure, x: offsetX, y: offsetY, origin = 'viewport', duration = this.#tickDuration, } = action;
 	        const { tiltX, tiltY } = getTilt(action);
+	        const { radiusX, radiusY } = getRadii(width ?? 1, height ?? 1);
 	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY);
 	        if (targetX < 0 || targetY < 0) {
 	            throw new protocol_js_1$k.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
@@ -2372,7 +2386,8 @@ var mapperTab = (function () {
 	                                    {
 	                                        x,
 	                                        y,
-	                                        ...getRadii(width ?? 1, height ?? 1),
+	                                        radiusX,
+	                                        radiusY,
 	                                        tangentialPressure,
 	                                        tiltX,
 	                                        tiltY,
@@ -2389,6 +2404,9 @@ var mapperTab = (function () {
 	                // --- Platform-specific code ends here ---
 	                source.x = x;
 	                source.y = y;
+	                source.radiusX = radiusX;
+	                source.radiusY = radiusY;
+	                source.force = pressure;
 	            }
 	        } while (!last);
 	    }
@@ -3403,9 +3421,12 @@ var mapperTab = (function () {
 	        path: params.cookie.path ?? '/',
 	        secure: params.cookie.secure ?? false,
 	        httpOnly: params.cookie.httpOnly ?? false,
-	        // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
 	        ...(partitionKey.sourceOrigin !== undefined && {
-	            partitionKey: partitionKey.sourceOrigin,
+	            partitionKey: {
+	                hasCrossSiteAncestor: false,
+	                // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
+	                topLevelSite: partitionKey.sourceOrigin,
+	            },
 	        }),
 	        ...(params.cookie.expiry !== undefined && {
 	            expires: params.cookie.expiry,
@@ -3522,6 +3543,11 @@ var mapperTab = (function () {
 	        const { url, method, headers: commandHeaders, body, request: networkId, } = params;
 	        if (params.url !== undefined) {
 	            NetworkProcessor.parseUrlString(params.url);
+	        }
+	        if (params.method !== undefined) {
+	            if (!NetworkProcessor.isMethodValid(params.method)) {
+	                throw new protocol_js_1$h.InvalidArgumentException(`Method '${method}' is invalid.`);
+	            }
 	        }
 	        if (params.headers) {
 	            NetworkProcessor.validateHeaders(params.headers);
@@ -3709,6 +3735,10 @@ var mapperTab = (function () {
 	                throw new protocol_js_1$h.InvalidArgumentException(`Header value '${headerValue}' is not acceptable value`);
 	            }
 	        }
+	    }
+	    static isMethodValid(method) {
+	        // https://httpwg.org/specs/rfc9110.html#method.overview
+	        return /^[!#$%&'*+\-.^_`|~a-zA-Z\d]+$/.test(method);
 	    }
 	    /**
 	     * Attempts to parse the given url.
@@ -3986,7 +4016,7 @@ var mapperTab = (function () {
 	Object.defineProperty(ChannelProxy$1, "__esModule", { value: true });
 	ChannelProxy$1.ChannelProxy = void 0;
 	const protocol_js_1$f = protocol;
-	const log_js_1$c = log$1;
+	const log_js_1$d = log$1;
 	const uuid_js_1$3 = uuid;
 	/**
 	 * Used to send messages from realm to BiDi user.
@@ -4016,7 +4046,7 @@ var mapperTab = (function () {
 	            void this.#startListener(realm, channelHandle, eventManager);
 	        }
 	        catch (error) {
-	            this.#logger?.(log_js_1$c.LogType.debugError, error);
+	            this.#logger?.(log_js_1$d.LogType.debugError, error);
 	        }
 	    }
 	    /**
@@ -4123,7 +4153,7 @@ var mapperTab = (function () {
 	            catch (error) {
 	                // If an error is thrown, then the channel is permanently broken, so we
 	                // exit the loop.
-	                this.#logger?.(log_js_1$c.LogType.debugError, error);
+	                this.#logger?.(log_js_1$d.LogType.debugError, error);
 	                break;
 	            }
 	        }
@@ -4482,7 +4512,7 @@ var mapperTab = (function () {
 	StorageProcessor$1.StorageProcessor = void 0;
 	const protocol_js_1$d = protocol;
 	const assert_js_1$3 = assert$1;
-	const log_js_1$b = log$1;
+	const log_js_1$c = log$1;
 	const NetworkProcessor_js_1$1 = NetworkProcessor$1;
 	const NetworkUtils_js_1$2 = NetworkUtils;
 	/**
@@ -4518,7 +4548,7 @@ var mapperTab = (function () {
 	        // `sourceOrigin` partition key, only cookies with the requested source origin
 	        // are returned.
 	        (c) => partitionKey.sourceOrigin === undefined ||
-	            c.partitionKey === partitionKey.sourceOrigin)
+	            c.partitionKey?.topLevelSite === partitionKey.sourceOrigin)
 	            .filter((cdpCookie) => {
 	            const bidiCookie = (0, NetworkUtils_js_1$2.cdpToBiDiCookie)(cdpCookie);
 	            return this.#matchCookie(bidiCookie, params.filter);
@@ -4557,7 +4587,7 @@ var mapperTab = (function () {
 	        // `sourceOrigin` partition key, only cookies with the requested source origin
 	        // are returned.
 	        (c) => partitionKey.sourceOrigin === undefined ||
-	            c.partitionKey === partitionKey.sourceOrigin)
+	            c.partitionKey?.topLevelSite === partitionKey.sourceOrigin)
 	            .map((c) => (0, NetworkUtils_js_1$2.cdpToBiDiCookie)(c))
 	            .filter((c) => this.#matchCookie(c, params.filter));
 	        return {
@@ -4579,7 +4609,7 @@ var mapperTab = (function () {
 	                // If the user context is not found, special error is thrown.
 	                throw new protocol_js_1$d.NoSuchUserContextException(err.message);
 	            }
-	            this.#logger?.(log_js_1$b.LogType.debugError, err);
+	            this.#logger?.(log_js_1$c.LogType.debugError, err);
 	            throw new protocol_js_1$d.UnableToSetCookieException(err.toString());
 	        }
 	        return {
@@ -4630,7 +4660,7 @@ var mapperTab = (function () {
 	            }
 	        }
 	        if (unsupportedPartitionKeys.size > 0) {
-	            this.#logger?.(log_js_1$b.LogType.debugInfo, `Unsupported partition keys: ${JSON.stringify(Object.fromEntries(unsupportedPartitionKeys))}`);
+	            this.#logger?.(log_js_1$c.LogType.debugInfo, `Unsupported partition keys: ${JSON.stringify(Object.fromEntries(unsupportedPartitionKeys))}`);
 	        }
 	        // Set `userContext` to `default` if not provided, as it's required in Chromium.
 	        const userContext = descriptor.userContext ?? 'default';
@@ -4745,7 +4775,7 @@ var mapperTab = (function () {
 	CommandProcessor$1.CommandProcessor = void 0;
 	const protocol_js_1$c = protocol;
 	const EventEmitter_js_1$3 = EventEmitter$1;
-	const log_js_1$a = log$1;
+	const log_js_1$b = log$1;
 	const BidiNoOpParser_js_1 = BidiNoOpParser$1;
 	const BrowserProcessor_js_1 = BrowserProcessor$1;
 	const CdpProcessor_js_1 = CdpProcessor$1;
@@ -4946,7 +4976,7 @@ var mapperTab = (function () {
 	            }
 	            else {
 	                const error = e;
-	                this.#logger?.(log_js_1$a.LogType.bidi, error);
+	                this.#logger?.(log_js_1$b.LogType.bidi, error);
 	                this.emit("response" /* CommandProcessorEvents.Response */, {
 	                    message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(new protocol_js_1$c.UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command.channel),
 	                    event: command.method,
@@ -4984,10 +5014,17 @@ var mapperTab = (function () {
 	class Deferred {
 	    #isFinished = false;
 	    #promise;
+	    #result;
 	    #resolve;
 	    #reject;
 	    get isFinished() {
 	        return this.#isFinished;
+	    }
+	    get result() {
+	        if (!this.#isFinished) {
+	            throw new Error('Deferred is not finished yet');
+	        }
+	        return this.#result;
 	    }
 	    constructor() {
 	        this.#promise = new Promise((resolve, reject) => {
@@ -5007,6 +5044,7 @@ var mapperTab = (function () {
 	        return this.#promise.catch(onRejected);
 	    }
 	    resolve(value) {
+	        this.#result = value;
 	        if (!this.#isFinished) {
 	            this.#isFinished = true;
 	            this.#resolve(value);
@@ -5058,7 +5096,7 @@ var mapperTab = (function () {
 	Object.defineProperty(Realm$1, "__esModule", { value: true });
 	Realm$1.Realm = void 0;
 	const protocol_js_1$b = protocol;
-	const log_js_1$9 = log$1;
+	const log_js_1$a = log$1;
 	const uuid_js_1$1 = uuid;
 	const ChannelProxy_js_1 = ChannelProxy$1;
 	class Realm {
@@ -5092,7 +5130,7 @@ var mapperTab = (function () {
 	            }
 	            else {
 	                // No need to await for the object to be released.
-	                void this.#releaseObject(objectId).catch((error) => this.#logger?.(log_js_1$9.LogType.debugError, error));
+	                void this.#releaseObject(objectId).catch((error) => this.#logger?.(log_js_1$a.LogType.debugError, error));
 	            }
 	        }
 	        return bidiValue;
@@ -5760,11 +5798,11 @@ var mapperTab = (function () {
 	const protocol_js_1$9 = protocol;
 	const assert_js_1$2 = assert$1;
 	const Deferred_js_1$2 = Deferred$1;
-	const log_js_1$8 = log$1;
+	const log_js_1$9 = log$1;
 	const unitConversions_js_1 = unitConversions;
 	const WindowRealm_js_1$1 = WindowRealm$1;
 	class BrowsingContextImpl {
-	    static LOGGER_PREFIX = `${log_js_1$8.LogType.debug}:browsingContext`;
+	    static LOGGER_PREFIX = `${log_js_1$9.LogType.debug}:browsingContext`;
 	    /** The ID of this browsing context. */
 	    #id;
 	    userContext;
@@ -5783,16 +5821,17 @@ var mapperTab = (function () {
 	    #navigation = {
 	        withinDocument: new Deferred_js_1$2.Deferred(),
 	    };
-	    #url = 'about:blank';
+	    #url;
 	    #eventManager;
 	    #realmStorage;
 	    #loaderId;
 	    #cdpTarget;
-	    #maybeDefaultRealm;
+	    // The deferred will be resolved when the default realm is created.
+	    #defaultRealmDeferred = new Deferred_js_1$2.Deferred();
 	    #logger;
 	    // Keeps track of the previously set viewport.
 	    #previousViewport = { width: 0, height: 0 };
-	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger) {
+	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, logger) {
 	        this.#cdpTarget = cdpTarget;
 	        this.#id = id;
 	        this.#parentId = parentId;
@@ -5801,9 +5840,10 @@ var mapperTab = (function () {
 	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#realmStorage = realmStorage;
 	        this.#logger = logger;
+	        this.#url = url;
 	    }
-	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger) {
-	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger);
+	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, logger) {
+	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, logger);
 	        context.#initListeners();
 	        browsingContextStorage.addContext(context);
 	        if (!context.isTopLevelContext()) {
@@ -5894,10 +5934,6 @@ var mapperTab = (function () {
 	    #deleteAllChildren() {
 	        this.directChildren.map((child) => child.dispose());
 	    }
-	    get #defaultRealm() {
-	        (0, assert_js_1$2.assert)(this.#maybeDefaultRealm, `No default realm for browsing context ${this.#id}`);
-	        return this.#maybeDefaultRealm;
-	    }
 	    get cdpTarget() {
 	        return this.#cdpTarget;
 	    }
@@ -5919,7 +5955,8 @@ var mapperTab = (function () {
 	    }
 	    async getOrCreateSandbox(sandbox) {
 	        if (sandbox === undefined || sandbox === '') {
-	            return this.#defaultRealm;
+	            // Default realm is not guaranteed to be created at this point, so return a deferred.
+	            return await this.#defaultRealmDeferred;
 	        }
 	        let maybeSandboxes = this.#realmStorage.findRealms({
 	            browsingContextId: this.id,
@@ -6067,7 +6104,13 @@ var mapperTab = (function () {
 	                    sandbox = name;
 	                    // Sandbox should have the same origin as the context itself, but in CDP
 	                    // it has an empty one.
-	                    origin = this.#defaultRealm.origin;
+	                    if (!this.#defaultRealmDeferred.isFinished) {
+	                        this.#logger?.(log_js_1$9.LogType.debugError, 'Unexpectedly, isolated realm created before the default one');
+	                    }
+	                    origin = this.#defaultRealmDeferred.isFinished
+	                        ? this.#defaultRealmDeferred.result.origin
+	                        : // This fallback is not expected to be ever reached.
+	                            '';
 	                    break;
 	                case 'default':
 	                    origin = serializeOrigin(params.context.origin);
@@ -6077,7 +6120,7 @@ var mapperTab = (function () {
 	            }
 	            const realm = new WindowRealm_js_1$1.WindowRealm(this.id, this.#browsingContextStorage, this.#cdpTarget.cdpClient, this.#eventManager, id, this.#logger, origin, uniqueId, this.#realmStorage, sandbox);
 	            if (auxData.isDefault) {
-	                this.#maybeDefaultRealm = realm;
+	                this.#defaultRealmDeferred.resolve(realm);
 	                // Initialize ChannelProxy listeners for all the channels of all the
 	                // preload scripts related to this BrowsingContext.
 	                // TODO: extend for not default realms by the sandbox name.
@@ -6087,12 +6130,21 @@ var mapperTab = (function () {
 	            }
 	        });
 	        this.#cdpTarget.cdpClient.on('Runtime.executionContextDestroyed', (params) => {
+	            if (this.#defaultRealmDeferred.isFinished &&
+	                this.#defaultRealmDeferred.result.executionContextId ===
+	                    params.executionContextId) {
+	                this.#defaultRealmDeferred = new Deferred_js_1$2.Deferred();
+	            }
 	            this.#realmStorage.deleteRealms({
 	                cdpSessionId: this.#cdpTarget.cdpSessionId,
 	                executionContextId: params.executionContextId,
 	            });
 	        });
 	        this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+	            if (!this.#defaultRealmDeferred.isFinished) {
+	                this.#defaultRealmDeferred.reject(new protocol_js_1$9.UnknownErrorException('execution contexts cleared'));
+	            }
+	            this.#defaultRealmDeferred = new Deferred_js_1$2.Deferred();
 	            this.#realmStorage.deleteRealms({
 	                cdpSessionId: this.#cdpTarget.cdpSessionId,
 	            });
@@ -6492,7 +6544,7 @@ var mapperTab = (function () {
 	    }
 	    async locateNodes(params) {
 	        // TODO: create a dedicated sandbox instead of `#defaultRealm`.
-	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
+	        return await this.#locateNodesByLocator(await this.#defaultRealmDeferred, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
 	    }
 	    async #getLocatorDelegate(realm, locator, maxNodeCount, startNodes) {
 	        switch (locator.type) {
@@ -6661,7 +6713,7 @@ var mapperTab = (function () {
 	                }
 	                // The next two commands cause a11y caches for the target to be
 	                // preserved. We probably do not need to disable them if the
-	                // client is using a11y features but we could by calling
+	                // client is using a11y features, but we could by calling
 	                // Accessibility.disable.
 	                await Promise.all([
 	                    this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable'),
@@ -7137,7 +7189,7 @@ var mapperTab = (function () {
 	Object.defineProperty(LogManager$1, "__esModule", { value: true });
 	LogManager$1.LogManager = void 0;
 	const protocol_js_1$8 = protocol;
-	const log_js_1$7 = log$1;
+	const log_js_1$8 = log$1;
 	const logHelper_js_1 = logHelper;
 	/** Converts CDP StackTrace object to BiDi StackTrace object. */
 	function getBidiStackTrace(cdpStackTrace) {
@@ -7189,7 +7241,7 @@ var mapperTab = (function () {
 	            });
 	            if (realm === undefined) {
 	                // Ignore exceptions not attached to any realm.
-	                this.#logger?.(log_js_1$7.LogType.cdp, params);
+	                this.#logger?.(log_js_1$8.LogType.cdp, params);
 	                return;
 	            }
 	            const argsPromise = realm === undefined
@@ -7228,7 +7280,7 @@ var mapperTab = (function () {
 	            });
 	            if (realm === undefined) {
 	                // Ignore exceptions not attached to any realm.
-	                this.#logger?.(log_js_1$7.LogType.cdp, params);
+	                this.#logger?.(log_js_1$8.LogType.cdp, params);
 	                return;
 	            }
 	            for (const browsingContext of realm.associatedBrowsingContexts) {
@@ -7269,17 +7321,21 @@ var mapperTab = (function () {
 	CdpTarget$1.CdpTarget = void 0;
 	const chromium_bidi_js_1 = chromiumBidi;
 	const Deferred_js_1$1 = Deferred$1;
+	const log_js_1$7 = log$1;
+	const BrowsingContextImpl_js_1$1 = BrowsingContextImpl$1;
 	const LogManager_js_1 = LogManager$1;
 	class CdpTarget {
 	    #id;
 	    #cdpClient;
 	    #browserCdpClient;
+	    #realmStorage;
 	    #eventManager;
 	    #preloadScriptStorage;
 	    #browsingContextStorage;
 	    #networkStorage;
 	    #unblocked = new Deferred_js_1$1.Deferred();
 	    #acceptInsecureCerts;
+	    #logger;
 	    #networkDomainEnabled = false;
 	    #fetchDomainStages = {
 	        request: false,
@@ -7287,7 +7343,7 @@ var mapperTab = (function () {
 	        auth: false,
 	    };
 	    static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger) {
-	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts);
+	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger);
 	        LogManager_js_1.LogManager.create(cdpTarget, realmStorage, eventManager, logger);
 	        cdpTarget.#setEventListeners();
 	        // No need to await.
@@ -7295,15 +7351,17 @@ var mapperTab = (function () {
 	        void cdpTarget.#unblock();
 	        return cdpTarget;
 	    }
-	    constructor(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts) {
+	    constructor(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger) {
 	        this.#id = targetId;
 	        this.#cdpClient = cdpClient;
 	        this.#browserCdpClient = browserCdpClient;
 	        this.#eventManager = eventManager;
+	        this.#realmStorage = realmStorage;
 	        this.#preloadScriptStorage = preloadScriptStorage;
 	        this.#networkStorage = networkStorage;
 	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	        this.#logger = logger;
 	    }
 	    /** Returns a deferred that resolves when the target is unblocked. */
 	    get unblocked() {
@@ -7329,8 +7387,19 @@ var mapperTab = (function () {
 	    async #unblock() {
 	        try {
 	            await Promise.all([
-	                this.#cdpClient.sendCommand('Runtime.enable'),
 	                this.#cdpClient.sendCommand('Page.enable'),
+	                // There can be some existing frames in the target, if reconnecting to an
+	                // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
+	                // contexts for the frames to correctly handle further events, like
+	                // `Runtime.executionContextCreated`.
+	                // It's important to schedule this task together with enabling domains commands to
+	                // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
+	                // coming.
+	                // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
+	                this.#cdpClient
+	                    .sendCommand('Page.getFrameTree')
+	                    .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+	                this.#cdpClient.sendCommand('Runtime.enable'),
 	                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
 	                    enabled: true,
 	                }),
@@ -7349,6 +7418,7 @@ var mapperTab = (function () {
 	            ]);
 	        }
 	        catch (error) {
+	            this.#logger?.(log_js_1$7.LogType.debugError, 'Failed to unblock target', error);
 	            // The target might have been closed before the initialization finished.
 	            if (!this.#cdpClient.isCloseError(error)) {
 	                this.#unblocked.resolve({
@@ -7362,6 +7432,17 @@ var mapperTab = (function () {
 	            kind: 'success',
 	            value: undefined,
 	        });
+	    }
+	    #restoreFrameTreeState(frameTree) {
+	        const frame = frameTree.frame;
+	        if (this.#browsingContextStorage.findContext(frame.id) === undefined &&
+	            frame.parentId !== undefined) {
+	            // Can restore only not yet known nested frames. The top-level frame is created
+	            // when the target is attached.
+	            const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
+	            BrowsingContextImpl_js_1$1.BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, this.#logger);
+	        }
+	        frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
 	    }
 	    async toggleFetchIfNeeded() {
 	        const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
@@ -7521,7 +7602,10 @@ var mapperTab = (function () {
 	    #handleFrameAttachedEvent(params) {
 	        const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
 	        if (parentBrowsingContext !== undefined) {
-	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#logger);
+	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
+	            // At this point, we don't know the URL of the frame yet, so it will be updated
+	            // later.
+	            'about:blank', this.#logger);
 	        }
 	    }
 	    #handleFrameDetachedEvent(params) {
@@ -7552,7 +7636,16 @@ var mapperTab = (function () {
 	                        ? targetInfo.browserContextId
 	                        : 'default';
 	                    // New context.
-	                    BrowsingContextImpl_js_1.BrowsingContextImpl.create(targetInfo.targetId, null, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#logger);
+	                    BrowsingContextImpl_js_1.BrowsingContextImpl.create(targetInfo.targetId, null, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
+	                    // Hack: when a new target created, CDP emits targetInfoChanged with an empty
+	                    // url, and navigates it to about:blank later. When the event is emitted for
+	                    // an existing target (reconnect), the url is already known, and navigation
+	                    // events will not be emitted anymore. Replacing empty url with `about:blank`
+	                    // allows to handle both cases in the same way.
+	                    // "7.3.2.1 Creating browsing contexts".
+	                    // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
+	                    // TODO: check who to deal with non-null creator and its `creatorOrigin`.
+	                    targetInfo.url === '' ? 'about:blank' : targetInfo.url, this.#logger);
 	                }
 	                return;
 	            }
