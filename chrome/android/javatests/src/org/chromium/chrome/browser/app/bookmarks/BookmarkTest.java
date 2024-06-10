@@ -437,6 +437,15 @@ public class BookmarkTest {
     }
 
     @Test
+    @SmallTest
+    public void testEmptySearch() throws InterruptedException {
+        openBookmarkManager();
+        BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        onView(withText("You'll find your bookmarks here"));
+    }
+
+    @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testOpenFromReadingListAndNavigateBack() throws Exception {

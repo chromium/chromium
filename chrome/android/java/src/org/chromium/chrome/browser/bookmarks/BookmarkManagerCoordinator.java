@@ -159,11 +159,6 @@ public class BookmarkManagerCoordinator
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
-        mSelectableListLayout.initializeEmptyStateView(
-                R.drawable.bookmark_empty_state_illustration,
-                R.string.bookmark_manager_empty_state,
-                R.string.bookmark_manager_back_to_page_by_adding_bookmark);
-        mSelectableListLayout.ignoreItemTypeForEmptyState(ViewType.SEARCH_BOX);
 
         mModelList = new ModelList();
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
@@ -294,6 +289,10 @@ public class BookmarkManagerCoordinator
                 ViewType.SEARCH_BOX,
                 this::buildSearchBoxRow,
                 BookmarkSearchBoxRowViewBinder.createViewBinder());
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.EMPTY_STATE,
+                this::buildEmptyStateView,
+                BookmarkManagerEmptyStateViewBinder::bindEmptyStateView);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
@@ -431,6 +430,10 @@ public class BookmarkManagerCoordinator
 
     View buildSearchBoxRow(ViewGroup parent) {
         return inflate(parent, R.layout.bookmark_search_box_row);
+    }
+
+    View buildEmptyStateView(ViewGroup parent) {
+        return inflate(parent, R.layout.empty_state_view);
     }
 
     private static View inflate(ViewGroup parent, @LayoutRes int layoutId) {
