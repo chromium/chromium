@@ -244,18 +244,21 @@ TEST_F(InkModuleTest, HandleSetAnnotationModeMessage) {
 
 class InkModuleStrokeTest : public InkModuleTest {
  protected:
+  // Mouse locations used for `RunStrokeCheckTest()`.
+  static constexpr gfx::PointF kMouseDownLocation = gfx::PointF(10.0f, 15.0f);
+  static constexpr gfx::PointF kMouseMoveLocation = gfx::PointF(20.0f, 25.0f);
+  static constexpr gfx::PointF kMouseUpLocation = gfx::PointF(30.0f, 17.0f);
+
+  void InitializeSimpleSinglePageBasicLayout() {
+    // Single page layout that matches visible area.
+    constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
+    client().set_pages_layout({kPage});
+  }
+
   void RunStrokeCheckTest(bool annotation_mode_enabled) {
     EXPECT_TRUE(ink_module().OnMessage(
         CreateSetAnnotationModeMessage(annotation_mode_enabled)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
-
-    // Single page layout that matches visible area.
-    constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
-    client().set_pages_layout({kPage});
-
-    constexpr gfx::PointF kMouseDownLocation(10.0f, 15.0f);
-    constexpr gfx::PointF kMouseMoveLocation(20.0f, 25.0f);
-    constexpr gfx::PointF kMouseUpLocation(30.0f, 17.0f);
 
     // Mouse events should only be handled when annotation mode is enabled.
     blink::WebMouseEvent mouse_down_event =
@@ -289,10 +292,12 @@ class InkModuleStrokeTest : public InkModuleTest {
 };
 
 TEST_F(InkModuleStrokeTest, NoAnnotationIfNotEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
 }
 
 TEST_F(InkModuleStrokeTest, AnnotationIfEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 }
 
