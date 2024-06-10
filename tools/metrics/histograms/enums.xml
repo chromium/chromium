@@ -30652,6 +30652,8 @@ Called by update_net_error_codes.py.-->
   <int value="409" label="MSIXBUNDLE"/>
   <int value="410" label="PYZ"/>
   <int value="411" label="PYZW"/>
+  <int value="412" label="ZST"/>
+  <int value="413" label="IQY"/>
 </enum>
 
 <enum name="ScanFailureProgress">

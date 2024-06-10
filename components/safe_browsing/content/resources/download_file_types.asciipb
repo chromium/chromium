@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 65
+version_id: 66
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -658,7 +658,6 @@ file_types {
   uma_value: 234
   is_archive: true
   ping_setting: FULL_PING
-
 }
 file_types {
   # Opens in IE, drops MOTW
@@ -731,6 +730,16 @@ file_types {
   uma_value: 240
   is_archive: true
   ping_setting: FULL_PING
+}
+file_types {
+  extension: "zst"
+  uma_value: 412
+  is_archive: true
+  inspection_type: SEVEN_ZIP
+  platform_settings {
+    auto_open_hint: ALLOW_AUTO_OPEN
+    max_file_size_to_analyze: 52428800 # 50MB
+  }
 }
 
 # Java
@@ -1621,6 +1630,19 @@ file_types {
   extension: "xlw"
   uma_value: 351
   ping_setting: FULL_PING
+}
+
+# IQY files can execute Powershell on opening. See
+# https://crbug.com/40068800.
+file_types {
+  extension: "iqy"
+  ping_setting: FULL_PING
+  uma_value: 413
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
 }
 
 # Extensions that will open in IE even when chrome is set as default browser.
