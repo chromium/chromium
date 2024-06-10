@@ -12,12 +12,37 @@
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/time_format.h"
 
-namespace {
+HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
+    mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
+        pending_page_handler,
+    base::WeakPtr<Profile> profile)
+    : page_handler_(this, std::move(pending_page_handler)),
+      profile_(std::move(profile)) {}
 
-// Receives the results of a HistoryEmbeddingsService::Search call, builds
-// them into mojom objects for the page, and sends them to the callback.
-void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
-                       history_embeddings::SearchResult native_search_result) {
+HistoryEmbeddingsHandler::~HistoryEmbeddingsHandler() = default;
+
+void HistoryEmbeddingsHandler::Search(
+    history_embeddings::mojom::SearchQueryPtr query,
+    SearchCallback callback) {
+  if (!profile_) {
+    std::move(callback).Run(history_embeddings::mojom::SearchResult::New());
+    return;
+  }
+
+  history_embeddings::HistoryEmbeddingsService* service =
+      HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
+  // The service is never null. Even tests build and use a service.
+  CHECK(service);
+  service->Search(
+      query->query, query->time_range_start,
+      history_embeddings::kSearchResultItemCount.Get(),
+      base::BindOnce(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void HistoryEmbeddingsHandler::OnReceivedSearchResult(
+    SearchCallback callback,
+    history_embeddings::SearchResult native_search_result) {
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   for (history_embeddings::ScoredUrlRow& scored_url_row :
        native_search_result.scored_url_rows) {
@@ -45,34 +70,6 @@ void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
     mojom_search_result->items.push_back(std::move(item));
   }
   std::move(callback).Run(std::move(mojom_search_result));
-}
-
-}  // namespace
-
-HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
-    mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
-        pending_page_handler,
-    base::WeakPtr<Profile> profile)
-    : page_handler_(this, std::move(pending_page_handler)),
-      profile_(std::move(profile)) {}
-
-HistoryEmbeddingsHandler::~HistoryEmbeddingsHandler() = default;
-
-void HistoryEmbeddingsHandler::Search(
-    history_embeddings::mojom::SearchQueryPtr query,
-    SearchCallback callback) {
-  if (!profile_) {
-    std::move(callback).Run(history_embeddings::mojom::SearchResult::New());
-    return;
-  }
-
-  history_embeddings::HistoryEmbeddingsService* service =
-      HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
-  // The service is never null. Even tests build and use a service.
-  CHECK(service);
-  service->Search(query->query, query->time_range_start,
-                  history_embeddings::kSearchResultItemCount.Get(),
-                  base::BindOnce(&OnSearchCompleted, std::move(callback)));
 }
 
 void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
