@@ -89,6 +89,15 @@ class ExclusiveAccessManagerPressAndHoldEscTest : public ExclusiveAccessTest {
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerPressAndHoldEscTest,
                        HandlePressAndHoldKeyEvent) {
+  // The timer isn't started when the Esc key is pressed down with a modifier
+  // key.
+  input::NativeWebKeyboardEvent event(
+      blink::WebInputEvent::Type::kRawKeyDown, blink::WebInputEvent::kShiftKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.windows_key_code = ui::VKEY_ESCAPE;
+  GetExclusiveAccessManager()->HandleUserKeyEvent(event);
+  EXPECT_FALSE(IsEscKeyHoldTimerRunning());
+
   // Start the timer on key down event.
   SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
   EXPECT_TRUE(IsEscKeyHoldTimerRunning());

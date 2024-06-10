@@ -135,7 +135,8 @@ bool KeyboardLockController::HandleKeyEvent(
     ReShowExitBubbleIfNeeded();
   } else if (event.GetType() ==
                  input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-             !hold_timer_.IsRunning()) {
+             !hold_timer_.IsRunning() &&
+             event.GetModifiers() == blink::WebInputEvent::kNoModifiers) {
     // Seeing a key down event on Esc when the hold timer is stopped starts
     // the timer. When the timer fires, the callback will trigger an exit from
     // fullscreen/pointerlock/keyboardlock.

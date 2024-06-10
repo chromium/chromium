@@ -172,7 +172,8 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
       }
     } else if (event.GetType() ==
                    input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-               !esc_key_hold_timer_.IsRunning()) {
+               !esc_key_hold_timer_.IsRunning() &&
+               event.GetModifiers() == blink::WebInputEvent::kNoModifiers) {
       esc_key_hold_timer_.Start(
           FROM_HERE, kHoldEscapeTime,
           base::BindOnce(&ExclusiveAccessManager::HandleUserHeldEscape,
