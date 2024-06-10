@@ -504,7 +504,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // should be private method.
         SignOutCoordinator.showSnackbar(
                 getContext(),
-                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager());
+                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
+                SyncServiceFactory.getForProfile(getProfile()));
         updatePreferences();
     }
 

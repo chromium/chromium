@@ -24,6 +24,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -31,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.stream.IntStream;
 
 /** A coordinator to handle sign-out. */
 public class SignOutCoordinator {
@@ -77,7 +79,12 @@ public class SignOutCoordinator {
                 unsyncedTypes -> {
                     switch (getUiState(identityManager, !unsyncedTypes.isEmpty())) {
                         case UiState.SNACK_BAR -> signOutAndShowSnackbar(
-                                context, snackbarManager, signinManager, signOutReason, onSignOut);
+                                context,
+                                snackbarManager,
+                                signinManager,
+                                syncService,
+                                signOutReason,
+                                onSignOut);
                         case UiState.UNSAVED_DATA -> showUnsavedDataDialog(
                                 context, dialogManager, signinManager, signOutReason, onSignOut);
                         case UiState.CLEAR_CHROME_DATA -> showSignOutDialog(context, dialogManager);
@@ -95,10 +102,28 @@ public class SignOutCoordinator {
     // TODO: b/325654229 - This method should be private. It's temporarily made public as a work
     // around for b/343933167.
     /** Shows the sanckbar which is shown upon signing out. */
-    public static void showSnackbar(Context context, SnackbarManager snackbarManager) {
+    public static void showSnackbar(
+            Context context, SnackbarManager snackbarManager, SyncService syncService) {
+        boolean anyTypeIsManagedByPolicy =
+                IntStream.of(
+                                UserSelectableType.AUTOFILL,
+                                UserSelectableType.BOOKMARKS,
+                                UserSelectableType.PASSWORDS,
+                                UserSelectableType.PAYMENTS,
+                                UserSelectableType.PREFERENCES,
+                                UserSelectableType.READING_LIST,
+                                UserSelectableType.HISTORY,
+                                UserSelectableType.TABS)
+                        .anyMatch(syncService::isTypeManagedByPolicy);
+        boolean shouldShowEnterprisePolicyMessage =
+                anyTypeIsManagedByPolicy || syncService.isSyncDisabledByEnterprisePolicy();
         snackbarManager.showSnackbar(
                 Snackbar.make(
-                                context.getString(R.string.sign_out_snackbar_message),
+                                context.getString(
+                                        shouldShowEnterprisePolicyMessage
+                                                ? R.string
+                                                        .account_settings_sign_out_snackbar_message_sync_disabled
+                                                : R.string.sign_out_snackbar_message),
                                 /* controller= */ null,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_SIGN_OUT)
@@ -218,6 +243,7 @@ public class SignOutCoordinator {
             Context context,
             SnackbarManager snackbarManager,
             SigninManager signinManager,
+            SyncService syncService,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
         signOut(
@@ -227,7 +253,7 @@ public class SignOutCoordinator {
                     PostTask.runOrPostTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
-                                showSnackbar(context, snackbarManager);
+                                showSnackbar(context, snackbarManager, syncService);
                                 onSignOut.run();
                             });
                 });

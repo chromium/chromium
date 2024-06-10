@@ -2246,6 +2246,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_SNACKBAR_MESSAGE" desc="Snackbar message shown after signing out from account settings">
         Signed out. Sign back in to use the bookmarks, passwords and more in your account.
       </message>
+      <message name="IDS_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_SYNC_DISABLED"  desc="Snackbar message shown after signing out from account settings.">
+        Signed out
+      </message>
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_TITLE" desc="Title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.">
         Some data isn\u2019t saved yet
       </message>
