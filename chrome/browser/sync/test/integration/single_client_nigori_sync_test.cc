@@ -816,6 +816,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
       /*keystore_decryptor_params=*/kKeystoreKeyParams,
       /*keystore_key_params=*/kKeystoreKeyParams);
 
+  const std::string kGroupName = "Cohort7_Control";
   sync_pb::TrustedVaultAutoUpgradeExperimentGroup* experiment_group =
       nigori_specifics.mutable_trusted_vault_debug_info()
           ->mutable_auto_upgrade_experiment_group();
@@ -829,19 +830,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
 
   EXPECT_TRUE(ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(),
-      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName,
-      "Cohort7_Control"));
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, kGroupName));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                        ShouldRegisterTrustedVaultSyntheticFieldTrial) {
+  // Same as in previous test (PRE_ test).
+  const std::string kGroupName = "Cohort7_Control";
+
   ASSERT_TRUE(SetupClients());
 
-  // Upon browser restart, the group should be re-registered automatically.
+  // Shortly after profile startup, the group should be re-registered
+  // automatically.
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(),
-      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName,
-      "Cohort7_Control"));
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, kGroupName));
 }
 
 IN_PROC_BROWSER_TEST_F(

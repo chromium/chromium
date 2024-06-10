@@ -271,8 +271,14 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
   // register a synthetic field trial group. This should be done as early as
   // possible to avoid untagged metrics if they get logged before other events
   // like sync engine initialization, which could take arbitrarily long (e.g.
-  // persistent auth error).
-  RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
+  // persistent auth error). Task-posting is involved to avoid infinite
+  // recursions if the implementation in SyncClient leads to
+  // accessing/constructing SyncService.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary,
+          weak_factory_.GetWeakPtr()));
 }
 
 void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
