@@ -57,7 +57,6 @@ namespace blink {
 enum class ResourceType : uint8_t;
 class PermissionsPolicy;
 class KURL;
-class Resource;
 struct ResourceLoaderOptions;
 class SecurityOrigin;
 class WebScopedVirtualTimePauser;
@@ -209,11 +208,6 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   virtual void AddLcpPredictedCallback(base::OnceClosure callback) {
     NOTIMPLEMENTED();
-  }
-
-  virtual std::tuple<Resource*, scoped_refptr<SharedBuffer>>
-  MaybeCreateResourceForKnownDataUrl(const FetchParameters&) {
-    return {nullptr, nullptr};
   }
 
  protected:
