@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "tab_group_range_unittest.mm",
     "tab_group_unittest.mm",
     "tab_group_utils_unittest.mm",
+    "tab_utils_unittest.mm",
     "web_state_list_unittest.mm",
     "web_state_opener_unittest.mm",
   ]
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     ":web_state_list",
     "test:unit_tests",
     "//base",
+    "//base/test:test_support",
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/keyed_service/core",
@@ -93,6 +95,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/ui/tab_switcher:utils",

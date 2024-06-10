@@ -840,7 +840,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
       // Reorder tab within same grid.
-      [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+      const WebStateList::InsertionParams insertionParams =
+          [self insertionParamsForDestinationItemIndex:destinationIndex
+                                                 items:_dragItems];
+      MoveWebStateWithIdentifierToInsertionParams(
+          tabInfo.tabID, insertionParams, _webStateList, fromSameCollection);
     } else {
       // The tab lives in another Browser.
       // TODO(crbug.com/41488813): Need to be updated for pinned tabs.
@@ -967,53 +971,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                       selectedItem:selectedItem
                           itemData:itemData
                        itemParents:itemParents];
-}
-
-// Moves item to the desired final item index `itemIndexAfterUpdate`.
-- (void)moveItemWithID:(web::WebStateID)sourceWebStateID
-               toIndex:(NSUInteger)itemIndexAfterUpdate {
-  int webStateListIndexBeforeUpdate =
-      GetWebStateIndex(_webStateList, WebStateSearchCriteria{
-                                          .identifier = sourceWebStateID,
-                                      });
-  if (!_webStateList->ContainsIndex(webStateListIndexBeforeUpdate)) {
-    return;
-  }
-
-  const TabGroup* sourceGroup =
-      _webStateList->GetGroupOfWebStateAt(webStateListIndexBeforeUpdate);
-  web::WebState* sourceWebState =
-      _webStateList->GetWebStateAt(webStateListIndexBeforeUpdate);
-  // Determine insertion params for insertion of a tab at `itemIndexAfterUpdate`
-  // in `_dragItems`.
-  const WebStateList::InsertionParams insertionParams =
-      [self insertionParamsForDestinationItemIndex:itemIndexAfterUpdate
-                                             items:_dragItems];
-  const TabGroup* destinationGroup = insertionParams.in_group;
-  const int webStateListIndexAfterUpdate = insertionParams.desired_index;
-
-  if (sourceGroup == destinationGroup) {
-    _webStateList->MoveWebStateAt(webStateListIndexBeforeUpdate,
-                                  webStateListIndexAfterUpdate);
-    return;
-  }
-
-  WebStateList::ScopedBatchOperation lock =
-      _webStateList->StartBatchOperation();
-  if (sourceGroup) {
-    _webStateList->RemoveFromGroups({webStateListIndexBeforeUpdate});
-    webStateListIndexBeforeUpdate =
-        _webStateList->GetIndexOfWebState(sourceWebState);
-  }
-  if (destinationGroup) {
-    _webStateList->MoveToGroup({webStateListIndexBeforeUpdate},
-                               destinationGroup);
-    webStateListIndexBeforeUpdate =
-        _webStateList->GetIndexOfWebState(sourceWebState);
-  }
-
-  _webStateList->MoveWebStateAt(webStateListIndexBeforeUpdate,
-                                webStateListIndexAfterUpdate);
 }
 
 // Moves item to the desired final item index `itemIndexAfterUpdate`.

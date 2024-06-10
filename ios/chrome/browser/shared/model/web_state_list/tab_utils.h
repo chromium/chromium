@@ -5,13 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_UTILS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_UTILS_H_
 
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state_id.h"
-
-class WebStateList;
-
-namespace web {
-class WebState;
-}
 
 // Criteria used to search for a webState.
 struct WebStateSearchCriteria {
@@ -53,5 +48,15 @@ web::WebState* GetWebState(WebStateList* web_state_list,
 int SetWebStatePinnedState(WebStateList* web_state_list,
                            web::WebStateID identifier,
                            bool pin_state);
+
+// Moves webState corresponding to `web_state_id` to the desired
+// `insertion_params`.
+// `from_same_collection` indicates whether the move operation is from the same
+// collection view.
+void MoveWebStateWithIdentifierToInsertionParams(
+    web::WebStateID web_state_id,
+    const WebStateList::InsertionParams insertion_params,
+    WebStateList* web_state_list,
+    bool from_same_collection);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_UTILS_H_
