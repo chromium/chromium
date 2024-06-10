@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
 
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -16,14 +14,12 @@ namespace {
 // These values are used in the TableViewModel to indicate sections of the
 // table.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  FollowingSectionIdentifier = kSectionIdentifierEnumZero,
-  OtherSectionIdentifier,
+  FeedManagementSectionIdentifier = kSectionIdentifierEnumZero,
 };
 
 // These values are used in the TableViewModel to indicate specific rows.
 typedef NS_ENUM(NSInteger, ItemType) {
   FollowingItemType = kItemTypeEnumZero,
-  InterestsItemType,
   HiddenItemType,
   ActivityItemType,
 };
@@ -61,7 +57,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
 
-  [model addSectionWithIdentifier:FollowingSectionIdentifier];
+  [model addSectionWithIdentifier:FeedManagementSectionIdentifier];
 
   TableViewDetailTextItem* followingItem =
       [[TableViewDetailTextItem alloc] initWithType:FollowingItemType];
@@ -69,25 +65,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT);
   followingItem.detailText =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_DETAIL);
-  followingItem.accessorySymbol = TableViewDetailTextCellAccessorySymbolChevron;
-  [model addItem:followingItem
-      toSectionWithIdentifier:FollowingSectionIdentifier];
-
-  [model addSectionWithIdentifier:OtherSectionIdentifier];
-
-  TableViewDetailTextItem* interestsItem =
-      [[TableViewDetailTextItem alloc] initWithType:InterestsItemType];
-  interestsItem.text =
-      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT);
-  interestsItem.detailText =
-      IsFollowUIUpdateEnabled()
-          ? l10n_util::GetNSString(
-                IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL_UI_UPDATE)
-          : l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL);
-  interestsItem.accessorySymbol =
+  followingItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
-  interestsItem.allowMultilineDetailText = YES;
-  [model addItem:interestsItem toSectionWithIdentifier:OtherSectionIdentifier];
+  followingItem.allowMultilineDetailText = YES;
+  [model addItem:followingItem
+      toSectionWithIdentifier:FeedManagementSectionIdentifier];
 
   TableViewDetailTextItem* hiddenItem =
       [[TableViewDetailTextItem alloc] initWithType:HiddenItemType];
@@ -97,7 +79,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   hiddenItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
   hiddenItem.allowMultilineDetailText = YES;
-  [model addItem:hiddenItem toSectionWithIdentifier:OtherSectionIdentifier];
+  [model addItem:hiddenItem
+      toSectionWithIdentifier:FeedManagementSectionIdentifier];
 
   TableViewDetailTextItem* activityItem =
       [[TableViewDetailTextItem alloc] initWithType:ActivityItemType];
@@ -108,7 +91,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   activityItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
   activityItem.allowMultilineDetailText = YES;
-  [model addItem:activityItem toSectionWithIdentifier:OtherSectionIdentifier];
+  [model addItem:activityItem
+      toSectionWithIdentifier:FeedManagementSectionIdentifier];
 }
 
 #pragma mark UITableViewDelegate
@@ -118,14 +102,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   __weak FeedManagementViewController* weakSelf = self;
   switch (itemType) {
-    case FollowingItemType:
-      [self.followDelegate handleFollowingTapped];
-      break;
-    case InterestsItemType: {
+    case FollowingItemType: {
       [self dismissViewControllerAnimated:YES
                                completion:^{
                                  [weakSelf.navigationDelegate
-                                         handleNavigateToInterests];
+                                         handleNavigateToFollowing];
                                }];
       break;
     }

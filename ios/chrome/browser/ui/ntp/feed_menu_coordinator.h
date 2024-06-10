@@ -14,7 +14,7 @@ enum class FeedMenuItemType {
   kTurnOn,
   kManage,
   kManageActivity,
-  kManageInterests,
+  kManageFollowing,
   kLearnMore,
 
   kMaxValue = kLearnMore,

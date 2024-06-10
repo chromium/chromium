@@ -74,9 +74,9 @@ class Time;
 // feed header menu.
 - (void)recordHeaderMenuManageActivityTapped;
 
-// Record metrics for when the user selects the 'Manage Interests' item in the
-// feed header menu.
-- (void)recordHeaderMenuManageInterestsTapped;
+// Record metrics for when the user selects the 'Following' item in the feed
+// header menu.
+- (void)recordHeaderMenuManageFollowingTapped;
 
 // Record metrics for when the user selects the 'Hidden' item in the feed
 // management UI.

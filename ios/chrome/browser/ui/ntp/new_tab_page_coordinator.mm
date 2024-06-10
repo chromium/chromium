@@ -849,8 +849,8 @@
     case FeedMenuItemType::kManageActivity:
       [self.NTPMediator handleNavigateToActivity];
       break;
-    case FeedMenuItemType::kManageInterests:
-      [self.NTPMediator handleNavigateToInterests];
+    case FeedMenuItemType::kManageFollowing:
+      [self.NTPMediator handleNavigateToFollowing];
       break;
     case FeedMenuItemType::kLearnMore:
       [self.NTPMediator handleFeedLearnMoreTapped];

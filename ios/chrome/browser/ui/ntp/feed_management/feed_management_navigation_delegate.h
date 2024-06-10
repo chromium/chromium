@@ -13,8 +13,8 @@ class GURL;
 // Navigate to activity.
 - (void)handleNavigateToActivity;
 
-// Navigate to interests.
-- (void)handleNavigateToInterests;
+// Navigate to follow manager.
+- (void)handleNavigateToFollowing;
 
 // Navigate to hidden.
 - (void)handleNavigateToHidden;

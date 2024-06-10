@@ -9,8 +9,6 @@ source_set("feed_management") {
   ]
   deps = [
     ":feed_management_ui",
-    ":follow_management",
-    ":follow_management_ui",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/net/model:crurl",
@@ -26,14 +24,12 @@ source_set("feed_management") {
 
 source_set("feed_management_ui") {
   sources = [
-    "feed_management_follow_delegate.h",
     "feed_management_view_controller.h",
     "feed_management_view_controller.mm",
   ]
   deps = [
     ":navigation_delegate",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
@@ -42,51 +38,6 @@ source_set("feed_management_ui") {
 
 source_set("navigation_delegate") {
   sources = [ "feed_management_navigation_delegate.h" ]
-}
-
-source_set("follow_management") {
-  sources = [
-    "follow_management_mediator.h",
-    "follow_management_mediator.mm",
-  ]
-  deps = [
-    ":follow_management_ui",
-    "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/follow/model:browser_agent",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/common/ui/favicon:favicon_constants",
-  ]
-}
-
-source_set("follow_management_ui") {
-  sources = [
-    "follow_management_follow_delegate.h",
-    "follow_management_ui_updater.h",
-    "follow_management_view_controller.h",
-    "follow_management_view_controller.mm",
-    "follow_management_view_delegate.h",
-    "followed_web_channel_item.h",
-    "followed_web_channel_item.mm",
-    "followed_web_channels_data_source.h",
-  ]
-  deps = [
-    ":feed_management_ui",
-    "//base",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/follow/model:enums",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/ntp:feature_flags",
-    "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
-    "//ios/chrome/browser/ui/ntp/feed_management/resources",
-    "//ios/chrome/browser/ui/ntp/metrics",
-    "//ios/chrome/common/ui/favicon",
-    "//ui/base",
-  ]
 }
 
 source_set("eg2_tests") {
@@ -100,33 +51,5 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "follow_management_mediator_unittest.mm",
-    "follow_management_view_controller_unittest.mm",
-  ]
-  deps = [
-    ":follow_management",
-    ":follow_management_ui",
-    "//base/test:test_support",
-    "//components/favicon/core",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/follow/model:browser_agent",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }

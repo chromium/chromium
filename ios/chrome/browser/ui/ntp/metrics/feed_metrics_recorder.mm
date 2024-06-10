@@ -304,14 +304,6 @@ using feed::FeedUserActionType;
       base::UserMetricsAction(kDiscoverFeedUserActionManageActivityTapped));
 }
 
-- (void)recordHeaderMenuManageInterestsTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageInterests
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageInterestsTapped));
-}
-
 - (void)recordHeaderMenuManageHiddenTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                   kTappedManageHidden

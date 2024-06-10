@@ -205,11 +205,11 @@ TEST_F(NewTabPageMediatorTest, TestFeedManagementNavigationDelegate) {
       FeedUserActionType::kTappedManageActivity, 1);
 
   histogram_tester_.reset(new base::HistogramTester());
-  [mediator_ handleNavigateToInterests];
+  [mediator_ handleNavigateToFollowing];
   EXPECT_URL_LOAD("https://google.com/preferences/interests");
   histogram_tester_->ExpectUniqueSample(
       kDiscoverFeedUserActionHistogram,
-      FeedUserActionType::kTappedManageInterests, 1);
+      FeedUserActionType::kTappedManageFollowing, 1);
 
   histogram_tester_.reset(new base::HistogramTester());
   [mediator_ handleNavigateToHidden];

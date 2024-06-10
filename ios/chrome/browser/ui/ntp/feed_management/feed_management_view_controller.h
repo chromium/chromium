@@ -7,15 +7,11 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
-@protocol FeedManagementFollowDelegate;
 @protocol FeedManagementNavigationDelegate;
 
 // The UI that displays various settings for the feed (e.g., following,
 // interests, hidden, activity).
 @interface FeedManagementViewController : LegacyChromeTableViewController
-
-// Delegate to execute user actions related to follow management.
-@property(nonatomic, weak) id<FeedManagementFollowDelegate> followDelegate;
 
 // Delegate to execute user actions related to navigation.
 @property(nonatomic, weak) id<FeedManagementNavigationDelegate>

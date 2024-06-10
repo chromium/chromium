@@ -56,7 +56,7 @@ const CGFloat kManagementContextMenuIconSize = 18;
       [feedActions
           addObject:[self createMenuAction:FeedMenuItemType::kManageActivity]];
       [feedActions
-          addObject:[self createMenuAction:FeedMenuItemType::kManageInterests]];
+          addObject:[self createMenuAction:FeedMenuItemType::kManageFollowing]];
     }
   }
 
@@ -95,7 +95,7 @@ const CGFloat kManagementContextMenuIconSize = 18;
       return IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM;
     case FeedMenuItemType::kManageActivity:
       return IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM;
-    case FeedMenuItemType::kManageInterests:
+    case FeedMenuItemType::kManageFollowing:
       return IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM;
     case FeedMenuItemType::kLearnMore:
       return IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM;
@@ -117,7 +117,7 @@ const CGFloat kManagementContextMenuIconSize = 18;
     case FeedMenuItemType::kManageActivity:
       return DefaultSymbolWithPointSize(kSliderHorizontalSymbol,
                                         kManagementContextMenuIconSize);
-    case FeedMenuItemType::kManageInterests:
+    case FeedMenuItemType::kManageFollowing:
       return DefaultSymbolWithPointSize(kSliderHorizontalSymbol,
                                         kManagementContextMenuIconSize);
     case FeedMenuItemType::kLearnMore:

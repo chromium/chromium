@@ -211,8 +211,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
 }
 
-- (void)handleNavigateToInterests {
-  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
+- (void)handleNavigateToFollowing {
+  [self.feedMetricsRecorder recordHeaderMenuManageFollowingTapped];
   [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
 }
 
