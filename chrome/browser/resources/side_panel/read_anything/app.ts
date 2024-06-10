@@ -974,10 +974,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             // Don't re-send install request if it's already been sent
             if (this.getVoicePackLocalStatus_(lang) !==
                 VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
-              this.setVoicePackLocalStatus_(
-                  lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-
-              chrome.readingMode.sendInstallVoicePackRequest(lang);
+              this.forceInstallRequest(lang, /* isRetry = */ false);
             }
           } else {
             this.setVoicePackLocalStatus_(
@@ -2667,32 +2664,51 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const statusForLang =
         this.voicePackInstallStatusServerResponses[langCodeForVoicePackManager];
 
+    if (!statusForLang) {
+      if (retryIfPreviousInstallFailed) {
+        this.forceInstallRequest(
+            langCodeForVoicePackManager, /* isRetry = */ false);
+      } else {
+        this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
+        // Inquire if the voice pack is downloaded. If not, it'll trigger a
+        // download when we get the response in updateVoicePackStatus().
+        this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
+      }
+      return;
+    }
+
     // If we send an install request for this language, we'll auto switch
     // voices after it installs.
-    if (!statusForLang ||
-        (isVoicePackStatusSuccess(statusForLang) &&
-         statusForLang.code ===
-             VoicePackServerStatusSuccessCode.NOT_INSTALLED)) {
+    if (isVoicePackStatusSuccess(statusForLang) &&
+        statusForLang.code === VoicePackServerStatusSuccessCode.NOT_INSTALLED) {
       this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
       // Inquire if the voice pack is downloaded. If not, it'll trigger a
       // download when we get the response in updateVoicePackStatus().
       this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
     } else if (
         retryIfPreviousInstallFailed && isVoicePackStatusError(statusForLang)) {
+      this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
+
       // If the previous install attempt failed (e.g. due to no internet
       // connection), the PackManager sends a failure for subsequent GetInfo
       // requests. Therefore, we need to bypass our normal flow of calling
       // GetInfo to see if the voice is available to install, and just call
       // sendInstallVoicePackRequest directly
-      this.setVoicePackLocalStatus_(
-          langCodeForVoicePackManager,
-          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
-
-      chrome.readingMode.sendInstallVoicePackRequest(
-          langCodeForVoicePackManager);
+      this.forceInstallRequest(
+          langCodeForVoicePackManager, /* isRetry = */ true);
     } else {
       this.autoSwitchVoice_(langCodeForVoicePackManager);
     }
+  }
+
+  private forceInstallRequest(
+      langCodeForVoicePackManager: string, isRetry: boolean) {
+    this.setVoicePackLocalStatus_(
+        langCodeForVoicePackManager,
+        isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
+                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+
+    chrome.readingMode.sendInstallVoicePackRequest(langCodeForVoicePackManager);
   }
 
   private onKeyDown_(e: KeyboardEvent) {

@@ -288,10 +288,10 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       suite('when there is no status for lang', () => {
-        test('does not directly send install request', () => {
+        test('directly sends install request', () => {
           emitLanguageToggle('en-us');
 
-          assertEquals(sentInstallRequestFor, '');
+          assertEquals(sentInstallRequestFor, 'en-us');
         });
       });
 

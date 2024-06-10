@@ -79,7 +79,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         type: Array,
         computed:
             'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
-            'currentNotifications_,selectedLang,languageSearchValue_)',
+            'currentNotifications_,selectedLang,languageSearchValue_,' +
+            'enabledLanguagesInPref)',
       },
     };
   }
@@ -89,7 +90,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private toastDuration_: number = toastDurationMs;
   private readonly voicePackInstallStatus:
       {[language: string]: VoiceClientSideStatusCode};
-  private readonly enabledLanguagesInPref: string[];
   private readonly availableLanguages_: LanguageDropdownItem[];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
@@ -211,8 +211,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
       voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode},
-      selectedLang: string|undefined,
-      languageSearchValue: string|undefined): LanguageDropdownItem[] {
+      selectedLang: string|undefined, languageSearchValue: string|undefined,
+      enabledLanguagesInPref: string[]): LanguageDropdownItem[] {
     if (!availableVoices) {
       return [];
     }
@@ -265,15 +265,15 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         .map(
             ([lang, readableLang]) => ({
               readableLanguage: readableLang,
-              checked: this.enabledLanguagesInPref &&
-                  this.enabledLanguagesInPref.includes(lang),
+              checked: enabledLanguagesInPref &&
+                  enabledLanguagesInPref.includes(lang),
               languageCode: lang,
               notification: {
                 isError: this.isNotificationError(lang, voicePackInstallStatus),
                 text: this.getNotificationText(lang, voicePackInstallStatus),
               },
-              disabled: this.enabledLanguagesInPref &&
-                  this.enabledLanguagesInPref.includes(lang) &&
+              disabled: enabledLanguagesInPref &&
+                  enabledLanguagesInPref.includes(lang) &&
                   (lang.toLowerCase() === selectedLangLowerCase),
               callback: () =>
                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
