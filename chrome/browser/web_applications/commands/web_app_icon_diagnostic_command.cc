@@ -21,7 +21,7 @@ namespace {
 
 base::Value CreateIconDiagnosticDebugData(
     const std::optional<WebAppIconDiagnosticResult> diagnostic_result) {
-  if (diagnostic_result.has_value()) {
+  if (!diagnostic_result.has_value()) {
     return base::Value("no_result_yet");
   }
   base::Value::Dict root;
