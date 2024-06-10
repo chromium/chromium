@@ -70,8 +70,10 @@ class DataAggregatorService : public CfmObserver,
   std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;
 
  private:
-  void AddLocalCommandSource(const std::string& command);
-  void OnLocalCommandDisconnect(const std::string& command);
+  void AddLocalCommandSource(const std::string& command,
+                             const base::TimeDelta& poll_freq);
+  void OnLocalCommandDisconnect(const std::string& command,
+                                const base::TimeDelta& poll_freq);
   void AddLocalLogSource(const std::string& filepath);
   void OnLocalLogDisconnect(const std::string& filepath);
   void InitializeUploadEndpoint(size_t num_tries);
