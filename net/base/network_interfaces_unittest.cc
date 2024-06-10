@@ -56,10 +56,6 @@ TEST(NetworkInterfacesTest, GetNetworkList) {
               ConvertInterfaceLuidToGuid(&luid, &guid));
     auto name = base::win::WStringFromGUID(guid);
     EXPECT_EQ(base::UTF8ToWide(it->name), name);
-
-    if (it->type == NetworkChangeNotifier::CONNECTION_WIFI) {
-      EXPECT_NE(WIFI_PHY_LAYER_PROTOCOL_NONE, GetWifiPHYLayerProtocol());
-    }
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
     char name[IF_NAMESIZE];
     EXPECT_TRUE(if_indextoname(it->interface_index, name));

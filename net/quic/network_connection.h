@@ -51,8 +51,7 @@ class NET_EXPORT NetworkConnection
   // NetworkChangeNotifier::GetConnectionType() function.
   NetworkChangeNotifier::ConnectionType connection_type_ =
       NetworkChangeNotifier::CONNECTION_UNKNOWN;
-  // Cache the connection description string to avoid calling the expensive
-  // GetWifiPHYLayerProtocol() function.
+  // Cache the connection description string.
   const char* connection_description_ = nullptr;
 };
 

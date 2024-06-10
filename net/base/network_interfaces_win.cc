@@ -261,38 +261,6 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   return internal::GetNetworkListImpl(networks, policy, adapters);
 }
 
-WifiPHYLayerProtocol GetWifiPHYLayerProtocol() {
-  auto conn_info = GetConnectionAttributes();
-
-  if (!conn_info.get())
-    return WIFI_PHY_LAYER_PROTOCOL_NONE;
-
-  switch (conn_info->wlanAssociationAttributes.dot11PhyType) {
-    case dot11_phy_type_fhss:
-      return WIFI_PHY_LAYER_PROTOCOL_ANCIENT;
-    case dot11_phy_type_dsss:
-      return WIFI_PHY_LAYER_PROTOCOL_B;
-    case dot11_phy_type_irbaseband:
-      return WIFI_PHY_LAYER_PROTOCOL_ANCIENT;
-    case dot11_phy_type_ofdm:
-      return WIFI_PHY_LAYER_PROTOCOL_A;
-    case dot11_phy_type_hrdsss:
-      return WIFI_PHY_LAYER_PROTOCOL_B;
-    case dot11_phy_type_erp:
-      return WIFI_PHY_LAYER_PROTOCOL_G;
-    case dot11_phy_type_ht:
-      return WIFI_PHY_LAYER_PROTOCOL_N;
-    case dot11_phy_type_vht:
-      return WIFI_PHY_LAYER_PROTOCOL_AC;
-    case dot11_phy_type_dmg:
-      return WIFI_PHY_LAYER_PROTOCOL_AD;
-    case dot11_phy_type_he:
-      return WIFI_PHY_LAYER_PROTOCOL_AX;
-    default:
-      return WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
-  }
-}
-
 // Note: There is no need to explicitly set the options back
 // as the OS will automatically set them back when the WlanHandle
 // is closed.

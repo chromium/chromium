@@ -292,12 +292,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 "Should have some network.connection_type",
                 systemProfile.getNetwork().hasConnectionType());
         assertTrue(
-                "Should have some network.wifi_phy_layer_protocol_is_ambiguous",
-                systemProfile.getNetwork().hasWifiPhyLayerProtocolIsAmbiguous());
-        assertTrue(
-                "Should have some network.wifi_phy_layer_protocol",
-                systemProfile.getNetwork().hasWifiPhyLayerProtocol());
-        assertTrue(
                 "Should have some network.min_effective_connection_type",
                 systemProfile.getNetwork().hasMinEffectiveConnectionType());
         assertTrue(

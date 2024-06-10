@@ -59,10 +59,6 @@ bool IsLoopbackOrUnspecifiedAddress(const sockaddr* addr) {
 
 }  // namespace internal
 
-WifiPHYLayerProtocol GetWifiPHYLayerProtocol() {
-  return WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
-}
-
 std::unique_ptr<ScopedWifiOptions> SetWifiOptions(int options) {
   return nullptr;
 }

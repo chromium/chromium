@@ -82,14 +82,6 @@ class NetworkMetricsProvider
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   SystemProfileProto::Network::ConnectionType GetConnectionType() const;
-  SystemProfileProto::Network::WifiPHYLayerProtocol GetWifiPHYLayerProtocol()
-      const;
-
-  // Posts a call to net::GetWifiPHYLayerProtocol on the blocking pool.
-  void ProbeWifiPHYLayerProtocol();
-  // Callback from the blocking pool with the result of
-  // net::GetWifiPHYLayerProtocol.
-  void OnWifiPHYLayerProtocolResult(net::WifiPHYLayerProtocol mode);
 
   void OnEffectiveConnectionTypeChanged(net::EffectiveConnectionType type);
 
@@ -111,12 +103,6 @@ class NetworkMetricsProvider
   network::mojom::ConnectionType connection_type_;
   // True if the network connection tracker has been initialized.
   bool network_connection_tracker_initialized_;
-
-  // True if |wifi_phy_layer_protocol_| changed during the lifetime of the log.
-  bool wifi_phy_layer_protocol_is_ambiguous_;
-  // The PHY mode of the currently associated access point obtained via
-  // net::GetWifiPHYLayerProtocol.
-  net::WifiPHYLayerProtocol wifi_phy_layer_protocol_;
 
   // Provides the network quality estimator. May be null.
   std::unique_ptr<NetworkQualityEstimatorProvider>
