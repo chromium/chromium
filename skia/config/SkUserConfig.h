@@ -225,8 +225,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
-#define SK_USE_LEGACY_DEFERRED_BLIT
-
 #define SK_SUPPORT_LEGACY_CONIC_CHOP
 
 #define SK_USE_PADDED_BLUR_UPSCALE
