@@ -6,8 +6,7 @@
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -42,10 +41,9 @@ TEST_F(GLTest, BasicFBO) {
   GLuint fbo = 0;
   glGenFramebuffers(1, &fbo);
   glBindTexture(GL_TEXTURE_2D, tex);
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[16 * 16 * 4]);
-  memset(pixels.get(), 0, 16*16*4);
+  auto pixels = base::HeapArray<uint8_t>::WithSize(16 * 16 * 4);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 16, 16, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               pixels.get());
+               pixels.data());
   glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
