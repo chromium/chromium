@@ -166,7 +166,8 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Elvis Aaron Presley", {NAME_FULL}},
     {"theking@gmail.com", {EMAIL_ADDRESS}},
     {"RCA", {COMPANY_NAME}},
-    {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}},
+    {"3734 Elvis Presley Blvd.",
+     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
     {"3734", {ADDRESS_HOME_HOUSE_NUMBER}},
     {"Elvis Presley Blvd.", {ADDRESS_HOME_STREET_NAME}},
     {"Apt. 10", {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
@@ -238,8 +239,10 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"SoUTh AfRiCa", {ADDRESS_HOME_COUNTRY}},
 
     // Make sure fields that differ by punctuation match.
-    {"3734 Elvis Presley Blvd", {ADDRESS_HOME_LINE1}},
-    {"3734, Elvis    Presley Blvd.", {ADDRESS_HOME_LINE1}},
+    {"3734 Elvis Presley Blvd",
+     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
+    {"3734, Elvis    Presley Blvd.",
+     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
 
     // Make sure that a state's full name and abbreviation match.
     {"TN", {ADDRESS_HOME_STATE}},     // Saved as "Tennessee" in profile.
