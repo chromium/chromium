@@ -95,6 +95,15 @@
     "expiry_milestone": -1
   },
   {
+    "name": "allow-apn-modification-policy",
+    "owners": [
+      "gordonseto@google.com",
+      "hsuregan@google.com",
+      "cros-connectivity@google.com"
+    ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "allow-cross-device-feature-suite",
     "owners": [ "chromeos-cross-device-eng@google.com", "cclem@chromium.org" ],
     // Used by developers to enable Cross-Device for testing on platforms where

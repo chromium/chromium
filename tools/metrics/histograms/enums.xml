@@ -20436,6 +20436,7 @@ from previous Chrome versions.
   <int value="16804822" label="SpeakOnMuteEnabled:disabled"/>
   <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
+  <int value="20023271" label="AllowApnModificationPolicy:disabled"/>
   <int value="20238651" label="DeprecatedExternalPickerFunction:enabled"/>
   <int value="20946908" label="CanvasOopRasterization:disabled"/>
   <int value="21055794" label="OpenXR:enabled"/>
@@ -22348,6 +22349,7 @@ from previous Chrome versions.
   <int value="847187839" label="AndroidOpenPdfInline:disabled"/>
   <int value="848005486" label="WebViewLegacyTlsSupport:disabled"/>
   <int value="848324390" label="enable-lock-screen-apps"/>
+  <int value="848661475" label="AllowApnModificationPolicy:enabled"/>
   <int value="849235409" label="Prerender2InNewTab:enabled"/>
   <int value="849262171" label="BindingManagerConnectionLimit:disabled"/>
   <int value="849315389"

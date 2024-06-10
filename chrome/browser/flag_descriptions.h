@@ -3269,6 +3269,9 @@ extern const char kAdaptiveChargingForTestingDescription[];
 extern const char kAdvancedDocumentScanApiName[];
 extern const char kAdvancedDocumentScanApiDescription[];
 
+extern const char kAllowApnModificationPolicyName[];
+extern const char kAllowApnModificationPolicyDescription[];
+
 extern const char kAllowCrossDeviceFeatureSuiteName[];
 extern const char kAllowCrossDeviceFeatureSuiteDescription[];
 

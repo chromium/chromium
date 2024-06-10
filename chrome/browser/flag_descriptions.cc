@@ -5631,6 +5631,13 @@ const char kAdvancedDocumentScanApiDescription[] =
     "to SANE scanners.  Also enable AsynchronousScannerDiscovery to get the "
     "full enhanced functionality.";
 
+const char kAllowApnModificationPolicyName[] =
+    "Allow APN Modification by Policy";
+const char kAllowApnModificationPolicyDescription[] =
+    "Enables the ChromeOS APN Allow APN Modification policy, which gives "
+    "admins the ability to allow or prohibit managed users from modifying "
+    "APNs.";
+
 const char kAllowCrossDeviceFeatureSuiteName[] =
     "Allow the use of Cross-Device features";
 const char kAllowCrossDeviceFeatureSuiteDescription[] =
