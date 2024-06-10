@@ -534,7 +534,7 @@ BASE_FEATURE(kReportApplicationLanguageInSearchRequest,
 // Enables storing successful query/match in the shortcut database On Android.
 BASE_FEATURE(kOmniboxShortcutsAndroid,
              "OmniboxShortcutsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable asynchronous Omnibox/Suggest view inflation.
 BASE_FEATURE(kOmniboxAsyncViewInflation,
