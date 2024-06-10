@@ -18,6 +18,13 @@ namespace features {
 
 // All features in alphabetical order.
 
+// Kill switch to guard additional security checks performed by the browser
+// process on opaque origins, such as when verifying source origins for
+// postMessage. See https://crbug.com/40109437.
+BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
+             "AdditionalOpaqueOriginEnforcements",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",

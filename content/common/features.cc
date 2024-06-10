@@ -11,13 +11,6 @@ namespace features {
 
 // Please keep features in alphabetical order.
 
-// Kill switch to guard additional security checks performed by the browser
-// process on opaque origins, such as when verifying source origins for
-// postMessage. See https://crbug.com/40109437.
-BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
-             "AdditionalOpaqueOriginEnforcements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables content-initiated, main frame navigations to data URLs.
 // TODO(meacer): Remove when the deprecation is complete.
 //               https://www.chromestatus.com/feature/5669602927312896
