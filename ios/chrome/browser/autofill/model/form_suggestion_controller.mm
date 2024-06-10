@@ -103,14 +103,16 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
               plus_addresses::features::kPlusAddressesEnabled) &&
           base::FeatureList::IsEnabled(
               plus_addresses::features::kPlusAddressUIRedesign);
-      return isPlusAddressFeaturesEnabled ? DefaultSymbolWithPointSize(
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-                                                kGooglePlusAddressSymbol,
+      return isPlusAddressFeaturesEnabled
+                 ? CustomSymbolWithPointSize(kGooglePlusAddressSymbol,
+                                             kSymbolPointSize)
+                 : nil;
 #else
-                                                kMailFillSymbol,
+      return isPlusAddressFeaturesEnabled
+                 ? DefaultSymbolWithPointSize(kMailFillSymbol, kSymbolPointSize)
+                 : nil;
 #endif
-                                                kSymbolPointSize)
-                                          : nil;
     }
     case autofill::SuggestionType::kAutocompleteEntry:
     default:

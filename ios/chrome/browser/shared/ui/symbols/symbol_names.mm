@@ -26,7 +26,7 @@ NSString* const kGooglePasswordManagerWidgetPromoDisabledImage =
     @"google_password_manager_widget_promo_disabled";
 NSString* const kGooglePaySymbol = @"google_pay";
 NSString* const kGooglePhotosSymbol = @"google_photos";
-NSString* const kGooglePlusAddressSymbol = @"envelope.fill";
+NSString* const kGooglePlusAddressSymbol = @"google_plus_address";
 NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage =
     @"google_settings_passwords_in_other_apps_banner";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";

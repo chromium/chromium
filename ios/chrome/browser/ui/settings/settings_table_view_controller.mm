@@ -1025,7 +1025,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                        detailText:nil
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
                            symbol:isPlusAddressUIRedesignEnabled
-                                      ? DefaultSettingsRootSymbol(
+                                      ? CustomSettingsRootSymbol(
                                             kGooglePlusAddressSymbol)
                                       : nil
 #else
