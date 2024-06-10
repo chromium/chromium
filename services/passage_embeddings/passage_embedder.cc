@@ -88,11 +88,32 @@ bool PassageEmbedder::LoadEmbeddingsModelFile(
     return false;
   }
 
-  if (!tflite_engine) {
-    // Use default TFLite engine if not already passed in.
-    tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
-        std::make_unique<optimization_guide::TFLiteOpResolver>());
+  tflite_engine_overridden_ = !!tflite_engine;
+  override_tflite_engine_ = std::move(tflite_engine);
+  return true;
+}
+
+bool PassageEmbedder::BuildExecutionTask() {
+  CHECK_NE(current_priority_, mojom::PassagePriority::kUnknown);
+  // Do nothing if an override model has been loaded.
+  if (tflite_engine_overridden_ && !override_tflite_engine_) {
+    return true;
   }
+
+  loaded_model_.reset();
+
+  // Load the override model if it is set but not loaded yet.
+  if (tflite_engine_overridden_) {
+    loaded_model_ = std::make_unique<PassageEmbedderExecutionTask>(
+        std::move(override_tflite_engine_));
+    override_tflite_engine_.reset();
+    return true;
+  }
+
+  // Build a new task from the model bytes and the task priority.
+  auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
+      std::make_unique<optimization_guide::TFLiteOpResolver>());
+
   absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
       reinterpret_cast<const char*>(embeddings_model_buffer_.data()),
       embeddings_model_buffer_.size());
@@ -100,8 +121,19 @@ bool PassageEmbedder::LoadEmbeddingsModelFile(
     return false;
   }
 
-  absl::Status interpreter_status = tflite_engine->InitInterpreter(
-      history_embeddings::kEmbedderNumThreads.Get());
+  int num_threads;
+  switch (current_priority_) {
+    case mojom::PassagePriority::kUserInitiated:
+      num_threads = history_embeddings::kEmbedderNumThreads.Get();
+      break;
+    case mojom::PassagePriority::kPassive:
+      num_threads = 1;
+      break;
+    case mojom::PassagePriority::kUnknown:
+      return false;
+  }
+
+  absl::Status interpreter_status = tflite_engine->InitInterpreter(num_threads);
   if (!interpreter_status.ok()) {
     return false;
   }
@@ -127,11 +159,19 @@ std::optional<OutputType> PassageEmbedder::Execute(InputType input) {
 
 void PassageEmbedder::GenerateEmbeddings(
     const std::vector<std::string>& inputs,
+    mojom::PassagePriority priority,
     PassageEmbedder::GenerateEmbeddingsCallback callback) {
   std::vector<mojom::PassageEmbeddingsResultPtr> results;
+  CHECK_NE(priority, mojom::PassagePriority::kUnknown);
   if (!sp_processor_ || !sp_processor_->status().ok()) {
     std::move(callback).Run({});
     return;
+  }
+
+  // Rebuild the execution task if necessary.
+  if (current_priority_ != priority) {
+    current_priority_ = priority;
+    BuildExecutionTask();
   }
 
   for (const std::string& input : inputs) {

@@ -26,6 +26,15 @@ struct PassageEmbeddingsResult {
   string passage;
 };
 
+// Classfies the priority of embeddings generation requests. Execution of user
+// initiated requests will cost more system resources and run faster, while
+// execution of passive requests will be more efficient but slower.
+enum PassagePriority {
+  kUnknown,
+  kUserInitiated,
+  kPassive,
+};
+
 // A loaded model which can be queried to generate embeddings for passages.
 // Functions in this interface will be called from the browser process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -35,7 +44,7 @@ interface PassageEmbedder {
   // in `inputs`. If successful, the returned `results` will match the number of
   // elements in `inputs` and be in the same order. If not successful, an empty
   // `results` array will be returned.
-  GenerateEmbeddings(array<string> passages) =>
+  GenerateEmbeddings(array<string> passages, PassagePriority priority) =>
       (array<PassageEmbeddingsResult> results);
 };
 

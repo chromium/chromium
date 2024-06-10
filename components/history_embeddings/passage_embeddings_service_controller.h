@@ -60,6 +60,7 @@ class PassageEmbeddingsServiceController {
   // an empty vector.
   using GetEmbeddingsCallback = ComputePassagesEmbeddingsCallback;
   void GetEmbeddings(std::vector<std::string> passages,
+                     passage_embeddings::mojom::PassagePriority priority,
                      GetEmbeddingsCallback callback);
 
   // Returns true if this service controller is ready for embeddings generation.

@@ -133,6 +133,7 @@ EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
 
 void PassageEmbeddingsServiceController::GetEmbeddings(
     std::vector<std::string> passages,
+    passage_embeddings::mojom::PassagePriority priority,
     GetEmbeddingsCallback callback) {
   if (embeddings_model_path_.empty() || sp_model_path_.empty()) {
     VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
@@ -160,7 +161,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
   }
 
   embedder_remote_->GenerateEmbeddings(
-      std::move(passages),
+      std::move(passages), priority,
       base::BindOnce(
           [](GetEmbeddingsCallback callback,
              std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr>

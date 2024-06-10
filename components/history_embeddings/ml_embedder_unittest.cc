@@ -72,6 +72,7 @@ class FakePassageEmbedder : public passage_embeddings::mojom::PassageEmbedder {
  private:
   // mojom::PassageEmbedder:
   void GenerateEmbeddings(const std::vector<std::string>& inputs,
+                          passage_embeddings::mojom::PassagePriority priority,
                           GenerateEmbeddingsCallback callback) override {
     std::vector<std::string> passages = inputs;
     std::vector<Embedding> embeddings;
