@@ -88,6 +88,12 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
         .WillByDefault(Return(u"content title"));
   }
 
+  void TearDown() override {
+    mahi_panel_widget_.reset();
+
+    AshTestBase::TearDown();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockMahiManager> mock_mahi_manager_;
   MahiUiController ui_controller_;
@@ -126,22 +132,18 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/0,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/1,
       error_status_view));
 }
 
-// MahiInappropriateQuestionPixelTest ------------------------------------------
-
-using MahiInappropriateQuestionPixelTest = MahiErrorStatusViewPixelTestBase;
-
-// Verifies the Mahi panel scroll view when asking an inappropriate question.
-TEST_F(MahiInappropriateQuestionPixelTest, InappropriateError) {
+// Verifies the error status on the Mahi panel scroll view when asking a
+// question.
+TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   ON_CALL(mock_mahi_manager(), AnswerQuestion)
       .WillByDefault(
           [](const std::u16string& question, bool current_panel_content,
              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
-            std::move(callback).Run(u"answer",
-                                    MahiResponseStatus::kInappropriate);
+            std::move(callback).Run(u"answer", GetParam());
           });
 
   ShowMahiPanel();
@@ -159,7 +161,7 @@ TEST_F(MahiInappropriateQuestionPixelTest, InappropriateError) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "basics", /*revision_number=*/2,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/0,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

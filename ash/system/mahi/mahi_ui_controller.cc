@@ -175,12 +175,10 @@ void MahiUiController::HandleError(const MahiUiError& error) {
   // `chromeos::MahiResponseStatus::kLowQuota` is a warning not an error.
   CHECK_NE(error.status, chromeos::MahiResponseStatus::kLowQuota);
 
-  // The presentation of the inappropriate error during
-  // `State::kQuestionAndAnswer` should be embedded into the Q&A view instead
-  // of a separate view.
+  // The presentation of any error during `State::kQuestionAndAnswer` should be
+  // embedded into the Q&A view instead of a separate view.
   const MahiUiUpdate update(MahiUiUpdateType::kErrorReceived, error);
-  if (error.status == chromeos::MahiResponseStatus::kInappropriate &&
-      error.origin_state == VisibilityState::kQuestionAndAnswer) {
+  if (error.origin_state == VisibilityState::kQuestionAndAnswer) {
     NotifyUiUpdate(update);
     return;
   }

@@ -32,9 +32,10 @@ int GetErrorStatusViewTextId(chromeos::MahiResponseStatus error) {
   switch (error) {
     case chromeos::MahiResponseStatus::kCantFindOutputData:
     case chromeos::MahiResponseStatus::kContentExtractionError:
-    case chromeos::MahiResponseStatus::kInappropriate:
     case chromeos::MahiResponseStatus::kUnknownError:
       return IDS_ASH_MAHI_ERROR_STATUS_LABEL_GENERAL;
+    case chromeos::MahiResponseStatus::kInappropriate:
+      return IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT;
     case chromeos::MahiResponseStatus::kQuotaLimitHit:
     case chromeos::MahiResponseStatus::kResourceExhausted:
       return IDS_ASH_MAHI_ERROR_STATUS_LABEL_AT_CAPACITY;
