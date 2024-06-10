@@ -8025,6 +8025,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityCaretBlinkIntervalSetting)},
 
+    {"enable-accessibility-magnify-accelerator-dialog",
+     flag_descriptions::kAccessibilityMagnifyAcceleratorDialogName,
+     flag_descriptions::kAccessibilityMagnifyAcceleratorDialogDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityMagnifyAcceleratorDialog)},
+
     {"enable-accessibility-overscroll-setting",
      flag_descriptions::kAccessibilityOverscrollSettingFeatureName,
      flag_descriptions::kAccessibilityOverscrollSettingFeatureDescription,

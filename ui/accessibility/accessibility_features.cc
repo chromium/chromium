@@ -237,6 +237,14 @@ bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
 }
 
+BASE_FEATURE(kAccessibilityMagnifyAcceleratorDialog,
+             "AccessibilityMagnifyAcceleratorDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityMagnifyAcceleratorDialogEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityMagnifyAcceleratorDialog);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

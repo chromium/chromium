@@ -178,6 +178,11 @@ AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakShortcutEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 
+// Controls whether the turn on magnifier at accelerator dialog feature is
+// available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifyAcceleratorDialog);
+AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -1156,6 +1156,12 @@ const char kAccessibilityMagnifierFollowsStsDescription[] =
     "This option enables the fullscreen magnifier to follow Select to Speak's "
     "reading focus.";
 
+const char kAccessibilityMagnifyAcceleratorDialogName[] =
+    "Magnifier turns on with accelerator dialog";
+const char kAccessibilityMagnifyAcceleratorDialogDescription[] =
+    "This option enables the fullscreen magnifier to turn on as soon as the "
+    "accelerator dialog is shown.";
+
 const char kAccessibilityMouseKeysName[] = "Mouse Keys";
 const char kAccessibilityMouseKeysDescription[] =
     "This option enables you to control the mouse with the keyboard.";

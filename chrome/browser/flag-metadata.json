@@ -2309,6 +2309,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "enable-accessibility-magnify-accelerator-dialog",
+    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "enable-accessibility-manage-broadcast-recevier-on-background",
     "owners": [ "avvall@google.com", "elabadysayed@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145

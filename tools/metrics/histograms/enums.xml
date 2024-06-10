@@ -16402,6 +16402,8 @@ from previous Chrome versions.
   <int value="-1725507605" label="enable-web-midi"/>
   <int value="-1725376391"
       label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:disabled"/>
+  <int value="-1723086446"
+      label="AccessibilityMagnifyAcceleratorDialog:enabled"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
   <int value="-1721353722"
       label="HttpsFirstModeV2ForTypicallySecureUsers:enabled"/>
@@ -17158,6 +17160,8 @@ from previous Chrome versions.
   <int value="-1407251816" label="AutofillContentEditables:enabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
+  <int value="-1404988115"
+      label="AccessibilityMagnifyAcceleratorDialog:disabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
   <int value="-1404088616" label="TetheringExperimentalFunctionality:enabled"/>
   <int value="-1404072922"
