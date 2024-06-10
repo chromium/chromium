@@ -492,6 +492,10 @@ export interface SessionContext {
   hasSelection: boolean;
 }
 
+export interface FakeGeneratePreviewObserver {
+  onDocumentReady(previewRequestId: number): void;
+}
+
 // Placeholder for PrintPreviewPageHandler mojo interface.
 export interface PrintPreviewPageHandler {
   // Completes initialization on the backend and provides immutable
@@ -510,6 +514,10 @@ export interface PrintPreviewPageHandler {
 
   // Send a request to generate a PDF with the desired settings.
   generatePreview(previewTicket: PreviewTicket): Promise<void>;
+
+  // Registers an observer that returns updates on the status of generated
+  // previews.
+  observePreviewReady(observer: FakeGeneratePreviewObserver): Promise<void>;
 }
 
 export interface FakeDestinationObserverInterface {

@@ -5,7 +5,7 @@
 import 'chrome://os-print/js/data/preview_ticket_manager.js';
 
 import {PREVIEW_REQUEST_FINISHED_EVENT, PREVIEW_REQUEST_STARTED_EVENT, PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
-import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler, OBSERVE_PREVIEW_READY_METHOD} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
@@ -65,7 +65,7 @@ suite('PreviewTicketManager', () => {
   // completes.
   test(
       'PREVIEW_REQUEST_STARTED_EVENT and PREVIEW_REQUEST_STARTED_EVENT are ' +
-          ' invoked when sendPreviewRequest called',
+          'invoked when sendPreviewRequest called',
       async () => {
         const delay = 1;
         printPreviewPageHandler.setTestDelay(delay);
@@ -95,6 +95,7 @@ suite('PreviewTicketManager', () => {
         assertEquals(0, finishCount, 'Finish should have zero calls');
 
         // Advance time by test delay to trigger method resolver.
+        printPreviewPageHandler.triggerOnDocumentReady();
         mockTimer.tick(delay);
         await finishEvent;
 
@@ -118,6 +119,7 @@ suite('PreviewTicketManager', () => {
 
     assertFalse(instance.isPreviewLoaded(), 'Preview not loaded after call');
 
+    printPreviewPageHandler.triggerOnDocumentReady();
     mockTimer.tick(delay);
     await finishEvent;
 
@@ -146,4 +148,14 @@ suite('PreviewTicketManager', () => {
             instance.isSessionInitialized(),
             'After initializeSession, instance should be initialized');
       });
+
+  // Verify observePreviewReady is called on construction of manager.
+  test('on create observePreviewReady is called', () => {
+    PreviewTicketManager.getInstance();
+    const expectedCallCount = 1;
+    assertEquals(
+        expectedCallCount,
+        printPreviewPageHandler.getCallCount(OBSERVE_PREVIEW_READY_METHOD),
+        `${OBSERVE_PREVIEW_READY_METHOD} called in constructor`);
+  });
 });
