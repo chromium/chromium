@@ -75,6 +75,7 @@ void ReadAnythingAppModel::OnThemeChanged(
   font_name_ = new_theme->font_name;
   font_size_ = new_theme->font_size;
   links_enabled_ = new_theme->links_enabled;
+  images_enabled_ = new_theme->images_enabled;
   letter_spacing_ = GetLetterSpacingValue(new_theme->letter_spacing);
   line_spacing_ = GetLineSpacingValue(new_theme->line_spacing);
   background_color_ = new_theme->background_color;
@@ -87,6 +88,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     const std::string& font,
     double font_size,
     bool links_enabled,
+    bool images_enabled,
     read_anything::mojom::Colors color,
     double speech_rate,
     base::Value::Dict* voices,
@@ -97,6 +99,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   font_name_ = font;
   font_size_ = font_size;
   links_enabled_ = links_enabled;
+  images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
   speech_rate_ = speech_rate;
   voices_ = voices->Clone();
@@ -1040,6 +1043,10 @@ void ReadAnythingAppModel::ResetTextSize() {
 
 void ReadAnythingAppModel::ToggleLinksEnabled() {
   links_enabled_ = !links_enabled_;
+}
+
+void ReadAnythingAppModel::ToggleImagesEnabled() {
+  images_enabled_ = !images_enabled_;
 }
 
 // TODO: b/40275871 - make this more efficient as we are now calling this

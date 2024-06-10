@@ -41,17 +41,19 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                void(const ui::AXTreeID& tree_id,
                     const std::vector<ui::AXTreeUpdate>& updates,
                     const std::vector<ui::AXEvent>& events));
-  MOCK_METHOD10(OnSettingsRestoredFromPrefs,
-                void(read_anything::mojom::LineSpacing line_spacing,
-                     read_anything::mojom::LetterSpacing letter_spacing,
-                     const std::string& font,
-                     double font_size,
-                     bool links_enabled,
-                     read_anything::mojom::Colors color,
-                     double speech_rate,
-                     base::Value::Dict voices,
-                     base::Value::List languages_enabled_in_pref,
-                     read_anything::mojom::HighlightGranularity granularity));
+  MOCK_METHOD(void,
+              OnSettingsRestoredFromPrefs,
+              (read_anything::mojom::LineSpacing line_spacing,
+               read_anything::mojom::LetterSpacing letter_spacing,
+               const std::string& font,
+               double font_size,
+               bool links_enabled,
+               bool images_enabled,
+               read_anything::mojom::Colors color,
+               double speech_rate,
+               base::Value::Dict voices,
+               base::Value::List languages_enabled_in_pref,
+               read_anything::mojom::HighlightGranularity granularity));
   MOCK_METHOD3(OnActiveAXTreeIDChanged,
                void(const ui::AXTreeID& tree_id,
                     ukm::SourceId ukm_source_id,
@@ -128,6 +130,7 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   std::string expected_font_name = "Google Sans";
   double expected_font_scale = 3.5;
   bool expected_links_enabled = false;
+  bool expected_images_enabled = true;
   read_anything::mojom::Colors expected_color =
       read_anything::mojom::Colors::kBlue;
   double expected_speech_rate = kReadAnythingDefaultSpeechRate;
@@ -142,14 +145,17 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
                    expected_font_scale);
   prefs->SetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled,
                     expected_links_enabled);
+  prefs->SetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled,
+                    expected_images_enabled);
   prefs->SetInteger(prefs::kAccessibilityReadAnythingColorInfo, 4);
 
-  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
-                         expected_line_spacing, expected_letter_spacing,
-                         expected_font_name, expected_font_scale,
-                         expected_links_enabled, expected_color,
-                         expected_speech_rate, testing::IsEmpty(),
-                         testing::IsEmpty(), expected_highlight_granularity))
+  EXPECT_CALL(
+      page_,
+      OnSettingsRestoredFromPrefs(
+          expected_line_spacing, expected_letter_spacing, expected_font_name,
+          expected_font_scale, expected_links_enabled, expected_images_enabled,
+          expected_color, expected_speech_rate, testing::IsEmpty(),
+          testing::IsEmpty(), expected_highlight_granularity))
       .Times(1);
 
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
@@ -181,11 +187,11 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   prefs->SetInteger(prefs::kAccessibilityReadAnythingHighlightGranularity, 1);
 
   // Verify the values passed to the page are correct.
-  EXPECT_CALL(
-      page_, OnSettingsRestoredFromPrefs(_, _, _, _, _, _, expected_speech_rate,
-                                         _, _, expected_highlight_granularity))
+  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
+                         _, _, _, _, _, _, _, expected_speech_rate, _, _,
+                         expected_highlight_granularity))
       .Times(1)
-      .WillOnce(testing::WithArgs<7, 8>(testing::Invoke(
+      .WillOnce(testing::WithArgs<8, 9>(testing::Invoke(
           [&](base::Value::Dict voices, base::Value::List langs) {
             EXPECT_THAT(voices, base::test::DictionaryHasValue(
                                     "", base::Value(kVoice)));
@@ -322,11 +328,11 @@ TEST_F(ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest,
   prefs->SetInteger(prefs::kAccessibilityReadAnythingHighlightGranularity, 1);
 
   // Verify the values passed to the page are correct.
-  EXPECT_CALL(
-      page_, OnSettingsRestoredFromPrefs(_, _, _, _, _, _, expected_speech_rate,
-                                         _, _, expected_highlight_granularity))
+  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
+                         _, _, _, _, _, _, _, expected_speech_rate, _, _,
+                         expected_highlight_granularity))
       .Times(1)
-      .WillOnce(testing::WithArgs<7, 8>(testing::Invoke(
+      .WillOnce(testing::WithArgs<8, 9>(testing::Invoke(
           [&](base::Value::Dict voices, base::Value::List langs) {
             EXPECT_THAT(voices, base::test::DictionaryHasValue(
                                     kLang1, base::Value(kVoice1)));

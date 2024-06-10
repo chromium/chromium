@@ -615,6 +615,7 @@ chromium-metrics-reviews@google.com.
   <int value="100286" label="kAccessibilityFaceGazeCursorControlEnabled"/>
   <int value="100287" label="kAccessibilityFaceGazeAdjustSpeedSeparately"/>
   <int value="100288" label="KeyboardAmbientLightSensorLastEnabled"/>
+  <int value="100289" label="AccessibilityReadAnythingImagesEnabled"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

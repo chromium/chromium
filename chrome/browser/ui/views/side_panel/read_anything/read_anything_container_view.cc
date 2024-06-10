@@ -79,6 +79,7 @@ void ReadAnythingContainerView::OnReadAnythingThemeChanged(
     const std::string& font_name,
     double font_scale,
     bool links_enabled,
+    bool images_enabled,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,

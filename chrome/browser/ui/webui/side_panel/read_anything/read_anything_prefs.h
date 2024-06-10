@@ -61,6 +61,9 @@ inline constexpr char kAccessibilityReadAnythingHighlightColor[] =
 inline constexpr char kAccessibilityReadAnythingLinksEnabled[] =
     "settings.a11y.read_anything.links_enabled";
 
+inline constexpr char kAccessibilityReadAnythingImagesEnabled[] =
+    "settings.a11y.read_anything.images_enabled";
+
 // List of strings to represent the user's preferred
 // languages for the read anything UI.
 inline constexpr char kAccessibilityReadAnythingLanguagesEnabled[] =

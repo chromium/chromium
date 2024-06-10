@@ -11202,7 +11202,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/permissions/permission_rhs_indicators_interactive_uitest.cc",
       "../browser/ui/views/plus_addresses/plus_address_creation_dialog_interactive_uitest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc",
-      "../browser/ui/views/side_panel/read_anything/read_anything_toolbar_view_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/ui/web_applications/web_app_interactive_uitest.cc",

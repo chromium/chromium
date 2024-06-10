@@ -14,7 +14,8 @@
   const readAnythingApp = document.querySelector('read-anything-app');
   const container = document.getElementById('container');
 
-  chrome.readingMode.setThemeForTesting('Poppins', 1.0, true, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting(
+      'Poppins', 1.0, true, false, 0, 0, 1, 0);
   const expected = '16px';  // 1em = 16px
   const actual = getComputedStyle(container).fontSize;
   const isEqual = actual === expected;

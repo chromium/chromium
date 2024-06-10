@@ -15,8 +15,8 @@
   const container = document.getElementById('container');
 
   chrome.readingMode.setThemeForTesting(
-      'f', 1, true, /* SkColorSetRGB(0x33, 0x36, 0x39) = */ 4281546297, 0, 1,
-      0);
+      'f', 1, true, false, /* SkColorSetRGB(0x33, 0x36, 0x39) = */ 4281546297,
+      0, 1, 0);
   const expected = 'rgb(51, 54, 57)';  // #333639
   const actual = getComputedStyle(container).color;
   const isEqual = actual === expected;

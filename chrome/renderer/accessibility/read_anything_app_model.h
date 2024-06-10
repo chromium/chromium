@@ -178,6 +178,7 @@ class ReadAnythingAppModel {
   void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
   bool links_enabled() const { return links_enabled_; }
+  bool images_enabled() const { return images_enabled_; }
   float letter_spacing() const { return letter_spacing_; }
   float line_spacing() const { return line_spacing_; }
   int color_theme() const { return color_theme_; }
@@ -257,6 +258,7 @@ class ReadAnythingAppModel {
       const std::string& font,
       double font_size,
       bool links_enabled,
+      bool images_enabled,
       read_anything::mojom::Colors color,
       double speech_rate,
       base::Value::Dict* voices,
@@ -314,6 +316,7 @@ class ReadAnythingAppModel {
   void DecreaseTextSize();
   void ResetTextSize();
   void ToggleLinksEnabled();
+  void ToggleImagesEnabled();
 
   std::string GetHtmlTag(const ui::AXNodeID& ax_node_id) const;
   std::string GetAltText(const ui::AXNodeID& ax_node_id) const;
@@ -564,6 +567,7 @@ class ReadAnythingAppModel {
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
   float font_size_ = kReadAnythingDefaultFontScale;
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
+  bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
   float letter_spacing_ =
       (int)read_anything::mojom::LetterSpacing::kDefaultValue;
   float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;

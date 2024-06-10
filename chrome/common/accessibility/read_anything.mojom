@@ -21,8 +21,11 @@ struct ReadAnythingTheme {
   // The px value of the user's font size.
   float font_size;
 
-  // True if links are disabled.
+  // True if links are enabled.
   bool links_enabled;
+
+  // True if images are enabled.
+  bool images_enabled;
 
   // The various colors of the user's chosen theme.
   skia.mojom.SkColor foreground_color;
@@ -148,6 +151,10 @@ interface UntrustedPageHandler {
   // via the webui toolbar.
   OnLinksEnabledChanged(bool enabled);
 
+  // Informs the browser controller that the user has toggled images
+  // via the webui toolbar.
+  OnImagesEnabledChanged(bool enabled);
+
   // Informs the browser controller that the user updated the color theme via
   // the webui toolbar.
   OnColorChange(read_anything.mojom.Colors color);
@@ -248,6 +255,7 @@ interface UntrustedPage {
                            string font,
                            double font_size,
                            bool links_enabled,
+                           bool images_enabled,
                            read_anything.mojom.Colors color,
                            double speech_rate,
                            mojo_base.mojom.DictionaryValue voices,

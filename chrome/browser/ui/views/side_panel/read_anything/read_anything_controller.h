@@ -60,6 +60,8 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   void OnSystemThemeChanged() override;
   void OnLinksEnabledChanged(bool is_enabled) override;
   bool GetLinksEnabled() override;
+  void OnImagesEnabledChanged(bool is_enabled) override;
+  bool GetImagesEnabled() override;
 
   Profile* GetProfile();
 

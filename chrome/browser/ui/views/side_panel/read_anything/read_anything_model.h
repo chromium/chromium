@@ -246,6 +246,7 @@ class ReadAnythingModel {
         const std::string& font_name,
         double font_scale,
         bool links_enabled,
+        bool images_enabled,
         ui::ColorId foreground_color_id,
         ui::ColorId background_color_id,
         ui::ColorId separator_color_id,
@@ -265,6 +266,7 @@ class ReadAnythingModel {
             const std::string& font_name,
             double font_scale,
             bool links_enabled,
+            bool images_enabled,
             read_anything::mojom::Colors colors,
             read_anything::mojom::LineSpacing line_spacing,
             read_anything::mojom::LetterSpacing letter_spacing);
@@ -277,6 +279,7 @@ class ReadAnythingModel {
   void DecreaseTextSize();
   void IncreaseTextSize();
   void SetLinksEnabled(bool enabled);
+  void SetImagesEnabled(bool enabled);
   void SetSelectedColorsByIndex(size_t new_index);
   void SetSelectedLineSpacingByIndex(size_t new_index);
   void SetSelectedLetterSpacingByIndex(size_t new_index);
@@ -297,6 +300,7 @@ class ReadAnythingModel {
   }
 
   bool GetLinksEnabled() { return links_enabled_; }
+  bool GetImagesEnabled() { return images_enabled_; }
 
  private:
   void NotifyThemeChanged();
@@ -318,6 +322,7 @@ class ReadAnythingModel {
   float font_scale_ = kReadAnythingDefaultFontScale;
 
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
+  bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
 
   read_anything::mojom::LineSpacing line_spacing_ = LineSpacing::kDefaultValue;
   read_anything::mojom::LetterSpacing letter_spacing_ =

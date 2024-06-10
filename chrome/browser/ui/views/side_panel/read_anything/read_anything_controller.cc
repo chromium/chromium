@@ -149,6 +149,17 @@ bool ReadAnythingController::GetLinksEnabled() {
   return model_->GetLinksEnabled();
 }
 
+void ReadAnythingController::OnImagesEnabledChanged(bool is_enabled) {
+  model_->SetImagesEnabled(is_enabled);
+
+  PrefService* prefs = browser_->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled, is_enabled);
+}
+
+bool ReadAnythingController::GetImagesEnabled() {
+  return model_->GetImagesEnabled();
+}
+
 ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
   return model_->GetLetterSpacingModel();
 }

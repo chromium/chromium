@@ -93,6 +93,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL},
       {"disableLinksLabel", IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL},
       {"enableLinksLabel", IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL},
+      {"disableImagesLabel", IDS_READING_MODE_DISABLE_IMAGES_BUTTON_LABEL},
+      {"enableImagesLabel", IDS_READING_MODE_ENABLE_IMAGES_BUTTON_LABEL},
       {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
       {"readingModeReadAloudToolbarLabel",
        IDS_READING_MODE_READ_ALOUD_TOOLBAR_LABEL},

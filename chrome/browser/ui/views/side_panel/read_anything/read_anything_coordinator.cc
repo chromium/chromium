@@ -125,6 +125,9 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   bool prefs_links_enabled = browser->profile()->GetPrefs()->GetBoolean(
       prefs::kAccessibilityReadAnythingLinksEnabled);
 
+  bool prefs_images_enabled = browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingImagesEnabled);
+
   read_anything::mojom::Colors prefs_colors =
       static_cast<read_anything::mojom::Colors>(
           browser->profile()->GetPrefs()->GetInteger(
@@ -145,6 +148,7 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
       /* font name= */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
       /* links enabled = */ prefs_links_enabled,
+      /* images_enabled = */ prefs_images_enabled,
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,
       /* letter spacing = */ prefs_letter_spacing);

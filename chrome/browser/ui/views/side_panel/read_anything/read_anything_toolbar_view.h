@@ -55,6 +55,8 @@ class ReadAnythingToolbarView
     virtual void OnSystemThemeChanged() = 0;
     virtual void OnLinksEnabledChanged(bool is_enabled) = 0;
     virtual bool GetLinksEnabled() = 0;
+    virtual void OnImagesEnabledChanged(bool is_enabled) = 0;
+    virtual bool GetImagesEnabled() = 0;
   };
 
   ReadAnythingToolbarView(
@@ -74,6 +76,7 @@ class ReadAnythingToolbarView
       const std::string& font_name,
       double font_scale,
       bool links_enabled,
+      bool images_enabled,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,

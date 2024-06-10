@@ -107,6 +107,10 @@
     font-size: 0.8em;
   }
 
+  .hiddenImg {
+    display: none;
+  }
+
 </style>
 <div id="appFlexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
@@ -132,7 +136,8 @@
       on-rate-change="onSpeechRateChange_"
       on-next-granularity-click="playNextGranularity_"
       on-previous-granularity-click="playPreviousGranularity_"
-      on-links-toggle="updateContent"
+      on-links-toggle="updateLinks"
+      on-images-toggle="updateImages"
       on-letter-spacing-change="onLetterSpacingChange_"
       on-theme-change="onThemeChange_"
       on-line-spacing-change="onLineSpacingChange_"

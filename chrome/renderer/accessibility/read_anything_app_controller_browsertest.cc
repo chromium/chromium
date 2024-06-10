@@ -76,6 +76,7 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnFontChange, (const std::string& font), (override));
   MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
   MOCK_METHOD(void, OnLinksEnabledChanged, (bool enabled), (override));
+  MOCK_METHOD(void, OnImagesEnabledChanged, (bool enabled), (override));
   MOCK_METHOD(void, OnSpeechRateChange, (double rate), (override));
   MOCK_METHOD(void,
               OnVoiceChange,
@@ -186,13 +187,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   void SetThemeForTesting(const std::string& font_name,
                           float font_size,
                           bool links_enabled,
+                          bool images_enabled,
                           SkColor foreground_color,
                           SkColor background_color,
                           int line_spacing,
                           int letter_spacing) {
-    controller_->SetThemeForTesting(font_name, font_size, links_enabled,
-                                    foreground_color, background_color,
-                                    line_spacing, letter_spacing);
+    controller_->SetThemeForTesting(
+        font_name, font_size, links_enabled, images_enabled, foreground_color,
+        background_color, line_spacing, letter_spacing);
   }
 
   void AccessibilityEventReceived(
@@ -294,6 +296,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool LinksEnabled() { return controller_->LinksEnabled(); }
 
+  bool ImagesEnabled() { return controller_->ImagesEnabled(); }
+
   SkColor ForegroundColor() { return controller_->ForegroundColor(); }
 
   SkColor BackgroundColor() { return controller_->BackgroundColor(); }
@@ -305,6 +309,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   void OnFontSizeReset() { controller_->OnFontSizeReset(); }
 
   void OnLinksEnabledToggled() { controller_->OnLinksEnabledToggled(); }
+
+  void OnImagesEnabledToggled() { controller_->OnImagesEnabledToggled(); }
 
   void TurnedHighlightOn() { controller_->TurnedHighlightOn(); }
 
@@ -561,6 +567,7 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   std::string font_name = "Roboto";
   float font_size = 18.0;
   bool links_enabled = false;
+  bool images_enabled = false;
   SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
   SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
   int letter_spacing =
@@ -569,8 +576,8 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   int line_spacing =
       static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
   float line_spacing_value = 1.5;
-  SetThemeForTesting(font_name, font_size, links_enabled, foreground,
-                     background, line_spacing, letter_spacing);
+  SetThemeForTesting(font_name, font_size, links_enabled, images_enabled,
+                     foreground, background, line_spacing, letter_spacing);
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
   EXPECT_EQ(links_enabled, LinksEnabled());
@@ -2094,11 +2101,25 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
 TEST_F(ReadAnythingAppControllerTest, RequestImageDataUrl) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kReadAnythingImagesViaAlgorithm}, {});
-
+      {features::kReadAnythingImagesViaAlgorithm,
+       features::kReadAnythingReadAloud},
+      {});
   ui::AXNodeID ax_node_id = 2;
   EXPECT_CALL(page_handler_, OnImageDataRequested(tree_id_, ax_node_id))
       .Times(1);
+  std::string font_name = "Roboto";
+  float font_size = 18.0;
+  bool links_enabled = false;
+  bool images_enabled = true;
+  SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
+  SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
+  int letter_spacing =
+      static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue);
+  int line_spacing =
+      static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
+
+  SetThemeForTesting(font_name, font_size, links_enabled, images_enabled,
+                     foreground, background, line_spacing, letter_spacing);
   RequestImageDataUrl(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);

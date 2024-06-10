@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './icons.html.js';
+import './voice_selection_menu.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/icons_lit.html.js';
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import './voice_selection_menu.js';
-import './icons.html.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/md_select.css.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
@@ -76,9 +77,10 @@ enum ReadAnythingSettingsChange {
   LINE_HEIGHT_CHANGE = 3,
   LETTER_SPACING_CHANGE = 4,
   LINKS_ENABLED_CHANGE = 5,
+  IMAGES_ENABLED_CHANGE = 6,
 
   // Must be last.
-  COUNT = 6,
+  COUNT = 7,
 }
 
 // Enum for logging the reading highlight state.
@@ -103,6 +105,11 @@ export const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
 export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
 export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
+// Images toggle button constants.
+export const IMAGES_ENABLED_ICON = 'read-anything:images-enabled';
+export const IMAGES_DISABLED_ICON = 'read-anything:images-disabled';
+export const IMAGES_TOGGLE_BUTTON_ID = 'images-toggle-button';
+
 // Events emitted from the toolbar to the app
 export const LETTER_SPACING_EVENT = 'letter-spacing-change';
 export const LINE_SPACING_EVENT = 'line-spacing-change';
@@ -115,6 +122,7 @@ export const HIGHLIGHT_TOGGLE_EVENT = 'highlight-toggle';
 export const NEXT_GRANULARITY_EVENT = 'next-granularity-click';
 export const PREVIOUS_GRANULARITY_EVENT = 'previous-granularity-click';
 export const LINKS_EVENT = 'links-toggle';
+export const IMAGES_EVENT = 'images-toggle';
 
 // Constants for styling the toolbar when page zoom changes.
 const whiteSpaceTypical = 'nowrap';
@@ -394,6 +402,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         (this.constructorTime - this.startTime),
         'Accessibility.ReadAnything.TimeFromToolbarStartedToConstructor');
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
+
+    // Only add the button to the toolbar if the feature is enabled.
+    if (chrome.readingMode.imagesFeatureEnabled) {
+      this.textStyleToggles_.push({
+        id: IMAGES_TOGGLE_BUTTON_ID,
+        icon: chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
+                                                 IMAGES_DISABLED_ICON,
+        title: chrome.readingMode.imagesEnabled ?
+            loadTimeData.getString('disableImagesLabel') :
+            loadTimeData.getString('enableImagesLabel'),
+        callback: this.onToggleImagesClick_.bind(this),
+      });
+    }
   }
 
   override connectedCallback() {
@@ -849,6 +870,20 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateLinkToggleButton();
   }
 
+  private onToggleImagesClick_(event: DomRepeatEvent<ToggleButton>) {
+    if (!event.target) {
+      return;
+    }
+    chrome.metricsPrivate.recordEnumerationValue(
+        TEXT_SETTINGS_CHANGE_UMA,
+        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE,
+        ReadAnythingSettingsChange.COUNT);
+
+    chrome.readingMode.onImagesEnabledToggled();
+    this.emitEvent_(IMAGES_EVENT);
+    this.updateImagesToggleButton();
+  }
+
   private updateLinkToggleButton() {
     const button = this.shadowRoot?.getElementById(LINK_TOGGLE_BUTTON_ID) as
         CrIconButtonElement;
@@ -858,6 +893,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       button.title = chrome.readingMode.linksEnabled ?
           loadTimeData.getString('disableLinksLabel') :
           loadTimeData.getString('enableLinksLabel');
+    }
+  }
+
+  private updateImagesToggleButton() {
+    const button = this.shadowRoot?.getElementById(IMAGES_TOGGLE_BUTTON_ID) as
+        CrIconButtonElement;
+    if (button) {
+      button.ironIcon = chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
+                                                           IMAGES_DISABLED_ICON;
+      button.title = chrome.readingMode.imagesEnabled ?
+          loadTimeData.getString('disableImagesLabel') :
+          loadTimeData.getString('enableImagesLabel');
     }
   }
 

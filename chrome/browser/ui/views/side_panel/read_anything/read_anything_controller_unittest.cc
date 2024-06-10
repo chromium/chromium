@@ -25,6 +25,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
               (const std::string& font_name,
                double font_scale,
                bool links_enabled,
+               bool images_enabled,
                ui::ColorId foreground_color_id,
                ui::ColorId background_color_id,
                ui::ColorId separator_color_id,
@@ -75,6 +76,9 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kAccessibilityReadAnythingLinksEnabled,
         kReadAnythingDefaultLinksEnabled);
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kAccessibilityReadAnythingImagesEnabled,
+        kReadAnythingDefaultImagesEnabled);
   }
 
   void TearDown() override {
@@ -129,11 +133,12 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
                      std::string font_name,
                      double font_scale,
                      bool links_enabled,
+                     bool images_enabled,
                      read_anything::mojom::Colors colors,
                      read_anything::mojom::LineSpacing line_spacing,
                      read_anything::mojom::LetterSpacing letter_spacing) {
-    model_->Init(language, font_name, font_scale, links_enabled, colors,
-                 line_spacing, letter_spacing);
+    model_->Init(language, font_name, font_scale, links_enabled, images_enabled,
+                 colors, line_spacing, letter_spacing);
   }
 
   std::string GetPrefFontName() {
@@ -184,7 +189,7 @@ TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
   // Initialize model with English so all fonts are available choices.
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5, true,
+  MockModelInit(language, font_name, 4.5, true, false,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -200,7 +205,7 @@ TEST_F(ReadAnythingControllerTest,
   // Initialize model with English so all fonts are available choices.
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5, true,
+  MockModelInit(language, font_name, 4.5, true, false,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -248,7 +253,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5, true,
+  MockModelInit(language, font_name, 4.5, true, false,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -264,7 +269,7 @@ TEST_F(ReadAnythingControllerTest,
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5, true,
+  MockModelInit(language, font_name, 4.5, true, false,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -279,7 +284,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 0.5, true,
+  MockModelInit(language, font_name, 0.5, true, false,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -295,7 +300,7 @@ TEST_F(ReadAnythingControllerTest,
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 0.5, true,
+  MockModelInit(language, font_name, 0.5, true, false,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);

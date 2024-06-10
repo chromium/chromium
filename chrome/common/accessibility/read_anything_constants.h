@@ -58,6 +58,7 @@ inline constexpr double kReadAnythingFontScaleIncrement = 0.25;
 
 // Display settings.
 inline constexpr bool kReadAnythingDefaultLinksEnabled = true;
+inline constexpr bool kReadAnythingDefaultImagesEnabled = false;
 
 const char* kLanguagesSupportedByPoppins[] = {
     "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",

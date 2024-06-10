@@ -9174,6 +9174,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL" desc="Accessibility label for the button that enables all links in reading mode content.">
         Enable links
       </message>
+      <message name="IDS_READING_MODE_DISABLE_IMAGES_BUTTON_LABEL" desc="Accessibility label for the button that disables showing images in reading mode content.">
+        Disable images
+      </message>
+      <message name="IDS_READING_MODE_ENABLE_IMAGES_BUTTON_LABEL" desc="Accessibility label for the button that enables showing images in reading mode content.">
+        Enable images
+      </message>
       <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature.">
         Color theme
       </message>

@@ -79,6 +79,11 @@ void ReadAnythingSidePanelController::InitModelWithUserPrefs() {
           ->GetPrefs()
           ->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled);
 
+  bool prefs_images_enabled =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+          ->GetPrefs()
+          ->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled);
+
   read_anything::mojom::Colors prefs_colors =
       static_cast<read_anything::mojom::Colors>(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
@@ -102,6 +107,7 @@ void ReadAnythingSidePanelController::InitModelWithUserPrefs() {
       /* font name = */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
       /* links enabled = */ prefs_links_enabled,
+      /* images_enabled = */ prefs_images_enabled,
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,
       /* letter spacing = */ prefs_letter_spacing);

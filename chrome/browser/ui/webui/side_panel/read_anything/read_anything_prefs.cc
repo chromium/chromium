@@ -68,6 +68,10 @@ void RegisterReadAnythingProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityReadAnythingLinksEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityReadAnythingImagesEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -711,6 +711,8 @@ void ReadAnythingAppController::DrawSelection() {
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   bool needs_redraw_for_links =
       model_.links_enabled() != new_theme->links_enabled;
+  bool needs_redraw_for_images =
+      model_.images_enabled() != new_theme->images_enabled;
   model_.OnThemeChanged(std::move(new_theme));
   ExecuteJavaScript("chrome.readingMode.updateTheme();");
 
@@ -718,6 +720,11 @@ void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   if (needs_redraw_for_links &&
       model_.active_tree_id() != ui::AXTreeIDUnknown()) {
     ExecuteJavaScript("chrome.readingMode.updateLinks();");
+  }
+
+  if (needs_redraw_for_images &&
+      model_.active_tree_id() != ui::AXTreeIDUnknown()) {
+    ExecuteJavaScript("chrome.readingMode.updateImages();");
   }
 }
 
@@ -727,15 +734,17 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     const std::string& font,
     double font_size,
     bool links_enabled,
+    bool images_enabled,
     read_anything::mojom::Colors color,
     double speech_rate,
     base::Value::Dict voices,
     base::Value::List languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
-  model_.OnSettingsRestoredFromPrefs(
-      line_spacing, letter_spacing, font, font_size, links_enabled, color,
-      speech_rate, &voices, &languages_enabled_in_pref, granularity);
+  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
+                                     font_size, links_enabled, images_enabled,
+                                     color, speech_rate, &voices,
+                                     &languages_enabled_in_pref, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -762,6 +771,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
+      .SetProperty("imagesEnabled", &ReadAnythingAppController::ImagesEnabled)
+
+      .SetProperty("imagesFeatureEnabled",
+                   &ReadAnythingAppController::ImagesFeatureEnabled)
       .SetProperty("foregroundColor",
                    &ReadAnythingAppController::ForegroundColor)
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
@@ -826,6 +839,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
       .SetMethod("onLinksEnabledToggled",
                  &ReadAnythingAppController::OnLinksEnabledToggled)
+      .SetMethod("onImagesEnabledToggled",
+                 &ReadAnythingAppController::OnImagesEnabledToggled)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("onStandardLineSpacing",
@@ -950,6 +965,14 @@ float ReadAnythingAppController::FontSize() const {
 
 bool ReadAnythingAppController::LinksEnabled() const {
   return model_.links_enabled();
+}
+
+bool ReadAnythingAppController::ImagesEnabled() const {
+  return model_.images_enabled();
+}
+
+bool ReadAnythingAppController::ImagesFeatureEnabled() const {
+  return features::IsReadAnythingImagesViaAlgorithmEnabled();
 }
 
 SkColor ReadAnythingAppController::ForegroundColor() const {
@@ -1282,7 +1305,7 @@ bool ReadAnythingAppController::IsLanguagePackDownloadingEnabled() const {
 }
 
 bool ReadAnythingAppController::IsAutomaticWordHighlightingEnabled() const {
-   return features::IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
+  return features::IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 }
 
 bool ReadAnythingAppController::IsGoogleDocs() const {
@@ -1384,6 +1407,11 @@ void ReadAnythingAppController::OnFontSizeReset() {
 void ReadAnythingAppController::OnLinksEnabledToggled() {
   model_.ToggleLinksEnabled();
   page_handler_->OnLinksEnabledChanged(model_.links_enabled());
+}
+
+void ReadAnythingAppController::OnImagesEnabledToggled() {
+  model_.ToggleImagesEnabled();
+  page_handler_->OnImagesEnabledChanged(model_.images_enabled());
 }
 
 void ReadAnythingAppController::OnScroll(bool on_selection) const {
@@ -1599,6 +1627,7 @@ int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,
                                                    bool links_enabled,
+                                                   bool images_enabled,
                                                    SkColor foreground_color,
                                                    SkColor background_color,
                                                    int line_spacing,
@@ -1608,8 +1637,8 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
   auto letter_spacing_enum =
       static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
   OnThemeChanged(ReadAnythingTheme::New(
-      font_name, font_size, links_enabled, foreground_color, background_color,
-      line_spacing_enum, letter_spacing_enum));
+      font_name, font_size, links_enabled, images_enabled, foreground_color,
+      background_color, line_spacing_enum, letter_spacing_enum));
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(

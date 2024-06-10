@@ -290,6 +290,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
         prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
         prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled),
+        prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled),
         static_cast<read_anything::mojom::Colors>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
         speechRate, std::move(voices),
@@ -466,6 +467,14 @@ void ReadAnythingUntrustedPageHandler::OnLinksEnabledChanged(bool enabled) {
         prefs::kAccessibilityReadAnythingLinksEnabled, enabled);
   }
 }
+
+void ReadAnythingUntrustedPageHandler::OnImagesEnabledChanged(bool enabled) {
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetBoolean(
+        prefs::kAccessibilityReadAnythingImagesEnabled, enabled);
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::OnColorChange(
     read_anything::mojom::Colors color) {
   if (browser_) {
@@ -606,6 +615,7 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
     const std::string& font_name,
     double font_scale,
     bool links_enabled,
+    bool images_enabled,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
@@ -624,7 +634,7 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
       web_contents->GetColorProvider().GetColor(background_color_id);
 
   page_->OnThemeChanged(ReadAnythingTheme::New(
-      font_name, font_scale, links_enabled, foreground_skcolor,
+      font_name, font_scale, links_enabled, images_enabled, foreground_skcolor,
       background_skcolor, line_spacing, letter_spacing));
 }
 

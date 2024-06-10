@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './read_anything_toolbar.js';
+import './strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
-import './strings.m.js';
-import './read_anything_toolbar.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -23,8 +23,8 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -78,6 +78,9 @@ const overflowXTypical = 'hidden';
 const overflowXScroll = 'scroll';
 const minWidthTypical = 'auto';
 const minWidthOverflow = 'fit-content';
+
+// Images CSS Classes.
+const HIDDEN_IMAGE = 'hiddenImg';
 
 // UMA logging constants.
 const NEW_PAGE_UMA = 'Accessibility.ReadAnything.NewPage';
@@ -146,6 +149,12 @@ if (chrome.readingMode) {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp, 'no app');
     readAnythingApp.updateLinks();
+  };
+
+  chrome.readingMode.updateImages = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp, 'no app');
+    readAnythingApp.updateImages();
   };
 
   chrome.readingMode.updateImage = (nodeId) => {
@@ -503,7 +512,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         }
       });
       this.previousHighlights_ = [];
-
     };
 
     document.onscroll = () => {
@@ -758,10 +766,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           NEW_PAGE_UMA, ReadAnythingNewPage.NEW_PAGE,
           ReadAnythingNewPage.COUNT);
     }
-    this.loadImages_();
+
+    if (chrome.readingMode.imagesFeatureEnabled) {
+      // Always load images even if they are disabled to ensure a fast response
+      // when toggling.
+      this.loadImages_();
+    }
+
 
     this.hasContent_ = true;
     container.appendChild(node);
+    this.updateImages();
   }
 
   updateImage(nodeId: number) {
@@ -906,6 +921,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       const replacement = this.buildSubtree_(nodeId);
       this.replaceElement(elem, replacement);
     }
+  }
+
+  updateImages() {
+    document.querySelectorAll('img, figure').forEach((element) => {
+      if (chrome.readingMode.imagesEnabled) {
+        element.classList.remove(HIDDEN_IMAGE);
+      } else {
+        element.classList.add(HIDDEN_IMAGE);
+      }
+    });
   }
 
   updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
@@ -1840,8 +1865,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.addEventListener('boundary', (event) => {
       // Some voices may give sentence boundaries, but we're only concerned
       // with word boundaries in boundary event because we're speaking text at
-      // the sentence granularity level, so we'll retrieve these boundaries in message.onEnd
-      // instead.
+      // the sentence granularity level, so we'll retrieve these boundaries in
+      // message.onEnd instead.
       if (event.name === 'word') {
         this.updateBoundary(event.charIndex);
 
