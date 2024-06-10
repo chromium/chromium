@@ -14,16 +14,6 @@
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class HistoryEmbeddingsUserActions {
-  kNonEmptyQueryHistorySearch = 0,
-  kEmbeddingsSearch = 1,
-  kEmbeddingsNonEmptyResultsShown = 2,
-  kEmbeddingsResultClicked = 3,
-  kMaxValue = kEmbeddingsResultClicked,
-};
-
 // Receives the results of a HistoryEmbeddingsService::Search call, builds
 // them into mojom objects for the page, and sends them to the callback.
 void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,

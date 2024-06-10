@@ -14,6 +14,16 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class HistoryEmbeddingsUserActions {
+  kNonEmptyQueryHistorySearch = 0,
+  kEmbeddingsSearch = 1,
+  kEmbeddingsNonEmptyResultsShown = 2,
+  kEmbeddingsResultClicked = 3,
+  kMaxValue = kEmbeddingsResultClicked,
+};
+
 class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
  public:
   HistoryEmbeddingsHandler(

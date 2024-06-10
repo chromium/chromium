@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -88,12 +89,15 @@ class HistoryEmbeddingsHandlerTest : public testing::Test {
 
   void TearDown() override { handler_.reset(); }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
@@ -103,4 +107,28 @@ TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
   handler_->Search(std::move(query), future.GetCallback());
   auto result = future.Take();
   ASSERT_EQ(result->items.size(), 0u);
+}
+
+TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
+  handler_->RecordSearchResultsMetrics(false, false);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kEmbeddingsSearch, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown, 0);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kEmbeddingsResultClicked, 0);
+
+  handler_->RecordSearchResultsMetrics(true, true);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kEmbeddingsSearch, 2);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "History.Embeddings.UserActions",
+      HistoryEmbeddingsUserActions::kEmbeddingsResultClicked, 1);
 }
