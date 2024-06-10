@@ -176,6 +176,7 @@ content/renderer/pepper 1 1
 content/test/gpu 1 1
 content/web_test/renderer 2 1
 courgette/testdata 26 4
+device/fido/enclave/verify/proto 1 1
 device/gamepad 5 3
 device/vr/public/mojom 2 1
 docs 29 17
@@ -813,7 +814,7 @@ tools/mb/docs 1 1
 tools/md_browser 7 5
 tools/memory/partition_allocator/palloc_viewer 1 1
 tools/metrics/actions 1 1
-tools/metrics/histograms 14 2
+tools/metrics/histograms 13 2
 tools/metrics/histograms/metadata/gpu 1 1
 tools/metrics/histograms/metadata/others 1 1
 tools/metrics/ukm 1 1
