@@ -7531,3 +7531,6 @@ crbug.com/325323464 [ Win ] http/tests/navigation/back-to-redirect-with-frame.ph
 
 # Gardener 2024-06-07
 crbug.com/325323464 [ Mac12 ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure ]
+
+# Gardener 2024-06-10
+crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failure ]
