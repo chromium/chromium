@@ -126,6 +126,7 @@ class BuildConfigGenerator extends DefaultTask {
       'androidx_media3_media3',
       'androidx_multidex_multidex',
       'androidx_print',
+      'androidx_privacysandbox_ads_ads_adservices',
       'androidx_test',
     ]
 
