@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_DEMOGRAPHICS_CLIENT_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_DEMOGRAPHICS_CLIENT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
@@ -14,11 +15,12 @@ namespace metrics {
 class DemographicsClient
     : public metrics::DemographicMetricsProvider::ProfileClient {
  public:
+  DemographicsClient();
+
   DemographicsClient(const DemographicsClient&) = delete;
   DemographicsClient& operator=(const DemographicsClient&) = delete;
 
-  DemographicsClient() = default;
-  ~DemographicsClient() override = default;
+  ~DemographicsClient() override;
 
   // DemographicMetricsProvider::ProfileClient:
   int GetNumberOfProfilesOnDisk() override;
@@ -33,7 +35,9 @@ class DemographicsClient
   // the same value so that reported metrics are consistent (unless that browser
   // state becomes invalid).
   ChromeBrowserState* GetCachedBrowserState();
-  raw_ptr<ChromeBrowserState> chrome_browser_state_ = nullptr;
+
+  // Weak pointer to the cached ChromeBrowserState.
+  base::WeakPtr<ChromeBrowserState> chrome_browser_state_;
 };
 
 }  // namespace metrics

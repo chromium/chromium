@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/metrics/model/demographics_client.h"
 
+#import "base/check.h"
 #import "base/time/time.h"
 #import "components/network_time/network_time_tracker.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -13,6 +14,10 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 namespace metrics {
+
+DemographicsClient::DemographicsClient() = default;
+
+DemographicsClient::~DemographicsClient() = default;
 
 base::Time DemographicsClient::GetNetworkTime() const {
   base::Time time;
@@ -47,27 +52,18 @@ int DemographicsClient::GetNumberOfProfilesOnDisk() {
 }
 
 ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
+  ChromeBrowserState* chrome_browser_state = chrome_browser_state_.get();
+  if (!chrome_browser_state) {
+    chrome_browser_state = GetApplicationContext()
+                               ->GetChromeBrowserStateManager()
+                               ->GetLastUsedBrowserStateDeprecatedDoNotUse();
 
-  // If chrome_browser_state_ is defined, check it is still valid.
-  if (chrome_browser_state_) {
-    for (ChromeBrowserState* browser_state : browser_states) {
-      // TODO(crbug.com/336468571): Replace GetDebugName() with
-      // GetBrowserStateID().
-      if (browser_state->GetDebugName() ==
-          chrome_browser_state_->GetDebugName()) {
-        return chrome_browser_state_;
-      }
-    }
+    CHECK(chrome_browser_state);
+    chrome_browser_state_ = chrome_browser_state->AsWeakPtr();
   }
 
-  chrome_browser_state_ = GetApplicationContext()
-                              ->GetChromeBrowserStateManager()
-                              ->GetLastUsedBrowserStateDeprecatedDoNotUse();
-  return chrome_browser_state_;
+  CHECK(chrome_browser_state);
+  return chrome_browser_state;
 }
 
 }  //  namespace metrics
