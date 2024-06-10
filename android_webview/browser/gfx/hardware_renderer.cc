@@ -74,7 +74,6 @@ class ScopedAcquireExternalContext {
     if (is_angle_) {
       // When using ANGLE, need to make sure ANGLE's internals are in sync
       // with the external context.
-      base::TimeTicks start_time = base::TimeTicks::Now();
 
       // If the context has changed, make sure it gets current now.
       if (!state_->context()->IsCurrent(surface_)) {
@@ -83,11 +82,6 @@ class ScopedAcquireExternalContext {
 
       eglAcquireExternalContextANGLE(state_->display()->GetDisplay(),
                                      surface_->GetHandle());
-
-      auto delta = base::TimeTicks::Now() - start_time;
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Android.WebView.Gfx.AcquireExternalContextANGLEMicroseconds", delta,
-          base::Microseconds(1), base::Seconds(1), 100);
     } else {
       // When not using ANGLE, fake context and surface are used, so the
       // MakeCurrent calls are cheap.
@@ -96,14 +90,7 @@ class ScopedAcquireExternalContext {
   }
   ~ScopedAcquireExternalContext() {
     if (is_angle_) {
-      base::TimeTicks start_time = base::TimeTicks::Now();
-
       eglReleaseExternalContextANGLE(state_->display()->GetDisplay());
-
-      auto delta = base::TimeTicks::Now() - start_time;
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Android.WebView.Gfx.ReleaseExternalContextANGLEMicroseconds", delta,
-          base::Microseconds(1), base::Seconds(1), 100);
     } else {
       state_->ReleaseCurrent(surface_);
     }

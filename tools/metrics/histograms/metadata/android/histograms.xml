@@ -5563,18 +5563,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Gfx.AcquireExternalContextANGLEMicroseconds"
-    units="microseconds" expires_after="2024-06-01">
-  <owner>blundell@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <owner>syoussefi@chromium.org</owner>
-  <summary>
-    Tracks the amount of time that it took for ANGLE in WebView to sync from the
-    external context. Recorded once per saving of HWUI state when drawing with
-    GL. This is recorded only on devices that support high resolution timers.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.Gfx.HardwareDrawType"
     enum="WebViewDrawAndSubmissionType" expires_after="2024-11-03">
   <owner>vasilyt@chromium.org</owner>
@@ -5584,19 +5572,6 @@ chromium-metrics-reviews@google.com.
     Result is enum that represent three flags: did we called invalidate this
     frame, did renderer submitted compositor frame and whether DrawParams from
     Android HWUI changed. This is logged once per WebView draw functor call.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.Gfx.ReleaseExternalContextANGLEMicroseconds"
-    units="microseconds" expires_after="2024-06-01">
-  <owner>blundell@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <owner>syoussefi@chromium.org</owner>
-  <summary>
-    Tracks the amount of time that it took for ANGLE in WebView to sync back to
-    the external context. Recorded once per saving of HWUI state when drawing
-    with GL. This is recorded only on devices that support high resolution
-    timers.
   </summary>
 </histogram>
 
