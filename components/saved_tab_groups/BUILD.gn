@@ -247,6 +247,8 @@ source_set("saved_tab_group_bridge") {
   ]
 
   sources = [
+    "saved_tab_group_proto_conversions.cc",
+    "saved_tab_group_proto_conversions.h",
     "saved_tab_group_sync_bridge.cc",
     "saved_tab_group_sync_bridge.h",
   ]
@@ -254,6 +256,7 @@ source_set("saved_tab_group_bridge") {
   deps = [
     ":model",
     "//components/saved_tab_groups/proto",
+    "//components/tab_groups:tab_groups",
   ]
 
   public_deps = [
