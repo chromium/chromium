@@ -45,12 +45,6 @@ device::mojom::VRPosePtr PoseToVRPosePtr(const mozilla::gfx::VRPose* p) {
   return pose;
 }
 
-gfx::Transform GetFloorTransform(const float matrix[16]) {
-  gfx::Transform transform;
-  WvrMatToTransform(matrix, &transform);
-  return transform.GetCheckedInverse();
-}
-
 device::mojom::XRHandedness ToXRHandness(mozilla::gfx::ControllerHand hand) {
   using mozilla::gfx::ControllerHand;
   switch (hand) {
@@ -678,14 +672,17 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
 
   frame_data->time_delta = now - base::TimeTicks();
 
-  gfx::Transform transform = GetFloorTransform(system_state.displayState.sittingToStandingTransform);
-  if (floor_transform_ != transform) {
+  // On 3D graphics the translation on a 4x4 transform matrix is stored in the first 3 values of
+  // the 4th column. This means that (x,y,z) are on indexes (12, 13, 14).
+  auto floor_height = system_state.displayState.sittingToStandingTransform[13];
+  if (floor_height_ != floor_height) {
     frame_data->stage_parameters_id = ++stage_parameters_id_;
-    floor_transform_ = transform;
+    floor_height_ = floor_height;
   }
 
   frame_data->stage_parameters = device::mojom::VRStageParameters::New();
-  frame_data->stage_parameters->mojo_from_floor = floor_transform_;
+  frame_data->stage_parameters->mojo_from_floor = gfx::Transform();
+  frame_data->stage_parameters->mojo_from_floor.Translate3d(0, -floor_height_, 0);
 
   std::move(get_frame_data_callback_).Run(std::move(frame_data));
 }
