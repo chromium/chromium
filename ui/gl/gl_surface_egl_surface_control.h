@@ -13,10 +13,12 @@
 
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/cancelable_callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/frame_data.h"
@@ -159,12 +161,47 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
     base::CancelableOnceClosure hang_detection_cb_;
   };
 
+  struct OnTransactionAckArgs {
+    using SequenceId = base::IdTypeU32<OnTransactionAckArgs>;
+
+    OnTransactionAckArgs(
+        SequenceId id,
+        SwapCompletionCallback completion_callback,
+        PresentationCallback presentation_callback,
+        ResourceRefs released_resources,
+        std::optional<PrimaryPlaneFences> primary_plane_fences);
+
+    OnTransactionAckArgs(const OnTransactionAckArgs&) = delete;
+    OnTransactionAckArgs& operator=(const OnTransactionAckArgs&) = delete;
+    OnTransactionAckArgs(OnTransactionAckArgs&& other);
+    OnTransactionAckArgs& operator=(OnTransactionAckArgs&& other);
+    ~OnTransactionAckArgs();
+
+    SequenceId id;  // Id is not used for ordering, only uniqueness.
+    SwapCompletionCallback completion_callback;
+    PresentationCallback presentation_callback;
+    ResourceRefs released_resources;
+    std::optional<PrimaryPlaneFences> primary_plane_fences;
+    std::optional<gfx::SurfaceControl::TransactionStats> transaction_stats;
+  };
+
   void CommitPendingTransaction(SwapCompletionCallback completion_callback,
                                 PresentationCallback callback);
 
+  // This ensures `OrderedOnTransactionAckOnGpuThread` are called on the order
+  // it's scheduled. This is needed because android does not guarantee
+  // transaction acks are called in order and code above may assume they are
+  // ordered. This is achieved by storing the actual arguments in a queue and
+  // only pass an id to look up the args to android. Then use the queue to
+  // order the callbacks. Note it's the order in the queue that's used; the id
+  // is sorted though it's only used for uniqueniess, not for ordering.
+  void OnTransactionAckOnGpuThread(
+      OnTransactionAckArgs::SequenceId id,
+      gfx::SurfaceControl::TransactionStats transaction_stats);
+
   // Called on the |gpu_task_runner_| when a transaction is acked by the
   // framework.
-  void OnTransactionAckOnGpuThread(
+  void OrderedOnTransactionAckOnGpuThread(
       SwapCompletionCallback completion_callback,
       PresentationCallback presentation_callback,
       ResourceRefs released_resources,
@@ -195,6 +232,13 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
 
   // Transactions waiting to be applied once the previous transaction is acked.
   std::queue<gfx::SurfaceControl::Transaction> pending_transaction_queue_;
+
+  // Arguments for pending OrderedOnTransactionAckOnGpuThread calls. This is
+  // needed to ensure OrderedOnTransactionAckOnGpuThread are called in the order
+  // they are scheduled, since Android does not make that guarantee.
+  OnTransactionAckArgs::SequenceId::Generator
+      pending_transaction_ack_id_generator_;
+  base::circular_deque<OnTransactionAckArgs> pending_transaction_acks_;
 
   // PresentationCallbacks for transactions which have been acked but their
   // present fence has not fired yet.
