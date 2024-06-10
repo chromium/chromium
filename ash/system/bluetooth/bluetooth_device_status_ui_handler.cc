@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -42,6 +43,8 @@ BluetoothDeviceStatusUiHandler::~BluetoothDeviceStatusUiHandler() = default;
 
 void BluetoothDeviceStatusUiHandler::OnDevicePaired(
     PairedBluetoothDevicePropertiesPtr device) {
+  BLUETOOTH_LOG(EVENT) << "Notifying device was paired: "
+                       << device->device_properties->id;
   ash::ToastData toast_data(
       /*id=*/GetToastId(device.get()),
       ash::ToastCatalogName::kBluetoothDevicePaired,
@@ -56,6 +59,9 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
 
 void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
     PairedBluetoothDevicePropertiesPtr device) {
+  BLUETOOTH_LOG(EVENT) << "Notifying device was disconnected: "
+                       << device->device_properties->id;
+
   ash::ToastData toast_data(
       /*id=*/GetToastId(device.get()),
       ash::ToastCatalogName::kBluetoothDeviceDisconnected,
@@ -70,6 +76,9 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
 
 void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
     PairedBluetoothDevicePropertiesPtr device) {
+  BLUETOOTH_LOG(EVENT) << "Notifying device was connected: "
+                       << device->device_properties->id;
+
   ash::ToastData toast_data(
       /*id=*/GetToastId(device.get()),
       ash::ToastCatalogName::kBluetoothDeviceConnected,
