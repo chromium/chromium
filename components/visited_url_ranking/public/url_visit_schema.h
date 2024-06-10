@@ -24,9 +24,10 @@ enum URLVisitAggregateRankingModelInputSignals {
   kIsInCluster = 9,
   kHasUrlKeyedImage = 10,
   kHasAppId = 11,
+  kPlatform = 12,
 };
 
-static constexpr size_t kNumInputs = 12;
+static constexpr size_t kNumInputs = 13;
 
 // Represents a field's metadata and is leveraged for the processing and
 // serialization of `URLVisitAggregate` fields participating in ML models.

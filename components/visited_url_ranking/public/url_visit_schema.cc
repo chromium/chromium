@@ -21,6 +21,7 @@ const char kSignalIsInTabGroup[] = "is_in_tab_group";
 const char kSignalIsInCluster[] = "is_in_cluster";
 const char kSignalHasUrlKeyedImage[] = "has_url_keyed_image";
 const char kSignalHasAppId[] = "has_app_id";
+const char kPlatformInputId[] = "platform_type";
 
 constexpr std::array<FieldSchema, kNumInputs> kURLVisitAggregateSchema = {{
     {.signal =
@@ -50,6 +51,8 @@ constexpr std::array<FieldSchema, kNumInputs> kURLVisitAggregateSchema = {{
      .name = kSignalHasUrlKeyedImage},
     {.signal = URLVisitAggregateRankingModelInputSignals::kHasAppId,
      .name = kSignalHasAppId},
+    {.signal = URLVisitAggregateRankingModelInputSignals::kPlatform,
+     .name = kPlatformInputId},
 }};
 
 }  // namespace visited_url_ranking

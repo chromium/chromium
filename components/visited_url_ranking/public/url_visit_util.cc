@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
@@ -19,6 +20,38 @@ using segmentation_platform::InputContext;
 using segmentation_platform::processing::ProcessedValue;
 
 namespace visited_url_ranking {
+
+namespace {
+
+// Used as input to the model, it is ok to group some platforms together. Only
+// lists platforms that use the service.
+enum class PlatformType {
+  kUnknown = 0,
+  kWindows = 1,
+  kLinux = 2,
+  kMac = 3,
+  kIos = 4,
+  kAndroid = 5,
+  kOther = 6
+};
+
+PlatformType GetPlatformInput() {
+#if BUILDFLAG(IS_WIN)
+  return PlatformType::kWindows;
+#elif BUILDFLAG(IS_MAC)
+  return PlatformType::kMac;
+#elif BUILDFLAG(IS_LINUX)
+  return PlatformType::kLinux;
+#elif BUILDFLAG(IS_IOS)
+  return PlatformType::kIos;
+#elif BUILDFLAG(IS_ANDROID)
+  return PlatformType::kAndroid;
+#else
+  return PlatformType::kOther;
+#endif
+}
+
+}  // namespace
 
 // TODO(crbug.com/335200723): Integrate client configurable merging and
 // deduplication logic to produce "merge" keys for provided URLs.
@@ -121,8 +154,9 @@ scoped_refptr<InputContext> AsInputContext(
               ProcessedValue::FromFloat(history_data->last_app_id.has_value());
         }
         break;
-      default:
-        NOTREACHED();
+      case kPlatform:
+        value =
+            ProcessedValue::FromFloat(static_cast<float>(GetPlatformInput()));
     }
 
     signal_value_map.emplace(field_schema.name, std::move(value));

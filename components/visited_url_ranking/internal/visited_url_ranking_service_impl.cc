@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -49,6 +50,10 @@ using visited_url_ranking::URLVisit;
 namespace visited_url_ranking {
 
 namespace {
+
+// Default sampling rate for kSeen events recording. 1 in
+// `kSeenRecordsSamplingRate` events are recorded randomly.
+constexpr int kSeenRecordsSamplingRate = 1;
 
 const char* EventNameForAction(ScoredURLUserAction action) {
   switch (action) {
@@ -131,7 +136,15 @@ VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
              std::unique_ptr<URLVisitAggregatesTransformer>> transformers)
     : segmentation_platform_service_(segmentation_platform_service),
       data_fetchers_(std::move(data_fetchers)),
-      transformers_(std::move(transformers)) {}
+      transformers_(std::move(transformers)),
+      seen_record_delay_(base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
+          features::kVisitedURLRankingService,
+          "seen_record_action_delay_sec",
+          kSeenRecordDelaySec))),
+      seen_records_sampling_rate_(base::GetFieldTrialParamByFeatureAsInt(
+          features::kVisitedURLRankingService,
+          "seen_record_action_sampling_rate",
+          kSeenRecordsSamplingRate)) {}
 
 VisitedURLRankingServiceImpl::~VisitedURLRankingServiceImpl() = default;
 
@@ -198,10 +211,10 @@ void VisitedURLRankingServiceImpl::RecordAction(
   // assume if the user clicks on first 5 mins, then it's a success, otherwise
   // failure.
   if (action == ScoredURLUserAction::kSeen) {
-    int delay_sec = base::GetFieldTrialParamByFeatureAsInt(
-        features::kVisitedURLRankingService, "seen_record_action_delay_sec",
-        kSeenRecordDelaySec);
-    wait_for_activation = base::Seconds(delay_sec);
+    if (base::RandInt(1, seen_records_sampling_rate_) > 1) {
+      return;
+    }
+    wait_for_activation = seen_record_delay_;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

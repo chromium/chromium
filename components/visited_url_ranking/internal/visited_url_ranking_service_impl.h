@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/trigger.h"
@@ -111,6 +112,12 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
       transformers_;
+
+  // Time delay to record kSeen events in case kActivation events are recorded.
+  const base::TimeDelta seen_record_delay_;
+
+  // Sampling rate for kSeen events to balance training collection.
+  const int seen_records_sampling_rate_;
 
   base::WeakPtrFactory<VisitedURLRankingServiceImpl> weak_ptr_factory_{this};
 };
