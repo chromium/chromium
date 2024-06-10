@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -20,6 +22,7 @@ import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DrawableButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.Pane;
+import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -30,12 +33,18 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.feature_engagement.FeatureConstants;
 
 import java.util.function.DoubleConsumer;
 
@@ -49,10 +58,22 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                 }
             };
 
+    private final TabGroupModelFilterObserver mFilterObserver =
+            new TabGroupModelFilterObserver() {
+                @Override
+                public void didRemoveTabGroup(
+                        int oldRootId,
+                        @Nullable Token oldTabGroupId,
+                        @DidRemoveTabGroupReason int removalReason) {
+                    onDidRemoveTabGroup(oldTabGroupId, removalReason);
+                }
+            };
+
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final @NonNull SharedPreferences mSharedPreferences;
     private final @NonNull Supplier<TabModelFilter> mTabModelFilterSupplier;
     private final @NonNull TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
+    private final @NonNull UserEducationHelper mUserEducationHelper;
 
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
 
@@ -65,6 +86,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @param userEducationHelper Used for showing IPHs.
      */
     TabSwitcherPane(
             @NonNull Context context,
@@ -74,11 +96,13 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull Supplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
             @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator,
-            @NonNull DoubleConsumer onToolbarAlphaChange) {
+            @NonNull DoubleConsumer onToolbarAlphaChange,
+            @NonNull UserEducationHelper userEducationHelper) {
         super(context, factory, /* isIncognito= */ false, onToolbarAlphaChange);
         mSharedPreferences = sharedPreferences;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
+        mUserEducationHelper = userEducationHelper;
 
         // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
         // probably
@@ -122,10 +146,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
                     mPriceAnnotationsPrefListener);
         }
-        TabModelFilter filter = mTabModelFilterSupplier.get();
-        if (filter != null) {
-            filter.getTabModel().removeObserver(mTabModelObserver);
-        }
+        removeObservers();
     }
 
     @Override
@@ -204,11 +225,23 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         TabModelFilter filter = mTabModelFilterSupplier.get();
         if (filter == null) return;
 
-        TabModel model = filter.getTabModel();
         if (visible) {
-            model.addObserver(mTabModelObserver);
+            filter.getTabModel().addObserver(mTabModelObserver);
+            if (filter instanceof TabGroupModelFilter groupFilter) {
+                groupFilter.addTabGroupObserver(mFilterObserver);
+            }
         } else {
-            model.removeObserver(mTabModelObserver);
+            removeObservers();
+        }
+    }
+
+    private void removeObservers() {
+        TabModelFilter filter = mTabModelFilterSupplier.get();
+        if (filter != null) {
+            filter.getTabModel().removeObserver(mTabModelObserver);
+            if (filter instanceof TabGroupModelFilter groupFilter) {
+                groupFilter.removeTabGroupObserver(mFilterObserver);
+            }
         }
     }
 
@@ -225,5 +258,29 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                                     ? "HasPriceDrop"
                                     : "NoPriceDrop"));
         }
+    }
+
+    private void onDidRemoveTabGroup(
+            @Nullable Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
+        if (removalReason != DidRemoveTabGroupReason.CLOSE) return;
+
+        TabGroupModelFilter filter = (TabGroupModelFilter) mTabModelFilterSupplier.get();
+        if (!filter.isTabGroupHiding(oldTabGroupId)) return;
+
+        @Nullable PaneHubController paneHubController = getPaneHubController();
+        if (paneHubController == null) return;
+
+        @Nullable View anchorView = paneHubController.getPaneButton(PaneId.TAB_GROUPS);
+        if (anchorView == null) return;
+
+        IPHCommand command =
+                new IPHCommandBuilder(
+                                getRootView().getResources(),
+                                FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
+                                R.string.find_hidden_tab_group_iph,
+                                R.string.find_hidden_tab_group_iph)
+                        .setAnchorView(anchorView)
+                        .build();
+        mUserEducationHelper.requestShowIPH(command);
     }
 }

@@ -156,6 +156,7 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsYourTabsAreTogetherFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsDragAndDropFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature);
 BASE_DECLARE_FEATURE(kIPHTabSwitcherButtonFeature);
 BASE_DECLARE_FEATURE(kIPHTranslateMenuButtonFeature);
 BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPChromeIntroFeature);

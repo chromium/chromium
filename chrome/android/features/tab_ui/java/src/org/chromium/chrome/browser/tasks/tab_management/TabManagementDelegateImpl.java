@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -41,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -207,6 +211,12 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
         } else {
             Supplier<TabModelFilter> tabModelFilterSupplier =
                     () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+            profileProviderSupplier.onAvailable(
+                    (profileProvider) -> profileSupplier.set(profileProvider.getOriginalProfile()));
+            Handler handler = new Handler();
+            UserEducationHelper userEducationHelper =
+                    new UserEducationHelper(activity, profileSupplier, handler);
             pane =
                     new TabSwitcherPane(
                             activity,
@@ -216,7 +226,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             tabModelFilterSupplier,
                             newTabButtonOnClickListener,
                             new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector),
-                            onToolbarAlphaChange);
+                            onToolbarAlphaChange,
+                            userEducationHelper);
         }
         return Pair.create(new TabSwitcherPaneAdapter(pane), pane);
     }

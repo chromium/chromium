@@ -774,6 +774,9 @@
       <message name="IDS_NEWLY_SYNCED_TAB_GROUP_IPH" desc="IPH text highlighting a tab group that was synced from another device">
         New group from your other device
       </message>
+      <message name="IDS_FIND_HIDDEN_TAB_GROUP_IPH" desc="IPH text to hint the user to opening the dedicated tab groups UI surface after hiding a tab group.">
+        You can find all your tab groups here
+      </message>
       <message name="IDS_OPEN_TAB_GROUP_MENU_ITEM" desc="Menu item to open a more detailed view of a tab group.">
         Open
       </message>
