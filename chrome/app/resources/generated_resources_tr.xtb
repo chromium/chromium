@@ -5585,7 +5585,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5233736638227740678">&amp;Yapıştır</translation>
 <translation id="5234523649284990414">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için boşluk çubuğuna basın. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
 <translation id="5234764350956374838">Kapat</translation>
-<translation id="5235050375939235066">Uygulamanın yüklemesi kaldırılsın mı?</translation>
+<translation id="5235050375939235066">Uygulama kaldırılsın mı?</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5235750401727657667">Yeni bir sekme açarken gördüğünüz sayfayı değiştirme</translation>
 <translation id="5237124927415201087"><ph name="DEVICE_TYPE" /> cihazınızı telefonunuzla kolayca kurun. Kablosuz ağınızı ve Google Hesabınızı, şifrelerinizi manuel olarak girmeden ekleyebilirsiniz.
@@ -9578,7 +9578,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8286227656784970313">Sistem sözlüğünü kullan</translation>
 <translation id="828642162569365647">Bu şifre veya PIN, <ph name="DEVICE_TYPE" /> cihazındaki verilerinizi ve telefonunuzdan eriştiğiniz bilgileri korur. <ph name="DEVICE_TYPE" /> cihazınız uyku modundan her uyandığında kilidi açmanız gerekir.</translation>
 <translation id="8287902281644548111">API çağrısına/URL'ye göre arayın</translation>
-<translation id="8288032458496410887"><ph name="APP" /> Uygulamasının Yüklemesini Kaldır...</translation>
+<translation id="8288032458496410887"><ph name="APP" /> Uygulamasını Kaldır...</translation>
 <translation id="8288553158681886528">PDF'den Metin Çıkar</translation>
 <translation id="8289128870594824098">Disk boyutu</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> yüklemesine hoş geldiniz</translation>
