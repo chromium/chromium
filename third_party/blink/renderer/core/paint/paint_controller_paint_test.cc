@@ -126,10 +126,13 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div1.Id(), kBackgroundType),
                           IsSameId(div2.Id(), kBackgroundType)));
-  HitTestData view_scroll_hit_test;
-  view_scroll_hit_test.scroll_translation =
-      GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
-  view_scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600);
+  HitTestData view_scroll_hit_test = {
+      .scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600),
+      .scroll_translation = GetLayoutView()
+                                .FirstFragment()
+                                .PaintProperties()
+                                ->ScrollTranslation(),
+      .scrolling_contents_cull_rect = gfx::Rect(0, 0, 800, 4600)};
   EXPECT_THAT(
       RootPaintController().GetPaintChunks()[0],
       IsPaintChunk(
@@ -159,6 +162,8 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
                           IsSameId(div2.Id(), kBackgroundType),
                           IsSameId(div3.Id(), kBackgroundType),
                           IsSameId(div4.Id(), kBackgroundType)));
+  view_scroll_hit_test.scrolling_contents_cull_rect =
+      gfx::Rect(0, 1000, 800, 8100);
   EXPECT_THAT(
       RootPaintController().GetPaintChunks()[0],
       IsPaintChunk(
@@ -213,10 +218,11 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div1.Id(), kBackgroundType),
                           IsSameId(div2.Id(), kBackgroundType)));
-  HitTestData container_scroll_hit_test;
-  container_scroll_hit_test.scroll_translation =
-      container.FirstFragment().PaintProperties()->ScrollTranslation();
-  container_scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  HitTestData container_scroll_hit_test = {
+      .scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200),
+      .scroll_translation =
+          container.FirstFragment().PaintProperties()->ScrollTranslation(),
+      .scrolling_contents_cull_rect = gfx::Rect(0, 0, 2200, 2200)};
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -248,6 +254,8 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div3.Id(), kBackgroundType),
                           IsSameId(div4.Id(), kBackgroundType)));
+  container_scroll_hit_test.scrolling_contents_cull_rect =
+      gfx::Rect(2000, 2000, 4200, 4200);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(

@@ -189,7 +189,7 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
     // wrong rendering) are obscured by the opaque background.
     return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
   }
-  return it->value;
+  return it->value.is_composited;
 }
 
 bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
@@ -548,7 +548,9 @@ void PaintArtifactCompositor::LayerizeGroup(
           chunk_cursor->hit_test_data->scroll_translation) {
         painted_scroll_translations_.insert(
             chunk_cursor->hit_test_data->scroll_translation.get(),
-            ComputeNeedsCompositedScrolling(artifact, chunk_cursor));
+            ScrollTranslationInfo{
+                chunk_cursor->hit_test_data->scrolling_contents_cull_rect,
+                ComputeNeedsCompositedScrolling(artifact, chunk_cursor)});
       }
       pending_layers_.emplace_back(
           artifact, *chunk_cursor,
@@ -793,10 +795,12 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
 
     CHECK(NeedsCompositedScrolling(*properties.inner_scroll_translation));
     CHECK(NeedsCompositedScrolling(*properties.outer_scroll_translation));
-    painted_scroll_translations_.insert(properties.inner_scroll_translation,
-                                        true);
-    painted_scroll_translations_.insert(properties.outer_scroll_translation,
-                                        true);
+    painted_scroll_translations_.insert(
+        properties.inner_scroll_translation,
+        ScrollTranslationInfo{InfiniteIntRect(), true});
+    painted_scroll_translations_.insert(
+        properties.outer_scroll_translation,
+        ScrollTranslationInfo{InfiniteIntRect(), true});
   }
 
   layer_tree_host->RegisterViewportPropertyIds(ids);
@@ -861,8 +865,9 @@ void PaintArtifactCompositor::Update(
   for (auto* node : scroll_translation_nodes) {
     property_tree_manager.EnsureCompositorScrollNode(*node);
   }
-  for (auto* node : painted_scroll_translations_.Keys()) {
-    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
+  for (auto& [node, info] : painted_scroll_translations_) {
+    property_tree_manager.EnsureCompositorScrollAndTransformNode(
+        *node, info.scrolling_contents_cull_rect);
   }
 
   cc::LayerSelection layer_selection;
@@ -896,7 +901,7 @@ void PaintArtifactCompositor::Update(
 
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollAndTransformNode(
-            ScrollTranslationStateForLayer(pending_layer));
+            ScrollTranslationStateForLayer(pending_layer), InfiniteIntRect());
 
     layer_list_builder.Add(&layer);
 

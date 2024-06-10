@@ -909,6 +909,77 @@ TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
                 ->transform_tree_index());
 }
 
+TEST_P(CompositingTest, ScrollingContentsCullRect) {
+  GetLocalFrameView()
+      ->GetFrame()
+      .GetSettings()
+      ->SetPreferCompositingToLCDTextForTesting(false);
+
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <!doctype html>
+    <style>
+      .scroller { width: 200px; height: 200px; overflow: scroll; }
+    </style>
+    <div id="short-composited-scroller" class="scroller">
+      <div style="height: 2000px; background: yellow">Content</div>
+    </div>
+    <div id="long-composited-scroller" class="scroller">
+      <div style="height: 10000px; background: yellow">Content</div>
+    </div>
+    <div id="narrow-non-composited-scroller" class="scroller">
+      <div style="width: 200px; height: 2000px">Content</div>
+    </div>
+    <div id="wide-non-composited-scroller" class="scroller">
+      <div style="width: 10000px; height: 200px">Content</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  EXPECT_TRUE(CcLayerByDOMElementId("short-composited-scroller"));
+  EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
+  EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
+  EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
+
+  auto check_cull_rect = [&](const char* id,
+                             const std::optional<gfx::Rect>& expected) {
+    const gfx::Rect* actual =
+        GetPropertyTrees()->scroll_tree().ScrollingContentsCullRect(
+            GetLayoutObjectById(id)
+                ->FirstFragment()
+                .PaintProperties()
+                ->Scroll()
+                ->GetCompositorElementId());
+    if (expected) {
+      ASSERT_TRUE(actual);
+      EXPECT_EQ(*expected, *actual);
+    } else {
+      EXPECT_FALSE(actual);
+    }
+  };
+
+  check_cull_rect("short-composited-scroller", std::nullopt);
+  check_cull_rect("long-composited-scroller", gfx::Rect(0, 0, 200, 4200));
+  check_cull_rect("narrow-non-composited-scroller", std::nullopt);
+  check_cull_rect("wide-non-composited-scroller", gfx::Rect(0, 0, 4200, 200));
+
+  GetElementById("short-composited-scroller")->scrollTo(5000, 5000);
+  GetElementById("long-composited-scroller")->scrollTo(5000, 5000);
+  GetElementById("narrow-non-composited-scroller")->scrollTo(5000, 5000);
+  GetElementById("wide-non-composited-scroller")->scrollTo(5000, 5000);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_TRUE(CcLayerByDOMElementId("short-composited-scroller"));
+  EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
+  EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
+  EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
+
+  check_cull_rect("short-composited-scroller", std::nullopt);
+  check_cull_rect("long-composited-scroller", gfx::Rect(0, 1000, 200, 8200));
+  check_cull_rect("narrow-non-composited-scroller", std::nullopt);
+  check_cull_rect("wide-non-composited-scroller",
+                  gfx::Rect(1000, 0, 8200, 200));
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {

@@ -339,8 +339,12 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   // Scroll translation nodes of the PaintArtifact that are painted.
   // This member variable is only used in PaintArtifactCompositor::Update.
-  // The value indicates if the scroll should be composited.
-  HashMap<const TransformPaintPropertyNode*, bool> painted_scroll_translations_;
+  struct ScrollTranslationInfo {
+    gfx::Rect scrolling_contents_cull_rect;
+    bool is_composited;
+  };
+  HashMap<const TransformPaintPropertyNode*, ScrollTranslationInfo>
+      painted_scroll_translations_;
 
   friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;

@@ -30,30 +30,38 @@ String HitTestData::ToString() const {
   sb.Append("{");
 
   bool printed_top_level_field = false;
+  auto append_field = [&](const char* name, const String& value) {
+    if (!printed_top_level_field) {
+      printed_top_level_field = true;
+    } else {
+      sb.Append(", ");
+    }
+    sb.Append(name);
+    sb.Append(value);
+  };
+
   if (!touch_action_rects.empty()) {
-    sb.Append("touch_action_rects: ");
-    sb.Append(RectsAsString<TouchActionRect>(touch_action_rects));
-    printed_top_level_field = true;
+    append_field("touch_action_rects: ",
+                 RectsAsString<TouchActionRect>(touch_action_rects));
   }
 
   if (!wheel_event_rects.empty()) {
-    sb.Append("wheel_event_rects: ");
-    sb.Append(RectsAsString<gfx::Rect>(wheel_event_rects));
-    printed_top_level_field = true;
+    append_field("wheel_event_rects: ",
+                 RectsAsString<gfx::Rect>(wheel_event_rects));
   }
 
   if (!scroll_hit_test_rect.IsEmpty()) {
-    if (printed_top_level_field)
-      sb.Append(", ");
-    sb.Append("scroll_hit_test_rect: ");
-    sb.Append(String(scroll_hit_test_rect.ToString()));
-    printed_top_level_field = true;
+    append_field("scroll_hit_test_rect: ",
+                 String(scroll_hit_test_rect.ToString()));
   }
 
   if (scroll_translation) {
-    if (printed_top_level_field)
-      sb.Append(", ");
-    sb.AppendFormat("scroll_translation: %p", scroll_translation.get());
+    append_field("scroll_translation: ",
+                 String::Format("%p", scroll_translation.get()));
+    if (scrolling_contents_cull_rect != InfiniteIntRect()) {
+      append_field("scrolling_contents_cull_rect: ",
+                   String(scrolling_contents_cull_rect.ToString()));
+    }
   }
 
   sb.Append("}");

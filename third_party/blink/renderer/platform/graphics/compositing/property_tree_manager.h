@@ -29,6 +29,7 @@ enum class RenderSurfaceReason : uint8_t;
 
 namespace gfx {
 class PointF;
+class Rect;
 class RRectF;
 }
 
@@ -111,13 +112,14 @@ class PropertyTreeManager {
   // Ensure the compositor scroll and transform nodes for a scroll translation
   // transform node. Returns the id of the scroll node.
   int EnsureCompositorScrollAndTransformNode(
-      const TransformPaintPropertyNode& scroll_offset_translation);
+      const TransformPaintPropertyNode& scroll_translation,
+      const gfx::Rect& scrolling_contents_cull_rect);
 
   // Same as above but marks the scroll nodes as being the viewport.
   int EnsureCompositorInnerScrollAndTransformNode(
-      const TransformPaintPropertyNode& scroll_offset_translation);
+      const TransformPaintPropertyNode& scroll_translation);
   int EnsureCompositorOuterScrollAndTransformNode(
-      const TransformPaintPropertyNode& scroll_offset_translation);
+      const TransformPaintPropertyNode& scroll_translation);
 
   // Ensures a cc::ScrollNode for a scroll translation node.
   // transform_id of the cc::ScrollNode is set to kInvalidPropertyNodeId.

@@ -581,6 +581,9 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       synced_offset->set_clobber_active_value();
   }
 
+  void SetScrollingContentsCullRect(ElementId id, const gfx::Rect& cull_rect);
+  const gfx::Rect* ScrollingContentsCullRect(ElementId id) const;
+
   SyncedScrollOffset* GetOrCreateSyncedScrollOffsetForTesting(ElementId id);
   bool UpdateScrollOffsetBaseForTesting(ElementId id,
                                         const gfx::PointF& offset);
@@ -644,6 +647,9 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // and impl threads.
   ScrollOffsetMap scroll_offset_map_;
   SyncedScrollOffsetMap synced_scroll_offset_map_;
+
+  // Maps from scroll element id to scrolling contents cull rect.
+  base::flat_map<ElementId, gfx::Rect> scrolling_contents_cull_rects_;
 
   base::WeakPtr<ScrollCallbacks> callbacks_;
 

@@ -99,10 +99,13 @@ TEST_P(ViewPainterTest, DocumentBackgroundWithScroll) {
     <div style='height: 5000px'></div>
   )HTML");
 
-  HitTestData scroll_hit_test_data;
-  scroll_hit_test_data.scroll_translation =
-      GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test_data.scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600);
+  HitTestData scroll_hit_test_data = {
+      .scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600),
+      .scroll_translation = GetLayoutView()
+                                .FirstFragment()
+                                .PaintProperties()
+                                ->ScrollTranslation(),
+      .scrolling_contents_cull_rect = gfx::Rect(0, 0, 800, 4600)};
   // The scroll hit test should be before the scrolled contents to ensure the
   // hit test does not prevent the background squashing with the scrolling
   // contents.

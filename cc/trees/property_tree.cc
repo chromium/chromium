@@ -1463,6 +1463,7 @@ ScrollTree::~ScrollTree() = default;
 
 ScrollTree& ScrollTree::operator=(const ScrollTree& from) {
   PropertyTree::operator=(from);
+  scrolling_contents_cull_rects_ = from.scrolling_contents_cull_rects_;
   currently_scrolling_node_id_ = kInvalidPropertyNodeId;
   // Maps for ScrollOffsets/SyncedScrollOffsets are intentionally omitted here
   // since we can not directly copy them. Pushing of these updates from main
@@ -1921,6 +1922,19 @@ bool ScrollTree::SetScrollOffset(ElementId id,
   }
 
   return false;
+}
+
+void ScrollTree::SetScrollingContentsCullRect(ElementId id,
+                                              const gfx::Rect& cull_rect) {
+  scrolling_contents_cull_rects_[id] = cull_rect;
+}
+
+const gfx::Rect* ScrollTree::ScrollingContentsCullRect(ElementId id) const {
+  auto it = scrolling_contents_cull_rects_.find(id);
+  if (it == scrolling_contents_cull_rects_.end()) {
+    return nullptr;
+  }
+  return &it->second;
 }
 
 SyncedScrollOffset* ScrollTree::GetOrCreateSyncedScrollOffsetForTesting(

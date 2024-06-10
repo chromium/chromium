@@ -93,10 +93,14 @@ void BoxPainter::RecordScrollHitTestData(
         << border_box_properties.Clip().ToTreeString().Utf8()
         << current_properties.Clip().ToTreeString().Utf8();
 #endif
+    gfx::Rect cull_rect = fragment->GetContentsCullRect().Rect();
+    if (cull_rect.Contains(properties->Scroll()->ContentsRect())) {
+      cull_rect = CullRect::Infinite().Rect();
+    }
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest,
         properties->ScrollTranslation(), VisualRect(fragment->PaintOffset()),
-        hit_test_opaqueness);
+        hit_test_opaqueness, cull_rect);
   }
 
   if (hit_test_opaqueness != cc::HitTestOpaqueness::kTransparent) {
