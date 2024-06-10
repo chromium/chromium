@@ -25,8 +25,7 @@ class SystemPermissionSettings {
 
   // Check whether the system blocks the access to the specified content type /
   // permission.
-  bool IsPermissionDenied(content::WebContents* web_contents,
-                          ContentSettingsType type) const;
+  bool IsPermissionDenied(ContentSettingsType type) const;
 
   // Opens the OS page where the user can change the permission settings.
   // Implementation is OS specific.
@@ -36,8 +35,7 @@ class SystemPermissionSettings {
  private:
   // Checks whether a given permission is blocked by the OS. Implementation is
   // OS specific.
-  virtual bool IsPermissionDeniedImpl(content::WebContents* web_contents,
-                                      ContentSettingsType type) const = 0;
+  virtual bool IsPermissionDeniedImpl(ContentSettingsType type) const = 0;
 };
 
 class ScopedSystemPermissionSettingsForTesting {

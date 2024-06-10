@@ -14,13 +14,12 @@ std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
 }  // namespace
 
 bool SystemPermissionSettings::IsPermissionDenied(
-    content::WebContents* web_contents,
     ContentSettingsType type) const {
   if (GlobalTestingBlockOverrides().find(type) !=
       GlobalTestingBlockOverrides().end()) {
     return GlobalTestingBlockOverrides().at(type);
   }
-  return IsPermissionDeniedImpl(web_contents, type);
+  return IsPermissionDeniedImpl(type);
 }
 
 ScopedSystemPermissionSettingsForTesting::

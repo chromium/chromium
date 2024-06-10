@@ -64,8 +64,7 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
     }
   }
 
-  bool IsPermissionDeniedImpl(content::WebContents* web_contents,
-                              ContentSettingsType type) const override {
+  bool IsPermissionDeniedImpl(ContentSettingsType type) const override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:  // fallthrough
       case ContentSettingsType::MEDIASTREAM_MIC: {

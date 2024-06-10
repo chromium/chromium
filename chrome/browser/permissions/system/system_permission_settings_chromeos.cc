@@ -11,8 +11,7 @@
 #include "components/content_settings/core/common/features.h"
 
 class SystemPermissionSettingsImpl : public SystemPermissionSettings {
-  bool IsPermissionDeniedImpl(content::WebContents* web_contents,
-                              ContentSettingsType type) const override {
+  bool IsPermissionDeniedImpl(ContentSettingsType type) const override {
     if (base::FeatureList::IsEnabled(
             content_settings::features::
                 kCrosSystemLevelPermissionBlockedWarnings)) {

@@ -6,8 +6,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 
 class SystemPermissionSettingsImpl : public SystemPermissionSettings {
-  bool IsPermissionDeniedImpl(content::WebContents* web_contents,
-                              ContentSettingsType type) const override {
+  bool IsPermissionDeniedImpl(ContentSettingsType type) const override {
     return false;
   }
 

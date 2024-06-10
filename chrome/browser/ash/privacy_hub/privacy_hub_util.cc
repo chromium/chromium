@@ -198,12 +198,12 @@ bool ContentBlocked(ContentType type) {
     case ContentType::MEDIASTREAM_CAMERA: {
       auto* const controller = CameraPrivacySwitchController::Get();
       CHECK(controller);
-      return controller->IsCameraUsageAllowed();
+      return !controller->IsCameraUsageAllowed();
     }
     case ContentType::MEDIASTREAM_MIC: {
       auto* const controller = MicrophonePrivacySwitchController::Get();
       CHECK(controller);
-      return controller->IsMicrophoneUsageAllowed();
+      return !controller->IsMicrophoneUsageAllowed();
     }
     case ContentType::GEOLOCATION: {
       if (!features::IsCrosPrivacyHubLocationEnabled()) {
@@ -211,7 +211,7 @@ bool ContentBlocked(ContentType type) {
       }
       auto* const controller = GeolocationPrivacySwitchController::Get();
       CHECK(controller);
-      return controller->IsGeolocationUsageAllowedForApps();
+      return !controller->IsGeolocationUsageAllowedForApps();
     }
     default: {
       // If the provided content type is not controllable in ChromeOS, then it

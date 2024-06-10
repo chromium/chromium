@@ -25,8 +25,7 @@ bool adapt(system_media_permissions::SystemPermission permission) {
 }  // namespace
 
 class SystemPermissionSettingsImpl : public SystemPermissionSettings {
-  bool IsPermissionDeniedImpl(content::WebContents* web_contents,
-                              ContentSettingsType type) const override {
+  bool IsPermissionDeniedImpl(ContentSettingsType type) const override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
         return adapt(
