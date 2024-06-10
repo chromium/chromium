@@ -804,6 +804,16 @@ std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
       profiles_to_suggest, field_types, suggestion_type, trigger_field_type,
       trigger_field.max_length());
 
+  // Add devtools test addresses suggestion if it exists. A suggestion will
+  // exist if devtools is open and therefore test addresses were set.
+  if (IsAddressType(trigger_field_type)) {
+    if (std::optional<Suggestion> test_addresses_suggestion =
+            GetSuggestionForTestAddresses(autofill_client_->GetTestAddresses(),
+                                          personal_data().app_locale())) {
+      suggestions.insert(suggestions.begin(),
+                         std::move(*test_addresses_suggestion));
+    }
+  }
   if (suggestions.empty()) {
     return suggestions;
   }
@@ -1003,14 +1013,7 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
                                                 suggestions.back());
     }
   }
-  // Add devtools test addresses suggestion if it exists. A suggestion will
-  // exist if devtools is open and therefore test addresses were set.
-  if (std::optional<Suggestion> test_addresses_suggestion =
-          GetSuggestionForTestAddresses(autofill_client_->GetTestAddresses(),
-                                        app_locale)) {
-    suggestions.insert(suggestions.begin(),
-                       std::move(*test_addresses_suggestion));
-  }
+
   return suggestions;
 }
 

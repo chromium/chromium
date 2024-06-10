@@ -1951,21 +1951,22 @@ TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
 }
 #endif
 
-TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion) {
+TEST_F(AddressSuggestionGeneratorTest,
+       TestAddressSuggestion_AddressField_ReturnSuggestion) {
   AutofillProfile profile = test::GetFullProfile();
   autofill_client()->set_test_addresses({profile});
   std::vector<Suggestion> suggestions =
-      test_api(suggestion_generator())
-          .CreateSuggestionsFromProfiles(
-              {&profile}, /*field_types=*/{NAME_FIRST},
-              SuggestionType::kAddressEntry, NAME_FIRST,
-              /*trigger_field_max_length=*/0);
+      suggestion_generator().GetSuggestionsForProfiles(
+          /*field_types=*/{NAME_FIRST}, FormFieldData(), NAME_FIRST,
+          SuggestionType::kAddressEntry,
+          AutofillSuggestionTriggerSource::kManualFallbackAddress);
 
-  // There should be test address suggestion and one regular profile
-  // suggestion.
-  ASSERT_EQ(suggestions.size(), 2u);
+  // There should be one `SuggestionType::kDevtoolsTestAddresses`, one
+  // `SuggestionType::kSeparator` and one `SuggestionType::kAutofillOptions`.
+  ASSERT_EQ(suggestions.size(), 3u);
   EXPECT_EQ(suggestions[0].type, SuggestionType::kDevtoolsTestAddresses);
-  EXPECT_EQ(suggestions[1].type, SuggestionType::kAddressEntry);
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kAutofillOptions);
 
   EXPECT_EQ(suggestions[0].main_text.value, u"Devtools");
   EXPECT_THAT(suggestions[0], EqualLabels({{u"Address test data"}}));
@@ -1977,6 +1978,21 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion) {
   EXPECT_EQ(child.main_text.value, u"United States");
   EXPECT_EQ(child.GetBackendId<Suggestion::Guid>().value(), profile.guid());
   EXPECT_EQ(child.type, SuggestionType::kDevtoolsTestAddressEntry);
+}
+
+TEST_F(AddressSuggestionGeneratorTest,
+       TestAddressSuggestion_NonAddressField_DoNotReturnSuggestion) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillForUnclassifiedFieldsAvailable);
+  AutofillProfile profile = test::GetFullProfile();
+  autofill_client()->set_test_addresses({profile});
+  std::vector<Suggestion> suggestions =
+      suggestion_generator().GetSuggestionsForProfiles(
+          /*field_types=*/{CREDIT_CARD_NUMBER}, FormFieldData(),
+          CREDIT_CARD_NUMBER, SuggestionType::kAddressEntry,
+          AutofillSuggestionTriggerSource::kManualFallbackAddress);
+
+  EXPECT_THAT(suggestions, IsEmpty());
 }
 
 }  // namespace autofill
