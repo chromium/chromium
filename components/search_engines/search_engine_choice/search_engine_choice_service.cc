@@ -406,7 +406,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   CHECK_EQ(is_from_cached_state,
            profile_prefs_->HasPrefPath(
                prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState),
-           base::NotFatalUntil::M127);
+           base::NotFatalUntil::M128);
 
   if (!is_from_cached_state &&
       display_state.selected_engine_index.has_value()) {
