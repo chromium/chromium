@@ -425,7 +425,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
             Exception,
             match=str({
                 "error": "no such request",
-                "message": f"No blocked request found for network id '{network_id}'"
+                "message": f"Network request with ID '{network_id}' doesn't exist"
             })):
         await execute_command(
             websocket, {

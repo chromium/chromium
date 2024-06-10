@@ -297,7 +297,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
             Exception,
             match=str({
                 "error": "no such request",
-                "message": f"No blocked request found for network id '{network_id}'"
+                "message": f"Network request with ID '{network_id}' doesn't exist"
             })):
         await execute_command(
             websocket, {

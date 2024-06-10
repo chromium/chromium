@@ -274,6 +274,7 @@ export class NetworkRequest {
       responseInterceptionCompleted
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
+      this.#networkStorage.deleteRequest(this.id);
     }
   }
 
