@@ -5937,8 +5937,35 @@
   },
   {
     "name": "nearby-presence",
-    "owners": ["chromeos-cross-device-eng@google.com", "hansberry@chromium.org"],
+    "owners": [
+      "chromeos-cross-device-eng@google.com",
+      "hansberry@chromium.org"
+    ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "nearby-webrtc",
+    "owners": [
+      "chromeos-cross-device-eng@google.com",
+      "jackshira@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "nearby-wifi-direct",
+    "owners": [
+      "chromeos-cross-device-eng@google.com",
+      "jackshira@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "nearby-wifi-lan",
+    "owners": [
+      "chromeos-cross-device-eng@google.com",
+      "jackshira@google.com"
+    ],
+    "expiry_milestone": 130
   },
   {
     "name": "new-ntp-omnibox-layout",

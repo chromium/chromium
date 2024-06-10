@@ -7192,6 +7192,18 @@ const char kEnableNearbyBluetoothClassicAdvertisingName[] =
 const char kEnableNearbyBluetoothClassicAdvertisingDescription[] =
     "Enables Nearby advertising over Bluetooth Classic.";
 
+const char kEnableNearbyWebRtcName[] = "Nearby WebRTC";
+const char kEnableNearbyWebRtcDescription[] =
+    "Enables Nearby transfers over WebRTC.";
+
+const char kEnableNearbyWifiDirectName[] = "Nearby WiFi Direct";
+const char kEnableNearbyWifiDirectDescription[] =
+    "Enables Nearby transfers over WiFi Direct.";
+
+const char kEnableNearbyWifiLanName[] = "Nearby WiFi LAN";
+const char kEnableNearbyWifiLanDescription[] =
+    "Enables Nearby transfers over WiFi LAN.";
+
 const char kNearbyPresenceName[] = "Nearby Presence";
 const char kNearbyPresenceDescription[] =
     "Enables Nearby Presence for scanning and discovery of nearby devices.";

@@ -20713,6 +20713,7 @@ from previous Chrome versions.
   <int value="133529502"
       label="EnableNearbyBluetoothClassicAdvertising:enabled"/>
   <int value="134009318" label="FastPairSavedDevices:enabled"/>
+  <int value="134124472" label="NearbySharingWifiDirect:enabled"/>
   <int value="134136822" label="VcDlcUi:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
   <int value="137866995" label="ImeKoreanModeSwitchDebug:enabled"/>
@@ -23799,6 +23800,7 @@ from previous Chrome versions.
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>
+  <int value="1474104225" label="NearbySharingWifiDirect:disabled"/>
   <int value="1474433736" label="NtpRealboxTailSuggest:enabled"/>
   <int value="1474707811" label="Jelly:enabled"/>
   <int value="1474861626" label="disable-multi-mirroring"/>
