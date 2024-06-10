@@ -28,6 +28,8 @@ found in the LICENSE file.
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:importantForAccessibility="yes"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <TextView
@@ -42,6 +44,8 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:lineHeight="20sp"
         android:maxLines="7"
+        android:clickable="true"
+        android:importantForAccessibility="yes"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
     <org.chromium.ui.widget.ButtonCompat
@@ -55,5 +59,6 @@ found in the LICENSE file.
         android:enabled="false"
         android:singleLine="true"
         android:gravity="center"
+        android:importantForAccessibility="yes"
         style="@style/FilledButton.Flat"/>
 </LinearLayout>
