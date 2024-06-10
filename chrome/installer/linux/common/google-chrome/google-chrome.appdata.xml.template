@@ -1,5 +1,5 @@
-<!-- Copyright 2017 The Chromium Authors -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 The Chromium Authors -->
 <component type="desktop">
   <id>@@PACKAGE@@.desktop</id>
   <update_contact>chromium-dev@chromium.org</update_contact>
