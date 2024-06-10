@@ -5,6 +5,7 @@
 #import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
@@ -28,8 +29,9 @@ NSString* kCustomSearchEngineName = @"Custom Search Engine";
 const char kPageURL[] = "/";
 const char kOpenSearch[] = "/opensearch.xml";
 const char kSearchURL[] = "/search?q=";
-const char kGoogleURL[] = "google";
-const char kYahooURL[] = "yahoo";
+
+const TemplateURLPrepopulateData::PrepopulatedEngine&
+    kSecondPrepopulatedSearchEngine = TemplateURLPrepopulateData::qwant;
 
 std::string GetSearchExample() {
   return std::string(kSearchURL) + "example";
@@ -42,10 +44,17 @@ std::unique_ptr<net::test_server::HttpResponse> SearchResponse(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
-  if (base::Contains(request.GetURL().path(), kGoogleURL)) {
-    http_response->set_content("<body>" + std::string(kGoogleURL) + "</body>");
-  } else if (base::Contains(request.GetURL().path(), kYahooURL)) {
-    http_response->set_content("<body>" + std::string(kYahooURL) + "</body>");
+  const std::string googleSearchEngineKeyword(
+      base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
+  const std::string secondSearchEngineKeyword(
+      base::UTF16ToUTF8(kSecondPrepopulatedSearchEngine.keyword));
+  if (base::Contains(request.GetURL().path(), googleSearchEngineKeyword)) {
+    http_response->set_content("<body>" + googleSearchEngineKeyword +
+                               "</body>");
+  } else if (base::Contains(request.GetURL().path(),
+                            secondSearchEngineKeyword)) {
+    http_response->set_content("<body>" + secondSearchEngineKeyword +
+                               "</body>");
   }
   return std::move(http_response);
 }
@@ -126,8 +135,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL url = self.testServer->GetURL(kPageURL);
   NSString* port = base::SysUTF8ToNSString(url.port());
 
+  const std::string googleSearchEngineKeyword(
+      base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
+  const std::string secondSearchEngineKeyword(
+      base::UTF16ToUTF8(kSecondPrepopulatedSearchEngine.keyword));
   NSArray<NSString*>* hosts = @[
-    base::SysUTF8ToNSString(kGoogleURL), base::SysUTF8ToNSString(kYahooURL)
+    base::SysUTF8ToNSString(googleSearchEngineKeyword),
+    base::SysUTF8ToNSString(secondSearchEngineKeyword)
   ];
 
   [SettingsAppInterface addURLRewriterForHosts:hosts onPort:port];
@@ -143,17 +157,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
-  [ChromeEarlGrey waitForWebStateContainingText:kGoogleURL];
+  [ChromeEarlGrey waitForWebStateContainingText:googleSearchEngineKeyword];
 
-  // Change default search engine to Yahoo.
+  // Change default search engine to `kSecondPrepopulatedSearchEngine`.
   [SearchEngineChoiceEarlGreyUI openSearchEngineSettings];
-
-  NSString* yahooSearchEngineName =
-      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
-                                        TemplateURLPrepopulateData::yahoo_fr];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(yahooSearchEngineName)]
-      performAction:grey_tap()];
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsWithPrepopulatedSearchEngine:
+          kSecondPrepopulatedSearchEngine] performAction:grey_tap()];
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
@@ -163,7 +173,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [SettingsAppInterface addURLRewriterForHosts:hosts onPort:port];
 
-  // Search on Yahoo.
+  // Search on selected search engine.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -175,7 +185,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
-  [ChromeEarlGrey waitForWebStateContainingText:kYahooURL];
+  [ChromeEarlGrey waitForWebStateContainingText:secondSearchEngineKeyword];
 }
 
 // Deletes a custom search engine by swiping and tapping on the "Delete" button.

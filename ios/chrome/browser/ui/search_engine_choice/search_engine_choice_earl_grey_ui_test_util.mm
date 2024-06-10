@@ -117,6 +117,13 @@ GREYElementInteraction* GetInteractionForSearchEngineSettingButton() {
                                kSearchEngineTableViewControllerId)];
 }
 
++ (GREYElementInteraction*)interactionForSettingsWithPrepopulatedSearchEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine {
+  NSString* name =
+      [self searchEngineNameWithPrepopulatedEngine:prepopulatedEngine];
+  return [self interactionForSettingsSearchEngineWithName:name];
+}
+
 + (NSString*)searchEngineNameWithPrepopulatedEngine:
     (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine {
   return base::SysUTF16ToNSString(prepopulatedEngine.name);

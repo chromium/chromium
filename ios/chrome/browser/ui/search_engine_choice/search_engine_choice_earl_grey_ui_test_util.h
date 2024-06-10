@@ -47,12 +47,21 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Returns GreyMatcher for the search engine for the settings table view.
 + (id<GREYMatcher>)settingsSearchEngineMatcherWithName:(NSString*)name;
 
-// Returns the GREYElementInteraction* for the item in the search engine list
-// with the given `matcher`. It scrolls in `direction` if necessary to ensure
-// that the matched item is sufficiently visible, thus interactable.
+// Returns the GREYElementInteraction for the item in the search engine list
+// with the given `name`. It scrolls the settings table view in down direction
+// if necessary to ensure that the matched item is sufficiently visible, thus
+// interactable.
 + (GREYElementInteraction*)interactionForSettingsSearchEngineWithName:
     (NSString*)name;
 
+// Returns the GREYElementInteraction* for the item in the search engine list
+// with the given `prepopulatedEngine`. It scrolls the settings table view in
+// down direction if necessary to ensure that the matched item is  sufficiently
+// visible, thus interactable.
++ (GREYElementInteraction*)interactionForSettingsWithPrepopulatedSearchEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine;
+
+// Returns the search engine name for `prepopulatedEngine`.
 + (NSString*)searchEngineNameWithPrepopulatedEngine:
     (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine;
 
