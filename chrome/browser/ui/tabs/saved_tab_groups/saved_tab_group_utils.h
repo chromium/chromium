@@ -126,6 +126,9 @@ class SavedTabGroupUtils {
   // the SavedTabGroupBar::EverythingMenuButton or the AppMenuButton.
   static ui::TrackedElement* GetAnchorElementForTabGroupsV2IPH(
       const ui::ElementTracker::ElementList& elements);
+
+  // Returns true if new tab groups should be pinned.
+  static bool ShouldAutoPinNewTabGroups(Profile* profile);
 };
 
 }  // namespace tab_groups

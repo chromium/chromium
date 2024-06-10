@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -560,6 +562,12 @@ ui::TrackedElement* SavedTabGroupUtils::GetAnchorElementForTabGroupsV2IPH(
 
   // Fallback to the AppMenuButton.
   return elements[0];
+}
+
+bool SavedTabGroupUtils::ShouldAutoPinNewTabGroups(Profile* profile) {
+  return tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
+         profile->GetPrefs()->GetBoolean(
+             tab_groups::prefs::kAutoPinNewTabGroups);
 }
 
 }  // namespace tab_groups

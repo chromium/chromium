@@ -509,7 +509,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
 
     saved_tab_group_service->SaveGroup(
         group_,
-        /*is_pinned=*/tab_groups::IsTabGroupsSaveUIUpdateEnabled());
+        /*is_pinned=*/tab_groups::SavedTabGroupUtils::ShouldAutoPinNewTabGroups(
+            browser_->profile()));
 
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);

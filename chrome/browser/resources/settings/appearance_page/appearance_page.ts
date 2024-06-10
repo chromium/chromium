@@ -66,6 +66,7 @@ export interface SettingsAppearancePageElement {
     colorSchemeModeSelect: HTMLSelectElement,
     defaultFontSize: SettingsDropdownMenuElement,
     showSavedTabGroups: SettingsToggleButtonElement,
+    autoPinNewTabGroups: SettingsToggleButtonElement,
     zoomLevel: HTMLSelectElement,
   };
 }
@@ -209,6 +210,13 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showAutoPinNewTabGroups_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
+        },
+      },
+
       showManagedThemeDialog_: Boolean,
     };
   }
@@ -240,6 +248,7 @@ export class SettingsAppearancePageElement extends
   private isForcedTheme_: boolean;
   private showHoverCardImagesOption_: boolean;
   private showSavedTabGroupsInBookmarksBar_: boolean;
+  private showAutoPinNewTabGroups_: boolean;
 
   // <if expr="is_linux">
   private showCustomChromeFrame_: boolean;

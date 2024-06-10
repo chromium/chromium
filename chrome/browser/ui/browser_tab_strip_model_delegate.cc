@@ -222,7 +222,10 @@ void BrowserTabStripModelDelegate::GroupAdded(
     return;
   }
 
-  saved_tab_group_service->SaveGroup(group, true);
+  saved_tab_group_service->SaveGroup(
+      group,
+      /*is_pinned=*/tab_groups::SavedTabGroupUtils::ShouldAutoPinNewTabGroups(
+          browser_->profile()));
 }
 
 void BrowserTabStripModelDelegate::WillCloseGroup(

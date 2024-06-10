@@ -29,6 +29,10 @@ inline constexpr char kStopShowingTabGroupConfirmationOnTabClose[] =
     "stop_showing_tab_group_confirmation_on_tab_close";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Boolean which specifies whether the tab group is automatically pinned when
+// it's created.
+inline constexpr char kAutoPinNewTabGroups[] = "auto_pin_new_tab_groups";
+
 // Whether the ModelTypeStore has been migrated from storing
 // SavedTabGroupSpecifics to SavedTabGroupData.
 inline constexpr char kSavedTabGroupSpecificsToDataMigration[] =

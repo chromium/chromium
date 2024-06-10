@@ -115,6 +115,7 @@ enum {
   kShowTabGroupsInBookmarkBar = 71,
   kFacilitatedPaymentsPix = 72,
   kSyncableTabGroups = 73,
+  kAutoPinNewTabGroups = 74,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -224,6 +225,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kSyncedDefaultSearchProviderGUID,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+        {tab_groups::prefs::kAutoPinNewTabGroups,
+         {syncable_prefs_ids::kAutoPinNewTabGroups, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {translate::TranslatePrefs::kPrefForceTriggerTranslateCount,
          {syncable_prefs_ids::kPrefForceTriggerTranslateCount,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},

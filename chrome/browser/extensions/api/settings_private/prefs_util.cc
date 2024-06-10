@@ -51,6 +51,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -194,6 +195,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[bookmarks::prefs::kShowTabGroupsInBookmarkBar] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kSidePanelHorizontalAlignment] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[tab_groups::prefs::kAutoPinNewTabGroups] =
       settings_api::PrefType::kBoolean;
 
 #if BUILDFLAG(IS_LINUX)

@@ -366,6 +366,24 @@ suite('AppearanceHandler', function() {
     await microtasksFinished();
     assertFalse(isVisible(appearancePage.$.showSavedTabGroups));
   });
+
+  test('ShowAutoPinNewTabGroupsToggleVisible', async function() {
+    loadTimeData.overrideValues({
+      tabGroupsSaveUIUpdateEnabled: true,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+    assertTrue(isVisible(appearancePage.$.autoPinNewTabGroups));
+  });
+
+  test('ShowAutoPinNewTabGroupsToggleHidden', async function() {
+    loadTimeData.overrideValues({
+      tabGroupsSaveUIUpdateEnabled: false,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+    assertFalse(isVisible(appearancePage.$.autoPinNewTabGroups));
+  });
 });
 
 suite('HomeUrlInput', function() {
