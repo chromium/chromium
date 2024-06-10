@@ -128,3 +128,36 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "win-utr-tester",
+    description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli changes.",
+    executable = "recipe:chromium/universal_test_runner_test",
+    builderless = True,
+    cores = 8,
+    os = os.WINDOWS_DEFAULT,
+    contact_team_email = "chrome-dev-infra-team@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "builder_suites": [
+            {
+                "bucket": "try",
+                "builder_name": "win-rel",
+                "test_names": [
+                    "url_unittests",
+                ],
+                "build_dir": "out/win-rel",
+            },
+            {
+                "bucket": "ci",
+                "builder_name": "Win10 Tests x64",
+                "test_names": [
+                    "telemetry_gpu_unittests",
+                ],
+                "build_dir": "out/win-rel",
+            },
+        ],
+    },
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+)
