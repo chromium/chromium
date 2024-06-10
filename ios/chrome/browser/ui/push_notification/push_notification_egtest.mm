@@ -72,8 +72,12 @@ void TapMenuItem(int labelId) {
 
   [ChromeEarlGrey writeFirstRunSentinel];
   [ChromeEarlGrey clearDefaultBrowserPromoData];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kIosDefaultBrowserPromoLastAction];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [NewTabPageAppInterface resetSetUpListPrefs];
 }
 
@@ -84,15 +88,7 @@ void TapMenuItem(int labelId) {
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
-// TODO(crbug.com/345389318): Test fails on downstream bots (device only).
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSetUpListMenuEnableNotifications \
-  DISABLED_testSetUpListMenuEnableNotifications
-#else
-#define MAYBE_testSetUpListMenuEnableNotifications \
-  testSetUpListMenuEnableNotifications
-#endif
-- (void)MAYBE_testSetUpListMenuEnableNotifications {
+- (void)testSetUpListMenuEnableNotifications {
   // Swizzle to grant notification auth when requested.
   ScopedNotificationAuthSwizzler auth(YES);
 
@@ -106,15 +102,7 @@ void TapMenuItem(int labelId) {
   WaitForThenTapText(@"notifications turned on");
 }
 
-// TODO(crbug.com/345389318): Test fails on downstream bots (device only).
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedCancel \
-  DISABLED_testSetUpListMenuEnableNotificationsAfterDeniedCancel
-#else
-#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedCancel \
-  testSetUpListMenuEnableNotificationsAfterDeniedCancel
-#endif
-- (void)MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedCancel {
+- (void)testSetUpListMenuEnableNotificationsAfterDeniedCancel {
   // Swizzle in the "denied' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusDenied, NO);
 
@@ -128,15 +116,7 @@ void TapMenuItem(int labelId) {
   TapMenuItem(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
 }
 
-// TODO(crbug.com/345389318): Test fails on downstream bots (device only).
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings \
-  DISABLED_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings
-#else
-#define MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings \
-  testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings
-#endif
-- (void)MAYBE_testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings {
+- (void)testSetUpListMenuEnableNotificationsAfterDeniedGoToSettings {
   // Swizzle in the "denied' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusDenied, NO);
 
