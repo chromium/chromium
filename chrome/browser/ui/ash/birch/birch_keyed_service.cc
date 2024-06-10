@@ -88,6 +88,9 @@ BirchDataProvider* BirchKeyedService::GetLastActiveProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetMostVisitedProvider() {
+  if (most_visited_provider_for_test_) {
+    return most_visited_provider_for_test_;
+  }
   return most_visited_provider_.get();
 }
 
