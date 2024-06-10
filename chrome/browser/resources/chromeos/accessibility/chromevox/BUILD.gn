@@ -102,6 +102,7 @@ ts_modules = [
   "common/msgs.ts",
   "common/panel_bridge.ts",
   "common/panel_command.ts",
+  "common/permission_checker.ts",
   "common/spannable.ts",
   "common/tree_dumper.ts",
   "common/tts_types.ts",
@@ -168,7 +169,6 @@ js_modules = [
   "common/custom_automation_event.js",
   "common/log_types.js",
   "common/panel_menu_data.js",
-  "common/permission_checker.js",
   "common/role_type.js",
   "common/settings_manager.js",
 ]

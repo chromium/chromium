@@ -9,37 +9,29 @@
 import {Command} from './command.js';
 import {CommandStore} from './command_store.js';
 
-const SessionType = chrome.chromeosInfoPrivate.SessionType;
+import SessionType = chrome.chromeosInfoPrivate.SessionType;
 
 export class PermissionChecker {
-  /** @private */
-  constructor() {
-    /** @private {boolean} */
-    this.isIncognito_ = Boolean(chrome.runtime.getManifest()['incognito']);
+  private isIncognito_: boolean;
+  private isKioskSession_: boolean;
 
-    /** @private {boolean} */
+  static instance: PermissionChecker;
+
+  private constructor() {
+    this.isIncognito_ = Boolean(chrome.runtime.getManifest()['incognito']);
     this.isKioskSession_ = false;
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     PermissionChecker.instance = new PermissionChecker();
     await PermissionChecker.instance.fetchState_();
   }
 
-  /**
-   * @param {!Command} command
-   * @return {boolean}
-   */
-  static isAllowed(command) {
+  static isAllowed(command: Command): boolean {
     return PermissionChecker.instance.isAllowed_(command);
   }
 
-  /**
-   * @param {!Command} command
-   * @return {boolean}
-   * @private
-   */
-  isAllowed_(command) {
+  private isAllowed_(command: Command): boolean {
     if (!this.isIncognito_ && !this.isKioskSession_) {
       return true;
     }
@@ -48,9 +40,8 @@ export class PermissionChecker {
         !CommandStore.COMMAND_DATA[command].denySignedOut;
   }
 
-  /** @private */
-  async fetchState_() {
-    const result = await new Promise(
+  private async fetchState_(): Promise<void> {
+    const result: {sessionType?: SessionType} = await new Promise(
         resolve => chrome.chromeosInfoPrivate.get(['sessionType'], resolve));
     this.isKioskSession_ = result['sessionType'] === SessionType.KIOSK;
   }
