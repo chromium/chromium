@@ -1046,16 +1046,18 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
     }
   }
 
-  // Store the processed result only if it ends as a `Decline` or `Accept`.
-  // `Always ask` and `No Choice` cannot be computed from the above logic.
-  if (processed_result == SigninInterceptionResult::kDeclined ||
-      processed_result == SigninInterceptionResult::kAccepted) {
-    // Save the choice per account.
-    ChromeSigninUserChoice choice =
-        (processed_result == SigninInterceptionResult::kAccepted)
-            ? ChromeSigninUserChoice::kSignin
-            : ChromeSigninUserChoice::kDoNotSignin;
-    signin_prefs.SetChromeSigninInterceptionUserChoice(gaia_id, choice);
+  if (processed_result == SigninInterceptionResult::kAccepted) {
+    // Save user choice as always sign in.
+    signin_prefs.SetChromeSigninInterceptionUserChoice(
+        gaia_id, ChromeSigninUserChoice::kSignin);
+  }
+
+  if (processed_result == SigninInterceptionResult::kDeclined) {
+    // Save user choice as do not sign in automatically.
+    signin_prefs.SetChromeSigninInterceptionUserChoice(
+        gaia_id, ChromeSigninUserChoice::kDoNotSignin);
+    signin_prefs.SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+        gaia_id, base::Time::Now());
   }
 
   return processed_result;

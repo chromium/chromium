@@ -665,6 +665,12 @@ IN_PROC_BROWSER_TEST_F(
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  ASSERT_FALSE(
+      signin_prefs
+          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account_info.gaia)
+          .has_value());
+
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kDeclined);
 
@@ -681,10 +687,13 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
                                       0);
 
-  ChromeSigninUserChoice user_choice =
-      GetChromeSigninUserChoicePref(account_info);
-  // User choice is remembered.
-  EXPECT_EQ(user_choice, ChromeSigninUserChoice::kDoNotSignin);
+  // User choice is remembered and decline time is stored.
+  EXPECT_EQ(GetChromeSigninUserChoicePref(account_info),
+            ChromeSigninUserChoice::kDoNotSignin);
+  EXPECT_TRUE(
+      signin_prefs
+          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account_info.gaia)
+          .has_value());
 
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.ChromeSignin.DismissesBeforeDecline", 0, 1);

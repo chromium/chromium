@@ -1789,19 +1789,33 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
   // Simluates settings page loading.
   SimulateHandleGetChromeSigninUserChoiceInfo();
 
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
   ChromeSigninUserChoice current_choice =
-      SigninPrefs(*profile()->GetPrefs())
-          .GetChromeSigninInterceptionUserChoice(account.gaia);
+      signin_prefs.GetChromeSigninInterceptionUserChoice(account.gaia);
 
   // Simulates setting a new value through the UI.
   ChromeSigninUserChoice user_choice = ChromeSigninUserChoice::kSignin;
   ASSERT_NE(current_choice, user_choice);
   SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice);
 
+  // Simulate declining the bubble time stored.
+  signin_prefs.SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+      account.gaia, base::Time::Now());
+  ASSERT_TRUE(
+      signin_prefs
+          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account.gaia)
+          .has_value());
+
   // Simulates a second selection within the same settings session.
   ChromeSigninUserChoice user_choice2 = ChromeSigninUserChoice::kDoNotSignin;
   ASSERT_NE(current_choice, user_choice2);
   SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice2);
+  // Explicitly setting the do not sign in option should clear bubble declined
+  // time.
+  EXPECT_FALSE(
+      signin_prefs
+          .GetChromeSigninInterceptionFirstDeclinedChoiceTime(account.gaia)
+          .has_value());
 
   // Enforcing changing the value to the same previous one should not record a
   // new modification.

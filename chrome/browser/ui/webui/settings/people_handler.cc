@@ -1357,6 +1357,12 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   }
 
   signin_prefs.SetChromeSigninInterceptionUserChoice(account.gaia, user_choice);
+  // If the user explicitly set the `kDoNotSignin` choice from the settings,
+  // suppress any bubble interaction time that could lead to re-prompts.
+  if (user_choice == ChromeSigninUserChoice::kDoNotSignin) {
+    signin_prefs.ClearChromeSigninInterceptionFirstDeclinedChoiceTime(
+        account.gaia);
+  }
 
   // Set for metrics purposes.
   chrome_signin_user_choice_modified_ = true;

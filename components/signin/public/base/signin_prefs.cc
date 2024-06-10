@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -26,6 +27,14 @@ constexpr char kSigninAccountPrefs[] = "signin.accounts_metadata_dict";
 // gaia id of the account.
 constexpr char kChromeSigninInterceptionUserChoice[] =
     "ChromeSigninInterceptionUserChoice";
+
+// Pref used to track the first declined choice of the Chrome Signin intercept.
+// It will be used together with the reprompt timing logic to know when to
+// trigger Chrome Signin intercept reprompts after declines. It is tied to an
+// account, stored as the content of a dictionary mapped by the gaia id of the
+// account.
+constexpr char kChromeSigninInterceptionFirstDeclinedChoiceTime[] =
+    "ChromeSigninInterceptionFirstDeclinedChoiceTime";
 
 // Pref used to store the number of dismisses of the Chrome Signin Bubble. It
 // is tied to an account, stored as the content of a dictionary mapped by the
@@ -113,6 +122,49 @@ ChromeSigninUserChoice SigninPrefs::GetChromeSigninInterceptionUserChoice(
   // No value default to 0 -> `ChromeSigninUserChoice::kNoChoice`.
   return static_cast<ChromeSigninUserChoice>(
       account_dict->FindInt(kChromeSigninInterceptionUserChoice).value_or(0));
+}
+
+void SigninPrefs::SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+    GaiaId gaia_id,
+    base::Time first_declined_time) {
+  if (GetChromeSigninInterceptionFirstDeclinedChoiceTime(gaia_id).has_value()) {
+    return;
+  }
+
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  // `EnsureDict` gets or create the dictionary.
+  base::Value::Dict* account_dict = scoped_update->EnsureDict(gaia_id);
+  // `Set` will add an entry if it doesn't already exists, or if it does, it
+  // will overwrite it.
+  account_dict->Set(kChromeSigninInterceptionFirstDeclinedChoiceTime,
+                    base::TimeToValue(first_declined_time));
+}
+
+void SigninPrefs::ClearChromeSigninInterceptionFirstDeclinedChoiceTime(
+    GaiaId gaia_id) {
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  // Do not create a dictionary if this not already exist.
+  base::Value::Dict* account_dict = scoped_update->FindDict(gaia_id);
+  if (!account_dict) {
+    return;
+  }
+
+  account_dict->Remove(kChromeSigninInterceptionFirstDeclinedChoiceTime);
+}
+
+std::optional<base::Time>
+SigninPrefs::GetChromeSigninInterceptionFirstDeclinedChoiceTime(
+    GaiaId gaia_id) const {
+  const base::Value::Dict* account_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id);
+  // If the account dict does not exist yet; return no time.
+  if (!account_dict) {
+    return std::nullopt;
+  }
+  // Return the pref value if it exists, otherwise return no time.
+  const base::Value* value =
+      account_dict->Find(kChromeSigninInterceptionFirstDeclinedChoiceTime);
+  return value ? base::ValueToTime(value) : std::nullopt;
 }
 
 int SigninPrefs::IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id) {

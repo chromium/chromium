@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_H_
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/flat_set.h"
@@ -61,12 +62,26 @@ class SigninPrefs {
   // any of those do not exist yet. It is expected be to used with a valid
   // `gaia_id` for an account that is in Chrome.
   // Reading a value from a pref dictionary or a data pref that do not exist yet
-  // will return the default value of that pref.
+  // will return the default value of that pref or std::nullopt if a default
+  // value does apply.
 
   void SetChromeSigninInterceptionUserChoice(
       GaiaId gaia_id,
       ChromeSigninUserChoice user_choice);
   ChromeSigninUserChoice GetChromeSigninInterceptionUserChoice(
+      GaiaId gaia_id) const;
+
+  // This pref is expected to be used with the reprompt logic for the Chrome
+  // Signin bubble. The reprompt should only be possible after bubble declines,
+  // meaning that this pref will be cleared when the user explicitly sets the
+  // setting to not signin to chrome automatically. For the reprompt cases, only
+  // the first declined time is needed as it will be used as a basis for the
+  // rest of the reprompts.
+  void SetChromeSigninInterceptionFirstDeclinedChoiceTime(
+      GaiaId gaia_id,
+      base::Time first_declined_time);
+  void ClearChromeSigninInterceptionFirstDeclinedChoiceTime(GaiaId gaia_id);
+  std::optional<base::Time> GetChromeSigninInterceptionFirstDeclinedChoiceTime(
       GaiaId gaia_id) const;
 
   int IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id);
