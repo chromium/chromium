@@ -362,7 +362,7 @@ TEST_F(TemplateURLTest, ParsePlayStoreDefinitions) {
   //
   // Extracted from search_engine_chrome_metadata using:
   // sed -n 's/[^{]*\({[^}]*}\)[^{]*/"\1",\n/gp' | sort | uniq
-  // TODO(b/344023531): Add LINT rules linking to upstream tests.
+  // LINT.IfChange
   std::set<std::string> recognized_params{{
       "{google:RLZ}",
       "{google:assistedQueryStats}",
@@ -402,6 +402,7 @@ TEST_F(TemplateURLTest, ParsePlayStoreDefinitions) {
       "{searchTerms}",
       "{yandex:searchPath}",
   }};
+  // LINT.ThenChange(//googledata/experiments/play/features/gateway/http/setupandupdate/tests/chrome_template_url_parameters_validations.gcl)
 
   // Basic confirmation check; if this fails, it's possible the logic below
   // needs updating.
