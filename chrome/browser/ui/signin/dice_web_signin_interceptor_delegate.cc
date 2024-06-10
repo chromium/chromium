@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -221,10 +221,7 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
   base::UmaHistogramEnumeration(
       base::StrCat({histogram_base_name, sync_suffix}), result);
   // Record Signin Pending status.
-  // TODO(crbug.com/342118992): Change this to use a function such as
-  // `GetSignInState` in `signin_utils.h` instead.
-  if (signin::GetSignInPromoVersion(identity_manager) ==
-      signin::SignInAutofillBubbleVersion::kSignInPending) {
+  if (signin_util::IsSigninPending(identity_manager)) {
     base::UmaHistogramEnumeration(
         base::StrCat({histogram_base_name, ".SigninPending"}), result);
   }

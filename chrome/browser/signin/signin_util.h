@@ -36,6 +36,16 @@ enum class ProfileSeparationPolicyState {
   kMaxValue = kKeepsBrowsingData
 };
 
+// Enum used to share the sign in state with the WebUI.
+enum class SignedInState {
+  kSignedOut = 0,
+  kSignedIn = 1,
+  kSyncing = 2,
+  kSignInPending = 3,
+  kWebOnlySignedIn = 4,
+  kSyncPaused = 5,
+};
+
 using ProfileSeparationPolicyStateSet =
     base::EnumSet<ProfileSeparationPolicyState,
                   ProfileSeparationPolicyState::kEnforcedByExistingProfile,
@@ -153,7 +163,10 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
 // Returns true if the Chrome is signed into with an account that is in
 // persistent error state. Always return false for Syncing users, even if in
 // error state.
-bool IsSigninPaused(signin::IdentityManager* identity_manager);
+bool IsSigninPending(signin::IdentityManager* identity_manager);
+
+// Returns the current state of the primary account that is used in Chrome.
+SignedInState GetSignedInState(signin::IdentityManager* identity_manager);
 
 }  // namespace signin_util
 

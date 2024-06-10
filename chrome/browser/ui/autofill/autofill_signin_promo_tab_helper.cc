@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/public/base/consent_level.h"
 
@@ -70,12 +71,7 @@ void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
   // If there is already an account in error state, then we need to reauth. This
   // variable will help us determine whether we should reset the helper in
   // `OnErrorStateOfRefreshTokenUpdatedForAccount` or not.
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          identity_manager->GetPrimaryAccountId(
-              signin::ConsentLevel::kSignin))) {
-    state_->needs_reauth_ = true;
-  }
+  state_->needs_reauth_ = signin_util::IsSigninPending(identity_manager);
   state_->password_form_ = password_form;
   state_->access_point_ = access_point;
   state_->time_limit_ = time_limit;

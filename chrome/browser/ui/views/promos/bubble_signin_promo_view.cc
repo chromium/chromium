@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -32,6 +33,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
+
+using signin_util::SignedInState;
 
 BubbleSignInPromoView::BubbleSignInPromoView(
     Profile* profile,
@@ -75,23 +78,25 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (access_point ==
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE) {
-    signin::SignInAutofillBubbleVersion bubble_version =
-        signin::GetSignInPromoVersion(identity_manager);
+    SignedInState bubble_version =
+        signin_util::GetSignedInState(identity_manager);
     switch (bubble_version) {
-      case signin::SignInAutofillBubbleVersion::kNoPromo:
+      case SignedInState::kSignedIn:
+      case SignedInState::kSyncing:
+      case SignedInState::kSyncPaused:
         return;
-      case signin::SignInAutofillBubbleVersion::kNoAccount:
+      case SignedInState::kSignedOut:
         title_resource_id = IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
         button_text =
             l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
         break;
-      case signin::SignInAutofillBubbleVersion::kWebSignedIn:
+      case SignedInState::kWebOnlySignedIn:
         title_resource_id = IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
         button_text = l10n_util::GetStringFUTF16(
             IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
             {base::UTF8ToUTF16(account.given_name)});
         break;
-      case signin::SignInAutofillBubbleVersion::kSignInPending:
+      case SignedInState::kSignInPending:
         title_resource_id = IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD;
         button_text =
             l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);

@@ -40,16 +40,6 @@ class SyncSetupInProgressHandle;
 
 namespace settings {
 
-// Enum used to share the sign in state with the WebUI.
-// TODO(b/336510160): Look into integrating SYNC_PAUSED value.
-enum class SignedInState {
-  SignedOut = 0,
-  SignedIn = 1,
-  Syncing = 2,
-  SignedInPaused = 3,
-  WebOnlySignedIn = 4,
-};
-
 class PeopleHandler : public SettingsPageUIHandler,
                       public signin::IdentityManager::Observer,
                       public LoginUIService::LoginUI,

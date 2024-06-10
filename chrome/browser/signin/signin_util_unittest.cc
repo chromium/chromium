@@ -18,10 +18,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 
 using signin_util::ProfileSeparationPolicyState;
 using signin_util::ProfileSeparationPolicyStateSet;
+using signin_util::SignedInState;
 
 namespace {
 
@@ -362,5 +365,80 @@ TEST_F(SigninUtilTest,
         << local_policy;
   }
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST(SignedInStatesTest, SignedInStates) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  signin::IdentityTestEnvironment identity_test_env;
+  signin::IdentityManager* identity_manager =
+      identity_test_env.identity_manager();
+
+  // No Account present.
+  EXPECT_EQ(SignedInState::kSignedOut,
+            signin_util::GetSignedInState(identity_manager));
+
+  // Web signed in.
+  identity_test_env.MakeAccountAvailable("test@email.com",
+                                         {.set_cookie = true});
+  EXPECT_EQ(SignedInState::kWebOnlySignedIn,
+            signin_util::GetSignedInState(identity_manager));
+
+  // Syncing.
+  AccountInfo info = identity_test_env.MakePrimaryAccountAvailable(
+      "test@email.com", signin::ConsentLevel::kSync);
+  EXPECT_EQ(SignedInState::kSyncing,
+            signin_util::GetSignedInState(identity_manager));
+
+  // Sync paused state.
+  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+      info.account_id, GoogleServiceAuthError(
+                           GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+  EXPECT_EQ(SignedInState::kSyncPaused,
+            signin_util::GetSignedInState(identity_manager));
+
+  // Remove account.
+  identity_test_env.ClearPrimaryAccount();
+  EXPECT_EQ(SignedInState::kSignedOut,
+            signin_util::GetSignedInState(identity_manager));
+
+  // `kExplicitBrowserSigninUIOnDesktop` enabled
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        switches::kExplicitBrowserSigninUIOnDesktop};
+
+    // Signed in.
+    info = identity_test_env.MakePrimaryAccountAvailable(
+        "test@email.com", signin::ConsentLevel::kSignin);
+    EXPECT_EQ(SignedInState::kSignedIn,
+              signin_util::GetSignedInState(identity_manager));
+
+    // When explicit browser signin is enabled, being signed in with an invalid
+    // refresh token is equivalent to the sign in pending state.
+    identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
+    EXPECT_EQ(SignedInState::kSignInPending,
+              signin_util::GetSignedInState(identity_manager));
+  }
+
+  // `kExplicitBrowserSigninUIOnDesktop` disabled
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        switches::kExplicitBrowserSigninUIOnDesktop);
+
+    // Signed in.
+    identity_test_env.ClearPrimaryAccount();
+    info = identity_test_env.MakePrimaryAccountAvailable(
+        "test@email.com", signin::ConsentLevel::kSignin);
+    EXPECT_EQ(SignedInState::kSignedIn,
+              signin_util::GetSignedInState(identity_manager));
+
+    // We expect the user to be signed in, and additional checks would be
+    // necessary to determine that the refresh token is in error.
+    identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
+    EXPECT_EQ(SignedInState::kSignedIn,
+              signin_util::GetSignedInState(identity_manager));
+  }
+}
+#endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #endif

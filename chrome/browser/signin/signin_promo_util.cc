@@ -13,6 +13,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "net/base/network_change_notifier.h"
 
@@ -24,10 +25,15 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 
 namespace {
+
+using signin_util::SignedInState;
+
 constexpr int kSigninPromoShownThreshold = 5;
 constexpr int kSigninPromoDismissedThreshold = 2;
+
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -112,18 +118,21 @@ bool ShouldShowSignInPromo(Profile& profile,
     return false;
   }
 
-  SignInAutofillBubbleVersion sign_in_status =
-      GetSignInPromoVersion(IdentityManagerFactory::GetForProfile(&profile));
+  SignedInState signed_in_state = signin_util::GetSignedInState(
+      IdentityManagerFactory::GetForProfile(&profile));
 
-  // Don't show the promo if the user is already signed in.
-  if (sign_in_status == SignInAutofillBubbleVersion::kNoPromo) {
-    return false;
-  }
-
-  // Always show the promo in sign in pending state.
-  if (sign_in_status == SignInAutofillBubbleVersion::kSignInPending &&
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    return true;
+  switch (signed_in_state) {
+    case signin_util::SignedInState::kSignedIn:
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kSyncPaused:
+      // Don't show the promo if the user is already signed in or syncing.
+      return false;
+    case signin_util::SignedInState::kSignInPending:
+      // Always show the promo in sign in pending state.
+      return true;
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+      break;
   }
 
   IdentityManager* identity_manager =
@@ -168,30 +177,5 @@ bool ShouldShowSignInPromo(Profile& profile,
   return false;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-SignInAutofillBubbleVersion GetSignInPromoVersion(
-    IdentityManager* identity_manager) {
-  if (identity_manager->HasPrimaryAccount(ConsentLevel::kSync)) {
-    return SignInAutofillBubbleVersion::kNoPromo;
-  }
-
-  if (identity_manager->HasPrimaryAccount(ConsentLevel::kSignin) &&
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin))) {
-    return SignInAutofillBubbleVersion::kSignInPending;
-  }
-
-  if (identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
-    return SignInAutofillBubbleVersion::kNoPromo;
-  }
-
-  if (!signin_ui_util::GetSingleAccountForPromos(identity_manager).IsEmpty()) {
-    return SignInAutofillBubbleVersion::kWebSignedIn;
-  }
-
-  return SignInAutofillBubbleVersion::kNoAccount;
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

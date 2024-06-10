@@ -42,7 +42,6 @@
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -288,10 +287,7 @@ bool IsReauthPrimaryAccount(bool new_account_interception,
 bool IsInInconsistentStateWithPrimaryAccount(
     const CoreAccountId& account_id,
     signin::IdentityManager* identity_manager) {
-  // TODO(crbug.com/342118992): Change this to use a function such as
-  // `GetSignInState` in `signin_utils.h` instead.
-  return signin::GetSignInPromoVersion(identity_manager) ==
-             signin::SignInAutofillBubbleVersion::kSignInPending &&
+  return signin_util::IsSigninPending(identity_manager) &&
          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                  .account_id != account_id;
 }

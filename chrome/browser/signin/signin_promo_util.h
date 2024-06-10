@@ -5,25 +5,12 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 
-#include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-
 class Profile;
 
 namespace signin {
 
 // Enumeration of sign in promo types for the autofill bubble.
 enum class SignInAutofillBubblePromoType { Passwords, Addresses, Payments };
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Enumeration of possible versions of the autofill sign in promo bubble.
-enum class SignInAutofillBubbleVersion {
-  kNoPromo,
-  kNoAccount,
-  kWebSignedIn,
-  kSignInPending
-};
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Whether we should show the sync promo.
 bool ShouldShowSyncPromo(Profile& profile);
@@ -33,12 +20,6 @@ bool ShouldShowSyncPromo(Profile& profile);
 bool ShouldShowSignInPromo(Profile& profile,
                            SignInAutofillBubblePromoType signin_promo_type);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Returns the version of the autofill bubble that should be displayed.
-// TODO(crbug.com/342118992): Move this to `signin_utils.h`.
-SignInAutofillBubbleVersion GetSignInPromoVersion(
-    IdentityManager* identity_manager);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_

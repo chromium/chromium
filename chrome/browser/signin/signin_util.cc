@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "content/public/browser/storage_partition.h"
@@ -303,12 +304,47 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
   return set_primary_account_result;
 }
 
-bool IsSigninPaused(signin::IdentityManager* identity_manager) {
+bool IsSigninPending(signin::IdentityManager* identity_manager) {
   return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
          identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
              identity_manager->GetPrimaryAccountId(
                  signin::ConsentLevel::kSignin));
+}
+
+SignedInState GetSignedInState(signin::IdentityManager* identity_manager) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSync))) {
+      return SignedInState::kSyncPaused;
+    }
+    return SignedInState::kSyncing;
+  }
+
+  // If explicit browser signin is not enabled, this returns `kSignedIn`
+  // regardless of the error state of the refresh token. There might for example
+  // be an error in the following two cases: (a) The account is managed. (b) The
+  // account is not managed, but the `SigninManager` has not been notified yet,
+  // which would sign the user out.
+  //
+  // If the error state of the primary account is relevant, then it needs to be
+  // checked in addition to this state.
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+               identity_manager->GetPrimaryAccountId(
+                   signin::ConsentLevel::kSignin)) &&
+                   switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? SignedInState::kSignInPending
+               : SignedInState::kSignedIn;
+  }
+
+  // Not signed, but at least one account is signed in on the web.
+  if (!identity_manager->GetAccountsWithRefreshTokens().empty()) {
+    return SignedInState::kWebOnlySignedIn;
+  }
+
+  return SignedInState::kSignedOut;
 }
 
 }  // namespace signin_util

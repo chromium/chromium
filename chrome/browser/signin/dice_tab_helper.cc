@@ -140,7 +140,7 @@ void DiceTabHelper::InitializeSigninFlow(
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
   }
 
-  if (signin_util::IsSigninPaused(identity_manager)) {
+  if (signin_util::IsSigninPending(identity_manager)) {
     base::UmaHistogramEnumeration(
         "Signin.SigninPending.ResolutionSourceStarted", access_point,
         signin_metrics::AccessPoint::ACCESS_POINT_MAX);

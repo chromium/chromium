@@ -11,8 +11,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -76,57 +74,6 @@ TEST(SigninPromoTest, SigninURLForDice) {
       GetAddAccountURLForDice("email@gmail.com",
                               GURL("https://continue_url/")));
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST(SignInPromoVersionTest, SignInPromoVersions) {
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  content::BrowserTaskEnvironment task_environment;
-
-  IdentityTestEnvironment identity_test_env;
-  IdentityManager* identity_manager = identity_test_env.identity_manager();
-
-  // No Account present.
-  EXPECT_EQ(SignInAutofillBubbleVersion::kNoAccount,
-            GetSignInPromoVersion(identity_manager));
-
-  // Web signed in.
-  identity_test_env.MakeAccountAvailable("test@email.com",
-                                         {.set_cookie = true});
-  EXPECT_EQ(SignInAutofillBubbleVersion::kWebSignedIn,
-            GetSignInPromoVersion(identity_manager));
-
-  // Syncing.
-  AccountInfo info = identity_test_env.MakePrimaryAccountAvailable(
-      "test@email.com", ConsentLevel::kSync);
-  EXPECT_EQ(SignInAutofillBubbleVersion::kNoPromo,
-            GetSignInPromoVersion(identity_manager));
-
-  // Sync paused state.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
-      info.account_id, GoogleServiceAuthError(
-                           GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
-  EXPECT_EQ(SignInAutofillBubbleVersion::kNoPromo,
-            GetSignInPromoVersion(identity_manager));
-
-  // Remove account.
-  identity_test_env.ClearPrimaryAccount();
-  EXPECT_EQ(SignInAutofillBubbleVersion::kNoAccount,
-            GetSignInPromoVersion(identity_manager));
-
-  // Signed in.
-  info = identity_test_env.MakePrimaryAccountAvailable("test@email.com",
-                                                       ConsentLevel::kSignin);
-  EXPECT_EQ(SignInAutofillBubbleVersion::kNoPromo,
-            GetSignInPromoVersion(identity_manager));
-
-  // Sign in pending state.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
-      info.account_id, GoogleServiceAuthError(
-                           GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
-  EXPECT_EQ(SignInAutofillBubbleVersion::kSignInPending,
-            GetSignInPromoVersion(identity_manager));
-}
-#endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class ShowPromoTest : public testing::Test {
  public:

@@ -74,6 +74,7 @@
 namespace {
 
 using signin::ConsentLevel;
+using signin_util::SignedInState;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Const;
@@ -1598,11 +1599,11 @@ TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::WebOnlySignedIn);
+              SignedInState::kWebOnlySignedIn);
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenSignout) {
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingThenSignout) {
   identity_test_env()->MakePrimaryAccountAvailable(kTestUser,
                                                    ConsentLevel::kSignin);
   SetExplicitSignin(true);
@@ -1624,7 +1625,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenSignout) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::SignedInPaused);
+              SignedInState::kSignInPending);
   }
 
   // Simulates pressing on the "Sign out" Button in the Sign in Paused state,
@@ -1644,11 +1645,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenSignout) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::SignedOut);
+              SignedInState::kSignedOut);
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenReauth) {
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingThenReauth) {
   identity_test_env()->MakePrimaryAccountAvailable(kTestUser,
                                                    ConsentLevel::kSignin);
   SetExplicitSignin(true);
@@ -1670,7 +1671,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenReauth) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::SignedInPaused);
+              SignedInState::kSignInPending);
     ;
   }
 
@@ -1690,11 +1691,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenReauth) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::SignedIn);
+              SignedInState::kSignedIn);
   }
 }
 
-TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedValueWithSync) {
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPendingValueWithSync) {
   CreatePeopleHandler();
 
   ASSERT_FALSE(HasSyncStatusUpdateChangedEvent());
@@ -1715,13 +1716,13 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedValueWithSync) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::Syncing);
+              SignedInState::kSyncing);
   }
 
   // Invalidate the account while it is syncing.
   TriggerPrimaryAccountInPersistentError();
 
-  // `signinPaused` is still false even when the account is in error.
+  // `SigninPending` is still false even when the account is in error.
   {
     auto values_list =
         GetAllFiredValuesForEventName(kSyncStatusChangeEventName);
@@ -1734,7 +1735,7 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedValueWithSync) {
         sync_status_values.FindInt("signedInState");
     ASSERT_TRUE(signedInState.has_value());
     EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
-              SignedInState::Syncing);
+              SignedInState::kSyncing);
   }
 }
 

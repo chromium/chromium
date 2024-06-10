@@ -27,6 +27,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -965,15 +966,18 @@ void ManagePasswordsUIController::SignIn(
 
   // If the sign in was already successful, move the password directly.
   // Otherwise, wait for a sign in event and move the password upon success.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          account.account_id)) {
+  signin_util::SignedInState signed_in_state = signin_util::GetSignedInState(
+      IdentityManagerFactory::GetForProfile(profile));
+  if (signed_in_state == signin_util::SignedInState::kSignedIn) {
     MoveJustSavedPasswordAfterAccountStoreOptIn(
         password_to_move,
         password_manager::PasswordManagerClient::ReauthSucceeded(true));
   } else {
+    if (signed_in_state != signin_util::SignedInState::kSignedOut &&
+        signed_in_state != signin_util::SignedInState::kSignInPending &&
+        signed_in_state != signin_util::SignedInState::kWebOnlySignedIn) {
+      return;
+    }
     content::WebContents* sign_in_tab_contents =
         signin_ui_util::GetSignInTabWithAccessPoint(
             *chrome::FindBrowserWithTab(web_contents()),
