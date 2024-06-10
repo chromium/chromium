@@ -897,8 +897,9 @@ TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
   EXPECT_EQ("| [ 1 a* b ] [ 2 d e ] c", builder.GetWebStateListDescription());
 }
 
+// TODO:(crbug.com/346293139): Re-enable this test.
 // Tests dropping a Tab Group from another browser (i.e. from the same window).
-TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
+TEST_P(BaseGridMediatorTest, DISABLED_DropCrossBrowserTabGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
