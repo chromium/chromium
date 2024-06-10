@@ -51,16 +51,13 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     /** Custom mock for TrainingInfo. */
     class FakeTrainingInfo extends TrainingInfo {
-        // Counter to ensure distinctness of instantiated FakeTrainingInfo. */
-        private static int sRequestIdCounter;
         public String recordHistory = "";
 
-        FakeTrainingInfo(SuggestionEntry entry) {
+        FakeTrainingInfo(SuggestionEntry entry, long requestId) {
             super(
                     /* nativeVisitedUrlRankingBackend= */ 0L,
                     /* visitId= */ entry.url.getSpec(),
-                    /* requestId= */ sRequestIdCounter);
-            ++sRequestIdCounter;
+                    /* requestId= */ requestId);
         }
 
         @Override
@@ -517,7 +514,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         List<SuggestionEntry> tentativeSuggestions =
                 Arrays.asList(makeSyncDerivedSuggestion(0), makeSyncDerivedSuggestion(1));
         List<FakeTrainingInfo> tentativeFakeTrainingInfos =
-                addFakeTrainingInfo(tentativeSuggestions);
+                addFakeTrainingInfo(tentativeSuggestions, Arrays.asList(1234L, -314159265358L));
 
         // Tentative suggestions = something: Call onDataReady() and show (tentative).
         mMediator.loadModule();
@@ -560,9 +557,11 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         List<SuggestionEntry> stableSuggestions2 = Arrays.asList(makeSyncDerivedSuggestion(0));
 
         List<FakeTrainingInfo> tentativeFakeTrainingInfos =
-                addFakeTrainingInfo(tentativeSuggestions);
-        List<FakeTrainingInfo> stableFakeTrainingInfos1 = addFakeTrainingInfo(stableSuggestions1);
-        List<FakeTrainingInfo> stableFakeTrainingInfos2 = addFakeTrainingInfo(stableSuggestions2);
+                addFakeTrainingInfo(tentativeSuggestions, Arrays.asList(0L, -1L));
+        List<FakeTrainingInfo> stableFakeTrainingInfos1 =
+                addFakeTrainingInfo(stableSuggestions1, Arrays.asList(-2024L, -133700000000L));
+        List<FakeTrainingInfo> stableFakeTrainingInfos2 =
+                addFakeTrainingInfo(stableSuggestions2, Arrays.asList(9876543219876543L));
 
         // Tentative suggestions = something: Call onDataReady() and show (tentative).
         mMediator.loadModule();
@@ -670,11 +669,15 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         return (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
     }
 
-    private List<FakeTrainingInfo> addFakeTrainingInfo(List<SuggestionEntry> entries) {
+    private List<FakeTrainingInfo> addFakeTrainingInfo(
+            List<SuggestionEntry> entries, List<Long> requestIds) {
+        int n = entries.size();
+        assert requestIds.size() == n;
         List<FakeTrainingInfo> fakeTrainingInfos = new ArrayList<FakeTrainingInfo>();
-        for (SuggestionEntry entry : entries) {
+        for (int i = 0; i < n; ++i) {
+            SuggestionEntry entry = entries.get(i);
             Assert.assertNull(entry.trainingInfo);
-            FakeTrainingInfo traingInfo = new FakeTrainingInfo(entry);
+            FakeTrainingInfo traingInfo = new FakeTrainingInfo(entry, requestIds.get(i));
             fakeTrainingInfos.add(traingInfo);
             entry.trainingInfo = traingInfo;
         }

@@ -27,7 +27,8 @@ public class TrainingInfo {
     TrainingInfo(long nativeVisitedUrlRankingBackend, @NonNull String visitId, long requestId) {
         mNativeVisitedUrlRankingBackend = nativeVisitedUrlRankingBackend;
         assert !visitId.isEmpty();
-        assert requestId >= 0L;
+        // No restrictions on `requestId`.
+
         mVisitId = visitId;
         mRequestId = requestId;
     }

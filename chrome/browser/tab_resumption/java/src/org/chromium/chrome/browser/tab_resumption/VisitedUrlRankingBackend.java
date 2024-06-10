@@ -89,7 +89,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
             @NonNull List<SuggestionEntry> suggestions) {
         SuggestionEntry entry =
                 new SuggestionEntry(sourceName, url, title, lastActiveTime, localTabId);
-        if (!visitId.isEmpty() && requestId >= 0L) {
+        if (!visitId.isEmpty()) {
             entry.trainingInfo =
                     new TrainingInfo(mNativeVisitedUrlRankingBackend, visitId, requestId);
         }
