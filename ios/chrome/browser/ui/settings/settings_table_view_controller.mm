@@ -501,6 +501,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   [model addItem:[self autoFillProfileDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUIRedesign)) {
+    _plusAddressesItem = [self plusAddressesItem];
+    [model addItem:_plusAddressesItem
+        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  }
 
   // Advanced Section
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -518,7 +526,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      !base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUIRedesign)) {
     _plusAddressesItem = [self plusAddressesItem];
     [model addItem:_plusAddressesItem
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -1006,13 +1016,24 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (TableViewDetailIconItem*)plusAddressesItem {
   NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
-  // TODO(crbug.com/40276862): Add icon and finalize display as requirements
-  // solidify.
+  BOOL isPlusAddressUIRedesignEnabled = base::FeatureList::IsEnabled(
+      plus_addresses::features::kPlusAddressUIRedesign);
+
   return [self detailItemWithType:SettingsItemTypePlusAddresses
                              text:title
                        detailText:nil
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+                           symbol:isPlusAddressUIRedesignEnabled
+                                      ? DefaultSettingsRootSymbol(
+                                            kGooglePlusAddressSymbol)
+                                      : nil
+#else
                            symbol:nil
-            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+#endif
+            symbolBackgroundColor:[UIColor
+                                      colorNamed:(isPlusAddressUIRedesignEnabled
+                                                      ? kYellow500Color
+                                                      : kPink500Color)]
           accessibilityIdentifier:kSettingsPlusAddressesId];
 }
 
