@@ -658,16 +658,12 @@ impl Hir {
     #[inline]
     pub fn dot(dot: Dot) -> Hir {
         match dot {
-            Dot::AnyChar => {
-                let mut cls = ClassUnicode::empty();
-                cls.push(ClassUnicodeRange::new('\0', '\u{10FFFF}'));
-                Hir::class(Class::Unicode(cls))
-            }
-            Dot::AnyByte => {
-                let mut cls = ClassBytes::empty();
-                cls.push(ClassBytesRange::new(b'\0', b'\xFF'));
-                Hir::class(Class::Bytes(cls))
-            }
+            Dot::AnyChar => Hir::class(Class::Unicode(ClassUnicode::new([
+                ClassUnicodeRange::new('\0', '\u{10FFFF}'),
+            ]))),
+            Dot::AnyByte => Hir::class(Class::Bytes(ClassBytes::new([
+                ClassBytesRange::new(b'\0', b'\xFF'),
+            ]))),
             Dot::AnyCharExcept(ch) => {
                 let mut cls =
                     ClassUnicode::new([ClassUnicodeRange::new(ch, ch)]);
@@ -675,17 +671,17 @@ impl Hir {
                 Hir::class(Class::Unicode(cls))
             }
             Dot::AnyCharExceptLF => {
-                let mut cls = ClassUnicode::empty();
-                cls.push(ClassUnicodeRange::new('\0', '\x09'));
-                cls.push(ClassUnicodeRange::new('\x0B', '\u{10FFFF}'));
-                Hir::class(Class::Unicode(cls))
+                Hir::class(Class::Unicode(ClassUnicode::new([
+                    ClassUnicodeRange::new('\0', '\x09'),
+                    ClassUnicodeRange::new('\x0B', '\u{10FFFF}'),
+                ])))
             }
             Dot::AnyCharExceptCRLF => {
-                let mut cls = ClassUnicode::empty();
-                cls.push(ClassUnicodeRange::new('\0', '\x09'));
-                cls.push(ClassUnicodeRange::new('\x0B', '\x0C'));
-                cls.push(ClassUnicodeRange::new('\x0E', '\u{10FFFF}'));
-                Hir::class(Class::Unicode(cls))
+                Hir::class(Class::Unicode(ClassUnicode::new([
+                    ClassUnicodeRange::new('\0', '\x09'),
+                    ClassUnicodeRange::new('\x0B', '\x0C'),
+                    ClassUnicodeRange::new('\x0E', '\u{10FFFF}'),
+                ])))
             }
             Dot::AnyByteExcept(byte) => {
                 let mut cls =
@@ -694,17 +690,17 @@ impl Hir {
                 Hir::class(Class::Bytes(cls))
             }
             Dot::AnyByteExceptLF => {
-                let mut cls = ClassBytes::empty();
-                cls.push(ClassBytesRange::new(b'\0', b'\x09'));
-                cls.push(ClassBytesRange::new(b'\x0B', b'\xFF'));
-                Hir::class(Class::Bytes(cls))
+                Hir::class(Class::Bytes(ClassBytes::new([
+                    ClassBytesRange::new(b'\0', b'\x09'),
+                    ClassBytesRange::new(b'\x0B', b'\xFF'),
+                ])))
             }
             Dot::AnyByteExceptCRLF => {
-                let mut cls = ClassBytes::empty();
-                cls.push(ClassBytesRange::new(b'\0', b'\x09'));
-                cls.push(ClassBytesRange::new(b'\x0B', b'\x0C'));
-                cls.push(ClassBytesRange::new(b'\x0E', b'\xFF'));
-                Hir::class(Class::Bytes(cls))
+                Hir::class(Class::Bytes(ClassBytes::new([
+                    ClassBytesRange::new(b'\0', b'\x09'),
+                    ClassBytesRange::new(b'\x0B', b'\x0C'),
+                    ClassBytesRange::new(b'\x0E', b'\xFF'),
+                ])))
             }
         }
     }

@@ -698,7 +698,7 @@ third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/dfa 11 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/hybrid 7 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/meta 6 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/nfa/thompson/backtrack 2 1
-third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.3 2 2
+third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4 2 2
 third_party/rust/chromium_crates_io/vendor/rustc_version-0.4.0/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17 2 1
 third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/.github/workflows 2 1
