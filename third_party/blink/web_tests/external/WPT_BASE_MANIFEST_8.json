@@ -79237,7 +79237,7 @@
       ]
      ],
      "border-image-image-type-001.htm": [
-      "9486f0b8b6e2d5fcccda1e7d44084db4c6722219",
+      "2c8d5941a4dbc6166fabd5d16c0f2f5f6128a129",
       [
        null,
        [
@@ -79246,7 +79246,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            64
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-image-type-002.htm": [
@@ -237011,6 +237027,19 @@
        }
       ]
      ],
+     "new-content-inline-with-offset-from-containing-block-clipped.html": [
+      "2b122d0a74620db0fa67c545d65a82624fa8e666",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/inline-with-offset-from-containing-block-clipped-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "new-content-intrinsic-aspect-ratio.html": [
       "60f2b92036c246803bae4b5d207e6ff5aa612d0f",
       [
@@ -237548,6 +237577,19 @@
         ],
         "timeout": "long"
        }
+      ]
+     ],
+     "old-content-inline-with-offset-from-containing-block-clipped.html": [
+      "7f35d8599b37188d0c0838d90126673ef1c88af4",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/inline-with-offset-from-containing-block-clipped-ref.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "old-content-intrinsic-aspect-ratio.html": [
@@ -343339,6 +343381,10 @@
       "14b76fb07e76189306ffd148886617bec1cf0100",
       []
      ],
+     "inline-with-offset-from-containing-block-clipped-ref.html": [
+      "2b6b56578c23a41c33484ddbd253859af3c02115",
+      []
+     ],
      "inline-with-offset-from-containing-block-ref.html": [
       "4a66af4ece26abd69a41840319783f86001746d0",
       []
@@ -346941,6 +346987,10 @@
      ],
      "scrollingElement-quirks-dynamic-002-ref.html": [
       "c8a783980f8a36216f282f5873b9e161286ab3ac",
+      []
+     ],
+     "smooth-scroll-nonstop-expected.txt": [
+      "7cf4f26a2da860b1713cc943d8637368d0bda72e",
       []
      ],
      "subpixel-sizes-and-offsets.tentative-expected.txt": [
@@ -480105,6 +480155,13 @@
      ],
      "smooth-scroll-in-load-event.html": [
       "e515b067102a938d3310487d89ef214bdfebb0ee",
+      [
+       null,
+       {}
+      ]
+     ],
+     "smooth-scroll-nonstop.html": [
+      "7ba6e690f9072671db98a442239b5fff1fa92e8f",
       [
        null,
        {}

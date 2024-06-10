@@ -2570,6 +2570,17 @@ crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTra
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac12 ] external/wpt/editing/other/exec-command-with-text-editor.tentative.html?type=text [ Timeout ]
+[ Mac12 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-not-found.html [ Timeout ]
+[ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay.html [ Timeout ]
+[ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/readyState_during_canplay.html [ Timeout ]
+[ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Timeout ]
+[ Mac12 ] external/wpt/scroll-to-text-fragment/non-html-documents.html [ Timeout ]
+[ Mac12 ] external/wpt/service-workers/service-worker/fetch-event-respond-with-custom-response.https.html [ Timeout ]
+[ Mac12 ] external/wpt/service-workers/service-worker/tentative/static-router/static-router-resource-timing.https.html [ Timeout ]
+[ Mac12 ] external/wpt/video-rvfc/request-video-frame-callback-dom.html [ Timeout ]
+[ Mac12 ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/pannernode-basic.window.html [ Timeout ]
+[ Mac12 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
 crbug.com/346088868 [ Mac14 ] external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Skip Timeout ]
 crbug.com/345868497 [ Mac14 ] external/wpt/import-maps/bare-specifiers.sub.html [ Skip Timeout ]
 crbug.com/345868498 [ Mac14 ] external/wpt/xhr/access-control-basic-cors-safelisted-response-headers.htm [ Timeout ]
@@ -3510,6 +3521,7 @@ crbug.com/1097992 external/wpt/css/css-pseudo/marker-font-variant-numeric-normal
 crbug.com/1060007 external/wpt/css/css-pseudo/marker-text-combine-upright.html [ Failure ]
 
 crbug.com/1498015 [ Mac11 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
+crbug.com/1498015 [ Mac12 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
 crbug.com/1498015 [ Mac14 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
@@ -3568,7 +3580,15 @@ crbug.com/1289685 external/wpt/css/css-transitions/properties-value-inherit-001.
 
 crbug.com/826419 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-track-inband.html [ Crash Failure Pass Timeout ]
 
-crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac11 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac12-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac13-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac14 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Mac14-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
+crbug.com/825798 [ Win ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
 
 # These tests (erroneously) see a platform-specific User-Agent header
 crbug.com/595993 external/wpt/service-workers/service-worker/fetch-header-visibility.https.html [ Failure ]
