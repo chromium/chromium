@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/window_backdrop.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -44,11 +45,14 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
@@ -58,6 +62,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -337,6 +342,55 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
   return user_settings->IsSyncAllOsTypesEnabled() ||
          profile->GetPrefs()->GetBoolean(
              ash::settings::prefs::kSyncOsWallpaper);
+}
+
+void WallpaperControllerClientImpl::CancelPreviewWallpaper(Profile* profile) {
+  wallpaper_controller_->CancelPreviewWallpaper();
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  wallpaper_controller_->RestoreMinimizedWindows(user->username_hash());
+}
+
+void WallpaperControllerClientImpl::ConfirmPreviewWallpaper(Profile* profile) {
+  wallpaper_controller_->ConfirmPreviewWallpaper();
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  wallpaper_controller_->RestoreMinimizedWindows(user->username_hash());
+}
+
+void WallpaperControllerClientImpl::MakeTransparent(
+    content::WebContents* web_contents) {
+  // Disable the window backdrop that creates an opaque layer in tablet mode.
+  ash::WindowBackdrop* window_backdrop =
+      ash::WindowBackdrop::Get(web_contents->GetTopLevelNativeWindow());
+  window_backdrop->SetBackdropMode(
+      ash::WindowBackdrop::BackdropMode::kDisabled);
+
+  // Set transparency on the top level native window and tell the WM not to
+  // change it when window state changes.
+  aura::Window* top_level_window = web_contents->GetTopLevelNativeWindow();
+  top_level_window->SetProperty(::chromeos::kWindowManagerManagesOpacityKey,
+                                false);
+  top_level_window->SetTransparent(true);
+
+  // Set the background color to transparent.
+  web_contents->GetRenderWidgetHostView()->SetBackgroundColor(
+      SK_ColorTRANSPARENT);
+
+  // Turn off the web contents background.
+  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
+                                    web_contents->GetTopLevelNativeWindow())
+                                    ->contents_web_view())
+      ->SetBackgroundVisible(false);
+}
+
+void WallpaperControllerClientImpl::MakeOpaque(
+    content::WebContents* web_contents) {
+  // Reversing `contents_web_view` is sufficient to make the view opaque,
+  // as `window_backdrop`, `top_level_window` and `web_contents` are not
+  // highly impactful to the animated theme change effect.
+  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
+                                    web_contents->GetTopLevelNativeWindow())
+                                    ->contents_web_view())
+      ->SetBackgroundVisible(true);
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(

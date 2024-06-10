@@ -180,6 +180,7 @@ include_rules = [
   "+chrome/browser/ui/views/frame/browser_frame.h",
   "+chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h",
   "+chrome/browser/ui/views/frame/browser_view.h",
+  "+chrome/browser/ui/views/frame/contents_web_view.h",
   "+chrome/browser/ui/views/frame/webui_tab_strip_container_view.h",
   "+chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h",
   "+chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h",
@@ -306,4 +307,3 @@ specific_include_rules = {
     "+chrome/browser/sync/send_tab_to_self_sync_service_factory.h",
   ]
 }
-

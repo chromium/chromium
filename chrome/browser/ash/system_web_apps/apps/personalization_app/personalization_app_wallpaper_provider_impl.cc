@@ -23,7 +23,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/public/cpp/window_backdrop.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
@@ -49,12 +48,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/base/window_properties.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -153,42 +148,12 @@ bool PersonalizationAppWallpaperProviderImpl::IsManagedSeaPenEnabled() {
 }
 
 void PersonalizationAppWallpaperProviderImpl::MakeTransparent() {
-  auto* web_contents = web_ui_->GetWebContents();
-
-  // Disable the window backdrop that creates an opaque layer in tablet mode.
-  auto* window_backdrop =
-      ash::WindowBackdrop::Get(web_contents->GetTopLevelNativeWindow());
-  window_backdrop->SetBackdropMode(
-      ash::WindowBackdrop::BackdropMode::kDisabled);
-
-  // Set transparency on the top level native window and tell the WM not to
-  // change it when window state changes.
-  aura::Window* top_level_window = web_contents->GetTopLevelNativeWindow();
-  top_level_window->SetProperty(::chromeos::kWindowManagerManagesOpacityKey,
-                                false);
-  top_level_window->SetTransparent(true);
-
-  // Set the background color to transparent.
-  web_contents->GetRenderWidgetHostView()->SetBackgroundColor(
-      SK_ColorTRANSPARENT);
-
-  // Turn off the web contents background.
-  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
-                                    web_contents->GetTopLevelNativeWindow())
-                                    ->contents_web_view())
-      ->SetBackgroundVisible(false);
+  WallpaperControllerClientImpl::Get()->MakeTransparent(
+      web_ui_->GetWebContents());
 }
 
 void PersonalizationAppWallpaperProviderImpl::MakeOpaque() {
-  auto* web_contents = web_ui_->GetWebContents();
-
-  // Reversing `contents_web_view` is sufficient to make the view opaque,
-  // as `window_backdrop`, `top_level_window` and `web_contents` are not
-  // highly impactful to the animated theme change effect.
-  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
-                                    web_contents->GetTopLevelNativeWindow())
-                                    ->contents_web_view())
-      ->SetBackgroundVisible(true);
+  WallpaperControllerClientImpl::Get()->MakeOpaque(web_ui_->GetWebContents());
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchCollections(
@@ -809,13 +774,11 @@ void PersonalizationAppWallpaperProviderImpl::ConfirmPreviewWallpaper() {
   // splitscreen, this prevents `WallpaperController::OnOverviewModeWillStart`
   // from triggering first, which leads to preview wallpaper getting canceled
   // before it gets confirmed (b/289133203).
-  WallpaperController::Get()->ConfirmPreviewWallpaper();
-  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
+  WallpaperControllerClientImpl::Get()->ConfirmPreviewWallpaper(profile_);
 }
 
 void PersonalizationAppWallpaperProviderImpl::CancelPreviewWallpaper() {
-  WallpaperController::Get()->CancelPreviewWallpaper();
-  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
+  WallpaperControllerClientImpl::Get()->CancelPreviewWallpaper(profile_);
 }
 
 void PersonalizationAppWallpaperProviderImpl::

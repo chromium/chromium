@@ -88,6 +88,11 @@ class WallpaperControllerClientImpl
                       files_id_callback) const override;
   bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
+  void CancelPreviewWallpaper(Profile* profile);
+  void ConfirmPreviewWallpaper(Profile* profile);
+  void MakeOpaque(content::WebContents* web_contents);
+  void MakeTransparent(content::WebContents* web_contents);
+
   // file_manager::VolumeManagerObserver:
   void OnVolumeMounted(ash::MountError error_code,
                        const file_manager::Volume& volume) override;

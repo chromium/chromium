@@ -120,7 +120,6 @@ specific_include_rules = {
   ],
   "personalization_app_integration_browsertest.cc": [
     "+ash/ambient/test/ambient_ash_test_helper.h",
-    "+chrome/browser/ui/views/frame/browser_view.h",
     "+ui/message_center/message_center.h",
   ],
   "personalization_app_utils_unittest.cc": [
