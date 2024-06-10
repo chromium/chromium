@@ -201,17 +201,6 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
       /*raster=*/nullptr, std::move(sii), support_locking);
 }
 
-// static
-scoped_refptr<TestContextProvider> TestContextProvider::Create(
-    std::unique_ptr<TestContextSupport> support) {
-  DCHECK(support);
-  constexpr bool support_locking = false;
-  return new TestContextProvider(
-      std::move(support),
-      std::make_unique<TestGLES2InterfaceForContextProvider>(),
-      /*raster=*/nullptr, /*sii=*/nullptr, support_locking);
-}
-
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
     std::unique_ptr<TestRasterInterface> raster,

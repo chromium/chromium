@@ -46,8 +46,6 @@ class TestContextProvider
       std::unique_ptr<TestGLES2Interface> gl);
   static scoped_refptr<TestContextProvider> Create(
       scoped_refptr<gpu::TestSharedImageInterface> sii);
-  static scoped_refptr<TestContextProvider> Create(
-      std::unique_ptr<TestContextSupport> support);
 
   // Creates a context backed by TestRasterInterface with no lock.
   static scoped_refptr<TestContextProvider> CreateRaster();
