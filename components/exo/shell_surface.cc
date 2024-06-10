@@ -14,6 +14,7 @@
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/adapters.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -239,6 +240,21 @@ void ShellSurface::AcknowledgeConfigure(uint32_t serial) {
 void ShellSurface::SetParent(ShellSurface* parent) {
   TRACE_EVENT1("exo", "ShellSurface::SetParent", "parent",
                parent ? base::UTF16ToASCII(parent->GetWindowTitle()) : "null");
+
+  // Some apps are trying to parent to its descendant, e.g. b/342265753. Add
+  // crash keys here to find out the causes.
+  const std::string* app_id = GetShellApplicationId(host_window());
+  SCOPED_CRASH_KEY_STRING256("342265753", "app id", app_id ? *app_id : "null");
+  SCOPED_CRASH_KEY_STRING256("342265753", "app title",
+                             base::UTF16ToUTF8(GetWindowTitle()));
+
+  const std::string* parent_id =
+      parent ? GetShellApplicationId(parent->host_window()) : nullptr;
+  SCOPED_CRASH_KEY_STRING256("342265753", "parent app id",
+                             parent_id ? *parent_id : "null");
+  SCOPED_CRASH_KEY_STRING256(
+      "342265753", "parent title",
+      parent ? base::UTF16ToUTF8(parent->GetWindowTitle()) : "null");
 
   SetParentWindow(parent ? parent->GetWidget()->GetNativeWindow() : nullptr);
 }
