@@ -49,7 +49,8 @@ class TSFBridgeImpl : public TSFBridge {
   void RemoveFocusedClient(TextInputClient* client) override;
   void SetImeKeyEventDispatcher(
       ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
-  void RemoveImeKeyEventDispatcher() override;
+  void RemoveImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
   bool IsInputLanguageCJK() override;
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
@@ -391,7 +392,8 @@ void TSFBridgeImpl::SetImeKeyEventDispatcher(
   }
 }
 
-void TSFBridgeImpl::RemoveImeKeyEventDispatcher() {
+void TSFBridgeImpl::RemoveImeKeyEventDispatcher(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher) {
   DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(IsInitialized());
 
@@ -399,7 +401,8 @@ void TSFBridgeImpl::RemoveImeKeyEventDispatcher() {
        it != tsf_document_map_.end(); ++it) {
     if (it->second.text_store.get() == nullptr)
       continue;
-    it->second.text_store->RemoveImeKeyEventDispatcher();
+    it->second.text_store->RemoveImeKeyEventDispatcher(
+        ime_key_event_dispatcher);
   }
 }
 

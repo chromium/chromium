@@ -1346,8 +1346,11 @@ void TSFTextStore::SetImeKeyEventDispatcher(
   ime_key_event_dispatcher_ = ime_key_event_dispatcher;
 }
 
-void TSFTextStore::RemoveImeKeyEventDispatcher() {
-  ime_key_event_dispatcher_ = nullptr;
+void TSFTextStore::RemoveImeKeyEventDispatcher(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher) {
+  if (ime_key_event_dispatcher == ime_key_event_dispatcher_) {
+    ime_key_event_dispatcher_ = nullptr;
+  }
 }
 
 bool TSFTextStore::CancelComposition() {

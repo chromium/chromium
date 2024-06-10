@@ -258,7 +258,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
       ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
   // Removes ImeKeyEventDispatcher pointer.
-  void RemoveImeKeyEventDispatcher();
+  void RemoveImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
   // Cancels the ongoing composition if exists.
   bool CancelComposition();
