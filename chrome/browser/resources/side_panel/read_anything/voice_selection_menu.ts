@@ -205,6 +205,11 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private openLanguageMenu_() {
     this.$.voiceSelectionMenu.get().close();
     this.$.languageMenu.get().showDialog();
+    this.$.languageMenu.get().addEventListener('close', () => {
+      // TODO(b/345266392): Ensure menu is more correctly positioned after
+      // a re-open.
+      openMenu(this.$.voiceSelectionMenu.get(), this.$.voiceSelectionMenu);
+    });
   }
 
   private onClose_() {
