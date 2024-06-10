@@ -132,6 +132,14 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
+const FeatureEntry::Choice kRevampPageInfoiOSChoices[] = {
+    {"Default", "", ""},
+    {"Enabled", switches::kEnableFeatures,
+     "RevampPageInfoIos, PageInfoAboutThisSite"},
+    {"Disabled", switches::kDisableFeatures,
+     "RevampPageInfoIos, PageInfoAboutThisSite"},
+};
+
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -1455,7 +1463,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          "BottomOmniboxPromoDefaultPosition")},
     {"revamp-page-info-ios", flag_descriptions::kRevampPageInfoIosName,
      flag_descriptions::kRevampPageInfoIosDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kRevampPageInfoIos)},
+     MULTI_VALUE_TYPE(kRevampPageInfoiOSChoices)},
     {"remove-old-web-state-restore",
      flag_descriptions::kRemoveOldWebStateRestoreName,
      flag_descriptions::kRemoveOldWebStateRestoreDescription, flags_ui::kOsIos,
