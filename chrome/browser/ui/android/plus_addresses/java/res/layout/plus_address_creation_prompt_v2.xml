@@ -67,11 +67,13 @@ found in the LICENSE file.
 
     <!-- TODO(b/342126606): Use correct icon when it is created. -->
     <ImageView
-        android:id="@+id/favicon"
+        android:id="@+id/proposed_plus_address_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:src="@drawable/ic_logo_googleg_20dp"
+        android:src="@drawable/ic_plus_addresses_logo_24dp"
+        app:tint="@macro/default_icon_color"
+        android:tintMode="src_in"
         android:importantForAccessibility="no"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="16dp"/>
