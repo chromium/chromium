@@ -19,8 +19,7 @@ const char kExceptionMessageServiceUnavailable[] =
 const char kExceptionMessagePermissionDenied[] =
     "A user permission error occurred, such as not signed-in or not "
     "allowed to execute model.";
-const char kExceptionMessageRetryableError[] =
-    "A retryable error occurred in the server.";
+const char kExceptionMessageGenericError[] = "Other generic failures occurred.";
 const char kExceptionMessageFiltered[] =
     "The execution yielded a bad response.";
 const char kExceptionMessageDisabled[] = "The response was disabled.";
@@ -75,8 +74,8 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
           DOMException::GetErrorName(DOMExceptionCode::kNotAllowedError));
     case ModelStreamingResponseStatus::kErrorGenericFailure:
       return DOMException::Create(
-          kExceptionMessageRetryableError,
-          DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
+          kExceptionMessageGenericError,
+          DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
     case ModelStreamingResponseStatus::kErrorRetryableError:
       base::debug::DumpWithoutCrashing();
       return CreateUnknown("kErrorRetryableError");
