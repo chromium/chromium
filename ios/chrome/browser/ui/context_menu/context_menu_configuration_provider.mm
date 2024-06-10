@@ -223,7 +223,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
           stringByAppendingString:kContextMenuEllipsis];
     }
   }
-  CHECK(menuTitle);
+
   UIMenu* menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
 
   UIContextMenuActionProvider actionProvider =
