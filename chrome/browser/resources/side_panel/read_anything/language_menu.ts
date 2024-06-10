@@ -344,7 +344,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         if (!window.navigator.onLine) {
           return 'readingModeLanguageMenuNoInternet';
         }
-        return '';
+        // Show a generic error message.
+        return 'languageMenuDownloadFailed';
       case VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION:
         // If we get an allocation error but voices exist for the given
         // language, show an allocation error specific to downloading high

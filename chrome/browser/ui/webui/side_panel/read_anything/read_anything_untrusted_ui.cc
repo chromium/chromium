@@ -134,6 +134,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"allocationError", IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"allocationErrorHighQuality",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"languageMenuDownloadFailed",
+       IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
