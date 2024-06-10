@@ -7,7 +7,9 @@
 
 #include <string>
 
-#include "ios/web/public/webui/web_ui_ios_controller.h"
+#import "base/values.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/web/public/webui/web_ui_ios_controller.h"
 
 namespace web {
 class WebUIIOS;
@@ -20,6 +22,9 @@ class PolicyUI : public web::WebUIIOSController {
   ~PolicyUI() override;
   PolicyUI(const PolicyUI&) = delete;
   PolicyUI& operator=(const PolicyUI&) = delete;
+
+  static bool ShouldLoadTestPage(ChromeBrowserState* browser_state);
+  static base::Value GetSchema(ChromeBrowserState* browser_state);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_POLICY_POLICY_UI_H_

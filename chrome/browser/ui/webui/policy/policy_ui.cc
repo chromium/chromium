@@ -44,6 +44,8 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
+// LINT.IfChange
+
 namespace {
 
 // Returns the operating system information to be displayed on
@@ -309,3 +311,5 @@ base::Value PolicyUI::GetSchema(Profile* profile) {
   }
   return base::Value(std::move(dict));
 }
+
+// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/policy/policy_ui.mm)

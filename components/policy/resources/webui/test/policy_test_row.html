@@ -53,6 +53,12 @@
     }
   }
 
+<if expr="is_android or is_ios">
+    #namespace-cell-heading {
+    display:none
+  }
+</if>
+
   /* Card view for narrow screen / mobile */
   @media only screen and (max-width: 710px) {
     :host {
@@ -102,7 +108,8 @@
     }
   }
 </style>
-<div role="cell" class="name-cell">
+
+<div role="cell" class="name-cell" id="namespace-cell-heading">
   <label>$i18n{testTableNamespace}</label>
   <select class="namespace" value="chrome">
     <option value="chrome">Chrome</option>
