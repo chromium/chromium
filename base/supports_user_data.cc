@@ -4,6 +4,7 @@
 
 #include "base/supports_user_data.h"
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -30,8 +31,10 @@ SupportsUserData::SupportsUserData(SupportsUserData&& rhs) {
 }
 
 SupportsUserData& SupportsUserData::operator=(SupportsUserData&& rhs) {
+  CHECK(!in_clear_);
+  CHECK(!rhs.in_clear_);
   impl_ = std::move(rhs.impl_);
-  in_destructor_ = rhs.in_destructor_;
+  // No need to set `in_clear_` since it must be `false`.
   rhs.impl_ = std::make_unique<Impl>();
   return *this;
 }
@@ -65,8 +68,8 @@ std::unique_ptr<SupportsUserData::Data> SupportsUserData::TakeUserData(
 void SupportsUserData::SetUserData(const void* key,
                                    std::unique_ptr<Data> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!in_destructor_) << "Calling SetUserData() when SupportsUserData is "
-                            "being destroyed is not supported.";
+  CHECK(!in_clear_) << "Calling SetUserData() when SupportsUserData is "
+                       "being cleared or destroyed is not supported.";
   // Avoid null keys; they are too vulnerable to collision.
   DCHECK(key);
   if (data.get()) {
@@ -101,6 +104,8 @@ void SupportsUserData::DetachFromSequence() {
 }
 
 void SupportsUserData::CloneDataFrom(const SupportsUserData& other) {
+  CHECK(!in_clear_);
+  CHECK(!other.in_clear_);
   for (const auto& data_pair : other.impl_->user_data_) {
     auto cloned_data = data_pair.second->Clone();
     if (cloned_data) {
@@ -113,17 +118,28 @@ SupportsUserData::~SupportsUserData() {
   if (!impl_->user_data_.empty()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
-  in_destructor_ = true;
+  CHECK(!in_clear_);
+  in_clear_ = true;
+  // Swapping to a local variable to clear the entries serves two purposes:
+  // - `this` is in a consistent state if `SupportsUserData::Data` instances
+  //   attempt to call back into the `SupportsUserData` during destruction.
+  // - `SupportsUserData::Data` instances cannot reference each other during
+  //   destruction, which is desirable since destruction order of the
+  //   `SupportsUserData::Data` instances is non-deterministic.
   absl::flat_hash_map<const void*, std::unique_ptr<Data>> user_data;
   impl_->user_data_.swap(user_data);
-  // Now this->impl_->user_data_ is empty, and any destructors called
-  // transitively from the destruction of |local_user_data| will see it that
-  // way instead of examining a being-destroyed object.
 }
 
 void SupportsUserData::ClearAllUserData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  impl_->user_data_.clear();
+  // If another clear operation is in progress, that means weird reentrancy of
+  // some sort.
+  CHECK(!in_clear_);
+  base::AutoReset<bool> reset_in_clear(&in_clear_, true);
+  // For similar reasons to the destructor, clear the entries by swapping to a
+  // local.
+  absl::flat_hash_map<const void*, std::unique_ptr<Data>> user_data;
+  impl_->user_data_.swap(user_data);
 }
 
 }  // namespace base

@@ -65,7 +65,7 @@ class BASE_EXPORT SupportsUserData {
  private:
   struct Impl;
   std::unique_ptr<Impl> impl_;
-  bool in_destructor_ = false;
+  bool in_clear_ = false;
   // Guards usage of |impl_|
   SEQUENCE_CHECKER(sequence_checker_);
 };
