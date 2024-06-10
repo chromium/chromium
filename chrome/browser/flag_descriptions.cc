@@ -6828,6 +6828,10 @@ const char kFuseBoxDebugDescription[] =
 const char kGameDashboard[] = "Game Dashboard";
 const char kGameDashboardDescription[] = "Enables the Game Dashboard.";
 
+const char kGameDashboardGamePWAs[] = "Game Dashboard Game PWAs";
+const char kGameDashboardGamePWAsDescription[] =
+    "Enables Game Dashboard for an additional set of game PWAs.";
+
 const char kGlanceablesV2Name[] = "Glanceables";
 const char kGlanceablesV2Description[] =
     "Enables Glanceables on the Calendar surface.";

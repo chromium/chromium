@@ -1318,6 +1318,11 @@ BASE_FEATURE(kGaiaRecordAccountCreation,
 // Enables the Game Dashboard.
 BASE_FEATURE(kGameDashboard, "GameDashboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Game Dashboard for additional PWA games.
+BASE_FEATURE(kGameDashboardGamePWAs,
+             "GameDashboardGamePWAs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Game Dashboard's Record Game feature. This flag is to be enabled
 // by the feature management module.
 BASE_FEATURE(kFeatureManagementGameDashboardRecordGame,
@@ -4048,6 +4053,10 @@ bool IsLockScreenHideSensitiveNotificationsSupported() {
 
 bool IsGameDashboardEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboard);
+}
+
+bool IsGameDashboardGamePWAsEnabled() {
+  return base::FeatureList::IsEnabled(kGameDashboardGamePWAs);
 }
 
 bool IsLockScreenInlineReplyEnabled() {

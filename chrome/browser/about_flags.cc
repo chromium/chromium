@@ -8192,6 +8192,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGameDashboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGameDashboard)},
 
+    {"game-dashboard-game-pwas", flag_descriptions::kGameDashboardGamePWAs,
+     flag_descriptions::kGameDashboardGamePWAsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kGameDashboardGamePWAs)},
+
     {"gesture-properties-dbus-service",
      flag_descriptions::kEnableGesturePropertiesDBusServiceName,
      flag_descriptions::kEnableGesturePropertiesDBusServiceDescription, kOsCrOS,

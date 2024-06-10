@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
@@ -50,6 +51,27 @@ static const std::array<std::string, 7> kGameAppIdAllowList{
     "ojjlibnpojmhhabohpkclejfdblglkpj", "hhkmajjdndhdnkbmomodobajdjngeejb",
     "gihmggjjlnjaldngedmnegjmhccccahg", "lbefcdhjbnilmnokeflglbaiaebadckd",
     "bifaabbnnccaenolhjngemgmegdjflkg"};
+
+// List of additional game PWA app IDs that are being tested.
+// TODO(b/343400145): Move these PWA app IDs into `kGameAppIdAllowList` once
+// they have been fully evaluated and the `game-dashboard-game-pwas` flag is
+// removed.
+static const std::array<std::string, 13> kPWAGameAppIdAllowList{
+    extension_misc::kAmazonLunaAppIdCA,   extension_misc::kAmazonLunaAppIdDE,
+    extension_misc::kAmazonLunaAppIdES,   extension_misc::kAmazonLunaAppIdFR,
+    extension_misc::kAmazonLunaAppIdIT,   extension_misc::kAmazonLunaAppIdUK,
+    extension_misc::kAmazonLunaAppIdUS,   extension_misc::kBoosteroidAppId,
+    extension_misc::kCoolMathGamesAppId,  extension_misc::kNowGGAppIdUK,
+    extension_misc::kNowGGAppIdUS,        extension_misc::kPokiAppId,
+    extension_misc::kXboxCloudGamingAppId};
+
+// Checks whether the given `app_id` is allow listed to show the Game
+// Dashboard button.
+bool IsAppIdAllowListed(const std::string& app_id) {
+  return base::Contains(kGameAppIdAllowList, app_id) ||
+         (features::IsGameDashboardGamePWAsEnabled() &&
+          base::Contains(kPWAGameAppIdAllowList, app_id));
+}
 }  // namespace
 
 // static
@@ -319,7 +341,7 @@ void GameDashboardController::MaybeCreateGameDashboardContext(
 void GameDashboardController::GetWindowGameState(aura::Window* window) {
   if (const auto* app_id = window->GetProperty(kAppIDKey); !app_id) {
     RefreshWindowTracking(window, WindowGameState::kNotYetKnown);
-  } else if (base::Contains(kGameAppIdAllowList, *app_id)) {
+  } else if (IsAppIdAllowListed(*app_id)) {
     RefreshWindowTracking(window, WindowGameState::kGame);
   } else if (IsArcWindow(window)) {
     // For ARC apps, the "app_id" is equivalent to its package name.

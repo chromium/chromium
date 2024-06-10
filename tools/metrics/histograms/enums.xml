@@ -18989,6 +18989,7 @@ from previous Chrome versions.
   <int value="-610319049"
       label="TrustedVaultFrequentDegradedRecoverabilityPolling:disabled"/>
   <int value="-609747087" label="CanvasOopRasterization:enabled"/>
+  <int value="-609590213" label="GameDashboardGamePWAs:disabled"/>
   <int value="-609034895" label="QuickActionSearchWidgetAndroid:enabled"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
   <int value="-608691289" label="EnableHeatmapPalmDetection:enabled"/>
@@ -22648,6 +22649,7 @@ from previous Chrome versions.
   <int value="979915681" label="LocalPrinterObserving:disabled"/>
   <int value="980396200" label="enable-new-korean-ime"/>
   <int value="980917863" label="LacrosExtensionPrinting:enabled"/>
+  <int value="981099951" label="GameDashboardGamePWAs:enabled"/>
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>

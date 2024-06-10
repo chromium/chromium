@@ -369,6 +369,47 @@ inline constexpr char kSigninProfileTestExtensionId[] =
 inline constexpr char kGuestModeTestExtensionId[] =
     "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
+// The extension id of the Amazon Luna .ca Canada PWA.
+inline constexpr char kAmazonLunaAppIdCA[] = "agmpcdnpkedhhjldepagpgebdindblfd";
+
+// The extension id of the Amazon Luna .de Germany PWA.
+inline constexpr char kAmazonLunaAppIdDE[] = "lhedecbjcehgjijkmihhhfmdicbkkgkm";
+
+// The extension id of the Amazon Luna .es Spain PWA.
+inline constexpr char kAmazonLunaAppIdES[] = "befdkfemegjbohkncpbchjcgndhgajfg";
+
+// The extension id of the Amazon Luna .fr France PWA.
+inline constexpr char kAmazonLunaAppIdFR[] = "khklcoifabacgdieoekhmfcilgfmdmbh";
+
+// The extension id of the Amazon Luna .it Italy PWA.
+inline constexpr char kAmazonLunaAppIdIT[] = "agcdabkknemgfgbjdpckaehhncgkfcdi";
+
+// The extension id of the Amazon Luna .co.uk UK PWA.
+inline constexpr char kAmazonLunaAppIdUK[] = "aolalpmkbpdlpjhmhhmcobipjkhlimkj";
+
+// The extension id of the Amazon Luna .com US PWA.
+inline constexpr char kAmazonLunaAppIdUS[] = "mdjpfbokiopdhidmalnpnmekjbajopld";
+
+// The extension id of the Boosteroid PWA.
+inline constexpr char kBoosteroidAppId[] = "ncjnbebeamfkkddkofiijnlpkcnobgin";
+
+// The extension id of the Cool Math Games PWA.
+inline constexpr char kCoolMathGamesAppId[] =
+    "moflhbhdponafajiefoaamnkbhpigdoc";
+
+// The extension id of the Now.gg UK PWA.
+inline constexpr char kNowGGAppIdUK[] = "nphngfagcmpkdicidafibmfcijfighif";
+
+// The extension id of the Now.gg US PWA.
+inline constexpr char kNowGGAppIdUS[] = "dgfmnbibgdaghllenpkjalbnljbffabj";
+
+// The extension id of the Poki PWA.
+inline constexpr char kPokiAppId[] = "nccldcgjjeeglpgcgebibmhmkakanigi";
+
+// The extension id of the Xbox Cloud Gaming PWA.
+inline constexpr char kXboxCloudGamingAppId[] =
+    "chcecgcbjkilfgeccdhoeaillkophnhg";
+
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.

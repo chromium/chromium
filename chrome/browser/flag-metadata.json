@@ -4843,6 +4843,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "game-dashboard-game-pwas",
+    "owners": [
+      "gdomergue@google.com",
+      "phshah@chromium.org",
+      "arc-gaming@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "gate-nv12-gmb-video-frames-on-hw-support",
     "owners": [ "blundell@chromium.org", "chrome-gpu-team@google.com" ],
     "expiry_milestone": 130
