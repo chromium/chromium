@@ -27,6 +27,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/url_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
@@ -36,6 +38,9 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
+
+using signin::ConsentLevel;
+using signin::PrimaryAccountChangeEvent;
 
 namespace extensions {
 
@@ -85,8 +90,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
   // fire.
   if (!identity_manager_->AreRefreshTokensLoaded())
     return;
-  std::vector<CoreAccountInfo> accounts =
-      identity_manager_->GetAccountsWithRefreshTokens();
+  auto accounts = GetAccountsWithRefreshTokensForExtensions();
   for (const ExtensionId& extension_id : extension_prefs_->GetExtensions()) {
     std::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
@@ -120,6 +124,10 @@ bool IdentityAPI::AreExtensionsRestrictedToPrimaryAccount() {
          !AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_);
 }
 
+bool IdentityAPI::HasAccessToChromeAccounts() const {
+  return identity_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
+}
+
 IdentityAPI::IdentityAPI(Profile* profile,
                          signin::IdentityManager* identity_manager,
                          ExtensionPrefs* extension_prefs,
@@ -132,6 +140,35 @@ IdentityAPI::IdentityAPI(Profile* profile,
   EraseStaleGaiaIdsForAllExtensions();
 }
 
+std::vector<CoreAccountInfo>
+IdentityAPI::GetAccountsWithRefreshTokensForExtensions() {
+  if (!HasAccessToChromeAccounts()) {
+    return {};
+  }
+  return identity_manager_->GetAccountsWithRefreshTokens();
+}
+
+void IdentityAPI::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      for (auto& account : GetAccountsWithRefreshTokensForExtensions()) {
+        OnRefreshTokenUpdatedForAccount(account);
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      EraseStaleGaiaIdsForAllExtensions();
+      base::flat_set<std::string> tracked_accounts;
+      std::swap(tracked_accounts, accounts_known_to_extensions_);
+      for (auto& account_id : tracked_accounts) {
+        FireOnAccountSignInChanged(account_id, /*is_signed_in=*/false);
+      }
+      break;
+  }
+}
+
 void IdentityAPI::OnRefreshTokensLoaded() {
   EraseStaleGaiaIdsForAllExtensions();
 }
@@ -141,9 +178,10 @@ void IdentityAPI::OnRefreshTokenUpdatedForAccount(
   // Refresh tokens are sometimes made available in contexts where
   // AccountTrackerService is not tracking the account in question. Bail out in
   // these cases.
-  if (account_info.gaia.empty())
+  if (!HasAccessToChromeAccounts() || account_info.gaia.empty()) {
     return;
-
+  }
+  accounts_known_to_extensions_.insert(account_info.gaia);
   FireOnAccountSignInChanged(account_info.gaia, true);
 }
 
@@ -151,12 +189,19 @@ void IdentityAPI::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
   DCHECK(!account_info.gaia.empty());
   EraseStaleGaiaIdsForAllExtensions();
+
+  auto it = accounts_known_to_extensions_.find(account_info.gaia);
+  if (it == accounts_known_to_extensions_.end()) {
+    // Account unknown to Extensions.
+    return;
+  }
+  accounts_known_to_extensions_.erase(it);
   FireOnAccountSignInChanged(account_info.gaia, false);
 }
 
 void IdentityAPI::FireOnAccountSignInChanged(const std::string& gaia_id,
                                              bool is_signed_in) {
-  DCHECK(!gaia_id.empty());
+  CHECK(!gaia_id.empty());
   api::identity::AccountInfo api_account_info;
   api_account_info.id = gaia_id;
 

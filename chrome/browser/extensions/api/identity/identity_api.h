@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -94,7 +95,17 @@ class IdentityAPI : public BrowserContextKeyedAPI,
               ExtensionPrefs* extension_prefs,
               EventRouter* event_router);
 
+  // Returns true if extensions have access to Chrome accounts.
+  // Access requires Chrome to be signed in.
+  bool HasAccessToChromeAccounts() const;
+  // Returns accounts that extension have access to.
+  // This returns empty if Chrome is not signed in. Otherwise, returns all
+  // accounts in the `identity_manager_`.
+  std::vector<CoreAccountInfo> GetAccountsWithRefreshTokensForExtensions();
+
   // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokensLoaded() override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
@@ -114,6 +125,8 @@ class IdentityAPI : public BrowserContextKeyedAPI,
 
   IdentityMintRequestQueue mint_queue_;
   IdentityTokenCache token_cache_;
+  // Contains Gaia Id of accounts known to extensions.
+  base::flat_set<std::string> accounts_known_to_extensions_;
 
   OnSignInChangedCallback on_signin_changed_callback_for_testing_;
 
