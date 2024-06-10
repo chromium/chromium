@@ -25,7 +25,14 @@ class CategoriesSelectionScreen : public BaseScreen {
  public:
   using TView = CategoriesSelectionScreenView;
 
-  enum class Result { kNext, kSkip, kError, kDataMalformed, kNotApplicable };
+  enum class Result {
+    kNext,
+    kSkip,
+    kError,
+    kDataMalformed,
+    kTimeout,
+    kNotApplicable
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -64,12 +71,17 @@ class CategoriesSelectionScreen : public BaseScreen {
                           AppsFetchingResult result);
 
   void ShowOverviewStep();
+  // TODO(b/345694992) : Extend browser test to test timeout logic.
+  void ExitScreenTimeout();
 
   // Called when the user selects categories on the screen.
   void OnSelect(base::Value::List selected_use_cases_ids);
 
   std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
   base::TimeDelta delay_overview_step_ = base::Seconds(2);
+
+  std::unique_ptr<base::OneShotTimer> timeout_overview_timer_;
+  base::TimeDelta delay_exit_timeout_ = base::Minutes(1);
 
   // The time when loading UI step started.
   base::TimeTicks loading_start_time_;

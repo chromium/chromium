@@ -86,6 +86,8 @@ std::string CategoriesSelectionScreen::GetResultString(Result result) {
       return "Error";
     case Result::kDataMalformed:
       return "DataMalformed";
+    case Result::kTimeout:
+      return "Timeout";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -132,6 +134,10 @@ void CategoriesSelectionScreen::ShowImpl() {
     return;
   }
   view_->Show();
+
+  timeout_overview_timer_ = std::make_unique<base::OneShotTimer>();
+  timeout_overview_timer_->Start(FROM_HERE, delay_exit_timeout_, this,
+                                 &CategoriesSelectionScreen::ExitScreenTimeout);
 
   loading_start_time_ = base::TimeTicks::Now();
 
@@ -199,6 +205,10 @@ void CategoriesSelectionScreen::OnResponseReceived(
   }
 }
 
+void CategoriesSelectionScreen::ExitScreenTimeout() {
+  exit_callback_.Run(Result::kTimeout);
+}
+
 void CategoriesSelectionScreen::OnSelect(
     base::Value::List selected_use_cases_ids) {
   int selected_use_cases_count =
@@ -230,9 +240,13 @@ void CategoriesSelectionScreen::ShowOverviewStep() {
 }
 
 void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
+  if (is_hidden()) {
+    return;
+  }
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionLoaded) {
+    timeout_overview_timer_.reset();
     delay_overview_timer_ = std::make_unique<base::OneShotTimer>();
     delay_overview_timer_->Start(FROM_HERE, delay_overview_step_, this,
                                  &CategoriesSelectionScreen::ShowOverviewStep);

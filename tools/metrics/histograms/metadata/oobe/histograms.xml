@@ -250,6 +250,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Categories-selection.Error"/>
   <variant name="Categories-selection.Next"/>
   <variant name="Categories-selection.Skip"/>
+  <variant name="Categories-selection.Timeout"/>
   <variant name="Choobe.Selected"/>
   <variant name="Choobe.Skipped"/>
   <variant name="Connect.EnableDebugging"/>
@@ -375,6 +376,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Personalized-apps.Error"/>
   <variant name="Personalized-apps.Next"/>
   <variant name="Personalized-apps.Skip"/>
+  <variant name="Personalized-apps.Timeout"/>
   <variant name="Pin-setup.Done"/>
   <variant name="Pin-setup.Skipped"/>
   <variant name="Pin-setup.TimedOut"/>

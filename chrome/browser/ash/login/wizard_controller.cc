@@ -1887,6 +1887,7 @@ void WizardController::OnCategoriesSelectionScreenExit(
     case CategoriesSelectionScreen::Result::kError:
     case CategoriesSelectionScreen::Result::kNotApplicable:
     case CategoriesSelectionScreen::Result::kDataMalformed:
+    case CategoriesSelectionScreen::Result::kTimeout:
       ShowRecommendAppsScreen();
       break;
     case CategoriesSelectionScreen::Result::kNext:
@@ -1910,6 +1911,7 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
     case PersonalizedRecommendAppsScreen::Result::kSkip:
     case PersonalizedRecommendAppsScreen::Result::kDataMalformed:
     case PersonalizedRecommendAppsScreen::Result::kError:
+    case PersonalizedRecommendAppsScreen::Result::kTimeout:
       if (features::IsOobeAiIntroEnabled()) {
         ShowAiIntroScreen();
       } else if (features::IsOobeTunaEnabled()) {

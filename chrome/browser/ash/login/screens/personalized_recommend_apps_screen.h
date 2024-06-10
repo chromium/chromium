@@ -32,6 +32,7 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
     kBack,
     kDataMalformed,
     kError,
+    kTimeout,
     kNotApplicable
   };
 
@@ -80,6 +81,8 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
   void OnInstall(base::Value::List selected_apps_package_ids);
 
   void ShowOverviewStep();
+  // TODO(b/345694992) : Extend browser test to test timeout logic.
+  void ExitScreenTimeout();
   void SetAppsAndUseCasesData(base::Value::List apps_with_use_cases_list);
 
   std::unique_ptr<base::OneShotTimer> delay_set_apps_timer_;
@@ -97,6 +100,9 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
   // This map is used to store order for each app, so we can record it in UMA
   // for the apps selected for installation.
   std::unordered_map<std::string, int> app_package_id_to_order_;
+
+  std::unique_ptr<base::OneShotTimer> timeout_overview_timer_;
+  base::TimeDelta delay_exit_timeout_ = base::Minutes(1);
 
   base::WeakPtr<PersonalizedRecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;

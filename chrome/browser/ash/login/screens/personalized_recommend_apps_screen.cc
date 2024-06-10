@@ -124,6 +124,8 @@ std::string PersonalizedRecommendAppsScreen::GetResultString(Result result) {
       return "DataMalformed";
     case Result::kError:
       return "Error";
+    case Result::kTimeout:
+      return "Timeout";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -188,6 +190,11 @@ void PersonalizedRecommendAppsScreen::ShowImpl() {
   }
 
   view_->Show();
+
+  timeout_overview_timer_ = std::make_unique<base::OneShotTimer>();
+  timeout_overview_timer_->Start(
+      FROM_HERE, delay_exit_timeout_, this,
+      &PersonalizedRecommendAppsScreen::ExitScreenTimeout);
 
   loading_start_time_ = base::TimeTicks::Now();
 
@@ -469,6 +476,10 @@ void PersonalizedRecommendAppsScreen::OnInstall(
   }
 }
 
+void PersonalizedRecommendAppsScreen::ExitScreenTimeout() {
+  exit_callback_.Run(Result::kTimeout);
+}
+
 void PersonalizedRecommendAppsScreen::ShowOverviewStep() {
   RecordUmaLoadingTime(base::TimeTicks::Now() - loading_start_time_);
   if (view_) {
@@ -485,9 +496,13 @@ void PersonalizedRecommendAppsScreen::SetAppsAndUseCasesData(
 
 void PersonalizedRecommendAppsScreen::OnUserAction(
     const base::Value::List& args) {
+  if (is_hidden()) {
+    return;
+  }
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionLoaded) {
+    timeout_overview_timer_.reset();
     delay_overview_timer_ = std::make_unique<base::OneShotTimer>();
     delay_overview_timer_->Start(
         FROM_HERE, delay_overview_step_, this,
