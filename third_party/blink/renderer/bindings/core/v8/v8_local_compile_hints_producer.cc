@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 
+#include <utility>
+
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
@@ -110,7 +114,7 @@ V8LocalCompileHintsProducer::CreateCompileHintsCachedDataForScript(
   size_t hints_count = compile_hints.size();
   constexpr size_t prefix_size = sizeof(uint64_t);
   size_t data_size = hints_count * sizeof(int) + prefix_size;
-  std::unique_ptr<uint8_t[]> data(new uint8_t[data_size]);
+  auto data = base::HeapArray<uint8_t>::Uninit(data_size);
 
   // Add the prefix in a little-endian manner.
   size_t ix = 0;
@@ -130,7 +134,7 @@ V8LocalCompileHintsProducer::CreateCompileHintsCachedDataForScript(
   DCHECK_EQ(data_size, ix);
 
   return new v8::ScriptCompiler::CachedData(
-      data.release(), static_cast<int>(data_size),
+      std::move(data).leak().data(), static_cast<int>(data_size),
       v8::ScriptCompiler::CachedData::BufferOwned);
 }
 
