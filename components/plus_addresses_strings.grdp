@@ -63,6 +63,9 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS" desc="Ok button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
       Sit
     </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
+      Loading ...
+    </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
       Refreshing ...
     </message>

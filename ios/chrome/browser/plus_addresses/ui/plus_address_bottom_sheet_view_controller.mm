@@ -180,7 +180,8 @@ UIImage* PlusAddressesLogo() {
   if (self) {
     _delegate = delegate;
     _browserCoordinatorHandler = browserCoordinatorHandler;
-    _reservedPlusAddress = @"";
+    _reservedPlusAddress = l10n_util::GetNSString(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS);
     _plusAddressUIRedesignEnabled = base::FeatureList::IsEnabled(
         plus_addresses::features::kPlusAddressUIRedesign);
     _refreshCount = 0;
