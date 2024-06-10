@@ -472,7 +472,6 @@ void CreditCardFormEventLogger::Log(FormEvent event,
     return ".WithBothServerAndLocalData";
   }();
   for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
-    FormTypeNameForLoggingToStringView(form_type);
     std::string name = base::StrCat(
         {"Autofill.FormEvents.", FormTypeNameForLoggingToStringView(form_type),
          data_suffix});
