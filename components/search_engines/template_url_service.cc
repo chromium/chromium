@@ -777,8 +777,8 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
     // be hidden by an extension or policy and then deleted. Clean up the user
     // prefs then.
     if (prefs_ && (template_url->sync_guid() ==
-                   GetDefaultSearchProviderPrefValue(*prefs_))) {
-      SetDefaultSearchProviderPrefValue(*prefs_, std::string());
+                   GetDefaultSearchProviderGuidFromPrefs(*prefs_))) {
+      SetDefaultSearchProviderGuidToPrefs(*prefs_, std::string());
     }
 
     UMA_HISTOGRAM_ENUMERATION(kDeleteSyncedEngineHistogramName,
@@ -1353,7 +1353,8 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
       // Write the fallback engine's GUID to prefs, which will cause
       // OnDefaultSearchProviderGUIDChanged() to set it as the new
       // user-selected engine.
-      SetDefaultSearchProviderPrefValue(*prefs_, fallback_engine->sync_guid());
+      SetDefaultSearchProviderGuidToPrefs(*prefs_,
+                                          fallback_engine->sync_guid());
     }
   } else {
     // If the default search provider came from a user pref we would have been
@@ -2078,6 +2079,14 @@ void TemplateURLService::Init() {
     pref_change_registrar_.Init(prefs_);
     if (search_engines::IsChoiceScreenFlagEnabled(
             search_engines::ChoicePromo::kAny)) {
+      // We migrate `kSyncedDefaultSearchProviderGUID` to
+      // `kDefaultSearchProviderGUID` if the latter was never set.
+      if (!prefs_->HasPrefPath(prefs::kDefaultSearchProviderGUID)) {
+        prefs_->SetString(
+            prefs::kDefaultSearchProviderGUID,
+            prefs_->GetString(prefs::kSyncedDefaultSearchProviderGUID));
+      }
+
       pref_change_registrar_.Add(
           prefs::kDefaultSearchProviderGUID,
           base::BindRepeating(
@@ -2325,7 +2334,7 @@ void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
   }
 
   if (prefs_ && (synced_turl->sync_guid() ==
-                 GetDefaultSearchProviderPrefValue(*prefs_))) {
+                 GetDefaultSearchProviderGuidFromPrefs(*prefs_))) {
     default_search_manager_.SetUserSelectedDefaultSearchEngine(
         synced_turl->data(), search_engines::ChoiceMadeLocation::kOther);
   }
@@ -2524,8 +2533,8 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
           << "Add() to repair the DSE must never fail.";
     }
     if (default_search_provider_ && prefs_) {
-      SetDefaultSearchProviderPrefValue(*prefs_,
-                                        default_search_provider_->sync_guid());
+      SetDefaultSearchProviderGuidToPrefs(
+          *prefs_, default_search_provider_->sync_guid());
     }
   }
 
@@ -2850,7 +2859,7 @@ void TemplateURLService::MergeInSyncTemplateURL(
         sync_turl->IsBetterThanConflictingEngine(conflicting_built_in_turl)) {
       std::string guid = conflicting_built_in_turl->sync_guid();
       if (conflicting_built_in_turl == default_search_provider_) {
-        bool pref_matched = GetDefaultSearchProviderPrefValue(*prefs_) ==
+        bool pref_matched = GetDefaultSearchProviderGuidFromPrefs(*prefs_) ==
                             default_search_provider_->sync_guid();
         // Update the existing engine in-place.
         Update(default_search_provider_, TemplateURL(sync_turl->data()));
@@ -2860,7 +2869,7 @@ void TemplateURLService::MergeInSyncTemplateURL(
         // a new search engine from Sync which just hasn't been added locally
         // yet, so leave it alone in that case.
         if (pref_matched) {
-          SetDefaultSearchProviderPrefValue(
+          SetDefaultSearchProviderGuidToPrefs(
               *prefs_, default_search_provider_->sync_guid());
         }
 
@@ -2905,7 +2914,7 @@ void TemplateURLService::OnDefaultSearchProviderGUIDChanged() {
   base::AutoReset<DefaultSearchChangeOrigin> change_origin(
       &dsp_change_origin_, DSP_CHANGE_SYNC_PREF);
 
-  std::string new_guid = GetDefaultSearchProviderPrefValue(*prefs_);
+  std::string new_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs_);
   if (new_guid.empty()) {
     default_search_manager_.ClearUserSelectedDefaultSearchEngine();
     return;
@@ -2917,7 +2926,9 @@ void TemplateURLService::OnDefaultSearchProviderGUIDChanged() {
     // `OnDefaultSearchProviderGUIDChanged` if we the search engine wasn't
     // modified.
     search_engines::ChoiceMadeLocation choice_location =
-        GetDefaultSearchProvider()->prepopulate_id() == turl->prepopulate_id()
+        GetDefaultSearchProvider() &&
+                GetDefaultSearchProvider()->prepopulate_id() ==
+                    turl->prepopulate_id()
             ? default_search_manager_
                   .GetChoiceMadeLocationForUserSelectedDefaultSearchEngine()
             : search_engines::ChoiceMadeLocation::kOther;

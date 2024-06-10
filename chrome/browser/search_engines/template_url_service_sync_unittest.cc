@@ -1292,7 +1292,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncedDefaultGUIDArrivesFirst) {
   // the model yet. Ensure that the default has not changed in any way.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, "newdefault");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "newdefault");
 
   ASSERT_EQ(default_search, model()->GetDefaultSearchProvider());
 
@@ -1360,10 +1360,10 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
   // the model yet. Ensure that the default has not changed in any way.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, "newdefault");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "newdefault");
 
   ASSERT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
-  EXPECT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+  EXPECT_EQ("newdefault", GetDefaultSearchProviderGuidFromPrefs(
                               *profile_a()->GetTestingPrefService()));
 
   // Simulate a situation where an ACTION_DELETE on the default arrives before
@@ -1378,7 +1378,7 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"key1"));
   EXPECT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   EXPECT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
-  EXPECT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+  EXPECT_EQ("newdefault", GetDefaultSearchProviderGuidFromPrefs(
                               *profile_a()->GetTestingPrefService()));
 
   // Finally, bring in the expected entry with the right GUID. Ensure that
@@ -1395,7 +1395,7 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
 
   EXPECT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   EXPECT_EQ("newdefault", model()->GetDefaultSearchProvider()->sync_guid());
-  EXPECT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+  EXPECT_EQ("newdefault", GetDefaultSearchProviderGuidFromPrefs(
                               *profile_a()->GetTestingPrefService()));
   EXPECT_THAT(model()->GetTemplateURLForGUID("guid1"), IsNull());
 }
@@ -1438,10 +1438,10 @@ TEST_F(TemplateURLServiceSyncTest,
   // the model yet. Ensure that the default has not changed in any way.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_THAT(prefs, NotNull());
-  SetDefaultSearchProviderPrefValue(*prefs, "newdefault");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "newdefault");
 
   ASSERT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
-  ASSERT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+  ASSERT_EQ("newdefault", GetDefaultSearchProviderGuidFromPrefs(
                               *profile_a()->GetTestingPrefService()));
 
   // Simulate a situation where an ACTION_DELETE on the default arrives before
@@ -1456,7 +1456,7 @@ TEST_F(TemplateURLServiceSyncTest,
   ASSERT_TRUE(model()->GetTemplateURLForKeyword(u"key1"));
   ASSERT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   ASSERT_EQ("guid1", model()->GetDefaultSearchProvider()->sync_guid());
-  ASSERT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+  ASSERT_EQ("newdefault", GetDefaultSearchProviderGuidFromPrefs(
                               *profile_a()->GetTestingPrefService()));
 
   // Update the default search engine before a new search engine arrives.
@@ -1479,7 +1479,7 @@ TEST_F(TemplateURLServiceSyncTest,
 
   EXPECT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   EXPECT_EQ("newdefault", model()->GetDefaultSearchProvider()->sync_guid());
-  EXPECT_EQ("newdefault", GetDefaultSearchProviderPrefValue(
+  EXPECT_EQ("newdefault", GetDefaultSearchProviderGuidFromPrefs(
                               *profile_a()->GetTestingPrefService()));
   EXPECT_THAT(model()->GetTemplateURLForGUID("guid1"), NotNull());
 }
@@ -1500,7 +1500,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncedDefaultArrivesAfterStartup) {
   // change our default since we're not quite syncing yet.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, "guid2");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "guid2");
 
   EXPECT_EQ(default_search, model()->GetDefaultSearchProvider());
 
@@ -1537,7 +1537,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncedDefaultAlreadySetOnStartup) {
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
   // Set kSyncedDefaultSearchProviderGUID to the current default.
-  SetDefaultSearchProviderPrefValue(*prefs, kGUID);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, kGUID);
 
   EXPECT_EQ(default_search, model()->GetDefaultSearchProvider());
 
@@ -1589,7 +1589,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncWithManagedDefaultSearch) {
   // ensure that the DSP remains managed.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, "newdefault");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "newdefault");
 
   EXPECT_EQ(dsp_turl, model()->GetDefaultSearchProvider());
   EXPECT_TRUE(model()->is_default_search_managed());
@@ -1654,7 +1654,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncWithExtensionDefaultSearch) {
   // ensure that the DSP remains extension controlled.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, "newdefault");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "newdefault");
 
   EXPECT_EQ(dsp_turl, model()->GetDefaultSearchProvider());
   EXPECT_TRUE(model()->IsExtensionControlledDefaultSearch());
@@ -1696,7 +1696,7 @@ TEST_F(TemplateURLServiceSyncTest, OverrideSyncPrefWithExtensionDefaultSearch) {
   // will not overwrite the GUID and won't trigger a recursion call.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, "remote_default_guid");
+  SetDefaultSearchProviderGuidToPrefs(*prefs, "remote_default_guid");
 
   // The search engine is still the same.
   EXPECT_EQ(ext_dse, model()->GetDefaultSearchProvider());
@@ -2333,9 +2333,9 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
   EXPECT_EQ(u"new_kw", result_turl->keyword());
   // Also make sure that prefs::kSyncedDefaultSearchProviderGUID was updated to
   // point to the new GUID.
-  EXPECT_EQ(
-      GetDefaultSearchProviderPrefValue(*profile_a()->GetTestingPrefService()),
-      "different_guid");
+  EXPECT_EQ(GetDefaultSearchProviderGuidFromPrefs(
+                *profile_a()->GetTestingPrefService()),
+            "different_guid");
 }
 
 // The following tests check the case where, when turning on Sync, we get the
@@ -2373,7 +2373,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
   // Step 1: Change the default search engine pref.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, kAddedGuid);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, kAddedGuid);
 
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
@@ -2444,7 +2444,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
   // Step 1: Change the default search engine pref.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, kAddedGuid);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, kAddedGuid);
 
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
@@ -2544,7 +2544,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
   // Step 3: Change the default search engine pref.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, kAddedGuid);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, kAddedGuid);
 
   // Verify that the keyword change to the previous default engine was applied,
   // and that the newly-added engine is now the default.
@@ -2615,7 +2615,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
   // Step 3: Change the default search engine pref.
   auto* prefs = profile_a()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, kAddedGuid);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, kAddedGuid);
 
   // Verify that the keyword change to the previous default engine was applied,
   // and that the newly-added engine is now the default.
@@ -2739,7 +2739,7 @@ TEST_F(TemplateURLServiceSyncTest, GUIDUpdatedOnDefaultSearchChange) {
   model()->SetUserSelectedDefaultSearchProvider(
       model()->GetTemplateURLForGUID(kNewGUID));
 
-  EXPECT_EQ(kNewGUID, GetDefaultSearchProviderPrefValue(
+  EXPECT_EQ(kNewGUID, GetDefaultSearchProviderGuidFromPrefs(
                           *profile_a()->GetTestingPrefService()));
 }
 

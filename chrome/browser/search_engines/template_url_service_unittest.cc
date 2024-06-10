@@ -1273,7 +1273,7 @@ TEST_P(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
   // there is sync activity.
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(GetDefaultSearchProviderPrefValue(*prefs).empty());
+  EXPECT_TRUE(GetDefaultSearchProviderGuidFromPrefs(*prefs).empty());
 
   const TemplateURL* initial_dse = model()->GetDefaultSearchProvider();
   ASSERT_TRUE(initial_dse);
@@ -1288,14 +1288,15 @@ TEST_P(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
   EXPECT_NE(initial_dse, user_dse);
 
   // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   model()->RepairPrepopulatedSearchEngines();
 
   // Check that initial search engine is returned as default after repair.
   ASSERT_EQ(initial_dse, model()->GetDefaultSearchProvider());
   // Check that initial_dse guid is stored in kSyncedDefaultSearchProviderGUID.
-  const std::string dse_guid = GetDefaultSearchProviderPrefValue(*prefs);
+  const std::string dse_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs);
   EXPECT_EQ(initial_dse->sync_guid(), dse_guid);
   EXPECT_EQ(initial_dse->keyword(),
             model()->GetTemplateURLForGUID(dse_guid)->keyword());
@@ -1312,7 +1313,7 @@ TEST_P(TemplateURLServiceTest,
   // there is sync activity.
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(GetDefaultSearchProviderPrefValue(*prefs).empty());
+  EXPECT_TRUE(GetDefaultSearchProviderGuidFromPrefs(*prefs).empty());
 
   TemplateURL* overridden_engine =
       model()->GetTemplateURLForKeyword(u"override_keyword");
@@ -1328,7 +1329,8 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
 
   // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   model()->RepairPrepopulatedSearchEngines();
 
@@ -1336,7 +1338,7 @@ TEST_P(TemplateURLServiceTest,
   ASSERT_EQ(overridden_engine, model()->GetDefaultSearchProvider());
   // Check that overridden_engine guid is stored in
   // kSyncedDefaultSearchProviderGUID.
-  const std::string dse_guid = GetDefaultSearchProviderPrefValue(*prefs);
+  const std::string dse_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs);
   EXPECT_EQ(overridden_engine->sync_guid(), dse_guid);
   EXPECT_EQ(overridden_engine->keyword(),
             model()->GetTemplateURLForGUID(dse_guid)->keyword());
@@ -1352,7 +1354,7 @@ TEST_P(TemplateURLServiceTest,
   // there is sync activity.
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(GetDefaultSearchProviderPrefValue(*prefs).empty());
+  EXPECT_TRUE(GetDefaultSearchProviderGuidFromPrefs(*prefs).empty());
 
   // Get initial DSE to check its guid later.
   const TemplateURL* initial_dse = model()->GetDefaultSearchProvider();
@@ -1365,7 +1367,8 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
 
   // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   // Add extension controlled default search engine.
   TemplateURL* extension_dse =
@@ -1373,14 +1376,15 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
   // Check that user DSE guid is still stored in
   // kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   model()->RepairPrepopulatedSearchEngines();
   // Check that extension engine is still default but sync guid is updated to
   // initial dse guid.
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
   EXPECT_EQ(initial_dse->sync_guid(),
-            GetDefaultSearchProviderPrefValue(*prefs));
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 }
 
 TEST_P(TemplateURLServiceTest, RepairStarterPackEngines) {
@@ -1435,13 +1439,13 @@ TEST_P(TemplateURLServiceTest, SetDefaultSearchProviderPref) {
   test_util()->VerifyLoad();
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, pref_value);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, pref_value);
 
   // Test that the correct preference is set when
-  // `SetDefaultSearchProviderPrefValue` is called.
+  // `SetDefaultSearchProviderGuidToPrefs` is called.
   if (IsSearchEngineChoiceEnabled()) {
     EXPECT_EQ(pref_value, prefs->GetString(prefs::kDefaultSearchProviderGUID));
-    EXPECT_EQ(std::string(),
+    EXPECT_EQ(pref_value,
               prefs->GetString(prefs::kSyncedDefaultSearchProviderGUID));
   } else {
     EXPECT_EQ(std::string(),
@@ -1456,34 +1460,22 @@ TEST_P(TemplateURLServiceTest, GetDefaultSearchProviderPref) {
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
 
-  const std::string sync_pref_value = "sync";
   EXPECT_EQ(std::string(), prefs->GetString(prefs::kDefaultSearchProviderGUID));
   EXPECT_EQ(std::string(),
             prefs->GetString(prefs::kSyncedDefaultSearchProviderGUID));
 
-  if (IsSearchEngineChoiceEnabled()) {
-    const std::string no_sync_pref_value = "no_sync";
-    // Test that `GetDefaultSearchProviderPrefValue` will set the value of
-    // `kDefaultSearchProviderGUID` when it's empty with the value in
-    // `kSyncedDefaultSearchProviderGUID` and return that value.
-    prefs->SetString(prefs::kSyncedDefaultSearchProviderGUID, sync_pref_value);
-    EXPECT_EQ(sync_pref_value, GetDefaultSearchProviderPrefValue(*prefs));
-    EXPECT_EQ(sync_pref_value,
-              prefs->GetString(prefs::kDefaultSearchProviderGUID));
+  const std::string sync_pref_value = "sync";
+  const std::string no_sync_pref_value = "no_sync";
 
-    // Test that `GetDefaultSearchProviderPrefValue` will not change the value
-    // of `kDefaultSearchProviderGUID` if the pref's value is already set.
-    prefs->SetString(prefs::kDefaultSearchProviderGUID, no_sync_pref_value);
-    EXPECT_EQ(no_sync_pref_value, GetDefaultSearchProviderPrefValue(*prefs));
-    EXPECT_EQ(no_sync_pref_value,
-              prefs->GetString(prefs::kDefaultSearchProviderGUID));
-  } else {
-    // Test that we get the correct value for
-    // `kSyncedDefaultSearchProviderGUID`.
-    EXPECT_EQ(std::string(), GetDefaultSearchProviderPrefValue(*prefs));
-    prefs->SetString(prefs::kSyncedDefaultSearchProviderGUID, sync_pref_value);
-    EXPECT_EQ(sync_pref_value, GetDefaultSearchProviderPrefValue(*prefs));
-  }
+  prefs->SetString(prefs::kSyncedDefaultSearchProviderGUID, sync_pref_value);
+  prefs->SetString(prefs::kDefaultSearchProviderGUID, no_sync_pref_value);
+
+  // Test that `GetDefaultSearchProviderGuidFromPrefs` will return the value
+  // of `kDefaultSearchProviderGUID` when the `kSearchEngineChoiceTrigger`
+  // feature is enabled or `kSyncedDefaultSearchProviderGUID` otherwise.
+  EXPECT_EQ(
+      GetDefaultSearchProviderGuidFromPrefs(*prefs),
+      IsSearchEngineChoiceEnabled() ? no_sync_pref_value : sync_pref_value);
 }
 
 TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
@@ -2030,7 +2022,7 @@ TEST_P(TemplateURLServiceTest, SetDefaultExtensionEngineAndRemoveUserDSE) {
   EXPECT_EQ(ext_dse_ptr, model()->GetDefaultSearchProvider());
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  std::string dse_guid = GetDefaultSearchProviderPrefValue(*prefs);
+  std::string dse_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs);
   EXPECT_EQ(user_dse->sync_guid(), dse_guid);
 
   model()->Remove(user_dse);
@@ -2039,7 +2031,7 @@ TEST_P(TemplateURLServiceTest, SetDefaultExtensionEngineAndRemoveUserDSE) {
   test_util()->RemoveExtensionControlledTURL("extension_id");
   // The DSE is set to the fallback search engine.
   EXPECT_TRUE(model()->GetDefaultSearchProvider());
-  EXPECT_NE(dse_guid, GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_NE(dse_guid, GetDefaultSearchProviderGuidFromPrefs(*prefs));
 }
 
 TEST_P(TemplateURLServiceTest, DefaultExtensionEnginePersist) {

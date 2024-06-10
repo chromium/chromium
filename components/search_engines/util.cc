@@ -432,34 +432,19 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   return actions;
 }
 
-const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    const auto& default_search_provider =
-        prefs.GetString(prefs::kDefaultSearchProviderGUID);
-
-    if (!default_search_provider.empty()) {
-      return default_search_provider;
-    }
-
-    const auto& synced_default_search_provider =
-        prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
-    if (!synced_default_search_provider.empty()) {
-      prefs.SetString(prefs::kDefaultSearchProviderGUID,
-                      synced_default_search_provider);
-    }
-    return synced_default_search_provider;
-  }
-  return prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
+const std::string& GetDefaultSearchProviderGuidFromPrefs(PrefService& prefs) {
+  return search_engines::IsChoiceScreenFlagEnabled(
+             search_engines::ChoicePromo::kAny)
+             ? prefs.GetString(prefs::kDefaultSearchProviderGUID)
+             : prefs.GetString(prefs::kSyncedDefaultSearchProviderGUID);
 }
 
-void SetDefaultSearchProviderPrefValue(PrefService& prefs,
-                                       const std::string& value) {
+void SetDefaultSearchProviderGuidToPrefs(PrefService& prefs,
+                                         const std::string& value) {
+  prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
     prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
-  } else {
-    prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);
   }
 }
 
