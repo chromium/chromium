@@ -200,9 +200,6 @@ class WTF_EXPORT SegmentedBuffer {
   };
 
  private:
-  // See SegmentedBuffer::Data().
-  void MergeSegmentsIntoBuffer();
-
   bool GetBytesInternal(void* dest, size_t) const;
   Iterator GetIteratorAtInternal(size_t position) const;
 

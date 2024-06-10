@@ -94,20 +94,6 @@ SegmentedBuffer::Iterator SegmentedBuffer::end() const {
   return Iterator(this);
 }
 
-void SegmentedBuffer::MergeSegmentsIntoBuffer() {
-  if (segments_.size() <= 1) {
-    return;
-  }
-
-  Vector<char> data;
-  data.ReserveInitialCapacity(size_);
-  for (const auto& segment : segments_) {
-    data.AppendVector(segment.data());
-  }
-  segments_.clear();
-  segments_.push_back(Segment(/*start_position=*/0, std::move(data)));
-}
-
 SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
     size_t position) const {
   if (position >= size()) {
