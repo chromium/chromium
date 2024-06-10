@@ -3,68 +3,62 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Basic facillities to handle events from a single automation
+ * @fileoverview Basic facilities to handle events from a single automation
  * node.
  */
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {EventSource} from '../event_source.js';
 import {Output} from '../output/output.js';
 
 const ActionType = chrome.automation.ActionType;
-const AutomationEvent = chrome.automation.AutomationEvent;
-const AutomationNode = chrome.automation.AutomationNode;
-const EventType = chrome.automation.EventType;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+
+type Listener = (evt: AutomationEvent) => void;
 
 export class BaseAutomationHandler {
-  /** @param {?AutomationNode} node */
-  constructor(node) {
-    /** @type {?AutomationNode} */
-    this.node_ = node;
+  private listeners_: Partial<Record<EventType, Listener>> = {};
+  protected node_?: AutomationNode;
 
-    /**
-     * @private {!Object<EventType, function(!AutomationEvent)>}
-     */
-    this.listeners_ = {};
+  /** Controls announcement of non-user-initiated events. */
+  static announceActions = false;
+
+  constructor(node?: AutomationNode) {
+    this.node_ = node;
   }
 
-  /**
-   * Adds an event listener to this handler.
-   * @param {EventType} eventType
-   * @param {!function(!AutomationEvent)} eventCallback
-   * @protected
-   */
-  addListener_(eventType, eventCallback) {
+  /** Adds an event listener to this handler. */
+  protected addListener_(eventType: EventType, eventCallback: Listener): void {
     if (this.listeners_[eventType]) {
       throw 'Listener already added: ' + eventType;
     }
 
     // Note: Keeping this bind lets us keep the addListener_ callsites simpler.
     const listener = this.makeListener_(eventCallback.bind(this));
-    this.node_.addEventListener(eventType, listener, true);
+    this.node_!.addEventListener(eventType, listener, true);
     this.listeners_[eventType] = listener;
   }
 
   /** Removes all listeners from this handler. */
-  removeAllListeners() {
-    for (const eventType in this.listeners_) {
-      this.node_.removeEventListener(
-          eventType, this.listeners_[eventType], true);
+  removeAllListeners(): void {
+    for (const type in this.listeners_) {
+      const eventType = type as EventType;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      this.node_!.removeEventListener(
+          eventType, this.listeners_[eventType]!, true);
     }
 
     this.listeners_ = {};
   }
 
-  /**
-   * @return {!function(!AutomationEvent): void}
-   * @private
-   */
-  makeListener_(callback) {
-    return evt => {
+  private makeListener_(callback: Listener): Listener {
+    return (evt: AutomationEvent) => {
       if (this.willHandleEvent_(evt)) {
         return;
       }
@@ -75,24 +69,17 @@ export class BaseAutomationHandler {
 
   /**
    * Called before the event |evt| is handled.
-   * @return {boolean} True to skip processing this event.
-   * @protected
+   * @return True to skip processing this event.
    */
-  willHandleEvent_(evt) {
+  protected willHandleEvent_(_evt: AutomationEvent): boolean {
     return false;
   }
 
-  /**
-   * Called after the event |evt| is handled.
-   * @protected
-   */
-  didHandleEvent_(evt) {}
+  /** Called after the event |evt| is handled. */
+  protected didHandleEvent_(_evt: AutomationEvent): void {}
 
-  /**
-   * Provides all feedback once ChromeVox's focus changes.
-   * @param {!ChromeVoxEvent} evt
-   */
-  onEventDefault(evt) {
+  /** Provides all feedback once ChromeVox's focus changes. */
+  onEventDefault(evt: ChromeVoxEvent): void {
     const node = evt.target;
     if (!node) {
       return;
@@ -122,27 +109,21 @@ export class BaseAutomationHandler {
 
     const output = new Output();
     output.withRichSpeechAndBraille(
-        ChromeVoxRange.current, prevRange, evt.type);
+        ChromeVoxRange.current, prevRange ?? undefined, evt.type);
     output.go();
   }
 
   /**
    * Returns true if the event contains an action that should not be processed.
-   * @param {!ChromeVoxEvent} evt
-   * @return {boolean}
    */
-  static disallowEventFromAction(evt) {
+  static disallowEventFromAction(evt: ChromeVoxEvent): boolean {
     return !BaseAutomationHandler.announceActions &&
         evt.eventFrom === 'action' &&
-        evt.eventFromAction !== ActionType.DO_DEFAULT &&
-        evt.eventFromAction !== ActionType.SHOW_CONTEXT_MENU;
+        (evt as CustomAutomationEvent).eventFromAction !==
+            ActionType.DO_DEFAULT &&
+        (evt as CustomAutomationEvent).eventFromAction !==
+            ActionType.SHOW_CONTEXT_MENU;
   }
 }
-
-/**
- * Controls announcement of non-user-initiated events.
- * @public {boolean}
- */
-BaseAutomationHandler.announceActions = false;
 
 TestImportManager.exportForTesting(BaseAutomationHandler);

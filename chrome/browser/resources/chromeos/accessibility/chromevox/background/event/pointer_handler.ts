@@ -43,8 +43,9 @@ export class PointerHandler extends BaseAutomationHandler {
   private lastHoverRequested_: Date;
   private ready_: boolean;
   private speakTextUnderMouse_: boolean = false;
+
   constructor() {
-    super(null);
+    super();
 
     this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
     this.expectingHoverCount_ = 0;
@@ -77,7 +78,8 @@ export class PointerHandler extends BaseAutomationHandler {
       return;
     }
 
-    const actOnNode = specificNode ? specificNode : this.node_;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const actOnNode = specificNode ? specificNode : this.node_!;
     actOnNode.hitTestWithReply(
         this.mouseX_, this.mouseY_, (target: AutomationNode) => {
           this.handleHitTestResult_(target);
@@ -157,7 +159,8 @@ export class PointerHandler extends BaseAutomationHandler {
       return;
     }
 
-    const actOnNode = specificNode ? specificNode : this.node_;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const actOnNode = specificNode ? specificNode : this.node_!;
     actOnNode.hitTestWithReply(
         this.mouseX_, this.mouseY_, (target: AutomationNode) => {
           this.handleHitTestResult_(target);
