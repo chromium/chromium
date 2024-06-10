@@ -125,20 +125,20 @@ void LogNewProfileImportDecision(
   base::UmaHistogramEnumeration(base::StrCat({kNameBase, "Aggregate"}),
                                 decision);
 
-  // Users who have no profiles on file are considered "non ready [to fill]".
   if (existing_profiles.empty()) {
-    base::UmaHistogramEnumeration(base::StrCat({kNameBase, "NonReady"}),
-                                  decision);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kNameBase, "UserHasNoExistingProfiles"}), decision);
   } else {
-    base::UmaHistogramEnumeration(base::StrCat({kNameBase, "Ready"}), decision);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kNameBase, "UserHasExistingProfile"}), decision);
 
     int duplication_rank = GetDuplicationRank(
         AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
             import_candidate, existing_profiles,
             AutofillProfileComparator(app_locale)));
     if (duplication_rank == 1) {
-      base::UmaHistogramEnumeration(base::StrCat({kNameBase, "QuasiDuplicate"}),
-                                    decision);
+      base::UmaHistogramEnumeration(
+          base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
     }
   }
 }
@@ -158,8 +158,8 @@ void LogProfileUpdateImportDecision(
           import_candidate, existing_profiles,
           AutofillProfileComparator(app_locale)));
   if (duplication_rank == 1) {
-    base::UmaHistogramEnumeration(base::StrCat({kNameBase, "QuasiDuplicate"}),
-                                  decision);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
   }
 }
 

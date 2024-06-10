@@ -4190,16 +4190,16 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="UserGroup">
     <variant name="Aggregate" summary="Aggregated data of all users."/>
-    <variant name="NonReady"
+    <variant name="UserHasExistingProfile"
+        summary="Metrics are recorded for users who have address profiles
+                 saved already."/>
+    <variant name="UserHasNoExistingProfiles"
         summary="Metrics are recorded for users who don't have any address
                  profiles saved."/>
-    <variant name="QuasiDuplicate"
+    <variant name="UserHasQuasiDuplicateProfile"
         summary="Metrics are recorded for users where an existing address
                  profile matches the import candidate after removing one
                  field."/>
-    <variant name="Ready"
-        summary="Metrics are recorded for users who have address profiles
-                 saved already."/>
   </token>
 </histogram>
 
@@ -4315,7 +4315,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="UserGroup">
     <variant name="Aggregate" summary="Aggregated data of all users."/>
-    <variant name="QuasiDuplicate"
+    <variant name="UserHasQuasiDuplicateProfile"
         summary="Metrics are recorded for users where an existing address
                  profile matches the import candidate after removing one
                  field. The profile to be updated is not considered an

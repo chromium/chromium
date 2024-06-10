@@ -505,8 +505,8 @@ TEST_F(AutofillProfileImportMetricsTest,
       "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileImport.NewProfileDecision2.NonReady", kExpectedDecision,
-      1);
+      "Autofill.ProfileImport.NewProfileDecision2.UserHasNoExistingProfiles",
+      kExpectedDecision, 1);
 }
 
 // Tests that the user decision for importing a new profile is emitted for ready
@@ -525,9 +525,10 @@ TEST_F(AutofillProfileImportMetricsTest,
       "Autofill.ProfileImport.NewProfileDecision2.Aggregate", kExpectedDecision,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileImport.NewProfileDecision2.Ready", kExpectedDecision, 1);
+      "Autofill.ProfileImport.NewProfileDecision2.UserHasExistingProfile",
+      kExpectedDecision, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileImport.NewProfileDecision2.QuasiDuplicate",
+      "Autofill.ProfileImport.NewProfileDecision2.UserHasQuasiDuplicateProfile",
       kExpectedDecision, 1);
 }
 
