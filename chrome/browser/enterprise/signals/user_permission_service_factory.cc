@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/consent_policy_observer.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_delegate_impl.h"
@@ -84,9 +83,6 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
       management_service, std::move(user_delegate), profile->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  device_trust_connector_service->AddObserver(
-      std::make_unique<enterprise_connectors::ConsentPolicyObserver>(
-          user_permission_service->GetWeakPtr()));
   return user_permission_service;
 }
 

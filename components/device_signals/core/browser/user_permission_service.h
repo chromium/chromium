@@ -75,10 +75,6 @@ class UserPermissionService : public KeyedService {
   // value could be false even though signals can be collected. This function
   // is exposed publicly mostly for debugging purposes.
   virtual bool HasUserConsented() const = 0;
-
-  // Will evaluate whether the user's consent should be reset or not based on
-  // the current management context.
-  virtual void ResetUserConsentIfNeeded() = 0;
 };
 
 }  // namespace device_signals

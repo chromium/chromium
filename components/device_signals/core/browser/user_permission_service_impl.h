@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -45,7 +44,6 @@ class UserPermissionServiceImpl : public UserPermissionService {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
   UserPermission CanCollectSignals() const override;
   bool HasUserConsented() const override;
-  void ResetUserConsentIfNeeded() override;
 
  protected:
   // Returns true if the specific consent flow policy is enabled.
@@ -57,8 +55,6 @@ class UserPermissionServiceImpl : public UserPermissionService {
   const raw_ptr<policy::ManagementService> management_service_;
   const std::unique_ptr<UserDelegate> user_delegate_;
   const raw_ptr<PrefService> user_prefs_;
-
-  PrefChangeRegistrar pref_observer_;
 
   base::WeakPtrFactory<UserPermissionServiceImpl> weak_factory_{this};
 };

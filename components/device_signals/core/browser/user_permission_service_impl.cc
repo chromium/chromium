@@ -38,12 +38,6 @@ UserPermissionServiceImpl::UserPermissionServiceImpl(
   CHECK(management_service_);
   CHECK(user_delegate_);
   CHECK(user_prefs_);
-
-  pref_observer_.Init(user_prefs_);
-  pref_observer_.Add(
-      prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
-      base::BindRepeating(&UserPermissionServiceImpl::ResetUserConsentIfNeeded,
-                          weak_factory_.GetWeakPtr()));
 }
 
 UserPermissionServiceImpl::~UserPermissionServiceImpl() = default;
@@ -149,24 +143,6 @@ UserPermission UserPermissionServiceImpl::CanCollectSignals() const {
       scopes.size() == 1U;
   return only_needed_by_device ? UserPermission::kGranted
                                : UserPermission::kMissingConsent;
-}
-
-void UserPermissionServiceImpl::ResetUserConsentIfNeeded() {
-  if (!HasUserConsented()) {
-    // No need to reset consent if no consent was given. Having this condition
-    // simplifies the following logic a lot as it excludes many contexts where
-    // consent was not required in the first place (e.g. affiliated case where a
-    // dependent user policy becomes disabled).
-    return;
-  }
-
-  std::set<policy::PolicyScope> scopes =
-      user_delegate_->GetPolicyScopesNeedingSignals();
-  bool has_dependent_user_policy =
-      scopes.find(policy::POLICY_SCOPE_USER) != scopes.end();
-  if (!IsConsentFlowPolicyEnabled() && !has_dependent_user_policy) {
-    user_prefs_->SetBoolean(prefs::kDeviceSignalsConsentReceived, false);
-  }
 }
 
 bool UserPermissionServiceImpl::IsConsentFlowPolicyEnabled() const {

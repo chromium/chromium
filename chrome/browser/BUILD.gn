@@ -6468,8 +6468,6 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac || is_chromeos_ash) {
     sources += [
-      "enterprise/connectors/device_trust/consent_policy_observer.cc",
-      "enterprise/connectors/device_trust/consent_policy_observer.h",
       "enterprise/connectors/device_trust/device_trust_connector_service.cc",
       "enterprise/connectors/device_trust/device_trust_connector_service.h",
       "enterprise/connectors/device_trust/device_trust_connector_service_factory.cc",
