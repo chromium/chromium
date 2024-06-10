@@ -1,0 +1,149 @@
+<style include="signin-shared tangible-sync-style-shared">
+  :host() {
+    color: var(--cr-primary-text-color);
+  }
+
+  #header-container {
+    position: relative;
+    width: 100%;
+  }
+
+  #avatar-container {
+    height: var(--tangible-sync-style-avatar-size);
+    left: 0;
+    margin: auto;
+    position: relative;
+    right: 0;
+    width: var(--tangible-sync-style-avatar-size);
+    z-index: 1;
+  }
+
+  #avatar {
+    border: 2px solid var(--md-background-color);
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+
+  .work-badge {
+    bottom: 0;
+    position: absolute;
+  }
+
+  #text-container {
+    text-align: center;
+  }
+
+  h1.title {
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 44px;
+    text-align: center;
+
+  }
+
+  .subtitle {
+    margin-top: 0;
+    line-height: 24px;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: center;
+
+  }
+
+  h2 {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+  }
+
+  .disclaimer-container {
+    display: flex;
+    justify-content: center;
+    margin-block-start: 30px;
+    min-height: 212px;
+    max-height: 300px;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: 24px;
+    box-sizing: border-box;
+  }
+
+  .disclaimer {
+    min-width: 360px;
+    width: 360px;
+    border-radius: 24px;
+    background-color: var(--md-background-color);
+    padding: 24px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .disclaimer .icon {
+    height: 24px;
+    width: 24px;
+    color: var(--google-blue-500);
+  }
+
+  .disclaimer h3 {
+    line-height: 32px;
+    text-align: center;
+  }
+
+  .disclaimer p {
+    line-height: 20px;
+    text-align: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .work-badge {
+      border-color: var(--md-background-color);
+    }
+
+    .work-badge > iron-icon {
+      box-shadow: 0 0 2px rgba(var(--google-grey-800-rgb), 0.12),
+         0 0 6px rgba(var(--google-grey-800-rgb), 0.15);
+    }
+
+    .disclaimer {
+      background-color: var(--cr-fallback-color-surface);
+    }
+  }
+</style>
+
+<div class="tangible-sync-style">
+  <div id="header-container">
+    <div id="avatar-container">
+      <img id="avatar" alt="" src="[[pictureUrl]]">
+      <div class="work-badge" hidden="[[!showEnterpriseBadge]]">
+        <iron-icon class="icon" icon="cr:domain"></iron-icon>
+      </div>
+    </div>
+  </div>
+  <div id="text-container">
+    <template is="dom-if" if="[[title]]">
+      <h1 class="title">
+        [[title]]
+      </h1>
+    </template>
+    <template is="dom-if" if="[[subtitle]]">
+      <p class="subtitle">
+        [[subtitle]]
+      </p>
+    </template>
+  </div>
+  <div class="disclaimer-container">
+    <section class="disclaimer">
+      <iron-icon class="icon" icon="cr:person"></iron-icon>
+      <h2>$i18n{profileInformationTitle}</h2>
+      <p>$i18n{profileInformationDetails}</p>
+    </section>
+    <section class="disclaimer">
+      <iron-icon class="icon" icon="cr:phonelink"></iron-icon>
+      <h2>$i18n{deviceInformationTitle}</h2>
+      <p>$i18n{deviceInformationDetails}</p>
+    </section>
+  </div>
+</div>

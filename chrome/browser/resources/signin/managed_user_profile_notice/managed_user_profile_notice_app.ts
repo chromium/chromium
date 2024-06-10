@@ -11,6 +11,7 @@ import './strings.m.js';
 import './signin_shared.css.js';
 import './signin_vars.css.js';
 import './tangible_sync_style_shared.css.js';
+import './managed_user_profile_notice_disclosure.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';

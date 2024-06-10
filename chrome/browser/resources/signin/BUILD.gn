@@ -55,6 +55,7 @@ build_webui("build") {
     web_component_files += [
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.ts",
       "managed_user_profile_notice/managed_user_profile_notice_app.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_disclosure.ts",
       "profile_customization/profile_customization_app.ts",
       "signin_email_confirmation/signin_email_confirmation_app.ts",
       "signin_error/signin_error_app.ts",

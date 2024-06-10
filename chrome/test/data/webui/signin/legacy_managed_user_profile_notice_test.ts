@@ -4,6 +4,7 @@
 
 import 'chrome://managed-user-profile-notice/legacy_managed_user_profile_notice_app.js';
 import 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
+import 'chrome://managed-user-profile-notice/managed_user_profile_notice_disclosure.js';
 
 import type {LegacyManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/legacy_managed_user_profile_notice_app.js';
 import type {ManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
@@ -65,8 +66,12 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
      * Checks that the expected image url is displayed.
      */
     function checkImageUrl(expectedUrl: string) {
-      assertTrue(isChildVisible(app, '#avatar'));
-      const img = app.shadowRoot!.querySelector<HTMLImageElement>('#avatar')!;
+      const targetElement = useUpdatedUi ?
+          app.shadowRoot!.querySelector<HTMLElement>('#disclosure')! :
+          app;
+      assertTrue(isChildVisible(targetElement, '#avatar'));
+      const img =
+          targetElement.shadowRoot!.querySelector<HTMLImageElement>('#avatar')!;
       assertEquals(expectedUrl, img.src);
     }
 
@@ -172,23 +177,27 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
     });
 
     test('onProfileInfoChanged', function() {
+      const targetElement = useUpdatedUi ?
+          app.shadowRoot!.querySelector<HTMLElement>('#disclosure')! :
+          app;
       // Helper to test all the text values in the UI.
       function checkTextValues(
           expectedTitle: string, expectedSubtitle: string,
           expectedEnterpriseInfo: string, expectedProceedLabel: string) {
-        assertTrue(isChildVisible(app, '.title'));
+        assertTrue(isChildVisible(targetElement, '.title'));
         const titleElement =
-            app.shadowRoot!.querySelector<HTMLElement>('.title')!;
+            targetElement.shadowRoot!.querySelector<HTMLElement>('.title')!;
         assertEquals(expectedTitle, titleElement.textContent!.trim());
-        assertTrue(isChildVisible(app, '.subtitle'));
+        assertTrue(isChildVisible(targetElement, '.subtitle'));
         const subtitleElement =
-            app.shadowRoot!.querySelector<HTMLElement>('.subtitle')!;
+            targetElement.shadowRoot!.querySelector<HTMLElement>('.subtitle')!;
         assertEquals(expectedSubtitle, subtitleElement.textContent!.trim());
 
         if (!useUpdatedUi) {
-          assertTrue(isChildVisible(app, '#enterpriseInfo'));
+          assertTrue(isChildVisible(targetElement, '#enterpriseInfo'));
           const enterpriseInfoElement =
-              app.shadowRoot!.querySelector<HTMLElement>('#enterpriseInfo')!;
+              targetElement.shadowRoot!.querySelector<HTMLElement>(
+                  '#enterpriseInfo')!;
           assertEquals(
               expectedEnterpriseInfo,
               enterpriseInfoElement.textContent!.trim());
@@ -202,7 +211,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       // Initial values.
       checkTextValues('title', 'subtitle', 'enterprise_info', 'proceed_label');
       checkImageUrl(AVATAR_URL_1);
-      assertFalse(isChildVisible(app, '.work-badge'));
+      assertFalse(isChildVisible(targetElement, '.work-badge'));
 
       // Update the values.
       webUIListenerCallback('on-profile-info-changed', {
@@ -220,7 +229,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           'new_title', 'new_subtitle', 'new_enterprise_info',
           'new_proceed_label');
       checkImageUrl(AVATAR_URL_2);
-      assertTrue(isChildVisible(app, '.work-badge'));
+      assertTrue(isChildVisible(targetElement, '.work-badge'));
       assertFalse(isChildVisible(app, '#cancel-button'));
     });
   });
