@@ -20619,8 +20619,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240214",
+                    "name": "Enabled_20240610",
                     "enable_features": [
+                        "OptimizeLoadingDataUrls",
                         "SimplifyLoadingTransparentPlaceholderImage"
                     ]
                 }
