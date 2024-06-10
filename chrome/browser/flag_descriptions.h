@@ -1910,6 +1910,10 @@ extern const char kShowPerformanceMetricsHudDescription[];
 extern const char kShowOverdrawFeedbackName[];
 extern const char kShowOverdrawFeedbackDescription[];
 
+extern const char kSidePanelResizingFlagId[];
+extern const char kSidePanelResizingName[];
+extern const char kSidePanelResizingDescription[];
+
 extern const char kSiteInstanceGroupsForDataUrlsName[];
 extern const char kSiteInstanceGroupsForDataUrlsDescription[];
 

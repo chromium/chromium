@@ -3294,6 +3294,12 @@ const char kShowOverdrawFeedbackDescription[] =
     "Visualize overdraw by color-coding elements based on if they have other "
     "elements drawn underneath.";
 
+const char kSidePanelResizingFlagId[] = "side-panel-resizing";
+const char kSidePanelResizingName[] = "Side Panel Resizing";
+const char kSidePanelResizingDescription[] =
+    "Allows users to resize the side panel and persist the width across "
+    "browser sessions.";
+
 const char kSiteInstanceGroupsForDataUrlsName[] =
     "SiteInstanceGroups for data: URLs";
 const char kSiteInstanceGroupsForDataUrlsDescription[] =

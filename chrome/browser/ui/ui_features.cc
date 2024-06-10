@@ -269,6 +269,10 @@ BASE_FEATURE(kSidePanelCompanionDefaultPinned,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kSidePanelResizing,
+             "SidePanelResizing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStrip,
              "ScrollableTabStrip",
