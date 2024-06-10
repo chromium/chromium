@@ -536,6 +536,48 @@ bool IsPlatformAuthenticatorForInvalidStateError(
   }
 }
 
+AuthenticatorCommonImpl::CredentialRequestResult
+CredentialRequestResultFromCode(bool success, device::AuthenticatorType type) {
+  switch (type) {
+    case device::AuthenticatorType::kChromeOS:
+    case device::AuthenticatorType::kChromeOSPasskeys:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kChromeOSSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kChromeOSError;
+    case device::AuthenticatorType::kEnclave:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kEnclaveSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kEnclaveError;
+    case device::AuthenticatorType::kICloudKeychain:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kICloudKeychainSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kICloudKeychainError;
+    case device::AuthenticatorType::kOther:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kOtherSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kOtherError;
+    case device::AuthenticatorType::kPhone:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kPhoneSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kPhoneError;
+    case device::AuthenticatorType::kTouchID:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kTouchIDSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kTouchIDError;
+    case device::AuthenticatorType::kWinNative:
+      return success ? AuthenticatorCommonImpl::CredentialRequestResult::
+                           kWinNativeSuccess
+                     : AuthenticatorCommonImpl::CredentialRequestResult::
+                           kWinNativeError;
+  }
+}
+
 }  // namespace
 
 // RequestState contains all state that is specific to a single WebAuthn call.
@@ -578,7 +620,8 @@ struct AuthenticatorCommonImpl::RequestState {
   bool awaiting_attestation_response = false;
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
-  std::optional<GetAssertionResult> get_assertion_result;
+  std::optional<CredentialRequestResult> get_assertion_result;
+  std::optional<CredentialRequestResult> make_credential_result;
   bool discoverable_credential_request = false;
   // no_cable_linking requests that both QR-linked and pre-linked phones be
   // ignored for this request.
@@ -651,6 +694,7 @@ AuthenticatorCommonImpl::MaybeCreateRequestDelegate() {
 
 void AuthenticatorCommonImpl::StartMakeCredentialRequest(
     bool allow_skipping_pin_touch) {
+  req_state_->make_credential_result.reset();
   InitDiscoveryFactory();
 
   discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
@@ -1540,6 +1584,10 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
     return;
   }
 
+  req_state_->make_credential_result = CredentialRequestResultFromCode(
+      status_code == device::MakeCredentialStatus::kSuccess,
+      authenticator->GetType());
+
   switch (status_code) {
     case device::MakeCredentialStatus::kUserConsentButCredentialExcluded:
     case device::MakeCredentialStatus::kWinInvalidStateError:
@@ -1790,51 +1838,9 @@ void AuthenticatorCommonImpl::OnSignResponse(
     return;
   }
 
-  switch (authenticator->GetType()) {
-    case device::AuthenticatorType::kChromeOS:
-    case device::AuthenticatorType::kChromeOSPasskeys:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kChromeOSSuccess
-              : GetAssertionResult::kChromeOSError;
-      break;
-    case device::AuthenticatorType::kEnclave:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kEnclaveSuccess
-              : GetAssertionResult::kEnclaveError;
-      break;
-    case device::AuthenticatorType::kICloudKeychain:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kICloudKeychainSuccess
-              : GetAssertionResult::kICloudKeychainError;
-      break;
-    case device::AuthenticatorType::kOther:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kOtherSuccess
-              : GetAssertionResult::kOtherError;
-      break;
-    case device::AuthenticatorType::kPhone:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kPhoneSuccess
-              : GetAssertionResult::kPhoneError;
-      break;
-    case device::AuthenticatorType::kTouchID:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kTouchIDSuccess
-              : GetAssertionResult::kTouchIDError;
-      break;
-    case device::AuthenticatorType::kWinNative:
-      req_state_->get_assertion_result =
-          status_code == device::GetAssertionStatus::kSuccess
-              ? GetAssertionResult::kWinNativeSuccess
-              : GetAssertionResult::kWinNativeError;
-      break;
-  }
+  req_state_->get_assertion_result = CredentialRequestResultFromCode(
+      status_code == device::GetAssertionStatus::kSuccess,
+      authenticator->GetType());
 
   switch (status_code) {
     case device::GetAssertionStatus::kUserConsentButCredentialNotRecognized:
@@ -2012,7 +2018,9 @@ void AuthenticatorCommonImpl::OnTimeout() {
   }
 
   if (req_state_->get_assertion_response_callback) {
-    req_state_->get_assertion_result = GetAssertionResult::kTimeout;
+    req_state_->get_assertion_result = CredentialRequestResult::kTimeout;
+  } else {
+    req_state_->make_credential_result = CredentialRequestResult::kTimeout;
   }
   SignalFailureToRequestDelegate(
       AuthenticatorRequestClientDelegate::InterestingFailureReason::kTimeout,
@@ -2050,7 +2058,11 @@ void AuthenticatorCommonImpl::OnCancelFromUI() {
   if (!req_state_->get_assertion_result &&
       req_state_->get_assertion_response_callback) {
     // The user cancelled before the request finished.
-    req_state_->get_assertion_result = GetAssertionResult::kUserCancelled;
+    req_state_->get_assertion_result = CredentialRequestResult::kUserCancelled;
+  } else if (!req_state_->make_credential_result &&
+             req_state_->make_credential_response_callback) {
+    req_state_->make_credential_result =
+        CredentialRequestResult::kUserCancelled;
   }
   CancelWithStatus(req_state_->error_awaiting_user_acknowledgement);
 }
@@ -2223,6 +2235,12 @@ void AuthenticatorCommonImpl::CompleteMakeCredentialRequest(
     blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details,
     Focus check_focus) {
   DCHECK(req_state_->make_credential_response_callback);
+
+  if (req_state_->make_credential_result) {
+    UMA_HISTOGRAM_ENUMERATION("WebAuthentication.MakeCredential.Result",
+                              *req_state_->make_credential_result);
+  }
+
   if (check_focus != Focus::kDontCheck &&
       !(req_state_->request_delegate && IsFocused())) {
     std::move(req_state_->make_credential_response_callback)

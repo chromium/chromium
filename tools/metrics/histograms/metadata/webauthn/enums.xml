@@ -180,6 +180,25 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Canceled"/>
 </enum>
 
+<enum name="WebAuthenticationCredentialRequestResult">
+  <int value="0" label="Timeout"/>
+  <int value="1" label="User cancelled"/>
+  <int value="2" label="Native Windows API success"/>
+  <int value="3" label="Native Windows API error"/>
+  <int value="4" label="Chrome TouchID authenticator success"/>
+  <int value="5" label="Chrome TouchID authenticator failure"/>
+  <int value="6" label="ChromeOS platform authenticator success"/>
+  <int value="7" label="ChromeOS platform authenticator failure"/>
+  <int value="8" label="Phone success"/>
+  <int value="9" label="Phone failure"/>
+  <int value="10" label="iCloud keychain success"/>
+  <int value="11" label="iCloud keychain failure"/>
+  <int value="12" label="Enclave success"/>
+  <int value="13" label="Enclave failure"/>
+  <int value="14" label="Other device success"/>
+  <int value="15" label="Other device error"/>
+</enum>
+
 <enum name="WebAuthenticationEnclaveEvent">
   <int value="0" label="Onboarding sheet was shown to the user"/>
   <int value="1"
@@ -204,25 +223,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Cloud-assisted BLE"/>
   <int value="4" label="Internal"/>
   <int value="5" label="Android Accessory"/>
-</enum>
-
-<enum name="WebAuthenticationGetAssertionResult">
-  <int value="0" label="Timeout"/>
-  <int value="1" label="User cancelled"/>
-  <int value="2" label="Native Windows API success"/>
-  <int value="3" label="Native Windows API error"/>
-  <int value="4" label="Chrome TouchID authenticator success"/>
-  <int value="5" label="Chrome TouchID authenticator failure"/>
-  <int value="6" label="ChromeOS platform authenticator success"/>
-  <int value="7" label="ChromeOS platform authenticator failure"/>
-  <int value="8" label="Phone success"/>
-  <int value="9" label="Phone failure"/>
-  <int value="10" label="iCloud keychain success"/>
-  <int value="11" label="iCloud keychain failure"/>
-  <int value="12" label="Enclave success"/>
-  <int value="13" label="Enclave failure"/>
-  <int value="14" label="Other device success"/>
-  <int value="15" label="Other device error"/>
 </enum>
 
 <enum name="WebAuthenticationMacOSPasskeysPermission">

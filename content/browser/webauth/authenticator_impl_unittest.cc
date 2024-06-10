@@ -984,6 +984,8 @@ TEST(ClientDataSerializationTest, Sign) {
 }
 
 TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
+  base::HistogramTester histogram_tester;
+
   // Don't provide an authenticator tap so the request times out.
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting(
@@ -996,6 +998,9 @@ TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
   EXPECT_EQ(
       AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options)).status,
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.MakeCredential.Result",
+      AuthenticatorCommonImpl::CredentialRequestResult::kTimeout, 1);
 }
 
 // Verify behavior for various combinations of origins and RP IDs.
@@ -1246,7 +1251,7 @@ TEST_F(AuthenticatorImplTest, TestGetAssertionTimeout) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::GetAssertionResult::kTimeout, 1);
+      AuthenticatorCommonImpl::CredentialRequestResult::kTimeout, 1);
 }
 
 TEST_F(AuthenticatorImplTest, OversizedCredentialId) {
@@ -2330,14 +2335,24 @@ TEST_F(AuthenticatorContentBrowserClientTest, TestGetAssertionCancel) {
   NavigateAndCommit(GURL(kTestOrigin1));
   test_client_.simulate_user_cancelled_ = true;
   base::HistogramTester histogram_tester;
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
 
   EXPECT_EQ(AuthenticatorGetAssertion().status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::GetAssertionResult::kUserCancelled, 1);
+      AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, TestMakeCredentialCancel) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  test_client_.simulate_user_cancelled_ = true;
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.MakeCredential.Result",
+      AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
 }
 
 // Test that credentials can be created and used from an extension origin when
@@ -3931,7 +3946,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionResultMetricError) {
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::GetAssertionResult::kOtherError, 1);
+      AuthenticatorCommonImpl::CredentialRequestResult::kOtherError, 1);
 }
 
 TEST_F(AuthenticatorImplTest, GetAssertionResultMetricSuccess) {
@@ -3946,7 +3961,33 @@ TEST_F(AuthenticatorImplTest, GetAssertionResultMetricSuccess) {
             AuthenticatorStatus::SUCCESS);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.GetAssertion.Result",
-      AuthenticatorCommonImpl::GetAssertionResult::kOtherSuccess, 1);
+      AuthenticatorCommonImpl::CredentialRequestResult::kOtherSuccess, 1);
+}
+
+TEST_F(AuthenticatorImplTest, MakeCredentialResultMetricError) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  base::HistogramTester histogram_tester;
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->exclude_credentials = GetTestCredentials();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->exclude_credentials[0].id, kTestRelyingPartyId));
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::CREDENTIAL_EXCLUDED);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.MakeCredential.Result",
+      AuthenticatorCommonImpl::CredentialRequestResult::kOtherError, 1);
+}
+
+TEST_F(AuthenticatorImplTest, MakeCredentialResultMetricSuccess) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.MakeCredential.Result",
+      AuthenticatorCommonImpl::CredentialRequestResult::kOtherSuccess, 1);
 }
 
 // Tests that for an authenticator that does not support batching, credential

@@ -61,7 +61,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class GetAssertionResult {
+  enum class CredentialRequestResult {
     kTimeout = 0,
     kUserCancelled = 1,
 

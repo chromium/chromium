@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertion.Result"
-    enum="WebAuthenticationGetAssertionResult" expires_after="2024-10-01">
+    enum="WebAuthenticationCredentialRequestResult" expires_after="2024-10-01">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>Records the result of a get assertion request.</summary>
@@ -265,6 +265,13 @@ chromium-metrics-reviews@google.com.
     &quot;success&quot; events are only recorded for transactions that
     previously recorded a &quot;start&quot; event.
   </summary>
+</histogram>
+
+<histogram name="WebAuthentication.MakeCredential.Result"
+    enum="WebAuthenticationCredentialRequestResult" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>Records the result of a make credential request.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
