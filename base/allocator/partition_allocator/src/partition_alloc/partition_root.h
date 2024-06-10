@@ -2171,10 +2171,10 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
-  // We should only call |SizeToBucketIndex| at most once when allocating.
-  // Otherwise, we risk having |bucket_distribution| changed
-  // underneath us (between calls to |SizeToBucketIndex| during the same call),
-  // which would result in an inconsistent state.
+  // We should avoid calling `GetBucketDistribution()` repeatedly in the
+  // same function, since the bucket distribution can change underneath
+  // us. If we pass this changed value to `SizeToBucketIndex()` in the
+  // same allocation request, we'll get inconsistent state.
   uint16_t bucket_index =
       SizeToBucketIndex(raw_size, this->GetBucketDistribution());
   size_t usable_size;
