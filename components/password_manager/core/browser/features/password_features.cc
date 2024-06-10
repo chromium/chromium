@@ -165,11 +165,11 @@ int GetLocalPasswordsMigrationToAndroidBackendDelay() {
 
 BASE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore,
              "UnifiedPasswordManagerSyncOnlyInGMSCore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearLoginDatabaseForUPMUsers,
              "ClearLoginDatabaseForUPMUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled() {
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)

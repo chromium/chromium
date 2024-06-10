@@ -405,8 +405,12 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordStoreProxyBackendBaseTest,
        InitialUPMMigrationPrefIsNotResetOnSyncInit) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EnablePasswordSync();
 
@@ -416,8 +420,12 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordStoreProxyBackendBaseTest,
        InitialUPMMigrationPrefIsResetOnSyncChange) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EnablePasswordSync();
 
@@ -448,10 +456,12 @@ class PasswordStoreProxyBackendTest
       public testing::WithParamInterface<UpmVariationParam> {
  public:
   void SetUp() override {
+    // TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
     PasswordStoreProxyBackendBaseTest::SetUp();
-    scoped_feature_list_.InitWithFeatureState(
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
-        GetParam().is_M4_feature_enabled);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+          GetParam().is_M4_feature_enabled},
+         {features::kClearLoginDatabaseForUPMUsers, false}});
 
     if (GetParam().is_sync_enabled) {
       EnablePasswordSync();

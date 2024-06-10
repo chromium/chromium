@@ -943,12 +943,15 @@ TEST_F(PasswordManagerAndroidUtilTest,
       password_manager::kLoginDataForAccountFileName)));
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SyncingButUnenrolled) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
+      {password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
   SetPasswordSyncEnabledPref(true);
   pref_service()->SetInteger(
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
@@ -981,12 +984,15 @@ TEST_F(PasswordManagerAndroidUtilTest,
       "PasswordManager.LocalUpmActivationStatus", kOff, 1);
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SyncingButInitialMigrationNotFinished) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
+      {password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
   SetPasswordSyncEnabledPref(true);
   ASSERT_EQ(pref_service()->GetInteger(
                 password_manager::prefs::

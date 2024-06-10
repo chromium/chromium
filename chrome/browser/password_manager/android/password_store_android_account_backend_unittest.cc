@@ -730,8 +730,13 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   RunUntilIdle();
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordStoreAndroidAccountBackendTest,
        OnExternalErrorCausingExperimentUnenrollment) {
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+
   // INTERNAL_ERROR is neither in ignored nor retriable error lists by default.
   base::HistogramTester histogram_tester;
 
@@ -814,9 +819,13 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
                                      kAuthErrorResolvableCode, 1);
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(
     PasswordStoreAndroidAccountBackendTest,
     OnUnretriableOperationWithExternalRetriableErrorOnCausesExperimentUnenrollment) {
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   base::HistogramTester histogram_tester;
 
   backend().InitBackend(
@@ -1272,8 +1281,12 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_TRUE(backend().IsAbleToSavePasswords());
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordStoreAndroidAccountBackendTest,
        PassphraseRequiredErrorCausesUnenrollmentIfFixUnsupported) {
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   base::HistogramTester histogram_tester;
 
   backend().InitBackend(
@@ -1358,8 +1371,12 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   histogram_tester.ExpectTotalCount(kUnenrollmentHistogram, 0);
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordStoreAndroidAccountBackendTest,
        OnExternalErrorInCombinationWithNoSyncError) {
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   base::HistogramTester histogram_tester;
 
   backend().InitBackend(
@@ -1388,8 +1405,12 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   RunUntilIdle();
 }
 
+// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
 TEST_F(PasswordStoreAndroidAccountBackendTest,
        OnExternalErrorInCombinationWithPersistentSyncError) {
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   base::HistogramTester histogram_tester;
 
   backend().InitBackend(
