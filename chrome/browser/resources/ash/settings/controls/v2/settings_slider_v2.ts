@@ -64,7 +64,6 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlMixinInternal} from './pref_control_mixin_internal.js';
@@ -87,11 +86,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     return getTemplate();
   }
 
-  /**
-   * Shared properties with other elements that may encapsulate this element
-   * internally (e.g. settings-slider-row).
-   */
-  static get sharedProperties(): PolymerElementProperties {
+  static get properties() {
     return {
       /**
        * The current value of the slider. It shouldn't be used or updated if
@@ -162,12 +157,6 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
         type: Boolean,
         value: false,
       },
-    };
-  }
-
-  static get properties() {
-    return {
-      ...this.sharedProperties,
 
       /**
        * By default, the slider value will only be updated when the dragging

@@ -74,7 +74,75 @@ export class SettingsSliderRowElement extends SettingsSliderRowElementBase {
 
   static get properties() {
     return {
-      ...SettingsSliderV2Element.sharedProperties,
+      /**
+       * The current value of the slider. It shouldn't be used or updated if
+       * `pref` is specified.
+       */
+      value: Number,
+
+      /**
+       * Values corresponding to each tick. It should be empty if `scale` is
+       * specified.
+       */
+      ticks: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * A scale factor used to support fractional values. For example, if
+       * min=0, max=10, scale=10, the value ranges for any decimal number
+       * between [0, 1]. If min=0, max=10, scale=1, the value ranges for any
+       * decimal number between [0, 10].
+       * This is not compatible with `ticks`, i.e. if `scale` is not 1 then
+       * `ticks` must not be set.
+       */
+      scale: {
+        type: Number,
+        value: 1,
+      },
+
+      /**
+       * The slider minimum value. If `ticks` is not used, this must be
+       * specified.
+       */
+      min: Number,
+
+      /**
+       * The slider maximum value. If `ticks` is not used, this must be
+       * specified.
+       */
+      max: Number,
+
+      /**
+       * Label for the min value of the slider that shows below the slider. Also
+       * used as the A11y label for the min value.
+       */
+      minLabel: String,
+
+      /**
+       * Label for the max value of the slider that shows below the slider. Also
+       * used as the A11y label for the max value.
+       */
+      maxLabel: String,
+
+      /**
+       * Whether or not to hide the min and max labels below the slider.
+       * Defaults to false.
+       */
+      hideLabel: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether or not to hide tick marks on the slider. Default to false.
+       * Only compatible with `ticks`, and not compatible with `scale`.
+       */
+      hideMarkers: {
+        type: Boolean,
+        value: false,
+      },
 
       updateValueInstantly: {
         type: Boolean,

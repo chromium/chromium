@@ -34,7 +34,27 @@ export class SettingsDropdownRowElement extends SettingsDropdownRowElementBase {
 
   static get properties() {
     return {
-      ...SettingsDropdownV2Element.sharedProperties,
+      /**
+       * List of options for the dropdown.
+       */
+      options: {
+        type: Array,
+        value: () => {
+          return [];
+        },
+      },
+
+      /**
+       * Note: This property should not be set via downward data-binding from
+       * parent elements if `pref` is defined.
+       * Represents the value of the dropdown. When `pref` is specified, the
+       * pref object's value is synced to this property. When `pref` is not
+       * specified, this property can be updated via downward data-binding.
+       */
+      value: {
+        type: String,
+        value: undefined,
+      },
     };
   }
 

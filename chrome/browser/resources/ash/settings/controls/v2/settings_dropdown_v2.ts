@@ -31,7 +31,6 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../../assert_extras.js';
@@ -69,11 +68,7 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
     return getTemplate();
   }
 
-  /**
-   * Properties shared publicly with other elements that may encapsulate this
-   * element internally (e.g. settings-dropdown-row).
-   */
-  static get sharedProperties(): PolymerElementProperties {
+  static get properties() {
     return {
       /**
        * List of options for the dropdown.
@@ -96,12 +91,6 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
         type: String,
         value: undefined,
       },
-    };
-  }
-
-  static get properties() {
-    return {
-      ...this.sharedProperties,
 
       // A11y properties added since they are data-bound in HTML.
       ariaLabel: {
