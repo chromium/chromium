@@ -238,14 +238,14 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     argv_cstr.push_back(const_cast<char*>(arg.c_str()));
   argv_cstr.push_back(nullptr);
 
-  std::unique_ptr<char*[]> owned_environ;
+  base::HeapArray<char*> owned_environ;
   char* empty_environ = nullptr;
   char** new_environ =
       options.clear_environment ? &empty_environ : *_NSGetEnviron();
   if (!options.environment.empty()) {
     owned_environ =
         internal::AlterEnvironment(new_environ, options.environment);
-    new_environ = owned_environ.get();
+    new_environ = owned_environ.data();
   }
 
   const char* executable_path = !options.real_path.empty()

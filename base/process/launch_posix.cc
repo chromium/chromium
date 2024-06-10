@@ -296,7 +296,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     argv_cstr.push_back(const_cast<char*>(arg.c_str()));
   argv_cstr.push_back(nullptr);
 
-  std::unique_ptr<char* []> new_environ;
+  base::HeapArray<char*> new_environ;
   char* const empty_environ = nullptr;
   char* const* old_environ = GetEnvironment();
   if (options.clear_environment)
@@ -455,7 +455,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     }
 
     if (!options.environment.empty() || options.clear_environment)
-      SetEnvironment(new_environ.get());
+      SetEnvironment(new_environ.data());
 
     // fd_shuffle1 is mutated by this call because it cannot malloc.
     if (!ShuffleFileDescriptors(&fd_shuffle1))
