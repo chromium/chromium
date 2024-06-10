@@ -99,12 +99,12 @@ void AddCustomItemsToMenu(
     }
     (*total_items)++;
     switch (item->type) {
-      case blink::mojom::CustomContextMenuItemType::kOption: {
-        menu_model->AddItem(command_id, item->label);
-        menu_model->SetMinorText(menu_model->GetItemCount() - 1,
-                                 item->shortcut);
+      case blink::mojom::CustomContextMenuItemType::kOption:
+        menu_model->AddItem(
+            RenderViewContextMenuBase::ConvertToContentCustomCommandId(
+                item->action),
+            item->label);
         break;
-      }
       case blink::mojom::CustomContextMenuItemType::kCheckableOption:
         menu_model->AddCheckItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(

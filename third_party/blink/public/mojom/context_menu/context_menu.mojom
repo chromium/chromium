@@ -60,21 +60,12 @@ struct FieldRendererId {
 };
 
 // Container for information about entries in an HTML select popup menu and
-// custom entries of the context menu. The DevTools renderer uses this to
-// populate menu items for the DevTools front-end, among other uses.
+// custom entries of the context menu.
 // TODO(crbug.com/1093904): Consider merging the MenuItem struct in
 // popup_menu.mojom.
 struct CustomContextMenuItem {
   mojo_base.mojom.String16 label;
   mojo_base.mojom.String16 icon;
-
-  // DevTools uses this field to show the keyboard shortcut associated with
-  // the action that corresponding to the menu item. No formatting/parsing
-  // is done, but the browser is expected to show this text as-is on the
-  // right side of the menu item (as so-called "minor text").
-  // Check out https://goo.gle/devtools-consistent-context-menus for details.
-  mojo_base.mojom.String16 shortcut;
-
   mojo_base.mojom.String16 tool_tip;
   CustomContextMenuItemType type;
   int32 action;

@@ -50,7 +50,6 @@ struct MenuItemInfo {
         checked(false) {}
 
   std::u16string label;
-  std::u16string shortcut;
   std::u16string tool_tip;
   Type type;
   unsigned action;

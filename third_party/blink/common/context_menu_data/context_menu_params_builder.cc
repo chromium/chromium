@@ -20,7 +20,6 @@ blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
   auto result = blink::mojom::CustomContextMenuItem::New();
 
   result->label = item.label;
-  result->shortcut = item.shortcut;
   result->tool_tip = item.tool_tip;
   result->type =
       static_cast<blink::mojom::CustomContextMenuItemType>(item.type);
