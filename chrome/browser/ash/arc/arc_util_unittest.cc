@@ -817,9 +817,6 @@ using ChromeUnaffiliatedDevicesArcRestrictionTest = ChromeArcUtilTest;
 
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ArcAllowedForAffiliatedUser_WhenPolicyValueTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(true, GetFakeUserManager(),
@@ -834,9 +831,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ArcAllowedForUnAffiliatedUser_WhenPolicyValueTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
@@ -851,9 +845,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ArcAllowedForNonEnterpriseAccount_WhenPolicyValueTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
@@ -867,9 +858,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ArcAllowedForAffiliatedUser_WhenPolicyValueFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(true, GetFakeUserManager(),
@@ -884,9 +872,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ArcNotAllowedForUnAffiliatedUser_WhenPolicyValueFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
@@ -901,9 +886,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ArcAllowedForNonEnterpriseAccount_WhenPolicyValueFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
@@ -918,8 +900,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ReportArcAllowedForAffiliatedUser_WhenPolicyValueFalse) {
   base::HistogramTester tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(true, GetFakeUserManager(),
@@ -938,8 +918,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ReportArcAllowedForUnAffiliatedUser_WhenPolicyValueTrue) {
   base::HistogramTester tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
@@ -956,8 +934,6 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
 TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
        ReportArcNotAllowedForUnAffiliatedUser_WhenPolicyValueFalse) {
   base::HistogramTester tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kUnaffiliatedDeviceArcRestriction);
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   profile()->GetTestingPrefService()->SetManagedPref(

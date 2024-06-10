@@ -368,11 +368,6 @@ BASE_FEATURE(kTouchscreenEmulation,
              "ArcTouchscreenEmulation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether ARC should be enabled on unaffiliated devices on client side
-BASE_FEATURE(kUnaffiliatedDeviceArcRestriction,
-             "UnaffiliatedDeviceArcRestriction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, ARC will not be throttled when there is active audio stream
 // from ARC.
 BASE_FEATURE(kUnthrottleOnActiveAudio,

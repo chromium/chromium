@@ -81,7 +81,6 @@ BASE_DECLARE_FEATURE(kSwitchToKeyMintOnT);
 BASE_DECLARE_FEATURE(kSwitchToKeyMintOnTOverride);
 BASE_DECLARE_FEATURE(kSyncInstallPriority);
 BASE_DECLARE_FEATURE(kTouchscreenEmulation);
-BASE_DECLARE_FEATURE(kUnaffiliatedDeviceArcRestriction);
 BASE_DECLARE_FEATURE(kUnthrottleOnActiveAudio);
 BASE_DECLARE_FEATURE(kUsbStorageUIFeature);
 BASE_DECLARE_FEATURE(kUseDalvikMemoryProfile);

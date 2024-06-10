@@ -282,27 +282,21 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
     return ArcStatus::kDisallowedByDevicePolicyRestriction;
   }
 
-  if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
-    if (!user->IsAffiliated() &&
-        !profile->GetPrefs()->GetBoolean(
-            prefs::kUnaffiliatedDeviceArcAllowed) &&
-        policy_util::IsAccountManaged(profile)) {
-      VLOG_IF(1, should_report_reason)
-          << "ARC disallowed for unaffiliated users";
-      return arc::ArcStatus::kDisallowedByUserPolicyRestriction;
-    }
+  if (!user->IsAffiliated() &&
+      !profile->GetPrefs()->GetBoolean(prefs::kUnaffiliatedDeviceArcAllowed) &&
+      policy_util::IsAccountManaged(profile)) {
+    VLOG_IF(1, should_report_reason) << "ARC disallowed for unaffiliated users";
+    return arc::ArcStatus::kDisallowedByUserPolicyRestriction;
   }
 
   // Please add any condition that disallows ARC above this check.
-  if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
-    const bool is_arc_allowed_on_unaffiliated_devices =
-        profile->GetPrefs()->GetBoolean(prefs::kUnaffiliatedDeviceArcAllowed);
-    if (user->IsAffiliated() && !is_arc_allowed_on_unaffiliated_devices) {
-      return ArcStatus::kAllowedOnAffiliatedDevice;
-    }
-    if (!user->IsAffiliated() && is_arc_allowed_on_unaffiliated_devices) {
-      return ArcStatus::kAllowedOnUnaffiliatedDevice;
-    }
+  const bool is_arc_allowed_on_unaffiliated_devices =
+      profile->GetPrefs()->GetBoolean(prefs::kUnaffiliatedDeviceArcAllowed);
+  if (user->IsAffiliated() && !is_arc_allowed_on_unaffiliated_devices) {
+    return ArcStatus::kAllowedOnAffiliatedDevice;
+  }
+  if (!user->IsAffiliated() && is_arc_allowed_on_unaffiliated_devices) {
+    return ArcStatus::kAllowedOnUnaffiliatedDevice;
   }
 
   return ArcStatus::kAllowed;
