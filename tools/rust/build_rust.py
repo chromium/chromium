@@ -803,7 +803,7 @@ def main():
     # Delete the build directory.
     if not args.skip_clean:
         print('Clearing build directory...')
-        if os.path.idsir(BUILD_DIR):
+        if os.path.isdir(BUILD_DIR):
             shutil.rmtree(BUILD_DIR)
 
     if not args.skip_test:
