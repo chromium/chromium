@@ -936,7 +936,7 @@ const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {
     return overview_item_view_->GetRoundedCorners();
   }
 
-  aura::Window* window = transform_window_.window();
+  const aura::Window* window = transform_window_.window();
   const auto header_rounded_corners = overview_item_view_->header_view()
                                           ->GetBackground()
                                           ->GetRoundedCornerRadii()

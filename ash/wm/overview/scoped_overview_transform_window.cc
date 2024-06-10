@@ -152,7 +152,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
       (new RasterScaleLayerObserver(window_, window_->layer(), window_))
           ->Lock());
 
-  fill_mode_ = GetOverviewItemFillMode(window->bounds().size());
+  fill_mode_ = GetOverviewItemFillModeForWindow(window);
 
   std::vector<raw_ptr<aura::Window, VectorExperimental>>
       transient_children_to_hide;
@@ -509,7 +509,7 @@ void ScopedOverviewTransformWindow::EnsureVisible() {
 }
 
 void ScopedOverviewTransformWindow::UpdateOverviewItemFillMode() {
-  fill_mode_ = ash::GetOverviewItemFillMode(window_->bounds().size());
+  fill_mode_ = GetOverviewItemFillModeForWindow(window_);
 }
 
 void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {

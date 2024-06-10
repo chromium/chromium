@@ -66,7 +66,15 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
 // window's transient hierarchy.
 ASH_EXPORT gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
 
+// Returns the corresponding `OverviewItemFillMode` with given `size`.
 OverviewItemFillMode GetOverviewItemFillMode(const gfx::Size& size);
+
+// Returns the corresponding `OverviewItemFillMode` for the given `window`:
+//  - For independent `OverviewItem`s, any `OverviewItemFillMode` are allowed.
+//  - For `OverviewItem`s within an `OverviewGroupItem`, only the default
+//  `kNormal` mode is allowed. (This restriction is in place to avoid visual
+//  glitches and header misalignment problems on the header view).
+OverviewItemFillMode GetOverviewItemFillModeForWindow(aura::Window* window);
 
 // Maximize the window if it is snapped without animation.
 void MaximizeIfSnapped(aura::Window* window);

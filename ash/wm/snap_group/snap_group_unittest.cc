@@ -52,6 +52,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
@@ -4682,6 +4683,47 @@ TEST_F(SnapGroupOverviewTest, SkipPairingInOverviewWithEscapeKey) {
             WindowStateType::kPrimarySnapped);
   EXPECT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// This test validates `OverviewItemFillMode` restrictions on
+// `OverviewGroupItem`:
+//   - Windows within an `OverviewGroupItem` are prohibited from using special
+//   `OverviewItemFillMode`s (`kPillarBoxed`, `kLetterBoxed`).
+//   - This restriction is in place to avoid visual glitches and header
+//   misalignment problems that can occur when one window in the group is
+//   resized to a very narrow or wide aspect ratio.
+// See http://b/341750824 for more details.
+TEST_F(SnapGroupOverviewTest, OverviewItemFillMode) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point divider_center(
+      snap_group_divider_bounds_in_screen().CenterPoint());
+  event_generator->MoveMouseTo(divider_center);
+  event_generator->PressLeftButton();
+
+  // Resize the divider to the extreme left. This makes the left snapped window
+  // so narrow that it will be the `OverviewItemFillMode::kPillarBoxed` if it is
+  // an independent window.
+  event_generator->MoveMouseTo(gfx::Point(10, 200), /*count=*/2);
+  event_generator->ReleaseLeftButton();
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
+  const auto& overview_items =
+      overview_group_item->overview_items_for_testing();
+  for (const auto& overview_item : overview_items) {
+    // As we disallow setting special `OverviewItemFillMode` for windows in a
+    // Snap Group, the left snapped window will maintain the default
+    // `OverviewItemFillMode::kNormal` fill mode.
+    EXPECT_EQ(OverviewItemFillMode::kNormal,
+              overview_item->GetOverviewItemFillMode());
+  }
 }
 
 // -----------------------------------------------------------------------------

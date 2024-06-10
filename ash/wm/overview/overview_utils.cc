@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_types.h"
@@ -161,6 +162,16 @@ OverviewItemFillMode GetOverviewItemFillMode(const gfx::Size& size) {
 
   if (size.height() > size.width() * kExtremeWindowRatioThreshold) {
     return OverviewItemFillMode::kPillarBoxed;
+  }
+
+  return OverviewItemFillMode::kNormal;
+}
+
+OverviewItemFillMode GetOverviewItemFillModeForWindow(aura::Window* window) {
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  if (!snap_group_controller ||
+      !snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+    return GetOverviewItemFillMode(window->bounds().size());
   }
 
   return OverviewItemFillMode::kNormal;
