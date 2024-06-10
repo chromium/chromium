@@ -16422,7 +16422,7 @@
             ],
             "experiments": [
                 {
-                    "name": "BothMouseDownAndMouseHover_20240515",
+                    "name": "BothMouseDownAndMouseHover_20240610",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "true",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "true",
@@ -16433,7 +16433,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseHover300ms_20240515",
+                    "name": "OnlyMouseHover300ms_20240610",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "true",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
@@ -16444,7 +16444,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseHover200ms_20240515",
+                    "name": "OnlyMouseHover200ms_20240610",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "true",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
@@ -16455,7 +16455,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseDown_20240515",
+                    "name": "OnlyMouseDown_20240610",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "false",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "true"
@@ -16465,7 +16465,7 @@
                     ]
                 },
                 {
-                    "name": "Control_20240515",
+                    "name": "Control_20240610",
                     "disable_features": [
                         "NewTabPageTriggerForPrerender2"
                     ]
