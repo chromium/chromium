@@ -27,9 +27,9 @@ void OobeAppsDiscoveryService::GetAppsAndUseCases(
   if (!(apps_list_.empty()) && !(use_cases_.empty())) {
     PropagateResult(std::move(callback), AppsFetchingResult::kSuccess);
   } else {
-    DownloadAppsAndUseCases();
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
+    DownloadAppsAndUseCases();
   }
 }
 
