@@ -193,7 +193,8 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     bool is_oidc_account,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    signin::SigninChoiceCallback callback) {
+    signin::SigninChoiceCallback process_user_choice_callback,
+    base::OnceClosure done_callback) {
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -224,7 +225,7 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
           ? ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
           : ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
       account_info, profile_creation_required_by_policy, show_link_data_option,
-      std::move(callback));
+      std::move(process_user_choice_callback), std::move(done_callback));
 
   return web_view;
 }
@@ -518,13 +519,15 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     bool is_oidc_account,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    signin::SigninChoiceCallback callback) {
+    signin::SigninChoiceCallback process_user_choice_callback,
+    base::OnceClosure done_callback) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::
           CreateManagedUserNoticeConfirmationWebView(
               browser, account_info, is_oidc_account,
               profile_creation_required_by_policy, show_link_data_option,
-              std::move(callback)),
+              std::move(process_user_choice_callback),
+              std::move(done_callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

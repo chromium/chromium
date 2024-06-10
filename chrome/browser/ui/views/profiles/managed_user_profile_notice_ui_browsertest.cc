@@ -111,7 +111,8 @@ class ManagedUserNoticeStepControllerForTest
         ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
         *account_info_, /*profile_creation_required_by_policy=*/false,
         /*show_link_data_option=*/false,
-        /*proceed_callback*/ base::DoNothing());
+        /*process_user_choice_callback*/ base::DoNothing(),
+        /*done_callback=*/base::DoNothing());
 
     if (step_shown_callback) {
       std::move(step_shown_callback).Run(/*success=*/true);
@@ -237,7 +238,9 @@ class ManagedUserNoticeUIDialogPixelTest
     controller->ShowModalManagedUserNoticeDialog(
         account_info, /*is_oidc_account=*/false,
         GetParam().profile_creation_required_by_policy,
-        GetParam().show_link_data_checkbox, base::DoNothing());
+        GetParam().show_link_data_checkbox,
+        /*process_user_choice_callback*/ base::DoNothing(),
+        /*done_callback=*/base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();

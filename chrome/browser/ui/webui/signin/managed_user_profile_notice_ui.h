@@ -56,7 +56,8 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
                   const AccountInfo& account_info,
                   bool profile_creation_required_by_policy,
                   bool show_link_data_option,
-                  signin::SigninChoiceCallback proceed_callback);
+                  signin::SigninChoiceCallback process_user_choice_callback,
+                  base::OnceClosure done_callback);
 
   // Allows tests to trigger page events.
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();

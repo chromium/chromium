@@ -93,7 +93,8 @@ class SigninViewControllerDelegate {
       bool is_oidc_account,
       bool force_new_profile,
       bool show_link_data_option,
-      signin::SigninChoiceCallback callback);
+      signin::SigninChoiceCallback process_user_choice_callback,
+      base::OnceClosure done_callback);
 #endif
 
   void AddObserver(Observer* observer);

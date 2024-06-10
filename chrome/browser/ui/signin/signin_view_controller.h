@@ -164,12 +164,16 @@ class SigninViewController {
   // otherwise the default wording will be used.
   // When `show_link_data_option` is false, the callback is called with either
   // SIGNIN_CHOICE_CANCEL or SIGNIN_CHOICE_NEW_PROFILE.
+  // `process_user_choice_callback` is the callback that handles the user
+  // choice. `done_callback` is the callback when the flow is complete, this is
+  // where The UI cleanups should be handled.
   void ShowModalManagedUserNoticeDialog(
       const AccountInfo& account_info,
       bool is_oidc_account,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
-      signin::SigninChoiceCallback callback);
+      signin::SigninChoiceCallback process_user_choice_callback,
+      base::OnceClosure done_callback);
 
   // Shows the modal sign-in error dialog as a browser-modal dialog on top of
   // the |browser_|'s window.
@@ -187,6 +191,8 @@ class SigninViewController {
 
   // Called by a `dialog_`' when it closes.
   void OnModalDialogClosed();
+
+  base::WeakPtr<SigninViewController> AsWeakPtr();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,

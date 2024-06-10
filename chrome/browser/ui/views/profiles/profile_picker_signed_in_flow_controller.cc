@@ -91,7 +91,7 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
 
 void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
     ManagedUserProfileNoticeUI::ScreenType type,
-    signin::SigninChoiceCallback proceed_callback) {
+    signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
@@ -101,7 +101,7 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
                                    // Unretained is enough as the callback is
                                    // called by the owner of this instance.
                                    base::Unretained(this), type,
-                                   std::move(proceed_callback)));
+                                   std::move(process_user_choice_callback)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -169,7 +169,7 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
 void ProfilePickerSignedInFlowController::
     SwitchToManagedUserProfileNoticeFinished(
         ManagedUserProfileNoticeUI::ScreenType type,
-        signin::SigninChoiceCallback proceed_callback) {
+        signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   ManagedUserProfileNoticeUI* managed_user_profile_notice_ui =
@@ -178,12 +178,15 @@ void ProfilePickerSignedInFlowController::
           ->GetController()
           ->GetAs<ManagedUserProfileNoticeUI>();
 
+  // Here `done_callback` does nothing because lifecycle of
+  // `managed_user_profile_notice_ui` is controlled by this class.
   managed_user_profile_notice_ui->Initialize(
       /*browser=*/nullptr, type,
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email_),
       /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false, std::move(proceed_callback));
+      /*show_link_data_option=*/false, std::move(process_user_choice_callback),
+      /*done_callback=*/base::DoNothing());
 }
 
 bool ProfilePickerSignedInFlowController::IsInitialized() const {

@@ -44,7 +44,8 @@ class ManagedUserProfileNoticeHandler
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
       const AccountInfo& account_info,
-      signin::SigninChoiceCallback proceed_callback);
+      signin::SigninChoiceCallback process_user_choice_callback,
+      base::OnceClosure done_callback);
   ~ManagedUserProfileNoticeHandler() override;
 
   ManagedUserProfileNoticeHandler(const ManagedUserProfileNoticeHandler&) =
@@ -132,7 +133,8 @@ class ManagedUserProfileNoticeHandler
   const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
-  signin::SigninChoiceCallback proceed_callback_;
+  signin::SigninChoiceCallback process_user_choice_callback_;
+  base::OnceClosure done_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_HANDLER_H_

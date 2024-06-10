@@ -208,14 +208,9 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
   browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       account_info, /*is_oidc_account=*/false,
       profile_creation_required_by_policy, show_link_data_option,
-
-      base::BindOnce(
-          [](signin::SigninChoiceCallback callback, Browser* browser,
-             signin::SigninChoice choice) {
-            browser->signin_view_controller()->CloseModalSignin();
-            std::move(callback).Run(choice);
-          },
-          std::move(callback), browser_.get()));
+      std::move(callback),
+      base::BindOnce(&SigninViewController::CloseModalSignin,
+                     browser_->signin_view_controller()->AsWeakPtr()));
 }
 #endif
 
@@ -255,9 +250,8 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
       /*profile_creation_required_by_policy=*/false,
       /*show_link_data_option=*/false,
       base::BindOnce(
-          [](signin::SigninChoiceCallback callback, Browser* browser,
+          [](signin::SigninChoiceCallback callback,
              signin::SigninChoice choice) {
-            browser->signin_view_controller()->CloseModalSignin();
             // When `show_link_data_option` is false,
             // `ShowModalManagedUserNoticeDialog()` calls back
             // with either `SIGNIN_CHOICE_CANCEL` or
@@ -268,5 +262,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
                     ? signin::SigninChoice::SIGNIN_CHOICE_CANCEL
                     : signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
           },
-          std::move(callback), browser_.get()));
+          std::move(callback)),
+      base::BindOnce(&SigninViewController::CloseModalSignin,
+                     browser_->signin_view_controller()->AsWeakPtr()));
 }

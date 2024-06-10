@@ -68,15 +68,20 @@ class ForcedEnterpriseSigninInterceptionHandle
         /*is_oidc_account=*/bubble_parameters.interception_type ==
             WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
         profile_creation_required_by_policy_, show_link_data_option_,
+        /*process_user_choice_callback=*/
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        /*done_callback=*/
+        base::BindOnce(&SigninViewController::CloseModalSignin,
+                       browser_->signin_view_controller()->AsWeakPtr()));
   }
 
   ~ForcedEnterpriseSigninInterceptionHandle() override {
-    if (browser_) {
-      browser_->signin_view_controller()->CloseModalSignin();
+    if (!browser_) {
+      return;
     }
+    browser_->signin_view_controller()->CloseModalSignin();
     if (callback_) {
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
           bubble_parameters_, browser_->profile(),

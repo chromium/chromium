@@ -70,15 +70,18 @@ class ManagedUserProfileNoticeHandlerTestBase
     account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
   }
 
-  void InitializeHandler(ManagedUserProfileNoticeUI::ScreenType screen_type,
-                         bool profile_creation_required_by_policy,
-                         bool show_link_data_option,
-                         signin::SigninChoiceCallback proceed_callback) {
+  void InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType screen_type,
+      bool profile_creation_required_by_policy,
+      bool show_link_data_option,
+      signin::SigninChoiceCallback process_user_choice_callback,
+      base::OnceClosure done_callback) {
     message_handler_.reset();
 
     message_handler_ = std::make_unique<ManagedUserProfileNoticeHandler>(
         /*browser=*/nullptr, screen_type, profile_creation_required_by_policy,
-        show_link_data_option, account_info_, std::move(proceed_callback));
+        show_link_data_option, account_info_,
+        std::move(process_user_choice_callback), std::move(done_callback));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }
@@ -117,15 +120,20 @@ class ManagedUserProfileNoticeHandleProceedTest
 // Tests how `HandleProceed` processes the arguments and the handler's state to
 // notify the registered callback.
 TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
-  base::MockCallback<signin::SigninChoiceCallback> mock_proceed_callback;
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/true, mock_proceed_callback.Get());
+      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
+      mock_done_callback.Get());
 
   base::Value::List args;
   args.Append(GetParam().should_link_data);
-  EXPECT_CALL(mock_proceed_callback, Run(GetParam().expected_choice));
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(GetParam().expected_choice));
+  EXPECT_CALL(mock_done_callback, Run());
   web_ui()->HandleReceivedMessage("proceed", args);
 }
 

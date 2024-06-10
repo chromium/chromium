@@ -122,7 +122,7 @@ class ProfilePickerSignedInFlowController
   void SwitchToSyncConfirmationFinished();
   void SwitchToManagedUserProfileNoticeFinished(
       ManagedUserProfileNoticeUI::ScreenType type,
-      signin::SigninChoiceCallback proceed_callback);
+      signin::SigninChoiceCallback process_user_choice_callback);
 
   // Returns whether the flow is initialized (i.e. whether `Init()` has been
   // called).
