@@ -110,6 +110,11 @@
 //! println!("{args:?}");
 //! ```
 
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![warn(missing_docs)]
+#![warn(clippy::print_stderr)]
+#![warn(clippy::print_stdout)]
+
 mod ext;
 
 use std::ffi::OsStr;
@@ -158,7 +163,7 @@ impl RawArgs {
     /// let mut paths = raw.remaining(&mut cursor).map(PathBuf::from).collect::<Vec<_>>();
     /// println!("{paths:?}");
     /// ```
-    pub fn new(iter: impl IntoIterator<Item = impl Into<std::ffi::OsString>>) -> Self {
+    pub fn new(iter: impl IntoIterator<Item = impl Into<OsString>>) -> Self {
         let iter = iter.into_iter();
         Self::from(iter)
     }

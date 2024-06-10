@@ -1,9 +1,10 @@
 use std::ffi::OsStr;
 
+/// String-like methods for [`OsStr`]
 pub trait OsStrExt: private::Sealed {
     /// Converts to a string slice.
     ///
-    /// The Utf8Error is guaranteed to have a valid UTF8 boundary
+    /// The `Utf8Error` is guaranteed to have a valid UTF8 boundary
     /// in its `valid_up_to()`
     fn try_str(&self) -> Result<&str, std::str::Utf8Error>;
     /// Returns `true` if the given pattern matches a sub-slice of
@@ -253,18 +254,15 @@ impl<'s, 'n> Iterator for Split<'s, 'n> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let haystack = self.haystack?;
-        match haystack.split_once(self.needle) {
-            Some((first, second)) => {
-                if !haystack.is_empty() {
-                    debug_assert_ne!(haystack, second);
-                }
-                self.haystack = Some(second);
-                Some(first)
+        if let Some((first, second)) = haystack.split_once(self.needle) {
+            if !haystack.is_empty() {
+                debug_assert_ne!(haystack, second);
             }
-            None => {
-                self.haystack = None;
-                Some(haystack)
-            }
+            self.haystack = Some(second);
+            Some(first)
+        } else {
+            self.haystack = None;
+            Some(haystack)
         }
     }
 }
@@ -275,10 +273,12 @@ impl<'s, 'n> Iterator for Split<'s, 'n> {
 ///
 /// `index` must be at a valid UTF-8 boundary
 pub(crate) unsafe fn split_at(os: &OsStr, index: usize) -> (&OsStr, &OsStr) {
-    let bytes = os.as_encoded_bytes();
-    let (first, second) = bytes.split_at(index);
-    (
-        OsStr::from_encoded_bytes_unchecked(first),
-        OsStr::from_encoded_bytes_unchecked(second),
-    )
+    unsafe {
+        let bytes = os.as_encoded_bytes();
+        let (first, second) = bytes.split_at(index);
+        (
+            OsStr::from_encoded_bytes_unchecked(first),
+            OsStr::from_encoded_bytes_unchecked(second),
+        )
+    }
 }

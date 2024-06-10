@@ -1,8 +1,7 @@
 [package]
 name = "clap_lex"
-version = "0.7.0"
+version = "0.7.1"
 description = "Minimal, flexible command line parser"
-repository = "https://github.com/clap-rs/clap/tree/master/clap_lex"
 categories = ["command-line-interface"]
 keywords = [
   "argument",
@@ -11,6 +10,7 @@ keywords = [
   "parser",
   "parse"
 ]
+repository.workspace = true
 license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -26,5 +26,11 @@ pre-release-replacements = [
   {file="README.md", search="github.com/clap-rs/clap/blob/[^/]+/", replace="github.com/clap-rs/clap/blob/{{tag_name}}/", exactly=4, prerelease = true},
 ]
 
+[dev-dependencies]
+automod = "1.0.14"
+
 [lib]
 bench = false
+
+[lints]
+workspace = true
