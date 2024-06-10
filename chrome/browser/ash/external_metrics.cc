@@ -63,6 +63,7 @@ ExternalMetrics* g_instance = nullptr;
 ExternalMetrics::ExternalMetrics()
     : uma_events_file_(kEventsFilePath),
       uma_events_dir_(kEventsDirectoryPath),
+      uma_early_metrics_dir_(kUmaEarlyMetricsDirectoryPath),
       collection_interval_(kDefaultCollectionInterval) {
   CHECK(!g_instance);
   g_instance = this;
@@ -98,10 +99,12 @@ void ExternalMetrics::Start() {
 // static
 scoped_refptr<ExternalMetrics> ExternalMetrics::CreateForTesting(
     const std::string& filename,
-    const std::string& dir) {
+    const std::string& uma_events_dir,
+    const std::string& uma_early_metrics_dir) {
   scoped_refptr<ExternalMetrics> external_metrics(new ExternalMetrics());
   external_metrics->uma_events_file_ = filename;
-  external_metrics->uma_events_dir_ = dir;
+  external_metrics->uma_events_dir_ = uma_events_dir;
+  external_metrics->uma_early_metrics_dir_ = uma_early_metrics_dir;
   return external_metrics;
 }
 
@@ -219,15 +222,35 @@ int ExternalMetrics::CollectEvents() {
                                                               &samples);
   int cumulative_num_samples = ProcessSamples(&samples);
 
-  base::DirReaderPosix reader(uma_events_dir_.c_str());
-  if (!reader.IsValid()) {
-    LOG(ERROR)
-        << "Failed to create DirReaderPosix. Cannot read per-pid uma files.";
-    return cumulative_num_samples;
+  // Collect UMA events for events that happen before the stateful partition is
+  // mounted. Crash reporter will set the UMA events output directory since
+  // the typical |uma_events_dir_| does not exist before stateful partition is
+  // mounted.
+  base::DirReaderPosix reader_early_metrics(uma_early_metrics_dir_.c_str());
+  if (!reader_early_metrics.IsValid()) {
+    LOG(ERROR) << "Failed to create DirReaderPosix. Cannot read early per-pid "
+                  "uma files.";
   }
 
-  while (reader.Next()) {
-    std::string filename(reader.name());
+  while (reader_early_metrics.IsValid() && reader_early_metrics.Next()) {
+    std::string filename(reader_early_metrics.name());
+    if (filename == "." || filename == "..") {
+      continue;
+    }
+    metrics::SerializationUtils::ReadAndDeleteMetricsFromFile(
+        base::StrCat({uma_early_metrics_dir_, "/", filename}), &samples);
+    cumulative_num_samples += ProcessSamples(&samples);
+  }
+
+  // Collect UMA events which happen after stateful partition is mounted.
+  base::DirReaderPosix reader_metrics(uma_events_dir_.c_str());
+  if (!reader_metrics.IsValid()) {
+    LOG(ERROR)
+        << "Failed to create DirReaderPosix. Cannot read per-pid uma files.";
+  }
+
+  while (reader_metrics.IsValid() && reader_metrics.Next()) {
+    std::string filename(reader_metrics.name());
     if (filename == "." || filename == "..") {
       continue;
     }

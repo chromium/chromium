@@ -31,6 +31,11 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // metrics are read.
   static constexpr char kEventsDirectoryPath[] =
       "/var/lib/metrics/uma-events.d";
+  // This directory holds per-pid event files. These files contain metrics
+  // collected before the stateful partition is mounted. This is read
+  // by externally-reported metrics when the crash reporter is invoked with the
+  // FLAGS_early flag to capture early boot metrics.
+  static constexpr char kUmaEarlyMetricsDirectoryPath[] = "/run/early-metrics/";
 
   ExternalMetrics();
 
@@ -49,7 +54,8 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // testing purpose.
   static scoped_refptr<ExternalMetrics> CreateForTesting(
       const std::string& filename,
-      const std::string& dir);
+      const std::string& uma_events_dir,
+      const std::string& uma_early_metrics_dir);
 
   // Synchronously executes one collection run for testing purposes. Does not
   // schedule any followup runs.
@@ -60,10 +66,13 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   friend class ExternalMetricsTest;
 
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, CustomInterval);
+  FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, ProcessSamplesSuccessfully);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, HandleMissingFile);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, CanReceiveHistogram);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest,
                            CanReceiveHistogramFromPidFiles);
+  FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest,
+                           CanReceiveMetricsFromEarlyMetricsDir);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest,
                            IncorrectHistogramsAreDiscarded);
 
@@ -118,6 +127,10 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // Directory of per-pid event files used by libmetrics to send metrics to
   // Chrome.
   std::string uma_events_dir_;
+
+  // Directory of per-pid event files before stateful partition is mounted.
+  // Used by libmetrics to send metrics to Chrome.
+  std::string uma_early_metrics_dir_;
 
   // Interval between metrics being read from our sources.
   base::TimeDelta collection_interval_;
