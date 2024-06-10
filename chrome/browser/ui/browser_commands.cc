@@ -1977,12 +1977,22 @@ void ShowAvatarMenu(Browser* browser) {
       /*is_source_accelerator=*/true);
 }
 
+// TODO(crbug.com/345770406): Rename the function name.
+// We removed the extra confirmation step in the Chrome update flow. After the
+// full rollout of the code, this name will be misleading. We will clean up the
+// code and its related source enums.
 void OpenUpdateChromeDialog(Browser* browser) {
   if (UpgradeDetector::GetInstance()->is_outdated_install()) {
     UpgradeDetector::GetInstance()->NotifyOutdatedInstall();
   } else if (UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
     UpgradeDetector::GetInstance()->NotifyOutdatedInstallNoAutoUpdate();
   } else {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    if (base::FeatureList::IsEnabled(features::kFewerUpdateConfirmations)) {
+      chrome::AttemptRelaunch();
+      return;
+    }
+#endif
     base::RecordAction(UserMetricsAction("UpdateChrome"));
     browser->window()->ShowUpdateChromeDialog();
   }

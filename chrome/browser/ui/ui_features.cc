@@ -120,6 +120,14 @@ BASE_FEATURE(kEvDetailsInPageInfo,
              "EvDetailsInPageInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Enables the feature to remove the last confirmation dialog when relaunching
+// to update Chrome.
+BASE_FEATURE(kFewerUpdateConfirmations,
+             "FewerUpdateConfirmations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Enables showing the "Get the most out of Chrome" section in settings.
 BASE_FEATURE(kGetTheMostOutOfChrome,
