@@ -234,8 +234,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         initWithDeviceSwitcherResultDispatcher:nullptr
                         hostContentSettingsMap:(HostContentSettingsMap*)
                                                    settings_map
-                                   prefService:chrome_browser_state_.get()
-                                                   ->GetPrefs()
                        tabStripCommandsHandler:nil
                                        tracker:(feature_engagement::Tracker*)
                                                    tracker

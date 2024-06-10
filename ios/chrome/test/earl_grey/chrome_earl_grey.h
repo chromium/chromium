@@ -848,8 +848,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
 
-// Returns true if the Preference is currently using its default value,
-// and has not been set by any higher-priority source (even with the same
+// Returns true if the LocaState Preference is currently using its default
+// value, and has not been set by any higher-priority source (even with the same
 // value).
 - (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
 

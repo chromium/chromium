@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
@@ -65,10 +64,6 @@
     : UIViewController <FullscreenUIElement, LocationBarAnimatee>
 
 @property(nonatomic, assign) BOOL incognito;
-
-// Pref service from the original browser state, used to get and set the
-// preferred omnibox position.
-@property(nonatomic, assign) PrefService* originalPrefService;
 
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,

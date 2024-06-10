@@ -11,7 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -649,12 +651,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Show Top or Bottom Address Bar action.
-  if (IsBottomOmniboxAvailable() && _originalPrefService &&
-      IsSplitToolbarMode(self)) {
+  if (IsBottomOmniboxAvailable() && IsSplitToolbarMode(self)) {
     NSString* title = nil;
     UIImage* image = nil;
     ToolbarType targetToolbarType;
-    if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
+    if (GetApplicationContext()->GetLocalState()->GetBoolean(
+            prefs::kBottomOmnibox)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
       if (@available(iOS 15.1, *)) {
         image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
@@ -692,9 +694,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Reverse the array manually when preferredMenuElementOrder is not available.
-  if (IsBottomOmniboxAvailable() && _originalPrefService) {
+  if (IsBottomOmniboxAvailable()) {
     if (!base::ios::IsRunningOnIOS16OrLater()) {
-      if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
+      if (GetApplicationContext()->GetLocalState()->GetBoolean(
+              prefs::kBottomOmnibox)) {
         menuElements =
             [[[menuElements reverseObjectEnumerator] allObjects] mutableCopy];
       }
@@ -798,17 +801,15 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 /// Set the preferred omnibox position to `toolbarType`.
 - (void)moveOmniboxToToolbarType:(ToolbarType)toolbarType {
-  if (_originalPrefService) {
-    _originalPrefService->SetBoolean(prefs::kBottomOmnibox,
-                                     toolbarType == ToolbarType::kSecondary);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kBottomOmnibox, toolbarType == ToolbarType::kSecondary);
 
-    if (toolbarType == ToolbarType::kPrimary) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToTop"));
-    } else {
-      RecordAction(UserMetricsAction(
-          "Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
-    }
+  if (toolbarType == ToolbarType::kPrimary) {
+    RecordAction(
+        UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToTop"));
+  } else {
+    RecordAction(
+        UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
   }
 }
 

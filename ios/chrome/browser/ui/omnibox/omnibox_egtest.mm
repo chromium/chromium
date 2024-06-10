@@ -285,11 +285,11 @@ void FocusFakebox() {
   [ChromeEarlGrey clearPasteboard];
   [ChromeEarlGrey clearBrowsingHistory];
 
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [super tearDown];
 }
 
@@ -495,7 +495,7 @@ void FocusFakebox() {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
   }
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
 
   // Enable the IPH flag to ensure the IPH triggersenable)
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -609,11 +609,11 @@ void FocusFakebox() {
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
   [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
 
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [super tearDown];
 }
 
@@ -711,7 +711,7 @@ void FocusFakebox() {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
   }
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
 
   // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];

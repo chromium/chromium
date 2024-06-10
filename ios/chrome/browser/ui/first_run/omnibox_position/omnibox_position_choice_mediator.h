@@ -14,7 +14,6 @@ class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
 
 @protocol OmniboxPositionChoiceConsumer;
-class PrefService;
 
 /// Mediator that handles the omnibox position selection operations.
 @interface OmniboxPositionChoiceMediator
@@ -22,9 +21,6 @@ class PrefService;
 
 /// The consumer for this object.
 @property(nonatomic, weak) id<OmniboxPositionChoiceConsumer> consumer;
-/// Pref service from the original browser state, used to set preferred omnibox
-/// position.
-@property(nonatomic, assign) PrefService* originalPrefService;
 /// Device switcher result dispatcher, used to classify user as Safari switcher.
 @property(nonatomic, assign)
     segmentation_platform::DeviceSwitcherResultDispatcher*

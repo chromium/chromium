@@ -385,7 +385,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 // Tests that tapping a button cancels the focus on the omnibox.
@@ -698,7 +698,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 // Verifies that the address bar can be moved from the location bar context

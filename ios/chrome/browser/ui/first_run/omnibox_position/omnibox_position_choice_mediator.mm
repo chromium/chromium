@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_mediator.h"
 
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/metrics.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_consumer.h"
@@ -32,11 +33,8 @@
 }
 
 - (void)saveSelectedPosition {
-  if (self.originalPrefService) {
-    _originalPrefService->SetBoolean(
-        prefs::kBottomOmnibox,
-        self.selectedPosition == ToolbarType::kSecondary);
-  }
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kBottomOmnibox, self.selectedPosition == ToolbarType::kSecondary);
   RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionValidated,
                     _isFirstRun);
   RecordSelectedPosition(
@@ -53,16 +51,15 @@
 
 - (void)skipSelection {
   CHECK(_isFirstRun);
-  if (self.originalPrefService) {
     const BOOL defaultPositionIsBottom =
         DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary;
-    self.originalPrefService->SetBoolean(prefs::kBottomOmniboxByDefault,
-                                         defaultPositionIsBottom);
-    self.originalPrefService->SetDefaultPrefValue(
-        prefs::kBottomOmnibox, base::Value(defaultPositionIsBottom));
-  }
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenSkipped,
-                    _isFirstRun);
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    localState->SetBoolean(prefs::kBottomOmniboxByDefault,
+                           defaultPositionIsBottom);
+    localState->SetDefaultPrefValue(prefs::kBottomOmnibox,
+                                    base::Value(defaultPositionIsBottom));
+    RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenSkipped,
+                      _isFirstRun);
 }
 
 #pragma mark - Setters

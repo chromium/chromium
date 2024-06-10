@@ -70,9 +70,6 @@
 
   _mediator =
       [[OmniboxPositionChoiceMediator alloc] initWithFirstRun:_firstRun];
-  _mediator.originalPrefService = self.browser->GetBrowserState()
-                                      ->GetOriginalChromeBrowserState()
-                                      ->GetPrefs();
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     _mediator.deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::

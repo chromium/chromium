@@ -283,6 +283,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/js_messaging:web_view_js_utils",

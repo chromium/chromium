@@ -11,12 +11,15 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -45,13 +48,18 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        TestChromeBrowserState::Builder().Build());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        test_manager_.get());
+
+    browser_ = std::make_unique<TestBrowser>(
+        test_manager_->GetLastUsedBrowserStateForTesting(), scene_state_);
     promos_manager_ = std::make_unique<MockPromosManager>();
     agent_ = [[OmniboxPositionChoiceSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()
-              forBrowserState:browser_state_.get()];
+              forBrowserState:test_manager_
+                                  ->GetLastUsedBrowserStateForTesting()];
     agent_.sceneState = scene_state_;
   }
 
@@ -62,9 +70,9 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
   }
 
  protected:
+  std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   OmniboxPositionChoiceSceneAgent* agent_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   // SceneState only weakly holds AppState, so keep it alive here.
@@ -90,7 +98,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestPromoRegistration) {
       .Times(0);
 
   // Register the promo when there is no user preferred omnibox position.
-  browser_state_->GetPrefs()->ClearPref(prefs::kBottomOmnibox);
+  GetApplicationContext()->GetLocalState()->ClearPref(prefs::kBottomOmnibox);
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
@@ -114,7 +122,8 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest,
       .Times(1);
 
   // Deregister the promo if there is a user preferred omnibox position.
-  browser_state_->GetPrefs()->SetBoolean(prefs::kBottomOmnibox, false);
+  GetApplicationContext()->GetLocalState()->SetBoolean(prefs::kBottomOmnibox,
+                                                       false);
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
@@ -158,7 +167,7 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestDeregistration) {
 
   // Register the promo on app foreground when there is no user preferred
   // omnibox position.
-  browser_state_->GetPrefs()->ClearPref(prefs::kBottomOmnibox);
+  GetApplicationContext()->GetLocalState()->ClearPref(prefs::kBottomOmnibox);
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
@@ -171,7 +180,8 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestDeregistration) {
       .Times(1);
 
   // Deregister the promo if a preferred omnibox position is set.
-  browser_state_->GetPrefs()->SetBoolean(prefs::kBottomOmnibox, false);
+  GetApplicationContext()->GetLocalState()->SetBoolean(prefs::kBottomOmnibox,
+                                                       false);
 
   scene_state_.UIEnabled = NO;
 }

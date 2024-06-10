@@ -360,6 +360,22 @@ void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
   }
 }
 
+// Helper function migrating the `bool` preference from BrowserState prefs to
+// LocalState prefs.
+void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* legacy_pref =
+      profile_pref_service->FindPreference(pref_name.data());
+  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
+    local_pref_service->SetBoolean(
+        pref_name.data(), profile_pref_service->GetBoolean(pref_name.data()));
+    profile_pref_service->ClearPref(pref_name.data());
+  }
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -544,6 +560,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kIOSChromeNextVersionKey, std::string());
   registry->RegisterStringPref(kIOSChromeUpgradeURLKey, std::string());
   registry->RegisterTimePref(kLastInfobarDisplayTimeKey, base::Time());
+
+  // Bottom omnibox preferences.
+  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
+  registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -598,8 +618,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
   registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
-  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
-  registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
   registry->RegisterBooleanPref(kDataSaverEnabled, false);
@@ -1055,6 +1073,14 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 06/2024.
   MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosSyncSegmentsNewTabPageDisplayCount, prefs);
+
+  // Added 06/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(prefs::kBottomOmnibox,
+                                                      prefs);
+
+  // Added 06/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kBottomOmniboxByDefault, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

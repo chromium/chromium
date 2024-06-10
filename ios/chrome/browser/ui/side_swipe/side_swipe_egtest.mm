@@ -20,7 +20,7 @@
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 #pragma mark - Tests
@@ -81,7 +81,7 @@
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 // This is currently needed to prevent this test case from being ignored.

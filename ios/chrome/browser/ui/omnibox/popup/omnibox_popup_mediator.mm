@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -144,8 +145,21 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _cachedImages = [[NSCache alloc] init];
     // This is logged only when `IsBottomOmniboxAvailable`.
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
+
+    _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:GetApplicationContext()->GetLocalState()
+                   prefName:prefs::kBottomOmnibox];
+    [_bottomOmniboxEnabled setObserver:self];
+    // Initialize to the correct value.
+    [self booleanDidChange:_bottomOmniboxEnabled];
   }
   return self;
+}
+
+- (void)disconnect {
+  [_bottomOmniboxEnabled stop];
+  [_bottomOmniboxEnabled setObserver:nil];
+  _bottomOmniboxEnabled = nil;
 }
 
 - (void)updateMatches:(const AutocompleteResult&)result {
@@ -209,22 +223,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 
   _debugInfoConsumer = debugInfoConsumer;
-}
-
-- (void)setOriginalPrefService:(PrefService*)originalPrefService {
-  _originalPrefService = originalPrefService;
-  if (IsBottomOmniboxAvailable() && _originalPrefService) {
-    _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
-                                              prefName:prefs::kBottomOmnibox];
-    [_bottomOmniboxEnabled setObserver:self];
-    // Initialize to the correct value.
-    [self booleanDidChange:_bottomOmniboxEnabled];
-  } else {
-    [_bottomOmniboxEnabled stop];
-    [_bottomOmniboxEnabled setObserver:nil];
-    _bottomOmniboxEnabled = nil;
-  }
 }
 
 #pragma mark - AutocompleteResultDataSource

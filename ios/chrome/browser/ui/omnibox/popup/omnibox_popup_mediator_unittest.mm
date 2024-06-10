@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 
 #import <memory>
 #import <vector>
@@ -21,12 +20,16 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -112,6 +115,12 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    TestChromeBrowserState::Builder test_cbs_builder;
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        test_cbs_builder.Build());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
     // Setup for AutocompleteController.
     auto template_url_service = std::make_unique<TemplateURLService>(
         /*prefs=*/nullptr, /*search_engine_search_service=*/nullptr,
@@ -172,6 +181,8 @@ class OmniboxPopupMediatorTest : public PlatformTest {
         .andReturn(&autocomplete_result_);
   }
 
+  void TearDown() override { [mediator_ disconnect]; }
+
   void SetVisibleSuggestionCount(NSUInteger visibleSuggestionCount) {
     OCMStub([mockResultConsumer_ newResultsAvailable])
         .andDo(^(NSInvocation* invocation) {
@@ -211,6 +222,7 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   }
 
   // Message loop for the main test thread.
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   base::test::TaskEnvironment environment_;
   OmniboxPopupMediator* mediator_;
   MockOmniboxPopupMediatorDelegate delegate_;

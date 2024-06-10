@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -121,8 +122,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       _deviceSwitcherResultDispatcher;
 
-  raw_ptr<PrefService> _prefService;
-
   id<TabStripCommands> _tabStripCommandsHandler;
 }
 
@@ -133,7 +132,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         (segmentation_platform::DeviceSwitcherResultDispatcher*)
             deviceSwitcherResultDispatcher
                     hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                               prefService:(PrefService*)prefService
                    tabStripCommandsHandler:
                        (id<TabStripCommands>)tabStripCommandsHandler
                                    tracker:(feature_engagement::Tracker*)
@@ -141,14 +139,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                               webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
-    CHECK(prefService);
     DCHECK(webStateList);
 
     _webStateList = webStateList;
     _engagementTracker = engagementTracker;
     _settingsMap = settingsMap;
     _deviceSwitcherResultDispatcher = deviceSwitcherResultDispatcher;
-    _prefService = prefService;
     _tabStripCommandsHandler = tabStripCommandsHandler;
     self.started = YES;
   }
@@ -212,7 +208,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 
   BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
-                         _prefService->GetBoolean(prefs::kBottomOmnibox);
+                         GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBottomOmnibox);
   BubbleArrowDirection arrowDirection =
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text =

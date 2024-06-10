@@ -213,11 +213,6 @@ const CGFloat kIPHVerticalOffset = -5;
       [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
   [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 
-  self.formInputAccessoryMediator.originalPrefService =
-      self.browser->GetBrowserState()
-          ->GetOriginalChromeBrowserState()
-          ->GetPrefs();
-
   _injectionHandler = [[ManualFillInjectionHandler alloc]
         initWithWebStateList:self.browser->GetWebStateList()
         securityAlertHandler:securityAlertHandler

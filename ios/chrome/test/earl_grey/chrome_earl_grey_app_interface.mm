@@ -1338,8 +1338,7 @@ NSString* SerializedValue(const base::Value* value) {
 + (BOOL)prefWithNameIsDefaultValue:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   const PrefService::Preference* pref =
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs()->FindPreference(
-          path);
+      GetApplicationContext()->GetLocalState()->FindPreference(path);
   return pref->IsDefaultValue();
 }
 

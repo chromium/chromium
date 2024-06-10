@@ -101,7 +101,7 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:translate::prefs::kOfferTranslateEnabled];
 
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDown {
@@ -469,7 +469,7 @@ void WaitforPDFExtensionView() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 // This is currently needed to prevent this test case from being ignored.

@@ -72,10 +72,6 @@ class WebStateList;
 @property(nonatomic, readonly, getter=isInputAccessoryViewActive)
     BOOL inputAccessoryViewActive;
 
-// Pref service from the original browser state, used to retrieve preferred
-// omnibox position.
-@property(nonatomic, assign) PrefService* originalPrefService;
-
 // Whether suggestions updates are enabled. The setter updates the consumer.
 @property(nonatomic, assign) BOOL suggestionsEnabled;
 

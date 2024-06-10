@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -275,6 +276,15 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     _engagementTracker = engagementTracker;
 
     self.suggestionsEnabled = YES;
+
+    if (IsBottomOmniboxAvailable()) {
+      _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:GetApplicationContext()->GetLocalState()
+                     prefName:prefs::kBottomOmnibox];
+      [_bottomOmniboxEnabled setObserver:self];
+      // Initialize to the current value.
+      [self booleanDidChange:_bottomOmniboxEnabled];
+    }
   }
   return self;
 }
@@ -572,22 +582,6 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   [_currentProvider inputAccessoryViewControllerDidReset];
   _currentProvider = currentProvider;
   _currentProvider.formInputNavigator = self.formNavigationHandler;
-}
-
-- (void)setOriginalPrefService:(PrefService*)originalPrefService {
-  _originalPrefService = originalPrefService;
-  if (IsBottomOmniboxAvailable() && _originalPrefService) {
-    _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
-                                              prefName:prefs::kBottomOmnibox];
-    [_bottomOmniboxEnabled setObserver:self];
-    // Initialize to the current value.
-    [self booleanDidChange:_bottomOmniboxEnabled];
-  } else {
-    [_bottomOmniboxEnabled stop];
-    [_bottomOmniboxEnabled setObserver:nil];
-    _bottomOmniboxEnabled = nil;
-  }
 }
 
 #pragma mark - Private

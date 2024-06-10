@@ -1432,7 +1432,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)isUnfocusedOmniboxAtBottom {
   return !self.isIPadIdiom && self.isSplitToolbarMode &&
-         [self userBooleanPref:prefs::kBottomOmnibox];
+         [self localStateBooleanPref:prefs::kBottomOmnibox];
 }
 
 #pragma mark - ContentSettings

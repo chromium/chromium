@@ -58,12 +58,12 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
 - (void)setUp {
   [super setUp];
   // Resets the address bar position preference to be on top.
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDown {
   // Resets the address bar position preference to be on top.
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [super tearDown];
 }
 

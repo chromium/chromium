@@ -97,7 +97,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
-  [ChromeEarlGrey clearUserPrefWithName:prefs::kBottomOmnibox];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -155,7 +155,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is top.
-  GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertFalse([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
                   @"Failed to set preferred omnibox position to top");
 }
 
@@ -184,7 +184,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is bottom.
-  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertTrue([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
                  @"Failed to set preferred omnibox position to bottom");
 }
 
@@ -205,7 +205,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is bottom.
-  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertTrue([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
                  @"Failed to set preferred omnibox position to bottom");
 }
 
@@ -234,7 +234,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is top.
-  GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertFalse([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
                   @"Failed to set preferred omnibox position to top");
 }
 
@@ -258,10 +258,10 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   GREYAssertTrue(
       [ChromeEarlGrey prefWithNameIsDefaultValue:prefs::kBottomOmnibox],
       @"The omnibox position pref should not have a user value");
-  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertTrue([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
                  @"Failed to set the omnibox position to bottom");
   GREYAssertTrue(
-      [ChromeEarlGrey userBooleanPref:prefs::kBottomOmniboxByDefault],
+      [ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmniboxByDefault],
       @"Failed to set preferred default omnibox position to bottom");
 }
 
@@ -278,7 +278,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
-  [ChromeEarlGrey clearUserPrefWithName:prefs::kBottomOmnibox];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -318,7 +318,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is bottom.
-  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertTrue([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
                  @"Failed to set preferred omnibox position to bottom");
 }
 

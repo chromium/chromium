@@ -349,8 +349,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         SyncServiceFactory::GetForBrowserState(_browserState);
     _syncObserverBridge.reset(new SyncObserverBridge(self, syncService));
 
+    PrefService* localState = GetApplicationContext()->GetLocalState();
     _showMemoryDebugToolsEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:GetApplicationContext()->GetLocalState()
+        initWithPrefService:localState
                    prefName:prefs::kShowMemoryDebuggingTools];
     [_showMemoryDebugToolsEnabled setObserver:self];
 
@@ -381,7 +382,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     [_articlesEnabled setObserver:self];
 
     _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:prefService
+        [[PrefBackedBoolean alloc] initWithPrefService:localState
                                               prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
 
@@ -416,9 +417,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(prefs::kSigninAllowed,
                                                      &_prefChangeRegistrar);
-    _notificationsObserver = [[NotificationsSettingsObserver alloc]
-        initWithPrefService:prefService
-                 localState:GetApplicationContext()->GetLocalState()];
+    _notificationsObserver =
+        [[NotificationsSettingsObserver alloc] initWithPrefService:prefService
+                                                        localState:localState];
     _notificationsObserver.delegate = self;
 
     // TODO(crbug.com/41344225): -loadModel should not be called from

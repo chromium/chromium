@@ -17,14 +17,14 @@
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearUserPrefWithName:prefs::kBottomOmnibox];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGrey clearUserPrefWithName:prefs::kBottomOmnibox];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
   [ChromeEarlGrey closeAllTabs];
 }
 
@@ -55,34 +55,34 @@
 
 // Tests `IsCurrentLayoutBottomOmnibox` on NTP.
 - (void)testIsBottomOmniboxOnNTP {
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [ChromeEarlGrey openNewTab];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:NO];
 }
 
 // Tests `IsCurrentLayoutBottomOmnibox` on incognito NTP.
 - (void)testIsBottomOmniboxOnIncognitoNTP {
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:YES];
 }
 
 // Tests `IsCurrentLayoutBottomOmnibox` on a web page.
 - (void)testIsBottomOmniboxOnWebPage {
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [self loadPage];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:YES];
 }
@@ -92,11 +92,11 @@
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];
 
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
   [self loadPage];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:NO];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];

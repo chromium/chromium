@@ -121,8 +121,6 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
-  PrefService* originalPrefs =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState()->GetPrefs();
   segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
       nullptr;
   if (!browser->GetBrowserState()->IsOffTheRecord()) {
@@ -135,7 +133,6 @@
                isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
   self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
-  self.toolbarMediator.originalPrefService = originalPrefs;
 
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
@@ -201,7 +198,6 @@
   [self.toolbarMediator disconnect];
   self.toolbarMediator.omniboxConsumer = nil;
   self.toolbarMediator.delegate = nil;
-  self.toolbarMediator.originalPrefService = nullptr;
   self.toolbarMediator.deviceSwitcherResultDispatcher = nullptr;
   self.toolbarMediator = nil;
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -110,9 +111,9 @@
   if (!browserState) {
     return;
   }
-  _bottomOmniboxPref =
-      [[PrefBackedBoolean alloc] initWithPrefService:browserState->GetPrefs()
-                                            prefName:prefs::kBottomOmnibox];
+  _bottomOmniboxPref = [[PrefBackedBoolean alloc]
+      initWithPrefService:GetApplicationContext()->GetLocalState()
+                 prefName:prefs::kBottomOmnibox];
   [_bottomOmniboxPref setObserver:self];
   // Initialize to the correct value.
   [self booleanDidChange:_bottomOmniboxPref];

@@ -998,7 +998,6 @@ enum class ToolbarKind {
   _bubblePresenter = [[BubblePresenter alloc]
       initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
                       hostContentSettingsMap:settingsMap
-                                 prefService:browserState->GetPrefs()
                      tabStripCommandsHandler:tabStripCommandsHandler
                                      tracker:engagementTracker
                                 webStateList:self.browser->GetWebStateList()];
