@@ -882,6 +882,17 @@
       Impersonate="no"
       Return="ignore"/>
 
+    <SetProperty Id="remove_minidumps"
+      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass Remove-Item -Force -Recurse '[binaries]minidumps'"
+      Before="remove_minidumps"
+      Sequence="execute" />
+    <CustomAction Id="remove_minidumps"
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
+
     <!-- Prevents errors during installation time when the website client has an
          active native messaging host instance running. Actions are run in quiet
          mode (no interactive windows are shown). This is done using a custom
@@ -959,6 +970,9 @@
       <RemoveExistingProducts After="InstallInitialize" />
 
       <Custom Action="remove_logs" Before="RemoveFiles">
+        Installed AND (NOT MAINTENANCE)
+      </Custom>
+      <Custom Action="remove_minidumps" Before="RemoveFiles">
         Installed AND (NOT MAINTENANCE)
       </Custom>
       <Custom Action="remove_symbolic_link" Before="RemoveFiles">
