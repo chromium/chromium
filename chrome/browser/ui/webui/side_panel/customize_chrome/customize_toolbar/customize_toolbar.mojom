@@ -29,6 +29,14 @@ enum ActionId {
   kShowChromeLabs,
 };
 
+// Unique identifiers for categories the actions can belong to.
+enum CategoryId {
+  kNavigation,
+  kYourChrome,
+  kSidePanels,
+  kTools,
+};
+
 // An action that can be pinned to the toolbar.
 struct Action {
   // Which action this is.
@@ -37,8 +45,17 @@ struct Action {
   string display_name;
   // Whether the action is currently pinned to the toolbar.
   bool pinned;
-  // TODO(crbug.com/323964782): Also include category.
+  // The category the action belongs to.
+  CategoryId category;
   // TODO(crbug.com/323964874): Also include icon data.
+};
+
+// A category actions can belong to.
+struct Category {
+  // Which category this is.
+  CategoryId id;
+  // The name for the webui to display for this category.
+  string display_name;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -52,6 +69,8 @@ interface CustomizeToolbarHandlerFactory {
 interface CustomizeToolbarHandler {
   // Returns the list of all actions that can be pinned to the toolbar.
   ListActions() => (array<Action> actions);
+  // Returns the list of categories the actions are sorted into.
+  ListCategories() => (array<Category> categories);
   // Pins the action with id `action_id` to (or unpins it from) the toolbar.
   PinAction(ActionId action_id, bool pinned);
 };

@@ -8238,6 +8238,40 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_SIGNED_OUT_TITLE" desc="The title of the message displayed when a wallpaper search request rejected because the user is signed out.">
         Please sign in to continue.
       </message>
+      <if expr="use_titlecase">
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER" desc="Header for the section of Customize Chrome for selecting toolbar icons.">
+          Choose Your Toolbar Icons
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_NAVIGATION" desc="The label for the category of actions that involve navigation, such as the home button or opening a new incognito window.">
+          Navigation
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_YOUR_CHROME" desc="The label for the category of actions that involve your Chrome data, such as opening the password manager or clearing browsing data.">
+          Your Chrome
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_SIDE_PANELS" desc="The label for the category of actions that open side panels, such as reading mode and show all bookmarks.">
+          Side Panels
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_TOOLS_AND_ACTIONS" desc="The label for the category of actions that open special purpose tools, such as Google Translate or developer tools.">
+          Tools and Actions
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER" desc="Header for the section of Customize Chrome for selecting toolbar icons.">
+          Choose your toolbar icons
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_NAVIGATION" desc="The label for the category of actions that involve navigation, such as the home button or opening a new incognito window.">
+          Navigation
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_YOUR_CHROME" desc="The label for the category of actions that involve your Chrome data, such as opening the password manager or clearing browsing data.">
+          Your Chrome
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_SIDE_PANELS" desc="The label for the category of actions that open side panels, such as reading mode and show all bookmarks.">
+          Side panels
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_TOOLS_AND_ACTIONS" desc="The label for the category of actions that open special purpose tools, such as Google Translate or developer tools.">
+          Tools and actions
+        </message>
+      </if>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">

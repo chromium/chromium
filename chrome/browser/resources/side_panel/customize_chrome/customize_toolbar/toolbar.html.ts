@@ -17,12 +17,27 @@ export function getHtml(this: ToolbarElement) {
 </div>
 <hr class="sp-cards-separator">
 <div class="sp-card">
-  ${this.actions_.map((action) => html`
-    <div class="toggle-container choose-icons-row">
-      <h4 class="toggle-title">${action.displayName}</h4>
-      <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
-          ?checked="${action.pinned}"></cr-toggle>
-    </div>
+  <sp-heading hide-back-button>
+    <h2 slot="heading">$i18n{chooseToolbarIconsHeader}</h2>
+  </sp-heading>
+  ${
+      this.categories_.map(
+          (category, categoryIndex) => html`
+    <h3 class="choose-icons-row">${category.displayName}</h3>
+    ${
+              this.actions_.map(
+                  (action) => action.category === category.id ? html`
+      <div class="toggle-container choose-icons-row">
+        <h4 class="toggle-title">${action.displayName}</h4>
+        <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
+            ?checked="${action.pinned}"></cr-toggle>
+      </div>
+    ` :
+                                                                '')}
+    ${
+              categoryIndex !== this.categories_.length - 1 ?
+                  html`<hr class="sp-hr">` :
+                  ''}
   `)}
 </div>
 <!--_html_template_end_-->`;

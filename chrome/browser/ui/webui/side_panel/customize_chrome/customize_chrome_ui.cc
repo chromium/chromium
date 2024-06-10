@@ -18,6 +18,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
@@ -219,6 +220,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_WEBSTORE_WRITTING_HELP_COLLECTION_LABEL},
       {"webstoreProductivityCategoryLabel",
        IDS_NTP_WEBSTORE_PRODUCTIVITY_CATEOGRY_LABEL},
+      // Customize Toolbar strings.
+      {"chooseToolbarIconsHeader",
+       IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -435,6 +439,11 @@ void CustomizeChromeUI::CreateCustomizeToolbarHandler(
     mojo::ReportBadMessage("Only allowed to create one Mojo pipe per WebUI.");
     return;
   }
+
+  const raw_ptr<Browser> browser =
+      chrome::FindBrowserWithWindow(web_contents_->GetTopLevelNativeWindow());
+  CHECK(browser);
+
   customize_toolbar_handler_ = std::make_unique<CustomizeToolbarHandler>(
-      std::move(handler), std::move(client), profile_, web_contents_);
+      std::move(handler), std::move(client), browser);
 }

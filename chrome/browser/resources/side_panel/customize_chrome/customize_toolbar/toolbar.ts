@@ -7,7 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Action, CustomizeToolbarHandlerInterface} from '../customize_toolbar.mojom-webui.js';
+import type {Action, Category, CustomizeToolbarHandlerInterface} from '../customize_toolbar.mojom-webui.js';
 
 import {CustomizeToolbarApiProxy} from './customize_toolbar_api_proxy.js';
 import {getCss} from './toolbar.css.js';
@@ -35,6 +35,7 @@ export class ToolbarElement extends CrLitElement {
   static override get properties() {
     return {
       actions_: {type: Array},
+      categories_: {type: Array},
     };
   }
 
@@ -42,6 +43,7 @@ export class ToolbarElement extends CrLitElement {
   private listenerIds_: number[] = [];
 
   protected actions_: Action[] = [];
+  protected categories_: Category[] = [];
 
   constructor() {
     super();
@@ -49,6 +51,10 @@ export class ToolbarElement extends CrLitElement {
 
     this.handler_.listActions().then(({actions}) => {
       this.actions_ = actions;
+    });
+
+    this.handler_.listCategories().then(({categories}) => {
+      this.categories_ = categories;
     });
   }
 

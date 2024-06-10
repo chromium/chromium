@@ -58,8 +58,8 @@ class PinnedToolbarActionsModel : public KeyedService {
   static PinnedToolbarActionsModel* Get(Profile* profile);
 
   // Adds or removes an observer.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   // Verify if we can update the model with the current profile.
   bool CanUpdate();
@@ -75,8 +75,8 @@ class PinnedToolbarActionsModel : public KeyedService {
   // not exist in the model.
   // 2) Removes `action_id` from the model if
   // `should_pin` is false and the id exists in the model.
-  void UpdatePinnedState(const actions::ActionId& action_id,
-                         const bool should_pin);
+  virtual void UpdatePinnedState(const actions::ActionId& action_id,
+                                 const bool should_pin);
 
   // TODO(b/307350981): Remove MaybeUpdateSearchCompanionPinnedState() and
   // UpdateSearchCompanionDefaultState() after migration is complete.
