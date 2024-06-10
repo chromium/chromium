@@ -47,8 +47,7 @@ class WidgetBase;
 class PLATFORM_EXPORT WidgetInputHandlerManager final
     : public base::RefCountedThreadSafe<WidgetInputHandlerManager>,
       public InputHandlerProxyClient,
-      public MainThreadEventQueueClient,
-      public base::SupportsWeakPtr<WidgetInputHandlerManager> {
+      public MainThreadEventQueueClient {
   // Used in UMA metrics reporting. Do not re-order, and rename the metric if
   // additional states are required.
   enum class InitialInputTiming {
@@ -187,6 +186,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // queues such that the queues are emptied. Invokes the passed closure when
   // both main and compositor thread queues have been processed.
   void FlushEventQueuesForTesting(base::OnceClosure done_callback);
+
+  base::WeakPtr<WidgetInputHandlerManager> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  protected:
   friend class base::RefCountedThreadSafe<WidgetInputHandlerManager>;
@@ -421,6 +424,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // Whether to use ScrollPredictor to resample scroll events. This is false for
   // web_tests to ensure that scroll deltas are not timing-dependent.
   const bool allow_scroll_resampling_ = true;
+
+  base::WeakPtrFactory<WidgetInputHandlerManager> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

@@ -276,7 +276,8 @@ void WidgetInputHandlerManager::InitInputHandler() {
 #endif
   uses_input_handler_ = true;
   base::OnceClosure init_closure = base::BindOnce(
-      &WidgetInputHandlerManager::InitOnInputHandlingThread, AsWeakPtr(),
+      &WidgetInputHandlerManager::InitOnInputHandlingThread,
+      weak_ptr_factory_.GetWeakPtr(),
       widget_->LayerTreeHost()->GetDelegateForInput(), sync_compositing);
   InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
 }
