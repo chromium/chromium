@@ -3407,7 +3407,28 @@ if (current_toolchain == default_toolchain) {
         trichrome_webview_basename = _trichrome_webview_basename
       }
 
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+      if (android_64bit_target_cpu) {
+        # Measure _64 rather than _64_32 in order to save on compile time.
+        # The secondary ABI can be measured via trichrome_32_minimal_apks.
+        write_ssargs_trichrome("ssargs_trichrome_64") {
+          ssargs_path = "$root_build_dir/apks/Trichrome64.ssargs"
+          abi_filter = android_app_abi
+          trichrome_library_basename = "TrichromeLibrary64.apk"
+          trichrome_chrome_basename = "TrichromeChrome64.minimal.apks"
+          trichrome_webview_basename = "TrichromeWebView64.minimal.apks"
+        }
+        create_app_bundle_minimal_apks("trichrome_chrome_64_minimal_apks") {
+          deps = [ ":trichrome_chrome_64_bundle" ]
+          bundle_path = "$root_build_dir/apks/TrichromeChrome64.aab"
+        }
+        group("trichrome_64_minimal_apks") {
+          deps = [
+            ":trichrome_chrome_64_minimal_apks",
+            ":trichrome_library_64_apk",
+            "//android_webview:trichrome_webview_64_minimal_apks",
+          ]
+        }
+
         _trichrome_library_32_basename = "TrichromeLibrary32.apk"
         _trichrome_chrome_32_basename = "TrichromeChrome32.minimal.apks"
         _trichrome_webview_32_basename = "TrichromeWebView32.minimal.apks"

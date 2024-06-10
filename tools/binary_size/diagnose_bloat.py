@@ -342,9 +342,15 @@ class _BuildHelper:
       if self.IsLinux():
         self.target = 'chrome'
       elif self.enable_chrome_android_internal:
-        self.target = 'trichrome_google_32_minimal_apks'
+        if 'target_cpu="arm64"' in self.extra_gn_args_str:
+          self.target = 'trichrome_google_64_32_minimal_apks'
+        else:
+          self.target = 'trichrome_google_32_minimal_apks'
       else:
-        self.target = 'trichrome_32_minimal_apks'
+        if 'target_cpu="arm64"' in self.extra_gn_args_str:
+          self.target = 'trichrome_64_minimal_apks'
+        else:
+          self.target = 'trichrome_32_minimal_apks'
 
   def _GenGnCmd(self):
     gn_args = 'is_official_build=true'
@@ -938,6 +944,10 @@ def main():
                            'Android default: trichrome_32_minimal_apks or '
                            'trichrome_google_32_minimal_apks (depending on '
                            '--enable-chrome-android-internal).')
+  build_group.add_argument('--arm64',
+                           action='store_true',
+                           help='Adds target_cpu="arm64" and sets the default '
+                           'target to trichrome_64_minimal_apks')
   build_group.add_argument('--custom-apk-name',
                            help='The apk name by default is derived from the '
                            'target name, but occasionally targets set a custom '
@@ -962,6 +972,11 @@ def main():
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
   if args.target and args.target.endswith('_bundle'):
     parser.error('Bundle targets must use _minimal_apks variants')
+  if args.arm64:
+    if args.gn_args:
+      args.gn_args = 'target_cpu="arm64" ' + args.gn_args
+    else:
+      args.gn_args = 'target_cpu="arm64"'
 
   if _GN_PATH is None:
     parser.error('Could not find "gn" on your PATH')

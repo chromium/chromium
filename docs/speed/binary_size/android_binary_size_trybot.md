@@ -22,12 +22,7 @@ The bot provides analysis using:
 
 ## Checks:
 
-- All monitored differences will be displayed below your CL on Gerrit's CL
-  review page (in the Binary Size section).
-- Non-bordered changes are small changes below the failure limit.
-- Red-bordered changes are above the limit and are failing the tryjob.
-- Green-bordered changes are positive changes in the opposite direction (good
-  job making chrome smaller).
+- Results are shown under Gerrit's "Checks" tab in the "Info" section.
 
 ### Binary Size Increase
 
@@ -37,6 +32,18 @@ The bot provides analysis using:
   intentional.
 
 [normalized apk size]: /docs/speed/binary_size/metrics.md#normalized-apk-size
+
+#### ARM64 vs ARM32
+
+If your CL shows a large increase in ARM64 size, but not for ARM32, keep in mind:
+- ARM32 instructions are ~half the size of ARM64 instructions.
+- ARM32 builds are optimized-for-size (`-Os`) and ARM64 optimizes for speed (`-O2`).
+
+To create a SuperSize report for ARM64, do so locally via:
+
+```sh
+tools/binary_size/diagnose_bloat.py --arm64
+```
 
 #### What to do if the Check Fails?
 

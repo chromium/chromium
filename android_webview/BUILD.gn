@@ -373,6 +373,10 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
 
   if (is_official_build) {
     # Used for binary size monitoring.
+    create_app_bundle_minimal_apks("trichrome_webview_64_minimal_apks") {
+      deps = [ ":trichrome_webview_64_bundle" ]
+      bundle_path = "$root_build_dir/apks/TrichromeWebView64.aab"
+    }
     create_app_bundle_minimal_apks("trichrome_webview_32_minimal_apks") {
       deps = [ ":trichrome_webview_32_bundle" ]
       bundle_path = "$root_build_dir/apks/TrichromeWebView32.aab"
