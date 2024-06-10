@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper.INVALID_ACTIVITY_TYPE;
+
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -88,6 +90,8 @@ import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProd
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
@@ -876,6 +880,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         profile,
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler());
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
+            int privacySandboxStorageActivityType =
+                    ActivityTypeMapper.toPrivacySandboxStorageActivityType(mActivityType);
+            if (privacySandboxStorageActivityType == INVALID_ACTIVITY_TYPE) return;
+
+            PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
+            privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
+        }
 
         boolean didTriggerPromo = false;
 

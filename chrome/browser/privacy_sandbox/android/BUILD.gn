@@ -14,6 +14,7 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/ActivityTypeMapper.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeAllSitesFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeBlockedSitesFragment.java",
@@ -48,6 +49,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -109,6 +111,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

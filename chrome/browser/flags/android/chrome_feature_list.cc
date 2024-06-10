@@ -328,6 +328,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kFingerprintingProtectionSetting,
     &privacy_sandbox::kIpProtectionV1,
     &privacy_sandbox::kIpProtectionUx,
+    &privacy_sandbox::kPrivacySandboxActivityTypeStorage,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,
     &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
     &privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,

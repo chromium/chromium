@@ -302,6 +302,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/payments/AddressEditorTest.java",
   "junit/src/org/chromium/chrome/browser/payments/ContactEditorTest.java",
   "junit/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
+  "junit/src/org/chromium/chrome/browser/privacy_sandbox/ActivityTypeMapperTest.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/CctHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/FakeCookieControlsBridge.java",
   "junit/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionModeBOnboardingViewTest.java",

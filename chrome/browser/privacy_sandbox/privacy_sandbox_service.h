@@ -304,6 +304,7 @@ class PrivacySandboxService : public KeyedService {
   // groups based on their Chrome usage patterns. This will enable us to tailor
   // the user experience for specific launches in the near future.
   //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   // LINT.IfChange(PrivacySandboxStorageActivityType)
   enum class PrivacySandboxStorageActivityType {
     kTabbed,              // BrApp

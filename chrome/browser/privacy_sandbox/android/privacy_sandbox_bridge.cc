@@ -230,3 +230,12 @@ JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
       Profile::FromJavaObject(j_profile))
       ->SetAllPrivacySandboxAllowedForTesting();  // IN-TEST
 }
+
+static void JNI_PrivacySandboxBridge_RecordActivityType(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jint activity_type) {
+  GetPrivacySandboxService(j_profile)->RecordActivityType(
+      static_cast<PrivacySandboxService::PrivacySandboxStorageActivityType>(
+          activity_type));
+}

@@ -113,4 +113,7 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
 
     @Override
     public void setAllPrivacySandboxAllowedForTesting(Profile profile) {}
+
+    @Override
+    public void recordActivityType(Profile profile, int activityType) {}
 }

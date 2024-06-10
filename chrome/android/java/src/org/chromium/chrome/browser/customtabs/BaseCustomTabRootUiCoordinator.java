@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper.INVALID_ACTIVITY_TYPE;
+
 import android.content.Intent;
 import android.graphics.Rect;
 import android.text.TextUtils;
@@ -67,6 +69,8 @@ import org.chromium.chrome.browser.page_insights.PageInsightsConfigRequest;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
+import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -364,7 +368,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         }));
 
         SupplierUtils.waitForAll(
-                this::initializeTrackingProtectionSnackbarController,
+                () -> initializeTrackingProtectionSnackbarController(),
                 mActivityTabProvider,
                 mProfileSupplier);
     }
@@ -769,6 +773,25 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 mTrackingProtectionSnackbarController.showSnackbar();
                             }
                         }));
+        SupplierUtils.waitForAll(
+                () -> maybeRecordPrivacySandboxActivityType(),
+                mIntentDataProvider,
+                mProfileSupplier);
+    }
+
+    private void maybeRecordPrivacySandboxActivityType() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
+            return;
+        }
+
+        int privacySandboxStorageActivityType =
+                ActivityTypeMapper.toPrivacySandboxStorageActivityType(
+                        mActivityType, mIntentDataProvider.get());
+        if (privacySandboxStorageActivityType == INVALID_ACTIVITY_TYPE) return;
+
+        PrivacySandboxBridge privacySandboxBridge =
+                new PrivacySandboxBridge(mProfileSupplier.get());
+        privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
     }
 
     private Runnable getPageInfoSnackbarOnAction() {
