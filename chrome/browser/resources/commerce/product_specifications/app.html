@@ -98,7 +98,9 @@
         on-url-change="onUrlChange_"
         on-url-remove="onUrlRemove_">
     </product-specifications-table>
-    <new-column-selector on-selected-url-change="onUrlAdd_">
+    <new-column-selector
+        excluded-urls="[[getTableUrls_(specsTable_.columns)]]"
+        on-selected-url-change="onUrlAdd_">
     </new-column-selector>
   </div>
 </div>

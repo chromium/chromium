@@ -61,6 +61,7 @@
       <th class="col" on-pointerenter="onShowOpenTabButton_">
         <product-selector
             selected-item="[[column.selectedItem]]"
+            excluded-urls="[[getUrls_(columns)]]"
             on-selected-url-change="onSelectedUrlChange_"
             on-remove-url="onUrlRemove_">
         </product-selector>

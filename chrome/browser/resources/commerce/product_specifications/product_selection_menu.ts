@@ -53,6 +53,11 @@ export class ProductSelectionMenuElement extends PolymerElement {
         value: '',
       },
 
+      excludedUrls: {
+        type: Array,
+        value: () => [],
+      },
+
       sections: Array,
     };
   }
@@ -60,19 +65,20 @@ export class ProductSelectionMenuElement extends PolymerElement {
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   selectedUrl: string;
+  excludedUrls: string[];
   sections: MenuSection[];
 
   async showAt(element: HTMLElement) {
     const openUrlInfos = await this.shoppingApi_.getUrlInfosForOpenTabs();
-    // Filter out URLs that match the selected item.
-    const filteredOpenUrlInfos = openUrlInfos.urlInfos.filter(
-        (urlInfo) => urlInfo.url.url !== this.selectedUrl);
+    const filteredOpenUrlInfos = this.filterUrlInfos_(openUrlInfos.urlInfos);
     const openTabs = this.urlInfosToListEntries_(filteredOpenUrlInfos);
 
     const recentlyViewedUrlInfos =
         await this.shoppingApi_.getUrlInfosForRecentlyViewedTabs();
+    const filteredRecentlyViewedUrlInfos =
+        this.filterUrlInfos_(recentlyViewedUrlInfos.urlInfos);
     const recentlyViewedTabs =
-        this.urlInfosToListEntries_(recentlyViewedUrlInfos.urlInfos);
+        this.urlInfosToListEntries_(filteredRecentlyViewedUrlInfos);
 
     const updatedSections: MenuSection[] = [];
     if (openTabs.length > 0) {
@@ -102,6 +108,13 @@ export class ProductSelectionMenuElement extends PolymerElement {
 
   close() {
     this.$.menu.get().close();
+  }
+
+  // Filter out URLs that match the selected item or any excluded urls.
+  private filterUrlInfos_(urlInfos: UrlInfo[]) {
+    return urlInfos.filter(
+        (urlInfo) => urlInfo.url.url !== this.selectedUrl &&
+            !this.excludedUrls.includes(urlInfo.url.url));
   }
 
   private urlInfosToListEntries_(urlInfos: UrlInfo[]) {

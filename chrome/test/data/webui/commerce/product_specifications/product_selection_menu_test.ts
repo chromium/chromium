@@ -188,11 +188,48 @@ suite('ProductSelectionMenuTest', () => {
         url: stringToMojoUrl('https://current-selection.com'),
       },
     ];
-    shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+    initOpenTabUrlInfos(openTabs);
 
     const menu = await createMenu();
     menu.selectedUrl = 'https://current-selection.com';
+    menu.showAt(document.body);
+    await flushTasks();
+
+    const listElements =
+        menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
+    assertEquals(2, listElements.length);
+
+    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+        '.description-text');
+    assertTrue(!!tabUrl);
+    assertEquals('example.com', tabUrl.textContent);
+  });
+
+  test('excludes excluded urls', async () => {
+    const titleString = 'title';
+    const excludedUrlString1 = 'https://excluded-url-1.com';
+    const excludedUrlString2 = 'https://excluded-url-2.com';
+    const recentlyViewedTabs = [
+      {
+        title: titleString,
+        url: stringToMojoUrl(excludedUrlString1),
+      },
+    ];
+    initRecentlyViewedTabUrlInfos(recentlyViewedTabs);
+    const openTabs = [
+      {
+        title: titleString,
+        url: stringToMojoUrl('https://example.com'),
+      },
+      {
+        title: titleString,
+        url: stringToMojoUrl(excludedUrlString2),
+      },
+    ];
+    initOpenTabUrlInfos(openTabs);
+
+    const menu = await createMenu();
+    menu.excludedUrls = [excludedUrlString1, excludedUrlString2];
     menu.showAt(document.body);
     await flushTasks();
 

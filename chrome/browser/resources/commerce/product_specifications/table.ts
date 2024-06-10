@@ -51,6 +51,10 @@ export class TableElement extends PolymerElement {
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  private getUrls_() {
+    return this.columns.map(column => column.selectedItem.url);
+  }
+
   private onHideOpenTabButton_() {
     this.hoveredColumnIndex_ = -1;
   }

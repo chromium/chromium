@@ -28,6 +28,17 @@ export class NewColumnSelectorElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      excludedUrls: {
+        type: Array,
+        value: () => [],
+      },
+    };
+  }
+
+  excludedUrls: string[];
+
   private showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.button);
     this.$.button.classList.add('showing-menu');
