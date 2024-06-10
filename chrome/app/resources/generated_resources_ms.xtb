@@ -4235,6 +4235,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4066207411788646768">Sila periksa sambungan anda untuk melihat pencetak yang tersedia dalam rangkaian anda</translation>
 <translation id="4067839975993712852">Tandai tab semasa sebagai dibaca</translation>
 <translation id="4068776064906523561">Cap jari disimpan</translation>
+<translation id="4070132839822635162">Jangan log masuk</translation>
 <translation id="407173827865827707">Apabila diklik</translation>
 <translation id="4072805772816336153">Cuba lagi nanti</translation>
 <translation id="4074164314564067597">papan kekunci</translation>
@@ -7364,6 +7365,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6469702164109431067">Kata laluan dan kunci laluan</translation>
 <translation id="6470823736074966819">Redamkan Pemberitahuan</translation>
 <translation id="6472893788822429178">Paparkan butang Laman Utama</translation>
+<translation id="6473315466413288899">Buat satu pilihan</translation>
 <translation id="6474498546677193336">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder akan dinyahkongsi apabila Linux ditutup selepas ini.</translation>
 <translation id="6474884162850599008">Putuskan sambungan akaun Google Drive</translation>
 <translation id="6475294023568239942">Kosongkan ruang cakera atau ubah saiz cakera Linux dalam Tetapan</translation>
@@ -10832,6 +10834,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9031811691986152304">cuba lagi</translation>
 <translation id="9032004780329249150">Gunakan kata laluan anda pada peranti iOS anda</translation>
 <translation id="9032097289595078011">Lumpuhkan Ganding Pantas</translation>
+<translation id="9032513103438497286">Sekat apl yang dipasang pada <ph name="DEVICE_TYPE" /> ini. Untuk menyekat muat turun apl atau kandungan, akses Tetapan Google Play.</translation>
 <translation id="9033765790910064284">Teruskan juga</translation>
 <translation id="9033857511263905942">&amp;Tampal</translation>
 <translation id="9034408118624208974">Belum mengetahui selok-belok Chromebook? Hidupkan penyegerakan supaya pilihan anda akan disandarkan.</translation>

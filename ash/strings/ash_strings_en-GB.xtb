@@ -223,7 +223,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1770726142253415363">Moved to row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
-<translation id="1775598828170459419">Showing <ph name="NUM_SHOWN_ITEMS" /> out of <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Set up viewing your phone's recent photos, media and notifications</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
@@ -1134,6 +1133,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Off until <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Sign out</translation>
+<translation id="5228195526683428788">Split screen divider</translation>
 <translation id="5229343007215035173">Turn on/off Privacy Screen</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -1520,6 +1520,7 @@ New install</translation>
 <translation id="6613765291890844037">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use | <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6622679827379792051">Set up viewing your phone's apps</translation>
+<translation id="662279009180869175">Use the left and right arrows to resize split screen</translation>
 <translation id="6624493541160101248">Current desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> of <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> and other notifications are hidden because viewing protection is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1538,6 +1539,7 @@ New install</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6671661918848783005">Can't unlock your Chromebook</translation>
+<translation id="6676552993057022464">Use the up and down arrows to resize split screen</translation>
 <translation id="6682029141988159141">Paste content from clipboard</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6686023075541098243">Set up viewing your phone's notifications</translation>

@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Parolları Yadda saxlayın</translation>
 <translation id="1753905327828125965">Ən çox ziyarət olunan</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} zəif parol}other{{count} zəif parol}}</translation>
+<translation id="1764070164487214210">İstiqamətlər</translation>
 <translation id="1766411844240160513">Formanı avtomatik doldurun</translation>
 <translation id="1767766085187034454">Google Tərcümə</translation>
 <translation id="1769106850515800431">Fərdiləşdirilmiş kontent</translation>
@@ -541,12 +542,14 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3771033907050503522">Gizli Panellər</translation>
 <translation id="3775743491439407556">Sinxronizasiya İşləmir</translation>
 <translation id="3779810277399252432">İnternet bağlantısı yoxdur.</translation>
+<translation id="3785672280731998727">Displey adı</translation>
 <translation id="3789294999358192700">Aşağıdakı addımları izləyin:</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803696231112616155">Bu saytı tərcümə etməyi təklif edin</translation>
 <translation id="3808311849069021992">Axtarış mexanizmi detallarını göstərin</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
+<translation id="3812308602011798782">Rəylər</translation>
 <translation id="3818045793209708987">Bu bağlamanın izlənməsi dayandı</translation>
 <translation id="3818293389945649617">Növbətini Tapın</translation>
 <translation id="3819183753496523827">Oflaynsınız. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
@@ -594,6 +597,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4045648459118332842">Saxlanmış parollarınızı bir toxunuşla istənilən tətbiqdə əldə edin</translation>
 <translation id="4049507953662678203">Şəbəkə bağlantısının olmasına əmin olun və yenidən cəhd edin.</translation>
 <translation id="4054572406751135230">Xəbər, idman və s. barədə məlumatlı qalın.</translation>
+<translation id="4068959193278821990">Təkmil qorumanı yandırın...</translation>
 <translation id="4092655288299341041">Yardımı göstərin</translation>
 <translation id="4105841739161771091">{count,plural, =1{Ünvanı silin}other{Ünvanları silin}}</translation>
 <translation id="4108998448622696017">Təhlükəli hadisələr baş verdikdə onları aşkarlayır və sizə xəbərdarlıq edir.</translation>
@@ -605,6 +609,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4121993058175073134">Növbəti raport datasını göndərmək üçün Ayarlar tətbiqində e-poçt hesabınızı sazlayın.</translation>
 <translation id="4124987746317609294">Vaxt Aralığı</translation>
 <translation id="4133265950310064865">Təkmil Qoruma</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" /> <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Bu vebsayt faylı endirmək və onu təqviminizə əlavə etmək istəyir.</translation>
 <translation id="4152011295694446843">Əlfəcinləri burada tapa bilərsiniz</translation>
@@ -1472,6 +1477,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="834783239627985533">Çox daxil olunan saytlar</translation>
 <translation id="8358401059263985056">Bildirişləri aktiv edin</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> üçün şəkil Google Fotoda yadda saxlanır...</translation>
+<translation id="8369246252708539904">Giriş açarını silin</translation>
 <translation id="8370406443343902172">Ayarlara keçin...</translation>
 <translation id="8374977641764177587">Bildirişlər aktiv edilsin?</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>

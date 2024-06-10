@@ -285,6 +285,7 @@
 <translation id="2515921719039583189">要刪除此裝置上的 Chrome 資料嗎？</translation>
 <translation id="2517113738956581680">完整大小工作表</translation>
 <translation id="2523184218357549926">將您瀏覽的網頁網址傳送給 Google</translation>
+<translation id="2524132927880411790">在 Google 應用程式中開啟語音搜尋</translation>
 <translation id="2527209463677295330">加入網頁上的更多文字，可能會找到更相關的結果</translation>
 <translation id="2527497042232966453">切換咗去無痕式分頁</translation>
 <translation id="2527779675047087889">隱藏剪貼簿內容</translation>
@@ -519,6 +520,7 @@
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637744895182738742">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="3674208116086565128">開啟 Google 應用程式主畫面</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3687645719033307815">您正在預覽此網頁的預覽畫面</translation>
 <translation id="3690369331356918524">密碼因資料外洩而被洩露時接收警告</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟已下載的 PDF</translation>
 <translation id="8137562778192957619">您不需記住此密碼。系統會將密碼儲存至「Google 密碼管理工具」。</translation>
+<translation id="8152331954420209374">開啟智慧鏡頭</translation>
 <translation id="8163820386638255770">如要將密碼儲存至 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
 <translation id="8171286197772512427">開咗「透過摘要意見反映表分享」功能</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>
 <translation id="8354977102499939946">透過語音快速搜尋。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
+<translation id="8367705492654390392">提出問題</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8378850197701296741">你在 <ph name="FROM_ACCOUNT" /> 中有書籤、記錄和其他設定。</translation>
 <translation id="8387617938027387193">驗證您的身分</translation>

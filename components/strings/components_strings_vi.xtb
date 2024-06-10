@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Cuộn và thu phóng nội dung thẻ được chia sẻ</translation>
 <translation id="1089439967362294234">Thay đổi mật khẩu</translation>
 <translation id="1090629319939036170">Trình đơn thực tế ảo</translation>
+<translation id="1091779689406092804">ảnh chụp màn hình</translation>
 <translation id="1094777233105318927">Thông tin về trình duyệt, hệ điều hành, thiết bị, phần mềm đã cài đặt và tệp</translation>
 <translation id="1096545575934602868">Trường này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục. Mọi mục thừa sẽ bị hủy.</translation>
 <translation id="1097803577928227769">Vườn hoa và công viên địa phương</translation>
@@ -472,6 +473,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1840009953725035797">Hệ thống rạp hát tại nhà</translation>
 <translation id="1842969606798536927">Thanh toán</translation>
 <translation id="1846432862466000825">Nhựa (Lưu niệm)</translation>
+<translation id="1848640291751752317">tệp đã tải xuống</translation>
 <translation id="1848982255014129637">Ảnh (Độ bóng cao)</translation>
 <translation id="1853392626017747777">Đã đóng hộp thoại đăng ký thẻ ảo</translation>
 <translation id="1854180393107901205">Dừng truyền</translation>
@@ -754,6 +756,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2366689192918515749">Thịt và hải sản</translation>
 <translation id="2367567093518048410">Mức độ</translation>
 <translation id="23703388716193220">Thiết bị chơi gôn</translation>
+<translation id="2370368710215137370">Tải tệp lên</translation>
 <translation id="2374629208601905275">Dựa trên luật tại khu vực của bạn, Chrome sẽ yêu cầu bạn chọn công cụ tìm kiếm mặc định. Đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn và được hiển thị theo thứ tự ngẫu nhiên.</translation>
 <translation id="2377241607395428273">Phần mềm hoạt hình và đồ hoạ</translation>
 <translation id="2378084239755710604">Đã đóng lời nhắc Lưu thẻ.</translation>
@@ -1422,6 +1425,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3682094733650754138">Lựa chọn điền địa chỉ đã được chọn</translation>
 <translation id="3687920599421452763">Xe tải và xe tải nhỏ</translation>
 <translation id="3693327506115126094">Chọn cách xác minh danh tính của bạn</translation>
+<translation id="3698353241727597930">Quản trị viên đã định cấu hình để <ph name="FILES" /> được lưu vào bộ nhớ <ph name="CLOUD_STORAGE" /> do doanh nghiệp của bạn quản lý. Các tệp này có thể được theo dõi, kiểm tra và giữ lại khi bạn xoá tệp.</translation>
 <translation id="3698629142018988477">Nút Tạo trang web, hãy nhấn nút này để tạo nhanh một trang mới trong Google Sites</translation>
 <translation id="3701325639446035885">Bán vé xem sự kiện</translation>
 <translation id="3701427423622901115">Đã xác nhận thao tác đặt lại.</translation>
@@ -1497,6 +1501,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3826050100957962900">Đăng nhập qua bên thứ ba</translation>
 <translation id="3827112369919217609">Tuyệt đối</translation>
 <translation id="3828924085048779000">Không cho phép cụm mật khẩu trống.</translation>
+<translation id="3830139096297532361">Không thể truy cập tệp PDF này. Không tải được các tệp trích xuất văn bản xuống. Vui lòng thử lại sau.</translation>
 <translation id="3830470485672984938">Sử dụng khoá truy cập khác</translation>
 <translation id="3831065134033923230">Kiểm tra mật khẩu bạn đã lưu</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> đã cài đặt các tiện ích để bổ sung thêm chức năng. Các tiện ích có quyền truy cập vào một số dữ liệu của bạn.</translation>
@@ -1671,6 +1676,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4202554117186904723">Cuộn thứ năm</translation>
 <translation id="4203769790323223880">Không cho phép truy cập máy ảnh</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kiểm tra tường lửa và cấu hình diệt vi-rút<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Lớn</translation>
 <translation id="4210602799576081649">Mã xác minh đã hết hạn, hãy yêu cầu mã mới</translation>
 <translation id="421066178035138955">Sử dụng dữ liệu và thiết bị thực tế ảo</translation>
@@ -2731,6 +2737,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6270066318535733958">Đi thuyền</translation>
 <translation id="6272088941196661550">Tiếp tục hành trình của bạn để xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive và OneDrive</translation>
 <translation id="6280223929691119688">Không thể phân phối đến địa chỉ này. Chọn một địa chỉ khác.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
 <translation id="6284449872909111707">Nhắn tin văn bản và nhắn tin nhanh</translation>
@@ -3169,6 +3176,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7119063404975271297">Phim truyền hình</translation>
 <translation id="7119371694555167493">Đã hết thời gian sao chép</translation>
 <translation id="7119414471315195487">Đóng các thẻ hoặc chương trình khác</translation>
+<translation id="7120588595737538743">tệp đã tải xuống và ảnh chụp màn hình</translation>
 <translation id="7124354851782353862">Nhập CVC</translation>
 <translation id="7129409597930077180">Không thể giao hàng đến địa chỉ này. Chọn một địa chỉ khác.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, nhấn phím Tab rồi nhấn phím Enter để Đóng mẹo sử dụng Chrome.</translation>
 <translation id="7485085230273446323">Kinh doanh và công nghiệp</translation>
 <translation id="7485870689360869515">Không tìm thấy dữ liệu.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Dầu gội và dầu xả</translation>
 <translation id="7495528107193238112">Nội dung này bị chặn. Hãy liên hệ với chủ sở hữu trang web để khắc phục sự cố.</translation>
 <translation id="749865518782565832">Hệ thống ống nước</translation>

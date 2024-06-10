@@ -285,6 +285,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2515921719039583189">Chrome-ko datuak ezabatu nahi dituzu gailutik?</translation>
 <translation id="2517113738956581680">Tamaina osoko orria</translation>
 <translation id="2523184218357549926">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri</translation>
+<translation id="2524132927880411790">Joan Google aplikazioaren ahozko bilaketara</translation>
 <translation id="2527209463677295330">Orriko testu gehiago barne hartuz gero, agian emaitza hobeak ikusiko dituzu</translation>
 <translation id="2527497042232966453">Ezkutuko moduko fitxetara aldatu da</translation>
 <translation id="2527779675047087889">Ezkutatu arbeleko edukia</translation>
@@ -519,6 +520,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="363596933471559332">Hasi saioa automatikoki webguneetan gordetako kredentzialekin. Eginbidea desaktibatuta badago, zeu zarela egiaztatzeko eskatuko dizu webguneak saioa hasten duzun bakoitzean.</translation>
 <translation id="3636940436873918441">Hizkuntza hobetsiak</translation>
 <translation id="3637744895182738742">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Joan Google aplikazioaren orri nagusira</translation>
 <translation id="368329460027487650">Amaitu da saioa. Saioa hasteko aukerak irekitzen ditu.</translation>
 <translation id="3687645719033307815">Orri honen aurrebista ikusten ari zara</translation>
 <translation id="3690369331356918524">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
@@ -1475,6 +1477,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8135406045838672858">Deskargatutako PDFak <ph name="APP_NAME" /> bidez irekitzen dira automatikoki</translation>
 <translation id="8137562778192957619">Ez duzu pasahitza gogoratu beharko. Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
+<translation id="8152331954420209374">Joan Lens-era</translation>
 <translation id="8163820386638255770">Pasahitzak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela</translation>
 <translation id="8171286197772512427">Laburpenari buruzko oharrak partekatzeko orria ireki da</translation>
 <translation id="8179976553408161302">Sartu</translation>
@@ -1511,6 +1514,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8348430946834215779">Erabili HTTPS ahal den guztietan eta jaso abisuak hura onartzen ez duten webguneak kargatu baino lehen</translation>
 <translation id="8354977102499939946">Bilatu bizkor ahotsa erabilita. Lasterbide hau editatzeko, joan ezarpenetara.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> deskarga leheneratu dira</translation>
+<translation id="8367705492654390392">Galdetu edozer</translation>
 <translation id="8368001212524806591">Egin prezioen jarraipena</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> kontuko laster-markak, historia eta beste ezarpen batzuk dituzu.</translation>
 <translation id="8387617938027387193">Egiaztatu zeu zarela</translation>

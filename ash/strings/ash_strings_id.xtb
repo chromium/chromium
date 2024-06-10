@@ -223,7 +223,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1770726142253415363">Dipindahkan ke baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
-<translation id="1775598828170459419">Menampilkan <ph name="NUM_SHOWN_ITEMS" /> dari <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Siapkan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="1796561540704213354">Situs, termasuk halaman yang telah Anda kunjungi dan halaman yang dibuka</translation>
@@ -310,6 +309,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2208323208084708176">Mode desktop terpadu</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
+<translation id="2223384056430485343">Di layar terpisah</translation>
 <translation id="2224075387478458881">Perekaman layar tidak diizinkan saat konten yang dilindungi terlihat</translation>
 <translation id="2227179592712503583">Hapus saran</translation>
 <translation id="2248634276911611268">Buka link di tab baru dan beralih ke tab baru ini</translation>

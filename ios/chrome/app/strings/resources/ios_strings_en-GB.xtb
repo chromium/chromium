@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1753905327828125965">Most Visited</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} weak password}other{{count} weak passwords}}</translation>
+<translation id="1764070164487214210">Directions</translation>
 <translation id="1766411844240160513">Autofill form</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Personalised content</translation>
@@ -541,12 +542,14 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sync isn't working</translation>
 <translation id="3779810277399252432">No Internet connection.</translation>
+<translation id="3785672280731998727">Display name</translation>
 <translation id="3789294999358192700">Follow the steps below:</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803696231112616155">Offer to translate this site</translation>
 <translation id="3808311849069021992">Show search engine details</translation>
 <translation id="3810973564298564668">Manage</translation>
+<translation id="3812308602011798782">Reviews</translation>
 <translation id="3818045793209708987">Stopped tracking this package</translation>
 <translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
@@ -594,6 +597,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4045648459118332842">Get your saved passwords in any app with one tap</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4054572406751135230">Keep up with news, sports and more.</translation>
+<translation id="4068959193278821990">Turn on enhanced protection…</translation>
 <translation id="4092655288299341041">Show help</translation>
 <translation id="4105841739161771091">{count,plural, =1{Delete address}other{Delete addresses}}</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
@@ -605,6 +609,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
 <translation id="4124987746317609294">Time range</translation>
 <translation id="4133265950310064865">Enhanced protection</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">This website wants to download a file and add it to your calendar.</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
@@ -1472,6 +1477,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="834783239627985533">Most-visited sites</translation>
 <translation id="8358401059263985056">Turn on notifications</translation>
 <translation id="8364841868226993049">Saving image in Google Photos for <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">Delete passkey</translation>
 <translation id="8370406443343902172">Go to Settings...</translation>
 <translation id="8374977641764177587">Turn on notifications?</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>

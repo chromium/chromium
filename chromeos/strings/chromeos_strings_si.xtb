@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">පැස්ටල් කහ</translation>
 <translation id="1056898198331236512">අවවාදයයි</translation>
 <translation id="1059913517121127803">ස්කෑන් කිරීම ආරම්භ කිරීමට නොහැකි විය</translation>
+<translation id="1061864016440983342">ස්ථානය නොමැතිව භාවිත කරන්න</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />කින් <ph name="INDEX" />ක්, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ෆයර්වෝලය අනාවරණය කර ගන්නා ලදි</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
 <translation id="2082932131694554252">පවරා ඇති යතුරු පුවරු යතුර</translation>
 <translation id="2085089206770112532">සංදර්ශක දීප්තිය පහළට</translation>
+<translation id="2086091080968010660">කාලය පදකම් වන වෙනස්කම් නිරවද්‍ය නොවේවි. සැකසීම් තුළ පද්ධති ස්ථාන ප්‍රවේශය සක්‍රීය කරන්න.</translation>
 <translation id="2102231663024125441">පෙළ සංස්කරණය</translation>
 <translation id="2105810540595158374">උපාංගය ක්‍රීඩා පාලකයකි.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">පෙරනිමි ප්‍රතිසාධන කරන්න</translation>
 <translation id="2286454467119466181">සරල</translation>
 <translation id="2287186687001756809">රූප නැත. ඡායාරූප එක් කිරීමට, <ph name="LINK" /> වෙත යන්න</translation>
+<translation id="2294577623958216786">වත්මන් කාලසටහන <ph name="SUNRISE" />-<ph name="SUNSET" /> ලෙස සකසා ඇත. හිරු බැසීමේ සහ හිරු උදාවේ කාලසටහන ස්වයංක්‍රීයව යාවත්කාලීන කිරීමට, පද්ධති ස්ථාන ප්‍රවේශය සක්‍රීය කරන්න.</translation>
 <translation id="2305172810646967500">කළු</translation>
 <translation id="2307344026739914387">වත්මන් යතුරු යුගල භාවිත කරන්න</translation>
 <translation id="2308243864813041101">යාවත්කාලීන ක්‍රියාවලිය දිගටම කිරීමට <ph name="DEVICE_NAME" /> USB කේබලය පේනු නොගත කරන්න</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">යතුරු පුවරුවේ දීප්තිය</translation>
 <translation id="6412715219990689313">එක්ව තැනූ යතුරු පුවරුව</translation>
 <translation id="6417265370957905582">Google සහායක</translation>
+<translation id="6419454453018688975">පද්ධති ස්ථාන ප්‍රවේශය සක්‍රීය කරන්න.</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">දුර්වලයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ගිණුම් සැකසීම් වෙත යන්න</translation>

@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
 <translation id="1753905327828125965">Gehien bisitatutakoak</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} pasahitz ez da segurua}other{{count} pasahitz ez dira seguruak}}</translation>
+<translation id="1764070164487214210">Jarraibideak</translation>
 <translation id="1766411844240160513">Bete inprimakia automatikoki</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Pertsonalizatutako edukia</translation>
@@ -541,12 +542,14 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
 <translation id="3775743491439407556">Sinkronizazioa ez dabil</translation>
 <translation id="3779810277399252432">Ez zaude konektatuta Internetera.</translation>
+<translation id="3785672280731998727">Bistaratzeko izena</translation>
 <translation id="3789294999358192700">Egin urrats hauek:</translation>
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="380329542618494757">Izena</translation>
 <translation id="3803696231112616155">Eskaini webgunea itzultzea</translation>
 <translation id="3808311849069021992">Erakutsi bilatzailearen xehetasunak</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
+<translation id="3812308602011798782">Iritziak</translation>
 <translation id="3818045793209708987">Utzi zaio paketearen jarraipena egiteari</translation>
 <translation id="3818293389945649617">Bilatu hurrengoa</translation>
 <translation id="3819183753496523827">Ez dago Interneteko konexiorik. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
@@ -594,6 +597,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4045648459118332842">Lortu gordetako pasahitzak edozein aplikaziotan sakatze hutsarekin</translation>
 <translation id="4049507953662678203">Ziurtatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="4054572406751135230">Egin albisteen, kirolen eta beste gauza askoren jarraipena.</translation>
+<translation id="4068959193278821990">Aktibatu Babes hobetua…</translation>
 <translation id="4092655288299341041">Erakutsi laguntza</translation>
 <translation id="4105841739161771091">{count,plural, =1{Ezabatu helbidea}other{Ezabatu helbideak}}</translation>
 <translation id="4108998448622696017">Gertaera arriskutsuak hautematen ditu eta haien berri ematen dizu gertatu ahala.</translation>
@@ -605,6 +609,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4121993058175073134">Sare-esportazioaren datuak bidaltzeko, konfiguratu posta-kontu elektronikoa Ezarpenak aplikazioan.</translation>
 <translation id="4124987746317609294">Denbora tartea</translation>
 <translation id="4133265950310064865">Babes hobetua</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Argazkiak</translation>
 <translation id="4148023517926189160">Webguneak, fitxategi bat deskargatu, eta egutegian gehitu nahi du.</translation>
 <translation id="4152011295694446843">Laster-markak aurkituko dituzu hemen</translation>
@@ -1470,6 +1475,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="834783239627985533">Gehien bisitatutako webguneak</translation>
 <translation id="8358401059263985056">Aktibatu jakinarazpenak</translation>
 <translation id="8364841868226993049">Irudia <ph name="USER_EMAIL" /> erabiltzailearentzat Google Argazkiak zerbitzuan gordetzen…</translation>
+<translation id="8369246252708539904">Ezabatu sarbide-gakoa</translation>
 <translation id="8370406443343902172">Joan ezarpenetara…</translation>
 <translation id="8374977641764177587">Jakinarazpenak aktibatu nahi dituzu?</translation>
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>

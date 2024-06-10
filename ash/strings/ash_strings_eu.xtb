@@ -222,7 +222,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />garren errenkadako <ph name="COLUMN_NUMBER" />garren zutabera eraman da.</translation>
 <translation id="1771761307086386028">Egin eskuinera</translation>
 <translation id="1774796056689732716">Egutegia, <ph name="CURRENT_MONTH_YEAR" />, une honetan <ph name="DATE" /> dago hautatuta.</translation>
-<translation id="1775598828170459419"><ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /> daude ikusgai</translation>
 <translation id="178347895271755507">Konfiguratu telefonoko azken argazkiak, multimedia-elementuak eta jakinarazpenak ikusteko aukera</translation>
 <translation id="1787955149152357925">Desaktibatuta</translation>
 <translation id="1796561540704213354">Bisitatu dituzun orrialdeak eta irekitako orriak dituzten webguneak</translation>
@@ -309,6 +308,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2208323208084708176">Mahaigain bateratuko modua</translation>
 <translation id="2220572644011485463">PINa edo pasahitza</translation>
 <translation id="2222841058024245321">7. lan-eremua</translation>
+<translation id="2223384056430485343">Pantaila zatituan</translation>
 <translation id="2224075387478458881">Ezin da pantaila grabatu eduki babestua ikusgai dagoenean</translation>
 <translation id="2227179592712503583">Kendu iradokizuna</translation>
 <translation id="2248634276911611268">Ireki esteka beste fitxa batean eta joan fitxa horretara</translation>
@@ -1133,6 +1133,7 @@ Lasterbide hau ere erabil dezakezu: lehenengo, nabarmendu testua, eta, ondoren, 
 <translation id="5208059991603368177">Aktibatuta</translation>
 <translation id="5216991270656129561">Desaktibatuta <ph name="TIME" /> arte</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
+<translation id="5228195526683428788">Pantaila-zatitzailea</translation>
 <translation id="5229343007215035173">Aktibatu edo desaktibatu pribatutasun-pantaila</translation>
 <translation id="5230516054153933099">Leihoa</translation>
 <translation id="5234764350956374838">Baztertu</translation>
@@ -1519,6 +1520,7 @@ Berriki instalatu da</translation>
 <translation id="6613765291890844037">Biltegiaren <ph name="STORAGE_IN_USE_SIZE" /> erabili dira | <ph name="STORAGE_TOTAL_SIZE" /> guztira</translation>
 <translation id="6614169507485700968">Aktibatuta dago pribatutasun-pantaila</translation>
 <translation id="6622679827379792051">Konfiguratu telefonoko aplikazioak ikusteko aukera</translation>
+<translation id="662279009180869175">Erabili ezkerrera eta eskuinera egiteko gezi-teklak pantaila zatituaren tamaina aldatzeko</translation>
 <translation id="6624493541160101248">Oraingo lan-eremua: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> lan-eremua.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> eta beste aplikazio baten jakinarazpenak ezkutatuta daude ikusteko babesa aktibatuta dagoelako</translation>
 <translation id="6627638273713273709">Bilatu + Maius + K</translation>
@@ -1537,6 +1539,7 @@ Berriki instalatu da</translation>
 <translation id="6670153871843998651">3. lan-eremua</translation>
 <translation id="6671495933530132209">Kopiatu irudia</translation>
 <translation id="6671661918848783005">Ezin da desblokeatu Chromebook-a</translation>
+<translation id="6676552993057022464">Erabili gora eta behera egiteko gezi-teklak pantaila zatituaren tamaina aldatzeko</translation>
 <translation id="6682029141988159141">Itsatsi arbeleko edukia</translation>
 <translation id="6683022854667115063">Entzungailuak</translation>
 <translation id="6686023075541098243">Konfiguratu telefonoko jakinarazpenak ikusteko aukera</translation>

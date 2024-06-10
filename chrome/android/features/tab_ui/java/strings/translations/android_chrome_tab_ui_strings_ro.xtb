@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Marchează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Marchează <ph name="TABS_COUNT_MANY" /> file selectate}other{Marchează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="2118649612461486615">Informații magazin</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Fila incognito nu va fi disponibilă.}few{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # file incognito nu vor fi disponibile.}other{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # de file incognito nu vor fi disponibile.}}</translation>
 <translation id="2162620598375156287">Acum la <ph name="CURRENT_PRICE" /> pe <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Elimină fila din grup}few{Elimină filele din grup}other{Elimină filele din grup}}</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>

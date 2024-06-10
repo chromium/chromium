@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Ozadje</translation>
 <translation id="3027578600144895987">Zapri kamero</translation>
 <translation id="3031560714565892478">Naprava je videokamera.</translation>
+<translation id="3051968340259309715">To sistemskim storitvam omogoča uporabo natančnosti zaznavanja lokacije za določanje vaše lokacije. Natančnost zaznavanja lokacije uporablja podatke o brezžičnih signalih, kot so dostopne točke Wi-Fi, bazne postaje mobilnih omrežij in GPS, skupaj s podatki tipal naprave, kot sta merilnik pospeška in žiroskop, za oceno lokacije naprave. Lokacijo lahko izklopite v Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Končna točka</translation>
 <translation id="3060579846059757016">Orisi</translation>

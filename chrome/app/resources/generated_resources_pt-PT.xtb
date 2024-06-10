@@ -4223,6 +4223,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4066207411788646768">Verifique a ligação para ver as impressões disponíveis na sua rede.</translation>
 <translation id="4067839975993712852">Marcar o separador atual como lido</translation>
 <translation id="4068776064906523561">Impressões digitais guardadas</translation>
+<translation id="4070132839822635162">Não iniciar sessão</translation>
 <translation id="407173827865827707">Ao clicar</translation>
 <translation id="4072805772816336153">Tente mais tarde.</translation>
 <translation id="4074164314564067597">teclado</translation>
@@ -7353,6 +7354,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6469702164109431067">Palavras-passe e chaves de acesso</translation>
 <translation id="6470823736074966819">Desativar o som das notificações</translation>
 <translation id="6472893788822429178">Mostrar botão Página Inicial</translation>
+<translation id="6473315466413288899">Selecione uma opção</translation>
 <translation id="6474498546677193336">Não foi possível cancelar a partilha porque uma aplicação está a utilizar esta pasta. Será cancelada a partilha da pasta quando o Linux for encerrado.</translation>
 <translation id="6474884162850599008">Desconectar a conta do Google Drive</translation>
 <translation id="6475294023568239942">Liberte espaço em disco ou redimensione o disco do Linux nas Definições</translation>
@@ -10820,6 +10822,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9031811691986152304">tentar novamente</translation>
 <translation id="9032004780329249150">Use as suas palavras-passe nos dispositivos iOS</translation>
 <translation id="9032097289595078011">Desative o Fast Pair</translation>
+<translation id="9032513103438497286">Bloqueie apps instaladas neste <ph name="DEVICE_TYPE" />. Para restringir a transferência de apps ou conteúdo, aceda às Definições do Google Play.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">C&amp;olar</translation>
 <translation id="9034408118624208974">É a primeira vez que usa o Chromebook? Ative a sincronização para fazer uma cópia de segurança das suas preferências.</translation>

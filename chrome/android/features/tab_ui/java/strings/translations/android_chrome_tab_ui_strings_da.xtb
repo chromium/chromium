@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Gem <ph name="TABS_COUNT_ONE" /> valgt fane som bogmærke}one{Gem <ph name="TABS_COUNT_MANY" /> valgt faner som bogmærke}other{Gem <ph name="TABS_COUNT_MANY" /> valgte faner som bogmærker}}</translation>
 <translation id="2118649612461486615">Butiksinfo</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. Din inkognitofane er ikke tilgængelig.}one{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofane er ikke tilgængelig.}other{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofaner er ikke tilgængelige.}}</translation>
 <translation id="2162620598375156287">Fås nu til <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ophæv gruppering af fane}one{Ophæv gruppering af fane}other{Ophæv gruppering af faner}}</translation>
 <translation id="2271452184061378400">Dine fanegrupper gemmes her</translation>

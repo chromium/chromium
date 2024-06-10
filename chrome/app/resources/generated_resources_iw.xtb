@@ -411,6 +411,7 @@
 <translation id="1293264513303784526">‏מכשיר עם יציאת USB-C (יציאה שמאלית)</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1294807885394205587">התהליך הזה עשוי להימשך מספר דקות. המערכת מפעילה את מנהל המאגר.</translation>
+<translation id="12951065153783848">החשבון שלך מנוהל על ידי הארגון</translation>
 <translation id="1296911687402551044">הצמדה של הכרטיסייה שנבחרה</translation>
 <translation id="1297175357211070620">יעד</translation>
 <translation id="129770436432446029">שליחת משוב לגבי <ph name="EXPERIMENT_NAME" /></translation>
@@ -963,6 +964,7 @@
 <translation id="1692118695553449118">סנכרון מופעל</translation>
 <translation id="1692210323591458290">סגול כהה</translation>
 <translation id="1692713444215319269">היפוך צבעים, הגדלת התצוגה והגדרות התצוגה</translation>
+<translation id="169341880170235617">קבוצות הכרטיסיות נשמרות עכשיו אוטומטית</translation>
 <translation id="1695487653372841667">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'.</translation>
 <translation id="1695510246756136088">לא ניתן להתחבר לאינטרנט. אפשר לנסות שוב.</translation>
 <translation id="1696555181932908973">אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1329,6 +1331,7 @@
 <translation id="1949980990364952348">שם האפליקציה</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">לעיון באפשרויות אחרות</translation>
+<translation id="1953796913175502363">הגדרת פרופיל העבודה</translation>
 <translation id="1954597385941141174">‏אתרים יכולים לבקש הרשאה להתחבר אל התקני USB</translation>
 <translation id="1954813140452229842">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. יש לבדוק את פרטי הכניסה ולנסות שוב.</translation>
 <translation id="1955749740583837857">סגירת ההמלצה</translation>
@@ -2747,6 +2750,7 @@
 <translation id="2979493931538961252">‏בזמן ש-Chromebook במצב אופליין ויש נקודות זמינות לשיתוף אינטרנט</translation>
 <translation id="2979639724566107830">פתיחה בחלון חדש</translation>
 <translation id="2979893796619951531">החרגת האתר</translation>
+<translation id="2979966855249721010">יכול להיות שיוצגו לך המלצות לאפליקציות, טיפים ועוד לפי תחומי העניין שלך</translation>
 <translation id="2981033191524548279">‏מצטערים, משהו השתבש. יש לשלוח משוב ולציין ‎#bruschetta בתיאור. קוד השגיאה הוא <ph name="ERROR" />. כדי לפתור את הבעיה, צריך להפעיל מחדש ולנסות שוב.</translation>
 <translation id="2981113813906970160">הצגת סמן עכבר גדול</translation>
 <translation id="2983102365694924129">על סמך הפעילות שלך באתר מסוים. ההגדרה הזו מושבתת.</translation>
@@ -2858,6 +2862,7 @@
 <translation id="3048742847101793553">הקובץ הזה נחסם על ידי הארגון שלך כי הסריקה נכשלה.</translation>
 <translation id="3048917188684939573">‏יומנים של הפעלת Cast ויומנים של מכשירים</translation>
 <translation id="3051250416341590778">גודל תצוגה</translation>
+<translation id="3051968340259309715">‏האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. כשההגדרה 'קביעת מיקום יותר מדויקת' מופעלת, המידע על אותות אלחוטיים, כמו נקודות גישה ל-Wi-Fi, אנטנות סלולריות ו-GPS, וגם נתוני חיישנים מהמכשיר, כמו מד התאוצה והג'ירוסקופ, משמשים כדי לקבוע את המיקום של המכשיר. אפשר להשבית את שיתוף המיקום ב'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום'. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3053013834507634016">שימוש במפתח אישור </translation>
 <translation id="3053273573829329829">הפעלה של קוד אימות משתמש</translation>
 <translation id="3053274730492362225">ללא הבהוב</translation>
@@ -3201,7 +3206,7 @@
 <translation id="3327050066667856415">‏אבטחת המכשיר מתוכננת ב-Chromebook באופן מובנה. המכשיר שלך מוגן מתוכנות זדוניות באופן אוטומטי, ולא נדרשות בו תוכנות נוספות.</translation>
 <translation id="3328489342742826322">‏שחזור מגיבוי יביא למחיקת האפליקציות והנתונים הקיימים של Linux בתיקיית קובצי Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
-<translation id="3331974543021145906">פרטי אפליקציה</translation>
+<translation id="3331974543021145906">פרטי האפליקציה</translation>
 <translation id="3333190335304955291">אפשר להשבית את השירות הזה דרך ההגדרות.</translation>
 <translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - הסרטון פועל במצב תמונה בתוך תמונה</translation>
@@ -3778,6 +3783,7 @@
 <translation id="3753033997400164841">מאחסנים סיסמה פעם אחת. משתמשים בה בכל מקום.</translation>
 <translation id="3753142252662437130">פילטרים של צבעים</translation>
 <translation id="3753412199586870466">פתיחת החלונית הצדדית</translation>
+<translation id="3753585830134123417">שינוי גודל החלונות לצד שמאל</translation>
 <translation id="3755411799582650620">ה-<ph name="PHONE_NAME" /> יכול כעת לבטל גם את הנעילה של <ph name="DEVICE_TYPE" /> זה.</translation>
 <translation id="375636864092143889">האתר משתמש במיקרופון</translation>
 <translation id="3756485814916578707">העברת המסך מתבצעת</translation>
@@ -3806,6 +3812,7 @@
 <translation id="3766687283066842296">‏מידע נוסף על Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> הרץ</translation>
 <translation id="3767835232661747729">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. עליך <ph name="BEGIN_LINK" />להזמין בני משפחה<ph name="END_LINK" /> להצטרף לקבוצה, וכך ניתן יהיה להפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
+<translation id="376841534249795524">למה ישמש אותך ה-<ph name="DEVICE_TYPE" />?</translation>
 <translation id="377050016711188788">גלידה</translation>
 <translation id="3771290962915251154">ההגדרה הזו מושבתת מאחר שבקרת ההורים מופעלת</translation>
 <translation id="3771294271822695279">קובצי וידאו</translation>
@@ -3961,6 +3968,7 @@
 <translation id="3873915545594852654">‏התרחשה בעיה הקשורה ל-ARC++‎.</translation>
 <translation id="3874164307099183178">‏הפעלת Google Assistant</translation>
 <translation id="3875815154304214043">האפליקציה <ph name="APP_NAME" /> הוגדרה כך שתיפתח בכרטיסייה חדשה בדפדפן. גם הקישורים הנתמכים ייפתחו בדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />למידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3876219572815410515">שינוי גודל החלונות למעלה</translation>
 <translation id="3877075909000773256">הגדרות שיתוף בקרבת מקום למכשיר של <ph name="USER_NAME" />. השיתוף יתבצע בשם <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">אין לך הרשאה להעתיק מהאתר הזה</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
@@ -4249,6 +4257,7 @@
 <translation id="4089817585533500276">‏Shift +‏ <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">הפעלת גישה מאומתת</translation>
 <translation id="4090947011087001172">לאפס את ההרשאות של האתר <ph name="SITE" />?</translation>
+<translation id="4091307190120921067">‏האפליקציות שבחרת יותקנו לאחר סיום ההגדרה. אפשר לקבל המלצות נוספות מאוחר יותר באפליקציה 'מה חדש ב-Chromebook'.</translation>
 <translation id="4092636882861724179">יש לך אפשרות לראות את הסיסמאות השמורות ולנהל אותן ב<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4092709865241032354">‏כדי לעזור למנהל הסיסמאות של Google לשמור את פרטי הכניסה, עליך להוסיף את שם המשתמש שלך באתר הזה</translation>
 <translation id="4093865285251893588">תמונת הפרופיל</translation>
@@ -6032,6 +6041,7 @@
 <translation id="5463625433003343978">מתבצע חיפוש מכשירים…</translation>
 <translation id="5463856536939868464">התפריט מכיל סימניות נסתרות</translation>
 <translation id="5466374726908360271">הד&amp;בקה וחיפוש של "<ph name="SEARCH_TERMS" />"</translation>
+<translation id="5466721587278161554">אם הסנכרון מופעל, קבוצות הכרטיסיות נשמרות בסרגל הסימניות ובתפריט האפליקציות ומתעדכנות בכל המכשירים שמחוברים לחשבון</translation>
 <translation id="5467207440419968613">ההרשאות הבאות נחסמו: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">מתבצע איתור של התקני רשת לשיתוף קבצים</translation>
 <translation id="5468330507528805311">‏סטטוס של שיתוף אינטרנט בין מכשירים (tethering):</translation>
@@ -7175,6 +7185,7 @@
 <translation id="6322559670748154781">בדרך כלל לא מורידים את הקובץ הזה ולכן הוא נחסם על ידי ההגנה המתקדמת</translation>
 <translation id="6324916366299863871">עריכת קיצור דרך</translation>
 <translation id="6325191661371220117">השבתת הפעלה אוטומטית</translation>
+<translation id="632524945411480350">שינוי גודל החלונות למטה</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6326855256003666642">‏ספירת Keepalive</translation>
 <translation id="6327065839080961103">שימוש בחבילת הגלישה על ידי <ph name="FEATURE_NAME" /></translation>
@@ -7777,6 +7788,7 @@
 <translation id="6798780071646309401">‏caps lock מופעל</translation>
 <translation id="6798954102094737107">פלאגין: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">הלחצנים המוסתרים בסרגל הכלים</translation>
+<translation id="6800893479155997609">האפליקציות המובילות ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{ניתן לבחור אם התוסף הזה יוכל לקרוא או לשנות את האתר הזה}one{ניתן לבחור אם התוספים האלה יוכלו לקרוא או לשנות את האתר הזה}two{ניתן לבחור אם התוספים האלה יוכלו לקרוא או לשנות את האתר הזה}other{ניתן לבחור אם התוספים האלה יוכלו לקרוא או לשנות את האתר הזה}}</translation>
 <translation id="6801435275744557998">כיול מסך המגע</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -8150,6 +8162,7 @@
 <translation id="7067396782363924830">צבעי הסביבה</translation>
 <translation id="7067725467529581407">אין להציג זאת שוב.</translation>
 <translation id="7068279399556423026">כדי לראות כרטיסיות ממכשירים אחרים, צריך להיכנס לחשבון</translation>
+<translation id="7068591156533195518">‫<ph name="APP_NAME" /> ועוד כמה אפליקציות חסומות במכשיר <ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="706949303827219454">פתיחה של דף הגדרות האבטחה בכרטיסייה חדשה</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{סיסמה חדשה לאתר הזה}one{סיסמאות חדשות לאתר הזה}two{סיסמאות חדשות לאתר הזה}other{סיסמאות חדשות לאתר הזה}}</translation>
 <translation id="7070484045139057854">התוסף יכול לקרוא ולשנות נתוני אתרים</translation>
@@ -8547,6 +8560,7 @@
 <translation id="7392915005464253525">פ&amp;תיחה מחדש של חלון שנסגר</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{פריט אחד הועתק}one{הועתקו {COUNT} פריטים}two{הועתקו {COUNT} פריטים}other{הועתקו {COUNT} פריטים}}</translation>
 <translation id="7393435859300249877">נשלחת התראה אם מדברים כשהמיקרופון מושתק כשמשתמשים באפליקציות מסוימות, כמו אפליקציות של וידאו צ'אט. האודיו אף פעם לא נשלח מהמכשיר.</translation>
+<translation id="7395163818609347230">שינוי גודל החלונות לצד ימין</translation>
 <translation id="7395774987022469191">כל המסך</translation>
 <translation id="7396017167185131589">התיקיות המשותפות יופיעו כאן</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> יופעל עם אתחול המערכת וימשיך לפעול ברקע גם כשסוגרים את כל החלונות האחרים של <ph name="PRODUCT_NAME" />.</translation>
@@ -9613,6 +9627,7 @@
 <translation id="8148760431881541277">הגבלת כניסה</translation>
 <translation id="8149564499626272569">‏אימות באמצעות הטלפון עם כבל USB</translation>
 <translation id="8149870652370242480">‏כדי להשתמש בטלפון בסיסמאות השמורות, סורקים את קוד ה-QR, מורידים את Chrome ל-iOS ונכנסים לחשבון Google.</translation>
+<translation id="8150396590017071059">שינוי קוד האימות של מנהל הסיסמאות</translation>
 <translation id="8151057139207656239">‏פרטי ה-build הועתקו</translation>
 <translation id="815114315010033526">‏שימוש בקוד QR במקום זאת</translation>
 <translation id="8151638057146502721">הגדרה</translation>
@@ -9699,6 +9714,7 @@
 <translation id="8217399928341212914">להמשיך לחסום הורדות אוטומטיות של קבצים מרובים</translation>
 <translation id="822050276545350872">מעכשיו, לא יהיה צורך להמתין יותר</translation>
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
+<translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
 <translation id="8222674561049363989">הקובץ הוא לא מסמך תקין</translation>
 <translation id="822347941086490485">‏מתבצע חיפוש של מכשירי HID...</translation>
 <translation id="8224427620313426549">החשבון שלך ב-<ph name="DOMAIN_LINK" /> לא יימחק</translation>

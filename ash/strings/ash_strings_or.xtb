@@ -222,7 +222,6 @@
 <translation id="1770726142253415363">ଧାଡ଼ି <ph name="ROW_NUMBER" />, ସ୍ତମ୍ଭ <ph name="COLUMN_NUMBER" />କୁ ମୁଭ କରାଯାଇଛି।</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1774796056689732716">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" />, ବର୍ତ୍ତମାନ <ph name="DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />ଟିରୁ <ph name="NUM_SHOWN_ITEMS" />ଟି ଦେଖାଉଛି</translation>
 <translation id="178347895271755507">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="1796561540704213354">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ଖୋଲା ଥିବା ପୃଷ୍ଠା ସମେତ ୱେବସାଇଟଗୁଡ଼ିକ</translation>
@@ -309,6 +308,7 @@
 <translation id="2208323208084708176">ଏକୀକୃତ ଡେସ୍କଟପ୍ ମୋଡ୍</translation>
 <translation id="2220572644011485463">ପିନ୍‌ କିମ୍ବା ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="2222841058024245321">ଡେସ୍କ 7</translation>
+<translation id="2223384056430485343">ଏକ ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନରେ</translation>
 <translation id="2224075387478458881">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହେଲେ ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ</translation>
 <translation id="2227179592712503583">ପରାମର୍ଶ କାଢ଼ନ୍ତୁ</translation>
 <translation id="2248634276911611268">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲି ଏହି ନୂଆ ଟାବକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
@@ -1132,6 +1132,7 @@
 <translation id="5208059991603368177">ଚାଲୁ ଅଛି</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> ପର୍ଯ୍ୟନ୍ତ ବନ୍ଦ ଅଛି</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
+<translation id="5228195526683428788">ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନ ଡିଭାଇଡର</translation>
 <translation id="5229343007215035173">ଗୋପନୀୟତା ସ୍କ୍ରିନକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5230516054153933099">ୱିଣ୍ଡୋ</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
@@ -1517,6 +1518,7 @@
 <translation id="6613765291890844037">ଷ୍ଟୋରେଜ ବ୍ୟବହାର କରାଯାଉଛି <ph name="STORAGE_IN_USE_SIZE" /> | ମୋଟ<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଚାଲୁ ଅଛି</translation>
 <translation id="6622679827379792051">ଆପଣଙ୍କ ଫୋନର ଆପ୍ସକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
+<translation id="662279009180869175">ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନକୁ ରିସାଇଜ କରିବା ପାଇଁ ବାମ ଏବଂ ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6624493541160101248">ବର୍ତ୍ତମାନର ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="6625718907317144388">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ଏବଂ ଅନ୍ୟ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1535,6 +1537,7 @@
 <translation id="6670153871843998651">ଡେସ୍କ 3</translation>
 <translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
 <translation id="6671661918848783005">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="6676552993057022464">ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନକୁ ରିସାଇଜ କରିବା ପାଇଁ ଉପର ଏବଂ ତଳ ତୀର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6682029141988159141">କ୍ଲିପବୋର୍ଡରୁ ବିଷୟବସ୍ତୁ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6683022854667115063">ହେଡଫୋନଗୁଡ଼ିକ</translation>
 <translation id="6686023075541098243">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>

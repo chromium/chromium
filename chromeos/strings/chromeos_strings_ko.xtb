@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">배경</translation>
 <translation id="3027578600144895987">카메라 종료</translation>
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
+<translation id="3051968340259309715">이렇게 하면 시스템 서비스에서 위치 정확도를 사용하여 내 위치를 파악할 수 있습니다. 위치 정확도는 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 타워, GPS)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)를 사용합니다. 설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스에서 위치를 사용 중지할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3060579846059757016">개요</translation>

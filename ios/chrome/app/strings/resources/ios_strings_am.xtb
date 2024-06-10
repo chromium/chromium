@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">የይለፍ ቃላትን አስቀምጥ</translation>
 <translation id="1753905327828125965">በይበልጥ የተጎበኙ</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} ደካማ የይለፍ ቃል}one{{count} ደካማ የይለፍ ቃል}other{{count} ደካማ የይለፍ ቃሎች}}</translation>
+<translation id="1764070164487214210">አቅጣጫዎች</translation>
 <translation id="1766411844240160513">ቅጽን ራስ-ሙላ</translation>
 <translation id="1767766085187034454">Google ትርጉም</translation>
 <translation id="1769106850515800431">ግላዊነት የተላበሰ ይዘት</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">ማንነት የማያሳውቁ ትሮች</translation>
 <translation id="3775743491439407556">ስምረት እየሰራ አይደለም</translation>
 <translation id="3779810277399252432">ምንም የበይነመረብ ግንኙነት የለም።</translation>
+<translation id="3785672280731998727">የማሳያ ስም</translation>
 <translation id="3789294999358192700">ከታች ያሉትን እርምጃዎች ይከተሉ፦</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="380329542618494757">ስም</translation>
 <translation id="3803696231112616155">ወደዚህ ጣቢያ ለመተርጎም ሐሳብ ያቅርቡ</translation>
 <translation id="3808311849069021992">የፍለጋ ፕሮግራም ዝርዝሮችን አሳይ</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
+<translation id="3812308602011798782">ግምገማዎች</translation>
 <translation id="3818045793209708987">ይህን ጥቅል መከታተል ቆሟል</translation>
 <translation id="3818293389945649617">ቀጣዩን አግኝ</translation>
 <translation id="3819183753496523827">ከመስመር ውጭ ነዎት። የበይነመረብ ግንኙነትዎን ይፈትሹት እና እንደገና ይሞክሩ።</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">በማንኛውም መተግበሪያ ውስጥ በአንድ መታ ማድረግ የተቀመጡ የይለፍ ቃላትዎን ያግኙ</translation>
 <translation id="4049507953662678203">የአውታረ መረብ ግንኙነት እንዳለዎት ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="4054572406751135230">ዜና፣ ስፖርቶችን እና ሌሎችን ይከታተሉ።</translation>
+<translation id="4068959193278821990">የላቀ ጥበቃን አብራ...</translation>
 <translation id="4092655288299341041">እገዛ አሳይ</translation>
 <translation id="4105841739161771091">{count,plural, =1{አድራሻን ሰርዝ}one{አድራሻን ሰርዝ}other{አድራሻዎችን ሰርዝ}}</translation>
 <translation id="4108998448622696017">አደገኛ ክስተቶች ልክ ሲያጋጥሙ ፈልጎ ያገኛቸውና ስለእነሱ ያስጠነቅቅዎታል።</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">የተጣራ-ወደ-ውጭ-የሚላክ ውሂብ ለመላክ እባክዎ የኢሜይል መለያዎን በቅንብሮች መተግበሪያው ውስጥ ያዋቅሩ።</translation>
 <translation id="4124987746317609294">የጊዜ ወሰን</translation>
 <translation id="4133265950310064865">የላቀ ጥበቃ</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />፣ <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
 <translation id="4148023517926189160">ይህ ድር ጣቢያ አንድ ፋይል አውርዶ ወደ የቀን መቁጠሪያዎ ማከል ይፈልጋል።</translation>
 <translation id="4152011295694446843">የእርስዎን እልባቶች እዚህ ያገኛሉ</translation>
@@ -1472,6 +1477,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="834783239627985533">በብዛት የተጎበኙ ጣቢያዎች</translation>
 <translation id="8358401059263985056">ማሳወቂያዎችን አብራ</translation>
 <translation id="8364841868226993049">በGoogle ፎቶዎች ውስጥ ለ<ph name="USER_EMAIL" /> ምስልን በማስቀመጥ ላይ...</translation>
+<translation id="8369246252708539904">የይለፍ ቁልፍ ሰርዝ</translation>
 <translation id="8370406443343902172">ወደ ቅንብሮች ሂድ…</translation>
 <translation id="8374977641764177587">ማሳወቂያዎችን አብራ?</translation>
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>

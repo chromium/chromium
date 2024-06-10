@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Background</translation>
 <translation id="3027578600144895987">Close the camera</translation>
 <translation id="3031560714565892478">Device is a video camera.</translation>
+<translation id="3051968340259309715">This allows system services to use Location Accuracy to determine your location. Location Accuracy uses information about wireless signals, such as Wi-Fi access points, mobile network towers and GPS, along with device sensor data, such as accelerometer and gyroscope, to estimate device location. You can turn off location in Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Outlines</translation>

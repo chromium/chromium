@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Gardar contras.</translation>
 <translation id="1753905327828125965">Máis visitados</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} contrasinal pouco seguro}other{{count} contrasinais pouco seguros}}</translation>
+<translation id="1764070164487214210">Indicacións</translation>
 <translation id="1766411844240160513">Autocompletar formulario</translation>
 <translation id="1767766085187034454">Tradutor de Google</translation>
 <translation id="1769106850515800431">Contido personalizado</translation>
@@ -541,12 +542,14 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
 <translation id="3775743491439407556">A sincronización non funciona</translation>
 <translation id="3779810277399252432">Non hai conexión a Internet.</translation>
+<translation id="3785672280731998727">Nome visible</translation>
 <translation id="3789294999358192700">Sigue os pasos que se mostran a continuación:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
 <translation id="3808311849069021992">Mostrar os detalles do buscador</translation>
 <translation id="3810973564298564668">Xestionar</translation>
+<translation id="3812308602011798782">Recensións</translation>
 <translation id="3818045793209708987">Deixouse de facer o seguimento deste paquete</translation>
 <translation id="3818293389945649617">Buscar seguinte</translation>
 <translation id="3819183753496523827">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
@@ -594,6 +597,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4045648459118332842">Usa en calquera aplicación e cun toque os contrasinais gardados</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
 <translation id="4054572406751135230">Mantente ao día das noticias, os deportes e moito máis.</translation>
+<translation id="4068959193278821990">Activar protección mellorada...</translation>
 <translation id="4092655288299341041">Mostrar axuda:</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar enderezo}other{Eliminar enderezos}}</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
@@ -605,6 +609,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4121993058175073134">Para enviar datos de exportación netos, configura a túa conta de correo electrónico na aplicación Configuración.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
 <translation id="4133265950310064865">Protección mellorada</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quere descargar un ficheiro e engadilo ao teu calendario.</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
@@ -1470,6 +1475,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="834783239627985533">Sitios máis visitados</translation>
 <translation id="8358401059263985056">Activar notificacións</translation>
 <translation id="8364841868226993049">Gardando imaxe de <ph name="USER_EMAIL" /> en Google Fotos...</translation>
+<translation id="8369246252708539904">Eliminar clave de acceso</translation>
 <translation id="8370406443343902172">Ir a Configuración...</translation>
 <translation id="8374977641764177587">Queres activar as notificacións?</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>

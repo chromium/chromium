@@ -223,7 +223,6 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-р мөр, <ph name="COLUMN_NUMBER" />-р багана руу зөөсөн.</translation>
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, одоогоор <ph name="DATE" />-г сонгосон.</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />-с <ph name="NUM_SHOWN_ITEMS" />-г харуулж байна</translation>
 <translation id="178347895271755507">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харахыг тохируулах</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
 <translation id="1796561540704213354">Таны зочилсон хуудас болон нээлттэй хуудаснуудыг оруулсан вебсайтууд</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">Компьютерийн нэгдмэл горим</translation>
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2222841058024245321">Дэлгэц 7</translation>
+<translation id="2223384056430485343">Хуваасан дэлгэцэд</translation>
 <translation id="2224075387478458881">Хамгаалалттай контент харагдаж байх үед дэлгэцийн үйлдэл бичихийг зөвшөөрөхгүй</translation>
 <translation id="2227179592712503583">Зөвлөмжийг устгах</translation>
 <translation id="2248634276911611268">Холбоосыг шинэ табд нээж, уг шинэ таб руу шилжих</translation>
@@ -1134,6 +1134,7 @@
 <translation id="5208059991603368177">Асаалттай</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> хүртэл унтраалттай</translation>
 <translation id="5222676887888702881">Гарах</translation>
+<translation id="5228195526683428788">Дэлгэц хуваах хуваагч</translation>
 <translation id="5229343007215035173">Нууцлалтай дэлгэцийг асаах/унтраах</translation>
 <translation id="5230516054153933099">Цонх</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
@@ -1520,6 +1521,7 @@
 <translation id="6613765291890844037">Нийт <ph name="STORAGE_TOTAL_SIZE" />-н хадгалах сангаас | <ph name="STORAGE_IN_USE_SIZE" />-г ашиглаж байна</translation>
 <translation id="6614169507485700968">Нууцлалын дэлгэц асаалттай байна</translation>
 <translation id="6622679827379792051">Утасныхаа аппуудыг харахыг тохируулах</translation>
+<translation id="662279009180869175">Хуваасан дэлгэцийн хэмжээг өөрчлөхийн тулд зүүн, баруун сумыг ашиглана уу</translation>
 <translation id="6624493541160101248">Одоогийн дэлгэц: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
 <translation id="6625718907317144388">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> болон бусад мэдэгдлийг нуусан</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1538,6 +1540,7 @@
 <translation id="6670153871843998651">Дэлгэц 3</translation>
 <translation id="6671495933530132209">Зургийг хуулах</translation>
 <translation id="6671661918848783005">Таны Chromebook-н түгжээг тайлах боломжгүй</translation>
+<translation id="6676552993057022464">Хуваасан дэлгэцийн хэмжээг өөрчлөхийн тулд дээш, доош сумыг ашиглана уу</translation>
 <translation id="6682029141988159141">Түр санах ойгоос контент буулгах</translation>
 <translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6686023075541098243">Утасныхаа мэдэгдлүүдийг харахыг тохируулах</translation>

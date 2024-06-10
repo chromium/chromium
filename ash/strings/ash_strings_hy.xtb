@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">Տեղափոխվեց տող <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
-<translation id="1775598828170459419">Ցուցադրված է <ph name="NUM_SHOWN_ITEMS" /> տարր՝ <ph name="NUM_TOTAL_ITEMS" />-ից</translation>
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
@@ -311,6 +310,7 @@
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2222841058024245321">Աշխատասեղան 7</translation>
+<translation id="2223384056430485343">Տրոհված էկրանին</translation>
 <translation id="2224075387478458881">Էկրանի տեսագրում չի թույլատրվում, երբ պաշտպանված բովանդակություն է տեսանելի</translation>
 <translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="2248634276911611268">Բացել հղումը նոր ներդիրում և անցնել այդ ներդիր</translation>

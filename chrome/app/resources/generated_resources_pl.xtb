@@ -4202,6 +4202,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4066207411788646768">Aby wyświetlić drukarki dostępne w sieci, sprawdź połączenie</translation>
 <translation id="4067839975993712852">Oznacz bieżącą kartę jako przeczytaną</translation>
 <translation id="4068776064906523561">Zapisane odciski palców</translation>
+<translation id="4070132839822635162">Nie loguj się</translation>
 <translation id="407173827865827707">Po kliknięciu</translation>
 <translation id="4072805772816336153">Spróbuj ponownie później</translation>
 <translation id="4074164314564067597">klawiatura</translation>
@@ -7329,6 +7330,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6469702164109431067">Hasła i klucze dostępu</translation>
 <translation id="6470823736074966819">Ignoruj powiadomienia</translation>
 <translation id="6472893788822429178">Pokaż przycisk strony głównej</translation>
+<translation id="6473315466413288899">Wybierz opcję</translation>
 <translation id="6474498546677193336">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu Linuksa.</translation>
 <translation id="6474884162850599008">Odłącz konto na Dysku Google</translation>
 <translation id="6475294023568239942">Zwolnij miejsce lub zmień rozmiar dysku Linuksa w ustawieniach</translation>
@@ -10797,6 +10799,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9031811691986152304">spróbować jeszcze raz</translation>
 <translation id="9032004780329249150">Używaj haseł na urządzeniach z iOS</translation>
 <translation id="9032097289595078011">Wyłącz Szybkie parowanie</translation>
+<translation id="9032513103438497286">Blokuj aplikacje zainstalowane na tym urządzeniu <ph name="DEVICE_TYPE" />. Aby ograniczyć pobieranie aplikacji lub treści, otwórz Ustawienia Google Play.</translation>
 <translation id="9033765790910064284">Kontynuuj mimo to</translation>
 <translation id="9033857511263905942">&amp;Wklej</translation>
 <translation id="9034408118624208974">Dopiero zaczynasz korzystać z Chromebooka? Włącz synchronizację, aby utworzyć kopię zapasową swoich ustawień.</translation>

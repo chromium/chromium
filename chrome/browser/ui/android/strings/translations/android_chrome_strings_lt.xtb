@@ -285,6 +285,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2515921719039583189">Ištrinti „Chrome“ duomenis iš šio įrenginio?</translation>
 <translation id="2517113738956581680">Viso dydžio lapas</translation>
 <translation id="2523184218357549926">Siunčiami „Google“ puslapių, kuriuose lankotės, URL</translation>
+<translation id="2524132927880411790">Eiti į „Google“ programos paiešką balsu</translation>
 <translation id="2527209463677295330">Įtraukus daugiau puslapio teksto, gali būti rodomi geresni rezultatai</translation>
 <translation id="2527497042232966453">Perjungta į inkognito skirtukus</translation>
 <translation id="2527779675047087889">Slėpti iškarpinės turinį</translation>
@@ -519,6 +520,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="363596933471559332">Automatiškai prisijungti prie svetainių naudojant išsaugotus prisijungimo duomenis. Kai funkcija išjungta, kaskart prisijungiant prie svetainės prašoma patvirtinti.</translation>
 <translation id="3636940436873918441">Pageidaujamos kalbos</translation>
 <translation id="3637744895182738742">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Eiti į „Google“ programos pagrindinį skirtuką</translation>
 <translation id="368329460027487650">Atsijungta. Atidaromos prisijungimo parinktys.</translation>
 <translation id="3687645719033307815">Žiūrite šio puslapio peržiūrą</translation>
 <translation id="3690369331356918524">Įspėjama, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
@@ -1475,6 +1477,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8135406045838672858">Atsisiųsti PDF failai automatiškai atidaromi naudojant „<ph name="APP_NAME" />“</translation>
 <translation id="8137562778192957619">Jums nereikės prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkyklėje.</translation>
+<translation id="8152331954420209374">Eiti į „Lens“</translation>
 <translation id="8163820386638255770">Jei norite naudoti ir saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
 <translation id="8171286197772512427">Bendrinimas su suvestinės atsiliepimų lapu atidarytas</translation>
 <translation id="8179976553408161302">Įvesti</translation>
@@ -1511,6 +1514,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8348430946834215779">Kai įmanoma, naudokite HTTPS ir gaukite įspėjimą prieš įkeliant jo nepalaikančias svetaines</translation>
 <translation id="8354977102499939946">Sparčiai ieškokite balsu. Jei norite redaguoti šį spartųjį klavišą, eikite į skiltį „Nustatymai“.</translation>
 <translation id="835847953965672673">Atkurta atsisiuntimų: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Klauskite ko nors</translation>
 <translation id="8368001212524806591">Stebėti kainą</translation>
 <translation id="8378850197701296741">Turite žymių, istorijos duomenų ir kitų nustatymų iš <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Jūsų tapatybės patvirtinimas</translation>

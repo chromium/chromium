@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Էջանշել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="2118649612461486615">Տեղեկություններ խանութի մասին</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր ինկոգնիտո ներդիրը հասանելի չի լինի։}one{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր # ինկոգնիտո ներդիր հասանելի չի լինի։}other{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր # ինկոգնիտո ներդիր հասանելի չի լինի։}}</translation>
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Հեռացնել ներդիրը խմբից}one{Հեռացնել ներդիրը խմբից}other{Հեռացնել ներդիրները խմբից}}</translation>
 <translation id="2271452184061378400">Ձեր ներդիրների խմբերը պահվում են այստեղ</translation>

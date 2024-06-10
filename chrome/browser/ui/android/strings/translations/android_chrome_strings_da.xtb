@@ -285,6 +285,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2515921719039583189">Vil du slette dine Chrome-data på denne enhed?</translation>
 <translation id="2517113738956581680">Felt i fuld størrelse</translation>
 <translation id="2523184218357549926">Sender webadresser på de sider, du besøger, til Google</translation>
+<translation id="2524132927880411790">Gå til stemmesøgning i Google-appen</translation>
 <translation id="2527209463677295330">Medtag mere af sideteksten for at se bedre resultater</translation>
 <translation id="2527497042232966453">Der er skiftet til inkognitofaner</translation>
 <translation id="2527779675047087889">Skjul indhold i udklipsholderen</translation>
@@ -519,6 +520,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="363596933471559332">Log automatisk ind på websites med gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at verificere, hver gang du vil logge ind på et website.</translation>
 <translation id="3636940436873918441">Foretrukne sprog</translation>
 <translation id="3637744895182738742">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Gå til startsiden i Google-appen</translation>
 <translation id="368329460027487650">Logget ud. Åbner valgmuligheder for login.</translation>
 <translation id="3687645719033307815">Du ser en forhåndsvisning af denne side</translation>
 <translation id="3690369331356918524">Advarer dig, hvis adgangskoder offentliggøres i et brud på datasikkerheden</translation>
@@ -1475,6 +1477,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8135406045838672858">Downloadede PDF-filer åbnes automatisk med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangs­kode­admin­istrator.</translation>
+<translation id="8152331954420209374">Gå til Lens</translation>
 <translation id="8163820386638255770">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto</translation>
 <translation id="8171286197772512427">Feedback om Oversigtsark til deling er åbnet</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8348430946834215779">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS</translation>
 <translation id="8354977102499939946">Søg hurtigt med din stemme. Gå til Indstillinger for at redigere denne genvej.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads blev gendannet</translation>
+<translation id="8367705492654390392">Stil et spørgsmål</translation>
 <translation id="8368001212524806591">Overvåg pris</translation>
 <translation id="8378850197701296741">Du har bogmærker, historik og andre indstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verificer din identitet</translation>

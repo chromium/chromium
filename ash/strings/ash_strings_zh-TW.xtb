@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
-<translation id="1775598828170459419">目前顯示 <ph name="NUM_SHOWN_ITEMS" /> 個，共 <ph name="NUM_TOTAL_ITEMS" /> 個</translation>
 <translation id="178347895271755507">配置以下設定：查看手機上最近的相片、媒體和通知</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">整合桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
+<translation id="2223384056430485343">在分割畫面中</translation>
 <translation id="2224075387478458881">當畫面上有受保護的內容時，無法使用螢幕畫面錄製功能</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2248634276911611268">在新分頁中開啟連結並切換至這個新分頁</translation>
@@ -1130,6 +1130,7 @@
 <translation id="5208059991603368177">開啟</translation>
 <translation id="5216991270656129561">關閉，直到<ph name="TIME" /></translation>
 <translation id="5222676887888702881">登出</translation>
+<translation id="5228195526683428788">分割畫面分隔線</translation>
 <translation id="5229343007215035173">開啟/關閉隱私保護功能</translation>
 <translation id="5230516054153933099">視窗</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -1515,6 +1516,7 @@
 <translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
 <translation id="6622679827379792051">配置以下設定：查看手機的應用程式</translation>
+<translation id="662279009180869175">使用向左和向右鍵調整分割畫面大小</translation>
 <translation id="6624493541160101248">目前的桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="6625718907317144388">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
@@ -1533,6 +1535,7 @@
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6671661918848783005">無法解鎖 Chromebook</translation>
+<translation id="6676552993057022464">使用向上和向下鍵調整分割畫面大小</translation>
 <translation id="6682029141988159141">貼上剪貼簿中的內容</translation>
 <translation id="6683022854667115063">耳罩式耳機</translation>
 <translation id="6686023075541098243">配置以下設定：查看手機的通知</translation>

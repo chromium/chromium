@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="1262876892872089030">სანამ ეს ჩანართი უმოქმედო იყო, Chromium-ის სისწრაფის შესანარჩუნებლად მეხსიერება გათავისუფლდა. სურვილისამებრ, შეგიძლიათ აირჩიოთ, რომ ეს საიტი ყოველთვის გამოირიცხოს უმოქმედოთა რიგებიდან.</translation>
 <translation id="1265577313130862557">Chromium-მა დაბლოკა ეს ჩამოტვირთვა, რადგან ეს ფაილი სახიფათოა</translation>
+<translation id="126567311906253476">Google სერვისებში, მაგალითად, Gmail-სა თუ YouTube-ში <ph name="USER_EMAIL" />-ით შესვლისას შეგიძლიათ Chromium-შიც იმავე ანგარიშით შეხვიდეთ</translation>
 <translation id="1315551408014407711">შექმენით ახალი Chromium პროფილი</translation>
 <translation id="1342274909142618978">ასევე, წაიშალოს მონაცემები Chromium-იდან (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">თქვენ შესული ხართ Chromium-ში!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">როცა HTTPS მიუწვდომელია, Chromium გამოიყენებს დაუცველ კავშირს თქვენი გაფრთხილების გარეშე</translation>
 <translation id="1774152462503052664">დავრთოთ ნება Chromium-ს გაშვებული იყოს ფონურ რეჟიმში</translation>
 <translation id="1779356040007214683">Chromium-ის უსაფრთხოების გაზრდის მიზნით, ჩვენ გავთიშეთ რამდენიმე გაფართოება, რომელიც არ არის ჩამოთვლილი <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ში და, შესაძლოა, დამატებულია თქვენი თანხმობის გარეშე.</translation>
+<translation id="1804128559285178512">როცა შესული ხართ, Chromium-ში შეგიძლიათ გამოიყენოთ თქვენი პაროლები და სხვა კონტენტი თქვენი Google ანგარიშიდან</translation>
 <translation id="1808667845054772817">Chromium-ის ხელახალი ინსტალაცია</translation>
 <translation id="1820835682567584003">Chromium ცდილობს შემდეგს: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">დათვალიერების მონაცემების მხოლოდ ამ მოწყობილობიდან წასაშლელად და Google ანგარიშში მათ შესანარჩუნებლად <ph name="BEGIN_LINK" />გამოდით Chromium-იდან<ph name="END_LINK" />.</translation>

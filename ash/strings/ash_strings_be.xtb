@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">Перамешчана на радок <ph name="ROW_NUMBER" />, у слупок <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Прагартаць управа</translation>
 <translation id="1774796056689732716">Каляндар, <ph name="CURRENT_MONTH_YEAR" />, дата, якая цяпер выбрана, – <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">Паказваецца <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Наладзіць прагляд нядаўніх фота, медыяфайлаў і апавяшчэнняў з тэлефона</translation>
 <translation id="1787955149152357925">Выключана</translation>
 <translation id="1796561540704213354">Вэб-сайты, у тым ліку наведаныя і адкрытыя вамі старонкі</translation>
@@ -1133,6 +1132,7 @@
 <translation id="5208059991603368177">Уключана</translation>
 <translation id="5216991270656129561">Выключана да <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Выйсці</translation>
+<translation id="5228195526683428788">Раздзяляльнік падзеленага экрана</translation>
 <translation id="5229343007215035173">Уключыць (выключыць) Экран прыватнасці</translation>
 <translation id="5230516054153933099">Акно</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
@@ -1519,6 +1519,7 @@
 <translation id="6613765291890844037">Выкарыстоўваецца сховішча: <ph name="STORAGE_IN_USE_SIZE" /> | Агульны аб'ём сховішча: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
 <translation id="6622679827379792051">Наладзіць прагляд праграм з тэлефона</translation>
+<translation id="662279009180869175">Змяняйце памер падзеленага экрана з дапамогай клавіш са стрэлкамі ўлева і ўправа</translation>
 <translation id="6624493541160101248">Бягучы працоўны стол: <ph name="DESK_NAME" />. Працоўны стол <ph name="DESK_INDEX" /> з <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Апавяшчэнні ад праграм "<ph name="APP_1_TITLE" />" і "<ph name="APP_2_TITLE" />" некаторых іншых схаваны, бо ўключаны рэжым абароненага прагляду</translation>
 <translation id="6627638273713273709">Пошук+Shift+K</translation>
@@ -1537,6 +1538,7 @@
 <translation id="6670153871843998651">Стол 3</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6671661918848783005">Не ўдалося разблакіраваць Chromebook</translation>
+<translation id="6676552993057022464">Змяняйце памер падзеленага экрана з дапамогай клавіш са стрэлкамі ўверх і ўніз</translation>
 <translation id="6682029141988159141">Уставіць змесціва з буфера абмену</translation>
 <translation id="6683022854667115063">Навушнікі</translation>
 <translation id="6686023075541098243">Наладзіць прагляд апавяшчэнняў з тэлефона</translation>

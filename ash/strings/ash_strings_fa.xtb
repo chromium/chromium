@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">به ردیف <ph name="ROW_NUMBER" />، ستون <ph name="COLUMN_NUMBER" /> منتقل شد.</translation>
 <translation id="1771761307086386028">پیمایش به راست</translation>
 <translation id="1774796056689732716">تقویم، <ph name="CURRENT_MONTH_YEAR" />، درحال‌حاضر <ph name="DATE" /> انتخاب شده است.</translation>
-<translation id="1775598828170459419">نمایش <ph name="NUM_SHOWN_ITEMS" /> از <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفن</translation>
 <translation id="1787955149152357925">خاموش</translation>
 <translation id="1796561540704213354">وب‌سایت‌ها شامل صفحه‌های که از آن‌ها بازدید کرده‌اید و صفحه‌های باز می‌شود</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">حالت میزکار یکپارچه</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="2222841058024245321">میزکار ۷</translation>
+<translation id="2223384056430485343">در صفحهٔ دونیمه</translation>
 <translation id="2224075387478458881">ضبط صفحه‌نمایش هنگامی که محتوای محافظت‌شده نمایان باشد مجاز نیست</translation>
 <translation id="2227179592712503583">حذف پیشنهاد</translation>
 <translation id="2248634276911611268">باز کردن پیوند در برگه جدید و رفتن به این برگه جدید</translation>
@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">روشن</translation>
 <translation id="5216991270656129561">خاموش تا <ph name="TIME" /></translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
+<translation id="5228195526683428788">تقسیم‌کننده صفحهٔ دونیمه</translation>
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
 <translation id="5230516054153933099">پنجره</translation>
 <translation id="5234764350956374838">رد کردن</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> از فضای ذخیره‌سازی درحال استفاده است | مجموع <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">صفحه حریم خصوصی روشن است</translation>
 <translation id="6622679827379792051">راه‌اندازی مشاهده برنامه‌های تلفن</translation>
+<translation id="662279009180869175">برای تغییر اندازه صفحهٔ دونیمه، از کلیدهای راست‌بر و چپ‌بر استفاده کنید</translation>
 <translation id="6624493541160101248">میزکار کنونی: <ph name="DESK_NAME" />. میزکار <ph name="DESK_INDEX" /> از <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">اعلان‌های <ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" />، و اعلان‌های دیگر پنهان شده است، زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">میز ۳</translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
 <translation id="6671661918848783005">‏قفل Chromebook باز نشد</translation>
+<translation id="6676552993057022464">برای تغییر اندازه صفحهٔ دونیمه، از کلیدهای بالابر و پایین‌بر استفاده کنید</translation>
 <translation id="6682029141988159141">جای‌گذاری محتوا از بریده‌دان</translation>
 <translation id="6683022854667115063">هدفون</translation>
 <translation id="6686023075541098243">راه‌اندازی مشاهده اعلان‌های تلفن</translation>

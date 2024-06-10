@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2118649612461486615">ຂໍ້​ມູນ​ຮ້ານ​ຄ້າ</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}other{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ # ແຖບຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}}</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ຍົກເລີກການຈັດກຸ່ມແຖບ}other{ຍົກເລີກການຈັດກຸ່ມແຖບ}}</translation>
 <translation id="2271452184061378400">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້ບ່ອນນີ້</translation>

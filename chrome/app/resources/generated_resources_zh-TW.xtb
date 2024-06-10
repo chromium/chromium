@@ -409,6 +409,7 @@
 <translation id="1293264513303784526">USB-C 裝置 (左側連接埠)</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1294807885394205587">這項程序可能需要幾分鐘才能完成。正在啟動容器管理工具。</translation>
+<translation id="12951065153783848">你的帳戶是由貴機構管理</translation>
 <translation id="1296911687402551044">固定所選分頁</translation>
 <translation id="1297175357211070620">目的地</translation>
 <translation id="129770436432446029">提供你對「<ph name="EXPERIMENT_NAME" />」的意見</translation>
@@ -963,6 +964,7 @@
 <translation id="1692118695553449118">同步功能已啟用</translation>
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="1692713444215319269">色彩反轉、放大鏡和顯示設定</translation>
+<translation id="169341880170235617">系統現在會自動儲存分頁群組</translation>
 <translation id="1695487653372841667">您可以控制要提供哪些資料給 Google。您隨時可以前往 [設定] 進行變更。</translation>
 <translation id="1695510246756136088">無法連上網際網路，請再試一次。</translation>
 <translation id="1696555181932908973">你可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
@@ -1320,6 +1322,7 @@
 <translation id="1949980990364952348">應用程式名稱</translation>
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1951823516285577843">尋找替代擴充功能</translation>
+<translation id="1953796913175502363">設定工作資料夾</translation>
 <translation id="1954597385941141174">網站可以要求連線至 USB 裝置</translation>
 <translation id="1954813140452229842">掛接共用裝置時發生錯誤。請檢查你的憑證，然後再試一次。</translation>
 <translation id="1955749740583837857">關閉建議</translation>
@@ -2735,6 +2738,7 @@
 <translation id="2979493931538961252">Chromebook 離線而且有可用的無線基地台時</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2979893796619951531">排除網站</translation>
+<translation id="2979966855249721010">系統會根據興趣喜好推薦應用程式、提供提示等等</translation>
 <translation id="2981033191524548279">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼為 <ph name="ERROR" />。只要重新開機後再試一次，即可修正這項錯誤。</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2983102365694924129">以你的網站活動做為依據。這項設定已關閉。</translation>
@@ -2846,6 +2850,7 @@
 <translation id="3048742847101793553">這個檔案掃描失敗，因此遭到貴機構封鎖。</translation>
 <translation id="3048917188684939573">投放與裝置記錄</translation>
 <translation id="3051250416341590778">顯示大小</translation>
+<translation id="3051968340259309715">系統服務將可使用「定位精確度」判斷你的位置。「定位精確度」會根據 Wi-Fi 存取點、行動網路基地台和 GPS 等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料估算出裝置位置。如要關閉定位功能，請依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3053013834507634016">憑證金鑰用途</translation>
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3053274730492362225">不閃爍</translation>
@@ -3763,6 +3768,7 @@
 <translation id="3753033997400164841">只要儲存一次，即可在所有裝置上使用。</translation>
 <translation id="3753142252662437130">色彩濾鏡</translation>
 <translation id="3753412199586870466">開啟側邊面板</translation>
+<translation id="3753585830134123417">已向左調整並排視窗的大小</translation>
 <translation id="3755411799582650620">你的 <ph name="PHONE_NAME" /> 現在也可以解鎖這台 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="375636864092143889">網站正在使用你的麥克風</translation>
 <translation id="3756485814916578707">正在投放螢幕畫面</translation>
@@ -3791,6 +3797,7 @@
 <translation id="3766687283066842296">進一步瞭解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />邀請家庭成員<ph name="END_LINK" />加入群組，充分發揮 Google 的產品和訂閱服務的功用。</translation>
+<translation id="376841534249795524">這部 <ph name="DEVICE_TYPE" /> 的用途是什麼？</translation>
 <translation id="377050016711188788">冰淇淋</translation>
 <translation id="3771290962915251154">已啟用家長監護功能，因此這項設定已停用</translation>
 <translation id="3771294271822695279">影片檔</translation>
@@ -3946,6 +3953,7 @@
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟 Google 助理</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設為會在新的瀏覽器分頁中開啟，支援的連結也會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3876219572815410515">已向上調整並排視窗的大小</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
 <translation id="3878445208930547646">不允許複製這個網站的內容</translation>
 <translation id="3879748587602334249">下載管理員</translation>
@@ -4233,6 +4241,7 @@
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
 <translation id="4090947011087001172">要重設 <ph name="SITE" /> 的網站權限嗎？</translation>
+<translation id="4091307190120921067">系統會在完成設定後安裝所選應用程式，你之後可以在「探索」應用程式中查看更多推薦內容。</translation>
 <translation id="4092636882861724179">你可以前往 <ph name="GOOGLE_PASSWORD_MANAGER" />查看及管理已儲存的密碼。</translation>
 <translation id="4092709865241032354">請新增你在這個網站的使用者名稱，Google 密碼管理工具才能儲存登入資訊</translation>
 <translation id="4093865285251893588">個人資料圖片</translation>
@@ -6014,6 +6023,7 @@
 <translation id="5463625433003343978">正在尋找裝置…</translation>
 <translation id="5463856536939868464">選單包含隱藏的書籤</translation>
 <translation id="5466374726908360271">貼上「<ph name="SEARCH_TERMS" />」並執行搜尋 (&amp;S)</translation>
+<translation id="5466721587278161554">分頁群組會儲存在書籤列和應用程式選單，並同步到所有已登入帳戶的裝置 (必須開啟同步功能)</translation>
 <translation id="5467207440419968613">已封鎖：<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">正在尋找檔案共用區</translation>
 <translation id="5468330507528805311">網路共用狀態：</translation>
@@ -7153,6 +7163,7 @@
 <translation id="6322559670748154781">這個檔案不是常見的下載項目，因此遭到進階保護功能封鎖</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325191661371220117">停用自動啟動功能</translation>
+<translation id="632524945411480350">已向下調整並排視窗的大小</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6326855256003666642">Keepalive 數量</translation>
 <translation id="6327065839080961103"><ph name="FEATURE_NAME" />數據用量</translation>
@@ -7751,6 +7762,7 @@
 <translation id="6798780071646309401">大寫鎖定模式已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">隱藏的工具列按鈕</translation>
+<translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> 的熱門應用程式</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{選擇這項擴充功能可否讀取或變更這個網站}other{選擇這些擴充功能可否讀取或變更這個網站}}</translation>
 <translation id="6801435275744557998">校正觸控螢幕</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -8124,6 +8136,7 @@
 <translation id="7067396782363924830">環境光顏色</translation>
 <translation id="7067725467529581407">不再顯示這個訊息。</translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
+<translation id="7068591156533195518">「<ph name="APP_NAME" />」和另外幾個應用程式已禁止在 <ph name="DEVICE_TYPE" /> 上使用</translation>
 <translation id="706949303827219454">在新分頁中開啟安全性設定頁面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
@@ -8521,6 +8534,7 @@
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
 <translation id="7393435859300249877">使用某些應用程式 (例如視訊通話應用程式) 時，如果你在麥克風設為靜音的狀態下說話，系統會通知你。音訊資料只會儲存在裝置上。</translation>
+<translation id="7395163818609347230">已向右調整並排視窗的大小</translation>
 <translation id="7395774987022469191">整個螢幕畫面</translation>
 <translation id="7396017167185131589">共用資料夾會顯示在這裡</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後仍會在背景繼續執行。</translation>
@@ -9586,6 +9600,7 @@
 <translation id="8148760431881541277">限制登入</translation>
 <translation id="8149564499626272569">透過接上 USB 傳輸線的手機進行驗證</translation>
 <translation id="8149870652370242480">如要在手機上使用儲存的密碼，請下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
+<translation id="8150396590017071059">變更密碼管理工具 PIN 碼</translation>
 <translation id="8151057139207656239">已複製版本詳細資料</translation>
 <translation id="815114315010033526">改用 QR 圖碼</translation>
 <translation id="8151638057146502721">設定</translation>
@@ -9672,6 +9687,7 @@
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
 <translation id="822050276545350872">從此不必再等待</translation>
 <translation id="8221491193165283816">你通常會封鎖通知。如要允許這個網站傳送通知給你，請按這裡。</translation>
+<translation id="8222112516148944758">系統現在會自動儲存分頁群組，並同步到所有裝置</translation>
 <translation id="8222674561049363989">這個檔案不是有效的文件</translation>
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
 <translation id="8224427620313426549">系統不會刪除你的 <ph name="DOMAIN_LINK" /> 帳戶。</translation>

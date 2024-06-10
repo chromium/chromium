@@ -285,6 +285,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2515921719039583189">Xoá dữ liệu Chrome khỏi thiết bị này?</translation>
 <translation id="2517113738956581680">Bảng có kích thước đầy đủ</translation>
 <translation id="2523184218357549926">Gửi cho Google URL của các trang bạn truy cập</translation>
+<translation id="2524132927880411790">Chuyển đến tính năng Tìm kiếm bằng giọng nói trong ứng dụng Google</translation>
 <translation id="2527209463677295330">Bạn có thể thấy kết quả phù hợp hơn bằng cách bao gồm thêm nhiều văn bản của trang</translation>
 <translation id="2527497042232966453">Đã chuyển sang các thẻ Ẩn danh</translation>
 <translation id="2527779675047087889">Ẩn các nội dung của bảng nhớ tạm</translation>
@@ -519,6 +520,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3636940436873918441">Ngôn ngữ ưu tiên</translation>
 <translation id="3637744895182738742">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Chuyển đến thẻ Trang chủ trong ứng dụng Google</translation>
 <translation id="368329460027487650">Đã đăng xuất. Mở các tuỳ chọn đăng nhập.</translation>
 <translation id="3687645719033307815">Bạn đang xem bản xem trước của trang này</translation>
 <translation id="3690369331356918524">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
@@ -1475,6 +1477,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8135406045838672858">Các tệp PDF đã tải xuống sẽ tự động mở bằng <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Bạn không cần ghi nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google.</translation>
+<translation id="8152331954420209374">Chuyển đến Ống kính</translation>
 <translation id="8163820386638255770">Xác minh danh tính của bạn để lưu mật khẩu vào Tài khoản Google và sử dụng các mật khẩu đó</translation>
 <translation id="8171286197772512427">Trang Chia sẻ kèm theo phản hồi về bảng tóm tắt đã mở</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8348430946834215779">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS</translation>
 <translation id="8354977102499939946">Tìm kiếm nhanh bằng giọng nói. Để chính sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="835847953965672673">Đã khôi phục <ph name="NUMBER_OF_DOWNLOADS" /> tệp đã tải xuống</translation>
+<translation id="8367705492654390392">Đặt câu hỏi bất kỳ</translation>
 <translation id="8368001212524806591">Theo dõi giá</translation>
 <translation id="8378850197701296741">Tài khoản <ph name="FROM_ACCOUNT" /> của bạn có dấu trang, nhật ký và các chế độ cài đặt khác.</translation>
 <translation id="8387617938027387193">Xác minh danh tính của bạn</translation>

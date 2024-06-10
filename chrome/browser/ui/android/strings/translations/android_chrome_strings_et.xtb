@@ -285,6 +285,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2515921719039583189">Kas kustutada seadmest Chrome'i andmed?</translation>
 <translation id="2517113738956581680">Täissuuruses leht</translation>
 <translation id="2523184218357549926">Saadab Google'ile teie külastatud lehtede URL-id</translation>
+<translation id="2524132927880411790">Ava Google’i rakenduse häälotsing</translation>
 <translation id="2527209463677295330">Kaasates rohkem lehe teksti võite näha paremaid tulemusi</translation>
 <translation id="2527497042232966453">Inkognito vahelehed on aktiveeritud</translation>
 <translation id="2527779675047087889">Peida lõikelaua sisu</translation>
@@ -519,6 +520,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="363596933471559332">Teid logitakse salvestatud mandaadiga veebisaitidele automaatselt sisse. Kui funktsioon on välja lülitatud, palutakse teilt kinnitust iga kord enne veebisaidile sisselogimist.</translation>
 <translation id="3636940436873918441">Eelistatud keeled</translation>
 <translation id="3637744895182738742">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Ava Google’i rakenduse avaleht</translation>
 <translation id="368329460027487650">Välja logitud. Avab sisselogimise valikud.</translation>
 <translation id="3687645719033307815">Vaatate selle lehe eelvaadet</translation>
 <translation id="3690369331356918524">Hoiatab teid, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
@@ -1475,6 +1477,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="813082847718468539">Kuvab saidi teabe</translation>
 <translation id="8135406045838672858">Allalaaditud PDF-id avatakse automaatselt rakendusega <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Te ei pea seda parooli meelde jätma. See salvestatakse Google'i paroolihaldurisse.</translation>
+<translation id="8152331954420209374">Ava Lens</translation>
 <translation id="8163820386638255770">Selleks, et saaksite oma Google’i kontol paroole kasutada ja salvestada, kinnitage oma isik</translation>
 <translation id="8171286197772512427">Jagamine kokkuvõtte tagasiside lehe abil on avatud</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
@@ -1511,6 +1514,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8348430946834215779">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse</translation>
 <translation id="8354977102499939946">Otsige kiirelt oma hääle abil. Selle otsetee muutmiseks avage menüü Seaded.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> allalaadimist taastati</translation>
+<translation id="8367705492654390392">Küsige midagi</translation>
 <translation id="8368001212524806591">Jälgi hinda</translation>
 <translation id="8378850197701296741">Teil on järjehoidjad, ajalugu ja muud seaded kontolt <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Kinnitage oma isik</translation>

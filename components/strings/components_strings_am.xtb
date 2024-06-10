@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">ያሸብልሉ እና የተጋራውን ትር ይዘቶች ያጉሉ</translation>
 <translation id="1089439967362294234">የይለፍ ቃል ቀይር</translation>
 <translation id="1090629319939036170">የምናባዊ እውነታ ምናሌ</translation>
+<translation id="1091779689406092804">ቅጽበታዊ ገጽ ዕይታዎች</translation>
 <translation id="1094777233105318927">ስለ የእርስዎ አሳሽ፣ ስርዓተ ክወና፣ መሣሪያ፣ የተጫነ ሶፍትዌር እና ፋይሎች መረጃ</translation>
 <translation id="1096545575934602868">ይህመስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሌሎች ተጨማሪ ግቤቶች ሁሉ ይወገዳሉ።</translation>
 <translation id="1097803577928227769">ክልላዊ ፓርኮች እና የአትክልት ስፍራዎች</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">የቤት ቲያትር ስርዓቶች</translation>
 <translation id="1842969606798536927">ይክፈሉ</translation>
 <translation id="1846432862466000825">ፕላስቲክ (በማህደር የሚቀመጥ)</translation>
+<translation id="1848640291751752317">ውርዶች</translation>
 <translation id="1848982255014129637">ፎቶ (በከፍተኛው አንጸባራቂ)</translation>
 <translation id="1853392626017747777">የምናባዊ ካርድ ምዝገባ ተዘግቷል</translation>
 <translation id="1854180393107901205">መውሰድ አቁም</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">ስጋ እና የባህር ምግብ</translation>
 <translation id="2367567093518048410">ደረጃ</translation>
 <translation id="23703388716193220">የጎልፍ መሣሪያዎች</translation>
+<translation id="2370368710215137370">የፋይሎች ሰቀላ</translation>
 <translation id="2374629208601905275">በክልልዎ ውስጥ ባለ ሕግ ላይ በመመሥረት Chrome የእርስዎን ነባሪ የፍለጋ ፕሮግራም እንዲመርጡ ይጠይቅዎታል። እነዚህ የፍለጋ ፕሮግራሞች በክልልዎ ውስጥ ታዋቂ ናቸው እና የዘፈቀደ በሆነ ቅደም ተከተል ይታያሉ።</translation>
 <translation id="2377241607395428273">የግራፊክስ እና የእነማ ሶፍትዌር</translation>
 <translation id="2378084239755710604">ካርድ አስቀምጥ ዝግ ነው።</translation>
@@ -1421,6 +1424,7 @@
 <translation id="3682094733650754138">የአድራሻ ይሙሉ ምርጫ ተመርጧል</translation>
 <translation id="3687920599421452763">ሚኒባሶች እና አነስተኛ ሚኒባሶች</translation>
 <translation id="3693327506115126094">እርስዎ መሆንዎን እንዴት እንደሚያረጋግጡ ይምረጡ</translation>
+<translation id="3698353241727597930">አስተዳዳሪዎ በድርጅት በሚተዳደረው የ<ph name="CLOUD_STORAGE" /> ማከማቻዎ ውስጥ <ph name="FILES" /> ለማስቀመጥ አዋቅረዋል። እነዚህ ፋይሎች ሲሰርዟቸው ክትትል ሊደረግባቸው፣ ሊመረመሩ እና ሊቆዩ ይችላሉ።</translation>
 <translation id="3698629142018988477">የጣቢያ አዝራርን ይፍጠሩ፣ በGoogle ድረ ገፆች ውስጥ በፍጥነት አዲስ ጣቢያ ለመፍጠር ያግብሩ</translation>
 <translation id="3701325639446035885">የክስተት ትኬት ሽያጮች</translation>
 <translation id="3701427423622901115">ዳግም ማስጀመር እውቅና ተሰጥቶታል።</translation>
@@ -1496,6 +1500,7 @@
 <translation id="3826050100957962900">የሶስተኛ ወገን መግቢያ</translation>
 <translation id="3827112369919217609">ፍጹም</translation>
 <translation id="3828924085048779000">ባዶ የይለፍ ሐረግ አይፈቀድም።</translation>
+<translation id="3830139096297532361">ይህ PDF ተደራሽ አይደለም። የጽሑፍ ማውጣት ፋይሎችን ማውረድ አልተቻለም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="3830470485672984938">የተለየ የይለፍ ቁልፍ ይጠቀሙ</translation>
 <translation id="3831065134033923230">የተቀመጡ ይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ለተጨማሪ ተግባራት ቅጥያዎችን ጭኗል። ቅጥያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
@@ -1670,6 +1675,7 @@
 <translation id="4202554117186904723">አምስተኛ ጥቅልል</translation>
 <translation id="4203769790323223880">ካሜራ አይፈቀድም</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />የኬላ እና የጸረ-ቫይረስ ውቅረቶችን መፈተሽ<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">ትልቅ</translation>
 <translation id="4210602799576081649">የማረጋገጫ ኮድ ጊዜው አልፎበታል፣ አዲስ ኮድ ይጠይቁ</translation>
 <translation id="421066178035138955">የምናባዊ እውነታ መሣሪያዎችን እና ውሂብ ይጠቀሙ</translation>
@@ -2730,6 +2736,7 @@
 <translation id="6270066318535733958">ጀልባ ቀዘፋ</translation>
 <translation id="6272088941196661550">በእርስዎ የChrome ታሪክ ውስጥ አግባብነት ያለው እንቅስቃሴን ለማየት ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="6272383483618007430">የGoogle ዝማኔ</translation>
+<translation id="6278015583149890680">Google Drive እና OneDrive</translation>
 <translation id="6280223929691119688">ወደዚህ አድራሻ ማድረስ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="6284292079994426700">26 x 38 ኢንች</translation>
 <translation id="6284449872909111707">ጽሁፍ እና ቅጽበታዊ መልዕክት መላላክ</translation>
@@ -3168,6 +3175,7 @@
 <translation id="7119063404975271297">የቴሌቪዥን ድራማዎች</translation>
 <translation id="7119371694555167493">የእረፍት ጊዜን በመቅዳት ላይ</translation>
 <translation id="7119414471315195487">ሌሎች ትሮችን ወይም ፕሮግራሞችን ይዝጉ</translation>
+<translation id="7120588595737538743">ውርዶች እና ቅጽበታዊ ገጽ እይታዎች</translation>
 <translation id="7124354851782353862">የእርስዎን ካርድ ማረጋገጫ ኮድ ያስገቡ</translation>
 <translation id="7129409597930077180">ወደዚህ አድራሻ መላክ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3367,6 +3375,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />፣ የChrome ጠቃሚ ምክርን ለማሰናበት Tab ከዚያ Enter ይጫኑ።</translation>
 <translation id="7485085230273446323">ንግድ እና የኢንዱስትሪ</translation>
 <translation id="7485870689360869515">ምንም ውሂብ አልተገኘም።</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">ሻምፖዎች እና ኮንዲሽነሮች</translation>
 <translation id="7495528107193238112">ይህ ይዘት ታግዷል። ችግሩን ለማስተካከል የጣቢያውን ባለቤት ያነጋግሩ።</translation>
 <translation id="749865518782565832">የቧንቧ ሥራ</translation>

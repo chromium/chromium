@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">অন আছে</translation>
 <translation id="1394698770495054737">সম্পূৰ্ণ অস্পষ্ট</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{১ দিন পূৰ্বে}one{# দিন পূৰ্বে}other{# দিন পূৰ্বে}}</translation>
 <translation id="1404963891829069586">ফ’কাছৰ ধ্বনি</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. তাৰিখসমূহৰ মাজত নেভিগে’ট কৰিবলৈ এৰ’ কীসমূহ ব্যৱহাৰ কৰক।</translation>
@@ -210,6 +211,7 @@
 <translation id="174102739345480129">চিহ্নকৰ সুবিধাটো অফ আছে।</translation>
 <translation id="1743570585616704562">চিনাক্ত কৰিব পৰা নাই</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" />ৰ জাননী সংকোচন কৰক</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{১ ঘণ্টাৰ ভিতৰত}=1{১ ঘণ্টা পূৰ্বে}one{# ঘণ্টা পূৰ্বে}other{# ঘণ্টা পূৰ্বে}}</translation>
 <translation id="1746730358044914197">ইনপুট পদ্ধতিসমূহ আপোনাৰ প্ৰশাসকে কনফিগাৰ কৰে।</translation>
 <translation id="1747336645387973286">কাৰ্য সমাপ্তিৰ অন্তিম তাৰিখ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">অন-স্ক্ৰীন কীব‘র্ড সক্ষম কৰা হ‘ল</translation>
@@ -223,7 +225,6 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />তম শাৰী, <ph name="COLUMN_NUMBER" />তম স্তম্ভলৈ নিয়া হৈছে।</translation>
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="1774796056689732716">কেলেণ্ডাৰ, <ph name="CURRENT_MONTH_YEAR" />, বৰ্তমান <ph name="DATE" /> বাছনি কৰা হৈছে।</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> টাৰ ভিতৰত <ph name="NUM_SHOWN_ITEMS" /> টা দেখুৱাই থকা হৈছে</translation>
 <translation id="178347895271755507">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া আৰু জাননী চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
@@ -310,6 +311,7 @@
 <translation id="2208323208084708176">সমন্বিত ডেস্কটপ ম'ড</translation>
 <translation id="2220572644011485463">পিন বা পাছৱৰ্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
+<translation id="2223384056430485343">এখন বিভাজিত স্ক্ৰীনত</translation>
 <translation id="2224075387478458881">সুৰক্ষিত সমল দৃশ্যমান হৈ থকাৰ সময়ত স্ক্ৰীন ৰেকৰ্ডিঙৰ অনুমতি দিয়া নহয়</translation>
 <translation id="2227179592712503583">পৰামৰ্শ আঁতৰাওক</translation>
 <translation id="2248634276911611268">নতুন টেবত লিংক খোলক আৰু এই নতুন টেবটোলৈ সলনি কৰক</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2360398059912971776">বেটাৰী</translation>
 <translation id="2361210043495191221">ৱাই-ফাই ট’গল কৰক। <ph name="STATE" />।</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" />ৰ পৰা পঠিওৱা</translation>
 <translation id="2367186422933365202">আপোনাৰ Chromebookত ছাইন ইন কৰিব পৰা নাই</translation>
 <translation id="2367972762794486313">এপ্‌সমূহ দেখুৱাওক</translation>
 <translation id="2368828502825385061">অৱস্থান নিৰূপণ কৰক</translation>
@@ -508,6 +511,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">মাইক্ৰ’ফ’নৰ এক্সেছ অন কৰিবনে?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" />ৰ কথনৰ ফাইল ডাউনল’ড কৰিব পৰা নগ’ল</translation>
+<translation id="2968761508099987738">এই মুহূৰ্তত আপোনাৰ বৰ্তমানৰ অৱস্থান সমৰ্থিত নহয়।</translation>
 <translation id="2970920913501714344">এপ্‌, এক্সটেনশ্বন আৰু থীম ইনষ্টল কৰক</translation>
 <translation id="2977598380246111477">পৰৱৰ্তী সংখ্যা</translation>
 <translation id="2985148236010982088">আটাইবোৰ এপ্‌ চাওক</translation>
@@ -981,6 +985,7 @@
 <translation id="468293128311738995">আপোনাৰ ফ’ন থকা এপ্</translation>
 <translation id="4690510401873698237">শ্বেল্ফ একেবাৰে তলিত আছে</translation>
 <translation id="4696813013609194136">অভিভাৱকৰ এক্সেছ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
+<translation id="4697357603686181098">এই ক্ষেত্ৰত সহায় কৰিব নোৱাৰি। আন এটা অনুৰোধ কৰি চাওক।</translation>
 <translation id="4702647871202761252">গোপনীয়তাৰ স্ক্ৰীনখন অফ আছে</translation>
 <translation id="4706121060329443414">পাছত ডাউনল’ড কৰিবলৈ প্ৰয়াস কৰা হ’ব। এতিয়াৰ বাবে প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ কথন পঠিওৱা হ’ব।</translation>
 <translation id="470644585772471629">ৰং বিপৰীতকৰণ</translation>
@@ -1892,6 +1897,7 @@
 <translation id="7982878511129296052">অফ কৰি থকা হৈছে...</translation>
 <translation id="7984197416080286869">ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰি অতি বেছি সংখ্যক বাৰ আনলক কৰিবলৈ প্ৰয়াস কৰা হৈছে</translation>
 <translation id="798779949890829624">এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
+<translation id="7989206653429884947">সঘনাই খোলা</translation>
 <translation id="799296642788192631">আপুনি গুৰুত্বপূৰ্ণ ফাইলসমূহ পিন কৰিব পাৰে। পিন কৰিবলৈ, কোনো ফাইলৰ ওপৰত কাৰ্ছৰডাল ৰাখক অথবা Files খোলক আৰু কোনো বস্তুত ৰাইট-ক্লিক কৰক।</translation>
 <translation id="7994370417837006925">একাধিক ছাইন ইন</translation>
 <translation id="7995804128062002838">স্ক্ৰীন কেপচাৰ কৰিব পৰা নগ’ল</translation>
@@ -2077,6 +2083,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">সময় শেষ হ’ল। বঢ়িয়া! 🎉</translation>
+<translation id="8753368202781196133">এই মুহূৰ্তত এই ভাষাটো সমৰ্থিত নহয়।</translation>
 <translation id="8755498163081687682">আপোনাৰ পৰিচয় সত্যাপন কৰক: <ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
 <translation id="875593634123171288">VPN ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="8756799553341497810">আপুনি এই ভিউৰ পৰা ওলাই গ’লে আপোনাৰ এপৰ লে’আউট কাষ্টমাইজ কৰাটো আৰম্ভ কৰিব পাৰিব।</translation>

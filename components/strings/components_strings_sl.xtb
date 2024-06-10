@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Pomikanje in povečava/pomanjšava vsebine deljenega zavihka</translation>
 <translation id="1089439967362294234">Spremeni geslo</translation>
 <translation id="1090629319939036170">Meni VR</translation>
+<translation id="1091779689406092804">posnetkov zaslona</translation>
 <translation id="1094777233105318927">Podatki o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi in datotekah</translation>
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
 <translation id="1097803577928227769">Regijski parki in vrtovi</translation>
@@ -472,6 +473,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1840009953725035797">Sistemi za domači kino</translation>
 <translation id="1842969606798536927">Plačilo</translation>
 <translation id="1846432862466000825">Plastic (Archival)</translation>
+<translation id="1848640291751752317">prenosov</translation>
 <translation id="1848982255014129637">Photo (High-Gloss)</translation>
 <translation id="1853392626017747777">Včlanitev navidezne kartice je zaprta</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
@@ -754,6 +756,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2366689192918515749">Meso in morska hrana</translation>
 <translation id="2367567093518048410">Raven</translation>
 <translation id="23703388716193220">Oprema za golf</translation>
+<translation id="2370368710215137370">Nalaganje datotek</translation>
 <translation id="2374629208601905275">Chrome na podlagi zakonodaje na vašem območju zahteva, da izberete privzeti iskalnik. Ti iskalniki so priljubljeni na vašem območju in so prikazani v naključnem vrstnem redu.</translation>
 <translation id="2377241607395428273">Programska oprema za grafiko in animacije</translation>
 <translation id="2378084239755710604">Shranjevanje kartice je zaprto.</translation>
@@ -1422,6 +1425,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3682094733650754138">Izbrana je bila možnost za izpolnitev naslova</translation>
 <translation id="3687920599421452763">Kombinirana in enoprostorna vozila</translation>
 <translation id="3693327506115126094">Izberite, kako želite potrditi, da ste to res vi</translation>
+<translation id="3698353241727597930">Vaš skrbnik je konfiguriral shranjevanje <ph name="FILES" /> v shrambo <ph name="CLOUD_STORAGE" />, ki jo upravlja podjetje. Te datoteke se lahko spremljajo, revidirajo in obdržijo, ko jih izbrišete.</translation>
 <translation id="3698629142018988477">Gumb za ustvarjanje spletnih mest, aktivirajte, če želite hitro ustvariti novo spletno mesto v Google Spletnih mestih</translation>
 <translation id="3701325639446035885">Prodaja vstopnic za prireditve</translation>
 <translation id="3701427423622901115">Ponastavitev je potrjena.</translation>
@@ -1497,6 +1501,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3826050100957962900">Prijava prek zunanjih ponudnikov</translation>
 <translation id="3827112369919217609">Absolutno</translation>
 <translation id="3828924085048779000">Prazno geslo ni dovoljeno.</translation>
+<translation id="3830139096297532361">Ta datoteka PDF ni dostopna. Datotek za ekstrakcijo besedila ni bilo mogoče prenesti. Poskusite znova pozneje.</translation>
 <translation id="3830470485672984938">Uporabi drug ključ za dostop</translation>
 <translation id="3831065134033923230">Preverjanje shranjenih gesel</translation>
 <translation id="3831915413245941253">Domena <ph name="ENROLLMENT_DOMAIN" /> je namestila razširitve zaradi dodatnih funkcij. Razširitve imajo dostop do nekaterih vaših podatkov.</translation>
@@ -1671,6 +1676,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4202554117186904723">Kolut 5</translation>
 <translation id="4203769790323223880">Kamera ni dovoljena</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />preveriti požarni zid in konfiguracije protivirusnega programa<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4210602799576081649">Potrditvena koda je potekla, zahtevajte novo kodo.</translation>
 <translation id="421066178035138955">Uporaba naprav in podatkov za navidezno resničnost</translation>
@@ -2731,6 +2737,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6270066318535733958">Čolnarjenje</translation>
 <translation id="6272088941196661550">Nadaljujte pot, če si želite ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
 <translation id="6272383483618007430">Google Posodobitve</translation>
+<translation id="6278015583149890680">Google Drive in OneDrive</translation>
 <translation id="6280223929691119688">Dostava na ta naslov ni mogoča. Izberite drugega.</translation>
 <translation id="6284292079994426700">26 x 38 palcev</translation>
 <translation id="6284449872909111707">Pošiljanje sporočil SMS in neposredno sporočanje</translation>
@@ -3169,6 +3176,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7119063404975271297">Televizijske drame</translation>
 <translation id="7119371694555167493">Časovna omejitev za kopiranje je potekla</translation>
 <translation id="7119414471315195487">Zaprite druge zavihke ali programe</translation>
+<translation id="7120588595737538743">prenosov in posnetkov zaslona</translation>
 <translation id="7124354851782353862">Vnesite kodo CVC</translation>
 <translation id="7129409597930077180">Pošiljanje na ta naslov ni mogoče. Izberite drugega.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@ Dodatne podrobnosti:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, pritisnite tabulatorko, nato Enter, če želite opustiti nasvet za Chrome.</translation>
 <translation id="7485085230273446323">Posel in industrija</translation>
 <translation id="7485870689360869515">Ni podatkov.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Šamponi in balzami</translation>
 <translation id="7495528107193238112">Ta vsebina je blokirana. Obrnite se na lastnika spletnega mesta, da odpravi težavo.</translation>
 <translation id="749865518782565832">Vodovodarstvo</translation>

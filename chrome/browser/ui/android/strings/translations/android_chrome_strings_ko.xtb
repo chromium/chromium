@@ -285,6 +285,7 @@
 <translation id="2515921719039583189">이 기기에서 Chrome 데이터를 삭제하시겠습니까?</translation>
 <translation id="2517113738956581680">전체 크기 시트</translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
+<translation id="2524132927880411790">Google 앱 음성 검색으로 이동</translation>
 <translation id="2527209463677295330">페이지 텍스트를 더 많이 포함하면 더 나은 검색결과를 확인할 수 있습니다.</translation>
 <translation id="2527497042232966453">시크릿 탭으로 전환됨</translation>
 <translation id="2527779675047087889">클립보드 내용 숨기기</translation>
@@ -519,6 +520,7 @@
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
+<translation id="3674208116086565128">Google 앱 홈으로 이동</translation>
 <translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
 <translation id="3687645719033307815">페이지의 미리보기를 보는 중입니다.</translation>
 <translation id="3690369331356918524">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8135406045838672858">다운로드한 PDF가 <ph name="APP_NAME" /> 앱에서 자동으로 열립니다</translation>
 <translation id="8137562778192957619">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 Google 비밀번호 관리자에 저장됩니다</translation>
+<translation id="8152331954420209374">렌즈로 이동</translation>
 <translation id="8163820386638255770">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8171286197772512427">요약 의견 시트와 공유 열림</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
+<translation id="8367705492654390392">무엇이든 물어보세요</translation>
 <translation id="8368001212524806591">가격 추적</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록 및 기타 설정이 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Să mărească și să deruleze în conținutul filei la care ai permis accesul</translation>
 <translation id="1089439967362294234">Schimbă parola</translation>
 <translation id="1090629319939036170">Meniu RV</translation>
+<translation id="1091779689406092804">capturilor de ecran</translation>
 <translation id="1094777233105318927">Informații despre browserul, sistemul de operare, dispozitivul, software-ul instalat și fișierele tale</translation>
 <translation id="1096545575934602868">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Toate intrările suplimentare vor fi șterse.</translation>
 <translation id="1097803577928227769">Parcuri și grădini regionale</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">Sisteme home theater</translation>
 <translation id="1842969606798536927">Plătește</translation>
 <translation id="1846432862466000825">Plastic (de arhivă)</translation>
+<translation id="1848640291751752317">descărcărilor</translation>
 <translation id="1848982255014129637">Foto (foarte lucios)</translation>
 <translation id="1853392626017747777">Înscrierea cardului virtual s-a închis</translation>
 <translation id="1854180393107901205">Nu mai trimite</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">Carne și fructe de mare</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="23703388716193220">Echipament pentru golf</translation>
+<translation id="2370368710215137370">Încărcarea fișierelor</translation>
 <translation id="2374629208601905275">În baza unei legi din regiunea ta, Chrome îți solicită să alegi motorul de căutare prestabilit. Aceste motoare de căutare sunt populare în regiunea ta și se afișează în ordine aleatorie.</translation>
 <translation id="2377241607395428273">Software pentru grafică și animație</translation>
 <translation id="2378084239755710604">Fișa Salvează cardul este închisă.</translation>
@@ -1422,6 +1425,7 @@
 <translation id="3682094733650754138">A fost selectată opțiunea de completare a adresei</translation>
 <translation id="3687920599421452763">Dube și furgonete</translation>
 <translation id="3693327506115126094">Alege cum să-ți confirmi identitatea</translation>
+<translation id="3698353241727597930">Administratorul a configurat salvarea <ph name="FILES" /> în spațiul de stocare <ph name="CLOUD_STORAGE" /> gestionat de companie. Aceste fișiere pot fi monitorizate, verificate și păstrate atunci când le ștergi.</translation>
 <translation id="3698629142018988477">Butonul Creează un site, activează pentru a crea rapid un site în Site-uri Google</translation>
 <translation id="3701325639446035885">Vânzări de bilete la evenimente</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3826050100957962900">Conectarea prin terță parte</translation>
 <translation id="3827112369919217609">Absolută</translation>
 <translation id="3828924085048779000">Trebuie să fie introdusă expresia de acces.</translation>
+<translation id="3830139096297532361">Acest PDF nu se poate accesa. Nu s-au putut descărca fișierele de extragere a textului. Încearcă din nou mai târziu.</translation>
 <translation id="3830470485672984938">Folosește altă cheie de acces</translation>
 <translation id="3831065134033923230">Verifică parolele salvate</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> a instalat extensii pentru funcții suplimentare. Extensiile au acces la unele dintre datele tale.</translation>
@@ -1671,6 +1676,7 @@
 <translation id="4202554117186904723">A cincea rolă</translation>
 <translation id="4203769790323223880">Folosirea camerei foto nu este permisă</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />să verifici configurarea pentru firewall și antivirus;<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Mare</translation>
 <translation id="4210602799576081649">Codul de verificare a expirat. Solicită un cod nou.</translation>
 <translation id="421066178035138955">să folosească dispozitivele de realitate virtuală și datele conexe.</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">Navigație recreativă</translation>
 <translation id="6272088941196661550">Continuă-ți parcursul pentru a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="6272383483618007430">Actualizare Google</translation>
+<translation id="6278015583149890680">Google Drive și OneDrive</translation>
 <translation id="6280223929691119688">Nu se poate livra la această adresă. Selectează altă adresă.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284449872909111707">Mesaje text și instantanee</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">Drame TV</translation>
 <translation id="7119371694555167493">Copierea a expirat</translation>
 <translation id="7119414471315195487">închide celelalte file sau programe;</translation>
+<translation id="7120588595737538743">descărcărilor și a capturilor de ecran</translation>
 <translation id="7124354851782353862">Introdu codul CVC</translation>
 <translation id="7129409597930077180">Nu se poate expedia la această adresă. Selectează altă adresă.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@ Detalii suplimentare:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, apasă pe Tab, apoi pe Enter pentru a închide sfatul Chrome.</translation>
 <translation id="7485085230273446323">Afaceri și comerț</translation>
 <translation id="7485870689360869515">Nu s-au găsit date.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Șampoane și balsamuri</translation>
 <translation id="7495528107193238112">Acest conținut este blocat. Contactează proprietarul site-ului pentru a remedia problema.</translation>
 <translation id="749865518782565832">Instalații</translation>

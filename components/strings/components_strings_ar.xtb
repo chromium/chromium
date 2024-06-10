@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">تمرير محتوى علامة التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="1089439967362294234">تغيير كلمة المرور</translation>
 <translation id="1090629319939036170">قائمة الواقع الافتراضي</translation>
+<translation id="1091779689406092804">لقطات الشاشة</translation>
 <translation id="1094777233105318927">معلومات حول المتصفّح ونظام التشغيل والجهاز والبرامج المُثبَّتة والملفات</translation>
 <translation id="1096545575934602868">يجب ألا يحتوي هذا الحقل على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال. سيتم تجاهل جميع الإدخالات الأخرى.</translation>
 <translation id="1097803577928227769">منتزهات وحدائق عامة ومحلية</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">أنظمة مسرح منزلي</translation>
 <translation id="1842969606798536927">الدفع</translation>
 <translation id="1846432862466000825">بلاستيك (أرشفة)</translation>
+<translation id="1848640291751752317">عمليات التنزيل</translation>
 <translation id="1848982255014129637">تصوير (شديد اللمعان)</translation>
 <translation id="1853392626017747777">تم إغلاق تسجيل البطاقة الافتراضية.</translation>
 <translation id="1854180393107901205">إيقاف البث</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">لحوم وأطعمة بحرية</translation>
 <translation id="2367567093518048410">المستوى</translation>
 <translation id="23703388716193220">معدّات غولف</translation>
+<translation id="2370368710215137370">تحميل الملفات</translation>
 <translation id="2374629208601905275">‏بموجب قانون في منطقتك، يطلب منك Chrome اختيار محرك البحث التلقائي. تُعدّ محركات البحث هذه رائجة في منطقتك ويتم عرضها بترتيب عشوائي.</translation>
 <translation id="2377241607395428273">برامج رسومات وصور متحركة</translation>
 <translation id="2378084239755710604">تم إغلاق نافذة حفظ البطاقة.</translation>
@@ -1423,6 +1426,7 @@
 <translation id="3682094733650754138">تم تحديد خيار ملء حقول العنوان.</translation>
 <translation id="3687920599421452763">شاحنات وشاحنات صغيرة</translation>
 <translation id="3693327506115126094">اختيار كيفية إثبات هويتك</translation>
+<translation id="3698353241727597930">ضبَطَ المشرف الإعدادات لحفظ <ph name="FILES" /> في مساحة التخزين التي تديرها المؤسسة على <ph name="CLOUD_STORAGE" />. قد تتم مراقبة هذه الملفات ويتم فحصها والاحتفاظ بها عند حذفها.</translation>
 <translation id="3698629142018988477">‏زر إنشاء موقع إلكتروني: انقر على هذا الزر لإنشاء موقع إلكتروني جديد بسرعة على "مواقع Google".</translation>
 <translation id="3701325639446035885">مبيعات تذاكر الأحداث</translation>
 <translation id="3701427423622901115">تمت الموافقة على إعادة الضبط.</translation>
@@ -1499,6 +1503,7 @@
 <translation id="3826050100957962900">تسجيل الدخول باستخدام الخدمات التابعة لجهات خارجية</translation>
 <translation id="3827112369919217609">صيغة مطلقة</translation>
 <translation id="3828924085048779000">غير مسموح باستخدام عبارة مرور فارغة.</translation>
+<translation id="3830139096297532361">‏يتعذّر الوصول إلى ملف PDF هذا، وتنزيل ملفات استخراج النص. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3830470485672984938">استخدام مفتاح مرور آخر</translation>
 <translation id="3831065134033923230">التحقّق من كلمات المرور المحفوظة</translation>
 <translation id="3831915413245941253">ثبّت <ph name="ENROLLMENT_DOMAIN" /> الإضافات للوظائف الإضافية. يمكن للإضافات الوصول إلى بعض بياناتك.</translation>
@@ -1673,6 +1678,7 @@
 <translation id="4202554117186904723">اللفافة الخامسة</translation>
 <translation id="4203769790323223880">تم رفض طلب الوصول إلى الكاميرا.</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />التحقق من عمليات ضبط جدار الحماية وبرامج مكافحة الفيروسات<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">كبير</translation>
 <translation id="4210602799576081649">انتهت صلاحية رمز إثبات الهوية، يُرجى طلب رمز جديد.</translation>
 <translation id="421066178035138955">استخدام أجهزة الواقع الافتراضي وبياناتها</translation>
@@ -2734,6 +2740,7 @@
 <translation id="6270066318535733958">ركوب قوارب</translation>
 <translation id="6272088941196661550">‏يمكنك استئناف سجلّ أنشطة البحث والتصفُّح للاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="6272383483618007430">‏تحديث Google</translation>
+<translation id="6278015583149890680">‏Google Drive وOneDrive</translation>
 <translation id="6280223929691119688">لا يمكن التسليم على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="6284292079994426700">26 × 38 بوصة</translation>
 <translation id="6284449872909111707">رسائل نصية وفورية</translation>
@@ -3172,6 +3179,7 @@
 <translation id="7119063404975271297">أعمال تلفزيونية درامية</translation>
 <translation id="7119371694555167493">انتهت مهلة النَسخ</translation>
 <translation id="7119414471315195487">إغلاق علامات التبويب أو البرامج الأخرى</translation>
+<translation id="7120588595737538743">عمليات التنزيل ولقطات الشاشة</translation>
 <translation id="7124354851782353862">‏أدخِل رمز التحقق من البطاقة (CVC)</translation>
 <translation id="7129409597930077180">لا يمكن الشحن على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3371,6 +3379,7 @@
 <translation id="7483863401933039889">‏<ph name="CHROME_TIP" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإغلاق نصيحة Chrome.</translation>
 <translation id="7485085230273446323">أنشطة تجارية وصناعية</translation>
 <translation id="7485870689360869515">لم يتم العثور على بيانات.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">شامبو وبلسم</translation>
 <translation id="7495528107193238112">هذا المحتوى محظور. يمكنك التواصل مع مالك الموقع الإلكتروني لحلّ المشكلة.</translation>
 <translation id="749865518782565832">سِباكة</translation>

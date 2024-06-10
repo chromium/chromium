@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">Переміщено в рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Прокрутити праворуч</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, зараз вибрано <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">Показано <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Налаштувати перегляд нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
 <translation id="1787955149152357925">Вимкнено</translation>
 <translation id="1796561540704213354">Веб-сайти, зокрема відвідані й відкриті сторінки</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">Режим уніфікованого комп’ютера</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222841058024245321">Робочий стіл 7</translation>
+<translation id="2223384056430485343">У режимі розділення екрана</translation>
 <translation id="2224075387478458881">Запис екрана заборонено, якщо видно захищений контент</translation>
 <translation id="2227179592712503583">Видалити пропозицію</translation>
 <translation id="2248634276911611268">Відкрити посилання на новій вкладці й перейти на неї</translation>

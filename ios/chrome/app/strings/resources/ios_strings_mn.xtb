@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Нууц үг хадгалах</translation>
 <translation id="1753905327828125965">Түгээмэл зочилсон</translation>
 <translation id="1757699834933698436">{count,plural, =1{Сул {count} нууц үг}other{Сул {count} нууц үг}}</translation>
+<translation id="1764070164487214210">Чиглэл</translation>
 <translation id="1766411844240160513">Маягтыг автоматаар бөглөх</translation>
 <translation id="1767766085187034454">Google Орчуулагч</translation>
 <translation id="1769106850515800431">Хувийн болгосон контент</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
 <translation id="3775743491439407556">Синк ажиллахгүй байна</translation>
 <translation id="3779810277399252432">Интернэт холболт алга.</translation>
+<translation id="3785672280731998727">Дэлгэцийн нэр</translation>
 <translation id="3789294999358192700">Дараах алхмуудыг дагана уу:</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803696231112616155">Энэ сайтыг орчуулахыг санал болгох</translation>
 <translation id="3808311849069021992">Хайлтын системийн дэлгэрэнгүй мэдээллийг харуулах</translation>
 <translation id="3810973564298564668">удирдах</translation>
+<translation id="3812308602011798782">Шүүмж</translation>
 <translation id="3818045793209708987">Энэ илгээмжийг хянахыг зогсоосон</translation>
 <translation id="3818293389945649617">Дараагийн мөрийг олох</translation>
 <translation id="3819183753496523827">Та офлайн байна. Интернэт холболтоо шалгаад, дахин оролдоно уу.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">Дурын аппад хадгалсан нууц үгнүүдээ нэг товшилтоор аваарай</translation>
 <translation id="4049507953662678203">Сүлжээнд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
 <translation id="4054572406751135230">Мэдээ, спорт болон бусад зүйлийн мэдээлэлтэй байгаарай.</translation>
+<translation id="4068959193278821990">Сайжруулсан хамгаалалтыг асаах...</translation>
 <translation id="4092655288299341041">Тусламжийг харуулах</translation>
 <translation id="4105841739161771091">{count,plural, =1{Хаягийг устгах}other{Хаягуудыг устгах}}</translation>
 <translation id="4108998448622696017">Аюултай үйл явдал тохиолдох үед түүнийг илрүүлж, танд анхааруулга өгдөг.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">Цэвэр экспортын өгөгдөл илгээхийн тулд Settings app дээр өөрийн и-мэйл хаягийн тохиргоог хийнэ үү.</translation>
 <translation id="4124987746317609294">Цаг хугацааны хүрээ</translation>
 <translation id="4133265950310064865">Сайжруулсан хамгаалалт</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4148023517926189160">Энэ вебсайт файл татаж, таны календарьт нэмэхийг хүсэж байна.</translation>
 <translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
@@ -1472,6 +1477,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="834783239627985533">Хамгийн их зочилсон сайтууд</translation>
 <translation id="8358401059263985056">Мэдэгдлүүдийг асаах</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" />-д зориулж зургийг Google Зурагт хадгалж байна...</translation>
+<translation id="8369246252708539904">Нэвтрэх түлхүүрийг устгах</translation>
 <translation id="8370406443343902172">Тохиргоо руу очих...</translation>
 <translation id="8374977641764177587">Мэдэгдлүүдийг асаах уу?</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>

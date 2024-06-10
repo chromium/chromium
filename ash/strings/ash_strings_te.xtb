@@ -223,7 +223,6 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />వ అడ్డు వరుస, <ph name="COLUMN_NUMBER" />వ నిలువు వరుసకు తరలించబడింది.</translation>
 <translation id="1771761307086386028">కుడికి స్క్రోల్ చేయి</translation>
 <translation id="1774796056689732716">క్యాలెండర్, <ph name="CURRENT_MONTH_YEAR" />, ప్రస్తుతం <ph name="DATE" /> తేదీ ఎంపిక చేయబడింది.</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />లో <ph name="NUM_SHOWN_ITEMS" /> చూపుతోంది</translation>
 <translation id="178347895271755507">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను చూసే సదుపాయాన్ని సెటప్ చేయండి</translation>
 <translation id="1787955149152357925">ఆఫ్ చేయి</translation>
 <translation id="1796561540704213354">వెబ్‌సైట్‌లలో మీరు బ్రౌజ్ చేసిన, తెరిచిన పేజీలు ఉంటాయి</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222841058024245321">డెస్క్ 7</translation>
+<translation id="2223384056430485343">స్ప్లిట్ స్క్రీన్‌లో</translation>
 <translation id="2224075387478458881">గోప్యమైన కంటెంట్ కనిపించినప్పుడు స్క్రీన్ రికార్డింగ్ అనుమతించబడదు</translation>
 <translation id="2227179592712503583">సూచనను తీసివేయండి</translation>
 <translation id="2248634276911611268">కొత్త ట్యాబ్‌లో లింక్‌ను తెరిచి, ఈ కొత్త ట్యాబ్‌కు మారండి</translation>

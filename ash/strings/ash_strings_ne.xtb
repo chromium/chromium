@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">यो एप सारेर रो <ph name="ROW_NUMBER" />, कलम <ph name="COLUMN_NUMBER" /> मा लगिएको छ।</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> मध्ये <ph name="NUM_SHOWN_ITEMS" /> औँ सामग्री देखाइँदै छ</translation>
 <translation id="178347895271755507">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">एकीकृत डेस्कटप मोड</translation>
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्क ७</translation>
+<translation id="2223384056430485343">स्प्लिट स्क्रिनमा</translation>
 <translation id="2224075387478458881">स्क्रिनमा संरक्षित सामग्री देखिएका बेला स्क्रिन रेकर्ड गर्न मिल्दैन</translation>
 <translation id="2227179592712503583">सुझाव हटाउनुहोस्</translation>
 <translation id="2248634276911611268">यो लिंक नयाँ ट्याबमा खोल्नुहोस् र उक्त नयाँ ट्याबमा जानुहोस्</translation>

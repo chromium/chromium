@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">儲存密碼</translation>
 <translation id="1753905327828125965">最常造訪</translation>
 <translation id="1757699834933698436">{count,plural, =1{有 {count} 組低強度密碼}other{有 {count} 組低強度密碼}}</translation>
+<translation id="1764070164487214210">規劃路線</translation>
 <translation id="1766411844240160513">自動填入表單</translation>
 <translation id="1767766085187034454">Google 翻譯</translation>
 <translation id="1769106850515800431">個人化內容</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">無痕式分頁</translation>
 <translation id="3775743491439407556">同步功能無法正常運作</translation>
 <translation id="3779810277399252432">沒有網際網路連線。</translation>
+<translation id="3785672280731998727">顯示名稱</translation>
 <translation id="3789294999358192700">步驟如下：</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="3808311849069021992">顯示搜尋引擎詳細資料</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3812308602011798782">評論</translation>
 <translation id="3818045793209708987">已停止追蹤這個包裹</translation>
 <translation id="3818293389945649617">尋找下一個相符的項目</translation>
 <translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">輕觸一下即可在任何應用程式中取得已儲存的密碼</translation>
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4054572406751135230">隨時掌握新聞、體育賽事等資訊。</translation>
+<translation id="4068959193278821990">開啟強化防護...</translation>
 <translation id="4092655288299341041">顯示說明資訊</translation>
 <translation id="4105841739161771091">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
 <translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
 <translation id="4124987746317609294">時間範圍</translation>
 <translation id="4133265950310064865">強化防護</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />，<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google 相簿</translation>
 <translation id="4148023517926189160">這個網站想要下載檔案並將其新增至你的日曆中。</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">最常造訪的網站</translation>
 <translation id="8358401059263985056">開啟通知功能</translation>
 <translation id="8364841868226993049">正在將圖片儲存至 <ph name="USER_EMAIL" /> 的 Google 相簿...</translation>
+<translation id="8369246252708539904">刪除密碼金鑰</translation>
 <translation id="8370406443343902172">前往「設定」...</translation>
 <translation id="8374977641764177587">要開啟通知嗎？</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>

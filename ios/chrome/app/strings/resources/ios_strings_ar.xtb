@@ -150,6 +150,7 @@
 <translation id="1752547299766512813">حفظ كلمات المرور</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
 <translation id="1757699834933698436">{count,plural, =1{هناك كلمة مرور واحدة ({count}) ضعيفة}zero{هناك {count} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({count}) ضعيفتان}few{هناك {count} كلمات مرور ضعيفة}many{هناك {count} كلمة مرور ضعيفة}other{هناك {count} كلمة مرور ضعيفة}}</translation>
+<translation id="1764070164487214210">الاتجاهات</translation>
 <translation id="1766411844240160513">الملء التلقائي للنموذج</translation>
 <translation id="1767766085187034454">‏ترجمة Google</translation>
 <translation id="1769106850515800431">المحتوى المخصَّص</translation>
@@ -543,12 +544,14 @@
 <translation id="3771033907050503522">علامات تبويب التصفح المتخفي</translation>
 <translation id="3775743491439407556">المزامنة لا تعمل على نحو سليم</translation>
 <translation id="3779810277399252432">لا يتوفر اتصال بالإنترنت.</translation>
+<translation id="3785672280731998727">الاسم المعروض</translation>
 <translation id="3789294999358192700">يُرجى اتّباع الخطوات التالية:</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="380329542618494757">الاسم</translation>
 <translation id="3803696231112616155">اقتراح ترجمة هذا الموقع الإلكتروني</translation>
 <translation id="3808311849069021992">عرض تفاصيل محرّك البحث</translation>
 <translation id="3810973564298564668">إدارة</translation>
+<translation id="3812308602011798782">المراجعات</translation>
 <translation id="3818045793209708987">التوقّف عن تتبُّع هذا الطرد</translation>
 <translation id="3818293389945649617">العثور على النتيجة التالية</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
@@ -596,6 +599,7 @@
 <translation id="4045648459118332842">الوصول بنقرة واحدة إلى كلمات المرور المحفوظة في أي تطبيق</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
 <translation id="4054572406751135230">يمكنك متابعة الأخبار والرياضة وغير ذلك.</translation>
+<translation id="4068959193278821990">تفعيل مستوى "الحماية المحسَّنة"...</translation>
 <translation id="4092655288299341041">عرض معلومات المساعدة</translation>
 <translation id="4105841739161771091">{count,plural, =1{حذف العنوان}zero{حذف العناوين}two{حذف العنوانَين}few{حذف العناوين}many{حذف العناوين}other{حذف العناوين}}</translation>
 <translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
@@ -607,6 +611,7 @@
 <translation id="4121993058175073134">لإرسال بيانات تصدير الشبكة، يُرجى إعداد حساب بريدك الإلكتروني في التطبيق "الإعدادات".</translation>
 <translation id="4124987746317609294">النطاق الزمني</translation>
 <translation id="4133265950310064865">الحماية المحسَّنة</translation>
+<translation id="4145507240503767005">‫<ph name="SEARCH_ENGINE_NAME" />، <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4148023517926189160">يطلب هذا الموقع الإلكتروني تنزيل ملف وإضافته إلى تقويمك.</translation>
 <translation id="4152011295694446843">ستظهر الإشارات المرجعية هنا</translation>
@@ -1474,6 +1479,7 @@
 <translation id="834783239627985533">المواقع الإلكترونية الأكثر زيارة</translation>
 <translation id="8358401059263985056">تفعيل الإشعارات</translation>
 <translation id="8364841868226993049">‏جارٍ حفظ الصورة في "صور Google" للحساب <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">حذف مفتاح المرور</translation>
 <translation id="8370406443343902172">جارٍ الانتقال إلى الإعدادات...</translation>
 <translation id="8374977641764177587">هل تريد تفعيل الإشعارات؟</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>

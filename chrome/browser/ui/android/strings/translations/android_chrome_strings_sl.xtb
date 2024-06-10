@@ -285,6 +285,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2515921719039583189">Želite iz te naprave izbrisati podatke v Chromu?</translation>
 <translation id="2517113738956581680">List polne velikosti</translation>
 <translation id="2523184218357549926">Googlu pošlje URL-je strani, ki jih obiščete</translation>
+<translation id="2524132927880411790">Odpiranje glasovnega iskanja aplikacije Google</translation>
 <translation id="2527209463677295330">Če vključite več besedila na strani, bodo morda prikazani boljši rezultati.</translation>
 <translation id="2527497042232966453">Preklopljeno na anonimne zavihke</translation>
 <translation id="2527779675047087889">Skrivanje vsebine odložišča</translation>
@@ -519,6 +520,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="363596933471559332">Samodejna prijava v spletna mesta s shranjenimi poverilnicami. Ko je ta funkcija izklopljena, bo pri vsaki prijavi v spletno mesto potrebno preverjanje.</translation>
 <translation id="3636940436873918441">Želeni jeziki</translation>
 <translation id="3637744895182738742">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Odpiranje začetne strani aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
 <translation id="3687645719033307815">Ogledujete si predogled te strani</translation>
 <translation id="3690369331356918524">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
@@ -1475,6 +1477,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8135406045838672858">Prenesene datoteke PDF se samodejno odprejo z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Tega gesla si vam ne bo treba zapomniti. Shranjeno bo v Googlovem upravitelju gesel.</translation>
+<translation id="8152331954420209374">Odpiranje Lensa</translation>
 <translation id="8163820386638255770">Če želite v računu Google uporabljati in shranjevati gesla, potrdite, da ste to vi</translation>
 <translation id="8171286197772512427">Odprto deljenje s povzetkom povratnih informacij</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8348430946834215779">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo.</translation>
 <translation id="8354977102499939946">Hitro iščite z glasom. To bližnjico lahko uredite v nastavitvah.</translation>
 <translation id="835847953965672673">Obnovljenih je bilo toliko prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Vprašajte kar koli</translation>
 <translation id="8368001212524806591">Spremljanje cene</translation>
 <translation id="8378850197701296741">Imate zaznamke, zgodovino in druge nastavitve iz računa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Preverite, da ste res vi</translation>

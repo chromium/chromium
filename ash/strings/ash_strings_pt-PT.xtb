@@ -223,7 +223,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1770726142253415363">A app foi movida para a linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
 <translation id="1774796056689732716">Calendário, <ph name="CURRENT_MONTH_YEAR" />, atualmente, está selecionada a data <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">A mostrar <ph name="NUM_SHOWN_ITEMS" /> de <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Configurar visualização das fotos, dos conteúdos multimédia e das notificações recentes do telemóvel</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Websites, incluindo páginas que visitou e páginas abertas</translation>
@@ -252,6 +251,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmara ajustada ao canto superior direito</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
+<translation id="1925320505152357008">menos de 1 min</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
 <translation id="1948405482892809935">Mudar para o utilizador seguinte</translation>
 <translation id="1951012854035635156">Assistente</translation>
@@ -607,6 +607,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="334927402682780278">Selecionar o texto do cursor até ao fim da linha</translation>
 <translation id="3349345708646875009">Abrir o Gestor de tarefas</translation>
 <translation id="3364721542077212959">Ferramentas da caneta stylus</translation>
+<translation id="3365281428003534650">Defina um temporizador/tarefa</translation>
 <translation id="3365977133351922112">O seu telemóvel está demasiado longe. Aproxime o seu telemóvel.</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369111525500416043">A concluir em breve</translation>
@@ -909,6 +910,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4412698727486357573">Centro de Ajuda</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
+<translation id="4417647906073317561">Definições do Modo sem distrações. Defina um temporizador, uma tarefa e uma música para se concentrar.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">As apps estão ordenadas pelo nome</translation>
@@ -1860,6 +1862,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">As notificações estão desativadas até à(s) <ph name="TIME" /> enquanto se concentra</translation>
 <translation id="7901190436359881020">Trocar as janelas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toque no sensor de impressões digitais.</translation>

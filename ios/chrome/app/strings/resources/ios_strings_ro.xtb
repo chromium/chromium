@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Salvează parole</translation>
 <translation id="1753905327828125965">Cele mai vizitate</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} parolă slabă}few{{count} parole slabe}other{{count} de parole slabe}}</translation>
+<translation id="1764070164487214210">Indicații de orientare</translation>
 <translation id="1766411844240160513">Completare automată a formularelor</translation>
 <translation id="1767766085187034454">Google Traducere</translation>
 <translation id="1769106850515800431">Conținut personalizat</translation>
@@ -541,12 +542,14 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3771033907050503522">File incognito</translation>
 <translation id="3775743491439407556">Sincronizarea nu funcționează</translation>
 <translation id="3779810277399252432">Nicio conexiune la internet.</translation>
+<translation id="3785672280731998727">Numele afișat</translation>
 <translation id="3789294999358192700">Urmează pașii de mai jos.</translation>
 <translation id="3789841737615482174">Instalează</translation>
 <translation id="380329542618494757">Nume</translation>
 <translation id="3803696231112616155">Oferă traducerea acestui site</translation>
 <translation id="3808311849069021992">Afișează detaliile motorului de căutare</translation>
 <translation id="3810973564298564668">Gestionează</translation>
+<translation id="3812308602011798782">Recenzii</translation>
 <translation id="3818045793209708987">Urmărirea acestui colet a fost oprită</translation>
 <translation id="3818293389945649617">Următorul</translation>
 <translation id="3819183753496523827">Ești offline. Verifică starea conexiunii la internet și încearcă din nou.</translation>
@@ -594,6 +597,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4045648459118332842">Accesează parolele salvate în orice aplicație cu o singură atingere</translation>
 <translation id="4049507953662678203">Asigură-te că ai o conexiune la rețea și încearcă din nou.</translation>
 <translation id="4054572406751135230">Fii la curent cu știrile, evenimente sportive și altele.</translation>
+<translation id="4068959193278821990">Activează Protecția îmbunătățită...</translation>
 <translation id="4092655288299341041">Afișează secțiunea Ajutor</translation>
 <translation id="4105841739161771091">{count,plural, =1{Șterge adresa}few{Șterge adresele}other{Șterge adresele}}</translation>
 <translation id="4108998448622696017">Detectează și te avertizează cu privire la evenimentele periculoase atunci când au loc.</translation>
@@ -605,6 +609,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4121993058175073134">Pentru trimitere date de export în rețea, configurați e-mailul în Setări.</translation>
 <translation id="4124987746317609294">Interval de timp</translation>
 <translation id="4133265950310064865">Protecție îmbunătățită</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Site-ul dorește să descarce un fișier și să-l adauge în calendar.</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
@@ -1472,6 +1477,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="834783239627985533">Cele mai accesate site-uri</translation>
 <translation id="8358401059263985056">Activează notificările</translation>
 <translation id="8364841868226993049">Se salvează imaginea în Google Foto pentru <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">Șterge cheia de acces</translation>
 <translation id="8370406443343902172">Accesează Setările...</translation>
 <translation id="8374977641764177587">Activezi notificările?</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>

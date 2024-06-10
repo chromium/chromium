@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Прокрутка и изменение масштаба содержимого демонстрируемой вкладки</translation>
 <translation id="1089439967362294234">Сменить пароль</translation>
 <translation id="1090629319939036170">Меню VR</translation>
+<translation id="1091779689406092804">скриншотов</translation>
 <translation id="1094777233105318927">Информация о вашем браузере, ОС, устройстве, установленном ПО и файлах.</translation>
 <translation id="1096545575934602868">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи не будут сохранены.</translation>
 <translation id="1097803577928227769">Парки и скверы</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">Домашние кинотеатры</translation>
 <translation id="1842969606798536927">Оплатить</translation>
 <translation id="1846432862466000825">Пластик (архивный)</translation>
+<translation id="1848640291751752317">скачанных файлов</translation>
 <translation id="1848982255014129637">Фотобумага (с высоким лоском)</translation>
 <translation id="1853392626017747777">Диалоговое окно создания виртуальной карты закрыто</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">Мясо и морепродукты</translation>
 <translation id="2367567093518048410">Уровень</translation>
 <translation id="23703388716193220">Инвентарь для гольфа</translation>
+<translation id="2370368710215137370">Загрузка файлов</translation>
 <translation id="2374629208601905275">В соответствии с законом вашей страны Chrome просит выбрать поисковую систему по умолчанию. Эти поисковые системы популярны в вашей стране. Они расположены в случайном порядке.</translation>
 <translation id="2377241607395428273">ПО для работы с графикой и анимацией</translation>
 <translation id="2378084239755710604">Окно сохранения данных карты закрыто.</translation>
@@ -1421,6 +1424,7 @@
 <translation id="3682094733650754138">Выбран вариант "Подставить адрес"</translation>
 <translation id="3687920599421452763">Фургоны и минивэны</translation>
 <translation id="3693327506115126094">Выберите способ подтверждения личности</translation>
+<translation id="3698353241727597930">Администратор настроил сохранение <ph name="FILES" /> в хранилище (<ph name="CLOUD_STORAGE" />), управляемое организацией. Эти файлы могут просматриваться, проверяться и оставаться в хранилище после удаления.</translation>
 <translation id="3698629142018988477">Кнопка "Создать сайт". Нажмите ее, чтобы быстро создать сайт на платформе Google.</translation>
 <translation id="3701325639446035885">Продажа билетов на мероприятия</translation>
 <translation id="3701427423622901115">Сброс подтвержден.</translation>
@@ -1496,6 +1500,7 @@
 <translation id="3826050100957962900">Вход через сторонние сервисы</translation>
 <translation id="3827112369919217609">Абсолютный</translation>
 <translation id="3828924085048779000">Пустые кодовые фразы запрещены.</translation>
+<translation id="3830139096297532361">Этот файл PDF недоступен. Не удалось скачать файлы для извлечения текста. Повторите попытку позже.</translation>
 <translation id="3830470485672984938">Использовать другой ключ доступа</translation>
 <translation id="3831065134033923230">Проверьте сохраненные пароли</translation>
 <translation id="3831915413245941253">Администратор <ph name="ENROLLMENT_DOMAIN" /> установил расширения с дополнительными функциями для браузера. У расширений есть доступ к некоторым вашим данным.</translation>
@@ -1670,6 +1675,7 @@
 <translation id="4202554117186904723">Пятый рулон</translation>
 <translation id="4203769790323223880">Доступ к камере запрещен</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Проверьте настройки брандмауэра и антивирусного ПО<ph name="END_LINK" />.</translation>
+<translation id="4207195957038009075">Google Диск</translation>
 <translation id="4209092469652827314">Крупный</translation>
 <translation id="4210602799576081649">Код подтверждения больше не действителен. Запросите новый.</translation>
 <translation id="421066178035138955">Использование устройств и данных виртуальной реальности.</translation>
@@ -2730,6 +2736,7 @@
 <translation id="6270066318535733958">Лодочный спорт</translation>
 <translation id="6272088941196661550">Посмотреть похожие действия в истории Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Диск и OneDrive</translation>
 <translation id="6280223929691119688">Невозможно доставить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="6284292079994426700">26 x 38 дюймов</translation>
 <translation id="6284449872909111707">Текстовые и мгновенные сообщения</translation>
@@ -3168,6 +3175,7 @@
 <translation id="7119063404975271297">Телевизионные драмы</translation>
 <translation id="7119371694555167493">Превышено время ожидания</translation>
 <translation id="7119414471315195487">Закройте другие вкладки и программы.</translation>
+<translation id="7120588595737538743">скриншотов и скачанных файлов</translation>
 <translation id="7124354851782353862">Введите CVC-код</translation>
 <translation id="7129409597930077180">Невозможно отправить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3367,6 +3375,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />. Если вы хотите закрыть совет по работе с Chrome, нажмите Tab, а затем Ввод.</translation>
 <translation id="7485085230273446323">Бизнес и промышленность</translation>
 <translation id="7485870689360869515">Данные не найдены.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Шампуни и кондиционеры для волос</translation>
 <translation id="7495528107193238112">Этот контент заблокирован. Чтобы устранить неполадку, свяжитесь с владельцем сайта.</translation>
 <translation id="749865518782565832">Сантехнические работы</translation>

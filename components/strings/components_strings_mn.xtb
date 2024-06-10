@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Хуваалцсан табынхаа контентыг гүйлгэж, томруулна уу</translation>
 <translation id="1089439967362294234">Нууц үг солих</translation>
 <translation id="1090629319939036170">VR-н цэс</translation>
+<translation id="1091779689406092804">дэлгэцийн агшин</translation>
 <translation id="1094777233105318927">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж болон файлуудын талаарх мэдээлэл</translation>
 <translation id="1096545575934602868">Энэ талбар нь <ph name="MAX_ITEMS_LIMIT" />-с илүү оролттой байж болохгүй. Цаашдын бүх оролтыг устгах болно.</translation>
 <translation id="1097803577928227769">Бүс нутгийн цэцэрлэг, цэцэрлэгт хүрээлэн</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">Гэрийн театрын системүүд</translation>
 <translation id="1842969606798536927">Төлөх</translation>
 <translation id="1846432862466000825">Хуванцар (архивын)</translation>
+<translation id="1848640291751752317">татаж авсан файл</translation>
 <translation id="1848982255014129637">Гэрэл зураг (маш гялгар)</translation>
 <translation id="1853392626017747777">Виртуал картын бүртгэлийг хаасан</translation>
 <translation id="1854180393107901205">Каст хийхийг зогсоох</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">Махан бүтээгдэхүүн болон далайн гаралтай хоол</translation>
 <translation id="2367567093518048410">Түвшин</translation>
 <translation id="23703388716193220">Гольфын хэрэгсэл</translation>
+<translation id="2370368710215137370">Файлын байршуулалт</translation>
 <translation id="2374629208601905275">Танай бүс нутгийн хуульд тулгуурлан Chrome танаас өгөгдмөл хайлтын системээ сонгохыг хүснэ. Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй бөгөөд эдгээрийг санамсаргүй дарааллаар харуулсан.</translation>
 <translation id="2377241607395428273">График, анимацийн программ хангамж</translation>
 <translation id="2378084239755710604">Карт хадгалахыг хаасан.</translation>
@@ -1423,6 +1426,7 @@
 <translation id="3682094733650754138">Хаягийг бөглөх сонголтыг сонгосон</translation>
 <translation id="3687920599421452763">Бүхээгтэй тэрэг, гэр бүлийн бүхээгтэй тэрэгнүүд</translation>
 <translation id="3693327506115126094">Та өөрийгөө мөн болохыг хэрхэн баталгаажуулахаа сонгоно уу</translation>
+<translation id="3698353241727597930">Танай администратор <ph name="FILES" />-г танай байгууллагын удирддаг <ph name="CLOUD_STORAGE" />-н хадгалах санд хадгалахаар тохируулсан. Таныг эдгээр файлыг устгах үед хянаж, аудит хийж, хадгалж магадгүй.</translation>
 <translation id="3698629142018988477">Сайт үүсгэх товчлуур, Google Sites-д шинэ сайт шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="3701325639446035885">Арга хэмжээний тасалбарын борлуулалтууд</translation>
 <translation id="3701427423622901115">Шинэчлэлтийг хүлээн зөвшөөрсөн.</translation>
@@ -1498,6 +1502,7 @@
 <translation id="3826050100957962900">Гуравдагч талын нэвтрэлт</translation>
 <translation id="3827112369919217609">Үнэмлэхүй</translation>
 <translation id="3828924085048779000">Хоосон нууц үгийг зөвшөөрөхгүй.</translation>
+<translation id="3830139096297532361">Энэ PDF-д хандах боломжгүй. Текстийн задаргааны файлуудыг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="3830470485672984938">Өөр нэвтрэх түлхүүр ашиглах</translation>
 <translation id="3831065134033923230">Хадгалсан нууц үгнүүдээ шалгана уу</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> нэмэлт функцийн өргөтгөлүүдийг суулгасан байна. Өргөтгөлүүд нь таны зарим өгөгдөлд хандах эрхтэй.</translation>
@@ -1672,6 +1677,7 @@
 <translation id="4202554117186904723">Тав дахь хуйлмал</translation>
 <translation id="4203769790323223880">Камерыг зөвшөөрөөгүй</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Галт хана болон вирусын эсрэг оновчилгоог шалгаж байна<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Драйв</translation>
 <translation id="4209092469652827314">Том</translation>
 <translation id="4210602799576081649">Баталгаажуулах кодын хугацаа дууссан. Шинэ код хүснэ үү</translation>
 <translation id="421066178035138955">Виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглах</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">Завиар явах</translation>
 <translation id="6272088941196661550">Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд аяллаа үргэлжлүүлнэ үү</translation>
 <translation id="6272383483618007430">Google Шинэчлэл</translation>
+<translation id="6278015583149890680">Google Драйв болон OneDrive</translation>
 <translation id="6280223929691119688">Энэ хаяг руу хүргэх боломжгүй тул өөр хаяг сонгоно уу.</translation>
 <translation id="6284292079994426700">26 x 38 инч</translation>
 <translation id="6284449872909111707">Мессеж, шуурхай мессеж</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">ТВ-ийн драмууд</translation>
 <translation id="7119371694555167493">Хуулах үйлдэл завсарласан</translation>
 <translation id="7119414471315195487">Бусад таб, эсвэл программыг хаах</translation>
+<translation id="7120588595737538743">татаж авсан файл болон дэлгэцийн агшин</translation>
 <translation id="7124354851782353862">Карт баталгаажуулалтын кодоо оруулна уу</translation>
 <translation id="7129409597930077180">Энэ хаяг руу хүргэх боломжгүй тул өөр хаяг сонгоно уу.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome-н зөвлөгөөг хаахын тулд Tab, дараа нь Enter дарна уу.</translation>
 <translation id="7485085230273446323">Бизнес, аж үйлдвэр</translation>
 <translation id="7485870689360869515">Мэдээлэл байхгүй байна.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Шампунь болон ангижруулагч</translation>
 <translation id="7495528107193238112">Энэ контентыг блоклосон байна. Асуудлыг шийдвэрлэхийн тулд сайтын өмчлөгчтэй холбогдоно уу.</translation>
 <translation id="749865518782565832">Сантехникийн үйлчилгээ</translation>

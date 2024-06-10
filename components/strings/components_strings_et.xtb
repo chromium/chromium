@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Teie jagatud vahelehe sisu kerimine ja suumimine</translation>
 <translation id="1089439967362294234">Parooli muutmine</translation>
 <translation id="1090629319939036170">VR-menüü</translation>
+<translation id="1091779689406092804">ekraanipildid</translation>
 <translation id="1094777233105318927">Teave teie brauseri, OS-i, seadme, installitud tarkvara ja failide kohta</translation>
 <translation id="1096545575934602868">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõigist ülejäänud kirjetest loobutakse.</translation>
 <translation id="1097803577928227769">Pargid ja aiad</translation>
@@ -472,6 +473,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1840009953725035797">Kodukinosüsteemid</translation>
 <translation id="1842969606798536927">Maksmine</translation>
 <translation id="1846432862466000825">Plast (arhiivimine)</translation>
+<translation id="1848640291751752317">allalaadimised</translation>
 <translation id="1848982255014129637">Foto (kõrgläikega)</translation>
 <translation id="1853392626017747777">Virtuaalkaardi registreerimise dialoog suleti</translation>
 <translation id="1854180393107901205">Peata ülekandmine</translation>
@@ -754,6 +756,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2366689192918515749">Liha ja mereannid</translation>
 <translation id="2367567093518048410">Tase</translation>
 <translation id="23703388716193220">Golfivarustus</translation>
+<translation id="2370368710215137370">Failide üleslaadimine</translation>
 <translation id="2374629208601905275">Teie piirkonna seaduste põhjal palub Chrome teil valida oma vaikeotsingumootori. Need otsingumootorid on teie piirkonnas populaarsed ja need kuvatakse juhuslikus järjestuses.</translation>
 <translation id="2377241607395428273">Graafika- ja animatsioonitarkvara</translation>
 <translation id="2378084239755710604">Kaardi salvestamise leht suleti.</translation>
@@ -1422,6 +1425,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3682094733650754138">Tehti valik Täitke aadressiväli</translation>
 <translation id="3687920599421452763">Kaubikud ja minikaubikud</translation>
 <translation id="3693327506115126094">Valige, kuidas oma isik kinnitada</translation>
+<translation id="3698353241727597930">Teie administraatori seadistuse kohaselt salvestatakse <ph name="FILES" /> teie ettevõtte hallatavasse salvestusruumi <ph name="CLOUD_STORAGE" />. Neid faile võidakse jälgida, auditeerida ja säilitada, kui need kustutate.</translation>
 <translation id="3698629142018988477">Nupp Loo sait, aktiveerige nupp, et luua teenuses Google Sites kiiresti uus sait</translation>
 <translation id="3701325639446035885">Sündmuste piletimüük</translation>
 <translation id="3701427423622901115">Lähtestamine kinnitati.</translation>
@@ -1497,6 +1501,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3826050100957962900">Kolmanda osapoole sisselogimisviibad</translation>
 <translation id="3827112369919217609">Absoluutne</translation>
 <translation id="3828924085048779000">Tühi parool ei ole lubatud.</translation>
+<translation id="3830139096297532361">See PDF pole juurdepääsetav. Teksti ekstraktimise faile ei saanud alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="3830470485672984938">Teise pääsuvõtme kasutamine</translation>
 <translation id="3831065134033923230">Salvestatud paroolide kontrollimine</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> on installinud laiendused, et pakkuda lisafunktsioone. Laiendustel on juurdepääs teie mõningatele andmetele.</translation>
@@ -1671,6 +1676,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4202554117186904723">Viies rull</translation>
 <translation id="4203769790323223880">Kaamera ei ole lubatud</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kontrollige tulemüüri ja viirusetõrje seadistusi<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Suur</translation>
 <translation id="4210602799576081649">Kinnituskood on aegunud, taotlege uut koodi</translation>
 <translation id="421066178035138955">Kasutada virtuaalreaalsuse seadmeid ja andmeid</translation>
@@ -2731,6 +2737,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6270066318535733958">Paadi- ja laevasõit</translation>
 <translation id="6272088941196661550">Jätkake oma teekonda, et näha Chrome'i ajaloos asjakohaseid tegevusi</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive ja OneDrive</translation>
 <translation id="6280223929691119688">Sellele aadressile ei saa kaupa kohale toimetada. Valige mõni teine aadress.</translation>
 <translation id="6284292079994426700">26 × 38 tolli</translation>
 <translation id="6284449872909111707">Tekst- ja kiirsõnumside</translation>
@@ -3169,6 +3176,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7119063404975271297">Teledraamad</translation>
 <translation id="7119371694555167493">Kopeerimine aegus</translation>
 <translation id="7119414471315195487">Sulgege muud vahelehed või programmid</translation>
+<translation id="7120588595737538743">allalaadimised ja ekraanipildid</translation>
 <translation id="7124354851782353862">Sisestage oma CVC</translation>
 <translation id="7129409597930077180">Sellele aadressile ei saa tarnida. Valige mõni teine aadress.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@ Lisateave:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, vajutage tabulaatorit ja seejärel sisestusklahvi, et Chrome’i nõuandest loobuda.</translation>
 <translation id="7485085230273446323">Ettevõtlus ja tööstus</translation>
 <translation id="7485870689360869515">Andmeid ei leitud.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Šampoonid ja palsamid</translation>
 <translation id="7495528107193238112">See sisu on blokeeritud. Probleemi lahendamiseks võtke ühendust saidi omanikuga.</translation>
 <translation id="749865518782565832">Torutööd</translation>

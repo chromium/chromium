@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">捲動及縮放已分享分頁的內容</translation>
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1090629319939036170">VR 選單</translation>
+<translation id="1091779689406092804">螢幕截圖</translation>
 <translation id="1094777233105318927">瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料</translation>
 <translation id="1096545575934602868">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘所有項目將會捨棄。</translation>
 <translation id="1097803577928227769">地區公園和花園</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">家庭影院系統</translation>
 <translation id="1842969606798536927">支付</translation>
 <translation id="1846432862466000825">塑膠 (封存用)</translation>
+<translation id="1848640291751752317">下載內容</translation>
 <translation id="1848982255014129637">相紙 (高光面)</translation>
 <translation id="1853392626017747777">閂咗虛擬卡註冊對話框</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">肉類和海鮮</translation>
 <translation id="2367567093518048410">級別</translation>
 <translation id="23703388716193220">高爾夫球用品</translation>
+<translation id="2370368710215137370">上傳檔案</translation>
 <translation id="2374629208601905275">根據你所在地區的法律規定，Chrome 會要求你選擇預設搜尋引擎。這些搜尋引擎是你所在地區的熱門之選，次序隨機排列。</translation>
 <translation id="2377241607395428273">平面設計和動畫軟件</translation>
 <translation id="2378084239755710604">閂咗儲存內容資訊卡功能表。</translation>
@@ -1421,6 +1424,7 @@
 <translation id="3682094733650754138">揀咗填入地址選項</translation>
 <translation id="3687920599421452763">客貨車和小型客貨車</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
+<translation id="3698353241727597930">系統管理員已將<ph name="FILES" />的儲存位置設為由貴公司管理的 <ph name="CLOUD_STORAGE" />。即使你刪除這些檔案，貴公司仍可能會監控、稽核及保留這些檔案。</translation>
 <translation id="3698629142018988477">建立網站按鈕，啟動之後就可以喺「Google 協作平台」度快速建立新網站</translation>
 <translation id="3701325639446035885">活動售票</translation>
 <translation id="3701427423622901115">重設已確認。</translation>
@@ -1496,6 +1500,7 @@
 <translation id="3826050100957962900">第三方登入</translation>
 <translation id="3827112369919217609">絕對</translation>
 <translation id="3828924085048779000">複雜密碼欄位不得留空。</translation>
+<translation id="3830139096297532361">這份 PDF 無法存取，因此無法下載文字擷取檔案，請稍後再試。</translation>
 <translation id="3830470485672984938">使用其他密鑰</translation>
 <translation id="3831065134033923230">檢查您已儲存的密碼</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> 的管理員已安裝支援額外功能的擴充程式。擴充程式可存取您的部分資料。</translation>
@@ -1670,6 +1675,7 @@
 <translation id="4202554117186904723">第五卷</translation>
 <translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />檢查防火牆和防毒軟件設定<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google 雲端硬碟</translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">驗證碼已過期，請要求新驗證碼</translation>
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
@@ -2730,6 +2736,7 @@
 <translation id="6270066318535733958">划船</translation>
 <translation id="6272088941196661550">恢復瀏覽過程以查看 Chrome 記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
+<translation id="6278015583149890680">Google 雲端硬碟和 OneDrive</translation>
 <translation id="6280223929691119688">無法送貨至此地址，請選取其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284449872909111707">短訊和即時通訊</translation>
@@ -3168,6 +3175,7 @@
 <translation id="7119063404975271297">電視劇</translation>
 <translation id="7119371694555167493">複製逾時</translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
+<translation id="7120588595737538743">下載內容和螢幕截圖</translation>
 <translation id="7124354851782353862">輸入 CVC</translation>
 <translation id="7129409597930077180">無法運送至此地址，請選取其他地址。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
@@ -3367,6 +3375,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />，按下 Tab 鍵再按下 Enter 鍵即可關閉 Chrome 提示。</translation>
 <translation id="7485085230273446323">商業及工業</translation>
 <translation id="7485870689360869515">找不到任何數據。</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">洗髮水和護髮素</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="749865518782565832">水管工程</translation>

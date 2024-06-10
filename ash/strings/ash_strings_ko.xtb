@@ -223,7 +223,6 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
 <translation id="1774796056689732716">현재 캘린더에서 <ph name="CURRENT_MONTH_YEAR" />을 표시 중이며 선택된 날짜는 <ph name="DATE" />입니다.</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />개 중 <ph name="NUM_SHOWN_ITEMS" />개 표시 중</translation>
 <translation id="178347895271755507">휴대전화의 최근 사진, 미디어, 알림 보기 설정</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222841058024245321">데스크 7</translation>
+<translation id="2223384056430485343">화면 분할 시</translation>
 <translation id="2224075387478458881">보호된 콘텐츠가 보일 때는 화면 녹화를 할 수 없습니다.</translation>
 <translation id="2227179592712503583">추천 삭제</translation>
 <translation id="2248634276911611268">새 탭에서 링크를 열고 이 새 탭으로 전환</translation>
@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">켜짐</translation>
 <translation id="5216991270656129561"><ph name="TIME" />까지 끄기</translation>
 <translation id="5222676887888702881">로그아웃</translation>
+<translation id="5228195526683428788">화면 분할기</translation>
 <translation id="5229343007215035173">개인 정보 보호 화면 사용 설정/중지</translation>
 <translation id="5230516054153933099">창</translation>
 <translation id="5234764350956374838">닫기</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037">저장용량 <ph name="STORAGE_IN_USE_SIZE" /> 사용 중 | 총 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">개인 정보 보호 화면이 켜져 있습니다</translation>
 <translation id="6622679827379792051">휴대전화의 앱 보기 설정</translation>
+<translation id="662279009180869175">왼쪽 및 오른쪽 화살표를 사용하여 화면 분할 크기 조절</translation>
 <translation id="6624493541160101248">현재 데스크는 <ph name="DESK_NAME" />입니다. 데스크 <ph name="DESK_COUNT" />개 중 <ph name="DESK_INDEX" />번째입니다.</translation>
 <translation id="6625718907317144388">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> 및 기타 알림이 숨겨집니다.</translation>
 <translation id="6627638273713273709">검색+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">데스크 3</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6671661918848783005">Chromebook을 잠금 해제할 수 없음</translation>
+<translation id="6676552993057022464">위쪽 및 아래쪽 화살표를 사용하여 화면 분할 크기 조절</translation>
 <translation id="6682029141988159141">클립보드의 콘텐츠 붙여넣기</translation>
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6686023075541098243">휴대전화 알림 보기 설정</translation>

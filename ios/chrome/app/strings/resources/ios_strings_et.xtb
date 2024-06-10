@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Paroolide salv.</translation>
 <translation id="1753905327828125965">Enim külastatud</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} nõrk parool}other{{count} nõrka parooli}}</translation>
+<translation id="1764070164487214210">Juhised</translation>
 <translation id="1766411844240160513">Täida vorm automaatselt</translation>
 <translation id="1767766085187034454">Google'i tõlge</translation>
 <translation id="1769106850515800431">Isikupärastatud sisu</translation>
@@ -541,12 +542,14 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3771033907050503522">Inkogn. vahelehed</translation>
 <translation id="3775743491439407556">Sünkroonimine ei tööta</translation>
 <translation id="3779810277399252432">Interneti-ühendus puudub.</translation>
+<translation id="3785672280731998727">Kuvatav nimi</translation>
 <translation id="3789294999358192700">Järgige allolevaid juhiseid.</translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3803696231112616155">Selle saidi tõlkimise pakkumine</translation>
 <translation id="3808311849069021992">Kuva otsingumootori üksikasjad</translation>
 <translation id="3810973564298564668">Halda</translation>
+<translation id="3812308602011798782">Arvustused</translation>
 <translation id="3818045793209708987">Selle saadetise jälgimine on peatatud</translation>
 <translation id="3818293389945649617">Järgmise vaste otsimine</translation>
 <translation id="3819183753496523827">Võrguühendus puudub. Kontrollige internetiühendust ja proovige uuesti.</translation>
@@ -594,6 +597,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4045648459118332842">Pääsege mis tahes rakenduses oma salvestatud paroolidele juurde vaid ühe puudutusega</translation>
 <translation id="4049507953662678203">Veenduge, et oleksite võrguga ühendatud, ja proovige uuesti.</translation>
 <translation id="4054572406751135230">Püsige kursis uudiste, spordi ja muuga.</translation>
+<translation id="4068959193278821990">Täiustatud kaitse sisselülitamine ...</translation>
 <translation id="4092655288299341041">Abi kuvamine</translation>
 <translation id="4105841739161771091">{count,plural, =1{Kustuta aadress}other{Kustuta aadressid}}</translation>
 <translation id="4108998448622696017">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad.</translation>
@@ -605,6 +609,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4121993058175073134">Netiekspordi andmete saatmiseks seadistage meilikonto rakenduses Seaded.</translation>
 <translation id="4124987746317609294">Ajavahemik</translation>
 <translation id="4133265950310064865">Täiustatud kaitse</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">See veebisait soovib faili alla laadida ja lisada selle teie kalendrisse.</translation>
 <translation id="4152011295694446843">Oma järjehoidjad leiate siit</translation>
@@ -1472,6 +1477,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="834783239627985533">Enim külastatavad saidid</translation>
 <translation id="8358401059263985056">Märguannete sisselülitamine</translation>
 <translation id="8364841868226993049">Pilt salvestatakse teenusesse Google Photos kontol <ph name="USER_EMAIL" /> …</translation>
+<translation id="8369246252708539904">Kustuta pääsuvõti</translation>
 <translation id="8370406443343902172">Ava seaded ...</translation>
 <translation id="8374977641764177587">Kas lülitada märguanded sisse?</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>

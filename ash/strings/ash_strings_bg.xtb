@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">Преместено на ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Превъртане надясно</translation>
 <translation id="1774796056689732716">Календар, текущата дата е <ph name="CURRENT_MONTH_YEAR" />, а понастоящем е избрана <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">Показани: <ph name="NUM_SHOWN_ITEMS" /> от <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Настройване на прегледа на скорошните снимки, мултимедийни файлове и известия на телефона ви</translation>
 <translation id="1787955149152357925">Изкл.</translation>
 <translation id="1796561540704213354">Уебсайтове, включително посетените от вас и отворените страници</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2222841058024245321">Работен кът 7</translation>
+<translation id="2223384056430485343">При разделен екран</translation>
 <translation id="2224075387478458881">Записването на екрана не е разрешено, когато се вижда защитено съдържание</translation>
 <translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="2248634276911611268">Отваряне на връзката в нов раздел и превключване към него</translation>

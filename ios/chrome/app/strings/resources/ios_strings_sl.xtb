@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Shranjena gesla</translation>
 <translation id="1753905327828125965">Najpogosteje obiskane</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} šibko geslo}one{{count} šibko geslo}two{{count} šibki gesli}few{{count} šibka gesla}other{{count} šibkih gesel}}</translation>
+<translation id="1764070164487214210">Navodila za pot</translation>
 <translation id="1766411844240160513">Samodejno izpolnjevanje obrazca</translation>
 <translation id="1767766085187034454">Google Prevajalnik</translation>
 <translation id="1769106850515800431">Osebno prilagojena vsebina</translation>
@@ -541,12 +542,14 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sinhronizacija ne deluje</translation>
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
+<translation id="3785672280731998727">Prikazno ime</translation>
 <translation id="3789294999358192700">Upoštevajte spodnja navodila:</translation>
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod tega spletnega mesta</translation>
 <translation id="3808311849069021992">Prikaz podrobnosti o iskalniku</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="3812308602011798782">Mnenja</translation>
 <translation id="3818045793209708987">Sledenje temu paketu je ustavljeno</translation>
 <translation id="3818293389945649617">Poišči naslednje</translation>
 <translation id="3819183753496523827">Niste povezani v internet. Preverite internetno povezavo in poskusite znova.</translation>
@@ -594,6 +597,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4045648459118332842">Z enim dotikom do shranjenih gesel v poljubni aplikaciji</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4054572406751135230">Bodite na tekočem z novicami, športom in drugim.</translation>
+<translation id="4068959193278821990">Vklop izboljšane zaščite …</translation>
 <translation id="4092655288299341041">Pokaži pomoč</translation>
 <translation id="4105841739161771091">{count,plural, =1{Izbriši naslov}one{Izbriši naslove}two{Izbriši naslove}few{Izbriši naslove}other{Izbriši naslove}}</translation>
 <translation id="4108998448622696017">Zaznava nevarne dogodke, ko se zgodijo, in vas opozarja nanje.</translation>
@@ -605,6 +609,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
 <translation id="4124987746317609294">Časovno obdobje</translation>
 <translation id="4133265950310064865">Izboljšana zaščita</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">To spletno mesto želi prenesti datoteko in jo dodati v vaš koledar.</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
@@ -1472,6 +1477,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="834783239627985533">Najbolj obiskana spletna mesta</translation>
 <translation id="8358401059263985056">Vklop obvestil</translation>
 <translation id="8364841868226993049">Shranjevanje slike v Google Foto za račun <ph name="USER_EMAIL" /> …</translation>
+<translation id="8369246252708539904">Izbriši geslo</translation>
 <translation id="8370406443343902172">Odpri nastavitve …</translation>
 <translation id="8374977641764177587">Želite vklopiti obvestila?</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>

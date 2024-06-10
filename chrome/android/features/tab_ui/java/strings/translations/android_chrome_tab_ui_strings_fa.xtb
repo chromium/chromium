@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{نشانک‌گذاری <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="2118649612461486615">اطلاعات فروشگاه</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}other{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{لغو گروه‌بندی برگه}one{لغو گروه‌بندی برگه}other{لغو گروه‌بندی برگه‌ها}}</translation>
 <translation id="2271452184061378400">گروه‌های برگه شما اینجا ذخیره می‌شود</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">גלילה בתוכן הכרטיסייה המשותפת ושינוי מרחק התצוגה שלו</translation>
 <translation id="1089439967362294234">שינוי סיסמה</translation>
 <translation id="1090629319939036170">‏תפריט VR</translation>
+<translation id="1091779689406092804">צילומי מסך</translation>
 <translation id="1094777233105318927">מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
 <translation id="1097803577928227769">פארקים וגנים אזוריים</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">מערכות קולנוע ביתי</translation>
 <translation id="1842969606798536927">לתשלום</translation>
 <translation id="1846432862466000825">Plastic (Archival)</translation>
+<translation id="1848640291751752317">הורדות</translation>
 <translation id="1848982255014129637">Photo (High-Gloss)</translation>
 <translation id="1853392626017747777">רישום הכרטיס הווירטואלי נסגר</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">בשר ומאכלי ים</translation>
 <translation id="2367567093518048410">רמה</translation>
 <translation id="23703388716193220">ציוד לגולף</translation>
+<translation id="2370368710215137370">העלאת קבצים</translation>
 <translation id="2374629208601905275">‏בהתאם לחוק באזור שלך, עליך לבחור את מנוע החיפוש שיוגדר כברירת המחדל ב-Chrome. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
 <translation id="2377241607395428273">תוכנות גרפיקה ואנימציה</translation>
 <translation id="2378084239755710604">גיליון שמירת הכרטיס נסגר.</translation>
@@ -1422,6 +1425,7 @@
 <translation id="3682094733650754138">נבחרה האפשרות 'מילוי הכתובת'</translation>
 <translation id="3687920599421452763">רכבים מסחריים ורכבי מיניוואן</translation>
 <translation id="3693327506115126094">עליך לבחור שיטה לאימות הזהות שלך</translation>
+<translation id="3698353241727597930">האדמינים הגדירו שהמערכת תשמור <ph name="FILES" /> באחסון שלך ב-<ph name="CLOUD_STORAGE" /> שמנוהל על ידי הארגון. אם הקבצים האלה ימחקו, יכול להיות שיתבצע מעקב אחריהם, בדיקה ושמירה שלהם.</translation>
 <translation id="3698629142018988477">‏הלחצן ליצירת אתר, מפעילים אותו כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
 <translation id="3701325639446035885">מכירת כרטיסים לאירועים</translation>
 <translation id="3701427423622901115">האיפוס אושר.</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3826050100957962900">כניסה של צד שלישי</translation>
 <translation id="3827112369919217609">מוחלט</translation>
 <translation id="3828924085048779000">אין אפשרות להשתמש בביטוי סיסמה ריק.</translation>
+<translation id="3830139096297532361">‏אין גישה לקובץ ה-PDF הזה. לא ניתן להוריד את הקבצים לחילוץ טקסט. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="3830470485672984938">שימוש במפתח גישה אחר</translation>
 <translation id="3831065134033923230">בדיקת הסיסמאות השמורות</translation>
 <translation id="3831915413245941253">הותקנו תוספים מהדומיין <ph name="ENROLLMENT_DOMAIN" /> כדי להשתמש בפונקציות נוספות. לתוספים יש גישה לחלק מהנתונים שלך.</translation>
@@ -1671,6 +1676,7 @@
 <translation id="4202554117186904723">הגליל החמישי</translation>
 <translation id="4203769790323223880">אין הרשאת גישה למצלמה</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />לבדוק את תצורת האנטי-וירוס וחומת האש<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">גדול</translation>
 <translation id="4210602799576081649">פג התוקף של קוד האימות. צריך לבקש קוד חדש</translation>
 <translation id="421066178035138955">להשתמש במכשירי מציאות מדומה ובנתוני מציאות מדומה</translation>
@@ -2736,6 +2742,7 @@ Del</translation>
 <translation id="6270066318535733958">חתירה בסירה</translation>
 <translation id="6272088941196661550">‏חזרה לתהליך כדי להציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="6272383483618007430">‏עדכוני Google</translation>
+<translation id="6278015583149890680">‏‫Google Drive ו-OneDrive</translation>
 <translation id="6280223929691119688">לא ניתן לבצע מסירה בכתובת זו. עליך לבחור כתובת אחרת.</translation>
 <translation id="6284292079994426700">‏26x38 אינץ'</translation>
 <translation id="6284449872909111707">העברת הודעות מיידיות והודעות טקסט</translation>
@@ -3174,6 +3181,7 @@ Del</translation>
 <translation id="7119063404975271297">תוכניות דרמה בטלוויזיה</translation>
 <translation id="7119371694555167493">פג הזמן שהוקצב להעתקה</translation>
 <translation id="7119414471315195487">סגירת כרטיסיות או תוכניות אחרות</translation>
+<translation id="7120588595737538743">הורדות וצילומי מסך</translation>
 <translation id="7124354851782353862">יש להזין את קוד האימות</translation>
 <translation id="7129409597930077180">לא ניתן לבצע משלוח לכתובת הזו. עליך לבחור כתובת אחרת.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3373,6 +3381,7 @@ Del</translation>
 <translation id="7483863401933039889">‏‫<ph name="CHROME_TIP" />, לוחצים על Tab ואז על Enter כדי לסגור את הטיפ ל-Chrome.</translation>
 <translation id="7485085230273446323">עסקים ותעשייה</translation>
 <translation id="7485870689360869515">לא נמצאו נתונים.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">שמפו ומרככי שיער</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>
 <translation id="749865518782565832">אינסטלציה</translation>

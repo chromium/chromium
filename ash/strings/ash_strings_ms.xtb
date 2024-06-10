@@ -223,7 +223,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1770726142253415363">Dialihkan ke baris <ph name="ROW_NUMBER" />, lajur <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Tatal ke kanan</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, pada masa ini <ph name="DATE" /> dipilih.</translation>
-<translation id="1775598828170459419">Tunjukkan <ph name="NUM_SHOWN_ITEMS" /> daripada <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Menyediakan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
@@ -252,6 +251,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1918022425394817322">Kamera diautojajar ke penjuru kanan sebelah atas</translation>
 <translation id="1923539912171292317">Klik automatik</translation>
+<translation id="1925320505152357008">kurang 1 min</translation>
 <translation id="1928739107511554905">Untuk mendapatkan kemas kini, gunakan skrin sentuh untuk memulakan semula Chromebook anda dengan papan kekunci yang dipasang.</translation>
 <translation id="1948405482892809935">Beralih kepada pengguna seterusnya</translation>
 <translation id="1951012854035635156">Pembantu</translation>
@@ -607,6 +607,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="334927402682780278">Pilih teks daripada kursor di penghujung baris</translation>
 <translation id="3349345708646875009">Buka pengurus tugas</translation>
 <translation id="3364721542077212959">Alatan stilus</translation>
+<translation id="3365281428003534650">Tetapkan pemasa, tugasan dan muzik</translation>
 <translation id="3365977133351922112">Telefon anda terlalu jauh. Dekatkan telefon anda.</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369111525500416043">Perlu disiapkan tidak lama lagi</translation>
@@ -909,6 +910,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4412698727486357573">Pusat bantuan</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
+<translation id="4417647906073317561">Tetapan fokus. Tetapkan pemasa, tugasan dan muzik untuk meningkatkan tumpuan.</translation>
 <translation id="4424159417645388645">Meja 5</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
 <translation id="4441283832827406317">Apl diisih mengikut nama</translation>
@@ -1860,6 +1862,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
         <ph name="MANAGED" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Pemberitahuan diredam hingga <ph name="TIME" /> semasa memberikan tumpuan</translation>
 <translation id="7901190436359881020">Tukar tetingkap</translation>
 <translation id="7901405293566323524">Hab Telefon</translation>
 <translation id="7902625623987030061">Sentuh penderia cap jari</translation>

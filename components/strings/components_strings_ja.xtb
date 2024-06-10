@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">共有タブの内容をスクロールしてズームする</translation>
 <translation id="1089439967362294234">パスワードを変更</translation>
 <translation id="1090629319939036170">VR メニュー</translation>
+<translation id="1091779689406092804">スクリーンショット</translation>
 <translation id="1094777233105318927">ブラウザ、OS、デバイス、インストール済みソフトウェア、ファイルに関する情報</translation>
 <translation id="1096545575934602868">このフィールドに入力できる件数は <ph name="MAX_ITEMS_LIMIT" /> 件までです。この件数を超える部分は破棄されます。</translation>
 <translation id="1097803577928227769">地域の公園、庭園</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">ホームシアター システム</translation>
 <translation id="1842969606798536927">お支払い</translation>
 <translation id="1846432862466000825">プラスチック（アーカイバル）</translation>
+<translation id="1848640291751752317">ダウンロード</translation>
 <translation id="1848982255014129637">写真（高光沢）</translation>
 <translation id="1853392626017747777">仮想カードの登録を閉じました</translation>
 <translation id="1854180393107901205">キャストを停止</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">肉、魚介類</translation>
 <translation id="2367567093518048410">レベル</translation>
 <translation id="23703388716193220">ゴルフ用品</translation>
+<translation id="2370368710215137370">ファイルのアップロード</translation>
 <translation id="2374629208601905275">お住まいの地域の法律に基づき、Chrome ではデフォルトの検索エンジンの選択を求めるメッセージが表示されます。これらの検索エンジンはお住まいの地域で一般的に使用されているもので、順不同です。</translation>
 <translation id="2377241607395428273">グラフィック、アニメーション ソフトウェア</translation>
 <translation id="2378084239755710604">カード保存のメッセージを閉じました。</translation>
@@ -1422,6 +1425,7 @@
 <translation id="3682094733650754138">住所を入力するオプションが選択されました</translation>
 <translation id="3687920599421452763">バン、ミニバン</translation>
 <translation id="3693327506115126094">本人確認の方法を選択してください</translation>
+<translation id="3698353241727597930">企業が管理する <ph name="CLOUD_STORAGE" /> ストレージに <ph name="FILES" /> を保存するように管理者が設定しています。これらのファイルは、監視および監査され、削除した場合も保持される可能性があります。</translation>
 <translation id="3698629142018988477">[サイトを作成] ボタンです。実行すると、Google サイトで新しいサイトをすばやく作成できます</translation>
 <translation id="3701325639446035885">イベント チケット販売</translation>
 <translation id="3701427423622901115">リセットを確認しました。</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3826050100957962900">サードパーティのログイン</translation>
 <translation id="3827112369919217609">絶対的</translation>
 <translation id="3828924085048779000">パスフレーズは必ず指定してください。</translation>
+<translation id="3830139096297532361">この PDF にアクセスできません。テキスト抽出ファイルをダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="3830470485672984938">別のパスキーを使用する</translation>
 <translation id="3831065134033923230">保存したパスワードを確認する</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> によって、機能を追加する拡張機能がインストールされました。この拡張機能では、ユーザーデータの一部にアクセスする場合があります。</translation>
@@ -1671,6 +1676,7 @@
 <translation id="4202554117186904723">ロール 5</translation>
 <translation id="4203769790323223880">カメラは許可されていません</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ファイアウォールとウイルス対策の設定を確認する<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google ドライブ</translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">確認コードの有効期限が切れています。新しいコードをリクエストしてください</translation>
 <translation id="421066178035138955">バーチャル リアリティ デバイスとデータの使用</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">ボート</translation>
 <translation id="6272088941196661550">ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認します</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google ドライブと OneDrive</translation>
 <translation id="6280223929691119688">この住所には配達できません。別の住所を選択してください。</translation>
 <translation id="6284292079994426700">26x38 インチ</translation>
 <translation id="6284449872909111707">テキスト メッセージ、インスタント メッセージ</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">テレビドラマ</translation>
 <translation id="7119371694555167493">コピーがタイムアウトしました</translation>
 <translation id="7119414471315195487">他のタブやプログラムを閉じる</translation>
+<translation id="7120588595737538743">ダウンロードとスクリーンショット</translation>
 <translation id="7124354851782353862">CVC を入力してください</translation>
 <translation id="7129409597930077180">この住所には配送できません。別の住所を選択してください。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />。Chrome のヒントを閉じるには、Tab キー、Enter キーの順に押します。</translation>
 <translation id="7485085230273446323">ビジネス、産業</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">シャンプー、コンディショナー</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="749865518782565832">配管</translation>

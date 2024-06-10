@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">გადასვლა მწკრივზე <ph name="ROW_NUMBER" />, სვეტში <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">გადაადგილება მარჯვნივ</translation>
 <translation id="1774796056689732716">კალენდარი, <ph name="CURRENT_MONTH_YEAR" />, ამჟამად არჩეულია <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">ნაჩვენებია <ph name="NUM_TOTAL_ITEMS" />-დან <ph name="NUM_SHOWN_ITEMS" /></translation>
 <translation id="178347895271755507">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და შეტყობინებების ნახვის დაყენება</translation>
 <translation id="1787955149152357925">გამორთვა</translation>
 <translation id="1796561540704213354">ვებსაიტები, მათ შორის, თქვენ მიერ მონახულებული გვერდები და გახსნილი გვერდები</translation>
@@ -252,6 +251,7 @@
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1918022425394817322">კამერა მიზიდულია ზედა მარჯვენა კუთხეში</translation>
 <translation id="1923539912171292317">ავტომატური დაწკაპუნებები</translation>
+<translation id="1925320505152357008">1 წთ-ზე ნაკლები</translation>
 <translation id="1928739107511554905">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook სენსორული ეკრანის მეშვეობით და არ გამოართოთ კლავიატურა.</translation>
 <translation id="1948405482892809935">შემდეგ მომხმარებელზე გადართვა</translation>
 <translation id="1951012854035635156">ასისტენტი</translation>
@@ -607,6 +607,7 @@
 <translation id="334927402682780278">ტექსტის არჩევა კურსორიდან სტრიქონის ბოლომდე</translation>
 <translation id="3349345708646875009">ამოცანების მმართველის გახსნა</translation>
 <translation id="3364721542077212959">სტილუსის ხელსაწყოები</translation>
+<translation id="3365281428003534650">დააყენეთ ტაიმები, ამოცანა და მუსიკა</translation>
 <translation id="3365977133351922112">თქვენი ტელეფონი ზედმეტად შორსაა. მოიტანეთ ის ახლოს.</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369111525500416043">შესრულებელია მალე</translation>
@@ -909,6 +910,7 @@
 <translation id="4406883609789734330">ავტოსუბტიტრები</translation>
 <translation id="4412698727486357573">დახმარების ცენტრი</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
+<translation id="4417647906073317561">ფოკუსირების რეჟიმის პარამეტრები. დააყენეთ ტაიმები, ამოცანა და მუსიკა, რომ შეუდგეთ საქმეს.</translation>
 <translation id="4424159417645388645">სამუშაო მაგიდა 5</translation>
 <translation id="4430019312045809116">ხმა</translation>
 <translation id="4441283832827406317">აპები დალაგებულია სახელის მიხედვით</translation>
@@ -1860,6 +1862,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ფოკუსირების რეჟიმში შეტყობინებები დადუმებულია <ph name="TIME" /> საათამდე</translation>
 <translation id="7901190436359881020">ფანჯრების ჩანაცვლება</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>

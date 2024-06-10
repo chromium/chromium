@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bookmark <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="2118649612461486615">Info toko</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> di <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Pisahkan tab}other{Pisahkan tab}}</translation>
 <translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>

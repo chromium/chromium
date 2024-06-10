@@ -223,7 +223,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1770726142253415363">Inilipat sa row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Mag-scroll pakanan</translation>
 <translation id="1774796056689732716">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" />, kasalukuyang pinili ang <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">Ipinapakita ang <ph name="NUM_SHOWN_ITEMS" /> sa <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">I-set up ang pagtingin sa mga kamakailang larawan, media, at notification ng iyong telepono</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
@@ -310,6 +309,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
+<translation id="2223384056430485343">Sa isang split screen</translation>
 <translation id="2224075387478458881">Hindi pinapayagan ang pag-record ng screen kapag may nakikitang protektadong content</translation>
 <translation id="2227179592712503583">Alisin ang suhestyon</translation>
 <translation id="2248634276911611268">Buksan ang link sa bagong tab at lumipat sa bagong tab na ito</translation>
@@ -1133,6 +1133,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5208059991603368177">Naka-on</translation>
 <translation id="5216991270656129561">Naka-off hanggang <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
+<translation id="5228195526683428788">Divider ng split screen</translation>
 <translation id="5229343007215035173">I-on/i-off ang privacy screen</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
@@ -1519,6 +1520,7 @@ Kaka-install lang</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> na storage ang ginagamit | <ph name="STORAGE_TOTAL_SIZE" /> ang kabuuan</translation>
 <translation id="6614169507485700968">Naka-on ang privacy screen</translation>
 <translation id="6622679827379792051">I-set up ang pagtingin sa mga app ng iyong telepono</translation>
+<translation id="662279009180869175">Gamitin ang pakaliwa at pakanang arrow para i-resize ang split screen</translation>
 <translation id="6624493541160101248">Kasalukuyang desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Nakatago ang mga notification sa <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, at iba pang notification dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="6627638273713273709">Maghanap+Shift+K</translation>
@@ -1537,6 +1539,7 @@ Kaka-install lang</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6671661918848783005">Hindi ma-unlock ang iyong Chromebook</translation>
+<translation id="6676552993057022464">Gamitin ang pataas at pababang arrow para i-resize ang split screen</translation>
 <translation id="6682029141988159141">I-paste ang content mula sa clipboard</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6686023075541098243">I-set up ang pagtingin sa mga notification ng iyong telepono</translation>

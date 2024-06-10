@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">パスワードの保存</translation>
 <translation id="1753905327828125965">よくアクセスするページ</translation>
 <translation id="1757699834933698436">{count,plural, =1{脆弱なパスワード: {count} 件}other{脆弱なパスワード: {count} 件}}</translation>
+<translation id="1764070164487214210">ルート</translation>
 <translation id="1766411844240160513">自動入力フォーム</translation>
 <translation id="1767766085187034454">Google 翻訳</translation>
 <translation id="1769106850515800431">マイページのコンテンツ</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">シークレットタブ</translation>
 <translation id="3775743491439407556">同期が機能していません</translation>
 <translation id="3779810277399252432">インターネットに接続されていません。</translation>
+<translation id="3785672280731998727">表示名</translation>
 <translation id="3789294999358192700">次の手順で設定してください。</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803696231112616155">このサイトを翻訳するか尋ねる</translation>
 <translation id="3808311849069021992">検索エンジンの詳細を表示</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3812308602011798782">クチコミ</translation>
 <translation id="3818045793209708987">この荷物の追跡を停止しました</translation>
 <translation id="3818293389945649617">次を検索</translation>
 <translation id="3819183753496523827">オフラインです。インターネット接続を確認してもう一度お試しください。</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">ワンタップで、保存したパスワードを他のアプリでも利用できます</translation>
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4054572406751135230">ニュースやスポーツなどの最新情報をチェックできます。</translation>
+<translation id="4068959193278821990">保護強化機能をオンにする…</translation>
 <translation id="4092655288299341041">ヘルプを表示</translation>
 <translation id="4105841739161771091">{count,plural, =1{住所を削除}other{住所を削除}}</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
 <translation id="4133265950310064865">保護強化機能</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />、<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">よくアクセスするサイト</translation>
 <translation id="8358401059263985056">通知をオンにする</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" /> さんの Google フォトに画像を保存しています...</translation>
+<translation id="8369246252708539904">パスキーを削除</translation>
 <translation id="8370406443343902172">設定に移動...</translation>
 <translation id="8374977641764177587">通知をオンにしますか？</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>

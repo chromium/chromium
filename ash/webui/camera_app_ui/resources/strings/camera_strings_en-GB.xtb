@@ -36,12 +36,15 @@
 <translation id="2320741269052147773">Pan left</translation>
 <translation id="2360840973209616515">The camera app is managed by your administrator.
         For details, contact the administrator.</translation>
+<translation id="2442754296994859145">Copy to verify the content or expand to stop scanning.</translation>
+<translation id="2486151619109781620">Collapse dialogue and start scanning</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2501853267655415902">Recording stopped</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="2577915835281444458">Recording will stop soon. Go to device storage to free up space.</translation>
 <translation id="2599796128805996109">Back camera</translation>
+<translation id="2654491636277477479">Copy detected text</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">Scan type</translation>
 <translation id="28682968802727151">Mirror preview</translation>
@@ -49,6 +52,7 @@
 <translation id="3067436040345934772">Pan right</translation>
 <translation id="3081586908890909590">Switch to record video</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">Now you can directly copy text in your photo</translation>
 <translation id="3158534262962737808">Join '<ph name="WIFINAME" />'</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Link copied</translation>
@@ -93,6 +97,7 @@
 <translation id="5317780077021120954">Save</translation>
 <translation id="5320594929574852403">Moving in left direction</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Expand dialogue and stop scanning</translation>
 <translation id="5662366948659129155">Scanning page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Square</translation>
 <translation id="574392208103952083">Medium</translation>
@@ -117,11 +122,13 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="6519884562954018934">Join <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6586509689874700895">First, press <ph name="BUTTON_NAME" /> to zoom in. Then, after you take a photo, you’ll see enhanced details.</translation>
+<translation id="659539649712855529">Copied <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Show all resolutions</translation>
 <translation id="6631515515009660915">Mirror off</translation>
 <translation id="6652737148136672975">Move corner position with arrow keys</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6681668084120808868">Take photo</translation>
+<translation id="6692092766759105707">Copy to verify the content.</translation>
 <translation id="6778482348691154169">Unable to take photo</translation>
 <translation id="6888362557094394345">Moving in bottom direction</translation>
 <translation id="695140971690006676">Reset all</translation>

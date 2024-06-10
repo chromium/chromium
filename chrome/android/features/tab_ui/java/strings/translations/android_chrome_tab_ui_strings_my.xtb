@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို လိပ်စာမှတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို လိပ်စာမှတ်ရန်}}</translation>
 <translation id="2118649612461486615">ဆိုင်အချက်အလက်</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ ကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}other{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ # ခုကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> တွင်ယခု <ph name="CURRENT_PRICE" /> ဖြစ်သည်</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖြုတ်ရန်}other{တဘ်များ အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="2271452184061378400">တဘ်အုပ်စုများကို ဤနေရာတွင် သိမ်းထားသည်</translation>

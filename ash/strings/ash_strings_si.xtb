@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1391102559483454063">සක්‍රියයි</translation>
 <translation id="1394698770495054737">පූර්ණ නොපැහැදිලි කිරීම</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 දිනකට පෙර}one{දින #කට පෙර}other{දින #කට පෙර}}</translation>
 <translation id="1404963891829069586">අවධාන ශබ්ද</translation>
 <translation id="1407069428457324124">අඳුරු තේමාව</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. දින අතර සංචාලනය කිරීමට ඊතල යතුරු භාවිත කරන්න.</translation>
@@ -210,6 +211,7 @@
 <translation id="174102739345480129">ලකුණුකරය ක්‍රියාවිරහිතයි.</translation>
 <translation id="1743570585616704562">හඳුනා නොගන්නා ලදී</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> දැනුම්දීම හකුළන්න</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 පැයක් ඇතුළත}=1{1 පැයකට පෙර}one{පැය #කට පෙර}other{පැය #කට පෙර}}</translation>
 <translation id="1746730358044914197">ඔබේ පරිපාලක විසින් ආදාන ක්‍රම වින්‍යාස කරනු ලැබේ.</translation>
 <translation id="1747336645387973286">නියමිත දිනය <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">තිරය මත යතුරු පුවරුව සබල කර ඇත</translation>
@@ -223,7 +225,6 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> පේළිය, <ph name="COLUMN_NUMBER" /> තීරුව වෙත යන්න.</translation>
 <translation id="1771761307086386028">දකුණට අනුචලන කරන්න</translation>
 <translation id="1774796056689732716">දින දර්ශනය, <ph name="CURRENT_MONTH_YEAR" />, දැනට <ph name="DATE" /> තෝරා ඇත.</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />න් <ph name="NUM_SHOWN_ITEMS" />ක් පෙන්වමින්</translation>
 <translation id="178347895271755507">ඔබේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය සහ දැනුම්දීම් බැලීම පිහිටුවන්න</translation>
 <translation id="1787955149152357925">ක්‍රියාවිරහිතයි</translation>
 <translation id="1796561540704213354">ඔබ පිවිසි පිටු සහ විවෘත පිටු ඇතුළු වෙබ් අඩවි</translation>
@@ -346,6 +347,7 @@
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2360398059912971776">බැටරිය</translation>
 <translation id="2361210043495191221">Wi-Fi ටොගල් කරන්න. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> වෙතින් යවන ලදි</translation>
 <translation id="2367186422933365202">ඔබගේ Chromebook වෙත පිරීමට නොහැකිය</translation>
 <translation id="2367972762794486313">යෙදුම් පෙන්වන්න</translation>
 <translation id="2368828502825385061">ස්ථානගත කරන්න</translation>
@@ -508,6 +510,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> කථන ගොනු බාගැනීමට නොහැකි විය</translation>
+<translation id="2968761508099987738">මේ වේලාවේ ඔබේ වත්මන් ස්ථානයට සහය නොදක්වනු ලබයි.</translation>
 <translation id="2970920913501714344">යෙදුම්, දිගු, සහ තේමා ස්ථාපනය කරන්න</translation>
 <translation id="2977598380246111477">මීළඟ අංකය</translation>
 <translation id="2985148236010982088">සියලු යෙදුම් බලන්න</translation>
@@ -981,6 +984,7 @@
 <translation id="468293128311738995">ඔබේ දුරකථනය වෙතින් යෙදුම්</translation>
 <translation id="4690510401873698237">පහළ ඇති රාක්කය</translation>
 <translation id="4696813013609194136">මාපිය කේතය සමඟ උපාංගය අඟුලු අරින්න</translation>
+<translation id="4697357603686181098">මේ සම්බන්‍ධයෙන් උදවු කළ නොහැක. වෙනත් ඉල්ලීමක් උත්සාහ කරන්න.</translation>
 <translation id="4702647871202761252">පෞද්ගලිකත්ව තිරය අක්‍රියයි</translation>
 <translation id="4706121060329443414">බාගැනීම පසුව උත්සාහ කරනු ඇත. දැනට සැකසීම සඳහා කථනය Google වෙත යවනු ඇත.</translation>
 <translation id="470644585772471629">වර්ණ අපවර්තනය</translation>
@@ -1892,6 +1896,7 @@
 <translation id="7982878511129296052">ක්‍රියාවිරහිත කරමින්...</translation>
 <translation id="7984197416080286869">ඇඟිලි සලකුණු ප්‍රයත්න ඉතා වැඩියි</translation>
 <translation id="798779949890829624">මෙම සැකසීම ඔබගේ පරිපාලක විසින් කළමනාකරණය කෙරේ</translation>
+<translation id="7989206653429884947">නිතර විවෘත කළ</translation>
 <translation id="799296642788192631">ඔබට වැදගත් ගොනු ඇමිණිය හැක. ඇමිණීමට, අයිතමයක් මත සැරිසැරීමට හෝ ගොනු විවෘත කර අයිතමයක් දකුණු-ක්ලික් කරන්න.</translation>
 <translation id="7994370417837006925">බහු පිවිසුම්</translation>
 <translation id="7995804128062002838">තිරය ග්‍රහණය කිරීම අසාර්ථක විය</translation>
@@ -2077,6 +2082,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">වේලාව ඉවරයි. අනර්ඝ වැඩ! 🎉</translation>
+<translation id="8753368202781196133">මේ වේලාවේදී මෙම භාෂාවට සහය නොදක්වනු ලැබේ.</translation>
 <translation id="8755498163081687682">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න: <ph name="ORIGIN_NAME" /> ඒ ඔබ බව තහවුරු කිරීමට කැමතියි</translation>
 <translation id="875593634123171288">VPN සැකසීම් පෙන්වන්න</translation>
 <translation id="8756799553341497810">ඔබ මෙම දසුනෙන් පිට වූ පසු ඔබට ඔබේ යෙදුම් පිරිසැලසුම අභිරුචිකරණය කිරීම ආරම්භ කළ හැක.</translation>

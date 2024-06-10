@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Anda mungkin melihat sejarah daripada apl lain yang membuka pautan dalam Chrome. Google Account anda mungkin mengandungi sejarah penyemakan imbas dalam bentuk lain pada <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />syarat perkhidmatan<ph name="END_LINK1" /> laman ini.</translation>
 <translation id="1397811292916898096">Cari dengan <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Anda boleh <ph name="BEGIN_LINK1" />mengurus data Chrome yang disimpan<ph name="END_LINK1" /> dalam Google Account anda.
+
+Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan pengalaman Chrome anda, akses <ph name="BEGIN_LINK2" />Perkhidmatan Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1409879593029778104">Muat turun <ph name="FILE_NAME" /> dihalang kerana fail ini sudah wujud.</translation>
@@ -248,6 +251,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2286841657746966508">Alamat pengebilan</translation>
 <translation id="228704530595896923">Senarai pilihan perkongsian.</translation>
 <translation id="2297822946037605517">Kongsi halaman ini</translation>
+<translation id="22981027763501686">Buat penyegerakan untuk mendapatkan penanda halaman dan sejarah anda serta pelbagai lagi pada peranti anda yang lain</translation>
 <translation id="230115972905494466">Tiada peranti yang serasi ditemui</translation>
 <translation id="2318045970523081853">Ketik untuk membuat panggilan</translation>
 <translation id="2321086116217818302">Menyediakan kata laluan…</translation>
@@ -856,6 +860,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5292796745632149097">Hantar ke</translation>
 <translation id="5301876394151419436">Anda log masuk sebagai <ph name="EMAIL" />. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="5304593522240415983">Medan ini tidak boleh kosong</translation>
+<translation id="5306014156308790439">Tambahkan pada koleksi dilumpuhkan</translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5316947901395241499">Penyimpanan kata laluan dimatikan oleh pentadbir anda</translation>
 <translation id="5317780077021120954">Simpan</translation>

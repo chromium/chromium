@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Baggrund</translation>
 <translation id="3027578600144895987">Luk kamera</translation>
 <translation id="3031560714565892478">Enheden er et videokamera.</translation>
+<translation id="3051968340259309715">Dette giver systemtjenester tilladelse til at anvende Lokationsnøjagtighed til at fastslå din lokation. Lokationsnøjagtighed anvender oplysninger om trådløse signaler, f.eks. Wi-Fi-adgangspunkter, mobilnetværksmaster og GPS, sammen med enhedssensordata, f.eks. accelerometer og gyroskop, til at estimere enhedens lokation. Du kan deaktivere lokation i Indstillinger &gt; Sikkerhed og privatliv &gt; Privatlivsindstillinger &gt; Lokationsadgang. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
 <translation id="3060579846059757016">Oversigter</translation>

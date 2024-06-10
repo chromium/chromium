@@ -285,6 +285,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2515921719039583189">I-delete sa device ang data sa Chrome?</translation>
 <translation id="2517113738956581680">Full-size sheet</translation>
 <translation id="2523184218357549926">Ipinapadala sa Google ang mga URL ng mga page na binibisita mo</translation>
+<translation id="2524132927880411790">Pumunta sa Paghahanap Gamit ang Boses ng Google App</translation>
 <translation id="2527209463677295330">Kapag nagsama ka ng mas maraming text ng isang page, posibleng makakita ka ng mas magagandang resulta</translation>
 <translation id="2527497042232966453">Lumipat sa mga tab na Incognito</translation>
 <translation id="2527779675047087889">Itago ang mga content ng clipboard</translation>
@@ -519,6 +520,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="363596933471559332">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kapag naka-off ang feature, hihilingin sa iyong mag-verify sa tuwing magsa-sign in ka sa isang website.</translation>
 <translation id="3636940436873918441">Mga gustong wika</translation>
 <translation id="3637744895182738742">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Pumunta sa Home sa Google App</translation>
 <translation id="368329460027487650">Naka-sign out. Magbubukas ng mga opsyon sa pag-sign in.</translation>
 <translation id="3687645719033307815">Tinitingnan mo ang preview ng page na ito</translation>
 <translation id="3690369331356918524">Babalaan ka kung mae-expose ang mga password sa isang paglabag sa data</translation>
@@ -1475,6 +1477,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
 <translation id="8135406045838672858">Awtomatikong magbubukas ang mga na-download na PDF gamit ang <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager.</translation>
+<translation id="8152331954420209374">Pumunta sa Lens</translation>
 <translation id="8163820386638255770">Para magamit at ma-save ang mga password sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="8171286197772512427">Binuksan ang sheet sa pag-share nang may feedback sa buod</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>
 <translation id="8354977102499939946">Mabilis na maghanap gamit ang iyong boses. Para i-edit ang shortcut na ito, pumunta sa Mga Setting.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> (na) download ang na-restore</translation>
+<translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>
 <translation id="8378850197701296741">May mga bookmark, history, at iba pang setting ka mula sa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">I-verify na ikaw ito</translation>

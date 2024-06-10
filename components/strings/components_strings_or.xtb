@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">ଆପଣଙ୍କ ସେୟାର କରାଯାଇଥିବା ଟାବର ବିଷୟବସ୍ତୁକୁ ସ୍କ୍ରୋଲ କରି ଜୁମ କରନ୍ତୁ</translation>
 <translation id="1089439967362294234">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="1090629319939036170">VR ମେନୁ</translation>
+<translation id="1091779689406092804">ସ୍କ୍ରିନସଟଗୁଡ଼ିକ</translation>
 <translation id="1094777233105318927">ଆପଣଙ୍କ ବ୍ରାଉଜର, OS, ଡିଭାଇସ, ଇନଷ୍ଟଲ କରାଯାଇଥିବା ସଫ୍ଟୱେର ଏବଂ ଫାଇଲଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା</translation>
 <translation id="1096545575934602868">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିଗୁଡ଼ିକୁ ଖାରଜ କରାଯିବ।</translation>
 <translation id="1097803577928227769">ରିଜିଓନାଲ ପାର୍କ ଏବଂ ବଗିଚାଗୁଡ଼ିକ</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">ହୋମ ଥିଏଟର ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="1842969606798536927">ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1846432862466000825">ପ୍ଲାଷ୍ଟିକ (ଆର୍କାଇଭାଲ)</translation>
+<translation id="1848640291751752317">ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
 <translation id="1848982255014129637">ଫଟୋ (ହାଇ-ଗ୍ଲସ)</translation>
 <translation id="1853392626017747777">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">ମାଂସ ଏବଂ ସାମୁଦ୍ରିକ ଖାଦ୍ୟ</translation>
 <translation id="2367567093518048410">ସ୍ତର</translation>
 <translation id="23703388716193220">ଗଲ୍ଫ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
+<translation id="2370368710215137370">ଫାଇଲଗୁଡ଼ିକ ଅପଲୋଡ କରାଯାଇଛି</translation>
 <translation id="2374629208601905275">ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଏକ ଆଇନ ଆଧାରରେ, Chrome ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବାଛିବାକୁ କହିଥାଏ। ଏହି ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଲୋକପ୍ରିୟ ଅଟେ ଏବଂ ସେଗୁଡ଼ିକୁ ରେଣ୍ଡମ କ୍ରମରେ ଦେଖାଯାଇଛି।</translation>
 <translation id="2377241607395428273">ଗ୍ରାଫିକ୍ସ ଏବଂ ଆନିମେସନ ସଫ୍ଟୱେର</translation>
 <translation id="2378084239755710604">ବନ୍ଦ ହୋଇଯାଇଥିବା କାର୍ଡ ସେଭ କରନ୍ତୁ।</translation>
@@ -1419,6 +1422,7 @@
 <translation id="3682094733650754138">'ଠିକଣା ପୂରଣ କରନ୍ତୁ' ବିକଳ୍ପକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="3687920599421452763">ଭ୍ୟାନ ଏବଂ ମିନିଭ୍ୟାନଗୁଡ଼ିକ</translation>
 <translation id="3693327506115126094">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣ କିପରି ଯାଞ୍ଚ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
+<translation id="3698353241727597930">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="FILES" /> ଆପଣଙ୍କର ଏଣ୍ଟରପ୍ରାଇଜ-ଦ୍ୱାରା ପରିଚାଳିତ <ph name="CLOUD_STORAGE" /> ଷ୍ଟୋରେଜରେ ସେଭ କରିବା ପାଇଁ କନଫିଗର କରିଛି। ଆପଣ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଡିଲିଟ କଲେ, ସେଗୁଡ଼ିକୁ ମନିଟର, ଅଡିଟ କରାଯାଇପାରେ କିମ୍ବା ରଖାଯାଇପାରେ।</translation>
 <translation id="3698629142018988477">'ସାଇଟ ତିଆରି କରନ୍ତୁ' ବଟନ, Google Sitesରେ ଶୀଘ୍ର ଏକ ନୂଆ ସାଇଟ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3701325639446035885">ଇଭେଣ୍ଟ ଟିକେଟ ସେଲ</translation>
 <translation id="3701427423622901115">ରିସେଟ୍ ସ୍ୱୀକାର କରାଯାଇଛି।</translation>
@@ -1494,6 +1498,7 @@
 <translation id="3826050100957962900">ତୃତୀୟ-ପକ୍ଷ ସାଇନ-ଇନ</translation>
 <translation id="3827112369919217609">ସମ୍ପୂର୍ଣ୍ଣ</translation>
 <translation id="3828924085048779000">ଶୂନ୍ୟ ପାସ୍‌ଫ୍ରେଜ୍‌ର ଅନୁମତି ନାହିଁ।</translation>
+<translation id="3830139096297532361">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। ଟେକ୍ସଟ ଏକ୍ସଟ୍ରାକସନ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3830470485672984938">ଏକ ଭିନ୍ନ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3831065134033923230">ଆପଣଙ୍କ ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3831915413245941253">ଅତିରିକ୍ତ ଫଙ୍କ୍‌ସନ୍ସ ପାଇଁ, <ph name="ENROLLMENT_DOMAIN" /> ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ଇନ୍‌ଷ୍ଟଲ୍ କରିଛି। ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକର ଆକ୍ସେସ୍ ଅଛି।</translation>
@@ -1668,6 +1673,7 @@
 <translation id="4202554117186904723">ପଞ୍ଚମ ରୋଲ୍</translation>
 <translation id="4203769790323223880">କେମେରାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ଫାୟାର୍‌ୱାଲ୍‌ ଏବଂ ଆଣ୍ଟିଭାଇରସ୍‌ କନ୍‌ଫିଗ୍‌ରେସନ୍‌ ଯାଞ୍ଚ ହେଉଛି<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">ବହୁତ୍</translation>
 <translation id="4210602799576081649">ଯାଞ୍ଚକରଣ କୋଡର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି, ଏକ ନୂଆ କୋଡ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="421066178035138955">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟାକୁ ବ୍ୟବହାର କରିବା</translation>
@@ -2726,6 +2732,7 @@
 <translation id="6270066318535733958">ନୌକା ଚାଳନା</translation>
 <translation id="6272088941196661550">ଆପଣଙ୍କ Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="6272383483618007430">Google ଅପଡେଟ୍</translation>
+<translation id="6278015583149890680">Google Drive ଏବଂ OneDrive</translation>
 <translation id="6280223929691119688">ଏହି ଠିକଣାକୁ ପହଞ୍ଚାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6284292079994426700">26 x 38 ଇଞ୍ଚ</translation>
 <translation id="6284449872909111707">ଟେକ୍ସଟ ଏବଂ ଇନଷ୍ଟାଣ୍ଟ ମେସେଜିଂ</translation>
@@ -3164,6 +3171,7 @@
 <translation id="7119063404975271297">ଟିଭି ଡ୍ରାମାଗୁଡ଼ିକ</translation>
 <translation id="7119371694555167493">କପି କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="7119414471315195487">ଅନ୍ୟ ଟାବ୍ କିମ୍ୱା କର୍ଯ୍ୟକ୍ରମଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7120588595737538743">ଡାଉନଲୋଡ ଏବଂ ସ୍କ୍ରିନସଟ</translation>
 <translation id="7124354851782353862">ଆପଣଙ୍କ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="7129409597930077180">ଏହି ଠିକଣାକୁ ପଠାଯାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3363,6 +3371,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chromeର ଟିପକୁ ଖାରଜ କରିବା ପାଇଁ ପ୍ରଥମେ ଟାବ, ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ।</translation>
 <translation id="7485085230273446323">ବିଜିନେସ ଓ ଇଣ୍ଡଷ୍ଟ୍ରିଆଲ</translation>
 <translation id="7485870689360869515">କୌଣସି ଡାଟା ମିଳିଲା ନାହିଁ।</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">ସାମ୍ପୁ ଓ କଣ୍ଡିସନର</translation>
 <translation id="7495528107193238112">ଏହି ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ସମସ୍ୟାର ସମାଧାନ କରିବାକୁ ସାଇଟର ମାଲିକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="749865518782565832">ପ୍ଲମ୍ବିଂ</translation>

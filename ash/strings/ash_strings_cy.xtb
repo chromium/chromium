@@ -223,7 +223,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1770726142253415363">Symudwyd i res <ph name="ROW_NUMBER" />, colofn <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sgrolio i'r dde</translation>
 <translation id="1774796056689732716">Calendr, <ph name="CURRENT_MONTH_YEAR" />, mae <ph name="DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
-<translation id="1775598828170459419">Yn dangos <ph name="NUM_SHOWN_ITEMS" /> allan o <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Gosod gweld lluniau, cyfryngau a hysbysiadau diweddar eich ffôn</translation>
 <translation id="1787955149152357925">Diffodd</translation>
 <translation id="1796561540704213354">Gwefannau gan gynnwys tudalennau rydych wedi ymweld â nhw a thudalennau agored</translation>
@@ -310,6 +309,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2208323208084708176">Modd bwrdd gwaith unedig</translation>
 <translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="2222841058024245321">Desg 7</translation>
+<translation id="2223384056430485343">Mewn sgrîn hollt</translation>
 <translation id="2224075387478458881">Ni chaniateir recordio'r sgrîn pan fydd cynnwys gwarchodedig yn weladwy</translation>
 <translation id="2227179592712503583">Tynnu'r awgrym</translation>
 <translation id="2248634276911611268">Agor y ddolen yn y tab newydd a newidiwch i'r tab newydd hwn</translation>

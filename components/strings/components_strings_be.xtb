@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Прагортка і маштабаванне змесціва абагуленай укладкі</translation>
 <translation id="1089439967362294234">Змяніць пароль</translation>
 <translation id="1090629319939036170">Меню VR</translation>
+<translation id="1091779689406092804">здымкі экрана</translation>
 <translation id="1094777233105318927">Інфармацыя пра браўзер, АС, прыладу, усталяванае праграмнае забеспячэнне і файлы</translation>
 <translation id="1096545575934602868">У гэтым полі павінна быць максімум <ph name="MAX_ITEMS_LIMIT" /> запісаў. Усе лішнія запісы будуць адхілены.</translation>
 <translation id="1097803577928227769">Рэгіянальныя паркі і сады</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">Дамашнія кінатэатры</translation>
 <translation id="1842969606798536927">Аплаціць</translation>
 <translation id="1846432862466000825">Пластык архіўнай якасці</translation>
+<translation id="1848640291751752317">спампоўкі</translation>
 <translation id="1848982255014129637">Высакаглянцавая фотапапера</translation>
 <translation id="1853392626017747777">Дыялогавае акно рэгістрацыі віртуальнай карткі закрыта</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">Мяса і морапрадукты</translation>
 <translation id="2367567093518048410">Узровень</translation>
 <translation id="23703388716193220">Рыштунак для гольфа</translation>
+<translation id="2370368710215137370">Запампоўванне файлаў</translation>
 <translation id="2374629208601905275">Згодна з законам, які дзейнічае ў вашым рэгіёне, Chrome прапануе вам выбраць стандартную пошукавую сістэму. Гэтыя пошукавыя сістэмы папулярныя ў вашым рэгіёне. Яны размешчаны ў выпадковым парадку.</translation>
 <translation id="2377241607395428273">Праграмнае забеспячэнне для графікі і анімацыі</translation>
 <translation id="2378084239755710604">Захаванне карткі: закрыта.</translation>
@@ -1422,6 +1425,7 @@
 <translation id="3682094733650754138">Выбраны варыянт "Запоўніць адрас"</translation>
 <translation id="3687920599421452763">Мікрааўтобусы і мінівэны</translation>
 <translation id="3693327506115126094">Выберыце спосаб спраўджання асобы</translation>
+<translation id="3698353241727597930">У адпаведнасці з наладамі адміністратара <ph name="FILES" /> будуць захоўвацца на <ph name="CLOUD_STORAGE" /> пад кіраваннем вашай арганізацыі. Пры выдаленні гэтыя файлы могуць адсочвацца, правярацца і захоўвацца.</translation>
 <translation id="3698629142018988477">Кнопка "Стварыць сайт". Каб хутка стварыць новы сайт з дапамогай Google Сайтаў, націсніце яе.</translation>
 <translation id="3701325639446035885">Продаж білетаў на мерапрыемствы</translation>
 <translation id="3701427423622901115">Скідванне пацверджана.</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3826050100957962900">Уваход праз староннія сэрвісы</translation>
 <translation id="3827112369919217609">Абсалютны</translation>
 <translation id="3828924085048779000">Неабходна задаць фразу-пароль</translation>
+<translation id="3830139096297532361">Гэты файл PDF недаступны. Спампаваць файлы з вынятым тэкстам не ўдалося. Паўтарыце спробу пазней.</translation>
 <translation id="3830470485672984938">Выкарыстаць іншы ключ доступу</translation>
 <translation id="3831065134033923230">Праверце захаваныя паролі</translation>
 <translation id="3831915413245941253">Даменам <ph name="ENROLLMENT_DOMAIN" /> былі ўсталяваны пашырэнні для дадатковых функцый. Пашырэнні маюць доступ да некаторых вашых даных.</translation>
@@ -1671,6 +1676,7 @@
 <translation id="4202554117186904723">Пяты рулон</translation>
 <translation id="4203769790323223880">Выкарыстанне камеры забаронена</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Праверыць канфігурацыю брандмаўэра і антывіруса.<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Дыск</translation>
 <translation id="4209092469652827314">Вялікі</translation>
 <translation id="4210602799576081649">Тэрмін дзеяння кода спраўджання скончыўся. Запытайце новы код.</translation>
 <translation id="421066178035138955">Выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">Лодачны спорт</translation>
 <translation id="6272088941196661550">Пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome</translation>
 <translation id="6272383483618007430">Абнаўленне Google</translation>
+<translation id="6278015583149890680">Google Дыск і OneDrive</translation>
 <translation id="6280223929691119688">Немагчыма адправіць на гэты адрас. Выберыце іншы адрас.</translation>
 <translation id="6284292079994426700">26 x 38 цаляў</translation>
 <translation id="6284449872909111707">Абмен тэкставымі і імгненнымі паведамленнямі</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">Тэлевізійныя драмы</translation>
 <translation id="7119371694555167493">Час чакання капіравання перавышаны</translation>
 <translation id="7119414471315195487">Закрыйце іншыя ўкладкі або праграмы</translation>
+<translation id="7120588595737538743">спампоўкі і здымкі экрана</translation>
 <translation id="7124354851782353862">Увядзіце код CVC</translation>
 <translation id="7129409597930077180">Адпраўка на гэты адрас немагчымая. Выберыце іншы адрас.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3369,6 +3377,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />. Каб закрыць параду Chrome, націсніце Tab, затым Увод.</translation>
 <translation id="7485085230273446323">Бізнес і прамысловасць</translation>
 <translation id="7485870689360869515">Даныя не знойдзены.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Шампуні і кандыцыянеры</translation>
 <translation id="7495528107193238112">Гэта змесціва заблакіравана. Каб вырашыць праблему, звярніцеся да ўладальніка сайта.</translation>
 <translation id="749865518782565832">Водаправодныя работы</translation>

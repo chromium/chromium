@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
 <translation id="1771761307086386028">向右滚动</translation>
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
-<translation id="1775598828170459419">当前显示 <ph name="NUM_SHOWN_ITEMS" /> 项，共 <ph name="NUM_TOTAL_ITEMS" /> 项</translation>
 <translation id="178347895271755507">设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222841058024245321">桌面 7</translation>
+<translation id="2223384056430485343">在分屏模式下</translation>
 <translation id="2224075387478458881">禁止在屏幕显示受保护内容时录制屏幕</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2248634276911611268">在新标签页中打开链接，同时切换到该标签页</translation>

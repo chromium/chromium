@@ -223,7 +223,6 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> ಸಾಲು, <ph name="COLUMN_NUMBER" /> ಕಾಲಮ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="1771761307086386028">ಬಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="1774796056689732716">ಕ್ಯಾಲೆಂಡರ್, <ph name="CURRENT_MONTH_YEAR" />, ಪ್ರಸ್ತುತವಾಗಿ <ph name="DATE" /> ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> ರಲ್ಲಿ <ph name="NUM_SHOWN_ITEMS" /> ಐಟಂಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="178347895271755507">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ ಮತ್ತು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="1787955149152357925">ಆಫ್</translation>
 <translation id="1796561540704213354">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">ಏಕೀಕೃತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಮೋಡ್</translation>
 <translation id="2220572644011485463">ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="2222841058024245321">ಡೆಸ್ಕ್ 7</translation>
+<translation id="2223384056430485343">ಸ್ಪ್ಲಿಟ್ ಸ್ಕ್ರೀನ್ ಮೋಡ್‌ನಲ್ಲಿ</translation>
 <translation id="2224075387478458881">ಸುರಕ್ಷಿತ ವಿಷಯವು ಗೋಚರಿಸಿದಾಗ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2227179592712503583">ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2248634276911611268">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಈ ಹೊಸ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಿಸಿ</translation>

@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Захоўваць паролі</translation>
 <translation id="1753905327828125965">Часцей за ўсё наведваліся</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} ненадзейны пароль}one{{count} ненадзейны пароль}few{{count} ненадзейныя паролі}many{{count} ненадзейных пароляў}other{{count} ненадзейнага пароля}}</translation>
+<translation id="1764070164487214210">Маршруты</translation>
 <translation id="1766411844240160513">Аўтаматычна запоўніць форму</translation>
 <translation id="1767766085187034454">Google Перакладчык</translation>
 <translation id="1769106850515800431">Персаналізаванае змесціва</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">Укладкі інкогніта</translation>
 <translation id="3775743491439407556">Сінхранізацыя не працуе</translation>
 <translation id="3779810277399252432">Няма падключэння да інтэрнэту.</translation>
+<translation id="3785672280731998727">Бачнае імя</translation>
 <translation id="3789294999358192700">Выканайце наступныя дзеянні:</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="380329542618494757">Імя</translation>
 <translation id="3803696231112616155">Прапаноўваць перакласці гэты сайт</translation>
 <translation id="3808311849069021992">Паказаць падрабязныя звесткі пра пошукавую сістэму</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
+<translation id="3812308602011798782">Водгукі</translation>
 <translation id="3818045793209708987">Гэта пасылка больш не адсочваецца</translation>
 <translation id="3818293389945649617">Знайсці наступнае супадзенне</translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">Выкарыстоўвайце захаваныя паролі ў любой праграме адным дотыкам</translation>
 <translation id="4049507953662678203">Праверце, ці ёсць у вас падключэнне да сеткі, і паўтарыце спробу.</translation>
 <translation id="4054572406751135230">Сачыце за навінамі, спартыўнымі спаборніцтвамі і іншымі падзеямі.</translation>
+<translation id="4068959193278821990">Уключыць палепшаную абарону...</translation>
 <translation id="4092655288299341041">Паказаць даведку</translation>
 <translation id="4105841739161771091">{count,plural, =1{Выдаліць адрас}one{Выдаліць адрас}few{Выдаліць адрасы}many{Выдаліць адрасы}other{Выдаліць адрасы}}</translation>
 <translation id="4108998448622696017">Выяўляе небяспечныя падзеі і папярэджвае пра іх.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">Для экспарту даных па сетцы наладзьце электронную пошту праз праграму "Налады".</translation>
 <translation id="4124987746317609294">Прамежак часу</translation>
 <translation id="4133265950310064865">Палепшаная абарона</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Фота</translation>
 <translation id="4148023517926189160">Гэты вэб-сайт хоча спампаваць файл і дадаць яго ў каляндар.</translation>
 <translation id="4152011295694446843">Вашы закладкі знаходзяцца тут</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8358401059263985056">Уключыць апавяшчэнні</translation>
 <translation id="8364841868226993049">Ідзе захаванне відарыса ў Google Фота пад уліковым запісам <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">Выдаліць ключ доступу</translation>
 <translation id="8370406443343902172">Перайсці ў налады...</translation>
 <translation id="8374977641764177587">Уключыць апавяшчэнні?</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>

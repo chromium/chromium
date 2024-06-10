@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
 <translation id="1753905327828125965">بیشترین موارد بازدید شده</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} گذرواژه ضعیف}one{{count} گذرواژه ضعیف}other{{count} گذرواژه ضعیف}}</translation>
+<translation id="1764070164487214210">مسیرها</translation>
 <translation id="1766411844240160513">تکمیل خودکار فرم</translation>
 <translation id="1767766085187034454">‏ترجمه Google</translation>
 <translation id="1769106850515800431">محتوای شخصی‌سازی‌شده</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">برگه‌های ناشناس</translation>
 <translation id="3775743491439407556">همگام‌سازی کار نمی‌کند</translation>
 <translation id="3779810277399252432">اتصال اینترنتی ندارید</translation>
+<translation id="3785672280731998727">نام نمایشی</translation>
 <translation id="3789294999358192700">مراحل زیر را دنبال کنید:</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803696231112616155">پیشنهاد ترجمه این سایت</translation>
 <translation id="3808311849069021992">نمایش جزئیات موتور جستجو</translation>
 <translation id="3810973564298564668">مدیریت</translation>
+<translation id="3812308602011798782">مرورها</translation>
 <translation id="3818045793209708987">پیگیری این بسته متوقف شد</translation>
 <translation id="3818293389945649617">یافتن بعدی</translation>
 <translation id="3819183753496523827">آفلاین هستید. اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">گذرواژه‌های ذخیره‌شده‌تان را با یک ضربه در هر برنامه‌ای دریافت کنید</translation>
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
 <translation id="4054572406751135230">از اخبار، رویدادهای ورزشی، و غیره مطلع بمانید.</translation>
+<translation id="4068959193278821990">روشن کردن «محافظت بهبودیافته»…</translation>
 <translation id="4092655288299341041">نمایش راهنما</translation>
 <translation id="4105841739161771091">{count,plural, =1{حذف نشانی}one{حذف نشانی‌ها}other{حذف نشانی‌ها}}</translation>
 <translation id="4108998448622696017">رویدادهای خطرناکی را که اتفاق می‌افتد شناسایی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">برای ارسال داده‌های صادراتی شبکه، لطفاً حساب ایمیل‌تان را در برنامه تنظیمات پیکربندی کنید.</translation>
 <translation id="4124987746317609294">محدوده زمانی</translation>
 <translation id="4133265950310064865">محافظت بهبودیافته</translation>
+<translation id="4145507240503767005">‫<ph name="SEARCH_ENGINE_NAME" />، <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">این وب‌سایت می‌خواهد فایلی را بارگیری کند و به تقویمتان اضافه کند.</translation>
 <translation id="4152011295694446843">نشانک‌ها را اینجا خواهید دید</translation>
@@ -1472,6 +1477,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="834783239627985533">پربازدیدترین سایت‌ها</translation>
 <translation id="8358401059263985056">روشن کردن اعلان‌ها</translation>
 <translation id="8364841868226993049">‏درحال ذخیره کردن تصویر در Google Photos برای <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">حذف گذرکلید</translation>
 <translation id="8370406443343902172">رفتن به تنظیمات…</translation>
 <translation id="8374977641764177587">اعلان‌ها روشن شود؟</translation>
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>

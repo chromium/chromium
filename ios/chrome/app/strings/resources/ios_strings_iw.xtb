@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">שמירת סיסמאות</translation>
 <translation id="1753905327828125965">עם המבקרים הרבים ביותר</translation>
 <translation id="1757699834933698436">{count,plural, =1{יש סיסמה חלשה אחת ({count})}one{יש {count} סיסמאות חלשות}two{יש {count} סיסמאות חלשות}other{יש {count} סיסמאות חלשות}}</translation>
+<translation id="1764070164487214210">מסלול הגעה</translation>
 <translation id="1766411844240160513">מילוי אוטומטי של טופס</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">תוכן בהתאמה אישית</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
 <translation id="3775743491439407556">הסנכרון לא פועל</translation>
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
+<translation id="3785672280731998727">השם המוצג</translation>
 <translation id="3789294999358192700">פועלים לפי השלבים הבאים:</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803696231112616155">הצגה של הצעה לתרגם את הדף הזה</translation>
 <translation id="3808311849069021992">הצגת הפרטים של מנוע החיפוש</translation>
 <translation id="3810973564298564668">ניהול</translation>
+<translation id="3812308602011798782">ביקורות</translation>
 <translation id="3818045793209708987">הופסק המעקב אחר החבילה הזו</translation>
 <translation id="3818293389945649617">חיפוש המחרוזת הבאה</translation>
 <translation id="3819183753496523827">אין לך חיבור לאינטרנט. צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">גישה לסיסמאות השמורות שלך בכל אפליקציה בהקשה אחת</translation>
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
 <translation id="4054572406751135230">מתעדכנים בחדשות, בספורט ועוד.</translation>
+<translation id="4068959193278821990">הפעלת ההגנה המשופרת…</translation>
 <translation id="4092655288299341041">הצגת העזרה</translation>
 <translation id="4105841739161771091">{count,plural, =1{מחיקת הכתובת}one{מחיקת הכתובות}two{מחיקת הכתובות}other{מחיקת הכתובות}}</translation>
 <translation id="4108998448622696017">המערכת מזהה אירועים מסוכנים כשהם מתרחשים ומזהירה אותך על כך.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
 <translation id="4124987746317609294">טווח זמן</translation>
 <translation id="4133265950310064865">הגנה משופרת</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />,‏ <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">האתר הזה מבקש להוריד קובץ ולהוסיף אותו ליומן שלך.</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
 <translation id="8358401059263985056">הפעלת ההתראות</translation>
 <translation id="8364841868226993049">‏התמונה נשמרת ב-Google Photos של <ph name="USER_EMAIL" />...</translation>
+<translation id="8369246252708539904">מחיקת מפתח הגישה</translation>
 <translation id="8370406443343902172">מעבר להגדרות…</translation>
 <translation id="8374977641764177587">להפעיל את ההתראות?</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Desprazarse polo contido da pestana compartida e facerlle zoom</translation>
 <translation id="1089439967362294234">Cambiar de contrasinal</translation>
 <translation id="1090629319939036170">Menú de RV</translation>
+<translation id="1091779689406092804">capturas de pantalla</translation>
 <translation id="1094777233105318927">Información sobre o teu navegador, sistema operativo, dispositivo, software instalado e ficheiros</translation>
 <translation id="1096545575934602868">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Descartaranse todas as restantes.</translation>
 <translation id="1097803577928227769">Xardíns e parques rexionais</translation>
@@ -472,6 +473,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1840009953725035797">Sistemas de cine doméstico</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (arquivo)</translation>
+<translation id="1848640291751752317">descargas</translation>
 <translation id="1848982255014129637">Foto (alto brillo)</translation>
 <translation id="1853392626017747777">Rexistro de tarxeta virtual pechado</translation>
 <translation id="1854180393107901205">Deter emisión</translation>
@@ -754,6 +756,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2366689192918515749">Carne e marisco</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="23703388716193220">Equipamento de Golf</translation>
+<translation id="2370368710215137370">Carga de ficheiros</translation>
 <translation id="2374629208601905275">De acordo cunha lei da túa rexión, Chrome pídeche que escollas un buscador predeterminado. Estes buscadores son populares na túa zona e móstranse en orde aleatoria.</translation>
 <translation id="2377241607395428273">Software de animación e gráficos</translation>
 <translation id="2378084239755710604">Tarxeta de gardado pechada.</translation>
@@ -1422,6 +1425,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3682094733650754138">Opción de cubrir o enderezo seleccionada</translation>
 <translation id="3687920599421452763">Furgonetas e monovolumes</translation>
 <translation id="3693327506115126094">Elixe como queres que se realice a verificación</translation>
+<translation id="3698353241727597930">A persoa administradora definiu a configuración para gardar <ph name="FILES" /> no teu almacenamento de <ph name="CLOUD_STORAGE" /> xestionado pola empresa. Estes ficheiros pódense supervisar, auditar e conservar cando os elimines.</translation>
 <translation id="3698629142018988477">Botón para crear un sitio. Actívao para crear rapidamente un sitio en Google Sites</translation>
 <translation id="3701325639446035885">Vendas de entradas para eventos</translation>
 <translation id="3701427423622901115">Realizouse o restablecemento.</translation>
@@ -1497,6 +1501,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3826050100957962900">Inicio de sesión de terceiros</translation>
 <translation id="3827112369919217609">Absoluto</translation>
 <translation id="3828924085048779000">A frase de acceso non pode estar baleira.</translation>
+<translation id="3830139096297532361">Non se pode acceder a este PDF. Non foi posible descargar os ficheiros de extracción de texto. Téntao de novo máis tarde.</translation>
 <translation id="3830470485672984938">Usar outra clave de acceso</translation>
 <translation id="3831065134033923230">Comproba os contrasinais gardados</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensións para poder utilizar funcións adicionais. As extensións teñen acceso a algúns dos teus datos.</translation>
@@ -1671,6 +1676,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203769790323223880">O acceso á cámara non está permitido</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar a configuración do firewall e do antivirus<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">O código de verificación está caducado. Solicita un novo</translation>
 <translation id="421066178035138955">Utilizar datos e dispositivos de realidade virtual</translation>
@@ -2730,6 +2736,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6270066318535733958">Actividades en barco</translation>
 <translation id="6272088941196661550">Retomar o percorrido para ver a actividade relevante do teu historial de Chrome</translation>
 <translation id="6272383483618007430">Actualización de Google</translation>
+<translation id="6278015583149890680">Google Drive e OneDrive</translation>
 <translation id="6280223929691119688">Non se pode realizar a entrega neste enderezo. Selecciona un diferente.</translation>
 <translation id="6284292079994426700">26 × 38 in</translation>
 <translation id="6284449872909111707">Mensaxaría instantánea e de texto</translation>
@@ -3168,6 +3175,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7119063404975271297">Series dramáticas</translation>
 <translation id="7119371694555167493">Esgotouse o tempo de espera para a copia</translation>
 <translation id="7119414471315195487">Pecha outras pestanas ou programas</translation>
+<translation id="7120588595737538743">descargas e capturas de pantalla</translation>
 <translation id="7124354851782353862">Introducir o teu CVC</translation>
 <translation id="7129409597930077180">Non se pode realizar o envío a este enderezo. Selecciona un diferente.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3367,6 +3375,7 @@ Detalles adicionais:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, preme Tabulador e, a continuación, Introducir para pechar o consello de Chrome.</translation>
 <translation id="7485085230273446323">Empresas e industrias</translation>
 <translation id="7485870689360869515">Non se atoparon datos.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Champús e acondicionadores</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="749865518782565832">Fontanaría</translation>

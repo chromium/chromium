@@ -223,7 +223,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1770726142253415363">Perkelta į <ph name="ROW_NUMBER" /> eilutę, <ph name="COLUMN_NUMBER" /> stulpelį.</translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
 <translation id="1774796056689732716">Kalendorius, <ph name="CURRENT_MONTH_YEAR" />, šiuo metu pasirinkta <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">Rodoma <ph name="NUM_SHOWN_ITEMS" /> iš <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Nustatyti naujausių telefono nuotraukų, medijos ir pranešimų peržiūrą</translation>
 <translation id="1787955149152357925">Išjungta</translation>
 <translation id="1796561540704213354">Svetainės, įskaitant puslapius, kuriuose lankėtės, ir atidarytus puslapius</translation>
@@ -310,6 +309,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2208323208084708176">Vieno darbalaukio režimas</translation>
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="2222841058024245321">7 darbalaukis</translation>
+<translation id="2223384056430485343">Išskaidyto ekrano režimu</translation>
 <translation id="2224075387478458881">Negalima įrašyti ekrano vaizdo, jei matomas apsaugotas turinys</translation>
 <translation id="2227179592712503583">Pašalinti pasiūlymą</translation>
 <translation id="2248634276911611268">Atidaryti nuorodą naujame skirtuke ir perjungti į šį naują skirtuką</translation>
@@ -1133,6 +1133,7 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5208059991603368177">Įjungti</translation>
 <translation id="5216991270656129561">Išjungta iki <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Atsijungti</translation>
+<translation id="5228195526683428788">Išskaidyto ekrano režimo daliklis</translation>
 <translation id="5229343007215035173">Įjungti ir (arba) išjungti privatumo ekraną</translation>
 <translation id="5230516054153933099">Langas</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
@@ -1519,6 +1520,7 @@ Naujas įdiegimas</translation>
 <translation id="6613765291890844037">Naudojama <ph name="STORAGE_IN_USE_SIZE" /> saugyklos vietos | Iš viso: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Privatumo ekranas įjungtas</translation>
 <translation id="6622679827379792051">Nustatyti telefono programų peržiūrą</translation>
+<translation id="662279009180869175">Naudokite rodykles kairėn ir dešinėn, kad pakeistumėte dydį veikiant išskaidyto ekrano režimui.</translation>
 <translation id="6624493541160101248">Dabartinis darbalaukis: „<ph name="DESK_NAME" />“. <ph name="DESK_INDEX" /> darbalaukis iš <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">„<ph name="APP_1_TITLE" />“, „<ph name="APP_2_TITLE" />“ ir kiti pranešimai paslėpti, nes įjungta peržiūros apsauga</translation>
 <translation id="6627638273713273709">Paieškos klavišas + „Shift“ + K</translation>
@@ -1537,6 +1539,7 @@ Naujas įdiegimas</translation>
 <translation id="6670153871843998651">3 pultas</translation>
 <translation id="6671495933530132209">Kopijuoti vaizdą</translation>
 <translation id="6671661918848783005">Nepavyko atrakinti „Chromebook“</translation>
+<translation id="6676552993057022464">Naudokite rodykles aukštyn ir žemyn, kad pakeistumėte dydį veikiant išskaidyto ekrano režimui.</translation>
 <translation id="6682029141988159141">Įklijuoti turinį iš iškarpinės</translation>
 <translation id="6683022854667115063">Ausinės</translation>
 <translation id="6686023075541098243">Nustatyti telefono pranešimų peržiūrą</translation>

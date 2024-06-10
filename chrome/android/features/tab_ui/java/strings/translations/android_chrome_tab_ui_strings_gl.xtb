@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana seleccionada aos marcadores}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas aos marcadores}}</translation>
 <translation id="2118649612461486615">Información da tenda</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. A pestana do modo de incógnito non estará dispoñible.}other{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestana}other{Desagrupar pestanas}}</translation>
 <translation id="2271452184061378400">Os teus grupos de pestanas gárdanse aquí</translation>

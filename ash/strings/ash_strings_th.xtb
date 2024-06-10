@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">ย้ายไปที่แถว <ph name="ROW_NUMBER" /> คอลัมน์ <ph name="COLUMN_NUMBER" /></translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
 <translation id="1774796056689732716">ปฏิทิน, <ph name="CURRENT_MONTH_YEAR" />, เลือกวันที่ <ph name="DATE" /> อยู่</translation>
-<translation id="1775598828170459419">กำลังแสดง <ph name="NUM_SHOWN_ITEMS" /> จาก <ph name="NUM_TOTAL_ITEMS" /> รายการ</translation>
 <translation id="178347895271755507">ตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1796561540704213354">เว็บไซต์จะรวมหน้าเว็บที่คุณเคยเข้าชมและหน้าเว็บที่เคยเปิด</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222841058024245321">เดสก์ 7</translation>
+<translation id="2223384056430485343">ในโหมดแยกหน้าจอ</translation>
 <translation id="2224075387478458881">ไม่อนุญาตให้บันทึกหน้าจอเมื่อมีเนื้อหาที่ได้รับการคุ้มครองแสดงอยู่</translation>
 <translation id="2227179592712503583">นำคำแนะนำออก</translation>
 <translation id="2248634276911611268">เปิดลิงก์ในแท็บใหม่และสลับไปที่แท็บใหม่นี้</translation>

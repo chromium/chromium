@@ -285,6 +285,7 @@
 <translation id="2515921719039583189">‏למחוק את הנתונים מ-Chrome מהמכשיר הזה?</translation>
 <translation id="2517113738956581680">גיליון בגודל מלא</translation>
 <translation id="2523184218357549926">‏שליחת כתובות אתרים של דפים שבהם ביקרת ל-Google</translation>
+<translation id="2524132927880411790">‏מעבר לחיפוש הקולי של אפליקציית Google</translation>
 <translation id="2527209463677295330">רוצה לראות תוצאות טובות יותר? כדאי לכלול כמה שיותר טקסט מהדף</translation>
 <translation id="2527497042232966453">בוצעה החלפה לכרטיסיות מצב אנונימי</translation>
 <translation id="2527779675047087889">הסתרת התוכן שבלוח</translation>
@@ -519,6 +520,7 @@
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
 <translation id="3636940436873918441">השפות המועדפות</translation>
 <translation id="3637744895182738742">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">‏מעבר לדף הבית של אפליקציית Google</translation>
 <translation id="368329460027487650">החשבון לא מחובר. ייפתחו אפשרויות הכניסה.</translation>
 <translation id="3687645719033307815">מוצגת לך תצוגה מקדימה של הדף הזה</translation>
 <translation id="3690369331356918524">במצב הזה המערכת מזהירה אותך אם סיסמאות נחשפות כתוצאה מפרצה באבטחת המידע</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8135406045838672858">‏קובצי PDF ייפתחו באופן אוטומטי באמצעות <ph name="APP_NAME" /> אחרי ההורדה</translation>
 <translation id="8137562778192957619">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google.</translation>
+<translation id="8152331954420209374">‏מעבר אל Lens</translation>
 <translation id="8163820386638255770">‏כדי להשתמש בסיסמאות ולשמור אותן בחשבון Google, עליך לאמת את הזהות שלך</translation>
 <translation id="8171286197772512427">גיליון השיתוף עם סיכום המשוב נפתח</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="835847953965672673">שוחזרו <ph name="NUMBER_OF_DOWNLOADS" /> הורדות</translation>
+<translation id="8367705492654390392">אפשר לשאול הכל</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
 <translation id="8378850197701296741">יש לך סימניות, היסטוריה והגדרות אחרות מהחשבון <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>

@@ -223,7 +223,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1770726142253415363">Ihanjiswe emgqeni <ph name="ROW_NUMBER" />, ikholomu<ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Skrolela ngakwesokudla</translation>
 <translation id="1774796056689732716">Ikhalenda, <ph name="CURRENT_MONTH_YEAR" />, okwamanje umhla ka-<ph name="DATE" /> ukhethiwe.</translation>
-<translation id="1775598828170459419">Ibonisa okungu-<ph name="NUM_SHOWN_ITEMS" /> kokungu-<ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Setha ukubuka izithombe, imidiya, kanye nezaziso zefoni yakho zakamuva</translation>
 <translation id="1787955149152357925">Valiwe</translation>
 <translation id="1796561540704213354">Amawebhusayithi ahlanganisa amakhasi owavakashele kanye namakhasi avulekile</translation>
@@ -310,6 +309,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2208323208084708176">Imodi ehlanganisiwe yedeskithophu</translation>
 <translation id="2220572644011485463">Iphinikhodi noma iphasiwedi</translation>
 <translation id="2222841058024245321">Itafula 7</translation>
+<translation id="2223384056430485343">Ekuhlukaniseni isikrini</translation>
 <translation id="2224075387478458881">Ukurekhoda isikrini akuvumelekile lapho okuqukethwe okuvikelekile kungabonakali</translation>
 <translation id="2227179592712503583">Susa isiphakamiso</translation>
 <translation id="2248634276911611268">Vula ilinki kuthebhu entsha bese ushintshela kule thebhu entsha</translation>
@@ -1133,6 +1133,7 @@ Ungaphinde futhi usebenzise isinqamuleli sekhibhodi. Okokuqala, gqamisa umbhalo,
 <translation id="5208059991603368177">Vuliwe</translation>
 <translation id="5216991270656129561">Kufaliwe kuze kube ngo-<ph name="TIME" /></translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>
+<translation id="5228195526683428788">Isihlukanisi sokuhlukanisa isikrini</translation>
 <translation id="5229343007215035173">Vula/vala isikrini sobumfihlo</translation>
 <translation id="5230516054153933099">Iwindi</translation>
 <translation id="5234764350956374838">Cashisa</translation>
@@ -1519,6 +1520,7 @@ Ukufaka okusha</translation>
 <translation id="6613765291890844037">Istoreji esingu-<ph name="STORAGE_IN_USE_SIZE" /> kusetshenziswa | ingqikithi ka-<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Isikrini sobumfihlo sivuliwe</translation>
 <translation id="6622679827379792051">Setha ukubuka ama-app efoni yakho</translation>
+<translation id="662279009180869175">Sebenzisa umcibisholo wesobunxele nowesokudla ukuze ushintshe usayizi wesikrini esihlukanisiwe</translation>
 <translation id="6624493541160101248">Itafula lamanje: <ph name="DESK_NAME" /> Itafula <ph name="DESK_INDEX" /> kwangu-<ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">I-<ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> nezinye izaziso zifihliwe ngoba isivikelo sokubuka sivuliwe</translation>
 <translation id="6627638273713273709">Usesho+Shift+K</translation>
@@ -1537,6 +1539,7 @@ Ukufaka okusha</translation>
 <translation id="6670153871843998651">Itafula 3</translation>
 <translation id="6671495933530132209">Kopisha isithombe</translation>
 <translation id="6671661918848783005">Ayikwazi ukuvula i-Chromebook yakho</translation>
+<translation id="6676552993057022464">Sebenzisa umcibisholo waphezulu nowaphansi ukuze ushintshe usayizi wesikrini esihlukanisiwe</translation>
 <translation id="6682029141988159141">Namathisela okuqukethwe ebhodini lokunamathisela</translation>
 <translation id="6683022854667115063">Ama-headphone</translation>
 <translation id="6686023075541098243">Setha ukubuka izaziso zefoni yakho</translation>

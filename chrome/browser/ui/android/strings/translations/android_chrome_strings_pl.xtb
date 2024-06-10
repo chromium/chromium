@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Możesz zobaczyć historię z innych aplikacji, które otwierają linki w Chrome. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zobacz <ph name="BEGIN_LINK1" />warunki korzystania<ph name="END_LINK1" /> z tej witryny.</translation>
 <translation id="1397811292916898096">Szukaj w <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Możesz <ph name="BEGIN_LINK1" />określić, jakie dane Chrome mają być zapisywane<ph name="END_LINK1" /> na koncie Google.
+
+W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chrome.</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1409879593029778104">Plik <ph name="FILE_NAME" /> nie został pobrany, bo już istnieje.</translation>
@@ -248,6 +251,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2286841657746966508">Adres rozliczeniowy</translation>
 <translation id="228704530595896923">Lista opcji udostępniania.</translation>
 <translation id="2297822946037605517">Udostępnij tę stronę</translation>
+<translation id="22981027763501686">Włącz synchronizację, aby mieć dostęp do zakładek, historii i innych danych na swoich pozostałych urządzeniach</translation>
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
 <translation id="2318045970523081853">Kliknij, by zadzwonić</translation>
 <translation id="2321086116217818302">Przygotowuję hasła…</translation>
@@ -856,6 +860,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5292796745632149097">Wyślij na</translation>
 <translation id="5301876394151419436">W tej chwili korzystasz z konta <ph name="EMAIL" />. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="5304593522240415983">To pole nie może być puste</translation>
+<translation id="5306014156308790439">Wyłączony przycisk Dodaj do kolekcji</translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5316947901395241499">Zapisywanie haseł zostało wyłączone przez administratora</translation>
 <translation id="5317780077021120954">Zapisz</translation>

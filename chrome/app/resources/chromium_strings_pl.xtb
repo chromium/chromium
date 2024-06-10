@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
 <translation id="1262876892872089030">Gdy ta karta była nieaktywna, pamięć została zwolniona, aby przeglądarka Chromium działała szybko. Możesz zdecydować, że ta witryna ma być zawsze aktywna.</translation>
 <translation id="1265577313130862557">Pobieranie zostało zablokowane przez Chromium, bo plik jest niebezpieczny</translation>
+<translation id="126567311906253476">Gdy logujesz się w usługach Google takich jak Gmail czy YouTube, używając konta <ph name="USER_EMAIL" />, możesz za pomocą tego samego konta automatycznie logować się w Chromium</translation>
 <translation id="1315551408014407711">Skonfiguruj nowy profil w Chromium</translation>
 <translation id="1342274909142618978">Usuń też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jesteś zalogowany w Chromium.</translation>
@@ -40,6 +41,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="1749104137266986751">Gdy protokół HTTPS będzie niedostępny, Chromium bez ostrzeżenia użyje połączenia niezabezpieczonego</translation>
 <translation id="1774152462503052664">Zezwól Chromium na działanie w tle</translation>
 <translation id="1779356040007214683">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy niektóre rozszerzenia niedostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, które mogły zostać dodane bez Twojej wiedzy.</translation>
+<translation id="1804128559285178512">Po zalogowaniu się w Chromium możesz używać haseł i innych danych z konta Google</translation>
 <translation id="1808667845054772817">Ponownie zainstaluj Chromium</translation>
 <translation id="1820835682567584003">Chromium próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Aby usunąć dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>

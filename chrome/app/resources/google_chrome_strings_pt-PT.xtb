@@ -122,6 +122,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2765403129283291972">O Chrome necessita de autorização de acesso ao microfone para este site.</translation>
 <translation id="2770231113462710648">Alterar o navegador predefinido para:</translation>
 <translation id="2775140325783767197">O Chrome não consegue verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
+<translation id="2797864378188255696">Ao iniciar sessão em serviços Google, como o Gmail ou o YouTube, com <ph name="USER_EMAIL" />, pode iniciar sessão automaticamente no Chrome com a mesma conta</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2825024317344269723">Site perigoso. O Chrome removeu as autorizações de notificações.</translation>
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
@@ -294,6 +295,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5334309298019785904">O ChromeOS não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
 <translation id="5334487786912937552">O Chrome necessita da autorização de acesso ao armazenamento para transferir ficheiros</translation>
 <translation id="5337648990166757586">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromeOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
+<translation id="5345497718959596593">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chrome</translation>
 <translation id="5357889879764279201">Obter ajuda com o ChromeOS Flex</translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Também controla a página apresentada quando inicia o Chrome ou pesquisa a partir da Caixa geral.</translation>

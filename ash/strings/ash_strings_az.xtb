@@ -223,7 +223,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1770726142253415363">Bura köçürülüb: sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
 <translation id="1774796056689732716">Təqvim, <ph name="CURRENT_MONTH_YEAR" />, hazırda <ph name="DATE" /> seçilib.</translation>
-<translation id="1775598828170459419">Göstərilir: <ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Telefonun son foto, media və bildirişlərinə baxmağı ayarlayın</translation>
 <translation id="1787955149152357925">Deaktiv</translation>
 <translation id="1796561540704213354">Ziyarət etdiyiniz və açıq səhifələr daxil olmaqla veb-saytlar</translation>
@@ -310,6 +309,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2208323208084708176">Vahid masa üstü rejimi</translation>
 <translation id="2220572644011485463">PIN və ya parol</translation>
 <translation id="2222841058024245321">Masa 7</translation>
+<translation id="2223384056430485343">Bölünmüş ekranda</translation>
 <translation id="2224075387478458881">Qorunan məzmun görünəndə ekranın yazılmasına icazə verilmir</translation>
 <translation id="2227179592712503583">Təklifi silin</translation>
 <translation id="2248634276911611268">Linki yeni tabda açın və bu yeni taba dəyişin</translation>
@@ -1133,6 +1133,7 @@ Klaviatura qısayolundan da istifadə edə bilərsiniz. Əvvəlcə mətni vurğu
 <translation id="5208059991603368177">Aktiv</translation>
 <translation id="5216991270656129561">Bu vaxtadək deaktiv olacaq: <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
+<translation id="5228195526683428788">Bölünmüş ekran ayırıcısı</translation>
 <translation id="5229343007215035173">Məxfilik ekranını aktiv/deaktiv edin</translation>
 <translation id="5230516054153933099">Pəncərə</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
@@ -1519,6 +1520,7 @@ Yeni quraşdırma</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> yaddaş istifadə edilir | Cəmi <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Məxfilik ekranı aktivdir</translation>
 <translation id="6622679827379792051">Telefon tətbiqlərinə baxmağı ayarlayın</translation>
+<translation id="662279009180869175">Bölünmüş ekranın ölçüsünü dəyişmək üçün sol və sağ oxlardan istifadə edin</translation>
 <translation id="6624493541160101248">Cari masa: <ph name="DESK_NAME" />. Masa <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Baxış qoruması aktiv olduğuna görə <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> və digər bildirişlər gizlədilib</translation>
 <translation id="6627638273713273709">Axtarış+Shift+K</translation>
@@ -1537,6 +1539,7 @@ Yeni quraşdırma</translation>
 <translation id="6670153871843998651">Masa 3</translation>
 <translation id="6671495933530132209">Şəkli kopyalayın</translation>
 <translation id="6671661918848783005">Chromebook'u kiliddən çıxarmaq olmur</translation>
+<translation id="6676552993057022464">Bölünmeş ekranın ölçüsünü dəyişmək üçün yuxarı və aşağı oxlardan istifadə edin</translation>
 <translation id="6682029141988159141">Mübadilə buferindən kontent əlavə edin</translation>
 <translation id="6683022854667115063">Qulaqlıq</translation>
 <translation id="6686023075541098243">Telefon bildirişlərinə baxmağı ayarlayın</translation>

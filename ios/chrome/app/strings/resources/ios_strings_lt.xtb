@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
 <translation id="1753905327828125965">Dažniausiai lankomi</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} nesudėtingas slaptažodis}one{{count} nesudėtingas slaptažodis}few{{count} nesudėtingi slaptažodžiai}many{{count} nesudėtingo slaptažodžio}other{{count} nesudėtingų slaptažodžių}}</translation>
+<translation id="1764070164487214210">Nuorodos</translation>
 <translation id="1766411844240160513">Automatiškai užpildyti formą</translation>
 <translation id="1767766085187034454">„Google“ vertėjas</translation>
 <translation id="1769106850515800431">Suasmenintas turinys</translation>
@@ -541,12 +542,14 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3771033907050503522">Inkognito skirt.</translation>
 <translation id="3775743491439407556">Sinchronizavimas neveikia</translation>
 <translation id="3779810277399252432">Nėra interneto ryšio.</translation>
+<translation id="3785672280731998727">Rodomas pavadinimas</translation>
 <translation id="3789294999358192700">Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803696231112616155">Siūlyti versti šią svetainę</translation>
 <translation id="3808311849069021992">Rodyti išsamią paieškos variklio informaciją</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
+<translation id="3812308602011798782">Atsiliepimai</translation>
 <translation id="3818045793209708987">Šio siuntinio stebėjimas sustabdytas</translation>
 <translation id="3818293389945649617">Rasti kitą</translation>
 <translation id="3819183753496523827">Esate neprisijungę. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
@@ -594,6 +597,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4045648459118332842">Vienu palietimu gaukite išsaugotus slaptažodžius bet kurioje programoje</translation>
 <translation id="4049507953662678203">Įsitikinkite, kad yra tinklo ryšys ir bandykite dar kartą.</translation>
 <translation id="4054572406751135230">Nepraleiskite naujienų, sporto naujienų ir kt.</translation>
+<translation id="4068959193278821990">Įjungti sustiprintą apsaugą...</translation>
 <translation id="4092655288299341041">Rodyti pagalbą</translation>
 <translation id="4105841739161771091">{count,plural, =1{Ištrinti adresą}one{Ištrinti adresus}few{Ištrinti adresus}many{Ištrinti adresus}other{Ištrinti adresus}}</translation>
 <translation id="4108998448622696017">Aptinka ir įspėja jus apie pavojingus įvykius, kai jų nutinka.</translation>
@@ -605,6 +609,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4121993058175073134">Jei n. siųsti tinklo eksp. duom., sukonf. el. pšt. pask. nust. progr.</translation>
 <translation id="4124987746317609294">Laikotarpis</translation>
 <translation id="4133265950310064865">Sustiprinta apsauga</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4148023517926189160">Ši svetainė nori atsisiųsti failą ir pridėti jį prie kalendoriaus.</translation>
 <translation id="4152011295694446843">Čia rasite žymes</translation>
@@ -1472,6 +1477,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="834783239627985533">Dažniausiai lankomos svetainės</translation>
 <translation id="8358401059263985056">Įjungti pranešimus</translation>
 <translation id="8364841868226993049">Išsaugomas vaizdas „Google“ nuotraukose <ph name="USER_EMAIL" /> paskyroje...</translation>
+<translation id="8369246252708539904">Ištrinti prieigos raktą</translation>
 <translation id="8370406443343902172">Eiti į nustatymus...</translation>
 <translation id="8374977641764177587">Įjungti pranešimus?</translation>
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>

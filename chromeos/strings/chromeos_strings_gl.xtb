@@ -360,6 +360,7 @@
 <translation id="3017079585324758401">Fondo</translation>
 <translation id="3027578600144895987">Pechar cámara</translation>
 <translation id="3031560714565892478">O dispositivo é unha cámara de vídeo.</translation>
+<translation id="3051968340259309715">Permite que os servizos do sistema utilicen a opción Precisión da localización para determinar a túa posición. Precisión da localización usa a información dos sinais sen fíos, (os puntos de acceso wifi, as torres das redes de telefonía móbil, o GPS…) e os datos dos sensores do dispositivo, como o acelerómetro e o xiroscopio, para calcular onde está o dispositivo. Podes desactivar a localización en Configuración &gt; Privacidade e seguranza &gt; Controis de privacidade &gt; Acceso á localización <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3060579846059757016">Esquemas</translation>

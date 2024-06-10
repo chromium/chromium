@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">အတန်း <ph name="ROW_NUMBER" />၊ ကော်လံ <ph name="COLUMN_NUMBER" /> သို့ ရွှေ့ထားသည်။</translation>
 <translation id="1771761307086386028">ညာသို့ လှိမ့်ရန်</translation>
 <translation id="1774796056689732716">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" />၊ လက်ရှိ <ph name="DATE" /> ကိုရွေးထားသည်။</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> ခုအနက် <ph name="NUM_SHOWN_ITEMS" /> ခုကို ပြထားသည်</translation>
 <translation id="178347895271755507">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာနှင့် အကြောင်းကြားချက်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
 <translation id="1787955149152357925">ပိတ်</translation>
 <translation id="1796561540704213354">သင်ဝင်ကြည့်ထားသော စာမျက်နှာများနှင့် ဖွင့်ထားသော စာမျက်နှာများ ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">တစ်စုတစ်စည်းတည်းပြ ဒက်စတော့ မုဒ်</translation>
 <translation id="2220572644011485463">ပင်နံပါတ် သို့မဟုတ် စကားဝှက်</translation>
 <translation id="2222841058024245321">မျက်နှာပြင်နေရာ ၇</translation>
+<translation id="2223384056430485343">မျက်နှာပြင် ခွဲ၍ပြသခြင်းတွင်</translation>
 <translation id="2224075387478458881">ကာကွယ်ထားသော အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို ခွင့်မပြုပါ</translation>
 <translation id="2227179592712503583">အကြံပြုချက် ဖယ်ရှားရန်</translation>
 <translation id="2248634276911611268">တဘ်အသစ်တွင် ဖွင့်ပြီး ဤတဘ်အသစ်သို့ ပြောင်းရန်</translation>

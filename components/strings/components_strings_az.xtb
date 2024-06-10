@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Sürüşdürün və paylaşılan tab kontentinin miqyasını dəyişin</translation>
 <translation id="1089439967362294234">Parolu Dəyişin</translation>
 <translation id="1090629319939036170">VR menyusu</translation>
+<translation id="1091779689406092804">skrinşotlar</translation>
 <translation id="1094777233105318927">Brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat</translation>
 <translation id="1096545575934602868">Bu sahədə maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə olmalıdır. Əlavə daxiletmələr silinəcək.</translation>
 <translation id="1097803577928227769">Regional Parklar və Bağlar</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">Ev Teatrı Sistemləri</translation>
 <translation id="1842969606798536927">Ödəniş</translation>
 <translation id="1846432862466000825">Plastik (arxiv)</translation>
+<translation id="1848640291751752317">endirmələr</translation>
 <translation id="1848982255014129637">Foto (çox parlaq)</translation>
 <translation id="1853392626017747777">Virtual kart qeydiyyatı bağlandı</translation>
 <translation id="1854180393107901205">Yayımı dayandırın</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">Ət və dəniz məhsulları</translation>
 <translation id="2367567093518048410">Səviyyə</translation>
 <translation id="23703388716193220">Qolf ləvazimatları</translation>
+<translation id="2370368710215137370">Faylların yüklənməsi</translation>
 <translation id="2374629208601905275">Regiondakı qanuna əsasən, Chrome defolt axtarış mexanizmi seçməyinizi istəyir. Bu axtarış mexanizmləri regionda populyardır və təsadüfi sıra ilə göstərilir.</translation>
 <translation id="2377241607395428273">Qrafika və Animasiya Proqramları</translation>
 <translation id="2378084239755710604">Kartın yadda saxlanması bağlandı.</translation>
@@ -1418,6 +1421,7 @@
 <translation id="3682094733650754138">Ünvanın daxil edilməsi seçilib</translation>
 <translation id="3687920599421452763">Ven və Minivenlər</translation>
 <translation id="3693327506115126094">Kimliyinizi necə doğrulayacağınızı seçin</translation>
+<translation id="3698353241727597930">Administrator <ph name="FILES" /> müəssisə tərəfindən idarə edilən <ph name="CLOUD_STORAGE" /> yaddaşında saxlamağı konfiqurasiya edib. Bu fayllar izlənilə, yoxlanıla və onları sildiyiniz zaman saxlanıla bilər.</translation>
 <translation id="3698629142018988477">"Sayt yaradın" düyməsi, aktivləşdirərək Google Saytda cəld yeni sayt yaradın</translation>
 <translation id="3701325639446035885">Tədbir bileti satışı</translation>
 <translation id="3701427423622901115">Sıfırlanma doğrulandı.</translation>
@@ -1493,6 +1497,7 @@
 <translation id="3826050100957962900">Üçüncü tərəfin girişi</translation>
 <translation id="3827112369919217609">Mütləq</translation>
 <translation id="3828924085048779000">Boş parola icazə verilmir.</translation>
+<translation id="3830139096297532361">Bu PDF-ə daxil olmaq olmur. Mətn çıxarma fayllarını endirmək mümkün olmadı. Sonra cəhd edin.</translation>
 <translation id="3830470485672984938">Başqa giriş açarı istifadə edin</translation>
 <translation id="3831065134033923230">Yadda saxlanılan parolları yoxlayın</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> domeninə əlavə funksiyalar üçün artırmalar quraşdırılıb. Artırmalar datanın bir hissəsinə daxil ola bilər.</translation>
@@ -1667,6 +1672,7 @@
 <translation id="4202554117186904723">Beşinci Rulon</translation>
 <translation id="4203769790323223880">Kameraya icazə verilmir</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />güvənlik divarı və antivirus konfiqurasiyaları yoxlanılır<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Disk</translation>
 <translation id="4209092469652827314">Böyük</translation>
 <translation id="4210602799576081649">Doğrulama kodunun müddəti bitib, yeni kod tələb edin</translation>
 <translation id="421066178035138955">Virtual reallıq cihazları və datanı istifadə etmək</translation>
@@ -2727,6 +2733,7 @@
 <translation id="6270066318535733958">Qayıqla səyahət</translation>
 <translation id="6272088941196661550">Chrome tarixçəsində əlaqəli fəaliyyəti görmək üçün baxışa davam edin</translation>
 <translation id="6272383483618007430">Google Güncəlləməsi</translation>
+<translation id="6278015583149890680">Google Disk və OneDrive</translation>
 <translation id="6280223929691119688">Bu ünvana çatdırmaq mümkün deyil. Başqa ünvan seçin.</translation>
 <translation id="6284292079994426700">26 x 38 düym</translation>
 <translation id="6284449872909111707">Mətn və Ani Mesajlaşma</translation>
@@ -3165,6 +3172,7 @@
 <translation id="7119063404975271297">TV Dramları</translation>
 <translation id="7119371694555167493">Kopyalama vaxtı bitdi</translation>
 <translation id="7119414471315195487">Digər tab və ya proqramları bağlayın</translation>
+<translation id="7120588595737538743">endirmələr və skrinşotlar</translation>
 <translation id="7124354851782353862">CVC-ni daxil edin</translation>
 <translation id="7129409597930077180">Bu ünvana göndərmək mümkün deyil. Başqa ünvan seçin.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3364,6 +3372,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />. Chrome tövsiyəsini rədd etmək üçün Tab, sonra Enter düyməsinə basın.</translation>
 <translation id="7485085230273446323">Biznes və Sənaye</translation>
 <translation id="7485870689360869515">Heç bir data tapılmadı.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Şampun və kondisionerlər</translation>
 <translation id="7495528107193238112">Bu məzmun bloklanıb. Problemi düzəltmək üçün sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="749865518782565832">Santexnika</translation>

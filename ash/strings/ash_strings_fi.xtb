@@ -223,7 +223,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1770726142253415363">Siirretty riville <ph name="ROW_NUMBER" />, sarakkeeseen <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
 <translation id="1774796056689732716">Kalenteri, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> on valittuna</translation>
-<translation id="1775598828170459419">Näytetään <ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Ota käyttöön puhelimen viimeaikaisten kuvien, median ja ilmoitusten katselu</translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="1796561540704213354">Verkkosivustot, esimerkiksi aiemmin avaamasi sivut ja avoinna olevat sivut</translation>

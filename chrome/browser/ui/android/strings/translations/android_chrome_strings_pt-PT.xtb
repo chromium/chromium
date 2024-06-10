@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Pode ver o histórico de outras apps que abrem links no Chrome. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte os <ph name="BEGIN_LINK1" />termos de utilização<ph name="END_LINK1" /> deste site.</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Pode <ph name="BEGIN_LINK1" />gerir que dados do Chrome são guardados<ph name="END_LINK1" /> na sua Conta Google.
+
+Para ver mais definições que usam dados para melhorar a sua experiência do Chrome, aceda aos <ph name="BEGIN_LINK2" />serviços Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1409879593029778104">A transferência de <ph name="FILE_NAME" /> foi impedida porque o ficheiro já existe.</translation>
@@ -248,6 +251,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2286841657746966508">Endereço de faturação</translation>
 <translation id="228704530595896923">Lista de opções de partilha.</translation>
 <translation id="2297822946037605517">Partilhar esta página</translation>
+<translation id="22981027763501686">Sincronize para aceder aos marcadores, ao histórico e a muito mais noutros dispositivos</translation>
 <translation id="230115972905494466">Não foram encontrados dispositivos compatíveis.</translation>
 <translation id="2318045970523081853">Toque para efetuar uma chamada</translation>
 <translation id="2321086116217818302">A preparar palavras-passe…</translation>
@@ -856,6 +860,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5301876394151419436">Tem sessão iniciada como <ph name="EMAIL" />. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5304593522240415983">Este campo não pode estar em branco</translation>
+<translation id="5306014156308790439">Botão Adicionar à coleção desativado</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5316947901395241499">O seu administrador desativou a gravação de palavras-passe</translation>
 <translation id="5317780077021120954">Guardar</translation>

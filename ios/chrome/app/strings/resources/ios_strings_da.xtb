@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Gem adgangskoder</translation>
 <translation id="1753905327828125965">Mest besøgte</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} svag adgangskode}one{{count} svag adgangskode}other{{count} svage adgangskoder}}</translation>
+<translation id="1764070164487214210">Rutevejledning</translation>
 <translation id="1766411844240160513">Udfyld formularen automatisk</translation>
 <translation id="1767766085187034454">Google Oversæt</translation>
 <translation id="1769106850515800431">Personligt tilpasset indhold</translation>
@@ -541,12 +542,14 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internetforbindelse.</translation>
+<translation id="3785672280731998727">Vist navn</translation>
 <translation id="3789294999358192700">Sådan gør du:</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilbyd at oversætte dette website</translation>
 <translation id="3808311849069021992">Vis søgemaskineoplysninger</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3812308602011798782">Anmeldelser</translation>
 <translation id="3818045793209708987">Sporing af denne pakke er stoppet</translation>
 <translation id="3818293389945649617">Find næste</translation>
 <translation id="3819183753496523827">Du er offline. Tjek din internetforbindelse, og prøv igen.</translation>
@@ -594,6 +597,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4045648459118332842">Få adgang til dine gemte adgangskoder i enhver app med et enkelt tryk</translation>
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="4054572406751135230">Hold dig opdateret om nyheder, sport m.m.</translation>
+<translation id="4068959193278821990">Aktivér Forbedret beskyttelse...</translation>
 <translation id="4092655288299341041">Vis Hjælp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slet adresse}one{Slet adresse}other{Slet adresser}}</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
@@ -605,6 +609,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4121993058175073134">For at sende oplysninger om nettoeksporten skal du konfigurere din mailkonto i appen Indstillinger.</translation>
 <translation id="4124987746317609294">Tidsinterval</translation>
 <translation id="4133265950310064865">Forbedret beskyttelse</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Dette website vil gerne downloade en fil og føje den til din kalender.</translation>
 <translation id="4152011295694446843">Her finder du dine bogmærker</translation>
@@ -1472,6 +1477,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="834783239627985533">Mest besøgte websites</translation>
 <translation id="8358401059263985056">Aktivér notifikationer</translation>
 <translation id="8364841868226993049">Gemmer billedet i Google Fotos for <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">Slet adgangsnøgle</translation>
 <translation id="8370406443343902172">Gå til Indstillinger…</translation>
 <translation id="8374977641764177587">Vil du slå notifikationer til?</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>

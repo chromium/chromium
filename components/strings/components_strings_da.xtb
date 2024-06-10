@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Rul ned, og zoom ind på indholdet på din delte fane</translation>
 <translation id="1089439967362294234">Skift adgangskode</translation>
 <translation id="1090629319939036170">VR-menu</translation>
+<translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Oplysninger om browseren, operativsystemet, enheden, installeret software og filer</translation>
 <translation id="1096545575934602868">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster kasseres.</translation>
 <translation id="1097803577928227769">Parker og haver</translation>
@@ -472,6 +473,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1840009953725035797">Hjemmebiografsystemer</translation>
 <translation id="1842969606798536927">Betal</translation>
 <translation id="1846432862466000825">Plast (arkiv)</translation>
+<translation id="1848640291751752317">downloads</translation>
 <translation id="1848982255014129637">Foto (helblankt)</translation>
 <translation id="1853392626017747777">Tilmelding via virtuelt kort er lukket</translation>
 <translation id="1854180393107901205">Stop cast</translation>
@@ -754,6 +756,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2366689192918515749">Kød, fisk og skaldyr</translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="23703388716193220">Golfudstyr</translation>
+<translation id="2370368710215137370">Upload af filer</translation>
 <translation id="2374629208601905275">I henhold til lovgivningen i din region beder Chrome dig om at vælge din standardsøgemaskine. Disse søgemaskiner er populære i din region og vises i vilkårlig rækkefølge.</translation>
 <translation id="2377241607395428273">Grafik- og animationssoftware</translation>
 <translation id="2378084239755710604">"Gem kort" er lukket.</translation>
@@ -1422,6 +1425,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3682094733650754138">Valgmuligheden for udfyldelse af adresse blev valgt</translation>
 <translation id="3687920599421452763">Kassevogne og minibusser</translation>
 <translation id="3693327506115126094">Vælg, hvordan du vil verificere din identitet</translation>
+<translation id="3698353241727597930">Din administrator har konfigureret at gemme <ph name="FILES" /> i din virksomhedsadministrerede <ph name="CLOUD_STORAGE" />-lagerplads. Disse filer kan overvåges, kontrolleres og opbevares, når du sletter dem.</translation>
 <translation id="3698629142018988477">Knappen Opret website, aktivér for hurtigt at oprette et nyt website i Google Sites</translation>
 <translation id="3701325639446035885">Salg af billetter til events</translation>
 <translation id="3701427423622901115">Nulstillingen blev anerkendt.</translation>
@@ -1497,6 +1501,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3826050100957962900">Tredjepartslogin</translation>
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3828924085048779000">Tomme adgangssætninger er ikke tilladt.</translation>
+<translation id="3830139096297532361">Denne PDF er ikke tilgængelig. Filerne til udtrækning af tekst kunne ikke downloades. Prøv igen senere.</translation>
 <translation id="3830470485672984938">Brug en anden adgangsnøgle</translation>
 <translation id="3831065134033923230">Tjek dine gemte adgangskoder</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> har installeret udvidelser til yderligere funktioner. Udvidelser har adgang til nogle af dine data.</translation>
@@ -1671,6 +1676,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4202554117186904723">Femte papirrulle</translation>
 <translation id="4203769790323223880">Adgang til kamera er ikke tilladt</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Tjekke firewall- og antiviruskonfigurationer<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drev</translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4210602799576081649">Verificeringskoden udløb. Anmod om en ny kode.</translation>
 <translation id="421066178035138955">Anvende virtual reality-enheder og -data</translation>
@@ -2731,6 +2737,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6270066318535733958">Med båd</translation>
 <translation id="6272088941196661550">Genoptag din søgning for at se relevant aktivitet i din Chrome-historik</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drev og OneDrive</translation>
 <translation id="6280223929691119688">Der kan ikke leveres til denne adresse. Vælg en anden adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284449872909111707">Beskeder og chatfunktioner</translation>
@@ -3169,6 +3176,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7119063404975271297">Tv-dramaer</translation>
 <translation id="7119371694555167493">Kopieringen fik timeout</translation>
 <translation id="7119414471315195487">Luk andre faner eller programmer</translation>
+<translation id="7120588595737538743">downloads og screenshots</translation>
 <translation id="7124354851782353862">Angiv din CVC</translation>
 <translation id="7129409597930077180">Der kan ikke sendes til denne adresse. Vælg en anden adresse.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@ Yderligere oplysninger:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, tryk på Tab-tasten efterfulgt af Enter for at lukke Chrome-tippet.</translation>
 <translation id="7485085230273446323">Virksomheder og industri</translation>
 <translation id="7485870689360869515">Der blev ikke fundet nogen data.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Shampoo og balsam</translation>
 <translation id="7495528107193238112">Dette indhold er blokeret. Kontakt ejeren af websitet for at løse problemet.</translation>
 <translation id="749865518782565832">Blikkenslagerarbejde og VVS</translation>

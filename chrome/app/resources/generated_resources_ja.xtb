@@ -409,6 +409,7 @@
 <translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1294807885394205587">この処理には数分かかることがあります。コンテナ マネージャーを起動しています。</translation>
+<translation id="12951065153783848">あなたのアカウントは組織が管理しています</translation>
 <translation id="1296911687402551044">選択したタブを固定</translation>
 <translation id="1297175357211070620">送信先</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />についてのフィードバックを送信</translation>
@@ -962,6 +963,7 @@
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1692210323591458290">暗い紫</translation>
 <translation id="1692713444215319269">色反転、拡大鏡、表示設定</translation>
+<translation id="169341880170235617">タブグループが自動的に保存されるようになりました</translation>
 <translation id="1695487653372841667">あなたは Google と共有するデータを設定することができ、これは [設定] でいつでも変更できます。</translation>
 <translation id="1695510246756136088">インターネットに接続できません。もう一度お試しください。</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
@@ -1317,6 +1319,7 @@
 <translation id="1949980990364952348">アプリ名</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1951823516285577843">代わりの拡張機能を探す</translation>
+<translation id="1953796913175502363">仕事用プロフィールの設定</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
 <translation id="1955749740583837857">おすすめを表示しない</translation>
@@ -2729,6 +2732,7 @@
 <translation id="2979493931538961252">Chromebook がオフラインで、アクセス ポイントを使用できる場合</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2979893796619951531">サイトを除外</translation>
+<translation id="2979966855249721010">興味や関心に基づいて、おすすめのアプリやヒントなどが表示されます</translation>
 <translation id="2981033191524548279">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。この問題は、再起動してもう一度試すと解決することがあります。</translation>
 <translation id="2981113813906970160">大きいマウスカーソルを表示する</translation>
 <translation id="2983102365694924129">ユーザーのウェブサイト上でのアクティビティに基づいて提案されます。この設定は無効になっています。</translation>
@@ -2840,6 +2844,7 @@
 <translation id="3048742847101793553">このファイルはスキャンに失敗したため、組織でブロックされました。</translation>
 <translation id="3048917188684939573">キャストとデバイスのログ</translation>
 <translation id="3051250416341590778">表示サイズ</translation>
+<translation id="3051968340259309715">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局、GPS などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスの位置情報が推定されます。[位置情報の精度] は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でオフにできます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3053013834507634016">証明書キーの用途</translation>
 <translation id="3053273573829329829">ユーザー PIN を有効にする</translation>
 <translation id="3053274730492362225">点滅なし</translation>
@@ -3757,6 +3762,7 @@
 <translation id="3753033997400164841">一度保存すればどこでも使用可能</translation>
 <translation id="3753142252662437130">カラーフィルタ</translation>
 <translation id="3753412199586870466">サイドパネルを開く</translation>
+<translation id="3753585830134123417">ウィンドウを左方向にサイズ変更しました</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> でもこの <ph name="DEVICE_TYPE" /> のロックを解除できるようになりました。</translation>
 <translation id="375636864092143889">サイトでマイクが使用されています</translation>
 <translation id="3756485814916578707">画面をキャストしています</translation>
@@ -3785,6 +3791,7 @@
 <translation id="3766687283066842296">スマートフォン ハブの詳細</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">現在のところ、パスワードはファミリー メンバーとのみ共有できます。グループに<ph name="BEGIN_LINK" />ファミリー メンバーを招待<ph name="END_LINK" />すると、Google 全体でサービスや定期購入をお得に利用できます。</translation>
+<translation id="376841534249795524"><ph name="DEVICE_TYPE" /> はどんな用途でお使いですか？</translation>
 <translation id="377050016711188788">アイスクリーム</translation>
 <translation id="3771290962915251154">保護者による使用制限が有効なため、この設定は無効になっています</translation>
 <translation id="3771294271822695279">動画ファイル</translation>
@@ -3940,6 +3947,7 @@
 <translation id="3873915545594852654">ARC++ で問題が発生しました。</translation>
 <translation id="3874164307099183178">Google アシスタントをオンにする</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> は新しいブラウザタブで開くよう設定されています。サポートされているリンクもブラウザで開かれます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3876219572815410515">ウィンドウを上方向にサイズ変更しました</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> さんのデバイスのニアバイシェア設定（<ph name="USER_EMAIL" /> アカウントでの共有）</translation>
 <translation id="3878445208930547646">このサイトからのコピーは許可されていません</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
@@ -4228,6 +4236,7 @@
 <translation id="4089817585533500276">Shift+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">確認済みアクセスを有効にする</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> のサイト権限をリセットしますか？</translation>
+<translation id="4091307190120921067">選択したアプリは設定後にインストールされます。他のおすすめのアプリは後から「使い方・ヒント」アプリで確認できます。</translation>
 <translation id="4092636882861724179"><ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されたパスワードを表示、管理できます。</translation>
 <translation id="4092709865241032354">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
@@ -6005,6 +6014,7 @@
 <translation id="5463625433003343978">デバイスを検出しています...</translation>
 <translation id="5463856536939868464">非表示のブックマークを含むメニュー</translation>
 <translation id="5466374726908360271">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
+<translation id="5466721587278161554">タブグループはブックマーク バーとアプリメニューに保存され、同期がオンになっている場合はログインしているすべてのデバイスで更新されます</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロックしました</translation>
 <translation id="5468173180030470402">ファイル共有を探しています</translation>
 <translation id="5468330507528805311">テザリング ステータス:</translation>
@@ -7148,6 +7158,7 @@
 <translation id="6322559670748154781">このファイルは一般的にダウンロードされているファイルではないため、高度な保護機能でブロックされました</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6325191661371220117">自動起動を無効にする</translation>
+<translation id="632524945411480350">ウィンドウを下方向にサイズ変更しました</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6326855256003666642">キープアライブ カウント</translation>
 <translation id="6327065839080961103"><ph name="FEATURE_NAME" /> のデータ使用量</translation>
@@ -7744,6 +7755,7 @@
 <translation id="6798780071646309401">CapsLock オン</translation>
 <translation id="6798954102094737107">プラグイン: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">非表示のツールバー ボタン</translation>
+<translation id="6800893479155997609">あなたの <ph name="DEVICE_TYPE" /> におすすめのアプリ</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{この拡張機能にこのサイトの読み取りや変更を許可するかどうかを選択します}other{これらの拡張機能にこのサイトの読み取りや変更を許可するかどうかを選択します}}</translation>
 <translation id="6801435275744557998">タッチスクリーンのキャリブレーション</translation>
 <translation id="6802031077390104172"><ph name="USAGE" />（<ph name="OID" />）</translation>
@@ -8117,6 +8129,7 @@
 <translation id="7067396782363924830">環境色</translation>
 <translation id="7067725467529581407">今後このメッセージを表示しない。</translation>
 <translation id="7068279399556423026">ログインして他のデバイスのタブを表示</translation>
+<translation id="7068591156533195518"><ph name="APP_NAME" /> とその他数個のアプリが <ph name="DEVICE_TYPE" /> でブロックされています</translation>
 <translation id="706949303827219454">セキュリティ設定ページを新しいタブで開きます</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="7070484045139057854">サイトデータの読み取りと変更を行います</translation>
@@ -8513,6 +8526,7 @@
 <translation id="7392915005464253525">閉じたウィンドウを開く（&amp;E）</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 個のアイテムがコピーされました}other{{COUNT} 個のアイテムがコピーされました}}</translation>
 <translation id="7393435859300249877">ビデオ通話アプリなど、特定のアプリの使用中にマイクをミュートした状態で話すと通知されます。音声がデバイスの外部に送信されることはありません。</translation>
+<translation id="7395163818609347230">ウィンドウを右方向にサイズ変更しました</translation>
 <translation id="7395774987022469191">画面全体</translation>
 <translation id="7396017167185131589">共有フォルダがここに表示されます</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> はシステム起動時に開始され、他の <ph name="PRODUCT_NAME" /> ウィンドウをすべて閉じてもバックグラウンドで動作し続けます。</translation>
@@ -9577,6 +9591,7 @@
 <translation id="8148760431881541277">ログインの制限</translation>
 <translation id="8149564499626272569">USB ケーブルで接続したスマートフォンで確認</translation>
 <translation id="8149870652370242480">スマートフォンに保存されているパスワードを使用するには、iOS 版 Chrome をダウンロードして Google アカウントにログインします。</translation>
+<translation id="8150396590017071059">パスワード マネージャーの PIN を変更する</translation>
 <translation id="8151057139207656239">ビルドの詳細をコピーしました</translation>
 <translation id="815114315010033526">代わりに QR コードを使用</translation>
 <translation id="8151638057146502721">設定</translation>
@@ -9663,6 +9678,7 @@
 <translation id="8217399928341212914">複数ファイルの自動ダウンロードを今後もブロックする</translation>
 <translation id="822050276545350872">今後は待つ必要はありません</translation>
 <translation id="8221491193165283816">通知はデフォルトでブロックされています。このサイトの通知を表示するには、ここをクリックしてください。</translation>
+<translation id="8222112516148944758">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
 <translation id="8222674561049363989">ファイルは有効なドキュメントではありません</translation>
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> のアカウントは削除されません</translation>

@@ -224,7 +224,6 @@
 <translation id="1770726142253415363">تم النقل إلى الصف رقم <ph name="ROW_NUMBER" />، العمود رقم <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">التمرير لليمين</translation>
 <translation id="1774796056689732716">التقويم، <ph name="CURRENT_MONTH_YEAR" />، التاريخ المُحدّد حاليًا هو <ph name="DATE" />.</translation>
-<translation id="1775598828170459419">يتم عرض <ph name="NUM_SHOWN_ITEMS" /> من إجمالي <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">إعداد ميزة عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
@@ -311,6 +310,7 @@
 <translation id="2208323208084708176">وضع سطح المكتب الموحد</translation>
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2222841058024245321">سطح المكتب 7</translation>
+<translation id="2223384056430485343">في "وضع تقسيم الشاشة"</translation>
 <translation id="2224075387478458881">يتم حظر استخدام ميزة تسجيل الشاشة عند عرض محتوى محمي.</translation>
 <translation id="2227179592712503583">إزالة الاقتراح</translation>
 <translation id="2248634276911611268">فتح الرابط في علامة تبويب جديدة والانتقال إليها</translation>
@@ -1135,6 +1135,7 @@
 <translation id="5208059991603368177">مُفعَّل</translation>
 <translation id="5216991270656129561">إيقاف الميزة حتى <ph name="TIME" /></translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
+<translation id="5228195526683428788">أداة تقسيم الشاشة</translation>
 <translation id="5229343007215035173">تفعيل/إيقاف شاشة الخصوصية</translation>
 <translation id="5230516054153933099">نافذة</translation>
 <translation id="5234764350956374838">تجاهل</translation>
@@ -1521,6 +1522,7 @@
 <translation id="6613765291890844037">مساحة التخزين المستخدَمة: <ph name="STORAGE_IN_USE_SIZE" /> | إجمالي مساحة التخزين: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
 <translation id="6622679827379792051">إعداد ميزة عرض التطبيقات في هاتفك</translation>
+<translation id="662279009180869175">استخدِم السهمين المتّجهَين لليسار ولليمين لتغيير حجم الشاشة المنقسمة</translation>
 <translation id="6624493541160101248">سطح المكتب الحالي: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> وغيرها من الإشعارات بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1539,6 +1541,7 @@
 <translation id="6670153871843998651">مكتب 3</translation>
 <translation id="6671495933530132209">نسخ الصورة</translation>
 <translation id="6671661918848783005">‏يتعذَّر فتح قفل جهاز Chromebook.</translation>
+<translation id="6676552993057022464">استخدِم السهمين المتّجهين للأعلى وللأسفل لتغيير حجم الشاشة المنقسمة</translation>
 <translation id="6682029141988159141">لصق المحتوى من الحافظة</translation>
 <translation id="6683022854667115063">سمّاعات رأس</translation>
 <translation id="6686023075541098243">إعداد ميزة عرض الإشعارات في هاتفك</translation>

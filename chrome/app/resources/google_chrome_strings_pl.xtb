@@ -121,6 +121,7 @@
 <translation id="2765403129283291972">Chrome potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
 <translation id="2770231113462710648">Zmień przeglądarkę domyślną na:</translation>
 <translation id="2775140325783767197">Chrome nie może sprawdzić Twoich haseł. Sprawdź połączenie z internetem.</translation>
+<translation id="2797864378188255696">Gdy logujesz się w usługach Google takich jak Gmail czy YouTube, używając konta <ph name="USER_EMAIL" />, możesz za pomocą tego samego konta automatycznie logować się w Chrome</translation>
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2825024317344269723">Niebezpieczna witryna. Przeglądarka Chrome usunęła powiadomienia.</translation>
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
@@ -293,6 +294,7 @@
 <translation id="5334309298019785904">Chrome OS nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
 <translation id="5334487786912937552">Aby pobierać pliki, Chrome musi mieć dostęp do pamięci</translation>
 <translation id="5337648990166757586">Opcjonalnie: pomóż ulepszyć funkcje i działanie Chrome OS, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
+<translation id="5345497718959596593">Po zalogowaniu się w Chrome możesz używać haseł i innych danych z konta Google</translation>
 <translation id="5357889879764279201">Skorzystaj z pomocy dotyczącej ChromeOS Flex</translation>
 <translation id="5368118228313795342">Dodatkowy kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome lub wyszukiwaniu w omniboksie.</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">공유한 탭의 콘텐츠 스크롤 및 확대/축소</translation>
 <translation id="1089439967362294234">비밀번호 변경</translation>
 <translation id="1090629319939036170">VR 메뉴</translation>
+<translation id="1091779689406092804">스크린샷</translation>
 <translation id="1094777233105318927">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보</translation>
 <translation id="1096545575934602868">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 추가되는 모든 항목은 삭제됩니다.</translation>
 <translation id="1097803577928227769">지역 공원 및 정원</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">홈시어터 시스템</translation>
 <translation id="1842969606798536927">결제</translation>
 <translation id="1846432862466000825">플라스틱(보관용)</translation>
+<translation id="1848640291751752317">다운로드</translation>
 <translation id="1848982255014129637">사진(고광택)</translation>
 <translation id="1853392626017747777">가상 카드 등록 종료됨</translation>
 <translation id="1854180393107901205">전송 중지</translation>
@@ -754,6 +756,7 @@
 <translation id="2366689192918515749">육류 및 해산물</translation>
 <translation id="2367567093518048410">수준</translation>
 <translation id="23703388716193220">골프 장비</translation>
+<translation id="2370368710215137370">파일 업로드</translation>
 <translation id="2374629208601905275">거주 지역의 법률에 따라 사용자에게 기본 검색엔진을 선택하도록 요청하는 메시지가 Chrome에 표시됩니다. 거주 지역에서 인기 있는 검색엔진이 임의의 순서로 표시됩니다.</translation>
 <translation id="2377241607395428273">그래픽 및 애니메이션 소프트웨어</translation>
 <translation id="2378084239755710604">저장 카드가 닫혔습니다.</translation>
@@ -1422,6 +1425,7 @@
 <translation id="3682094733650754138">주소 입력 옵션이 선택됨</translation>
 <translation id="3687920599421452763">밴 및 미니밴</translation>
 <translation id="3693327506115126094">본인 인증 방법 선택</translation>
+<translation id="3698353241727597930">관리자가 엔터프라이즈 관리 <ph name="CLOUD_STORAGE" /> 스토리지에 <ph name="FILES" />을(를) 저장하도록 구성했습니다. 이러한 파일은 삭제 시 모니터링, 감사, 보관될 수 있습니다.</translation>
 <translation id="3698629142018988477">사이트 만들기 버튼, Google Sites에서 빠르게 새 사이트를 만들려면 활성화하세요.</translation>
 <translation id="3701325639446035885">이벤트 티켓 판매</translation>
 <translation id="3701427423622901115">재설정이 확인되었습니다.</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3826050100957962900">서드 파티 로그인</translation>
 <translation id="3827112369919217609">독립</translation>
 <translation id="3828924085048779000">암호를 빈 칸으로 두어서는 안 됩니다.</translation>
+<translation id="3830139096297532361">이 PDF에 액세스할 수 없습니다. 텍스트 추출 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="3830470485672984938">다른 패스키 사용</translation>
 <translation id="3831065134033923230">저장된 비밀번호 확인하기</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" />에서 추가 기능을 위한 확장 프로그램을 설치했습니다. 확장 프로그램에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
@@ -1671,6 +1676,7 @@
 <translation id="4202554117186904723">5번째 롤</translation>
 <translation id="4203769790323223880">카메라가 허용되지 않음</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />방화벽 및 바이러스 백신 소프트웨어 설정 확인<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">크게</translation>
 <translation id="4210602799576081649">인증 코드가 만료되었습니다. 새 코드를 요청하세요.</translation>
 <translation id="421066178035138955">가상 현실 기기 및 데이터 사용</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">보트 타기</translation>
 <translation id="6272088941196661550">Chrome 방문 기록에서 관련 활동을 보려면 탐색 여정을 재개하세요.</translation>
 <translation id="6272383483618007430">Google 업데이트</translation>
+<translation id="6278015583149890680">Google Drive 및 OneDrive</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6284292079994426700">26x38인치</translation>
 <translation id="6284449872909111707">문자 메시지 및 채팅</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">TV 드라마</translation>
 <translation id="7119371694555167493">복사 시간 초과</translation>
 <translation id="7119414471315195487">다른 탭 또는 프로그램 닫기</translation>
+<translation id="7120588595737538743">다운로드 및 스크린샷</translation>
 <translation id="7124354851782353862">CVC 입력</translation>
 <translation id="7129409597930077180">이 주소로 배송할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3367,6 +3375,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome 도움말을 닫으려면 Tab과 Enter를 차례로 누르세요.</translation>
 <translation id="7485085230273446323">비즈니스 및 산업</translation>
 <translation id="7485870689360869515">데이터 없음</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">샴푸 및 린스</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="749865518782565832">배관공사</translation>

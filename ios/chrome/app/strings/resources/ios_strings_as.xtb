@@ -533,6 +533,7 @@
 <translation id="371398631992790800">বুকমাৰ্ক লুকুৱাওক</translation>
 <translation id="37207012422556617">ট্ৰেণ্ডিং সন্ধানসমূহ</translation>
 <translation id="3725081662140949903">অন্য লোকসকলক আপোনাৰ পাছৱৰ্ড ব্যৱহাৰ কৰাত বাধা দিয়াৰ বাবে, আপোনাৰ পাছৱৰ্ড সলনি কৰিবলৈ <ph name="APP" /> এপ্‌টো খোলক</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" />ৰে শেষ হোৱা আপোনাৰ কাৰ্ড নম্বৰটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="3738428049780661523"><ph name="DATE" />ত সৃষ্টি কৰা হৈছে</translation>
 <translation id="374357899112510277">ডাউনল’ড লুকুৱাওক</translation>
 <translation id="3745190878148784130">পাঠ জুম কৰাৰ সুবিধাটো লুকুৱাওক</translation>
@@ -1102,6 +1103,7 @@
 <translation id="6476800141292307438">এই পৃষ্ঠাটো <ph name="LANGUAGE" />লৈ অনুবাদ কৰি থকা হৈছে। বিকল্পসমূহ স্ক্রীণখনৰ একেবাৰে তলৰ কাষত আছে।</translation>
 <translation id="648164694371393720">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ কৰাত আসোঁৱাহ হৈছে</translation>
 <translation id="6494931198667773526">সমাপ্তিৰ সময়</translation>
+<translation id="6500795388871406244">পৰামৰ্শিত পাছৱৰ্ড ব্যৱহাৰ কৰক:</translation>
 <translation id="650279896687777322">অধিক জানক...</translation>
 <translation id="6507973708545996744">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী পাবলৈ ছাইন ইন কৰক।</translation>
 <translation id="6510072653668207258">মোক পাছত মনত পেলাই দিয়ক</translation>
@@ -1316,6 +1318,7 @@
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7598439272585186139">অধিক সুৰক্ষা লাভ কৰক</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কেতিয়াও অনুবাদ নকৰিব</translation>
+<translation id="7603308509262646847">কাৰ্ড অধিকাৰী <ph name="NAME" /> স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="7603852183842204213">পপ-আপ অৱৰোধ কৰা হ’ল (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">টেবৰ গোট</translation>
 <translation id="7607521702806708809">পাছৱৰ্ড মচক</translation>
@@ -1348,6 +1351,7 @@
 <translation id="7749790401023484470">আপুনি কোনো পাঠ বাছনি কৰা নাই।</translation>
 <translation id="7752405526771734448">Lens ভিজুৱেল ছাৰ্চ</translation>
 <translation id="7756478488453921771">মেনু → ছেটিং → পৰিশোধ পদ্ধতি</translation>
+<translation id="775755486779745798">ম্যাদ উকলাৰ মাহ <ph name="MONTH" /> স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="7760127703945531263">ইনক’গনিট’ লক</translation>
 <translation id="7765158879357617694">আঁতৰাওক</translation>
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
@@ -1524,6 +1528,7 @@
 <translation id="8556590991644167667">{count,plural, =1{আপুনি {count} টা সকীয়নি অগ্ৰাহ্য কৰিছে}one{আপুনি {count} টা সকীয়নি অগ্ৰাহ্য কৰিছে}other{আপুনি {count} টা সকীয়নি অগ্ৰাহ্য কৰিছে}}</translation>
 <translation id="8560253818350321773">প্ৰথমে সঘনাই ব্যৱহৃত বস্তুবোৰ দেখুৱাওক।</translation>
 <translation id="8569721750632860947">আপুনি আপোনাৰ পঢ়াৰ সূচী কোনটো URL যোগ দিব বিচাৰে?</translation>
+<translation id="8577056989960190117">ম্যাদ উকলাৰ বছৰ <ph name="YEAR" /> স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="8588404856427128947">অফ আছে</translation>
 <translation id="8591976964826315682">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="8593565399399144771">ইয়াত আপুনি এটা নতুন টেব খুলিব পাৰে।</translation>

@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> тандалган өтмөктү кыстаруу}other{<ph name="TABS_COUNT_MANY" /> тандалган өтмөктү кыстаруу}}</translation>
 <translation id="2118649612461486615">Дүкөн жөнүндө маалымат</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. Жашыруун өтмөк жеткиликсиз болот.}other{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. # жашыруун өтмөк жеткиликсиз болот.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Өтмөктү топтон ажыратуу}other{Өтмөктөрдү топтон ажыратуу}}</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>

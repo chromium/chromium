@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Scroll and zoom the contents of your shared tab</translation>
 <translation id="1089439967362294234">Change Password</translation>
 <translation id="1090629319939036170">VR Menu</translation>
+<translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Information about your browser, OS, device, installed software and files</translation>
 <translation id="1096545575934602868">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be discarded.</translation>
 <translation id="1097803577928227769">Regional parks and gardens</translation>
@@ -472,6 +473,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1840009953725035797">Home cinema systems</translation>
 <translation id="1842969606798536927">Pay</translation>
 <translation id="1846432862466000825">Plastic (archival)</translation>
+<translation id="1848640291751752317">downloads</translation>
 <translation id="1848982255014129637">Photo (high gloss)</translation>
 <translation id="1853392626017747777">Virtual card enrollment closed</translation>
 <translation id="1854180393107901205">Stop casting</translation>
@@ -754,6 +756,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2366689192918515749">Meat and Seafood</translation>
 <translation id="2367567093518048410">Level</translation>
 <translation id="23703388716193220">Golf Equipment</translation>
+<translation id="2370368710215137370">Files upload</translation>
 <translation id="2374629208601905275">Based on a law in your region, Chrome asks you to choose your default search engine. These search engines are popular in your region and are shown in random order.</translation>
 <translation id="2377241607395428273">Graphics and animation software</translation>
 <translation id="2378084239755710604">Save card closed.</translation>
@@ -1422,6 +1425,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3682094733650754138">The fill address option was selected</translation>
 <translation id="3687920599421452763">Vans and minivans</translation>
 <translation id="3693327506115126094">Choose how you'll verify that it's you</translation>
+<translation id="3698353241727597930">Your administrator has configured to save <ph name="FILES" /> in your enterprise-managed <ph name="CLOUD_STORAGE" /> storage. These files may be monitored, audited and retained when you delete them.</translation>
 <translation id="3698629142018988477">Create site button, activate to quickly create a new site in Google Sites</translation>
 <translation id="3701325639446035885">Event Ticket Sales</translation>
 <translation id="3701427423622901115">Reset acknowledged.</translation>
@@ -1497,6 +1501,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3827112369919217609">Absolute</translation>
 <translation id="3828924085048779000">Empty passphrase is not allowed.</translation>
+<translation id="3830139096297532361">This PDF is inaccessible. Couldn't download text extraction files. Please try again later.</translation>
 <translation id="3830470485672984938">Use a different passkey</translation>
 <translation id="3831065134033923230">Check your saved passwords</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> has installed extensions for additional functions. Extensions have access to some of your data.</translation>
@@ -1671,6 +1676,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4202554117186904723">Fifth roll</translation>
 <translation id="4203769790323223880">Camera not allowed</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Checking firewall and antivirus configurations<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4210602799576081649">Verification code expired. Request a new code</translation>
 <translation id="421066178035138955">Use virtual reality devices and data</translation>
@@ -2731,6 +2737,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6270066318535733958">Boating</translation>
 <translation id="6272088941196661550">Resume your journey to see relevant activity in your Chrome history</translation>
 <translation id="6272383483618007430">Google update</translation>
+<translation id="6278015583149890680">Google Drive and OneDrive</translation>
 <translation id="6280223929691119688">Can’t deliver to this address. Select a different address.</translation>
 <translation id="6284292079994426700">26 in x 38 in</translation>
 <translation id="6284449872909111707">Text and instant messaging</translation>
@@ -3169,6 +3176,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7119063404975271297">TV dramas</translation>
 <translation id="7119371694555167493">Copying timed out</translation>
 <translation id="7119414471315195487">Close other tabs or programmes</translation>
+<translation id="7120588595737538743">downloads and screenshots</translation>
 <translation id="7124354851782353862">Enter your CVC</translation>
 <translation id="7129409597930077180">Can’t deliver to this address. Select a different address.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@ Additional details:
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, press Tab, then Enter to dismiss Chrome tip.</translation>
 <translation id="7485085230273446323">Business and industrial</translation>
 <translation id="7485870689360869515">No data found.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Shampoos and Conditioners</translation>
 <translation id="7495528107193238112">This content is blocked. Contact the site owner to fix the issue.</translation>
 <translation id="749865518782565832">Plumbing</translation>

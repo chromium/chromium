@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">ወደ <ph name="ROW_NUMBER" /> ረድፍ፣ <ph name="COLUMN_NUMBER" /> አምድ ተንቀሳቅሷል።</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
 <translation id="1774796056689732716">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" />፣ በአሁኑ ጊዜ <ph name="DATE" /> ተመርጧል።</translation>
-<translation id="1775598828170459419">ከ<ph name="NUM_TOTAL_ITEMS" /> <ph name="NUM_SHOWN_ITEMS" /> በማሳየት ላይ</translation>
 <translation id="178347895271755507">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ዕይታን ያዋቅሩ</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="1796561540704213354">የጎበኟቸውን ገፆች እና የተከፈቱ ገፆችን የሚያካትቱ ድር ጣቢያዎች</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">የተዋሃደ የዴስክቶፕ ሁነታ</translation>
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="2222841058024245321">ዴስክ 7</translation>
+<translation id="2223384056430485343">በተከፈለ ማያ ገጽ ውስጥ</translation>
 <translation id="2224075387478458881">ጥበቃ የሚደረግለት ይዘት በሚታይበት ጊዜ የማያ ገፅ ቀረጻ አይፈቀድም</translation>
 <translation id="2227179592712503583">የአስተያየት ጥቆማን አስወግድ</translation>
 <translation id="2248634276911611268">አገናኝን በአዲስ ትር ውስጥ ይክፈቱ እና ወደዚህ አዲስ ትር ይቀይሩ</translation>
@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">አብራ</translation>
 <translation id="5216991270656129561">እስከ <ph name="TIME" /> ድረስ ይጠፋል</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
+<translation id="5228195526683428788">የተከፈለ ማያ ገጽ ከፋይ</translation>
 <translation id="5229343007215035173">የግላዊነት ማያ ገጽን አብራ/አጥፋ</translation>
 <translation id="5230516054153933099">መስኮት</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037">ማከማቻ <ph name="STORAGE_IN_USE_SIZE" /> በጥቅም ላይ | <ph name="STORAGE_TOTAL_SIZE" /> ጠቅላላ</translation>
 <translation id="6614169507485700968">የግላዊነት ማያ ገፅ በርቷል</translation>
 <translation id="6622679827379792051">የስልክዎን መተግበሪያዎች ዕይታ ያዋቅሩ</translation>
+<translation id="662279009180869175">የተከፈለ ማያ ገጽ መጠን ለመቀየር የግራ እና ቀኝ ቀስቶችን ይጠቀሙ</translation>
 <translation id="6624493541160101248">የአሁኑ ዴስክ፦ <ph name="DESK_NAME" />። <ph name="DESK_INDEX" /> ዴስክ ከ<ph name="DESK_COUNT" />።</translation>
 <translation id="6625718907317144388">የእይታ ጥበቃ ስለበራ የ<ph name="APP_1_TITLE" />፣ <ph name="APP_2_TITLE" /> እና ሌሎች ማሳወቂያዎች ተደብቀዋል</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">ዴስክ 3</translation>
 <translation id="6671495933530132209">ምስል ቅዳ</translation>
 <translation id="6671661918848783005">የእርስዎን Chromebook መክፈት አልተቻለም</translation>
+<translation id="6676552993057022464">የተከፈለ ማያ ገጽ መጠን ለመቀየር የላይ እና የታች ቀስቶችን ይጠቀሙ</translation>
 <translation id="6682029141988159141">ከቅንጥብ ሰሌዳ የመጣ ይዘትን ይለጥፉ</translation>
 <translation id="6683022854667115063">የራስ ላይ ማዳመጫዎች</translation>
 <translation id="6686023075541098243">የስልክዎን ማሳወቂያዎች ዕይታ ያዋቅሩ</translation>

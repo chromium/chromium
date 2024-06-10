@@ -285,6 +285,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2515921719039583189">Chrome datası bu cihazdan silinsin?</translation>
 <translation id="2517113738956581680">Tam ölçülü vərəq</translation>
 <translation id="2523184218357549926">Daxil olduğunuz səhifələrin linkləri Google'a göndərilir</translation>
+<translation id="2524132927880411790">Google tətbiqi Səsli axtarışa keçin</translation>
 <translation id="2527209463677295330">Digər səhifə mətnini daxil etməklə daha yaxşı nəticələr görə bilərsiniz</translation>
 <translation id="2527497042232966453">Anonim tablara keçib</translation>
 <translation id="2527779675047087889">Mübadilə buferindəki kontenti gizlədin</translation>
@@ -519,6 +520,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="363596933471559332">Saxlanmış kredensialları istifadə edərək vebsaytlara avtomatik daxil olun. Funksiya deaktiv olanda sayta hər dəfə girdiyinizdə doğrulama tələb olunacaq.</translation>
 <translation id="3636940436873918441">Tərcih etdiyiniz dillər</translation>
 <translation id="3637744895182738742">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Google tətbiqi Home-a keçin</translation>
 <translation id="368329460027487650">Çıxılıb. Giriş seçimlərini açır.</translation>
 <translation id="3687645719033307815">Bu səhifənin önizləməsinə baxırsınız</translation>
 <translation id="3690369331356918524">Data pozulması halında parolların ələ keçirilib-keçirilmədiyini Sizə bildirir</translation>
@@ -1473,6 +1475,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="813082847718468539">Sayt məlumatına baxın</translation>
 <translation id="8135406045838672858">Endirilmiş PDF-lər avtomatik <ph name="APP_NAME" /> ilə açılır</translation>
 <translation id="8137562778192957619">Bu parolu xatırlamağa ehtiyac yoxdur. Google Parol Menecerində yadda saxlanacaq.</translation>
+<translation id="8152331954420209374">Linzaya keçin</translation>
 <translation id="8163820386638255770">Google Hesabında parolları istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8171286197772512427">Xülasə rəyi ilə paylaşım vərəqi açılıb</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1509,6 +1512,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8348430946834215779">Mümkün olduqda HTTPS istifadə edin və onu dəstəkləməyən saytları yükləməzdən əvvəl xəbərdarlıq alın</translation>
 <translation id="8354977102499939946">Səsinizlə sürətlə axtarın. Bu qısayolu redaktə etmək üçün Ayarlara keçin.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> endirmə bərpa edilib</translation>
+<translation id="8367705492654390392">İstədiyinizi soruşun</translation>
 <translation id="8368001212524806591">Qiyməti izləyin</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> hesabında əlfəcin, tarixçə və digər ayarlar var.</translation>
 <translation id="8387617938027387193">Kimliyinizi doğrulayın</translation>

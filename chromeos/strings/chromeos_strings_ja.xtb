@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">背景</translation>
 <translation id="3027578600144895987">カメラを閉じる</translation>
 <translation id="3031560714565892478">デバイスの種類はビデオカメラです。</translation>
+<translation id="3051968340259309715">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局、GPS などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスの位置情報が推定されます。[位置情報の精度] は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でオフにできます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">エンドポイント</translation>
 <translation id="3060579846059757016">アウトライン</translation>

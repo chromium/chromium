@@ -223,7 +223,6 @@
 <translation id="1770726142253415363">行 <ph name="ROW_NUMBER" />、列 <ph name="COLUMN_NUMBER" /> に移動しました。</translation>
 <translation id="1771761307086386028">右にスクロール</translation>
 <translation id="1774796056689732716">カレンダー、<ph name="CURRENT_MONTH_YEAR" />、現在 <ph name="DATE" /> が選択されています。</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> 件中 <ph name="NUM_SHOWN_ITEMS" /> 件を表示しています</translation>
 <translation id="178347895271755507">スマートフォンの最近の写真、メディア、通知の表示を設定</translation>
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
@@ -310,6 +309,7 @@
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222841058024245321">デスク 7</translation>
+<translation id="2223384056430485343">分割画面表示</translation>
 <translation id="2224075387478458881">保護されたコンテンツが表示されているときは、画面を録画できません</translation>
 <translation id="2227179592712503583">候補を削除</translation>
 <translation id="2248634276911611268">新しいタブでリンクを開いて、新しいタブに切り替える</translation>
@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">オン</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> までオフ</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="5228195526683428788">分割画面の分割線</translation>
 <translation id="5229343007215035173">プライバシー画面のオン / オフを切り替える</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
 <translation id="5234764350956374838">閉じる</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037">使用中の保存容量 <ph name="STORAGE_IN_USE_SIZE" /> | 全体 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
 <translation id="6622679827379792051">スマートフォンのアプリの表示を設定</translation>
+<translation id="662279009180869175">分割画面のサイズを変更するには、左右の矢印キーを使用します</translation>
 <translation id="6624493541160101248">現在のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="6625718907317144388">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />、その他の通知は表示されません</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">デスク 3</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
 <translation id="6671661918848783005">Chromebook のロックを解除できません</translation>
+<translation id="6676552993057022464">分割画面のサイズを変更するには、上下の矢印キーを使用します</translation>
 <translation id="6682029141988159141">クリップボードの内容を貼り付ける</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6686023075541098243">スマートフォンの通知の表示を設定</translation>

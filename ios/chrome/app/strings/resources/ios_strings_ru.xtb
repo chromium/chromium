@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">Сохр. пароли</translation>
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} простой пароль}one{{count} простой пароль}few{{count} простых пароля}many{{count} простых паролей}other{{count} простого пароля}}</translation>
+<translation id="1764070164487214210">Маршрут</translation>
 <translation id="1766411844240160513">Заполнить автоматически</translation>
 <translation id="1767766085187034454">Google Переводчик</translation>
 <translation id="1769106850515800431">Персонализированный контент</translation>
@@ -541,12 +542,14 @@
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
 <translation id="3775743491439407556">Ошибка синхронизации</translation>
 <translation id="3779810277399252432">Нет доступа к Интернету</translation>
+<translation id="3785672280731998727">Отображаемое название</translation>
 <translation id="3789294999358192700">Выполните следующие действия:</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803696231112616155">Предлагать переводить этот сайт</translation>
 <translation id="3808311849069021992">Показать сведения о поисковой системе</translation>
 <translation id="3810973564298564668">Управление</translation>
+<translation id="3812308602011798782">Отзывы</translation>
 <translation id="3818045793209708987">Эта посылка больше не отслеживается</translation>
 <translation id="3818293389945649617">Найти следующую</translation>
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
@@ -594,6 +597,7 @@
 <translation id="4045648459118332842">Вводите сохраненные пароли в любом приложении одним нажатием</translation>
 <translation id="4049507953662678203">Проверьте подключение к Интернету и повторите попытку.</translation>
 <translation id="4054572406751135230">Следите за новостями и обновлениями другого контента.</translation>
+<translation id="4068959193278821990">Включить улучшенную защиту</translation>
 <translation id="4092655288299341041">Справочная информация</translation>
 <translation id="4105841739161771091">{count,plural, =1{Удалить адрес}one{Удалить адреса}few{Удалить адреса}many{Удалить адреса}other{Удалить адреса}}</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
@@ -605,6 +609,7 @@
 <translation id="4121993058175073134">Чтобы отправлять очищенные данные для экспорта, задайте соответствующие параметры аккаунта электронной почты в приложении "Настройки".</translation>
 <translation id="4124987746317609294">Временной диапазон</translation>
 <translation id="4133265950310064865">Улучшенная защита</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Сайт собирается скачать файл и добавить его в ваш календарь.</translation>
 <translation id="4152011295694446843">Здесь вы найдете свои закладки</translation>
@@ -1472,6 +1477,7 @@
 <translation id="834783239627985533">Часто посещаемые сайты</translation>
 <translation id="8358401059263985056">Включить уведомления</translation>
 <translation id="8364841868226993049">Сохраняем изображение в Google Фото в аккаунте <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">Удалить ключ доступа</translation>
 <translation id="8370406443343902172">Открыть настройки</translation>
 <translation id="8374977641764177587">Включить уведомления?</translation>
 <translation id="8378714024927312812">Управляется вашей организацией</translation>

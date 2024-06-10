@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Fundal</translation>
 <translation id="3027578600144895987">Închide camera foto</translation>
 <translation id="3031560714565892478">Dispozitivul este o cameră video.</translation>
+<translation id="3051968340259309715">Astfel, serviciile de sistem pot să folosească Precizia locației pentru a-ți determina locația. Precizia locației folosește informațiile despre semnalele wireless, cum ar fi punctele de acces Wi-Fi, turnurile de telefonie mobilă și GPS-ul, împreună cu datele de la senzorii dispozitivului, cum ar fi accelerometrul și giroscopul, pentru a estima locația dispozitivului. Poți dezactiva locația în Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punct final</translation>
 <translation id="3060579846059757016">Scheme</translation>

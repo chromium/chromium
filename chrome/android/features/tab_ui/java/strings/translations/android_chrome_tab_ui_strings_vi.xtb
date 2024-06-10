@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Đánh dấu <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đánh dấu <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="2118649612461486615">Thông tin cửa hàng</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. Thẻ ẩn danh sẽ bị mất.}other{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. # thẻ ẩn danh sẽ bị mất.}}</translation>
 <translation id="2162620598375156287">Hiện có giá <ph name="CURRENT_PRICE" /> trên <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Bỏ thẻ khỏi nhóm}other{Bỏ thẻ khỏi nhóm}}</translation>
 <translation id="2271452184061378400">Các nhóm thẻ của bạn được lưu tại đây</translation>
