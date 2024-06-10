@@ -79,8 +79,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
  public:
   using GpuMemoryBufferVideoFramePoolContext =
       media::RenderableGpuMemoryBufferVideoFramePool::Context;
-  // |frame_sink_manager| must outlive this instance. Binds this instance to the
-  // Mojo message pipe endpoint in |receiver|, but |receiver| may be empty for
+  // `frame_sink_manager` must outlive this instance. Binds this instance to the
+  // Mojo message pipe endpoint in `receiver`, but `receiver` may be empty for
   // unit testing.
   FrameSinkVideoCapturerImpl(
       FrameSinkVideoCapturerManager* frame_sink_manager,
@@ -101,7 +101,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   const std::optional<VideoCaptureTarget>& target() const { return target_; }
 
   // In some cases, the target to resolve is already known and can be passed
-  // directly instead of attempting to resolve it in |ResolveTarget|. This is
+  // directly instead of attempting to resolve it in `ResolveTarget`. This is
   // called by the frame sink manager.
   void SetResolvedTarget(CapturableFrameSink* target);
 
@@ -155,7 +155,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // does not align with the number of frames that can be in-flight (the
   // capturer can artificially keep a marked frame alive, even if it's not
   // currently in-flight), we will crate a pool with capacity equal to
-  // |kDesignLimitMaxFrames + 1|.
+  // `kDesignLimitMaxFrames + 1`.
   //
   // Example numbers, for a frame pool that is fully-allocated with 11 frames of
   // size 1920x1080, using the I420 pixel format (12 bits per pixel). Then:
@@ -178,10 +178,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   static constexpr base::TimeDelta kMaxRefreshDelay = base::Seconds(1);
 
   // Calculate content rectangle
-  // Given a |visible_rect| representing visible rectangle of some video frame,
-  // calculates a centered rectangle that fits entirely within |visible_rect|
-  // and has the same aspect ratio as |source_size|, taking into account
-  // |pixel_format|.
+  // Given a `visible_rect` representing visible rectangle of some video frame,
+  // calculates a centered rectangle that fits entirely within `visible_rect`
+  // and has the same aspect ratio as `source_size`, taking into account
+  // `pixel_format`.
   static gfx::Rect GetContentRectangle(const gfx::Rect& visible_rect,
                                        const gfx::Size& source_size,
                                        media::VideoPixelFormat pixel_format);
@@ -196,12 +196,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // to RefreshInternal with kRefreshRequest as the event.
   void MaybeScheduleRefreshFrame();
 
-  // Sets the |dirty_rect_| to maximum size and updates the content version.
+  // Sets the `dirty_rect_` to maximum size and updates the content version.
   void InvalidateEntireSource();
 
   // Returns the delay that should be used when setting the refresh timer. This
   // is based on the current oracle prediction for frame duration and is
-  // bounded by |kMaxRefreshDelay|.
+  // bounded by `kMaxRefreshDelay`.
   base::TimeDelta GetDelayBeforeNextRefreshAttempt() const;
 
   // Called whenever a major damage event, such as a capture parameter change, a
@@ -218,9 +218,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   bool IsVideoCaptureStarted() final;
 
   // Resolves the capturable frame sink target using the current value of
-  // |target_|, detaching this capturer from the previous target (if any), and
+  // `target_`, detaching this capturer from the previous target (if any), and
   // attaching to the new found target. This is called by the frame sink
-  // manager. If |target_| is null, the capturer goes idle and expects this
+  // manager. If `target_` is null, the capturer goes idle and expects this
   // method to be called again in the near future, once the target becomes known
   // to the frame sink manager.
   void ResolveTarget();
@@ -230,7 +230,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // true iff the attempt was successful.
   bool TryResolveTarget();
 
-  // Helper method that actually implements the refresh logic. |event| is used
+  // Helper method that actually implements the refresh logic. `event` is used
   // to determine if the refresh is urgent for scheduling purposes.
   void RefreshInternal(media::VideoCaptureOracle::Event event);
 
@@ -245,30 +245,71 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                          base::TimeTicks event_time,
                          const CompositorFrameMetadata& frame_metadata);
 
-  struct CaptureRequestProperties {
-    CaptureRequestProperties(
-        int64_t capture_frame_number,
-        OracleFrameNumber oracle_frame_number,
-        int64_t content_version,
-        gfx::Rect content_rect,
-        CapturableFrameSink::RegionProperties region_properties,
-        scoped_refptr<media::VideoFrame> frame,
-        base::TimeTicks request_time);
-    CaptureRequestProperties();
-    CaptureRequestProperties(const CaptureRequestProperties&);
-    CaptureRequestProperties(CaptureRequestProperties&&);
-    CaptureRequestProperties& operator=(const CaptureRequestProperties&);
-    CaptureRequestProperties& operator=(CaptureRequestProperties&&);
-    ~CaptureRequestProperties();
+  // Used by FrameCapture to track the possible outcomes of a capture.
+  enum class CaptureResult : uint8_t {
+    kPending = 0,  // Outcome not yet known.
+    kSuccess,
+    // Unable to read data out of the CopyOutputResult.
+    kI420ReadbackFailed,
+    kARGBReadbackFailed,
+    kGpuMemoryBufferReadbackFailed,
+    kNV12ReadbackFailed,
+    // Subcapture target changed during the capture process.
+    kSubCaptureTargetChanged,
+    // Oracle rejected the capture.  See VideoCaptureOracle::CompleteCapture.
+    kOracleRejectedFrame
+  };
+
+  // One instance is created for each capture. It wraps the `media::VideoFrame`
+  // that will be eventually delivered to the client along with bookkeeping
+  // information for the capture process, and also tracks whether the capture
+  // was successful or not.
+  class FrameCapture {
+   public:
+    FrameCapture(int64_t capture_frame_number,
+                 OracleFrameNumber oracle_frame_number,
+                 int64_t content_version,
+                 gfx::Rect content_rect,
+                 CapturableFrameSink::RegionProperties region_properties,
+                 scoped_refptr<media::VideoFrame> frame,
+                 base::TimeTicks request_time);
+    // Default ctor and copy-ability is required; this is stored in a
+    // std::priority_queue.
+    FrameCapture();
+    FrameCapture(const FrameCapture&);
+    FrameCapture(FrameCapture&&);
+    FrameCapture& operator=(const FrameCapture&);
+    FrameCapture& operator=(FrameCapture&&);
+    ~FrameCapture();
+    bool operator<(const FrameCapture& other) const;
+
+    // Returns true if the capture has reached a terminal state.
+    bool finished() const { return result_ != CaptureResult::kPending; }
+
+    // Returns true if the capture is successful so far.
+    bool success() const { return result_ == CaptureResult::kSuccess; }
+
+    CaptureResult result() const { return result_; }
+
+    // Marks the capture as successful; however this may be overridden by
+    // CaptureFailed() at a later stage in the process.
+    void CaptureSucceeded();
+
+    // Marks the capture as failed.  `frame` will be set to null, but a copy of
+    // its metadata will be retained.
+    void CaptureFailed(CaptureResult result);
+
+    // Returns the video frame metadata for this capture.
+    const media::VideoFrameMetadata& frame_metadata() const;
 
     // The current capture frame number, starting from zero and incremented
     // by one for every CopyOutputRequest.
     int64_t capture_frame_number;
 
-    // The oracle's frame number for this frame. Unlike |capture_frame_number|,
-    // this gets incremented with each call to MaybeCaptureFrame, whether or
-    // not we decide to actually capture a frame. If the pipeline is too full,
-    // the |oracle_frame_number| will increment while the |capture_frame_number|
+    // The oracle's frame number for this frame. Unlike `capture_frame_number`,
+    // this gets incremented with each call to MaybeCaptureFrame, whether or not
+    // we decide to actually capture a frame. If the pipeline is too full, the
+    // `oracle_frame_number` will increment while the `capture_frame_number`
     // will not.
     OracleFrameNumber oracle_frame_number;
 
@@ -278,8 +319,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     // become marked and can be resurrected.
     int64_t content_version;
 
-    // The subsection of the output frame that the content gets scaled to and
-    // outputted on, in post-scaled physical pixels.
+    // The subsection of the output frame that the content gets scaled to
+    // and outputted on, in post-scaled physical pixels.
     gfx::Rect content_rect;
 
     // Properties of the region being captured.
@@ -290,34 +331,35 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
     // When the request for capture was made.
     base::TimeTicks request_time;
+
+   private:
+    // A copy of the frame's metadata retained even if the original frame is
+    // discarded.
+    std::optional<media::VideoFrameMetadata> frame_metadata_;
+
+    // The result of the capture.
+    CaptureResult result_ = CaptureResult::kPending;
   };
 
   // Extracts the image data from the copy output result, populating the
   // content region of a [possibly letterboxed] video frame.
-  void DidCopyFrame(CaptureRequestProperties properties,
+  void DidCopyFrame(FrameCapture capture,
                     std::unique_ptr<CopyOutputResult> result);
 
-  // Places the frame in the |delivery_queue_| and calls MaybeDeliverFrame(),
-  // one frame at a time, in-order. |frame| may be null to indicate a
-  // completed, but unsuccessful capture.
-  void OnFrameReadyForDelivery(int64_t capture_frame_number,
-                               OracleFrameNumber oracle_frame_number,
-                               const gfx::Rect& content_rect,
-                               scoped_refptr<media::VideoFrame> frame);
+  // Places the capture-in-progress `frame_capture` into `delivery_queue_` and
+  // calls MaybeDeliverFrame(), one frame at a time, in-order.
+  void OnFrameReadyForDelivery(const FrameCapture& frame_capture);
 
-  // Delivers a |frame| to the consumer, if the VideoCaptureOracle allows
-  // it. |frame| can be null to indicate a completed, but unsuccessful capture.
-  // In this case, some state will be updated, but nothing will be sent to the
-  // consumer.
-  void MaybeDeliverFrame(OracleFrameNumber oracle_frame_number,
-                         const gfx::Rect& content_rect,
-                         scoped_refptr<media::VideoFrame> frame);
+  // Delivers a frame to the consumer, if the capture was successful and
+  // VideoCaptureOracle allows it.  If no frame is able to be delivered, some
+  // state will be updated, but nothing will be sent to the consumer.
+  void MaybeDeliverFrame(FrameCapture frame_capture);
 
-  // For ARGB format, ensures that every dimension of |size| is positive. For
+  // For ARGB format, ensures that every dimension of `size` is positive. For
   // I420 format, ensures that every dimension is even and at least 2.
   gfx::Size AdjustSizeForPixelFormat(const gfx::Size& size) const;
 
-  // Expands |rect| such that its x, y, right, and bottom values are even
+  // Expands `rect` such that its x, y, right, and bottom values are even
   // numbers.
   static gfx::Rect ExpandRectToI420SubsampleBoundaries(const gfx::Rect& rect);
 
@@ -326,13 +368,13 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   bool ShouldMark(const media::VideoFrame& frame,
                   int64_t content_version) const;
 
-  // Marks |frame| for resurrection, using |content_version| as its content
-  // version. If |frame| is null, the frame marking will be cleared, in which
-  // case the |content_version| parameter is ignored.
+  // Marks `frame` for resurrection, using `content_version` as its content
+  // version. If `frame` is null, the frame marking will be cleared, in which
+  // case the `content_version` parameter is ignored.
   void MarkFrame(scoped_refptr<media::VideoFrame> frame,
                  int64_t content_version = -1);
 
-  // Returns true if currently marked frame can be resurrected. |size| specifies
+  // Returns true if currently marked frame can be resurrected. `size` specifies
   // the desired size of the frame
   bool CanResurrectFrame(const gfx::Size& size) const;
 
@@ -405,7 +447,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // True after Start() and false after Stop().
   bool video_capture_started_ = false;
   // Our consumer-preferred VideoBufferHandle type. Valid only when
-  // |video_capture_started_| is true.
+  // `video_capture_started_` is true.
   mojom::BufferFormatPreference buffer_format_preference_ =
       mojom::BufferFormatPreference::kDefault;
 
@@ -448,20 +490,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // A queue of captured frames pending delivery. This queue is used to re-order
   // frames, if they should happen to be captured out-of-order.
-  struct CapturedFrame {
-    int64_t capture_frame_number;
-    OracleFrameNumber oracle_frame_number;
-    gfx::Rect content_rect;
-    scoped_refptr<media::VideoFrame> frame;
-    CapturedFrame(int64_t capture_frame_number,
-                  OracleFrameNumber oracle_frame_number,
-                  const gfx::Rect& content_rect,
-                  scoped_refptr<media::VideoFrame> frame);
-    CapturedFrame(const CapturedFrame& other);
-    ~CapturedFrame();
-    bool operator<(const CapturedFrame& other) const;
-  };
-  std::priority_queue<CapturedFrame> delivery_queue_;
+  std::priority_queue<FrameCapture> delivery_queue_;
 
   // The Oracle-provided media timestamp of the first frame. This is used to
   // compute the relative media stream timestamps for each successive frame.
