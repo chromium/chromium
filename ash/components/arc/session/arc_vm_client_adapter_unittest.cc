@@ -2920,22 +2920,6 @@ TEST_F(ArcVmClientAdapterTest, ArcCustomTabsExperimentTrue) {
   EXPECT_TRUE(request.mini_instance_request().arc_custom_tabs_experiment());
 }
 
-TEST_F(ArcVmClientAdapterTest, ArcEnableNotificationRefreshFalse) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.enable_notifications_refresh = false;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.mini_instance_request().enable_notifications_refresh());
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcEnableNotificationRefreshTrue) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.enable_notifications_refresh = true;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.mini_instance_request().enable_notifications_refresh());
-}
-
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSignedIn) {
   StartParams start_params(GetPopulatedStartParams());
   start_params.arc_signed_in = true;
