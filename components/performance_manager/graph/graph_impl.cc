@@ -49,8 +49,6 @@ base::Value::Dict DescribeNodeWithDescriber(const NodeDataDescriber& describer,
       return describer.DescribeNodeData(SystemNodeImpl::FromNode(node));
     case NodeTypeEnum::kWorker:
       return describer.DescribeNodeData(WorkerNodeImpl::FromNode(node));
-    case NodeTypeEnum::kInvalidType:
-      NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
 }
@@ -553,9 +551,6 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
         observer.OnWorkerNodeAdded(worker_node);
       }
     } break;
-    case NodeTypeEnum::kInvalidType: {
-      NOTREACHED_IN_MIGRATION();
-    } break;
   }
 }
 
@@ -588,9 +583,6 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
       for (auto& observer : worker_node_observers_) {
         observer.OnBeforeWorkerNodeRemoved(worker_node);
       }
-    } break;
-    case NodeTypeEnum::kInvalidType: {
-      NOTREACHED_IN_MIGRATION();
     } break;
   }
 }

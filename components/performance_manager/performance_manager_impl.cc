@@ -454,9 +454,7 @@ void PerformanceManagerImpl::BatchDeleteNodesImpl(
         graph->RemoveNode(worker_node);
         break;
       }
-      case SystemNodeImpl::Type():
-      case NodeTypeEnum::kInvalidType:
-      default: {
+      case SystemNodeImpl::Type(): {
         NOTREACHED_IN_MIGRATION();
         break;
       }

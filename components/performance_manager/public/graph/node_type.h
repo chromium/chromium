@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/numerics/safe_conversions.h"
+
 namespace performance_manager {
 
 enum class NodeTypeEnum : uint8_t {
@@ -15,11 +17,12 @@ enum class NodeTypeEnum : uint8_t {
   kProcess,
   kSystem,
   kWorker,
-  kInvalidType,
+  kMaxValue = kWorker
 };
 
 // Keep in sync with NodeTypeEnum above.
-inline constexpr uint8_t kValidNodeTypeCount = 5;
+inline constexpr uint8_t kValidNodeTypeCount =
+    base::strict_cast<uint8_t>(NodeTypeEnum::kMaxValue) + 1;
 
 }  // namespace performance_manager
 

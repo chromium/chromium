@@ -80,8 +80,6 @@ std::string DumpNodeDescription(const Node* node) {
       return WorkerNodeImplDescriber()
           .DescribeNodeData(WorkerNodeImpl::FromNode(node))
           .DebugString();
-    case NodeTypeEnum::kInvalidType:
-      NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
 }
