@@ -3701,7 +3701,7 @@ RenderInputRouter* RenderWidgetHostImpl::GetRenderInputRouter() {
 
 void RenderWidgetHostImpl::SetupRenderInputRouter() {
   render_input_router_ = std::make_unique<RenderInputRouter>(
-      this, this, MakeFlingScheduler(), this,
+      this, MakeFlingScheduler(), this,
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   SetupInputRouter();
 }

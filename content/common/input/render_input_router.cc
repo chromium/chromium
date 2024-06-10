@@ -109,7 +109,6 @@ RenderInputRouter::~RenderInputRouter() = default;
 
 RenderInputRouter::RenderInputRouter(
     InputRouterImplClient* host,
-    InputDispositionHandler* handler,
     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -117,7 +116,6 @@ RenderInputRouter::RenderInputRouter(
       latency_tracker_(
           std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
       input_router_impl_client_(host),
-      input_disposition_handler_(handler),
       delegate_(delegate),
       task_runner_(std::move(task_runner)) {}
 
@@ -293,8 +291,7 @@ void RenderInputRouter::OnWheelEventAck(
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              wheel_event.event);
 
-  input_disposition_handler_->OnWheelEventAck(wheel_event, ack_source,
-                                              ack_result);
+  delegate_->OnWheelEventAck(wheel_event, ack_source, ack_result);
 }
 
 void RenderInputRouter::OnTouchEventAck(
@@ -327,7 +324,7 @@ void RenderInputRouter::OnGestureEventAck(
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              event.event);
 
-  input_disposition_handler_->OnGestureEventAck(event, ack_source, ack_result);
+  delegate_->OnGestureEventAck(event, ack_source, ack_result);
 }
 
 void RenderInputRouter::DispatchInputEventWithLatencyInfo(

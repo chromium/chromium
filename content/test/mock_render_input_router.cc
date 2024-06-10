@@ -8,12 +8,10 @@ namespace content {
 
 MockRenderInputRouter::MockRenderInputRouter(
     InputRouterImplClient* host,
-    InputDispositionHandler* handler,
     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : RenderInputRouter(host,
-                        handler,
                         std::move(fling_scheduler),
                         delegate,
                         std::move(task_runner)) {

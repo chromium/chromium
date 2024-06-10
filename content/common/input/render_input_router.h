@@ -49,7 +49,6 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
   ~RenderInputRouter() override;
 
   RenderInputRouter(InputRouterImplClient* host,
-                    InputDispositionHandler* handler,
                     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
                     RenderInputRouterDelegate* delegate,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -198,7 +197,6 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
   raw_ptr<InputRouterImplClient> input_router_impl_client_;
-  raw_ptr<InputDispositionHandler> input_disposition_handler_;
   raw_ptr<RenderInputRouterDelegate> delegate_;
 
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;

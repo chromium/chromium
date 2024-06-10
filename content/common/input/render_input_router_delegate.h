@@ -48,6 +48,16 @@ class CONTENT_EXPORT RenderInputRouterDelegate {
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
       const blink::WebInputEvent& event) = 0;
+
+  // Called upon event ack receipt from the renderer.
+  virtual void OnGestureEventAck(
+      const input::GestureEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) = 0;
+  virtual void OnWheelEventAck(
+      const input::MouseWheelEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) = 0;
 };
 
 }  // namespace content

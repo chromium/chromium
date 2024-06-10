@@ -149,7 +149,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     : public RenderWidgetHost,
       public FrameTokenMessageQueue::Client,
       public InputRouterImplClient,
-      public InputDispositionHandler,
       public RenderProcessHostObserver,
       public RenderProcessHostPriorityClient,
       public SyntheticGestureController::Delegate,
@@ -377,6 +376,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
       const blink::WebInputEvent& event) override;
+  void OnGestureEventAck(
+      const input::GestureEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) override;
+  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -1012,19 +1018,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Callback for notification that we failed to receive any rendered graphics
   // from a newly loaded page. Used for testing.
   virtual void NotifyNewContentRenderingTimeoutForTesting() {}
-
-  // InputDispositionHandler
-  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
-                       blink::mojom::InputEventResultSource ack_source,
-                       blink::mojom::InputEventResultState ack_result) override;
-  void OnTouchEventAck(
-      const input::TouchEventWithLatencyInfo& event,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result) override {}
-  void OnGestureEventAck(
-      const input::GestureEventWithLatencyInfo& event,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result) override;
 
   // virtual for testing.
   virtual void OnMouseEventAck(const input::MouseEventWithLatencyInfo& event,
