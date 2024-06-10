@@ -19,7 +19,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -79,10 +78,9 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
                     set(true);
                 }
             };
-    private PolicyLoadListener mPolicyLoadListener;
+    private final PolicyLoadListener mPolicyLoadListener;
 
     private final long mStartTime;
-    private long mNativeInitializedTime;
 
     private ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
@@ -97,6 +95,10 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
                                 mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
+    }
+
+    protected long getStartTime() {
+        return mStartTime;
     }
 
     @Override
@@ -167,10 +169,6 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
         mNativeInitialized = true;
-        mNativeInitializedTime = SystemClock.elapsedRealtime();
-        // TODO(b/41493788): Do not record this outside of the FRE.
-        RecordHistogram.recordTimesHistogram(
-                "MobileFre.NativeInitialized", mNativeInitializedTime - mStartTime);
         mPolicyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());
     }
 
@@ -249,11 +247,8 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         return mFirstRunAppRestrictionInfo;
     }
 
-    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
-        if (!mNativeInitialized) return;
-
-        assert mNativeInitializedTime != 0;
-    }
+    /** Observer method for the policy load listener. Overridden by inheriting classes. */
+    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {}
 
     /**
      * @return PolicyLoadListener used to indicate if policy initialization is complete.

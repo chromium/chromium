@@ -314,6 +314,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // Notify feature engagement that FRE occurred.
         TrackerFactory.getTrackerForProfile(profile)
                 .notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
+        RecordHistogram.recordTimesHistogram(
+                "MobileFre.NativeInitialized", SystemClock.elapsedRealtime() - getStartTime());
     }
 
     private void onNativeDependenciesFullyInitialized() {
