@@ -113,7 +113,7 @@ void LayoutGrid::SetCachedPlacementData(GridPlacementData&& placement_data) {
 }
 
 bool LayoutGrid::HasCachedSubgridMinMaxSizes() const {
-  return static_cast<bool>(cached_subgrid_min_max_sizes_);
+  return cached_subgrid_min_max_sizes_ && !IsSubgridMinMaxSizesCacheDirty();
 }
 
 const MinMaxSizes& LayoutGrid::CachedSubgridMinMaxSizes() const {
@@ -125,16 +125,13 @@ void LayoutGrid::SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
                                             const GridLayoutData& layout_data) {
   cached_subgrid_min_max_sizes_ = MakeGarbageCollected<SubgridMinMaxSizesCache>(
       std::move(min_max_sizes), layout_data);
+  SetSubgridMinMaxSizesCacheDirty(false);
 }
 
-bool LayoutGrid::ShouldInvalidateMinMaxSizesCacheFor(
+bool LayoutGrid::ShouldInvalidateSubgridMinMaxSizesCacheFor(
     const GridLayoutData& layout_data) const {
   return HasCachedSubgridMinMaxSizes() &&
          !cached_subgrid_min_max_sizes_->IsValidFor(layout_data);
-}
-
-void LayoutGrid::InvalidateSubgridMinMaxSizesCache() {
-  cached_subgrid_min_max_sizes_.Clear();
 }
 
 const GridLayoutData* LayoutGrid::LayoutData() const {

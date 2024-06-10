@@ -34,9 +34,8 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   const MinMaxSizes& CachedSubgridMinMaxSizes() const;
   void SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
                                   const GridLayoutData& layout_data);
-  bool ShouldInvalidateMinMaxSizesCacheFor(
+  bool ShouldInvalidateSubgridMinMaxSizesCacheFor(
       const GridLayoutData& layout_data) const;
-  void InvalidateSubgridMinMaxSizesCache();
 
   wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection track_direction) const;
