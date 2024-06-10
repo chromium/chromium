@@ -121,6 +121,7 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     this.initialPin_ = '';
     this.pinKeyboardValue_ = '';
     this.isConfirmStep = false;
+    this.enableSubmit = false;
   }
 
   /**
