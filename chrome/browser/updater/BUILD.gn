@@ -5,56 +5,65 @@
 import("//build/config/chrome_build.gni")
 import("//chrome/browser/buildflags.gni")
 
-source_set("browser_updater_client") {
-  sources = [
-    "browser_updater_client.cc",
-    "browser_updater_client.h",
-    "browser_updater_client_util.cc",
-    "browser_updater_client_util.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/browser:buildflags",
-    "//chrome/common:version_header",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:browser_sources",
-    "//components/version_info",
-  ]
-
-  if (is_win) {
-    sources += [ "browser_updater_client_win.cc" ]
-
-    deps += [
-      "//chrome/browser/google",
-      "//chrome/install_static:install_static_util",
-    ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "browser_updater_client_mac.mm",
-      "browser_updater_helper_client_mac.h",
-      "browser_updater_helper_client_mac.mm",
+if (is_win || is_mac) {
+  source_set("browser_updater_client") {
+    sources = [
+      "browser_updater_client.cc",
+      "browser_updater_client.h",
+      "browser_updater_client_util.cc",
+      "browser_updater_client_util.h",
     ]
 
-    if (enable_updater) {
-      sources += [ "browser_updater_client_util_mac.mm" ]
-    } else {
-      sources += [ "browser_updater_client_util_no_updater.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser:buildflags",
+      "//chrome/common:version_header",
+      "//chrome/updater:branding_header",
+      "//chrome/updater:browser_sources",
+      "//components/version_info",
+    ]
+
+    if (is_win) {
+      sources += [ "browser_updater_client_win.cc" ]
+
+      if (enable_updater) {
+        sources += [ "browser_updater_client_util_win.cc" ]
+      } else {
+        sources += [ "browser_updater_client_util_no_updater.cc" ]
+      }
+
+      deps += [
+        "//chrome/browser/google",
+        "//chrome/install_static:install_static_util",
+        "//chrome/installer/util:with_no_strings",
+      ]
     }
 
-    deps += [
-      "//chrome/app:branded_strings_grit",
-      "//chrome/app:generated_resources_grit",
-      "//chrome/browser/google",
-      "//chrome/common:channel_info",
-      "//chrome/common:chrome_features",
-      "//ui/base",
-    ]
-  }
+    if (is_mac) {
+      sources += [
+        "browser_updater_client_mac.mm",
+        "browser_updater_helper_client_mac.h",
+        "browser_updater_helper_client_mac.mm",
+      ]
 
-  frameworks = [ "OpenDirectory.framework" ]
+      if (enable_updater) {
+        sources += [ "browser_updater_client_util_mac.mm" ]
+      } else {
+        sources += [ "browser_updater_client_util_no_updater.cc" ]
+      }
+
+      deps += [
+        "//chrome/app:branded_strings_grit",
+        "//chrome/app:generated_resources_grit",
+        "//chrome/browser/google",
+        "//chrome/common:channel_info",
+        "//chrome/common:chrome_features",
+        "//ui/base",
+      ]
+    }
+
+    frameworks = [ "OpenDirectory.framework" ]
+  }
 }
 
 source_set("scheduler") {
@@ -65,8 +74,8 @@ source_set("scheduler") {
 
   deps = [ "//base" ]
 
-  if (is_mac) {
-    if (enable_updater || is_chrome_branded) {
+  if (enable_updater) {
+    if (is_mac) {
       sources += [ "scheduler_mac.cc" ]
       deps += [
         ":browser_updater_client",
@@ -74,8 +83,16 @@ source_set("scheduler") {
         "//chrome/common",
         "//chrome/updater:browser_sources",
       ]
+    } else if (is_win) {
+      sources += [ "scheduler_win.cc" ]
+      deps += [
+        ":browser_updater_client",
+        "//chrome/updater:browser_sources",
+      ]
     } else {
-      sources += [ "scheduler_mac_noimpl.cc" ]
+      sources += [ "scheduler_noimpl.cc" ]
     }
+  } else {
+    sources += [ "scheduler_noimpl.cc" ]
   }
 }

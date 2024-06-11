@@ -104,6 +104,7 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -879,6 +880,10 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PreCreateMainMessageLoop();
+
+#if BUILDFLAG(ENABLE_UPDATER)
+  updater::SchedulePeriodicTasks();
+#endif  // BUILDFLAG(ENABLE_UPDATER)
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
