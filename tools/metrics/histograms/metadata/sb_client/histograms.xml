@@ -570,20 +570,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.ClassificationStart" enum="BooleanHit"
-    expires_after="2024-07-21">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The number of pages that we could have possibly classified (essentially the
-    number of top page navigations by users with SBClientPhishing enabled). The
-    name is slightly misleading as it is recorded before
-    &quot;Preclassification&quot; happens.
-
-    This metric is used to populate a dashboard on go/crsb-site.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.Classifier.Event"
     enum="SBPhishingClassifierEvent" expires_after="2024-09-22">
   <owner>drubery@chromium.org</owner>

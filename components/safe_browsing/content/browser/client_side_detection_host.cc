@@ -208,8 +208,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   void Start() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // We start by doing some simple checks that can run on the UI thread.
-    base::UmaHistogramBoolean("SBClientPhishing.ClassificationStart", true);
-
     if (url_.SchemeIs(content::kChromeUIScheme)) {
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_CHROME_UI_PAGE);
