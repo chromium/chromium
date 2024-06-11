@@ -11734,6 +11734,10 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillUpstreamUpdatedUiOptions,
          "AutofillUpstreamUpdatedUi")},
 
+    {"canvas-2d-hibernation", flag_descriptions::kCanvasHibernationName,
+     flag_descriptions::kCanvasHibernationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -19,6 +19,10 @@ const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "
     "using software rendering.";
 
+const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
+const char kCanvasHibernationDescription[] =
+    "Enables canvas hibernation for 2D canvas.";
+
 const char kCanvasOopRasterizationName[] =
     "Out-of-process 2D canvas rasterization.";
 const char kCanvasOopRasterizationDescription[] =

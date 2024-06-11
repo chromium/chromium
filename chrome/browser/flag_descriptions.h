@@ -473,6 +473,9 @@ extern const char kGetUserMediaDeferredDeviceSettingsSelectionName[];
 extern const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[];
 #endif
 
+extern const char kCanvasHibernationName[];
+extern const char kCanvasHibernationDescription[];
+
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 

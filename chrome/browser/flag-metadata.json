@@ -1252,6 +1252,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "canvas-2d-hibernation",
+    "owners": [ "lizeb@chromium.org", "clank-performance-team@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "canvas-2d-layers",
     "owners": [ "fserb@chromium.org", "jpgravel@chromium.org", "yiyix@chromium.org" ],
     "expiry_milestone": 132
