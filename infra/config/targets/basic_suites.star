@@ -220,6 +220,7 @@ targets.legacy_basic_suite(
     },
 )
 
+# Run android_browser_tests with feature BackForwardCache disabled
 targets.legacy_basic_suite(
     name = "bfcache_android_specific_gtests",
     tests = {
@@ -231,6 +232,7 @@ targets.legacy_basic_suite(
     },
 )
 
+# Run content_browser_tests with BackForwardCache disabled
 targets.legacy_basic_suite(
     name = "bfcache_generic_gtests",
     tests = {
@@ -242,6 +244,7 @@ targets.legacy_basic_suite(
     },
 )
 
+# Run browser_tests with BackForwardCache disabled
 targets.legacy_basic_suite(
     name = "bfcache_linux_specific_gtests",
     tests = {
@@ -5076,6 +5079,19 @@ targets.legacy_basic_suite(
     },
 )
 
+# Run webview_instrumentation_test with feature WebViewBackForwardCache enabled.
+# These tests are for WebView only.
+targets.legacy_basic_suite(
+    name = "webview_bot_instrumentation_test_apk_bfcache_mutations_gtest",
+    tests = {
+        "webview_instrumentation_test_apk_bfcache_mutations": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
+)
+
 targets.legacy_basic_suite(
     name = "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
     tests = {
@@ -5103,6 +5119,22 @@ targets.legacy_basic_suite(
     name = "webview_cts_tests_gtest",
     tests = {
         "webview_cts_tests": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+# Run webview_cts_tests with feature WebViewBackForwardCache enabled.
+# These tests are for WebView only.
+targets.legacy_basic_suite(
+    name = "webview_cts_tests_bfcache_mutations_gtest",
+    tests = {
+        "webview_cts_tests_bfcache_mutations": targets.legacy_test_config(
             args = [
                 "--store-tombstones",
             ],

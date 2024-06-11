@@ -123,6 +123,8 @@ targets.legacy_compound_suite(
     basic_suites = [
         "bfcache_android_specific_gtests",
         "bfcache_generic_gtests",
+        "webview_bot_instrumentation_test_apk_bfcache_mutations_gtest",
+        "webview_cts_tests_bfcache_mutations_gtest",
     ],
 )
 

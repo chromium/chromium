@@ -5265,6 +5265,19 @@
       },
     },
 
+    'webview_bot_instrumentation_test_apk_bfcache_mutations_gtest': {
+      'webview_instrumentation_test_apk_bfcache_mutations': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--use-apk-under-test-flags-file',
+          '--enable-features=WebViewBackForwardCache',
+        ],
+        'swarming': {
+          'shards': 12,
+        },
+      },
+    },
+
     'webview_bot_instrumentation_test_apk_gtest': {
       'webview_instrumentation_test_apk': {
         'args': [
@@ -5304,6 +5317,23 @@
 
     'webview_bot_unittests_gtest': {
       'android_webview_unittests': {},
+    },
+
+    'webview_cts_tests_bfcache_mutations_gtest': {
+      'webview_cts_tests_bfcache_mutations': {
+        'test': 'webview_cts_tests',
+        'mixins': [
+          'webview_cts_archive',
+        ],
+        'args': [
+          '--use-apk-under-test-flags-file',
+          '--enable-features=WebViewBackForwardCache',
+          '--store-tombstones',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
     },
 
     'webview_cts_tests_gtest': {
@@ -5606,6 +5636,8 @@
     'bfcache_android_gtests': [
       'bfcache_android_specific_gtests',
       'bfcache_generic_gtests',
+      'webview_bot_instrumentation_test_apk_bfcache_mutations_gtest',
+      'webview_cts_tests_bfcache_mutations_gtest',
     ],
 
     'bfcache_linux_gtests': [
