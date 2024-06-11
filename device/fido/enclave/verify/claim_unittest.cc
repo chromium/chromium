@@ -89,4 +89,23 @@ TEST(ClaimTest, VerifyValidityDuration_ValidityIsCurrent_ReturnsTrue) {
                                      MakeValidEndorsementStatement()));
 }
 
+TEST(ClaimTest, ParseEndorsement_ValidJsonFile_SuccessfullyReturnsValue) {
+  std::string endorsement = GetContentsFromFile("endorsement.json");
+  auto endorsement_statement = ParseEndorsementStatement(
+      base::make_span(reinterpret_cast<const uint8_t*>(endorsement.data()),
+                      endorsement.size()));
+  ASSERT_TRUE(endorsement_statement.has_value());
+  ASSERT_TRUE(ValidateEndorsement(*endorsement_statement));
+}
+
+TEST(ClaimTest, ParseEndorsement_InvalidJsonFile_ReturnsErrorMessage) {
+  std::string endorsement = GetContentsFromFile("endorsement_novalidity.json");
+  auto endorsement_statement = ParseEndorsementStatement(
+      base::make_span(reinterpret_cast<const uint8_t*>(endorsement.data()),
+                      endorsement.size()));
+  ASSERT_FALSE(endorsement_statement.has_value());
+  ASSERT_EQ(endorsement_statement.error(),
+            "can't parse predicate from endorsement.");
+}
+
 }  // namespace device::enclave

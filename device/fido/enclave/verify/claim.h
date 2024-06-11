@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "device/fido/enclave/verify/hash.h"
 
 namespace device::enclave {
 
@@ -34,12 +35,12 @@ extern const inline std::string_view kStatementV1 =
 
 // A software artifact identified by its name and a set of artifacts.
 struct COMPONENT_EXPORT(DEVICE_FIDO) Subject {
-  Subject(std::string name, std::map<std::string, std::string> digest);
+  Subject(std::string name, Hash digest);
   Subject();
   ~Subject();
 
   std::string name;
-  std::map<std::string, std::string> digest;
+  Hash digest;
 };
 
 // Represents a generic statement that binds a predicate to a subject.
@@ -54,18 +55,17 @@ struct Statement {
 // Metadata about an artifact that serves as the evidence for the truth of a
 // claim.
 struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimEvidence {
-  ClaimEvidence(std::optional<std::string> role,
-                std::string uri,
-                std::map<std::string, std::string> digest);
+  ClaimEvidence(std::optional<std::string> role, std::string uri, Hash digest);
   ClaimEvidence();
   ~ClaimEvidence();
+  ClaimEvidence(const ClaimEvidence& claim_evidence);
 
   // Optional field specifying the role of this evidence within the claim.
   std::optional<std::string> role;
   // URI uniquely identifies this evidence.
   std::string uri;
   // Collection of cryptographic digests for the contents of this artifact.
-  std::map<std::string, std::string> digest;
+  Hash digest;
 };
 
 // Validity time range of an issued claim.
@@ -100,8 +100,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Claimless {};
 typedef Statement<ClaimPredicate<Claimless>> EndorsementStatement;
 
 // Converts the given byte array into an endorsement statement.
-base::expected<EndorsementStatement, std::string> ParseEndorsementStatement(
-    base::span<const uint8_t> bytes);
+base::expected<EndorsementStatement, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
+    ParseEndorsementStatement(base::span<const uint8_t> bytes);
 
 // Checks that the given statement is a valid claim:
 // - has valid Statement and Predicate types, and
