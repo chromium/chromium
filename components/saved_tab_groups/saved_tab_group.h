@@ -72,8 +72,12 @@ class SavedTabGroup {
     return saved_tabs_;
   }
   std::optional<size_t> position() const { return position_; }
+  const std::optional<std::string>& collaboration_id() const {
+    return collaboration_id_;
+  }
 
   bool is_pinned() const { return position_.has_value(); }
+  bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
@@ -107,6 +111,8 @@ class SavedTabGroup {
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
   SavedTabGroup& SetPinned(bool pinned);
+  SavedTabGroup& SetCollaborationId(
+      std::optional<std::string> collaboration_id);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -215,6 +221,9 @@ class SavedTabGroup {
   // Timestamp for when the tab was last updated using windows epoch
   // microseconds.
   base::Time update_time_windows_epoch_micros_;
+
+  // Collaboration ID in case if the group is shared.
+  std::optional<std::string> collaboration_id_;
 };
 
 }  // namespace tab_groups

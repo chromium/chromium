@@ -28,8 +28,9 @@ using testing::Invoke;
 using testing::Return;
 using testing::UnorderedElementsAre;
 
-MATCHER_P2(HasGroupMetadata, title, color, "") {
-  return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color;
+MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
+  return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
+         arg.collaboration_id() == collaboration_id;
 }
 
 sync_pb::SharedTabGroupDataSpecifics MakeTabGroupSpecifics(
@@ -44,25 +45,29 @@ sync_pb::SharedTabGroupDataSpecifics MakeTabGroupSpecifics(
 }
 
 syncer::EntityData CreateEntityData(
-    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    const std::string& collaboration_id) {
   syncer::EntityData entity_data;
   *entity_data.specifics.mutable_shared_tab_group_data() = specifics;
+  entity_data.collaboration_id = collaboration_id;
   entity_data.name = specifics.guid();
   return entity_data;
 }
 
 std::unique_ptr<syncer::EntityChange> CreateAddEntityChange(
-    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    const std::string& collaboration_id) {
   const std::string& storage_key = specifics.guid();
-  return syncer::EntityChange::CreateAdd(storage_key,
-                                         CreateEntityData(specifics));
+  return syncer::EntityChange::CreateAdd(
+      storage_key, CreateEntityData(specifics, collaboration_id));
 }
 
 std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
-    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    const std::string& collaboration_id) {
   const std::string& storage_key = specifics.guid();
-  return syncer::EntityChange::CreateUpdate(storage_key,
-                                            CreateEntityData(specifics));
+  return syncer::EntityChange::CreateUpdate(
+      storage_key, CreateEntityData(specifics, collaboration_id));
 }
 
 class SharedTabGroupDataSyncBridgeTest : public testing::Test {
@@ -101,8 +106,10 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
   InitializeBridge();
   EXPECT_TRUE(bridge()->SupportsGetClientTag());
   EXPECT_FALSE(bridge()
-                   ->GetClientTag(CreateEntityData(MakeTabGroupSpecifics(
-                       "test title", sync_pb::SharedTabGroup::GREEN)))
+                   ->GetClientTag(CreateEntityData(
+                       MakeTabGroupSpecifics("test title",
+                                             sync_pb::SharedTabGroup::GREEN),
+                       "collaboration"))
                    .empty());
 }
 
@@ -118,17 +125,21 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteGroupsAtInitialSync) {
 
   syncer::EntityChangeList change_list;
   change_list.push_back(CreateAddEntityChange(
-      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE)));
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE),
+      "collaboration"));
   change_list.push_back(CreateAddEntityChange(
-      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED)));
+      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED),
+      "collaboration 2"));
   bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                               std::move(change_list));
 
   EXPECT_THAT(
       model()->saved_tab_groups(),
       UnorderedElementsAre(
-          HasGroupMetadata("title", tab_groups::TabGroupColorId::kBlue),
-          HasGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed)));
+          HasSharedGroupMetadata("title", tab_groups::TabGroupColorId::kBlue,
+                                 "collaboration"),
+          HasSharedGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed,
+                                 "collaboration 2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
@@ -137,17 +148,21 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   syncer::EntityChangeList change_list;
   change_list.push_back(CreateAddEntityChange(
-      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE)));
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE),
+      "collaboration"));
   change_list.push_back(CreateAddEntityChange(
-      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED)));
+      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED),
+      "collaboration 2"));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(change_list));
 
   EXPECT_THAT(
       model()->saved_tab_groups(),
       UnorderedElementsAre(
-          HasGroupMetadata("title", tab_groups::TabGroupColorId::kBlue),
-          HasGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed)));
+          HasSharedGroupMetadata("title", tab_groups::TabGroupColorId::kBlue,
+                                 "collaboration"),
+          HasSharedGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed,
+                                 "collaboration 2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
@@ -155,10 +170,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
 
   sync_pb::SharedTabGroupDataSpecifics group_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const std::string collaboration_id1 = "collaboration";
   syncer::EntityChangeList change_list;
-  change_list.push_back(CreateAddEntityChange(group_specifics));
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, collaboration_id1));
   change_list.push_back(CreateAddEntityChange(
-      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED)));
+      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED),
+      "collaboration 2"));
   bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                               std::move(change_list));
   ASSERT_EQ(model()->Count(), 2);
@@ -166,15 +184,19 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
 
   group_specifics.mutable_tab_group()->set_title("updated title");
   group_specifics.mutable_tab_group()->set_color(sync_pb::SharedTabGroup::CYAN);
-  change_list.push_back(CreateUpdateEntityChange(group_specifics));
+  change_list.push_back(
+      CreateUpdateEntityChange(group_specifics, collaboration_id1));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(change_list));
 
   EXPECT_THAT(
       model()->saved_tab_groups(),
       UnorderedElementsAre(
-          HasGroupMetadata("updated title", tab_groups::TabGroupColorId::kCyan),
-          HasGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed)));
+          HasSharedGroupMetadata("updated title",
+                                 tab_groups::TabGroupColorId::kCyan,
+                                 "collaboration"),
+          HasSharedGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed,
+                                 "collaboration 2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
@@ -182,12 +204,14 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
 
   SavedTabGroup group_to_delete(u"title", tab_groups::TabGroupColorId::kBlue,
                                 /*urls=*/{}, /*position=*/std::nullopt);
+  group_to_delete.SetCollaborationId("collaboration");
   group_to_delete.AddTabLocally(SavedTabGroupTab(
       GURL("https://website.com"), u"Website Title",
       group_to_delete.saved_guid(), /*position=*/std::nullopt));
   model()->Add(group_to_delete);
   model()->Add(SavedTabGroup(u"title 2", tab_groups::TabGroupColorId::kGrey,
-                             /*urls=*/{}, /*position=*/std::nullopt));
+                             /*urls=*/{}, /*position=*/std::nullopt)
+                   .SetCollaborationId("collaboration 2"));
   ASSERT_EQ(model()->Count(), 2);
 
   syncer::EntityChangeList change_list;
@@ -196,9 +220,18 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(change_list));
 
-  EXPECT_THAT(model()->saved_tab_groups(),
-              UnorderedElementsAre(HasGroupMetadata(
-                  "title 2", tab_groups::TabGroupColorId::kGrey)));
+  EXPECT_THAT(
+      model()->saved_tab_groups(),
+      UnorderedElementsAre(HasSharedGroupMetadata(
+          "title 2", tab_groups::TabGroupColorId::kGrey, "collaboration 2")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
+  InitializeBridge();
+
+  EXPECT_TRUE(bridge()->IsEntityDataValid(CreateEntityData(
+      MakeTabGroupSpecifics("test title", sync_pb::SharedTabGroup::GREEN),
+      "collaboration")));
 }
 
 }  // namespace

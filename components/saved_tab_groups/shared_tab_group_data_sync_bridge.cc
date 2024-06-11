@@ -84,7 +84,7 @@ base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
 
 sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
     const SavedTabGroup& group) {
-  // TODO(crbug.com/319521964): check if the `group` is shared tab group.
+  CHECK(group.is_shared_tab_group());
   sync_pb::SharedTabGroupDataSpecifics pb_specifics;
   pb_specifics.set_guid(group.saved_guid().AsLowercaseString());
   pb_specifics.set_update_time_windows_epoch_micros(
@@ -99,13 +99,14 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
 }
 
 SavedTabGroup SpecificsToSharedTabGroup(
-    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    const std::string& collaboration_id) {
   CHECK(specifics.has_tab_group());
+  CHECK(!collaboration_id.empty());
 
   const tab_groups::TabGroupColorId color =
       SyncColorToTabGroupColor(specifics.tab_group().color());
-  const std::u16string& title =
-      base::UTF8ToUTF16(specifics.tab_group().title());
+  std::u16string title = base::UTF8ToUTF16(specifics.tab_group().title());
   const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
 
   // GUID must be checked before this method is called.
@@ -114,12 +115,14 @@ SavedTabGroup SpecificsToSharedTabGroup(
   const base::Time update_time =
       TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros());
 
-  return SavedTabGroup(title, color, /*urls=*/{}, /*position=*/std::nullopt,
-                       guid, /*local_group_id=*/std::nullopt,
-                       /*originator_cache_guid=*/std::nullopt,
-                       /*created_before_syncing_tab_groups=*/false,
-                       /*creation_time_windows_epoch_micros=*/std::nullopt,
-                       update_time);
+  SavedTabGroup group(title, color, /*urls=*/{}, /*position=*/std::nullopt,
+                      guid, /*local_group_id=*/std::nullopt,
+                      /*originator_cache_guid=*/std::nullopt,
+                      /*created_before_syncing_tab_groups=*/false,
+                      /*creation_time_windows_epoch_micros=*/std::nullopt,
+                      update_time);
+  group.SetCollaborationId(collaboration_id);
+  return group;
 }
 
 }  // namespace
@@ -180,7 +183,8 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
         if (change->data().specifics.shared_tab_group_data().has_tab_group()) {
           AddGroupToLocalStorage(
               change->data().specifics.shared_tab_group_data(),
-              metadata_change_list.get(), write_batch.get());
+              change->data().collaboration_id, metadata_change_list.get(),
+              write_batch.get());
         } else if (change->data().specifics.shared_tab_group_data().has_tab()) {
           // Postpone tab updates until all remote groups are added.
           tab_updates.push_back(std::move(change));
@@ -280,7 +284,18 @@ SharedTabGroupDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 bool SharedTabGroupDataSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  if (entity_data.collaboration_id.empty()) {
+    LOG(WARNING) << "Remote Shared Tab Group is missing collaboration ID";
+    return false;
+  }
+  const sync_pb::SharedTabGroupDataSpecifics& specifics =
+      entity_data.specifics.shared_tab_group_data();
+  if (!base::Uuid::ParseLowercase(specifics.guid()).is_valid()) {
+    return false;
+  }
+  if (!specifics.has_tab_group() && !specifics.has_tab()) {
+    return false;
+  }
   return true;
 }
 
@@ -321,6 +336,7 @@ void SharedTabGroupDataSyncBridge::OnDatabaseSave(
 
 void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    const std::string& collaboration_id,
     syncer::MetadataChangeList* metadata_change_list,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
   base::Uuid group_guid = base::Uuid::ParseLowercase(specifics.guid());
@@ -335,7 +351,8 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     // This is a new remotely created group. Add the group from sync into local
     // storage.
     write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
-    model_->AddedFromSync(SpecificsToSharedTabGroup(specifics));
+    model_->AddedFromSync(
+        SpecificsToSharedTabGroup(specifics, collaboration_id));
     return;
   }
 
@@ -348,12 +365,18 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
       /*originator_cache_guid=*/std::nullopt,
       TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros()));
   CHECK(existing_group);
+
+  // TODO(crbug.com/319521964): consider checking that collaboration ID never
+  // changes.
+
+  // Create new specifics in case some fields were merged.
   sync_pb::SharedTabGroupDataSpecifics updated_specifics =
       SharedTabGroupToSpecifics(*existing_group);
 
   // Write result to the store.
   // TODO(crbug.com/319521964): introduce an additional layer to store specifics
-  // with local-only data.
+  // with local-only data. Note that collaboration ID is stored as part of sync
+  // metadata.
   write_batch->WriteData(updated_specifics.guid(),
                          updated_specifics.SerializeAsString());
 }

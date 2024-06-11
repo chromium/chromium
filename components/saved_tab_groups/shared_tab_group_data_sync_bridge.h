@@ -90,6 +90,7 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
   // this class).
   void AddGroupToLocalStorage(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
+      const std::string& collaboration_id,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::ModelTypeStore::WriteBatch* write_batch);
   void AddTabToLocalStorage(

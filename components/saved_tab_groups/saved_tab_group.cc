@@ -175,6 +175,13 @@ SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetCollaborationId(
+    std::optional<std::string> collaboration_id) {
+  collaboration_id_ = std::move(collaboration_id);
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
   UpdateTabPositionsImpl();
