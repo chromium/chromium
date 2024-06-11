@@ -98,6 +98,8 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
       base::FeatureList::IsEnabled(arc::kIgnoreHoverEventAnr);
   flags->extend_input_anr_timeout =
       base::FeatureList::IsEnabled(arc::kExtendInputAnrTimeout);
+  flags->notification_width_increase =
+      chromeos::features::IsNotificationWidthIncreaseEnabled();
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }
