@@ -95,6 +95,7 @@ class EditorMediator : public EditorContext::Observer,
 
   // EditorSystemActuator::System overrides
   void Announce(const std::u16string& message) override;
+  // EditorSystemActuator::System / EditorPanelManager::Delegate override
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;
   void CloseUI() override;

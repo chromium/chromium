@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module crosapi.mojom;
 
@@ -89,4 +89,7 @@ interface EditorPanelManager {
   // Binds a new EditorObserver in ash
   [MinVersion=3] BindEditorObserver@8(
       pending_remote<EditorObserver> pending_observer_remote);
+
+  // Should be called when the consent is rejected by the user.
+  [MinVersion=5] OnConsentRejected@9();
 };

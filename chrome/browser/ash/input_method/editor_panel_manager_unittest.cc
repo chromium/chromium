@@ -56,6 +56,7 @@ class EditorPanelManagerDelegateForTesting
   void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
                             pending_receiver) override {}
   void OnPromoCardDeclined() override {}
+  void ProcessConsentAction(ConsentAction consent_action) override {}
   void HandleTrigger(std::optional<std::string_view> preset_query_id,
                      std::optional<std::string_view> freeform_text) override {}
   EditorOpportunityMode GetEditorOpportunityMode() const override {

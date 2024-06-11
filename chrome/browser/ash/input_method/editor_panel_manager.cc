@@ -124,6 +124,10 @@ void EditorPanelManager::OnPromoCardDeclined() {
       EditorStates::kPromoCardExplicitDismissal);
 }
 
+void EditorPanelManager::OnConsentRejected() {
+  delegate_->ProcessConsentAction(ConsentAction::kDeclined);
+}
+
 void EditorPanelManager::StartEditingFlow() {
   delegate_->HandleTrigger(/*preset_query_id=*/std::nullopt,
                            /*freeform_text=*/std::nullopt);

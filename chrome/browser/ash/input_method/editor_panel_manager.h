@@ -38,6 +38,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
         mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) = 0;
 
     virtual void OnPromoCardDeclined() = 0;
+    virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void HandleTrigger(
         std::optional<std::string_view> preset_query_id,
         std::optional<std::string_view> freeform_text) = 0;
@@ -64,6 +65,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   void GetEditorPanelContext(GetEditorPanelContextCallback callback) override;
   void OnPromoCardDismissed() override;
   void OnPromoCardDeclined() override;
+  void OnConsentRejected() override;
   void StartEditingFlow() override;
   void StartEditingFlowWithPreset(const std::string& text_query_id) override;
   void StartEditingFlowWithFreeform(const std::string& text) override;
