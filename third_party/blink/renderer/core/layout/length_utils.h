@@ -592,10 +592,6 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 // to zero) and an auto inline-size resolves to the respective min/max content
 // size.
 //
-// Additionally, the min/max contribution includes the inline margins. Because
-// content contributions are commonly needed by a block's parent, we also take
-// a writing-mode here so we can compute this in the parent's coordinate system.
-//
 // Note that if the writing mode of the child is orthogonal to that of the
 // parent, we'll still return the inline min/max contribution in the writing
 // mode of the parent (i.e. typically something based on the preferred *block*
