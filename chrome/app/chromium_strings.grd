@@ -1551,9 +1551,12 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <if  expr="is_macosx">
+      <if expr="is_macosx">
         <message name="IDS_RUNTIME_PERMISSION_OS_REASON_TEXT" desc="Text provided to the macOS permission dialog, explaining why Chrome needs to access a protected resource (e.g., camera, microphone).">
           Once Chromium has access, websites will be able to ask you for access.
+        </message>
+        <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_DESC" desc="Text shown in the macOS permission dialog, describing why Chrome needs the permission to access local network.">
+          This will allow you to select from available devices and display content on them.
         </message>
       </if>
 
