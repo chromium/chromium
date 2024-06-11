@@ -54,6 +54,11 @@ const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
 // Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kRequestsFeatureFlag = 1llu << 4;
 
+// Dict key for the IsInternal device flag.
+const char kIsInternalKey[] = "IsInternal";
+// Dict key for the HasTrustedReport release flag.
+const char kHasTrustedReportKey[] = "HasTrustedReport";
+
 // String to FwupdDbusResult conversion
 // Consistent with
 // https://github.com/fwupd/fwupd/blob/988f27fd96c5334089ec5daf9c4b2a34f5c6943a/libfwupd/fwupd-error.c#L26
@@ -342,12 +347,14 @@ class FwupdClientImpl : public FwupdClient {
         variant_reader.PopString(&value_string);
         result.Set(key, value_string);
       } else if (data_type == dbus::Message::UINT64) {
+        // Value doesn't support lossless storage of uint64_t, so
+        // convert flags to boolean keys.
         if (key == "Flags") {
           uint64_t value_uint64 = 0;
           variant_reader.PopUint64(&value_uint64);
           const bool is_internal =
               (value_uint64 & kInternalDeviceFlag) == kInternalDeviceFlag;
-          result.Set(key, is_internal);
+          result.Set(kIsInternalKey, is_internal);
         }
         if (key == "TrustFlags") {
           uint64_t value_uint64 = 0;
@@ -355,7 +362,7 @@ class FwupdClientImpl : public FwupdClient {
           const bool has_trusted_report =
               (value_uint64 & kTrustedReportsReleaseFlag) ==
               kTrustedReportsReleaseFlag;
-          result.Set(key, has_trusted_report);
+          result.Set(kHasTrustedReportKey, has_trusted_report);
         }
       }
     }
@@ -402,7 +409,7 @@ class FwupdClientImpl : public FwupdClient {
       const std::string* uri = dict.FindString("Uri");
       const std::string* checksum = dict.FindString("Checksum");
       const std::string* remote_id = dict.FindString("RemoteId");
-      std::optional<bool> trusted_report = dict.FindBool("TrustFlags");
+      std::optional<bool> trusted_report = dict.FindBool(kHasTrustedReportKey);
       bool has_trusted_report =
           !base::FeatureList::IsEnabled(
               features::kUpstreamTrustedReportsFirmware) ||
@@ -499,9 +506,9 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
-      std::optional<bool> flags = dict.FindBool("Flags");
+      std::optional<bool> is_internal = dict.FindBool(kIsInternalKey);
       const std::string* name = dict.FindString("Name");
-      if (flags.has_value() && flags.value()) {
+      if (is_internal.has_value() && is_internal.value()) {
         if (name) {
           FIRMWARE_LOG(DEBUG) << "Ignoring internal device: " << *name;
         } else {
