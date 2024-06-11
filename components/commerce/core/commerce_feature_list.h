@@ -391,6 +391,11 @@ extern const char kCodeBasedRuleDiscountCouponDeletionTimeParam[];
 extern const base::FeatureParam<base::TimeDelta>
     kCodeBasedRuleDiscountCouponDeletionTime;
 
+// Feature params for product specifications.
+extern const char kProductSpecificationsSetValidForClusteringTimeParam[];
+extern const base::FeatureParam<base::TimeDelta>
+    kProductSpecificationsSetValidForClusteringTime;
+
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);
 // Check if a URL belongs to a partner merchant of rule discount.

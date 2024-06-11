@@ -142,13 +142,13 @@ class CommerceUiTabHelperTest : public testing::Test {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   raw_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
   // Must outlive `web_contents_`.

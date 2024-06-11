@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/cluster_server_proxy.h"
@@ -55,7 +56,8 @@ class MockObserver : public ClusterManager::Observer {
 
 class ClusterManagerTest : public testing::Test {
  public:
-  ClusterManagerTest() = default;
+  ClusterManagerTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ClusterManagerTest() override = default;
 
   void SetUp() override {
@@ -117,6 +119,15 @@ class ClusterManagerTest : public testing::Test {
 
  protected:
   ProductSpecificationsSet CreateProductSpecificationsSet(
+      std::vector<GURL> url_group,
+      int64_t update_time_usec_since_epoch) {
+    base::Uuid uuid = base::Uuid::GenerateRandomV4();
+    return ProductSpecificationsSet(uuid.AsLowercaseString(), 0,
+                                    update_time_usec_since_epoch, url_group,
+                                    kProductGroupName);
+  }
+
+  ProductSpecificationsSet CreateProductSpecificationsSet(
       const std::string& url,
       int64_t update_time_usec_since_epoch) {
     base::Uuid uuid = base::Uuid::GenerateRandomV4();
@@ -128,7 +139,8 @@ class ClusterManagerTest : public testing::Test {
 
   ProductSpecificationsSet CreateProductSpecificationsSet(
       const std::string& url) {
-    return CreateProductSpecificationsSet(url, 0);
+    return CreateProductSpecificationsSet(
+        url, base::Time::Now().InMillisecondsSinceUnixEpoch());
   }
 
   ProductInfo CreateProductInfo(const std::string& label, int64_t product_id) {
@@ -216,10 +228,8 @@ TEST_F(ClusterManagerTest, AddAndRemoveCandidateProduct) {
 
 TEST_F(ClusterManagerTest,
        ClusterManagerInitializationWithExistingProductSpecificationsSets) {
-  ProductSpecificationsSet set1 =
-      CreateProductSpecificationsSet(kProduct1Url, 0);
-  ProductSpecificationsSet set2 =
-      CreateProductSpecificationsSet(kProduct2Url, 0);
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
+  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
   ON_CALL(*product_specification_service_, GetAllProductSpecifications())
       .WillByDefault(
           testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
@@ -251,6 +261,94 @@ TEST_F(ClusterManagerTest,
   ASSERT_EQ(category.category_labels_size(), 1);
   ASSERT_EQ(category.category_labels(0).category_default_label(),
             kCategoryChair);
+}
+
+TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
+  // Mock that set1 is no longer valid for clustering.
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(
+      kProduct1Url, (base::Time::Now() -
+                     kProductSpecificationsSetValidForClusteringTime.Get())
+                        .InMillisecondsSinceUnixEpoch());
+  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
+  ON_CALL(*product_specification_service_, GetAllProductSpecifications())
+      .WillByDefault(
+          testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
+  EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
+      .Times(1);
+  cluster_manager_ = std::make_unique<ClusterManager>(
+      product_specification_service_.get(),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::url_infos,
+                          base::Unretained(this)));
+  ASSERT_EQ(GetProductGroupMap()->size(), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 0u);
+  ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 1u);
+}
+
+TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
+  ON_CALL(*product_specification_service_, GetAllProductSpecifications())
+      .WillByDefault(
+          testing::Return(std::vector<ProductSpecificationsSet>{set1}));
+  EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
+      .Times(1);
+  cluster_manager_ = std::make_unique<ClusterManager>(
+      product_specification_service_.get(),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::url_infos,
+                          base::Unretained(this)));
+  ASSERT_EQ(GetProductGroupMap()->size(), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
+
+  // Add one set that will become invalid in one day and another set that will
+  // become invalid in two days.
+  std::vector<GURL> url_group1({GURL(kProduct2Url), GURL(kTestUrl1)});
+  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(
+      url_group1,
+      (base::Time::Now() -
+       kProductSpecificationsSetValidForClusteringTime.Get() + base::Days(1))
+          .InMillisecondsSinceUnixEpoch());
+  cluster_manager_->OnProductSpecificationsSetAdded(set2);
+  std::vector<GURL> url_group2({GURL(kTestUrl2)});
+  ProductSpecificationsSet set3 = CreateProductSpecificationsSet(
+      url_group2,
+      (base::Time::Now() -
+       kProductSpecificationsSetValidForClusteringTime.Get() + base::Days(2))
+          .InMillisecondsSinceUnixEpoch());
+  cluster_manager_->OnProductSpecificationsSetAdded(set3);
+
+  ASSERT_EQ(GetProductGroupMap()->size(), 3u);
+  ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set3.uuid()), 1u);
+
+  // Mock that one URL in the soon-to-be invalid set is open.
+  UpdateUrlInfos(std::vector<GURL>{GURL(kProduct2Url)});
+
+  // Fast forward one day. The first set would become invalid and the open URLs
+  // in the set will be added back to candidate products.
+  ASSERT_EQ(0u, GetCandidateProductMap()->size());
+  task_environment_.FastForwardBy(base::Days(1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(GetProductGroupMap()->size(), 2u);
+  ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 0u);
+  ASSERT_EQ(GetProductGroupMap()->count(set3.uuid()), 1u);
+  ASSERT_EQ(1u, GetCandidateProductMap()->size());
+
+  // Fast forward one more day, the second set would become invalid and be
+  // removed.
+  task_environment_.FastForwardBy(base::Days(1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(GetProductGroupMap()->size(), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 0u);
+  ASSERT_EQ(GetProductGroupMap()->count(set3.uuid()), 0u);
+  ASSERT_EQ(1u, GetCandidateProductMap()->size());
 }
 
 TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigation) {
@@ -491,8 +589,7 @@ TEST_F(ClusterManagerTest,
 
   // Similar candidates will not include `foo1` if it is added to a product
   // group.
-  ProductSpecificationsSet set1 =
-      CreateProductSpecificationsSet(kProduct1Url, 0);
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
   cluster_manager_->OnProductSpecificationsSetAdded(set1);
 
   GetEntryPointInfoForNavigation(foo2, &info);
@@ -541,10 +638,8 @@ TEST_F(ClusterManagerTest,
 
 TEST_F(ClusterManagerTest,
        FindSimilarCandidateProductsForProductGroupWithProductsAlreadyInGroup) {
-  ProductSpecificationsSet set1 =
-      CreateProductSpecificationsSet(kProduct1Url, 0);
-  ProductSpecificationsSet set2 =
-      CreateProductSpecificationsSet(kProduct2Url, 0);
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
+  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
   cluster_manager_->OnProductSpecificationsSetAdded(set1);
   cluster_manager_->OnProductSpecificationsSetAdded(set2);
   GURL foo1(kProduct1Url);
@@ -605,8 +700,7 @@ TEST_F(ClusterManagerTest, GetProductGroupForCandidateProduct) {
 }
 
 TEST_F(ClusterManagerTest, GetProductGroupForCandidateProductAlreadyInGroup) {
-  ProductSpecificationsSet set1 =
-      CreateProductSpecificationsSet(kProduct1Url, 0);
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
   cluster_manager_->OnProductSpecificationsSetAdded(set1);
   GURL foo1(kProduct1Url);
   GURL foo2(kTestUrl1);
@@ -624,7 +718,9 @@ TEST_F(ClusterManagerTest, GetProductGroupForCandidateProductAlreadyInGroup) {
 }
 
 TEST_F(ClusterManagerTest, MultipleSimilarProductGroupForCandidateProduct) {
-  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kTestUrl1, 0);
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(
+      kTestUrl1,
+      (base::Time::Now() - base::Days(1)).InMillisecondsSinceUnixEpoch());
   cluster_manager_->OnProductSpecificationsSetAdded(set1);
   GURL foo(kProduct1Url);
   UpdateUrlInfos(std::vector<GURL>{foo});
@@ -635,8 +731,8 @@ TEST_F(ClusterManagerTest, MultipleSimilarProductGroupForCandidateProduct) {
       cluster_manager_->GetProductGroupForCandidateProduct(foo);
   ASSERT_EQ(product_group->uuid, set1.uuid());
 
-  ProductSpecificationsSet set2 =
-      CreateProductSpecificationsSet(kTestUrl3, 100);
+  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(
+      kTestUrl3, base::Time::Now().InMillisecondsSinceUnixEpoch());
   cluster_manager_->OnProductSpecificationsSetAdded(set2);
   base::RunLoop().RunUntilIdle();
   product_group = cluster_manager_->GetProductGroupForCandidateProduct(foo);

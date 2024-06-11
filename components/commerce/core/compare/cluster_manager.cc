@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
@@ -162,6 +163,11 @@ ClusterManager::ClusterManager(
   }
 
   obs_.Observe(product_specification_service);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ClusterManager::RemoveIneligibleGroupsForClustering,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Days(1));
 }
 
 ClusterManager::~ClusterManager() {
@@ -170,6 +176,9 @@ ClusterManager::~ClusterManager() {
 
 void ClusterManager::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& product_specifications_set) {
+  if (!IsSetEligibleForClustering(product_specifications_set.update_time())) {
+    return;
+  }
   base::Uuid uuid = product_specifications_set.uuid();
   product_group_map_[uuid] =
       std::make_unique<ProductGroup>(uuid, product_specifications_set.name(),
@@ -474,6 +483,41 @@ void ClusterManager::OnGetComparableUrls(
   }
 
   std::move(callback).Run(std::move(open_urls));
+}
+
+bool ClusterManager::IsSetEligibleForClustering(const base::Time& update_time) {
+  return base::Time::Now() - update_time <
+         kProductSpecificationsSetValidForClusteringTime.Get();
+}
+
+void ClusterManager::RemoveIneligibleGroupsForClustering() {
+  for (auto it = product_group_map_.begin(); it != product_group_map_.end();) {
+    const auto& product_group = it->second;
+    if (!IsSetEligibleForClustering(product_group->update_time)) {
+      // If the product URLs in the removing set are open, add them back to
+      // candidate products.
+      for (const GURL& product_url : product_group->member_products) {
+        if (IsUrlOpen(product_url, get_open_url_infos_cb_) &&
+            candidate_product_map_.find(product_url) ==
+                candidate_product_map_.end()) {
+          get_product_info_cb_.Run(
+              product_url,
+              base::BindOnce(&ClusterManager::OnProductInfoRetrieved,
+                             weak_ptr_factory_.GetWeakPtr()));
+        }
+      }
+      it = product_group_map_.erase(it);
+    } else {
+      it++;
+    }
+  }
+
+  // Re-schedule another remove in one day.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ClusterManager::RemoveIneligibleGroupsForClustering,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Days(1));
 }
 
 }  // namespace commerce

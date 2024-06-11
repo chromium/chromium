@@ -440,6 +440,13 @@ const base::FeatureParam<base::TimeDelta>
         &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountCouponDeletionTimeParam,
         base::Seconds(6)};
 
+const char kProductSpecificationsSetValidForClusteringTimeParam[] =
+    "set-valid-for-clustering-time";
+const base::FeatureParam<base::TimeDelta>
+    kProductSpecificationsSetValidForClusteringTime{
+        &commerce::kProductSpecifications,
+        kProductSpecificationsSetValidForClusteringTimeParam, base::Days(14)};
+
 const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";
 const base::FeatureParam<bool> kRevertIconOnFailure{
