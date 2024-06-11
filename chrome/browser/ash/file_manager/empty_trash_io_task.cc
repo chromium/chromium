@@ -58,26 +58,22 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
   DCHECK_EQ(in_flight_, 0);
   progress_.state = State::kInProgress;
   for (const trash::TrashPathsMap::value_type& location : locations) {
-    for (const std::string_view name :
-         {trash::kFilesFolderName, trash::kInfoFolderName}) {
-      base::FilePath dir =
-          location.first.Append(location.second.relative_folder_path)
-              .Append(name);
+    base::FilePath dir =
+        location.first.Append(location.second.relative_folder_path);
 
-      const EntryStatus& entry = progress_.outputs.emplace_back(
-          file_system_context_->CreateCrackedFileSystemURL(
-              storage_key_, storage::FileSystemType::kFileSystemTypeLocal, dir),
-          std::nullopt);
-      ++in_flight_;
+    const EntryStatus& entry = progress_.outputs.emplace_back(
+        file_system_context_->CreateCrackedFileSystemURL(
+            storage_key_, storage::FileSystemType::kFileSystemTypeLocal, dir),
+        std::nullopt);
+    ++in_flight_;
 
-      VLOG(1) << "Removing " << entry.url.path();
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(&base::DeletePathRecursively, std::move(dir)),
-          base::BindOnce(&EmptyTrashIOTask::OnRemoved,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         progress_.outputs.size() - 1));
-    }
+    VLOG(1) << "Removing " << entry.url.path();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&base::DeletePathRecursively, std::move(dir)),
+        base::BindOnce(&EmptyTrashIOTask::OnRemoved,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       progress_.outputs.size() - 1));
   }
 }
 
