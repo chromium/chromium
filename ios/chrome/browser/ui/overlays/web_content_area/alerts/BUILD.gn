@@ -12,10 +12,10 @@ source_set("alerts") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/alert_view/ui_bundled",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/shared/ui/elements",
-    "//ios/chrome/browser/ui/alert_view",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/presenters",
   ]
@@ -31,14 +31,14 @@ source_set("unit_tests") {
   deps = [
     ":alerts",
     "//base/test:test_support",
+    "//ios/chrome/browser/alert_view/ui_bundled",
+    "//ios/chrome/browser/alert_view/ui_bundled/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/elements",
-    "//ios/chrome/browser/ui/alert_view",
-    "//ios/chrome/browser/ui/alert_view/test",
     "//ios/chrome/browser/ui/overlays/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test:test",

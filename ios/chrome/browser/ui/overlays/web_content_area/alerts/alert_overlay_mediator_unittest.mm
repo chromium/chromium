@@ -6,14 +6,14 @@
 
 #import "base/functional/bind.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
+#import "ios/chrome/browser/alert_view/ui_bundled/test/fake_alert_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
-#import "ios/chrome/browser/ui/alert_view/alert_action.h"
-#import "ios/chrome/browser/ui/alert_view/test/fake_alert_consumer.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 

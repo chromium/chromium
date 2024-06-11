@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/alert_view/alert_action.h"
+#import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 
 @implementation AlertAction
 

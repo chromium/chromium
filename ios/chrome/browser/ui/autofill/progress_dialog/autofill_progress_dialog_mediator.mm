@@ -9,8 +9,8 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
-#import "ios/chrome/browser/ui/alert_view/alert_action.h"
-#import "ios/chrome/browser/ui/alert_view/alert_consumer.h"
+#import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
+#import "ios/chrome/browser/alert_view/ui_bundled/alert_consumer.h"
 #import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(

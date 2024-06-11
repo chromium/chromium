@@ -11,7 +11,7 @@ source_set("test") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/alert_view",
+    "//ios/chrome/browser/alert_view/ui_bundled",
     "//testing/gtest",
   ]
 }

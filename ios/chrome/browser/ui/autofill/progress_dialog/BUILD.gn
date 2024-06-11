@@ -13,12 +13,12 @@ source_set("progress_dialog") {
   deps = [
     "//base:base",
     "//components/autofill/core/browser",
+    "//ios/chrome/browser/alert_view/ui_bundled",
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/alert_view",
     "//ios/chrome/browser/ui/autofill",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -30,7 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":progress_dialog",
     "//components/autofill/core/browser",
-    "//ios/chrome/browser/ui/alert_view",
+    "//ios/chrome/browser/alert_view/ui_bundled",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
