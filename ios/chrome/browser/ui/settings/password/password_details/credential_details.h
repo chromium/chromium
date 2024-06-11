@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_H_
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_CREDENTIAL_DETAILS_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_CREDENTIAL_DETAILS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -18,7 +18,7 @@ struct CredentialUIEntry;
 }  // namespace password_manager
 
 // Represents the credential type (blocked, federated or regular) of the
-// credential in this Password Details.
+// credential in this Credential Details.
 typedef NS_ENUM(NSInteger, CredentialType) {
   CredentialTypeRegularPassword = kItemTypeEnumZero,
   CredentialTypeBlocked,
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, CredentialType) {
   CredentialTypePasskey,
 };
 
-// Enum which represents the entry point from which the password details are
+// Enum which represents the entry point from which the credential details are
 // accessed.
 enum class DetailsContext {
   kPasswordSettings,   // When accessed from any context other than Password
@@ -40,7 +40,7 @@ enum class DetailsContext {
 
 // Object which is used by `PasswordDetailsViewController` to show
 // information about password and/or passkey.
-@interface PasswordDetails : NSObject
+@interface CredentialDetails : NSObject
 
 // Represents the type of the credential (blocked, federated or regular).
 @property(nonatomic, assign) CredentialType credentialType;
@@ -85,7 +85,7 @@ enum class DetailsContext {
 // `shouldOfferToMoveToAccount` tells whether or not to show a move option.
 @property(nonatomic, assign) BOOL shouldOfferToMoveToAccount;
 
-// The DetailsContext for the password details.
+// The DetailsContext for the credential details.
 @property(nonatomic, assign) DetailsContext context;
 
 - (instancetype)initWithCredential:
@@ -96,4 +96,4 @@ enum class DetailsContext {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_CREDENTIAL_DETAILS_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/base/features.h"
 
-@implementation PasswordDetails
+@implementation CredentialDetails
 
 - (instancetype)initWithCredential:
     (const password_manager::CredentialUIEntry&)credential {

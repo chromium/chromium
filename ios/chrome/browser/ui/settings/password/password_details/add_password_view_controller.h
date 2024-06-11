@@ -24,7 +24,7 @@
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Delegate for PasswordDetails related actions e.g. Password editing.
+// Delegate for CredentialDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<AddPasswordViewControllerDelegate> delegate;
 
 // ApplicationCommands handler.

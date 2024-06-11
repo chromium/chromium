@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -45,7 +45,7 @@ constexpr char kPassword[] = "test";
 @interface FakeAddPasswordDelegate
     : NSObject <AddPasswordViewControllerDelegate>
 
-@property(nonatomic, strong) PasswordDetails* password;
+@property(nonatomic, strong) CredentialDetails* credential;
 
 // Whether `showExistingCredential` was called.
 @property(nonatomic) BOOL showExistingCredentialCalled;
@@ -55,8 +55,8 @@ constexpr char kPassword[] = "test";
 @implementation FakeAddPasswordDelegate
 
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
-           didEditPasswordDetails:(PasswordDetails*)password {
-  self.password = password;
+           didEditPasswordDetails:(CredentialDetails*)credential {
+  self.credential = credential;
 }
 
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController

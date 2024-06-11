@@ -26,10 +26,10 @@
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Handler for PasswordDetails related actions.
+// Handler for CredentialDetails related actions.
 @property(nonatomic, weak) id<PasswordDetailsHandler> handler;
 
-// Delegate for PasswordDetails related actions e.g. Password editing.
+// Delegate for CredentialDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<PasswordDetailsTableViewControllerDelegate>
     delegate;
 

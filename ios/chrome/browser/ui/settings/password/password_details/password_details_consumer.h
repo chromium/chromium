@@ -7,15 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class PasswordDetails;
+@class CredentialDetails;
 
 // Sets the Password details for consumer.
 @protocol PasswordDetailsConsumer <NSObject>
 
-// Displays provided array of password details and the title for the Password
+// Displays provided array of credential details and the title for the Password
 // Details view.
-- (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
-            andTitle:(NSString*)title;
+- (void)setCredentials:(NSArray<CredentialDetails*>*)credentials
+              andTitle:(NSString*)title;
 
 // Determine if this is a details view for a blocked site (never saved
 // password).

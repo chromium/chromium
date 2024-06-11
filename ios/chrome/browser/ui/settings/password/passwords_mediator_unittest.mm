@@ -66,7 +66,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
-  std::vector<password_manager::CredentialUIEntry> _passwords;
+  std::vector<password_manager::CredentialUIEntry> _credentials;
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 }
@@ -88,10 +88,11 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
          insecurePasswordsCount:(NSInteger)insecureCount {
 }
 
-- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
-        blockedSites:
-            (std::vector<password_manager::CredentialUIEntry>)blockedSites {
-  _passwords = passwords;
+- (void)setCredentials:
+            (std::vector<password_manager::CredentialUIEntry>)credentials
+          blockedSites:
+              (std::vector<password_manager::CredentialUIEntry>)blockedSites {
+  _credentials = credentials;
   _blockedSites = blockedSites;
 }
 

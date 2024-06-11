@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -32,7 +33,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_menu_item.h"
@@ -155,8 +156,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   BOOL _settingsAreDismissed;
 }
 
-// Array of passwords that are shown on the screen.
-@property(nonatomic, strong) NSArray<PasswordDetails*>* passwords;
+// Array of credentials that are shown on the screen.
+@property(nonatomic, strong) NSArray<CredentialDetails*>* credentials;
 
 @property(nonatomic, strong) NSString* pageTitle;
 
@@ -299,8 +300,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   self.passwordDetailsInfoItems = [[NSMutableArray alloc] init];
 
-  for (PasswordDetails* passwordDetails in _passwords) {
-    [self addPasswordDetailsToModel:passwordDetails];
+  for (CredentialDetails* credentialsDetails in _credentials) {
+    [self addPasswordDetailsToModel:credentialsDetails];
   }
 }
 
@@ -311,7 +312,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 #pragma mark - Items
 
 - (TableViewStackedDetailsItem*)websiteItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewStackedDetailsItem* item = [[TableViewStackedDetailsItem alloc]
       initWithType:PasswordDetailsItemTypeWebsite];
   item.titleText = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITES);
@@ -322,7 +323,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewTextEditItem*)usernameItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeUsername];
   item.textFieldBackgroundColor = [UIColor clearColor];
@@ -346,7 +347,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // For testing: only use this custom accessibility identifier if there are
   // more than one password shown on the Password Details.
-  if (_passwords.count > 1) {
+  if (_credentials.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
         stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsID,
                          passwordDetails.username, passwordDetails.websites[0]];
@@ -355,7 +356,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewTextEditItem*)userDisplayNameItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeUsername];
   item.textFieldBackgroundColor = [UIColor clearColor];
@@ -372,7 +373,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // For testing: only use this custom accessibility identifier if there are
   // more than one password shown on the Password Details.
-  if (_passwords.count > 1) {
+  if (_credentials.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
         stringWithFormat:@"%@%@%@",
                          kUserDisplayNameTextfieldForPasswordDetailsID,
@@ -383,7 +384,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewTextEditItem*)creationDateItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeUsername];
   item.textFieldBackgroundColor = [UIColor clearColor];
@@ -405,7 +406,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // For testing: only use this custom accessibility identifier if there are
   // more than one password shown on the Password Details.
-  if (_passwords.count > 1) {
+  if (_credentials.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
         stringWithFormat:@"%@%@%@", kCreationDateTextfieldForPasswordDetailsID,
                          item.textFieldValue, passwordDetails.websites[0]];
@@ -414,7 +415,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewTextEditItem*)passwordItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypePassword];
   item.textFieldBackgroundColor = [UIColor clearColor];
@@ -450,7 +451,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // For testing: only use this custom accessibility identifier if there are
   // more than one password shown on the Password Details.
-  if (_passwords.count > 1) {
+  if (_credentials.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
         stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsID,
                          passwordDetails.username, passwordDetails.websites[0]];
@@ -459,7 +460,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewMultiLineTextEditItem*)noteItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewMultiLineTextEditItem* item = [[TableViewMultiLineTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeNote];
   item.label = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_NOTE);
@@ -470,7 +471,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewTextEditItem*)federationItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeFederation];
   item.textFieldBackgroundColor = [UIColor clearColor];
@@ -527,7 +528,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (TableViewTextItem*)deleteButtonItemForPasswordDetails:
-    (PasswordDetails*)passwordDetails {
+    (CredentialDetails*)passwordDetails {
   TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:PasswordDetailsItemTypeDeleteButton];
   int itemText = IDS_IOS_CONFIRM_PASSWORD_DELETION;
@@ -635,7 +636,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     case PasswordDetailsItemTypeChangePasswordButton:
       if (!self.tableView.editing) {
         DCHECK(self.applicationCommandsHandler);
-        PasswordDetails* passwordDetails = self.passwords[indexPath.section];
+        CredentialDetails* passwordDetails =
+            self.credentials[indexPath.section];
         DCHECK(passwordDetails.changePasswordURL.has_value());
 
         CHECK(password_manager::ShouldRecordPasswordCheckUserAction(
@@ -812,9 +814,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       // the credential. It can be edited, leading to a second recording, but
       // that shouldn't happen often. This approach is good enough.
       if (![self.usernamesWithMoveToAccountOfferRecorded
-              containsObject:self.passwords[indexPath.section].username]) {
+              containsObject:self.credentials[indexPath.section].username]) {
         [self.usernamesWithMoveToAccountOfferRecorded
-            addObject:self.passwords[indexPath.section].username];
+            addObject:self.credentials[indexPath.section].username];
         // TODO(crbug.com/40880533): Use a common function for recording sites.
         base::UmaHistogramEnumeration(
             "PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered",
@@ -870,21 +872,22 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 #pragma mark - PasswordDetailsConsumer
 
-- (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
-            andTitle:(NSString*)title {
-  BOOL hadPasswords = [_passwords count];
-  _passwords = passwords;
+- (void)setCredentials:(NSArray<CredentialDetails*>*)credentials
+              andTitle:(NSString*)title {
+  BOOL hadCredentials = [_credentials count];
+  _credentials = credentials;
   _pageTitle = title;
 
   [self updateNavigationTitle];
-  // Update the model even if all passwords are deleted and the view controller
-  // will be dismissed. UIKit could still trigger events that execute CHECK in
-  // this file that would fail if `_passwords` and the model are not in sync.
+  // Update the model even if all credentials are deleted and the view
+  // controller will be dismissed. UIKit could still trigger events that execute
+  // CHECK in this file that would fail if `_credentials` and the model are not
+  // in sync.
   [self reloadData];
 
-  if (![passwords count]) {
+  if (![credentials count]) {
     // onAllPasswordsDeleted() mustn't be called twice.
-    if (hadPasswords) {
+    if (hadCredentials) {
       [self.handler onAllPasswordsDeleted];
     }
   }
@@ -1007,7 +1010,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       self.passwordShown = YES;
       self.passwordDetailsInfoItems[_passwordIndexToReveal]
           .passwordTextItem.textFieldValue =
-          self.passwords[_passwordIndexToReveal].password;
+          self.credentials[_passwordIndexToReveal].password;
       self.passwordDetailsInfoItems[_passwordIndexToReveal]
           .passwordTextItem.identifyingIcon =
           DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
@@ -1018,7 +1021,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
         self.passwordDetailsInfoItems[_passwordIndexToReveal].passwordTextItem
       ]];
 
-      PasswordDetails* passwordDetails = self.passwords[_passwordIndexToReveal];
+      CredentialDetails* passwordDetails =
+          self.credentials[_passwordIndexToReveal];
       DetailsContext detailsContext = passwordDetails.context;
       // When details was opened from the Password Manager, only log password
       // check actions if the password is compromised.
@@ -1031,7 +1035,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
     case PasswordAccessReasonCopy: {
       NSString* copiedString =
-          self.passwords[self.tableView.indexPathForSelectedRow.section]
+          self.credentials[self.tableView.indexPathForSelectedRow.section]
               .password;
       StoreTextInPasteboard(copiedString);
 
@@ -1070,17 +1074,17 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Checks if the usernames are valid and updates items accordingly.
 - (BOOL)checkIfValidUsernames {
-  DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
+  DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
     NSString* newUsernameValue =
         self.passwordDetailsInfoItems[i].usernameTextItem.textFieldValue;
     BOOL usernameChanged =
-        ![newUsernameValue isEqualToString:self.passwords[i].username];
+        ![newUsernameValue isEqualToString:self.credentials[i].username];
     BOOL showUsernameAlreadyUsed =
         usernameChanged &&
         [self.delegate isUsernameReused:newUsernameValue
-                              forDomain:self.passwords[i].signonRealm];
+                              forDomain:self.credentials[i].signonRealm];
     self.passwordDetailsInfoItems[i].usernameTextItem.hasValidText =
         !showUsernameAlreadyUsed;
     self.passwordDetailsInfoItems[i].usernameTextItem.identifyingIconEnabled =
@@ -1098,7 +1102,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Checks if the passwords are valid and updates items accordingly.
 - (BOOL)checkIfValidPasswords {
-  DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
+  DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
     BOOL passwordEmpty = [self.passwordDetailsInfoItems[i]
@@ -1118,7 +1122,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Checks if notes are valid.
 - (BOOL)checkIfValidNotes {
-  DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
+  DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
     if (self.passwordDetailsInfoItems[i].passwordNoteItem.text.length >
@@ -1148,8 +1152,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (BOOL)hasAtLeastOnePassword {
-  for (PasswordDetails* passwordDetails in self.passwords) {
-    if (passwordDetails.password.length > 0) {
+  for (CredentialDetails* credentialDetails in self.credentials) {
+    if (credentialDetails.password.length > 0) {
       return YES;
     }
   }
@@ -1157,10 +1161,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (BOOL)passwordsDidChange {
-  DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
+  DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
-    if (![self.passwords[i].password
+    if (![self.credentials[i].password
             isEqualToString:self.passwordDetailsInfoItems[i]
                                 .passwordTextItem.textFieldValue]) {
       return YES;
@@ -1173,7 +1177,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)updateNavigationTitle {
   if (self.pageTitle.length == 0) {
     // When no pageTitle is supplied, use origin of first password.
-    PasswordDetails* firstPassword = self.passwords.firstObject;
+    CredentialDetails* firstPassword = self.credentials.firstObject;
     self.pageTitle = firstPassword.origins.firstObject;
   }
   _titleLabel.text = self.pageTitle;
@@ -1181,7 +1185,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Creates the model items corresponding to a `PasswordDetails` and adds them to
 // the `model`.
-- (void)addPasswordDetailsToModel:(PasswordDetails*)passwordDetails {
+- (void)addPasswordDetailsToModel:(CredentialDetails*)passwordDetails {
   TableViewModel* model = self.tableViewModel;
   PasswordDetailsInfoItem* passwordItem =
       [[PasswordDetailsInfoItem alloc] init];
@@ -1318,7 +1322,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   NSString* toastMessage = l10n_util::GetNSStringF(
       IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE,
       base::SysNSStringToUTF16(self.userEmail));
-  [self.handler moveCredentialToAccountStore:self.passwords[passwordIndex]
+  [self.handler moveCredentialToAccountStore:self.credentials[passwordIndex]
                                   anchorView:anchorView
                              movedCompletion:^{
                                [weakSelf showToast:toastMessage forSuccess:YES];
@@ -1517,9 +1521,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   switch (itemType) {
     case PasswordDetailsItemTypeWebsite: {
-      PasswordDetails* detailsToCopy;
+      CredentialDetails* detailsToCopy;
       detailsToCopy =
-          self.passwords[self.tableView.indexPathForSelectedRow.section];
+          self.credentials[self.tableView.indexPathForSelectedRow.section];
       message =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE);
       // Copy websites to pasteboard separated by a whitespace.
@@ -1535,7 +1539,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
     case PasswordDetailsItemTypeUsername: {
       NSString* copiedString =
-          self.passwords[self.tableView.indexPathForSelectedRow.section]
+          self.credentials[self.tableView.indexPathForSelectedRow.section]
               .username;
 
       StoreTextInPasteboard(copiedString);
@@ -1545,7 +1549,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
     case PasswordDetailsItemTypeFederation: {
       NSString* copiedString =
-          self.passwords[self.tableView.indexPathForSelectedRow.section]
+          self.credentials[self.tableView.indexPathForSelectedRow.section]
               .federation;
       StoreTextInPasteboard(copiedString);
       return;
@@ -1562,16 +1566,16 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 }
 
 - (void)didTapDismissWarningButtonAtPasswordIndex:(NSUInteger)passwordIndex {
-  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(passwordIndex >= 0 && passwordIndex < self.credentials.count);
   CHECK(self.delegate);
 
   password_manager::LogMuteCompromisedWarning();
 
-  [self.delegate dismissWarningForPassword:self.passwords[passwordIndex]];
+  [self.delegate dismissWarningForPassword:self.credentials[passwordIndex]];
 }
 
 - (void)didTapRestoreWarningButtonAtPasswordIndex:(NSUInteger)passwordIndex {
-  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(passwordIndex >= 0 && passwordIndex < self.credentials.count);
   CHECK(self.delegate);
 
   password_manager::LogUnmuteCompromisedWarning();
@@ -1581,11 +1585,11 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 - (void)didTapDeleteButton:(UITableViewCell*)cell
            atPasswordIndex:(NSUInteger)passwordIndex {
-  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(passwordIndex >= 0 && passwordIndex < self.credentials.count);
   CHECK(self.handler);
-  [self.handler
-      showPasswordDeleteDialogWithPasswordDetails:self.passwords[passwordIndex]
-                                       anchorView:cell];
+  [self.handler showCredentialDeleteDialogWithCredentialDetails:
+                    self.credentials[passwordIndex]
+                                                     anchorView:cell];
 }
 
 - (void)dismissView {
@@ -1651,9 +1655,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 #pragma mark - Public
 
 - (void)passwordEditingConfirmed {
-  DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
+  DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
-    PasswordDetails* password = self.passwords[i];
+    CredentialDetails* password = self.credentials[i];
     NSString* oldUsername = password.username;
     NSString* oldPassword = password.password;
     NSString* oldNote = password.note;

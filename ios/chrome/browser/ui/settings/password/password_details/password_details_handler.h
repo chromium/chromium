@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_HANDLER_H_
 
-@class PasswordDetails;
+@class CredentialDetails;
 
 // Presenter which handles commands from `PasswordDetailsViewController`.
 @protocol PasswordDetailsHandler
@@ -25,13 +25,14 @@
 // Called when the user wants to delete a password. `anchorView` should be
 // the button that triggered this deletion flow, to position the confirmation
 // dialog correctly on tablets.
-// TODO(crbug.com/40880506): PasswordDetails is a concept that should only be
+// TODO(crbug.com/40880506): CredentialDetails is a concept that should only be
 // consumed by the view controller, it doesn't belong in this protocol.
 // Ultimately this is passed to map to a CredentialUIEntry. There should be a
 // better way to map. Either pass (username, password, sign-on realm), which are
 // the identifiers being used now, or something like sort key.
-- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
-                                         anchorView:(UIView*)anchorView;
+- (void)showCredentialDeleteDialogWithCredentialDetails:
+            (CredentialDetails*)credential
+                                             anchorView:(UIView*)anchorView;
 
 // Called when the user wants to move a password from profile store to account
 // store.`anchorView` should be the button that triggered this move flow, to
@@ -39,7 +40,7 @@
 // extra confirmation step in case there is a conflicting credential in the
 // account store (same username but different password value). `movedCompletion`
 // is called if the move is performed successfully.
-- (void)moveCredentialToAccountStore:(PasswordDetails*)password
+- (void)moveCredentialToAccountStore:(CredentialDetails*)credential
                           anchorView:(UIView*)anchorView
                      movedCompletion:(void (^)())movedCompletion;
 

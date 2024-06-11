@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
@@ -90,13 +90,14 @@ NSString* DisplayName() {
 - (void)dismissPasswordDetailsTableViewController {
 }
 
-- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
-                                         anchorView:(UIView*)anchorView {
+- (void)showCredentialDeleteDialogWithCredentialDetails:
+            (CredentialDetails*)password
+                                             anchorView:(UIView*)anchorView {
   self.deletionCalled = YES;
   self.deletionCalledOnCompromisedPassword = password.isCompromised;
 }
 
-- (void)moveCredentialToAccountStore:(PasswordDetails*)password
+- (void)moveCredentialToAccountStore:(CredentialDetails*)password
                           anchorView:(UIView*)anchorView
                      movedCompletion:(void (^)())movedCompletion {
 }
@@ -118,7 +119,7 @@ NSString* DisplayName() {
 @interface FakePasswordDetailsDelegate
     : NSObject <PasswordDetailsTableViewControllerDelegate>
 
-@property(nonatomic, strong) PasswordDetails* password;
+@property(nonatomic, strong) CredentialDetails* password;
 
 @property(nonatomic, assign) BOOL dismissWarningCalled;
 
@@ -130,7 +131,7 @@ NSString* DisplayName() {
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(PasswordDetails*)password
+               didEditPasswordDetails:(CredentialDetails*)password
                       withOldUsername:(NSString*)oldUsername
                           oldPassword:(NSString*)oldPassword
                               oldNote:(NSString*)oldNote {
@@ -170,7 +171,7 @@ NSString* DisplayName() {
   return NO;
 }
 
-- (void)dismissWarningForPassword:(PasswordDetails*)password {
+- (void)dismissWarningForPassword:(CredentialDetails*)password {
   self.dismissWarningCalled = YES;
 }
 
@@ -272,8 +273,8 @@ class PasswordDetailsTableViewControllerTest
       forms.push_back(std::move(form));
     }
 
-    NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
-    PasswordDetails* passwordDetails = [[PasswordDetails alloc]
+    NSMutableArray<CredentialDetails*>* passwords = [NSMutableArray array];
+    CredentialDetails* passwordDetails = [[CredentialDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(forms)];
     passwordDetails.context = context;
     passwordDetails.compromised = is_compromised;
@@ -282,7 +283,7 @@ class PasswordDetailsTableViewControllerTest
 
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPasswords:passwords andTitle:nil];
+    [passwords_controller setCredentials:passwords andTitle:nil];
   }
 
   void SetFederatedPassword() {
@@ -292,13 +293,13 @@ class PasswordDetailsTableViewControllerTest
     form.url = GURL(u"http://www.example.com/");
     form.signon_realm = form.url.spec();
     form.federation_origin = url::Origin::Create(GURL(kExampleCom));
-    NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
-    PasswordDetails* password = [[PasswordDetails alloc]
+    NSMutableArray<CredentialDetails*>* passwords = [NSMutableArray array];
+    CredentialDetails* password = [[CredentialDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(form)];
     [passwords addObject:password];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPasswords:passwords andTitle:nil];
+    [passwords_controller setCredentials:passwords andTitle:nil];
   }
 
   // Creates a passkey, adds it to the view controller and returns the passkey's
@@ -321,14 +322,14 @@ class PasswordDetailsTableViewControllerTest
     password_manager::PasskeyCredential passkeyCredential(
         source, rp_id, credential_id, user_id, passkey_username,
         passkey_display_name, creation_time);
-    NSMutableArray<PasswordDetails*>* passkeys = [NSMutableArray array];
-    PasswordDetails* passkey = [[PasswordDetails alloc]
+    NSMutableArray<CredentialDetails*>* passkeys = [NSMutableArray array];
+    CredentialDetails* passkey = [[CredentialDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(
                                passkeyCredential)];
     [passkeys addObject:passkey];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPasswords:passkeys andTitle:nil];
+    [passwords_controller setCredentials:passkeys andTitle:nil];
     return creation_time;
   }
 
@@ -338,13 +339,13 @@ class PasswordDetailsTableViewControllerTest
     form.url = GURL(kExampleCom);
     form.blocked_by_user = true;
     form.signon_realm = form.url.spec();
-    NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
-    PasswordDetails* password = [[PasswordDetails alloc]
+    NSMutableArray<CredentialDetails*>* passwords = [NSMutableArray array];
+    CredentialDetails* password = [[CredentialDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(form)];
     [passwords addObject:password];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPasswords:passwords andTitle:nil];
+    [passwords_controller setCredentials:passwords andTitle:nil];
   }
 
   void CheckEditCellText(NSString* expected_text, int section, int item) {
