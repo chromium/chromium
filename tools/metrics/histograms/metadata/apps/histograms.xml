@@ -1527,9 +1527,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-09-22">
-  <owner>laurencom@google.com</owner>
-  <owner>tby@google.com</owner>
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-05-22">
+  <owner>chenjih@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
     {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
@@ -1544,9 +1544,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SystemInfoProvider.Error.{ErrorSource}"
-    enum="CrosDiagnosticsDataError" expires_after="2024-06-15">
-  <owner>laurencom@google.com</owner>
-  <owner>tby@google.com</owner>
+    enum="CrosDiagnosticsDataError" expires_after="2025-05-15">
+  <owner>chenjih@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
     not met error when receiving system information including battery info,
