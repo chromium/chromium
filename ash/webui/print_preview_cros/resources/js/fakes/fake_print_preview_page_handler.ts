@@ -135,10 +135,15 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
         OBSERVE_PREVIEW_READY_METHOD, this.testDelayMs);
   }
 
-  triggerOnDocumentReady() {
+  triggerOnDocumentReady(previewRequestId: number) {
     this.observables.setObservableData(
-        OBSERVABLE_ON_DOCUMENT_READY, [/*previewRequestId=*/ -1]);
+        OBSERVABLE_ON_DOCUMENT_READY, [previewRequestId]);
     this.observables.trigger(OBSERVABLE_ON_DOCUMENT_READY);
+  }
+
+  triggerOnDocumentReadyActiveRequestId() {
+    assert(this.previewTicket);
+    this.triggerOnDocumentReady(this.previewTicket.requestId);
   }
 
   getPreviewTicket(): PreviewTicket|null {

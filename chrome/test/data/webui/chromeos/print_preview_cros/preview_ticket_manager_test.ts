@@ -95,7 +95,7 @@ suite('PreviewTicketManager', () => {
         assertEquals(0, finishCount, 'Finish should have zero calls');
 
         // Advance time by test delay to trigger method resolver.
-        printPreviewPageHandler.triggerOnDocumentReady();
+        printPreviewPageHandler.triggerOnDocumentReadyActiveRequestId();
         mockTimer.tick(delay);
         await finishEvent;
 
@@ -119,7 +119,7 @@ suite('PreviewTicketManager', () => {
 
     assertFalse(instance.isPreviewLoaded(), 'Preview not loaded after call');
 
-    printPreviewPageHandler.triggerOnDocumentReady();
+    printPreviewPageHandler.triggerOnDocumentReadyActiveRequestId();
     mockTimer.tick(delay);
     await finishEvent;
 
@@ -157,5 +157,47 @@ suite('PreviewTicketManager', () => {
         expectedCallCount,
         printPreviewPageHandler.getCallCount(OBSERVE_PREVIEW_READY_METHOD),
         `${OBSERVE_PREVIEW_READY_METHOD} called in constructor`);
+  });
+
+  // Verify PREVIEW_REQUEST_FINISHED_EVENT isn't dispatched for "stale" preview
+  // requests.
+  test('preview request only completes for the active request', async () => {
+    const delay = 1;
+    printPreviewPageHandler.setTestDelay(delay);
+    const instance = PreviewTicketManager.getInstance();
+
+    let startCount = 0;
+    instance.addEventListener(
+        PREVIEW_REQUEST_STARTED_EVENT, () => ++startCount);
+    let finishCount = 0;
+    instance.addEventListener(
+        PREVIEW_REQUEST_FINISHED_EVENT, () => ++finishCount);
+
+    let startEvent = eventToPromise(PREVIEW_REQUEST_STARTED_EVENT, instance);
+    instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+
+    // The preview request from initialization increments the active request id.
+    await startEvent;
+    assertEquals(1, startCount, 'Start should have one calls');
+    assertEquals(0, finishCount, 'Finish should have zero calls');
+
+    // Triggering another preview request should again increment the active
+    // request id.
+    startEvent = eventToPromise(PREVIEW_REQUEST_STARTED_EVENT, instance);
+    instance.sendPreviewRequest();
+    await startEvent;
+    assertEquals(2, startCount, 'Start should have two calls');
+    assertEquals(0, finishCount, 'Finish should have zero calls');
+
+    // Simulate the first "stale" preview request completing but it should not
+    // trigger the preview complete event.
+    printPreviewPageHandler.triggerOnDocumentReady(/*previewRequestId=*/ 1);
+    mockTimer.tick(delay);
+    assertEquals(0, finishCount, 'Finish should have zero calls');
+
+    // Simulate the active preview request completing.
+    printPreviewPageHandler.triggerOnDocumentReadyActiveRequestId();
+    mockTimer.tick(delay);
+    assertEquals(1, finishCount, 'Finish should have one call');
   });
 });

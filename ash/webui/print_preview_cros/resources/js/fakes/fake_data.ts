@@ -11,9 +11,9 @@ import {ColorModel, DuplexMode, MarginType, MediaSize, PageRange, PreviewTicket,
  * 'fake_data' contains fake data to be used for tests and mocks.
  */
 
-export function getFakePreviewTicket(): PreviewTicket {
+export function getFakePreviewTicket(requestId: number = 1): PreviewTicket {
   const previewTicket: PreviewTicket = {
-    requestId: 1,
+    requestId: requestId,
     printPreviewId: new UnguessableToken(),
     destinationId: 'Default Printer',
     collate: true,

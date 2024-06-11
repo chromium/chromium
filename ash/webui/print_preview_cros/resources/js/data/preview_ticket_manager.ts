@@ -44,6 +44,9 @@ export class PreviewTicketManager extends EventTarget implements
   private previewLoaded = false;
   private sessionContext: SessionContext;
   private eventTracker = new EventTracker();
+  // Represents the request id for the latest preview request. All responses
+  // for ids below this will be ignored.
+  private activeRequestId = 0;
 
   // Prevent additional initialization.
   private constructor() {
@@ -74,16 +77,23 @@ export class PreviewTicketManager extends EventTarget implements
   // Send a request to generate a preview PDF with the desired print settings.
   // TODO(b/323421684): Rely on an observer to determine when the request is
   // finished.
-  private sendPreviewRequest(): void {
+  sendPreviewRequest(): void {
+    ++this.activeRequestId;
     this.previewLoaded = false;
     this.dispatchEvent(createCustomEvent(PREVIEW_REQUEST_STARTED_EVENT));
 
     // TODO(b/323421684): Replace with actual preview settings.
-    this.printPreviewPageHandler!.generatePreview(getFakePreviewTicket());
+    this.printPreviewPageHandler!.generatePreview(
+        getFakePreviewTicket(this.activeRequestId));
   }
 
   // FakeGeneratePreviewObserver:
-  onDocumentReady(_previewRequestId: number): void {
+  onDocumentReady(previewRequestId: number): void {
+    // Only acknowledge responses for the latest preview request.
+    if (previewRequestId !== this.activeRequestId) {
+      return;
+    }
+
     this.previewLoaded = true;
     this.dispatchEvent(createCustomEvent(PREVIEW_REQUEST_FINISHED_EVENT));
   }
