@@ -255,10 +255,11 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
   bool CanFindServiceWorkerClient(ServiceWorkerClient* service_worker_client) {
     if (context_) {
-      for (auto it = context_->GetServiceWorkerClients(
-               service_worker_client->key(),
-               false /* include_reserved_clients */,
-               false /* include_back_forward_cached_clients */);
+      for (auto it =
+               context_->service_worker_client_owner().GetServiceWorkerClients(
+                   service_worker_client->key(),
+                   false /* include_reserved_clients */,
+                   false /* include_back_forward_cached_clients */);
            !it.IsAtEnd(); ++it) {
         if (service_worker_client == &*it) {
           return true;
@@ -415,9 +416,10 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
   EXPECT_EQ(uuid1, service_worker_client->client_uuid());
 
   ASSERT_TRUE(context_);
-  EXPECT_EQ(service_worker_client.get(),
-            context_->GetServiceWorkerClientByClientID(
-                service_worker_client->client_uuid()));
+  EXPECT_EQ(
+      service_worker_client.get(),
+      context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
+          service_worker_client->client_uuid()));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CrossOriginRedirect) {
@@ -442,10 +444,13 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CrossOriginRedirect) {
   EXPECT_NE(uuid1, service_worker_client->client_uuid());
 
   ASSERT_TRUE(context_);
-  EXPECT_FALSE(context_->GetServiceWorkerClientByClientID(uuid1));
-  EXPECT_EQ(service_worker_client.get(),
-            context_->GetServiceWorkerClientByClientID(
-                service_worker_client->client_uuid()));
+  EXPECT_FALSE(
+      context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
+          uuid1));
+  EXPECT_EQ(
+      service_worker_client.get(),
+      context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
+          service_worker_client->client_uuid()));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
@@ -1106,14 +1111,18 @@ class ServiceWorkerContainerHostTestByClientType
         CHECK(
             base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
         return ScopedServiceWorkerClient(
-            helper_->context()->CreateServiceWorkerClientForWorker(
-                helper_->mock_render_process_id(),
-                ServiceWorkerClientInfo(blink::DedicatedWorkerToken())));
+            helper_->context()
+                ->service_worker_client_owner()
+                .CreateServiceWorkerClientForWorker(
+                    helper_->mock_render_process_id(),
+                    ServiceWorkerClientInfo(blink::DedicatedWorkerToken())));
       case ClientType::kSharedWorker:
         return ScopedServiceWorkerClient(
-            helper_->context()->CreateServiceWorkerClientForWorker(
-                helper_->mock_render_process_id(),
-                ServiceWorkerClientInfo(blink::SharedWorkerToken())));
+            helper_->context()
+                ->service_worker_client_owner()
+                .CreateServiceWorkerClientForWorker(
+                    helper_->mock_render_process_id(),
+                    ServiceWorkerClientInfo(blink::SharedWorkerToken())));
     }
   }
 

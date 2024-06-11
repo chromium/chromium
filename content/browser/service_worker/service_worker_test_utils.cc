@@ -390,8 +390,9 @@ ScopedServiceWorkerClient CreateServiceWorkerClient(
     ServiceWorkerContextCore* context,
     bool are_ancestors_secure,
     int frame_tree_node_id) {
-  return ScopedServiceWorkerClient(context->CreateServiceWorkerClientForWindow(
-      are_ancestors_secure, frame_tree_node_id));
+  return ScopedServiceWorkerClient(
+      context->service_worker_client_owner().CreateServiceWorkerClientForWindow(
+          are_ancestors_secure, frame_tree_node_id));
 }
 
 ScopedServiceWorkerClient CreateServiceWorkerClient(

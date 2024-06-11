@@ -151,8 +151,9 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   if (!handle_->scoped_service_worker_client()) {
     if (blink::IsRequestDestinationFrame(request_destination_)) {
       handle_->set_service_worker_client(
-          context_core->CreateServiceWorkerClientForWindow(
-              are_ancestors_secure_, frame_tree_node_id_));
+          context_core->service_worker_client_owner()
+              .CreateServiceWorkerClientForWindow(are_ancestors_secure_,
+                                                  frame_tree_node_id_));
     } else {
       DCHECK(request_destination_ ==
                  network::mojom::RequestDestination::kWorker ||
@@ -160,9 +161,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
                  network::mojom::RequestDestination::kSharedWorker);
 
       handle_->set_service_worker_client(
-          context_core->CreateServiceWorkerClientForWorker(
-              process_id_,
-              absl::ConvertVariantTo<ServiceWorkerClientInfo>(*worker_token_)));
+          context_core->service_worker_client_owner()
+              .CreateServiceWorkerClientForWorker(
+                  process_id_, absl::ConvertVariantTo<ServiceWorkerClientInfo>(
+                                   *worker_token_)));
     }
     CHECK(handle_->service_worker_client());
 

@@ -914,9 +914,10 @@ void ServiceWorkerRegisterJob::AddRegistrationToMatchingContainerHosts(
   // Include bfcached clients because they need to have the correct
   // information about the matching registrations if, e.g., claim() is called
   // while they are in bfcache or after they are restored from bfcache.
-  for (auto it = context_->GetServiceWorkerClients(
-           registration->key(), true /* include_reserved_clients */,
-           true /* include_back_forward_cached_clients */);
+  for (auto it =
+           context_->service_worker_client_owner().GetServiceWorkerClients(
+               registration->key(), true /* include_reserved_clients */,
+               true /* include_back_forward_cached_clients */);
        !it.IsAtEnd(); ++it) {
     if (!blink::ServiceWorkerScopeMatches(registration->scope(),
                                           it->GetUrlForScopeMatch())) {

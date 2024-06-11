@@ -2050,9 +2050,9 @@ void StoragePartitionImpl::OnAuthRequired(
     // routing_id are invalid. It can't be added yet because somehow routing_id
     // is valid here.
     if (service_worker_context_->context()) {
-      auto* container_host =
-          service_worker_context_->context()->GetServiceWorkerClientByWindowId(
-              *window_id);
+      auto* container_host = service_worker_context_->context()
+                                 ->service_worker_client_owner()
+                                 .GetServiceWorkerClientByWindowId(*window_id);
       if (container_host) {
         if (container_host->GetRenderFrameHostId()) {
           // Use ServiceWorkerContainerHost's GlobalRenderFrameHostId when
@@ -2224,9 +2224,9 @@ void StoragePartitionImpl::OnCertificateRequested(
     // routing_id are invalid. It can't be added yet because somehow routing_id
     // is valid here.
     if (service_worker_context_->context()) {
-      auto* container_host =
-          service_worker_context_->context()->GetServiceWorkerClientByWindowId(
-              *window_id);
+      auto* container_host = service_worker_context_->context()
+                                 ->service_worker_client_owner()
+                                 .GetServiceWorkerClientByWindowId(*window_id);
       if (container_host) {
         if (container_host->GetRenderFrameHostId()) {
           // Use ServiceWorkerContainerHost's GlobalRenderFrameHostId when

@@ -204,9 +204,10 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
 
     // An empty host.
     ScopedServiceWorkerClient service_worker_client =
-        helper_->context()->CreateServiceWorkerClientForWindow(
-            is_parent_frame_secure,
-            /*frame_tree_node_id=*/1);
+        helper_->context()
+            ->service_worker_client_owner()
+            .CreateServiceWorkerClientForWindow(is_parent_frame_secure,
+                                                /*frame_tree_node_id=*/1);
     service_worker_client_ = service_worker_client.AsWeakPtr();
     service_worker_clients_.push_back(std::move(service_worker_client));
   }

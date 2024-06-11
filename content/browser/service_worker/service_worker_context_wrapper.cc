@@ -1140,7 +1140,8 @@ void ServiceWorkerContextWrapper::HasMainFrameWindowClient(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
-  context_core_->HasMainFrameWindowClient(key, std::move(callback));
+  context_core_->service_worker_client_owner().HasMainFrameWindowClient(
+      key, std::move(callback));
 }
 
 std::unique_ptr<std::vector<GlobalRenderFrameHostId>>
@@ -1152,9 +1153,10 @@ ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
       new std::vector<GlobalRenderFrameHostId>());
   if (!context_core_)
     return rfh_ids;
-  for (auto it = context_core_->GetWindowServiceWorkerClients(
-           key,
-           /*include_reserved_clients=*/false);
+  for (auto it = context_core_->service_worker_client_owner()
+                     .GetWindowServiceWorkerClients(
+                         key,
+                         /*include_reserved_clients=*/false);
        !it.IsAtEnd(); ++it) {
     DCHECK(it->IsContainerForWindowClient());
     rfh_ids->push_back(it->GetRenderFrameHostId());
@@ -1620,8 +1622,8 @@ void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
     context_core_.reset();
     return;
   }
-  context_core_ =
-      std::make_unique<ServiceWorkerContextCore>(context_core_.get(), this);
+  context_core_ = std::make_unique<ServiceWorkerContextCore>(
+      std::move(context_core_), this);
   DVLOG(1) << "Restarted ServiceWorkerContextCore successfully.";
   context_core_->OnStorageWiped();
 }

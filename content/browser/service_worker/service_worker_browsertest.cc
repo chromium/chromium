@@ -4112,9 +4112,12 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
 
   std::vector<GURL> GetClientURLsForStorageKey(const blink::StorageKey& key) {
     std::vector<GURL> urls;
-    for (auto it = wrapper()->context()->GetServiceWorkerClients(
-             key, /*include_reserved_clients=*/true,
-             /*include_back_forward_cached_clients=*/false);
+    for (auto it = wrapper()
+                       ->context()
+                       ->service_worker_client_owner()
+                       .GetServiceWorkerClients(
+                           key, /*include_reserved_clients=*/true,
+                           /*include_back_forward_cached_clients=*/false);
          !it.IsAtEnd(); ++it) {
       urls.push_back(it->url());
     }

@@ -313,8 +313,10 @@ void ServiceWorkerRegistration::ClaimClients() {
   const bool include_reserved_clients = false;
   // Include clients in BackForwardCache in order to evict them if needed.
   const bool include_back_forward_cached_clients = true;
-  for (auto it = context_->GetServiceWorkerClients(
-           key_, include_reserved_clients, include_back_forward_cached_clients);
+  for (auto it =
+           context_->service_worker_client_owner().GetServiceWorkerClients(
+               key_, include_reserved_clients,
+               include_back_forward_cached_clients);
        !it.IsAtEnd(); ++it) {
     // "1. If client’s execution ready flag is unset or client’s discarded flag
     //     is set, continue."

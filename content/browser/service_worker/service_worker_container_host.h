@@ -433,6 +433,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   const base::WeakPtr<ServiceWorkerContextCore>& context() const {
     return context_;
   }
+  ServiceWorkerClientOwner& owner() { return *owner_; }
 
   // Implements blink::mojom::ServiceWorkerContainerHost and called from
   // ServiceWorkerContainerHostForClient.
@@ -530,7 +531,18 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // If it is still not ready to send, the features are buffered again.
   void FlushFeatures();
 
-  base::WeakPtr<ServiceWorkerContextCore> context_;
+  const base::WeakPtr<ServiceWorkerContextCore> context_;
+
+  // The `ServiceWorkerClientOwner` that owns `this`.
+  // On construction, `owner_` is the same as
+  // `context_->service_worker_client_owner()`.
+  // After `ServiceWorkerContextWrapper::DidDeleteAndStartOver()`,
+  // - `context_` is cleared (as the old `ServiceWorkerContextCore` is
+  //   destroyed) so that subsequent e.g. registration fails.
+  // - `owner_` remains the same and valid (the `ServiceWorkerClientOwner`
+  //   is now owned by the new `ServiceWorkerContextCore`), in order to
+  //   continue lifetime management of `this`.
+  const raw_ref<ServiceWorkerClientOwner> owner_;
 
   // The corresponding container host.
   // Always valid and non-null except for initialization/destruction.

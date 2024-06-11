@@ -151,6 +151,7 @@ ServiceWorkerClient::ServiceWorkerClient(
     bool is_parent_frame_secure,
     int frame_tree_node_id)
     : context_(std::move(context)),
+      owner_(context_->service_worker_client_owner()),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(is_parent_frame_secure),
@@ -165,6 +166,7 @@ ServiceWorkerClient::ServiceWorkerClient(
     int process_id,
     ServiceWorkerClientInfo client_info)
     : context_(std::move(context)),
+      owner_(context_->service_worker_client_owner()),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(true),
@@ -222,7 +224,7 @@ ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
           container_info->client_receiver.InitWithNewEndpointAndPassRemote()) {
   CHECK(service_worker_client_);
   DCHECK(container_.is_bound());
-  service_worker_client_->context()->BindHost(
+  service_worker_client_->owner().BindHost(
       *this, container_info->host_remote.InitWithNewEndpointAndPassReceiver());
 }
 
@@ -1145,10 +1147,8 @@ void ServiceWorkerClient::UpdateUrlsInternal(
     // Set UUID to the new one.
     std::string previous_client_uuid = client_uuid_;
     client_uuid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    if (context_) {
-      context_->UpdateServiceWorkerClientClientID(previous_client_uuid,
-                                                  client_uuid_);
-    }
+    owner_->UpdateServiceWorkerClientClientID(previous_client_uuid,
+                                              client_uuid_);
   }
 
   SyncMatchingRegistrations();
