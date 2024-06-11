@@ -5,6 +5,7 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/network_password_input.js';
 
+import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CrComponentsNetworkPasswordInputTest', function() {
@@ -28,6 +29,30 @@ suite('CrComponentsNetworkPasswordInputTest', function() {
 
     assertTrue(networkPassword.showPassword);
     assertEquals('text', passwordInput.type);
+  });
+
+  test('Show password button is hidden', function() {
+    networkPassword.disabled = true;
+    flush();
+    assertFalse(!!networkPassword.$$('#icon'));
+
+    networkPassword.disabled = false;
+    flush();
+    assertTrue(!!networkPassword.$$('#icon'));
+
+    networkPassword.managedProperties = {
+      source: OncSource.kNone,
+    };
+    flush();
+    assertTrue(!!networkPassword.$$('#icon'));
+
+    networkPassword.managedProperties = {
+      source: OncSource.kDevice,
+    };
+    flush();
+    // TODO(b/328633844): Update this test to check the visibility of the "show
+    // password" button when the network type is Wi-Fi.
+    assertFalse(!!networkPassword.$$('#icon'));
   });
 
   test('Aria label', function() {

@@ -16,6 +16,7 @@ import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
@@ -67,6 +68,12 @@ Polymer({
     errorMessage: {
       type: String,
       value: '',
+    },
+
+    /** {?ManagedProperties} */
+    managedProperties: {
+      type: Object,
+      value: null,
     },
 
     /** @private */
@@ -129,6 +136,19 @@ Polymer({
   getShowPasswordTitle_() {
     return this.showPassword ? this.i18n('hidePassword') :
                                this.i18n('showPassword');
+  },
+
+  /**
+   * TODO(b/328633844): Update this function to make the "show password" button
+   * visible for configured WiFi networks.
+   * Used to control whether the Show Password button is visible.
+   * @return {boolean}
+   * @private
+   */
+  showPasswordIcon_() {
+    return !this.showPolicyIndicator_ &&
+        (!this.managedProperties ||
+         this.managedProperties.source === OncSource.kNone);
   },
 
   /**

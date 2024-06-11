@@ -54,6 +54,7 @@
         on-keypress="onWifiPasswordInputKeypress_"
         label="[[i18n('OncWiFi-Passphrase')]]"
         value="{{configProperties_.typeConfig.wifi.passphrase}}"
+        managed-properties="[[managedProperties_]]"
         prefilled-value="{{prefilledProperties.typeConfig.wifi.passphrase}}"
         property="[[managedProperties_.typeProperties.wifi.passphrase]]">
     </network-password-input>
@@ -90,6 +91,7 @@
         <network-password-input label="[[i18n('OncVPN-IPsec-Password')]]"
             id="ipsec-eap-password-input"
             value="{{eapProperties_.password}}"
+            managed-properties="[[managedProperties_]]"
             property="[[managedEapProperties_.password]]">
         </network-password-input>
       </template>
@@ -97,10 +99,12 @@
         <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
             id="l2tp-username-input"
             value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
+            managed-properties="[[managedProperties_]]"
             property="[[managedProperties_.typeProperties.vpn.l2tp.username]]">
         </network-config-input>
         <network-password-input label="[[i18n('OncVPN-L2TP-Password')]]"
             value="{{configProperties_.typeConfig.vpn.l2tp.password}}"
+            managed-properties="[[managedProperties_]]"
             property="[[managedProperties_.typeProperties.vpn.l2tp.password]]">
         </network-password-input>
         <network-config-input label="[[i18n('OncVPN-IPsec-Group')]]"
@@ -112,6 +116,7 @@
         <network-password-input label="[[i18n('OncVPN-IPsec-PSK')]]"
             id="ipsec-psk-input"
             value="{{configProperties_.typeConfig.vpn.ipSec.psk}}"
+            managed-properties="[[managedProperties_]]"
             property="[[managedProperties_.typeProperties.vpn.ipSec.psk]]">
         </network-password-input>
       </template>
@@ -136,6 +141,7 @@
       </network-config-input>
       <network-password-input label="[[i18n('OncVPN-OpenVPN-Password')]]"
           value="{{configProperties_.typeConfig.vpn.openVpn.password}}"
+          managed-properties="[[managedProperties_]]"
           property="[[managedProperties_.typeProperties.vpn.openVpn.password]]">
       </network-password-input>
       <network-config-input label="[[i18n('OncVPN-OpenVPN-OTP')]]"
@@ -177,6 +183,7 @@
         <network-password-input label="[[i18n('OncVPN-WireGuard-PrivateKey')]]"
             id="wireguardPrivateKeyInput"
             value="{{configProperties_.typeConfig.vpn.wireguard.privateKey}}"
+            managed-properties="[[managedProperties_]]"
             property="[[managedProperties_.typeProperties.vpn.wireguard.privateKey]]">
         </network-password-input>
       </template>
@@ -186,6 +193,7 @@
             value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.publicKey}}">
         </network-config-input>
         <network-password-input label="[[i18n('OncVPN-WireGuard-Peer-PresharedKey')]]"
+            managed-properties="[[managedProperties_]]"
             value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey}}">
         </network-password-input>
         <network-config-input label="[[i18n('OncVPN-WireGuard-Peer-Endpoint')]]"
