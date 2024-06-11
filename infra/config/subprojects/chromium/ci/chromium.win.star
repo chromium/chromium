@@ -22,11 +22,11 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
     contact_team_email = "chrome-desktop-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    gardener_rotations = gardener_rotations.CHROMIUM,
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -162,13 +162,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    # Too flaky. See crbug.com/876224 for more details.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "debug|tester",
         short_name = "10",
     ),
-    # Too flaky. See crbug.com/876224 for more details.
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -388,14 +388,14 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    # TODO(https://crbug.com/341773363): Bots were quarantined.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "a64",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # TODO(https://crbug.com/341773363): Bots were quarantined.
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -459,14 +459,14 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    # TODO(crbug.com/40877793): Enable gardening when stable and green.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "debug|tester",
         short_name = "a64",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # TODO(crbug.com/40877793): Enable gardening when stable and green.
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -577,13 +577,13 @@ ci.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+
+    # TODO(crbug.com/332248571): Promote to main gardening rotation once green.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "lxw",
     ),
     contact_team_email = "chrome-build-team@google.com",
-
-    # TODO(crbug.com/332248571): Promote to main gardening rotation once green.
-    gardener_rotations = args.ignore_default(None),
 )

@@ -15,9 +15,9 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu.fyi",
     pool = ci.gpu.POOL,
+    gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = 6 * time.hour,
-    gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     health_spec = health_spec.DEFAULT,
     properties = {
         "perf_dashboard_machine_group": "ChromiumGPUFYI",

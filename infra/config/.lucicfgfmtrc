@@ -50,7 +50,7 @@ rules {
         arg: "ssd"
         arg: "free_space"
         arg: "disallow_gce"
-        arg: "sheriff_rotations"
+        arg: "gardener_rotations"
         arg: "tree_closing"
         arg: "console_view_entry"
         arg: "main_console_view"

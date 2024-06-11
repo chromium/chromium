@@ -16,10 +16,10 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu",
     pool = ci.gpu.POOL,
+    gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     tree_closing = True,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -147,11 +147,11 @@ ci.gpu.linux_builder(
             "remoteexec",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.gpu.mac_builder(
@@ -220,11 +220,11 @@ ci.gpu.mac_builder(
             "x64",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.gpu.windows_builder(
@@ -292,11 +292,11 @@ ci.gpu.windows_builder(
             "remoteexec",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
-    gardener_rotations = args.ignore_default(None),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -319,11 +319,11 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -374,11 +374,11 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(

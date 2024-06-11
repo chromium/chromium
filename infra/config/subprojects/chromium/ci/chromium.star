@@ -23,10 +23,10 @@ ci.defaults.set(
     builder_group = "chromium",
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    gardener_rotations = gardener_rotations.CHROMIUM,
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -321,13 +321,13 @@ ci.builder(
         additional_compile_targets = "chrome",
     ),
     cores = 8,
+    # TODO(crbug.com/40238185): Turn on when stable.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros",
         short_name = "lnx",
     ),
-    # TODO(crbug.com/40238185): Turn on when stable.
-    gardener_rotations = args.ignore_default(None),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -500,13 +500,13 @@ ci.builder(
         additional_compile_targets = "chrome",
     ),
     cores = 32,
+    gardener_rotations = args.ignore_default(None),
     # TODO(crbug.com/40238619): Enable tree_closing/gardening when stable.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros",
         short_name = "arm64",
     ),
-    gardener_rotations = args.ignore_default(None),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -597,12 +597,12 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "off",
     ),
     execution_timeout = 7 * time.hour,
-    gardener_rotations = args.ignore_default(None),
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
             build_time = struct(
@@ -836,14 +836,14 @@ ci.builder(
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     # TODO(crbug.com/335863313): Enable when verified.
+    gardener_rotations = args.ignore_default(None),
+    # TODO(crbug.com/335863313): Enable when verified.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
         short_name = "arm64",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # TODO(crbug.com/335863313): Enable when verified.
-    gardener_rotations = args.ignore_default(None),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {

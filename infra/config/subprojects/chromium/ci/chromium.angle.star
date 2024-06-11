@@ -15,8 +15,8 @@ ci.defaults.set(
     executable = "recipe:angle_chromium",
     builder_group = "chromium.angle",
     pool = ci.gpu.POOL,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     gardener_rotations = gardener_rotations.ANGLE,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     properties = {
         "perf_dashboard_machine_group": "ChromiumANGLE",

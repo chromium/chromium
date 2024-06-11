@@ -138,9 +138,9 @@ ci.builder(
             ),
         },
     ),
+    gardener_rotations = gardener_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         category = "rel",
         short_name = "x64",
     ),
-    gardener_rotations = gardener_rotations.CHROMIUM,
 )

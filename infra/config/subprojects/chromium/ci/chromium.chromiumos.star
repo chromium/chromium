@@ -21,9 +21,9 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     tree_closing = True,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    gardener_rotations = gardener_rotations.CHROMIUM,
     health_spec = health_spec.modified_default({
         "Unhealthy": struct(
             build_time = struct(
@@ -67,6 +67,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",
@@ -75,7 +76,6 @@ ci.builder(
     # This builder gets triggered against multiple branches, so it shouldn't be
     # bootstrapped
     bootstrap = False,
-    gardener_rotations = args.ignore_default(None),
     notifies = ["chrome-lacros-engprod-alerts"],
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -403,6 +403,8 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "tast",
@@ -410,8 +412,6 @@ ci.thin_tester(
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chromeos-sw-engprod@google.com",
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -577,14 +577,14 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "remoteexec",
         ],
     ),
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "jcz",
     ),
     main_console_view = "main",
     contact_team_email = "chromeos-velocity@google.com",
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -635,14 +635,14 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "remoteexec",
         ],
     ),
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "oct",
     ),
     main_console_view = "main",
     contact_team_email = "chromeos-velocity@google.com",
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -776,6 +776,8 @@ ci.thin_tester(
             gs_bucket = "chromium-ci-skylab",
         ),
     ),
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "tast",
@@ -783,8 +785,6 @@ ci.thin_tester(
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chromeos-sw-engprod@google.com",
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -828,6 +828,8 @@ ci.builder(
             "release",
         ],
     ),
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "rel",
@@ -835,8 +837,6 @@ ci.builder(
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -926,6 +926,8 @@ ci.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "lacros|arm64",
         short_name = "sky",
@@ -933,8 +935,6 @@ ci.builder(
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -1024,6 +1024,9 @@ ci.builder(
             "release",
         ],
     ),
+    # TODO(crbug.com/40231151): enable gardener rotation and tree_closing
+    # when the builder is stable.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|arm64",
@@ -1031,9 +1034,6 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    # TODO(crbug.com/40231151): enable gardener rotation and tree_closing
-    # when the builder is stable.
-    gardener_rotations = args.ignore_default(None),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 

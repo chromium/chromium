@@ -21,10 +21,10 @@ ci.defaults.set(
     ),
     pool = ci.DEFAULT_POOL,
     os = os.MAC_DEFAULT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    gardener_rotations = gardener_rotations.CHROMIUM,
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -282,12 +282,12 @@ ci.builder(
     ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "a64",
     ),
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -395,14 +395,14 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    # TODO(crbug.com/336530603): Add to rotation when it's stable.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "14",
     ),
     contact_team_email = "bling-engprod@google.com",
-    # TODO(crbug.com/336530603): Add to rotation when it's stable.
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -532,13 +532,13 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
         short_name = "14",
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "bling-engprod@google.com",
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -561,13 +561,13 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    # TODO(crbug.com/336530603): Add to rotation when it's stable.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "14",
     ),
     contact_team_email = "bling-engprod@google.com",
-    # TODO(crbug.com/336530603): Add to rotation when it's stable.
-    gardener_rotations = args.ignore_default(None),
 )
 
 ios_builder(

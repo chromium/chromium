@@ -126,12 +126,12 @@ packager_builder(
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
     triggered_by = [],
+    gardener_rotations = gardener_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
         category = "packager|android",
         short_name = "androidx",
     ),
     contact_team_email = "clank-build@google.com",
-    gardener_rotations = gardener_rotations.ANDROID,
     notifies = ["chromium-androidx-packager"],
 )
 

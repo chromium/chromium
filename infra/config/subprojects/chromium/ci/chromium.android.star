@@ -19,8 +19,8 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     gardener_rotations = gardener_rotations.ANDROID,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -85,6 +85,10 @@ ci.builder(
     ),
     builderless = False,
     cores = None,
+    # TODO(crbug.com/40282985): Restore tree-closing and gardener rotation if/when
+    # bot is fixed.
+    # tree_closing = True,
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "san",
@@ -94,10 +98,6 @@ ci.builder(
     # build.
     # TODO(crbug.com/40882299): Check why the compile takes longer time.
     execution_timeout = 8 * time.hour,
-    # TODO(crbug.com/40282985): Restore tree-closing and gardener rotation if/when
-    # bot is fixed.
-    # tree_closing = True,
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -685,12 +685,12 @@ ci.thin_tester(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "O",
     ),
     cq_mirrors_console_view = "mirrors",
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -804,13 +804,13 @@ ci.builder(
             "webview_google",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "M proguard",
     ),
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 8 * time.hour,
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -916,13 +916,13 @@ ci.builder(
             "release_java",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -963,13 +963,13 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
         short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1002,12 +1002,12 @@ ci.builder(
             "arm64",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm64",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1043,12 +1043,12 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1085,11 +1085,11 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1124,12 +1124,12 @@ ci.builder(
             "cronet_android_mainline_clang",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|arm64",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1168,12 +1168,12 @@ ci.builder(
             "use_clang_coverage",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang_coverage|arm64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1211,12 +1211,12 @@ ci.builder(
             "cronet_android_mainline_clang",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|riscv64",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1257,12 +1257,12 @@ ci.builder(
             "cronet_android_mainline_clang",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|riscv64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1302,12 +1302,12 @@ ci.builder(
             "cronet_android_mainline_clang",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|x86",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1346,12 +1346,12 @@ ci.builder(
             "use_clang_coverage",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang_coverage|x86",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1374,12 +1374,12 @@ ci.builder(
     cores = None,
     os = os.ANDROID,
     cpu = None,
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test|perf",
         short_name = "m",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
@@ -1413,12 +1413,12 @@ ci.builder(
             "riscv64",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|riscv64",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-sheriff@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1454,12 +1454,12 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|riscv64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-sheriff@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1497,12 +1497,12 @@ ci.builder(
             "x86",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1540,12 +1540,12 @@ ci.builder(
             "x64",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x64",
         short_name = "dbg",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1575,12 +1575,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "12",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1610,12 +1610,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "13",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1646,12 +1646,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "14",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1681,12 +1681,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "l",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1716,12 +1716,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "m",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1751,12 +1751,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "n",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1786,12 +1786,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "o",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1821,12 +1821,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "p",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1857,12 +1857,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "10",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1892,12 +1892,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "11",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1933,12 +1933,12 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -1974,12 +1974,12 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
-    gardener_rotations = args.ignore_default(None),
     notifies = ["cronet"],
 )
 
@@ -2203,15 +2203,15 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    # TODO(crbug.com/40152686): Add it back to gardening once the builder is
+    # stable.
+    gardener_rotations = args.ignore_default(None),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "11",
     ),
     execution_timeout = 4 * time.hour,
-    # TODO(crbug.com/40152686): Add it back to gardening once the builder is
-    # stable.
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -2348,6 +2348,8 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    # TODO(crbug.com/40286106): Enable gardening once tests are stable
+    gardener_rotations = args.ignore_default(None),
     # TODO(crbug.com/40286106): Enable tree_closing once compile are stable
     #tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -2356,8 +2358,6 @@ ci.builder(
     ),
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
-    # TODO(crbug.com/40286106): Enable gardening once tests are stable
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -2400,6 +2400,8 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    # TODO(crbug.com/40286106): Enable gardening once tests are stable
+    gardener_rotations = args.ignore_default(None),
     # TODO(crbug.com/40286106): Enable tree_closing once compile are stable
     #tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -2408,8 +2410,6 @@ ci.builder(
     ),
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
-    # TODO(crbug.com/40286106): Enable gardening once tests are stable
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(

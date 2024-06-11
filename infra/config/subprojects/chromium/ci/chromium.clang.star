@@ -21,11 +21,11 @@ ci.defaults.set(
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
+    gardener_rotations = gardener_rotations.CHROMIUM_CLANG,
     # Because these run ToT Clang, reclient is not used.
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,
-    gardener_rotations = gardener_rotations.CHROMIUM_CLANG,
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
             fail_rate = struct(),
@@ -1212,12 +1212,12 @@ ci.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "pgo-arm",
     ),
     contact_team_email = "lexan@google.com",
-    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
