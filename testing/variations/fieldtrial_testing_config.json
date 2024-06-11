@@ -9062,21 +9062,6 @@
             ]
         }
     ],
-    "ExternalBeginFrameSourceWinUsesRunOrPostTask": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExternalBeginFrameSourceWinUsesRunOrPostTask"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExternalHDR10": [
         {
             "platforms": [
