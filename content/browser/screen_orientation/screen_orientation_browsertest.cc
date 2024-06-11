@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   GURL second_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationManager delayer(shell()->web_contents(), second_url);
   shell()->LoadURL(second_url);
-  EXPECT_TRUE(delayer.WaitForRequestStart());
+  delayer.WaitForSpeculativeRenderFrameHostCreation();
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =

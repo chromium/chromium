@@ -816,16 +816,8 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                   !!root->render_manager()->speculative_frame_host());
 
         shell->LoadURL(regular_url());
-
-        // The foo.com navigation should swap to a new process, since it is not
-        // safe to reuse |embedder_defined_unassigned_url|'s process before
-        // |embedder_defined_unassigned_url| commits.
-        EXPECT_TRUE(root->render_manager()->speculative_frame_host());
-        regular_process =
-            root->render_manager()->speculative_frame_host()->GetProcess();
-
-        // Wait for response.  This will cause |regular_manager| to spin up a
-        // nested message loop while we're blocked in the current message loop
+        // This will cause |regular_manager| to spin up a nested message loop
+        // while we're blocked in the current message loop
         // (within DidCommitNavigationInterceptor).  Thus, it's important to
         // allow nestable tasks in |regular_manager|'s message loop, so that it
         // can process the response before we unblock the
@@ -833,6 +825,13 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
         // the commit.
         regular_manager.AllowNestableTasks();
         EXPECT_TRUE(regular_manager.WaitForResponse());
+
+        // The foo.com navigation should swap to a new process, since it is not
+        // safe to reuse |embedder_defined_unassigned_url|'s process before
+        // |embedder_defined_unassigned_url| commits.
+        EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+        regular_process =
+            root->render_manager()->speculative_frame_host()->GetProcess();
 
         regular_manager.ResumeNavigation();
         // After returning here, the commit for

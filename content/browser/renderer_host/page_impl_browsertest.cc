@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
   // 2) Start navigation to B, but don't commit yet.
   TestNavigationManager manager(shell()->web_contents(), url_b);
   shell()->LoadURL(url_b);
-  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =

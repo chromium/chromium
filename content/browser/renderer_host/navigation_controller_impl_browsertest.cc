@@ -21559,7 +21559,7 @@ IN_PROC_BROWSER_TEST_P(
     // Main frame same-site navigation creates a speculative RenderFrameHost.
     TestNavigationManager navigation_manager(contents(), url_a);
     EXPECT_TRUE(ExecJs(root, JsReplace("location.href = $1;", url_a)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(root->render_manager()->speculative_frame_host());
 
     // Cancel the navigation. This should trigger the deletion of the
@@ -21574,7 +21574,7 @@ IN_PROC_BROWSER_TEST_P(
     // Main frame cross-site navigation creates a speculative RenderFrameHost.
     TestNavigationManager navigation_manager(contents(), url_b);
     EXPECT_TRUE(ExecJs(root, JsReplace("location.href = $1;", url_b)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(root->render_manager()->speculative_frame_host());
     // Cancel the navigation. This should trigger the deletion of the
     // speculative RenderFrameHost.
@@ -21604,7 +21604,7 @@ IN_PROC_BROWSER_TEST_P(
     // Subframe same-site navigation creates a speculative RenderFrameHost.
     TestNavigationManager navigation_manager(contents(), url_a);
     EXPECT_TRUE(ExecJs(child, JsReplace("location.href = $1;", url_a)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(child->render_manager()->speculative_frame_host());
     // Cancel the navigation. This should trigger the deletion of the
     // speculative RenderFrameHost.
@@ -21620,7 +21620,7 @@ IN_PROC_BROWSER_TEST_P(
     // Subframe cross-site navigation creates a speculative RenderFrameHost.
     TestNavigationManager navigation_manager(contents(), url_b);
     EXPECT_TRUE(ExecJs(child, JsReplace("location.href = $1;", url_b)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(child->render_manager()->speculative_frame_host());
     child->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
 
@@ -21663,7 +21663,7 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager(new_shell->web_contents(), url_a);
     EXPECT_TRUE(
         ExecJs(new_window_root, JsReplace("location.href = $1;", url_a)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(new_window_root->render_manager()->speculative_frame_host());
 
     // Close the window. This should trigger the deletion of the
@@ -21694,7 +21694,7 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager(new_shell->web_contents(), url_b);
     EXPECT_TRUE(
         ExecJs(new_window_root, JsReplace("location.href = $1;", url_b)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(new_window_root->render_manager()->speculative_frame_host());
 
     // Close the window. This should trigger the deletion of the
@@ -21732,7 +21732,7 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager(contents(), url_a);
     EXPECT_TRUE(
         ExecJs(root->child_at(0), JsReplace("location.href = $1;", url_a)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(root->child_at(0)->render_manager()->speculative_frame_host());
 
     // Close the window. This should trigger the deletion of the
@@ -21761,7 +21761,7 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager(contents(), url_b);
     EXPECT_TRUE(
         ExecJs(root->child_at(0), JsReplace("location.href = $1;", url_b)));
-    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(root->child_at(0)->render_manager()->speculative_frame_host());
 
     // Close the iframe. This should trigger the deletion of the

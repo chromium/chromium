@@ -5375,8 +5375,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
         count_speculative +=
             (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative);
       });
-  ASSERT_EQ(all_prerender_frames.size(), 4u);
-  ASSERT_EQ(count_speculative, 1u);
+  // With feature DeferSpeculativeRFHCreation, the speculative RFH won't be
+  // created when the navigation starts.
+  if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation)) {
+    ASSERT_EQ(all_prerender_frames.size(), 3u);
+    ASSERT_EQ(count_speculative, 0u);
+  } else {
+    ASSERT_EQ(all_prerender_frames.size(), 4u);
+    ASSERT_EQ(count_speculative, 1u);
+  }
 
   // 5. Renderers attempt to build Mojo connections for kDefer and kGrant
   // interfaces during prerendering. This part simulates them.
@@ -12775,6 +12782,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FocusChangeInPrerenderedPage) {
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     UnusedRenderWidgetHostFrameTreePointerUpdatedOnActivation) {
+  // Since the render view host won't be created until the response is received
+  // if feature DeferSpeculativeRFHCreation is on. The test is no longer valid
+  // for this case.
+  if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation)) {
+    return;
+  }
+
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
 
   // Navigate to an initial page.

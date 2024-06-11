@@ -3157,9 +3157,14 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
   // Start a subframe navigation and pause it before `DidCommitNavigation`.
   void NavigateSubframeAndPauseAtDidCommit(FrameTreeNode* ftn,
                                            const GURL& subframe_navigate_url) {
+    // Enforce the creation of speculative RFH to correctly wait for
+    // the commit event.
+    SpeculativeRenderFrameHostObserver observer(web_contents(),
+                                                subframe_navigate_url);
     // We have to pause a navigation before `DidCommitNavigation`, so we don't
     // want to wait for the navigation to finish.
     ASSERT_TRUE(BeginNavigateToURLFromRenderer(ftn, subframe_navigate_url));
+    observer.Wait();
 
     // Wait until the navigation is pending commit. Note that the navigation
     // might use a speculative RenderFrameHost, so use that if necessary.
@@ -3245,12 +3250,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   RenderFrameHostImplWrapper main_rfh(current_frame_host());
-  RenderFrameHostImplWrapper sub_rfh(
-      main_rfh.get()->child_at(0)->current_frame_host());
+  FrameTreeNode* child_node = main_rfh.get()->child_at(0);
+  RenderFrameHostImplWrapper sub_rfh(child_node->current_frame_host());
 
   // Pause subframe's navigation before `DidCommitNavigation`.
-  NavigateSubframeAndPauseAtDidCommit(main_rfh.get()->child_at(0),
-                                      subframe_navigate_url);
+  NavigateSubframeAndPauseAtDidCommit(child_node, subframe_navigate_url);
 
   // Subframe navigation is ongoing, so `NavigateToURL` cannot be used since
   // this function waits for all frames including subframe to finish loading.

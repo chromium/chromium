@@ -2240,11 +2240,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProxyCreationSkipsSubtree) {
   std::string cross_site_rfh_type = "speculative";
   {
     TestNavigationObserver observer(shell()->web_contents());
-    TestFrameNavigationObserver navigation_observer(child);
+    TestNavigationManager navigation_manager(shell()->web_contents(),
+                                             cross_site_url);
     NavigationController::LoadURLParams params(cross_site_url);
     params.transition_type = PageTransitionFromInt(ui::PAGE_TRANSITION_LINK);
     params.frame_tree_node_id = child->frame_tree_node_id();
     child->navigator().controller().LoadURLWithParams(params);
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
 
     site = child->render_manager()->speculative_frame_host()->GetSiteInstance();
     EXPECT_NE(shell()->web_contents()->GetSiteInstance(), site);
@@ -2263,7 +2265,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProxyCreationSkipsSubtree) {
 
     // Now that the verification is done, run the message loop and wait for the
     // navigation to complete.
-    navigation_observer.Wait();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(cross_site_url, observer.last_navigation_url());
 
@@ -2286,11 +2288,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProxyCreationSkipsSubtree) {
     // verify that the intermediate SiteInstance/RenderFrameHost have been
     // properly cleaned up.
     TestNavigationObserver observer(shell()->web_contents());
-    TestFrameNavigationObserver navigation_observer(child);
+    TestNavigationManager navigation_manager(shell()->web_contents(),
+                                             cross_site_url);
     NavigationController::LoadURLParams params(cross_site_url);
     params.transition_type = PageTransitionFromInt(ui::PAGE_TRANSITION_LINK);
     params.frame_tree_node_id = child->frame_tree_node_id();
     child->navigator().controller().LoadURLWithParams(params);
+    navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
 
     SiteInstance* site2 =
         child->render_manager()->speculative_frame_host()->GetSiteInstance();
@@ -2307,7 +2311,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProxyCreationSkipsSubtree) {
         cross_site_rfh_type.c_str());
     EXPECT_EQ(tree, DepictFrameTree(root));
 
-    navigation_observer.Wait();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(cross_site_url, observer.last_navigation_url());
     EXPECT_EQ(0U, child->child_count());
@@ -3948,9 +3952,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Start a navigation back to A, being careful to stay in the same
   // BrowsingInstance, and check that the RenderViewHost wasn't reused.
-  TestNavigationObserver navigation_observer(shell()->web_contents());
+  TestNavigationManager navigation_manager(shell()->web_contents(), a_url);
   shell()->LoadURLForFrame(a_url, std::string(),
                            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
+  navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   RenderViewHostImpl* pending_rvh = pending_rfh->render_view_host();
@@ -3966,7 +3971,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                rvh_process_id == pending_rvh->GetProcess()->GetID());
 
   // Make sure the last navigation finishes without crashing.
-  navigation_observer.Wait();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 }
 
 // Test for https://crbug.com/591478, where navigating to a cross-site page with
@@ -6385,7 +6390,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL stall_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
   TestNavigationManager delayer(shell()->web_contents(), stall_url);
   EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", stall_url)));
-  EXPECT_TRUE(delayer.WaitForRequestStart());
+  delayer.WaitForSpeculativeRenderFrameHostCreation();
 
   // The pending RFH should be in the same process as the popup.
   RenderFrameHostImpl* pending_rfh =
@@ -6443,7 +6448,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigationHandleObserver handle_observer(shell()->web_contents(), stall_url);
   TestNavigationManager delayer(shell()->web_contents(), stall_url);
   EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", stall_url)));
-  EXPECT_TRUE(delayer.WaitForRequestStart());
+  delayer.WaitForSpeculativeRenderFrameHostCreation();
 
   // Kill the b.com process, currently in use by the pending RenderFrameHost
   // and the popup.
@@ -8283,7 +8288,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Wait for main frame request, but don't commit it yet.  This should create
   // a speculative RenderFrameHost.
-  ASSERT_TRUE(manager1.WaitForRequestStart());
+  manager1.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* root_speculative_rfh =
       root->render_manager()->speculative_frame_host();
   EXPECT_TRUE(root_speculative_rfh);
@@ -8300,7 +8305,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(root_proxy->is_render_frame_proxy_live());
 
   // Wait for subframe request, but don't commit it yet.
-  ASSERT_TRUE(manager2.WaitForRequestStart());
+  manager2.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* subframe_speculative_rfh =
       child->render_manager()->speculative_frame_host();
   EXPECT_TRUE(child->render_manager()->speculative_frame_host());
@@ -8309,10 +8314,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Similarly, the subframe should also have a b.com proxy (unused in this
   // test), since it is also doing a cross-process navigation.
+  SiteInstanceGroup* b_subframe_group = b_subframe_site_instance->group();
   RenderFrameProxyHost* child_proxy =
       child->current_frame_host()
           ->browsing_context_state()
-          ->GetRenderFrameProxyHost(b_subframe_site_instance->group());
+          ->GetRenderFrameProxyHost(b_subframe_group);
   EXPECT_TRUE(child_proxy);
   EXPECT_TRUE(child_proxy->is_render_frame_proxy_live());
 
@@ -8334,10 +8340,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(0, EvalJs(web_contents(), "frames.length;"));
 
   // The root proxy should be gone.
-  EXPECT_FALSE(
-      root->current_frame_host()
-          ->browsing_context_state()
-          ->GetRenderFrameProxyHost(b_subframe_site_instance->group()));
+  EXPECT_FALSE(root->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(b_subframe_group));
 }
 
 // Similar to TwoCrossSitePendingNavigationsAndMainFrameWins, but checks the
@@ -8371,7 +8376,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Wait for main frame request and check the frame tree.  There should be a
   // proxy for b.com at the root, but nowhere else at this point.
-  ASSERT_TRUE(manager1.WaitForRequestStart());
+  manager1.WaitForSpeculativeRenderFrameHostCreation();
   EXPECT_EQ(
       " Site A (B speculative) -- proxies for B\n"
       "   |--Site A\n"
@@ -8387,7 +8392,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       ExecJs(web_contents(), JsReplace("frames[0].location = $1", new_url_2)));
 
   // Wait for subframe request.
-  ASSERT_TRUE(manager2.WaitForRequestStart());
+  manager2.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* child_speculative_rfh =
       child->render_manager()->speculative_frame_host();
   EXPECT_TRUE(child_speculative_rfh);
@@ -8499,7 +8504,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL new_url_1(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationManager manager(web_contents(), new_url_1);
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace("location = $1", new_url_1)));
-  ASSERT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   // Before it commits, start and commit a navigation to b.com in the second
   // tab.
@@ -8558,7 +8563,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Wait for the request, but don't commit it yet. This should create a
   // speculative RenderFrameHost.
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* speculative_rfh = root->current_frame_host()
                                              ->child_at(0)
@@ -8680,8 +8685,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
+  // Speculative RFH will not be created at this point if we enable deferring.
   EXPECT_EQ(using_speculative_rfh,
-            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe);
+            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe &&
+                !base::FeatureList::IsEnabled(
+                    features::kDeferSpeculativeRFHCreation));
 
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
@@ -8725,7 +8733,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* first_child = root->child_at(0);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(
       first_child->render_manager()->current_frame_host(), url2));
-
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
   // Cross-site navigations always force a speculative RFH to be created.
   EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
 
@@ -8807,8 +8815,11 @@ IN_PROC_BROWSER_TEST_P(
 
   const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
+  // Speculative RFH will not be created at this point if we enable deferring.
   EXPECT_EQ(using_speculative_rfh,
-            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe);
+            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe &&
+                !base::FeatureList::IsEnabled(
+                    features::kDeferSpeculativeRFHCreation));
 
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
@@ -8888,7 +8899,7 @@ IN_PROC_BROWSER_TEST_P(
   FrameTreeNode* first_child = root->child_at(0);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(
       first_child->render_manager()->current_frame_host(), url2));
-
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
   // Cross-site navigations always force a speculative RFH to be created.
   EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
 
@@ -8934,6 +8945,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* first_child = root->child_at(0);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(
       first_child->render_manager()->current_frame_host(), error_url));
+  if (GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe) {
+    nav_manager.WaitForSpeculativeRenderFrameHostCreation();
+  }
 
   const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
@@ -8974,7 +8988,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* first_child = root->child_at(0);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(
       first_child->render_manager()->current_frame_host(), error_url));
-
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
   // Cross-site navigations always force a speculative RFH to be created.
   EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
 
@@ -9165,7 +9179,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Wait for the request, but don't commit it yet. This should create a
   // speculative RenderFrameHost.
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* root_speculative_rfh =
       root->render_manager()->speculative_frame_host();
   EXPECT_TRUE(root_speculative_rfh);
@@ -12600,7 +12614,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 2) Navigation from B to C. The server is slow to respond.
   TestNavigationManager navigation_observer(web_contents(), url_c);
   EXPECT_TRUE(ExecJs(rfh_b, JsReplace("location.href=$1;", url_c)));
-  EXPECT_TRUE(navigation_observer.WaitForRequestStart());
+  navigation_observer.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* rfh_c =
       rfh_b->frame_tree_node()->render_manager()->speculative_frame_host();
 
@@ -12655,7 +12669,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // 2) Navigation from C to D. The server is slow to respond.
   TestNavigationManager navigation_observer(web_contents(), url_d);
   EXPECT_TRUE(ExecJs(rfh_c, JsReplace("location.href=$1;", url_d)));
-  EXPECT_TRUE(navigation_observer.WaitForRequestStart());
+  navigation_observer.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* rfh_d =
       rfh_c->frame_tree_node()->render_manager()->speculative_frame_host();
 

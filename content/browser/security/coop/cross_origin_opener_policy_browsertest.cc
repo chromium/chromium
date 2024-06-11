@@ -1854,7 +1854,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Start navigating to a COOP page.
     TestNavigationManager coop_navigation(web_contents(), coop_page);
     shell()->LoadURL(coop_page);
-    EXPECT_TRUE(coop_navigation.WaitForRequestStart());
+    if (ShouldCreateNewHostForAllFrames()) {
+      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    } else {
+      EXPECT_TRUE(coop_navigation.WaitForRequestStart());
+    }
 
     // Simulate the renderer process crashing.
     RenderProcessHost* process = initial_site_instance->GetProcess();
@@ -1965,7 +1969,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Start navigating to a non COOP page.
     TestNavigationManager non_coop_navigation(web_contents(), non_coop_page);
     shell()->LoadURL(non_coop_page);
-    EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
+    if (ShouldCreateNewHostForAllFrames()) {
+      non_coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    } else {
+      EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
+    }
 
     // Simulate the renderer process crashing.
     RenderProcessHost* process = initial_site_instance->GetProcess();
@@ -2080,7 +2088,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager coop_navigation(web_contents(),
                                           coop_allow_popups_page);
     shell()->LoadURL(coop_allow_popups_page);
-    EXPECT_TRUE(coop_navigation.WaitForRequestStart());
+    if (ShouldCreateNewHostForAllFrames()) {
+      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    } else {
+      EXPECT_TRUE(coop_navigation.WaitForRequestStart());
+    }
 
     // Simulate the renderer process crashing.
     RenderProcessHost* process = initial_site_instance->GetProcess();
@@ -2330,6 +2342,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Navigate to a non COOP page.
     TestNavigationManager non_coop_navigation(web_contents(), non_coop_page);
     shell()->LoadURL(non_coop_page);
+    if (ShouldCreateNewHostForAllFrames()) {
+      non_coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    }
     EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
 
     // A speculative RenderFrameHost will only be created if we always use a new
@@ -2360,6 +2375,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager coop_navigation(web_contents(), coop_page);
     shell()->LoadURL(coop_page);
     EXPECT_TRUE(coop_navigation.WaitForRequestStart());
+    if (CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    }
 
     auto* speculative_rfh = web_contents()
                                 ->GetPrimaryFrameTree()
@@ -2395,6 +2413,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager non_coop_navigation(web_contents(), non_coop_page);
     shell()->LoadURL(non_coop_page);
     EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
+    if (CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+      non_coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    }
 
     auto* speculative_rfh = web_contents()
                                 ->GetPrimaryFrameTree()
@@ -2429,6 +2450,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager coop_navigation(web_contents(), coop_page);
     shell()->LoadURL(coop_page);
     EXPECT_TRUE(coop_navigation.WaitForRequestStart());
+    if (ShouldCreateNewHostForAllFrames()) {
+      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    }
 
     // A speculative RenderFrameHost will only be created if we always use a new
     // RenderFrameHost for all cross-document navigations.
@@ -4568,7 +4592,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // that's locked to b.test.
   TestNavigationManager navigation(web_contents(), url_2);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url_2));
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostWrapper speculative_rfh(web_contents()
                                              ->GetPrimaryFrameTree()
                                              .root()
@@ -4579,7 +4603,6 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_NE(rph_id_1, rph_id_2);
 
   // Allow the navigation to receive the response and commit.
-  navigation.ResumeNavigation();
   EXPECT_TRUE(navigation.WaitForNavigationFinished());
   EXPECT_TRUE(navigation.was_successful());
 
@@ -4627,11 +4650,6 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   TestNavigationManager navigation(web_contents(), url_2);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url_2));
   EXPECT_TRUE(navigation.WaitForRequestStart());
-  RenderFrameHostImpl* speculative_rfh = web_contents()
-                                             ->GetPrimaryFrameTree()
-                                             .root()
-                                             ->render_manager()
-                                             ->speculative_frame_host();
 
   // When the back-forward cache is enabled, or when RenderDocument is used, we
   // will get a speculative RenderFrameHost, which should reuse the existing
@@ -4639,16 +4657,25 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // should stay in the current RenderFrameHost.
   int rph_id_2;
   if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
+    navigation.WaitForSpeculativeRenderFrameHostCreation();
+    RenderFrameHost* speculative_rfh = web_contents()
+                                           ->GetPrimaryFrameTree()
+                                           .root()
+                                           ->render_manager()
+                                           ->speculative_frame_host();
     ASSERT_TRUE(speculative_rfh);
     rph_id_2 = speculative_rfh->GetProcess()->GetID();
     EXPECT_EQ(rph_id_1, rph_id_2);
   } else {
-    ASSERT_FALSE(speculative_rfh);
+    ASSERT_FALSE(web_contents()
+                     ->GetPrimaryFrameTree()
+                     .root()
+                     ->render_manager()
+                     ->speculative_frame_host());
     rph_id_2 = rph_id_1;
   }
 
-  // Allow the navigation to receive the response and commit.
-  navigation.ResumeNavigation();
+  // Allow the navigation to receive the response commit.
   EXPECT_TRUE(navigation.WaitForNavigationFinished());
   EXPECT_TRUE(navigation.was_successful());
 
@@ -4690,7 +4717,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // Start a navigation to another same-site COOP URL.
   TestNavigationManager navigation(web_contents(), url_2);
   EXPECT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url_2));
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  // Wait for response to ensure any speculative RFH has already been created,
+  // if necessary.
+  ASSERT_TRUE(navigation.WaitForResponse());
   RenderFrameHostImpl* speculative_rfh = web_contents()
                                              ->GetPrimaryFrameTree()
                                              .root()
@@ -4715,7 +4744,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     rph_id_2 = rph_id_1;
   }
 
-  // Allow the navigation to receive the response and commit.
+  // Allow the navigation to commit.
   navigation.ResumeNavigation();
   EXPECT_TRUE(navigation.WaitForNavigationFinished());
   EXPECT_TRUE(navigation.was_successful());
@@ -6680,7 +6709,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
   popup_window->GetController().GoBack();
 
   // Check that the proper speculative SiteInstance was selected.
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* speculative_rfh = popup_window->GetPrimaryFrameTree()
                                              .root()
                                              ->render_manager()

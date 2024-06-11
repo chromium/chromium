@@ -291,8 +291,11 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   }
 
   // Enlarge WebContentsView by |wcv_resize_insets_| while the navigation entry
-  // is pending.
-  void DidStartNavigation(
+  // is pending. Since the new render process may not be created when the
+  // navigation starts if the feature DeferSpeculativeRFHCreation is enabled,
+  // resize the window when the navigation is ready to commit. Otherwise we will
+  // change the size of the original window.
+  void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override {
     Resize();
   }

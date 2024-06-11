@@ -573,6 +573,13 @@ ProxyHostObserver* GetProxyHostObserver() {
   return observer.get();
 }
 
+bool IsRequestCompatibleWithSpeculativeRFH(NavigationRequest* request) {
+  return request->state() <=
+             NavigationRequest::NavigationState::WILL_START_REQUEST &&
+         request->GetAssociatedRFHType() ==
+             NavigationRequest::AssociatedRenderFrameHostType::NONE;
+}
+
 }  // namespace
 
 bool WaiterHelper::WaitInternal() {
@@ -3178,6 +3185,21 @@ bool TestNavigationManager::WaitForNavigationFinished() {
   return WaitForDesiredState();
 }
 
+void TestNavigationManager::WaitForSpeculativeRenderFrameHostCreation() {
+  TRACE_EVENT(
+      "test",
+      "TestNavigationManager::WaitForSpeculativeRenderFrameHostCreation");
+  if (current_state_ < NavigationState::STARTED) {
+    CHECK(WaitForRequestStart());
+  }
+  if (!speculative_rfh_created_) {
+    base::RunLoop run_loop(message_loop_type_);
+    wait_rfh_closure_ = run_loop.QuitClosure();
+    ResumeNavigation();
+    run_loop.Run();
+  }
+}
+
 void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
   if (!ShouldMonitorNavigation(handle))
     return;
@@ -3238,6 +3260,34 @@ void TestNavigationManager::OnWillProcessResponse() {
   OnNavigationStateChanged();
 }
 
+void TestNavigationManager::RenderFrameCreated(
+    RenderFrameHost* render_frame_host) {
+  RenderFrameHostImpl* host_impl =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
+  NavigationRequest* request =
+      host_impl->frame_tree_node()->navigation_request();
+  if (host_impl->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleStateImpl::kSpeculative &&
+      IsRequestCompatibleWithSpeculativeRFH(request) &&
+      request->GetURL() == url_ &&
+      (request == request_ || request_ == nullptr)) {
+    DCHECK(host_impl->frame_tree_node()->HasNavigation());
+    speculative_rfh_created_ = true;
+    created_speculative_rfh_ =
+        std::make_unique<RenderFrameHostWrapper>(render_frame_host);
+    if (wait_rfh_closure_) {
+      std::move(wait_rfh_closure_).Run();
+    }
+  }
+}
+
+RenderFrameHost* TestNavigationManager::GetCreatedSpeculativeRFH() {
+  if (!created_speculative_rfh_) {
+    return nullptr;
+  }
+  return created_speculative_rfh_->get();
+}
+
 // TODO(csharrison): Remove CallResumeForTesting method calls in favor of doing
 // it through the throttle.
 bool TestNavigationManager::WaitForDesiredState() {
@@ -3250,9 +3300,9 @@ bool TestNavigationManager::WaitForDesiredState() {
 
   // Wait for the desired state if needed.
   if (current_state_ < desired_state_) {
-    DCHECK(!quit_closure_);
+    DCHECK(!state_quit_closure_);
     base::RunLoop run_loop(message_loop_type_);
-    quit_closure_ = run_loop.QuitClosure();
+    state_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
 
@@ -3268,8 +3318,9 @@ void TestNavigationManager::OnNavigationStateChanged() {
   // If the state the user was waiting for has been reached, exit the message
   // loop.
   if (current_state_ >= desired_state_) {
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
+    if (state_quit_closure_) {
+      std::move(state_quit_closure_).Run();
+    }
     return;
   }
 
@@ -4279,6 +4330,32 @@ void CookieChangeObserver::OnCookieAccessed(
   }
 
   if (++num_seen_ == num_expected_calls_) {
+    run_loop_.Quit();
+  }
+}
+
+SpeculativeRenderFrameHostObserver::SpeculativeRenderFrameHostObserver(
+    content::WebContents* web_contents,
+    const GURL& url)
+    : content::WebContentsObserver(web_contents), url_(url) {}
+
+SpeculativeRenderFrameHostObserver::~SpeculativeRenderFrameHostObserver() =
+    default;
+
+void SpeculativeRenderFrameHostObserver::Wait() {
+  run_loop_.Run();
+}
+
+void SpeculativeRenderFrameHostObserver::RenderFrameCreated(
+    RenderFrameHost* render_frame_host) {
+  RenderFrameHostImpl* host_impl =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
+  NavigationRequest* request =
+      host_impl->frame_tree_node()->navigation_request();
+  if (host_impl->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleStateImpl::kSpeculative &&
+      IsRequestCompatibleWithSpeculativeRFH(request) &&
+      request->GetURL() == url_) {
     run_loop_.Quit();
   }
 }

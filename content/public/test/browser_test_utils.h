@@ -1725,6 +1725,12 @@ class TestNavigationManager : public WebContentsObserver {
   // terminated before reaching DidStartNavigation (e.g. timeout).
   [[nodiscard]] bool WaitForNavigationFinished();
 
+  // Waits until a speculative render frame host is created.
+  // Note that the network may or may not be accessed.
+  void WaitForSpeculativeRenderFrameHostCreation();
+
+  RenderFrameHost* GetCreatedSpeculativeRFH();
+
   // Resume the navigation.
   // * Called after |WaitForRequestStart|, it causes the request to be sent.
   // * Called after |WaitForResponse|, it causes the response to be committed.
@@ -1764,6 +1770,7 @@ class TestNavigationManager : public WebContentsObserver {
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* handle) override;
   void DidFinishNavigation(NavigationHandle* handle) override;
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   // Called when the NavigationThrottle pauses the navigation in
   // WillStartRequest.
@@ -1793,7 +1800,10 @@ class TestNavigationManager : public WebContentsObserver {
   NavigationState desired_state_ = NavigationState::WILL_START;
   bool was_committed_ = false;
   bool was_successful_ = false;
-  base::OnceClosure quit_closure_;
+  bool speculative_rfh_created_ = false;
+  std::unique_ptr<RenderFrameHostWrapper> created_speculative_rfh_;
+  base::OnceClosure state_quit_closure_;
+  base::OnceClosure wait_rfh_closure_;
   base::RunLoop::Type message_loop_type_ = base::RunLoop::Type::kDefault;
 
   base::WeakPtrFactory<TestNavigationManager> weak_factory_{this};
@@ -2335,6 +2345,31 @@ class CookieChangeObserver : public content::WebContentsObserver {
   int num_expected_calls_;
   int num_read_seen_ = 0;
   int num_write_seen_ = 0;
+};
+
+// Wait for the creation of Speculative RFH without throttling the navigation.
+// Since the TestNavigationManager will throttle the navigation, using with
+// class with TestNavigationManager is not recommended. Manually driving the
+// run loop will be required to receive the events in both objects. We recommend
+// to use TestNavigationManager for simply driving the navigation. However if it
+// is required to intercept the navigation with other observers such as
+// CommitPauser, it would be better to use SpeculativeRenderFrameHostObserver to
+// ensure the speculative RFH to avoid interference caused by the
+// TestNavigationManager.
+class SpeculativeRenderFrameHostObserver : public content::WebContentsObserver {
+ public:
+  explicit SpeculativeRenderFrameHostObserver(
+      content::WebContents* web_contents,
+      const GURL& url);
+  ~SpeculativeRenderFrameHostObserver() override;
+
+  void Wait();
+
+ private:
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+
+  base::RunLoop run_loop_;
+  GURL url_;
 };
 
 [[nodiscard]] base::CallbackListSubscription

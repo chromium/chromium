@@ -700,6 +700,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   content::TestNavigationManager manager(opener_contents, b_url);
   EXPECT_TRUE(
       ExecJs(popup_contents, "opener.location='" + b_url.spec() + "';"));
+  // Since the pending RPH for b.com will be checked, we need to wait for it
+  // to be created.
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   // Close the popup.  This should *not* kill the b.com process, as it still
   // has a pending navigation in the opener window.

@@ -619,7 +619,10 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // 2) Start same-site navigation to A2 without committing.
   TestNavigationManager navigation_a2(shell()->web_contents(), a2_url);
   shell()->LoadURL(a2_url);
-  EXPECT_TRUE(navigation_a2.WaitForRequestStart());
+  // Chrome in Android will use unisolated site instance, we have to
+  // use `WaitForResponse` since the speculative RFH won't be necessariliy
+  // created.
+  EXPECT_TRUE(navigation_a2.WaitForResponse());
   // Verify that we're now navigating to |a2_url|.
   EXPECT_EQ(node->navigation_request()->GetURL(), a2_url);
   // We should have a speculative RFH for this navigation.
@@ -636,7 +639,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // 3) Start cross-site navigation to B1 without committing.
   TestNavigationManager navigation_b1(shell()->web_contents(), b1_url);
   shell()->LoadURL(b1_url);
-  EXPECT_TRUE(navigation_b1.WaitForRequestStart());
+  EXPECT_TRUE(navigation_b1.WaitForResponse());
   // Verify that we're now navigating to |b1_url|.
   EXPECT_EQ(node->navigation_request()->GetURL(), b1_url);
   // We should have a speculative RFH for this navigation.
@@ -652,10 +655,11 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
 
   // 4) Start same-site navigation to B2 without committing.
   TestNavigationManager navigation_b2(shell()->web_contents(), b2_url);
+  // B2 shall reuse the speculative RFH. No RFH creation.
   shell()->LoadURL(b2_url);
-  EXPECT_TRUE(navigation_b2.WaitForRequestStart());
   // Verify that we're now navigating to |b2_url|.
   EXPECT_EQ(node->navigation_request()->GetURL(), b2_url);
+  EXPECT_TRUE(navigation_b2.WaitForResponse());
   // We should have a speculative RFH for this navigation.
   RenderFrameHostImpl* b2_speculative_rfh =
       node->render_manager()->speculative_frame_host();

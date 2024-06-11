@@ -3675,9 +3675,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, LastCommittedOrigin) {
 
   // Start a navigation to a b.com URL, and don't wait for commit.
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
-  TestFrameNavigationObserver commit_observer(root);
+  TestNavigationManager navigation_manager(web_contents, url_b);
   RenderFrameDeletedObserver deleted_observer(rfh_a);
   shell()->LoadURL(url_b);
+  navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
 
   // The speculative RFH shouln't have a last committed origin (the default
   // value is a unique origin). The current RFH shouldn't change its last
@@ -3688,7 +3689,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, LastCommittedOrigin) {
 
   // Verify that the last committed origin is set for the b.com RHF once it
   // commits.
-  commit_observer.WaitForCommit();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_EQ(url::Origin::Create(url_b), rfh_b->GetLastCommittedOrigin());
   EXPECT_EQ(rfh_b, web_contents->GetPrimaryMainFrame());
 
@@ -3979,7 +3980,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   TestNavigationManager cross_site_navigation(shell()->web_contents(), site2);
   shell()->LoadURL(site2);
-  EXPECT_TRUE(cross_site_navigation.WaitForRequestStart());
+  cross_site_navigation.WaitForSpeculativeRenderFrameHostCreation();
 
   RenderFrameHostImpl* speculative_rfh =
       static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -3992,7 +3993,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       GURL("javascript:(0)"), Referrer(), ui::PAGE_TRANSITION_TYPED,
       std::string());
 
-  cross_site_navigation.ResumeNavigation();
+  ASSERT_TRUE(cross_site_navigation.WaitForNavigationFinished());
   // No crash means everything worked!
 }
 
@@ -6022,6 +6023,7 @@ IN_PROC_BROWSER_TEST_P(
   content::TestNavigationManager navigation_manager(web_contents, url);
 
   shell()->LoadURL(url);
+  navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
   RenderProcessHost* speculative_rph = web_contents->GetPrimaryFrameTree()
                                            .root()
                                            ->render_manager()
@@ -6092,6 +6094,7 @@ IN_PROC_BROWSER_TEST_P(
   content::TestNavigationManager navigation_manager(web_contents, url);
 
   shell()->LoadURL(url);
+  navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
   RenderProcessHost* speculative_rph = web_contents->GetPrimaryFrameTree()
                                            .root()
                                            ->render_manager()

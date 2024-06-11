@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Begin navigation to c.
   TestNavigationManager nav_manager(web_contents(), url_c);
   shell()->LoadURL(url_c);
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
 
   RenderFrameHostImpl* rfh_c =
       rfh_b->frame_tree_node()->render_manager()->speculative_frame_host();

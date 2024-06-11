@@ -2099,6 +2099,10 @@ IN_PROC_BROWSER_TEST_P(
   // view from the native view tree. Thus the number of ViewAndroids is two
   // instead of three, when the old main frame and the OOPIF are BFCached. See
   // `WebContentsViewAndroid::RenderViewHostChanged()`.
+  // If the DeferSpeculativeRFHCreation feature is enabled, the RWHV won't be
+  // created when the navigation starts so only one native view will be left.
+  // For some reason the android view for the first speculative RFH is not
+  // removed when the response arrives (a new speculiatve RFH will be created).
   //
   // TODO(crbug.com/40285569): The number of `ui::ViewAndroid`s should be
   // one, regardless of BFCache.

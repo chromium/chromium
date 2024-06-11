@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachRenderFrameHost) {
       static_cast<WebContentsImpl*>(shell()->web_contents());
   TestNavigationManager manager(web_contents, url_b);
   shell()->LoadURL(url_b);
-  ASSERT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   // 4. Get the speculative RenderFrameHost.
   FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();

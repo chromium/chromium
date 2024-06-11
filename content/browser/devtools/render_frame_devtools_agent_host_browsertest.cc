@@ -108,8 +108,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/response_b"));
   TestNavigationManager observer_b(shell()->web_contents(), url_b);
   shell()->LoadURL(url_b);
-  EXPECT_TRUE(observer_b.WaitForRequestStart());
-
+  observer_b.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* current_rfh =
       root->render_manager()->current_frame_host();
   RenderFrameHostImpl* speculative_rfh_b =
@@ -119,7 +118,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   EXPECT_EQ(current_rfh, rfh_devtools_agent->GetFrameHostForTesting());
 
   // 3.b) Navigation: ReadyToCommit.
-  observer_b.ResumeNavigation();  // Send the request.
   response_b.WaitForRequest();
   response_b.Send(
       "HTTP/1.1 200 OK\r\n"

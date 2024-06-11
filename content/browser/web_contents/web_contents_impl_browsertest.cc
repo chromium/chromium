@@ -4409,7 +4409,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   TestNavigationManager manager(web_contents, url2);
   web_contents->GetController().LoadURL(
       url2, Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
-  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   // While there is a speculative RenderFrameHost in the root FrameTreeNode...
   ASSERT_TRUE(root->render_manager()->speculative_frame_host());

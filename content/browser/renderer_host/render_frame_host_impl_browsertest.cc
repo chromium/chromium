@@ -4494,7 +4494,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // 3) Start navigation to B, but don't commit yet.
   TestNavigationManager manager(web_contents(), url_b);
   shell()->LoadURL(url_b);
-  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
@@ -4608,7 +4608,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // 2) Start navigation to B, but don't commit yet.
   TestNavigationManager manager(web_contents(), url_b);
   shell()->LoadURL(url_b);
-  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* speculative_rfh =
@@ -5889,7 +5889,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   TestNavigationManager nav_manager(web_contents(), url_b);
   shell()->LoadURL(url_b);
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
 
   RenderFrameHostImpl* rfh_b =
       rfh_a->frame_tree_node()->render_manager()->speculative_frame_host();
@@ -5972,7 +5972,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   TestNavigationManager nav_manager(web_contents(), url_d);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(rfh_b, url_d));
-  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
 
   RenderFrameHostImpl* rfh_d =
       rfh_b->frame_tree_node()->render_manager()->speculative_frame_host();
@@ -7461,7 +7461,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // 3) Start navigation to B, but don't commit yet.
   TestNavigationManager manager(web_contents(), url_b);
   shell()->LoadURL(url_b);
-  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.WaitForSpeculativeRenderFrameHostCreation();
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =

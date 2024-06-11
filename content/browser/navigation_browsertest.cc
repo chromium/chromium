@@ -6062,8 +6062,11 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
   // render process for a.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("a.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(web_contents,
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
                                              infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process.
   RenderFrameHostImpl* speculative_render_frame_host =
@@ -6171,7 +6174,10 @@ IN_PROC_BROWSER_TEST_F(NavigationQueueingBrowserTest, Regular) {
   // Start a navigation that will create a speculative RFH.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
+  rfh_observer.Wait();
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -6298,11 +6304,12 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   // already hosted in the render process for b.com: this is to ensure the
   // render process remains live even after the second child frame is detached
   // later in this test.
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      second_subframe_node,
-      embedded_test_server()->GetURL("b.com", "/title1.html")));
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+  SpeculativeRenderFrameHostObserver observer(shell()->web_contents(), b_url);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(second_subframe_node, b_url));
 
   // Ensure the speculative RFH is in the expected process.
+  observer.Wait();
   RenderFrameHostImpl* speculative_render_frame_host =
       second_subframe_node->render_manager()->speculative_frame_host();
   ASSERT_TRUE(speculative_render_frame_host);
@@ -6371,7 +6378,10 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   // render process for b.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process (i.e. the b.com
   // process that was created for the navigation in the new window earlier).
@@ -6458,8 +6468,11 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   // render process for b.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
                                              infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process.
   RenderFrameHostImpl* speculative_render_frame_host =
@@ -6551,7 +6564,10 @@ IN_PROC_BROWSER_TEST_P(
   // render process for b.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process (i.e. the b.com
   // process that was created for the navigation in the new window earlier).
@@ -6651,8 +6667,11 @@ IN_PROC_BROWSER_TEST_P(
   // render process for b.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(web_contents,
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
                                              infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process.
   RenderFrameHostImpl* speculative_render_frame_host =
@@ -6755,7 +6774,10 @@ IN_PROC_BROWSER_TEST_P(
   // render process for b.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process (i.e. the b.com
   // process that was created for the navigation in the new window earlier).
@@ -6842,8 +6864,11 @@ IN_PROC_BROWSER_TEST_P(
   // render process for b.com.
   const GURL infinitely_loading_url =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  infinitely_loading_url);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
                                              infinitely_loading_url));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process.
   RenderFrameHostImpl* speculative_render_frame_host =
@@ -6928,7 +6953,10 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   // render process for b.com.
   const GURL url_b =
       embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  SpeculativeRenderFrameHostObserver rfh_observer(shell()->web_contents(),
+                                                  url_b);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), url_b));
+  rfh_observer.Wait();
 
   // Ensure the speculative RFH is in the expected process (i.e. the b.com
   // process that was created for the navigation in the new window earlier).
@@ -6964,7 +6992,11 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   const GURL url_c = embedded_test_server()->GetURL("c.com", "/title1.html");
   TestNavigationManager url_c_nav(web_contents, url_c);
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url_c));
-  ASSERT_TRUE(url_c_nav.WaitForRequestStart());
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    ASSERT_TRUE(url_c_nav.WaitForRequestStart());
+  } else {
+    url_c_nav.WaitForSpeculativeRenderFrameHostCreation();
+  }
   EXPECT_EQ(url_c, root->navigation_request()->GetURL());
 
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
@@ -7043,13 +7075,16 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
 // if the renderer crashes.
 IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
                        CrashedInPendingCommit) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
+  SpeculativeRenderFrameHostObserver rfh_observer(web_contents, url_b);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), url_b));
+  rfh_observer.Wait();
+
   base::WeakPtr<RenderFrameHostImpl> speculative_render_frame_host =
       web_contents->GetPrimaryFrameTree()
           .root()
