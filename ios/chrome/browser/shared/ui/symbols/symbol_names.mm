@@ -15,6 +15,8 @@ NSString* const kChromeNotificationsOptInBannerImage =
     @"chrome_notifications_opt_in_banner";
 NSString* const kChromeNotificationsOptInBannerLandscapeImage =
     @"chrome_notifications_opt_in_banner_landscape";
+NSString* const kChromeSearchEngineChoiceIcon =
+    @"chrome_search_engine_choice_icon";
 NSString* const kChromeSigninBannerImage = @"chrome_signin_banner";
 NSString* const kChromeSigninPromoLogoImage = @"chrome_signin_promo_logo";
 NSString* const kGoogleIconSymbol = @"google_icon";
@@ -46,6 +48,8 @@ NSString* const kChromiumPasswordManagerWidgetPromoImage =
     @"chromium_password_manager_widget_promo";
 NSString* const kChromiumPasswordManagerWidgetPromoDisabledImage =
     @"chromium_password_manager_widget_promo_disabled";
+NSString* const kChromiumSearchEngineChoiceIcon =
+    @"chromium_search_engine_choice_icon";
 NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage =
     @"chromium_settings_passwords_in_other_apps_banner";
 NSString* const kChromiumSigninBannerImage = @"chromium_signin_banner";
