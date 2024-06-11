@@ -209,9 +209,10 @@ void PickerEmojiBarView::ClearSearchResults() {
   item_row_->RemoveAllChildViews();
 }
 
-void PickerEmojiBarView::SetSearchResults(PickerSearchResultsSection section) {
+void PickerEmojiBarView::SetSearchResults(
+    std::vector<PickerSearchResult> results) {
   ClearSearchResults();
-  for (const auto& result : section.results()) {
+  for (const auto& result : results) {
     // `base::Unretained` is safe here because `this` owns the item view.
     auto item_view = CreateItemView(
         result, base::BindRepeating(&PickerEmojiBarView::SelectSearchResult,

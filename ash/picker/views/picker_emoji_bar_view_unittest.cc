@@ -59,10 +59,8 @@ TEST_F(PickerEmojiBarViewTest, CreatesSearchResultItems) {
   MockSearchResultsViewDelegate mock_delegate;
   PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
 
-  emoji_bar.SetSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
-      /*has_more_results=*/false));
+  emoji_bar.SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
 
   EXPECT_THAT(emoji_bar.item_row_for_testing()->children(),
               ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
@@ -72,10 +70,8 @@ TEST_F(PickerEmojiBarViewTest, CreatesSearchResultItems) {
 TEST_F(PickerEmojiBarViewTest, ClearsSearchResults) {
   MockSearchResultsViewDelegate mock_delegate;
   PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
-  emoji_bar.SetSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
-      /*has_more_results=*/false));
+  emoji_bar.SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
 
   emoji_bar.ClearSearchResults();
 
@@ -106,10 +102,8 @@ TEST_F(PickerEmojiBarViewTest, GainsPseudoFocus) {
   auto* emoji_bar = widget->SetContentsView(
       std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
   widget->Show();
-  emoji_bar->SetSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
-      /*has_more_results=*/false));
+  emoji_bar->SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
   ViewDrawnWaiter().Wait(emoji_bar->item_row_for_testing()->children().front());
 
   EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_)).Times(1);
@@ -129,10 +123,8 @@ TEST_F(PickerEmojiBarViewTest, AdvancesPseudoFocus) {
   auto* emoji_bar = widget->SetContentsView(
       std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
   widget->Show();
-  emoji_bar->SetSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
-      /*has_more_results=*/false));
+  emoji_bar->SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
   ViewDrawnWaiter().Wait(emoji_bar->item_row_for_testing()->children().front());
 
   EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_)).Times(2);

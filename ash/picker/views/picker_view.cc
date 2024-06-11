@@ -390,7 +390,10 @@ void PickerView::PublishSearchResults(
     if (result.type() == PickerSectionType::kGifs) {
       continue;
     } else if (result.type() == PickerSectionType::kExpressions) {
-      emoji_bar_view_->SetSearchResults(std::move(result));
+      // TODO: b/327255023 - Avoid this copy by having a separate method for
+      // publishing expression results.
+      emoji_bar_view_->SetSearchResults(
+          {result.results().begin(), result.results().end()});
     } else {
       search_results_view_->AppendSearchResults(std::move(result));
     }
@@ -574,9 +577,7 @@ void PickerView::ResetEmojiBarToZeroState() {
     }
   }
 
-  emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions, emoji_bar_results,
-      /*has_more_results=*/false));
+  emoji_bar_view_->SetSearchResults(std::move(emoji_bar_results));
 }
 
 BEGIN_METADATA(PickerView)
