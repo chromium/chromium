@@ -11,6 +11,7 @@
 #import "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
 #import "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #import "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
+#import "components/visited_url_ranking/internal/transformer/recency_filter_transformer.h"
 #import "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
 #import "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -108,6 +109,10 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
           base::flat_set<std::string>(
               visited_url_ranking::kBlocklistedCategories.begin(),
               visited_url_ranking::kBlocklistedCategories.end())));
+
+  transformers.emplace(
+      visited_url_ranking::URLVisitAggregatesTransformType::kRecencyFilter,
+      std::make_unique<visited_url_ranking::RecencyFilterTransformer>());
 
   auto* segmentation_platform_service = segmentation_platform::
       SegmentationPlatformServiceFactory::GetForBrowserState(browser_state);

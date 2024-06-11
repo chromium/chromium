@@ -29,6 +29,7 @@
 #include "components/visited_url_ranking/internal/transformer/default_app_url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
+#include "components/visited_url_ranking/internal/transformer/recency_filter_transformer.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
@@ -143,6 +144,8 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<HistoryURLVisitAggregatesCategoriesTransformer>(
           base::flat_set<std::string>(kBlocklistedCategories.begin(),
                                       kBlocklistedCategories.end())));
+  transformers.emplace(URLVisitAggregatesTransformType::kRecencyFilter,
+                       std::make_unique<RecencyFilterTransformer>());
 
 #if BUILDFLAG(IS_ANDROID)
   base::flat_set<std::string_view> default_app_blocklist(

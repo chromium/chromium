@@ -24,6 +24,8 @@ static_library("internal") {
     "transformer/history_url_visit_aggregates_categories_transformer.h",
     "transformer/history_url_visit_aggregates_visibility_score_transformer.cc",
     "transformer/history_url_visit_aggregates_visibility_score_transformer.h",
+    "transformer/recency_filter_transformer.cc",
+    "transformer/recency_filter_transformer.h",
     "visited_url_ranking_service_impl.cc",
     "visited_url_ranking_service_impl.h",
   ]
@@ -68,6 +70,7 @@ source_set("unit_tests") {
     "transformer/default_app_url_visit_aggregates_transformer_unittest.cc",
     "transformer/history_url_visit_aggregates_categories_transformer_unittest.cc",
     "transformer/history_url_visit_aggregates_visibility_score_transformer_unittest.cc",
+    "transformer/recency_filter_transformer_unittest.cc",
     "visited_url_ranking_service_impl_unittest.cc",
   ]
 

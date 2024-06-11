@@ -150,6 +150,9 @@ struct URLVisitAggregate {
   // various fetchers that participated in constructing the aggregate object.
   std::set<const GURL*> GetAssociatedURLs() const;
 
+  // Utility to fetch timestamp that the URL was last opened on a tab.
+  base::Time GetLastVisitTime() const;
+
   // A map of aggregate tab related characteristics associated with the visit as
   // provided by a given source.
   using URLVisitVariant =

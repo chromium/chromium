@@ -15,4 +15,15 @@ BASE_FEATURE(kVisitedURLRankingService,
 const char kVisitedURLRankingFetchDurationInHoursParam[] =
     "VisitedURLRankingFetchDurationInHoursParam";
 
+const char kHistoryAgeThresholdHours[] = "history_age_threshold_hours";
+// 1 day in hours.
+const int kHistoryAgeThresholdHoursDefaultValue = 24;
+
+const char kTabAgeThresholdHours[] = "tab_age_threshold_hours";
+// 7 days in hours.
+const int kTabAgeThresholdHoursDefaultValue = 168;
+
+const char kURLAggregateCountLimit[] = "aggregate_count_limit";
+const int kURLAggregateCountLimitDefaultValue = 50;
+
 }  // namespace visited_url_ranking::features

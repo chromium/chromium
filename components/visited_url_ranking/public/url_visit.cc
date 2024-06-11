@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/public/url_visit.h"
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -48,6 +49,36 @@ std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
                fetcher_entry.second);
   }
   return urls;
+}
+
+base::Time URLVisitAggregate::GetLastVisitTime() const {
+  std::optional<base::Time> last_visit_time;
+  for (const auto& fetcher_entry : fetcher_data_map) {
+    // Prefer timestamp from local tabs, if not an active tab then use timestamp
+    // from the history.
+    switch (fetcher_entry.first) {
+      case Fetcher::kTabModel:
+        last_visit_time =
+            std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                .last_active_tab.visit.last_modified;
+        break;
+      case Fetcher::kSession:
+        if (!last_visit_time) {
+          last_visit_time =
+              std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                  .last_active_tab.visit.last_modified;
+        }
+        break;
+      case Fetcher::kHistory:
+        if (!last_visit_time) {
+          last_visit_time =
+              std::get<URLVisitAggregate::HistoryData>(fetcher_entry.second)
+                  .last_visited.visit_row.visit_time;
+        }
+        break;
+    }
+  }
+  return *last_visit_time;
 }
 
 URLVisitAggregate::Tab::Tab(const int32_t id_arg,
