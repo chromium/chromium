@@ -829,13 +829,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.StateError" enum="PrintPreviewStateError"
-    expires_after="2024-01-23">
-  <owner>gavinwill@chromium.org</owner>
+    expires_after="2025-03-23">
+  <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Records the error that puts Print Preview into an error state. The NONE
     error state is not recorded. In an error state, the Print button is
-    disabled.
+    disabled. Warning: this histogram was expired from 2024-01-24 to 2024-06-10;
+    data may be missing.
   </summary>
 </histogram>
 
