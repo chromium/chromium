@@ -64,6 +64,7 @@ class RectF;
 
 namespace viz {
 struct FrameTimingDetails;
+class LocalSurfaceId;
 }  // namespace viz
 
 namespace blink {
@@ -251,6 +252,9 @@ class WebFrameWidget : public WebWidget {
   // Changes the zoom level to the specified level, clamping at the limits
   // defined by the associated `webView`.
   virtual void SetZoomLevel(double zoom_level) = 0;
+
+  // Update the LocalSurfaceId used for frames produced by this widget.
+  virtual void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) = 0;
 
  private:
   // This is a private virtual method so we don't expose cc::LayerTreeHost

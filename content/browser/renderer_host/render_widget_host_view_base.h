@@ -412,6 +412,15 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Gets the bounds of the top-level window, in screen coordinates.
   virtual gfx::Rect GetBoundsInRootWindow() = 0;
 
+  // Increments the LocalSurfaceId associated with this view when a commit IPC
+  // is being sent to change the Document for the root RenderFrameHost rendering
+  // to this view.
+  // Note: Generally changing the SurfaceID is done using
+  // SynchronizeVisualProperties which also sends the updated SurfaceID to the
+  // renderer. However, for this API the caller is responsible for ensuring the
+  // new ID is synchronized with the renderer.
+  virtual const viz::LocalSurfaceId& IncrementSurfaceIdForNavigation();
+
   // Dispatched when the a cross-document navigation happens in the primary main
   // frame, and the old view is still visible. This API is called on the old
   // view.

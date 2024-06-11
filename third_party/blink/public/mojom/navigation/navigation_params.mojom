@@ -42,6 +42,7 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 
 enum NavigationType {
   // Reload the page, validating only cache entry for the main resource.
@@ -640,6 +641,17 @@ struct CommitNavigationParams {
   // sending salt values to the renderer after the :visited link hashtable has
   // been initialized.
   uint64? visited_link_salt;
+
+  // Provides the LocalSurfaceId to assign to the new Document when this
+  // navigation commits. This is only set for navigations where the new Document
+  // uses the same compositor as the old Document, i.e., same-RFH navigations.
+  //
+  // Note: We always assign a LocalSurfaceId to the new Document when the
+  // navigation commits in the browser (DidCommitNavigation). But if the old
+  // Document will be screenshotted by the browser, we need to generate an ID
+  // earlier to ensure the new Document doesn't render frames using the same ID
+  // as the old Document when it is committed in the renderer.
+  viz.mojom.LocalSurfaceId? local_surface_id;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

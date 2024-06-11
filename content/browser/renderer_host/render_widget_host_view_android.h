@@ -181,6 +181,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ClearKeyboardTriggeredTooltip() override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
+  const viz::LocalSurfaceId& IncrementSurfaceIdForNavigation() override;
   void ProcessAckedTouchEvent(
       const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;

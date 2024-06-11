@@ -721,6 +721,11 @@ void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
   return;
 }
 
+const viz::LocalSurfaceId&
+RenderWidgetHostViewBase::IncrementSurfaceIdForNavigation() {
+  NOTREACHED_NORETURN();
+}
+
 void RenderWidgetHostViewBase::OnOldViewDidNavigatePreCommit() {}
 
 void RenderWidgetHostViewBase::OnNewViewDidNavigatePostCommit() {}

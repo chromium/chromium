@@ -120,6 +120,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
                                  const gfx::Rect& bounds) override {}
   void ClearKeyboardTriggeredTooltip() override {}
   gfx::Rect GetBoundsInRootWindow() override;
+  const viz::LocalSurfaceId& IncrementSurfaceIdForNavigation() override;
   blink::mojom::PointerLockResult LockPointer(bool) override;
   blink::mojom::PointerLockResult ChangePointerLock(bool) override;
   void UnlockPointer() override;

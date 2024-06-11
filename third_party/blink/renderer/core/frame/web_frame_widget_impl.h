@@ -394,6 +394,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetDeviceScaleFactorForTesting(float factor) override;
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
   void PrepareForFinalLifecyclUpdateForTesting() override;
+  void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) override;
 
   // Called when a drag-n-drop operation should begin.
   virtual void StartDragging(LocalFrame* source_frame,

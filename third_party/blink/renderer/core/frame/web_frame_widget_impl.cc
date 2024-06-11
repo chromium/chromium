@@ -4947,6 +4947,14 @@ void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
       });
 }
 
+void WebFrameWidgetImpl::ApplyLocalSurfaceIdUpdate(
+    const viz::LocalSurfaceId& id) {
+  if (!View()->does_composite()) {
+    return;
+  }
+  widget_base_->LayerTreeHost()->SetLocalSurfaceIdFromParent(id);
+}
+
 void WebFrameWidgetImpl::SetMayThrottleIfUndrawnFrames(
     bool may_throttle_if_undrawn_frames) {
   if (!View()->does_composite())

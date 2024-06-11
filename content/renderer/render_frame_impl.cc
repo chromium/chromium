@@ -3000,6 +3000,13 @@ void RenderFrameImpl::CommitNavigationWithParams(
   if (!weak_self)
     return;
 
+  if (commit_params->local_surface_id) {
+    CHECK(frame_->FrameWidget())
+        << "Only local roots should get a SurfaceID update";
+    frame_->FrameWidget()->ApplyLocalSurfaceIdUpdate(
+        *commit_params->local_surface_id);
+  }
+
   if (load_type == WebFrameLoadType::kStandard &&
       common_params->url.SchemeIsHTTPOrHTTPS()) {
     base::UmaHistogramMicrosecondsTimes(

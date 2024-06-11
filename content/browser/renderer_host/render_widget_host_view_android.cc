@@ -2145,6 +2145,21 @@ gfx::Rect RenderWidgetHostViewAndroid::GetBoundsInRootWindow() {
   return GetViewBounds();
 }
 
+const viz::LocalSurfaceId&
+RenderWidgetHostViewAndroid::IncrementSurfaceIdForNavigation() {
+  local_surface_id_allocator_.GenerateId();
+
+  if (delegated_frame_host_) {
+    delegated_frame_host_->EmbedSurface(
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
+        GetCompositorViewportPixelSize(),
+        cc::DeadlinePolicy::UseDefaultDeadline(),
+        host()->delegate()->IsFullscreen());
+  }
+
+  return local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+}
+
 void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {

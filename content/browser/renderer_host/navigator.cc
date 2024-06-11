@@ -501,14 +501,10 @@ void Navigator::DidNavigate(
   // will hide the old View, and the
   // `RenderFrameHostManager::DidNavigateFrame()` will subsequently unload the
   // old page and show the new View.
-  //
-  // TODO(crbug.com/40278956): Move this into
-  // `RenderFrameHostManager::CommitPending` to accommodate both regular
-  // navigations and early-commit.
   if (!was_within_same_document) {
     NavigationTransitionUtils::
         CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
-            *navigation_request);
+            *navigation_request, /*did_receive_commit_ack=*/true);
   }
 
   if (ui::PageTransitionIsMainFrame(params.transition)) {

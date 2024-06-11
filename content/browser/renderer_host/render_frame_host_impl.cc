@@ -14582,6 +14582,16 @@ void RenderFrameHostImpl::SendCommitNavigation(
                                                    origin_to_commit);
   }
 
+  // TODO(khushalsagar): This code-path can be removed after RenderDocument is
+  // fully enabled. See crbug.com/346500010.
+  if (!navigation_request->IsSameDocument() &&
+      NavigationTransitionUtils::
+          CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
+              *navigation_request, /*did_receive_commit_ack=*/false)) {
+    commit_params->local_surface_id =
+        GetView()->IncrementSurfaceIdForNavigation();
+  }
+
   commit_params->commit_sent = base::TimeTicks::Now();
   {
     auto scope = MakeUrgentMessageScopeIfNeeded();

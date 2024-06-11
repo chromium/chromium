@@ -28,16 +28,27 @@ struct NavigationTransitionUtils {
 
   // Capture the `NavigationEntryScreenshot` for the old page, and store the
   // screenshot in the old page's NavigationEntry.
-  // Should only be called immediately before the old page is unloaded.
-  static void CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
-      const NavigationRequest& navigation_request);
+  //
+  // This is invoked at 2 points in the navigation's lifecycle, the screenshot is done at one
+  // of these 2 points:
+  //
+  // 1. When dispatching a commit message from the browser to the renderer
+  //    process.
+  // 2. When the browser receives the DidCommitNavigation ack and the navigation
+  //    is committed in the browser process.
+  //
+  // Returns true if a screenshot for the currently committed Document is
+  // requested for this navigation.
+  static bool CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
+      NavigationRequest& navigation_request,
+      bool did_receive_commit_ack);
 
   // Called when `DidCommitSameDocumentNavigation` arrives at the browser, and
   // *before* the navigation commits. Ensures that a `NavigationEntryScreenshot`
   // for the pre-navigation DOM state is cached when provided by the Viz
   // process.
   static void SetSameDocumentNavigationEntryScreenshotToken(
-      const NavigationRequest& navigation_request,
+      NavigationRequest& navigation_request,
       const blink::SameDocNavigationScreenshotDestinationToken&
           destination_token);
 

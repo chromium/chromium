@@ -201,6 +201,12 @@ gfx::Rect TestRenderWidgetHostView::GetBoundsInRootWindow() {
   return gfx::Rect();
 }
 
+const viz::LocalSurfaceId&
+TestRenderWidgetHostView::IncrementSurfaceIdForNavigation() {
+  static constexpr viz::LocalSurfaceId kInvalidId;
+  return kInvalidId;
+}
+
 void TestRenderWidgetHostView::ClearFallbackSurfaceForCommitPending() {
   clear_fallback_surface_for_commit_pending_called_ = true;
 }
