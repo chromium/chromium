@@ -21,7 +21,7 @@ namespace content {
 // Parameters:
 // - |usage|: Indicates the category of GPU memory usage being tracked.
 // - |testing_callback|: (Optional) Closure used by some tests to synchronize
-//                       with the work done here on the IO thread.
+//                       with the work done here on the UI thread.
 // - |peak_memory|: The total peak GPU memory usage in bytes.
 // - |allocation_per_source|: A breakdown of the peak memory usage, showing how
 //                            much was allocated by each source.

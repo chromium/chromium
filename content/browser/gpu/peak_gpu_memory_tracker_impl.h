@@ -38,7 +38,7 @@ class PeakGpuMemoryTrackerImpl : public PeakGpuMemoryTracker {
   friend class PeakGpuMemoryTrackerImplTest;
 
   // A callback which will be run after receiving a callback from the
-  // GpuService. For use by tests to synchronize work done on the IO thread.
+  // GpuService. For use by tests to synchronize work done on the UI thread.
   base::OnceClosure post_gpu_service_callback_for_testing_ = base::DoNothing();
 
   // Provides the unique identifier for each PeakGpuMemoryTrackerImpl.

@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   // the callback being a posted task.
   tracker.reset();
   FlushRemoteForTesting();
-  // Wait for callback to be ran on the IO thread, which will call the
+  // Wait for callback to be ran on the UI thread, which will call the
   // QuitClosure.
   run_loop.Run();
   histogram.ExpectUniqueSample("Memory.GPU.PeakMemoryUsage2.PageLoad",

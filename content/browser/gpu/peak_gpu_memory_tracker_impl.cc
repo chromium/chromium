@@ -26,71 +26,55 @@ uint32_t PeakGpuMemoryTrackerImpl::next_sequence_number_ = 0;
 PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(
     PeakGpuMemoryTracker::Usage usage)
     : usage_(usage) {
-  // TODO(thiabaud): Do this call inline, since this happens on the UI thread.
-  //
   // Actually performs request to GPU service to begin memory tracking for
-  // |sequence_number_|. This will normally be created from the UI thread, so
-  // repost to the IO thread.
-  GpuProcessHost::CallOnUI(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /* force_create=*/false,
-      base::BindOnce(
-          [](uint32_t sequence_num, GpuProcessHost* host) {
-            // There may be no host nor service available. This may occur during
-            // shutdown, when the service is fully disabled, and in some tests.
-            // In those cases do nothing.
-            if (!host)
-              return;
-            if (auto* gpu_service = host->gpu_service()) {
-              gpu_service->StartPeakMemoryMonitor(sequence_num);
-            }
-          },
-          sequence_num_));
+  // |sequence_number_|.
+  auto* host =
+      GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create*/ false);
+  // There may be no host nor service available. This may occur during
+  // shutdown, when the service is fully disabled, and in some tests.
+  // In those cases do nothing.
+  if (!host) {
+    return;
+  }
+  if (auto* gpu_service = host->gpu_service()) {
+    gpu_service->StartPeakMemoryMonitor(sequence_num_);
+  }
 }
 
 PeakGpuMemoryTrackerImpl::~PeakGpuMemoryTrackerImpl() {
   if (canceled_)
     return;
 
-  // TODO(thiabaud): Do this call inline, since this happens on the UI thread.
-  GpuProcessHost::CallOnUI(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /* force_create=*/false,
-      base::BindOnce(
-          [](uint32_t sequence_num, PeakGpuMemoryTracker::Usage usage,
-             base::OnceClosure testing_callback, GpuProcessHost* host) {
-            // There may be no host nor service available. This may occur during
-            // shutdown, when the service is fully disabled, and in some tests.
-            // In those cases there is nothing to report to UMA. However we
-            // still run the optional testing callback.
-            if (!host) {
-              std::move(testing_callback).Run();
-              return;
-            }
-            if (auto* gpu_service = host->gpu_service()) {
-              gpu_service->GetPeakMemoryUsage(
-                  sequence_num, base::BindOnce(&PeakGpuMemoryCallback, usage,
-                                               std::move(testing_callback)));
-            }
-          },
-          sequence_num_, usage_,
-          std::move(post_gpu_service_callback_for_testing_)));
+  auto* host =
+      GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create*/ false);
+  // There may be no host nor service available. This may occur during
+  // shutdown, when the service is fully disabled, and in some tests.
+  // In those cases there is nothing to report to UMA. However we
+  // still run the optional testing callback.
+  if (!host) {
+    std::move(post_gpu_service_callback_for_testing_).Run();
+    return;
+  }
+  if (auto* gpu_service = host->gpu_service()) {
+    gpu_service->GetPeakMemoryUsage(
+        sequence_num_,
+        base::BindOnce(&PeakGpuMemoryCallback, usage_,
+                       std::move(post_gpu_service_callback_for_testing_)));
+  }
 }
 
 void PeakGpuMemoryTrackerImpl::Cancel() {
   canceled_ = true;
-  // TODO(thiabaud): Do this call inline, since this happens on the UI thread.
-  //
+
+  auto* host =
+      GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create*/ false);
+  if (!host) {
+    return;
+  }
   // Notify the GpuProcessHost that we are done observing this sequence.
-  GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           /* force_create=*/false,
-                           base::BindOnce(
-                               [](uint32_t sequence_num, GpuProcessHost* host) {
-                                 if (!host)
-                                   return;
-                                 if (auto* gpu_service = host->gpu_service())
-                                   gpu_service->GetPeakMemoryUsage(
-                                       sequence_num, base::DoNothing());
-                               },
-                               sequence_num_));
+  if (auto* gpu_service = host->gpu_service()) {
+    gpu_service->GetPeakMemoryUsage(sequence_num_, base::DoNothing());
+  }
 }
 
 }  // namespace content
