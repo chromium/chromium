@@ -396,7 +396,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     // UI State
     private StripLayoutTab mInteractingTab;
-    private CompositorButton mLastPressedCloseButton;
     private float mWidth;
     private float mHeight;
     private long mLastSpinnerUpdate;
@@ -1675,9 +1674,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 1. Reset the button state.
         mNewTabButton.drag(x, y);
-        if (mLastPressedCloseButton != null) {
-            if (!mLastPressedCloseButton.drag(x, y)) mLastPressedCloseButton = null;
-        }
 
         if (mInReorderMode) {
             // 2.a. Handle reordering tabs.
@@ -2248,17 +2244,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     /**
      * Called on up or cancel touch events. This is called after the click and fling event if any.
+     *
      * @param time The current time of the app in ms.
      */
     public void onUpOrCancel(long time) {
-        // 1. Reset the last close button pressed state.
-        if (mLastPressedCloseButton != null) mLastPressedCloseButton.onUpOrCancel();
-        mLastPressedCloseButton = null;
-
-        // 2. Stop any reordering that is happening.
+        // 1. Stop any reordering that is happening.
         stopReorderMode();
 
-        // 3. Reset state
+        // 2. Reset state
         mInteractingTab = null;
         mReorderState = REORDER_SCROLL_NONE;
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
@@ -3515,13 +3508,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     void startReorderMode(long time, float currentX, float startX) {
         if (mInReorderMode) return;
         RecordUserAction.record("MobileToolbarStartReorderTab");
-        // 1. Reset the last pressed close button state.
-        if (mLastPressedCloseButton != null && mLastPressedCloseButton.isPressed()) {
-            mLastPressedCloseButton.setPressed(false);
-        }
-        mLastPressedCloseButton = null;
 
-        // 2. Check to see if we have a valid (non-null, non-dying, non-placeholder) tab to start
+        // 1. Check to see if we have a valid (non-null, non-dying, non-placeholder) tab
+        // to start
         // dragging.
         mInteractingTab = mActiveClickedTab == null ? getTabAtPosition(startX) : mActiveClickedTab;
         if (mInteractingTab == null
@@ -3531,23 +3520,23 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
         mInteractingTab.setIsReordering(true);
 
-        // 3. Set mInReorderMode to true before selecting this tab to prevent unnecessary triggering
+        // 2. Set mInReorderMode to true before selecting this tab to prevent unnecessary triggering
         // of #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
         mInReorderMode = true;
 
-        // 4. Select this tab so that it is always in the foreground.
+        // 3. Select this tab so that it is always in the foreground.
         TabModelUtils.setIndex(
                 mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getId()), false);
 
-        // 5. Set initial state.
+        // 4. Set initial state.
         ArrayList<Animator> animationList = startReorderInternal(startX);
 
-        // 6. Lift the container off the toolbar and perform haptic feedback.
+        // 5. Lift the container off the toolbar and perform haptic feedback.
         Tab tab = getTabById(mInteractingTab.getId());
         updateTabAttachState(mInteractingTab, false, animationList);
         performHapticFeedback(tab);
 
-        // 7. Kick-off animations and request an update.
+        // 6. Kick-off animations and request an update.
         if (animationList != null) {
             startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
         }
