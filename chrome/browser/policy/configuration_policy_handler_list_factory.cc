@@ -2640,14 +2640,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
               SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
               SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED))));
 
-  handlers->AddHandler(
-      std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
-          key::kEnterpriseBadgingTemporarySetting,
-          prefs::kEnterpriseBadgingTemporarySetting, chrome_schema,
-          policy::SchemaOnErrorStrategy::SCHEMA_STRICT,
-          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-
   handlers->AddHandler(std::make_unique<PolicyWithDependencyHandler>(
       key::kCustomProfileLabel,
       PolicyWithDependencyHandler::DependencyRequirement::
