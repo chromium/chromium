@@ -87,17 +87,31 @@
   // OmniboxPopupViewSuggestionsDelegate instead of OmniboxViewIOS.
   std::unique_ptr<OmniboxViewIOS> _editView;
 
+  // Omnibox client. Stored between init and start, then ownership is passed to
+  // OmniboxView.
+  std::unique_ptr<OmniboxClient> _client;
+
   /// Object handling interactions in the keyboard accessory view.
   OmniboxAssistiveKeyboardMediator* _keyboardMediator;
 
   // The handler for ToolbarCommands.
   id<ToolbarCommands> _toolbarHandler;
 }
-@synthesize locationBar = _locationBar;
 @synthesize viewController = _viewController;
 @synthesize mediator = _mediator;
 
 #pragma mark - public
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                             omniboxClient:
+                                 (std::unique_ptr<OmniboxClient>)client {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _client = std::move(client);
+  }
+  return self;
+}
 
 - (void)start {
   DCHECK(!self.popupCoordinator);
@@ -137,12 +151,12 @@
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.viewController.pasteDelegate = self.mediator;
 
-  DCHECK(self.locationBar);
+  DCHECK(_client.get());
 
   id<OmniboxCommands> omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
-      self.textField, self.locationBar, self.browser->GetBrowserState(),
+      self.textField, std::move(_client), self.browser->GetBrowserState(),
       omniboxHandler, self.focusDelegate, _toolbarHandler,
       self.viewController.additionalTextConsumer);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
@@ -190,7 +204,6 @@
   self.viewController.textChangeDelegate = nil;
   self.returnDelegate.acceptDelegate = nil;
   _editView.reset();
-  self.locationBar = nil;
   self.viewController = nil;
   self.mediator.templateURLService = nullptr;  // Unregister the observer.
   if (self.keyboardAccessoryView) {
@@ -268,7 +281,7 @@
   DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
       std::make_unique<OmniboxPopupViewIOS>(_editView->controller(),
-                                            self.locationBar, _editView.get());
+                                            _editView.get());
 
   _editView->SetPopupProvider(popupView.get());
 

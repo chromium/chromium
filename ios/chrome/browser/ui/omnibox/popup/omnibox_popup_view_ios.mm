@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
-#import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_context_getter.h"
@@ -36,10 +35,8 @@ using base::UserMetricsAction;
 
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     OmniboxController* controller,
-    WebLocationBar* location_bar,
     OmniboxPopupViewSuggestionsDelegate* delegate)
     : OmniboxPopupView(controller),
-      location_bar_(location_bar),
       delegate_(delegate) {
   DCHECK(delegate);
   DCHECK(controller);
@@ -90,12 +87,6 @@ void OmniboxPopupViewIOS::OnMatchSelected(
     size_t row,
     WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
-  NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(location_bar_->GetWebState());
-  if (NTPTabHelper->IsActive()) {
-    RecordHomeAction(IOSHomeActionType::kOmnibox,
-                     NTPTabHelper->ShouldShowStartSurface());
-  }
 
   // OpenMatch() may close the popup, which will clear the result set and, by
   // extension, `match` and its contents.  So copy the relevant match out to

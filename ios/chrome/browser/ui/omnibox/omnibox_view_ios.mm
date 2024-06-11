@@ -31,13 +31,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_additional_text_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -54,22 +52,14 @@ using base::UserMetricsAction;
 
 OmniboxViewIOS::OmniboxViewIOS(
     OmniboxTextFieldIOS* field,
-    WebLocationBar* location_bar,
+    std::unique_ptr<OmniboxClient> client,
     ChromeBrowserState* browser_state,
     id<OmniboxCommands> omnibox_focuser,
     id<OmniboxFocusDelegate> focus_delegate,
     id<ToolbarCommands> toolbar_commands_handler,
     id<OmniboxAdditionalTextConsumer> additional_text_consumer)
-    : OmniboxView(
-          location_bar
-              ? std::make_unique<ChromeOmniboxClientIOS>(
-                    location_bar,
-                    browser_state,
-                    feature_engagement::TrackerFactory::GetForBrowserState(
-                        browser_state))
-              : nullptr),
+    : OmniboxView(std::move(client)),
       field_(field),
-      location_bar_(location_bar),
       omnibox_focuser_(omnibox_focuser),
       focus_delegate_(focus_delegate),
       toolbar_commands_handler_(toolbar_commands_handler),

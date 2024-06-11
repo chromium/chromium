@@ -17,7 +17,6 @@
 @class OmniboxPopupMediator;
 class OmniboxController;
 class OmniboxPopupViewSuggestionsDelegate;
-class WebLocationBar;
 struct AutocompleteMatch;
 
 // iOS implementation of OmniboxPopupView.
@@ -26,7 +25,6 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
                             public OmniboxPopupProvider {
  public:
   OmniboxPopupViewIOS(OmniboxController* controller,
-                      WebLocationBar* location_bar,
                       OmniboxPopupViewSuggestionsDelegate* delegate);
   ~OmniboxPopupViewIOS() override;
 
@@ -61,7 +59,6 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
 
  private:
-  raw_ptr<WebLocationBar> location_bar_;
   raw_ptr<OmniboxPopupViewSuggestionsDelegate> delegate_;  // weak
   OmniboxPopupMediator* mediator_;
 };

@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
+#import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_controller_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
@@ -186,12 +187,17 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
-  self.omniboxCoordinator =
-      [[OmniboxCoordinator alloc] initWithBaseViewController:nil
-                                                     browser:self.browser];
+  self.omniboxCoordinator = [[OmniboxCoordinator alloc]
+      initWithBaseViewController:nil
+                         browser:self.browser
+                   omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
+                                     _locationBar.get(), self.browserState,
+                                     feature_engagement::TrackerFactory::
+                                         GetForBrowserState(
+                                             self.browserState))];
   self.omniboxCoordinator.bubblePresenter = self.bubblePresenter;
-  self.omniboxCoordinator.locationBar = _locationBar.get();
   self.omniboxCoordinator.focusDelegate = self.delegate;
+
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];
 
