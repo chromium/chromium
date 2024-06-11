@@ -1582,8 +1582,9 @@ BASE_FEATURE(kWebAppUniversalInstall,
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 );
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
