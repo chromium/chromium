@@ -532,7 +532,8 @@ void GlanceablesClassroomClientImpl::FetchCoursesPage(
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<ListCoursesRequest>(
-          request_sender, /*student_id=*/kOwnCoursesFilterValue, page_token,
+          request_sender, /*student_id=*/kOwnCoursesFilterValue,
+          /*teacher_id=*/"", page_token,
           base::BindOnce(&GlanceablesClassroomClientImpl::OnCoursesPageFetched,
                          weak_factory_.GetWeakPtr(), std::move(fetched_courses),
                          clock_->Now())));

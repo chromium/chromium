@@ -35,7 +35,11 @@ class Courses;
 // Returns a list of courses that the requesting user is permitted to view,
 // restricted to those that match the request.
 // `student_id` - restricts returned courses to those having a student with
-//                the specified identifier.
+//                the specified identifier. Use an empty string to avoid
+//                filtering by student id.
+// `teacher_id` - restricts returned courses to those having a teacher with
+//                the specified identifier. Use an empty string to avoid
+//                filtering by teacher id.
 // `page_token` - token specifying the result page to return.
 //                Use an empty string to fetch the first page.
 // `callback`   - done callback.
@@ -47,6 +51,7 @@ class ListCoursesRequest : public UrlFetchRequestBase {
 
   ListCoursesRequest(RequestSender* sender,
                      const std::string& student_id,
+                     const std::string& teacher_id,
                      const std::string& page_token,
                      Callback callback);
   ListCoursesRequest(const ListCoursesRequest&) = delete;
@@ -69,6 +74,7 @@ class ListCoursesRequest : public UrlFetchRequestBase {
   void OnDataParsed(std::unique_ptr<Courses> courses);
 
   const std::string student_id_;
+  const std::string teacher_id_;
   const std::string page_token_;
   Callback callback_;
 
