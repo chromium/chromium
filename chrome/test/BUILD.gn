@@ -8903,6 +8903,7 @@ test("unit_tests") {
       "//ash/webui/annotator:test_support",
       "//ash/webui/annotator/public/mojom:annotator_mojo_bindings",
       "//ash/webui/camera_app_ui",
+      "//ash/webui/mall:app_id",
       "//ash/webui/personalization_app/mojom:mojom",
       "//ash/webui/projector_app:test_support",
       "//ash/webui/projector_app/public/cpp",

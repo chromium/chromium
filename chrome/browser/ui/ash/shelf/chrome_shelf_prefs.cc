@@ -16,6 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -405,14 +406,40 @@ void AddContainerAppPinIfNeeded(
 
 // Ensures the Mall app is pinned to the shelf after Chrome, when Mall is
 // enabled.
-void AddMallPin(app_list::AppListSyncableService* syncable_service) {
+void AddMallPinIfNeeded(Profile* profile,
+                        app_list::AppListSyncableService* syncable_service) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kCrosMall)) {
     return;
   }
 
+  // When Mall SWA is disabled, always pin the Mall web app if it is not
+  // already pinned. There is no option to unpin the web app.
+  if (!chromeos::features::IsCrosMallSwaEnabled()) {
+    InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
+                                                 {{web_app::kMallAppId}},
+                                                 /*is_policy_initiated=*/false);
+    return;
+  }
+
+  // When Mall SWA is enabled, pin the Mall SWA once, and use a synced pref to
+  // make sure it doesn't pin a second time. Users have the option to unpin the
+  // SWA.
+  if (!profile->GetPrefs()->GetList(prefs::kShelfMallAppPinRolls).empty()) {
+    return;
+  }
+
+  if (!ShelfControllerHelper::IsAppDefaultInstalled(profile,
+                                                    ash::kMallSystemAppId)) {
+    return;
+  }
+
   InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                               {{web_app::kMallAppId}},
+                                               {{ash::kMallSystemAppId}},
                                                /*is_policy_initiated=*/false);
+
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kShelfMallAppPinRolls);
+  update->Append("v1");
 }
 
 void SetPreloadPinComplete(Profile* profile) {
@@ -439,6 +466,9 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
       PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterListPref(
+      prefs::kShelfMallAppPinRolls,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
@@ -530,10 +560,9 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     AddDefaultApps();
   }
 
-  AddMallPin(syncable_service);
-
   if (IsSafeToApplyDefaultPinLayout(profile_)) {
     AddContainerAppPinIfNeeded(profile_, helper, syncable_service);
+    AddMallPinIfNeeded(profile_, syncable_service);
   }
 
   // Handle pins, forced by policy. In case Chrome is first app they are added

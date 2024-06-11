@@ -346,6 +346,7 @@ enum {
   kAccessibilityFaceGazeAdjustSpeedSeparately = 100287,
   kKeyboardAmbientLightSensorLastEnabled = 100288,
   kAccessibilityReadAnythingImagesEnabled = 100289,
+  kShelfMallAppPinRolls = 100290,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1169,6 +1170,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kSyncableVersionedWallpaperInfo,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {prefs::kShelfMallAppPinRolls,
+     {syncable_prefs_ids::kShelfMallAppPinRolls, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,

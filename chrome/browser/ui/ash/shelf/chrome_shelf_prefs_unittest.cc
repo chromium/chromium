@@ -10,6 +10,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/webui/mall/app_id.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/no_destructor.h"
@@ -40,6 +42,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -169,6 +172,14 @@ class ChromeShelfPrefsTest : public testing::Test {
                                     /*is_child=*/false);
   }
 
+  void InstallApp(apps::AppPtr app) {
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile_.get())
+        ->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                 /*should_notify_initialized=*/false);
+  }
+
   void InstallApp(const apps::PackageId& package_id) {
     auto app_type = apps::AppType::kChromeApp;
     auto app_id = package_id.identifier();
@@ -182,11 +193,7 @@ class ChromeShelfPrefsTest : public testing::Test {
     app->name = package_id.identifier();
     app->installer_package_id = package_id;
 
-    std::vector<apps::AppPtr> deltas;
-    deltas.push_back(std::move(app));
-    apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-        ->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 /*should_notify_initialized=*/false);
+    InstallApp(std::move(app));
   }
 
   AppListSyncableServiceFake& syncable_service() {
@@ -352,6 +359,58 @@ TEST_F(ChromeShelfPrefsTest, PinMallBeforeDefaultApps) {
     // Mall should have pushed back any default apps.
     EXPECT_EQ(pinned_apps_strs[2], second_pin_app_id);
   }
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallSystemApp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kCrosMall,
+                            chromeos::features::kCrosMallSwa},
+      /*disabled_features=*/{});
+
+  std::string second_pin_app_id;
+  {
+    std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
+    second_pin_app_id = pinned_apps_strs[1];
+    // Mall should not be pinned unless it is installed.
+    EXPECT_NE(second_pin_app_id, ash::kMallSystemAppId);
+  }
+
+  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kSystemWeb,
+                                                 ash::kMallSystemAppId);
+  app->readiness = apps::Readiness::kReady;
+  app->install_reason = apps::InstallReason::kSystem;
+  InstallApp(std::move(app));
+
+  {
+    std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
+    EXPECT_EQ(pinned_apps_strs[1], ash::kMallSystemAppId);
+    // Mall should have pushed back any default apps.
+    EXPECT_EQ(pinned_apps_strs[2], second_pin_app_id);
+  }
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kCrosMall,
+                            chromeos::features::kCrosMallSwa},
+      /*disabled_features=*/{});
+
+  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kSystemWeb,
+                                                 ash::kMallSystemAppId);
+  app->readiness = apps::Readiness::kReady;
+  app->install_reason = apps::InstallReason::kSystem;
+  InstallApp(std::move(app));
+
+  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
+  EXPECT_EQ(pinned_apps_strs[1], ash::kMallSystemAppId);
+
+  shelf_prefs_->RemovePinPosition(ash::ShelfID(ash::kMallSystemAppId));
+
+  // The Mall app must not reappear in the pinned apps list.
+  EXPECT_THAT(GetPinnedAppIds(),
+              testing::Not(testing::Contains(ash::kMallSystemAppId)));
 }
 
 TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {

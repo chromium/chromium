@@ -3234,6 +3234,10 @@ inline constexpr char kShelfDefaultPinLayoutRollsForTabletFormFactor[] =
 // to prevent applying the default pin twice (after the user unpins the app).
 inline constexpr char kShelfContainerAppPinRolls[] =
     "shelf_container_app_pin_layout_rolls";
+// Keeps track of whether the Mall app was pinned to shelf as a default app,
+// to prevent applying the default pin twice (after the user unpins the app).
+inline constexpr char kShelfMallAppPinRolls[] =
+    "shelf_mall_app_pin_layout_rolls";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
