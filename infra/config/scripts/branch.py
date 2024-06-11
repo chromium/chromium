@@ -59,9 +59,12 @@ def parse_args(args=None, *, parser_type=None):
       required=True,
       help='A description of why the platform is enabled')
   enable_platform_parser.add_argument(
+      '--gardener-rotation',
+      # TODO: crbug.com/343503161 - Update the branch_configuration/tester
+      # recipe to use --gardener-rotation flag, then remove this
       '--sheriff-rotation',
-      help=
-      'A sheriff that builders associated with the platform should be added to')
+      help=('A gardener rotation that builders'
+            ' associated with the platform should be added to'))
 
   args = parser.parse_args(args)
   if args.func is None:
@@ -105,14 +108,14 @@ def enable_platform(
     settings_json: str,
     platform: str,
     description: str,
-    sheriff_rotation: Optional[str],
+    gardener_rotation: Optional[str],
 ) -> str:
   settings = json.loads(settings_json)
   settings['is_main'] = False
   platforms = settings.pop('platforms', {})
   platform_settings = {'description': description}
-  if sheriff_rotation is not None:
-    platform_settings['gardener_rotation'] = sheriff_rotation
+  if gardener_rotation is not None:
+    platform_settings['gardener_rotation'] = gardener_rotation
   platforms[platform] = platform_settings
   settings['platforms'] = dict(sorted(platforms.items()))
   return json.dumps(settings, indent=4) + '\n'
@@ -126,7 +129,7 @@ def enable_platform_cmd(args):
       settings,
       args.platform,
       args.description,
-      args.sheriff_rotation,
+      args.gardener_rotation,
   )
 
   with open(args.settings_json, 'w') as f:

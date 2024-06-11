@@ -110,20 +110,20 @@ class BranchUnitTest(unittest.TestCase):
     ])
     self.assertEqual(args.platform, 'fake-platform')
     self.assertEqual(args.description, 'fake-description')
-    self.assertIsNone(args.sheriff_rotation)
+    self.assertIsNone(args.gardener_rotation)
 
-  def test_enable_platform_parse_args_sheriff_rotation(self):
+  def test_enable_platform_parse_args_gardener_rotation(self):
     args = branch.parse_args([
         'enable-platform',
         'fake-platform',
         '--description',
         'fake-description',
-        '--sheriff-rotation',
-        'fake-sheriff-rotation',
+        '--gardener-rotation',
+        'fake-gardener-rotation',
     ])
     self.assertEqual(args.platform, 'fake-platform')
     self.assertEqual(args.description, 'fake-description')
-    self.assertEqual(args.sheriff_rotation, 'fake-sheriff-rotation')
+    self.assertEqual(args.gardener_rotation, 'fake-gardener-rotation')
 
   def test_enable_platform(self):
     input = textwrap.dedent("""\
@@ -155,7 +155,7 @@ class BranchUnitTest(unittest.TestCase):
             }
             """))
 
-  def test_enable_platform_sheriff_rotation(self):
+  def test_enable_platform_gardener_rotation(self):
     input = textwrap.dedent("""\
         {
             "project": "chromium-mMM",
@@ -167,7 +167,7 @@ class BranchUnitTest(unittest.TestCase):
         input,
         'fake-platform',
         'fake-description',
-        'fake-sheriff-rotation',
+        'fake-gardener-rotation',
     )
     self.assertEqual(
         output,
@@ -180,7 +180,7 @@ class BranchUnitTest(unittest.TestCase):
                 "platforms": {
                     "fake-platform": {
                         "description": "fake-description",
-                        "gardener_rotation": "fake-sheriff-rotation"
+                        "gardener_rotation": "fake-gardener-rotation"
                     }
                 }
             }

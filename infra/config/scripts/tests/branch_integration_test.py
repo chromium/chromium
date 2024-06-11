@@ -130,7 +130,7 @@ class BranchIntegrationTest(unittest.TestCase):
             }
             """))
 
-  def test_enable_platform_with_sheriff_rotation_rewrites_settings_json(self):
+  def test_enable_platform_with_gardener_rotation_rewrites_settings_json(self):
     with open(self._settings_json, 'w') as f:
       settings = {
           "project": "chromium-mXX",
@@ -145,8 +145,8 @@ class BranchIntegrationTest(unittest.TestCase):
         'fake-platform',
         '--description',
         'fake-description',
-        '--sheriff-rotation',
-        'fake-sheriff-rotation',
+        '--gardener-rotation',
+        'fake-gardener-rotation',
     ])
     self.assertEqual(result.returncode, 0,
                      (f'subprocess failed\n***COMMAND***\n{result.args}\n'
@@ -165,7 +165,7 @@ class BranchIntegrationTest(unittest.TestCase):
                 "platforms": {
                     "fake-platform": {
                         "description": "fake-description",
-                        "gardener_rotation": "fake-sheriff-rotation"
+                        "gardener_rotation": "fake-gardener-rotation"
                     }
                 }
             }
