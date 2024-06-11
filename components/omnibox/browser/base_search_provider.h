@@ -109,7 +109,8 @@ class BaseSearchProvider : public AutocompleteProvider {
       omnibox::SuggestionEnhancement enhancement,
       const TemplateURLRef& search_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
-      const SearchTermsData& search_terms_data);
+      const SearchTermsData& search_terms_data,
+      SuggestionAnswer::AnswerType answer_type);
 
   // Returns whether the URL of the current page is eligible to be sent in any
   // suggest request. Only valid URLs with an HTTP or HTTPS scheme are eligible.

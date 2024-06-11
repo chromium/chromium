@@ -876,7 +876,7 @@ TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
 
     auto action = BaseSearchProvider::CreateAnswerAction(
         std::move(*enhancement), template_url->url_ref(), search_terms_args,
-        search_terms_data);
+        search_terms_data, SuggestionAnswer::ANSWER_TYPE_FINANCE);
 
     auto* answer_action = OmniboxAnswerAction::FromAction(action.get());
     // Check that query is found in action's destination URL.

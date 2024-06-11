@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
@@ -32,7 +33,8 @@ TEST_F(OmniboxAnswerActionTest, ActionHasLabelsFromEnhancement) {
   std::string display_text = "Similar and opposite words";
   enhancement->set_display_text(display_text);
   auto action = base::MakeRefCounted<OmniboxAnswerAction>(
-      std::move(*enhancement), GURL());
+      std::move(*enhancement), GURL(),
+      SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
   const auto& labels = action->GetLabelStrings();
 
   // Ensure actions have the correct labels.
@@ -50,9 +52,52 @@ TEST_F(OmniboxAnswerActionTest, ConvertAction) {
       answer_template.mutable_enhancements()->add_enhancements();
 
   scoped_refptr<OmniboxAction> upcasted_action =
-      base::MakeRefCounted<OmniboxAnswerAction>(std::move(*enhancement),
-                                                GURL());
+      base::MakeRefCounted<OmniboxAnswerAction>(
+          std::move(*enhancement), GURL(),
+          SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
   auto* downcasted_action =
       OmniboxAnswerAction::FromAction(upcasted_action.get());
   EXPECT_EQ(upcasted_action.get(), downcasted_action);
+}
+
+TEST_F(OmniboxAnswerActionTest, RecordMetrics) {
+  omnibox::RichAnswerTemplate answer_template;
+  omnibox::SuggestionEnhancement* enhancement =
+      answer_template.mutable_enhancements()->add_enhancements();
+
+  {
+    auto action = base::MakeRefCounted<OmniboxAnswerAction>(
+        std::move(*enhancement), GURL(),
+        SuggestionAnswer::ANSWER_TYPE_DICTIONARY);
+    base::HistogramTester histograms;
+    action->RecordActionShown(1, /*executed = */ false);
+    histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
+                                 SuggestionAnswer::ANSWER_TYPE_DICTIONARY, 1);
+    histograms.ExpectTotalCount("Omnibox.AnswerAction.Shown", 1);
+    histograms.ExpectTotalCount("Omnibox.AnswerAction.Used", 0);
+  }
+
+  {
+    auto action = base::MakeRefCounted<OmniboxAnswerAction>(
+        std::move(*enhancement), GURL(), SuggestionAnswer::ANSWER_TYPE_FINANCE);
+    base::HistogramTester histograms;
+    action->RecordActionShown(1, /*executed = */ false);
+    histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
+                                 SuggestionAnswer::ANSWER_TYPE_FINANCE, 1);
+    histograms.ExpectTotalCount("Omnibox.AnswerAction.Shown", 1);
+    histograms.ExpectTotalCount("Omnibox.AnswerAction.Used", 0);
+  }
+
+  {
+    auto action = base::MakeRefCounted<OmniboxAnswerAction>(
+        std::move(*enhancement), GURL(), SuggestionAnswer::ANSWER_TYPE_FINANCE);
+    base::HistogramTester histograms;
+    action->RecordActionShown(1, /*executed = */ true);
+    histograms.ExpectBucketCount("Omnibox.AnswerAction.Shown",
+                                 SuggestionAnswer::ANSWER_TYPE_FINANCE, 1);
+    histograms.ExpectTotalCount("Omnibox.AnswerAction.Shown", 1);
+    histograms.ExpectBucketCount("Omnibox.AnswerAction.Used",
+                                 SuggestionAnswer::ANSWER_TYPE_FINANCE, 1);
+    histograms.ExpectTotalCount("Omnibox.AnswerAction.Used", 1);
+  }
 }

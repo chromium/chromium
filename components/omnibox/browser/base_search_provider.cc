@@ -261,7 +261,8 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
     omnibox::SuggestionEnhancement enhancement,
     const TemplateURLRef& search_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
-    const SearchTermsData& search_terms_data) {
+    const SearchTermsData& search_terms_data,
+    SuggestionAnswer::AnswerType answer_type) {
   // Define actions destination URL.
   std::string query_params;
   for (const auto& param : enhancement.query_cgi_params()) {
@@ -276,8 +277,8 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
   TemplateURLRef::PostContent post_content;
   GURL rewritten_destination(search_url.ReplaceSearchTerms(
       search_terms_args, search_terms_data, &post_content));
-  return base::MakeRefCounted<OmniboxAnswerAction>(std::move(enhancement),
-                                                   rewritten_destination);
+  return base::MakeRefCounted<OmniboxAnswerAction>(
+      std::move(enhancement), rewritten_destination, answer_type);
 }
 
 // static

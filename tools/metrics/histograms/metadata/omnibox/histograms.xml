@@ -174,6 +174,62 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Omnibox.AnswerAction.UsageByType.{AnswerType}"
+    enum="BooleanUsage" expires_after="2025-05-30">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    For action associated with type &quot;{AnswerType}&quot;, captures whether
+    the user interacted with this action to complete the interaction with the
+    omnibox.
+
+    The histogram is captured only if the action &quot;{AnswerType}&quot; was
+    presented to the user when the interaction with the omnibox completed. The
+    sum of &quot;Used&quot; and &quot;Not Used&quot; indicates the sum of all
+    impressions of a given action.
+
+    Answer Actions are the Omnibox Action chips attached to an answer
+    suggestion.
+  </summary>
+  <token key="AnswerType">
+    <variant name="Currency"/>
+    <variant name="Dictionary"/>
+    <variant name="Finance"/>
+    <variant name="Invalid"/>
+    <variant name="KnowledgeGraph"/>
+    <variant name="Local"/>
+    <variant name="LocalTime"/>
+    <variant name="PlayInstall"/>
+    <variant name="Sports"/>
+    <variant name="Sunrise"/>
+    <variant name="Translation"/>
+    <variant name="Weather"/>
+    <variant name="WhenIs"/>
+  </token>
+</histogram>
+
+<histogram name="Omnibox.AnswerAction.{ShownOrUsed}"
+    enum="SuggestionAnswerType" expires_after="2025-05-30">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Counts how often Omnibox Answer Actions are {ShownOrUsed} and records the
+    type (SuggestionAnswer::AnswerType) of every {ShownOrUsed} action.
+
+    Recorded once at the end of the interaction with the Omnibox Suggestions for
+    every Action presented to the user. Not recorded for Suggestions that are
+    annotated with Answers Actions where the Answer row was not shown to the
+    user.
+
+    Answer Actions are the Omnibox Action chips attached to an answer
+    suggestion.
+  </summary>
+  <token key="ShownOrUsed">
+    <variant name="Shown" summary="shown"/>
+    <variant name="Used" summary="used"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"
     expires_after="2024-11-03">
   <owner>jdonnelly@chromium.org</owner>
