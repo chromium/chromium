@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cros_components/sidenav/sidenav.js';
 import '../../settings_shared.css.js';
+import './storybook_styles.css.js';
 import './settings_dropdown_row_storybook.js';
 import './settings_dropdown_v2_storybook.js';
 import './settings_row_storybook.js';

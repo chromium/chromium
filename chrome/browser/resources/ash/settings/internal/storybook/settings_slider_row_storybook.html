@@ -1,20 +1,4 @@
-<style>
-  h2 {
-    font: var(--cros-title-1-font);
-  }
-
-  settings-slider-row {
-    background-color: var(--cros-sys-app_base_shaded);
-    margin-bottom: 8px;
-  }
-
-  code {
-    background-color: var(--cros-sys-app_base_shaded);
-    border-radius: 10px;
-    display: block;
-    margin-top: 10px;
-    padding: 10px;
-  }
+<style include="storybook-styles">
 </style>
 
 <h2>Slider with ticks</h2>
@@ -38,7 +22,7 @@
 <settings-slider-row label="Lorem ipsum" sublabel="Lorem ipsum dolor sit amet"
     icon="os-settings:display" min="0" max="10" scale="10" min-label="min"
     max-label="max" hide-label="[[hideLabel_]]"
-    value="[[sliderValueWithScale_]]" 
+    value="[[sliderValueWithScale_]]"
     on-change="onScaleSliderChange_"
     update-value-instantly="[[updateValueInstantly_]]">
 </settings-slider-row>

@@ -1,0 +1,28 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=//resources/ash/common/cr_elements/cros_color_overrides.css.js
+ * #include=cros-color-overrides
+ * #css_wrapper_metadata_end */
+
+h2 {
+  font: var(--cros-title-1-font);
+}
+
+code {
+  background-color: var(--cros-sys-app_base_shaded);
+  border-radius: 10px;
+  display: block;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+settings-row,
+settings-dropdown-row,
+settings-slider-row {
+  background-color: var(--cros-sys-surface1);
+  margin-bottom: 8px;
+}

@@ -492,6 +492,7 @@ build_webui("build") {
 
   css_files = [
     "device_page/input_device_settings_shared.css",
+    "internal/storybook/storybook_styles.css",
     "internet_page/internet_shared.css",
     "os_apps_page/app_management_page/app_management_cros_shared_style.css",
     "os_apps_page/app_management_page/app_management_cros_shared_vars.css",
