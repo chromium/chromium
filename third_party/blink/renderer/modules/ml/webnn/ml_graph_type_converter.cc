@@ -231,22 +231,15 @@ uint64_t InsertInputTranspose(const OperandToIdMap& operand_to_id_map,
 }
 
 blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
-                                  const MLOperator* clamp,
-                                  bool is_activation) {
-  auto clamp_mojo = blink_mojom::Clamp::New();
-  // Activation has no input or output operands.
-  if (!is_activation) {
-    clamp_mojo->input_operand_id = GetOperatorInputId(clamp, operand_to_id_map);
-    clamp_mojo->output_operand_id =
-        GetOperatorOutputId(clamp, operand_to_id_map);
-  }
-
+                                  const MLOperator* clamp) {
   const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
   CHECK(options);
-  clamp_mojo->min_value =
-      options->getMinValueOr(-std::numeric_limits<float>::infinity());
-  clamp_mojo->max_value =
-      options->getMaxValueOr(+std::numeric_limits<float>::infinity());
+
+  auto clamp_mojo = blink_mojom::Clamp::New(
+      GetOperatorInputId(clamp, operand_to_id_map),
+      GetOperatorOutputId(clamp, operand_to_id_map),
+      options->getMinValueOr(-std::numeric_limits<float>::infinity()),
+      options->getMaxValueOr(+std::numeric_limits<float>::infinity()));
   return clamp_mojo;
 }
 
@@ -464,9 +457,6 @@ std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
 ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
                                const MLActivation* ml_activation) {
   switch (ml_activation->Kind()) {
-    case blink_mojom::Activation::Tag::kClamp:
-      return blink_mojom::Activation::NewClamp(
-          CreateClamp(operand_to_id_map, ml_activation->Operator(), true));
     case blink_mojom::Activation::Tag::kElu:
       return blink_mojom::Activation::NewElu(
           CreateElu(operand_to_id_map, ml_activation->Operator(), true));
@@ -485,8 +475,6 @@ ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
       return blink_mojom::Activation::NewRelu(blink_mojom::Relu::New());
     case blink_mojom::Activation::Tag::kSigmoid:
       return blink_mojom::Activation::NewSigmoid(blink_mojom::Sigmoid::New());
-    case blink_mojom::Activation::Tag::kSoftmax:
-      return blink_mojom::Activation::NewSoftmax(blink_mojom::Softmax::New());
     case blink_mojom::Activation::Tag::kSoftplus:
       return blink_mojom::Activation::NewSoftplus(blink_mojom::Softplus::New());
     case blink_mojom::Activation::Tag::kSoftsign:
@@ -1305,11 +1293,9 @@ OperationPtr CreateSliceOperation(const OperandToIdMap& operand_to_id_map,
 
 OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
                                     const MLOperator* softmax) {
-  auto softmax_mojo = blink_mojom::Softmax::New();
-  softmax_mojo->input_operand_id =
-      GetOperatorInputId(softmax, operand_to_id_map);
-  softmax_mojo->output_operand_id =
-      GetOperatorOutputId(softmax, operand_to_id_map);
+  auto softmax_mojo = blink_mojom::Softmax::New(
+      GetOperatorInputId(softmax, operand_to_id_map),
+      GetOperatorOutputId(softmax, operand_to_id_map));
   return blink_mojom::Operation::NewSoftmax(std::move(softmax_mojo));
 }
 
@@ -1424,8 +1410,8 @@ std::optional<String> SerializeMojoOperation(
           CreateBatchNormalizationOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kClamp:
-      graph_info->operations.push_back(blink_mojom::Operation::NewClamp(
-          CreateClamp(operand_to_id_map, op, false)));
+      graph_info->operations.push_back(
+          blink_mojom::Operation::NewClamp(CreateClamp(operand_to_id_map, op)));
       break;
     case blink_mojom::Operation::Tag::kConcat:
       graph_info->operations.push_back(

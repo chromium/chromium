@@ -569,20 +569,11 @@ CreateActivationOperatorDesc(const Activation* activation) {
     case Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
-    // TODO(crbug.com/336589268): Un-fuse the op instead of reporting error
-    // when the activation is not supported.
-    case Activation::Tag::kClamp:
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kNotSupportedError,
-                      "The activation (clamp) is not supported."));
+    // TODO(crbug.com/345640552): Fuse gelu and other operators when possible.
     case Activation::Tag::kGelu:
       return base::unexpected(
           CreateError(mojom::Error::Code::kNotSupportedError,
                       "The activation (gelu) is not supported."));
-    case Activation::Tag::kSoftmax:
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kNotSupportedError,
-                      "The activation (softmax) is not supported."));
     default:
       NOTREACHED_NORETURN() << "The operation is not an activation.";
   }

@@ -1363,13 +1363,6 @@ MLActivation* CreateActivation(V8TestingScope& scope,
                                MLGraphBuilder* builder,
                                const Activation& activation) {
   switch (activation.kind) {
-    case webnn::mojom::blink::Activation::Tag::kClamp: {
-      auto* clamp_options = MLClampOptions::Create();
-      CHECK(clamp_options);
-      clamp_options->setMinValue(activation.clamp_options->min_value.value());
-      clamp_options->setMaxValue(activation.clamp_options->max_value.value());
-      return builder->clamp(clamp_options, scope.GetExceptionState());
-    }
     case webnn::mojom::blink::Activation::Tag::kElu: {
       auto* elu_options = MLEluOptions::Create();
       CHECK(elu_options);
@@ -1415,91 +1408,12 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       return builder->relu(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kSigmoid:
       return builder->sigmoid(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kSoftmax:
-      return builder->softmax(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kSoftplus:
       return builder->softplus(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kSoftsign:
       return builder->softsign(scope.GetExceptionState());
     case webnn::mojom::blink::Activation::Tag::kTanh:
       return builder->tanh(scope.GetExceptionState());
-  }
-}
-
-void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
-                     const Activation& expected_activation) {
-  switch (expected_activation.kind) {
-    case webnn::mojom::blink::Activation::Tag::kClamp: {
-      ASSERT_TRUE(mojom_activation->is_clamp());
-      auto& clamp = mojom_activation->get_clamp();
-      CHECK(clamp);
-      auto& clamp_options = expected_activation.clamp_options;
-      CHECK(clamp_options);
-      EXPECT_EQ(clamp->min_value, clamp_options->min_value);
-      EXPECT_EQ(clamp->max_value, clamp_options->max_value);
-      break;
-    }
-    case webnn::mojom::blink::Activation::Tag::kElu: {
-      ASSERT_TRUE(mojom_activation->is_elu());
-      auto& elu = mojom_activation->get_elu();
-      CHECK(elu);
-      CHECK(expected_activation.elu_alpha.has_value());
-      EXPECT_EQ(elu->alpha, expected_activation.elu_alpha.value());
-      break;
-    }
-    case webnn::mojom::blink::Activation::Tag::kGelu:
-      EXPECT_TRUE(mojom_activation->is_gelu());
-      break;
-    case webnn::mojom::blink::Activation::Tag::kHardSigmoid: {
-      ASSERT_TRUE(mojom_activation->is_hard_sigmoid());
-      auto& hard_sigmoid = mojom_activation->get_hard_sigmoid();
-      CHECK(hard_sigmoid);
-      CHECK(expected_activation.hard_sigmoid_alpha.has_value());
-      EXPECT_EQ(hard_sigmoid->alpha,
-                expected_activation.hard_sigmoid_alpha.value());
-      CHECK(expected_activation.hard_sigmoid_beta.has_value());
-      EXPECT_EQ(hard_sigmoid->beta,
-                expected_activation.hard_sigmoid_beta.value());
-      break;
-    }
-    case webnn::mojom::blink::Activation::Tag::kLeakyRelu: {
-      ASSERT_TRUE(mojom_activation->is_leaky_relu());
-      auto& leaky_relu = mojom_activation->get_leaky_relu();
-      CHECK(leaky_relu);
-      CHECK(expected_activation.leaky_relu_alpha.has_value());
-      EXPECT_EQ(leaky_relu->alpha,
-                expected_activation.leaky_relu_alpha.value());
-      break;
-    }
-    case webnn::mojom::blink::Activation::Tag::kLinear: {
-      ASSERT_TRUE(mojom_activation->is_linear());
-      auto& linear = mojom_activation->get_linear();
-      CHECK(linear);
-      CHECK(expected_activation.linear_alpha.has_value());
-      EXPECT_EQ(linear->alpha, expected_activation.linear_alpha.value());
-      CHECK(expected_activation.linear_beta.has_value());
-      EXPECT_EQ(linear->beta, expected_activation.linear_beta.value());
-      break;
-    }
-    case webnn::mojom::blink::Activation::Tag::kRelu:
-      EXPECT_TRUE(mojom_activation->is_relu());
-      break;
-    case webnn::mojom::blink::Activation::Tag::kSigmoid:
-      EXPECT_TRUE(mojom_activation->is_sigmoid());
-      break;
-    case webnn::mojom::blink::Activation::Tag::kSoftmax:
-      EXPECT_TRUE(mojom_activation->is_softmax());
-      break;
-    case webnn::mojom::blink::Activation::Tag::kSoftplus: {
-      EXPECT_TRUE(mojom_activation->is_softplus());
-      break;
-    }
-    case webnn::mojom::blink::Activation::Tag::kSoftsign:
-      EXPECT_TRUE(mojom_activation->is_softsign());
-      break;
-    case webnn::mojom::blink::Activation::Tag::kTanh:
-      EXPECT_TRUE(mojom_activation->is_tanh());
-      break;
   }
 }
 

@@ -44,7 +44,6 @@ class GraphInfoBuilder final {
   // An `Activation` type should have the following members:
   // struct Activation {
   //  mojom::Activation::Tag kind;
-  //  std::optional<ClampTester::ClampAttributes> clamp_attributes;
   //  std::optional<float> elu_alpha;
   //  std::optional<float> hard_sigmoid_alpha;
   //  std::optional<float> hard_sigmoid_beta;
@@ -56,14 +55,6 @@ class GraphInfoBuilder final {
   mojom::ActivationPtr CreateActivation(
       const ActivationAttributes& activation) {
     switch (activation.kind) {
-      case mojom::Activation::Tag::kClamp: {
-        const auto clamp_attributes = activation.clamp_attributes;
-        CHECK(clamp_attributes.has_value());
-        auto clamp = mojom::Clamp::New();
-        clamp->min_value = clamp_attributes->min_value;
-        clamp->max_value = clamp_attributes->max_value;
-        return mojom::Activation::NewClamp(std::move(clamp));
-      }
       case mojom::Activation::Tag::kElu: {
         auto elu = mojom::Elu::New();
         CHECK(activation.elu_alpha.has_value());
@@ -98,8 +89,6 @@ class GraphInfoBuilder final {
         return mojom::Activation::NewRelu(mojom::Relu::New());
       case mojom::Activation::Tag::kSigmoid:
         return mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
-      case mojom::Activation::Tag::kSoftmax:
-        return mojom::Activation::NewSoftmax(mojom::Softmax::New());
       case mojom::Activation::Tag::kSoftplus:
         return mojom::Activation::NewSoftplus(mojom::Softplus::New());
       case mojom::Activation::Tag::kSoftsign:

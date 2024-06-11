@@ -971,7 +971,6 @@ struct Where {
 
 // Represents the `MLActivation` which describes an activation function type.
 union Activation {
-  Clamp clamp;
   Elu elu;
   Gelu gelu;
   HardSigmoid hard_sigmoid;
@@ -979,7 +978,6 @@ union Activation {
   Linear linear;
   Relu relu;
   Sigmoid sigmoid;
-  Softmax softmax;
   Softplus softplus;
   Softsign softsign;
   Tanh tanh;

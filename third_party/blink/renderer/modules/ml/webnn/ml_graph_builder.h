@@ -102,8 +102,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* clamp(const MLOperand* input,
                    const MLClampOptions* options,
                    ExceptionState& exception_state);
-  MLActivation* clamp(const MLClampOptions* options,
-                      ExceptionState& exception_state);
 
   MLOperand* concat(const HeapVector<Member<MLOperand>>& inputs,
                     const uint32_t axis,
@@ -343,7 +341,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* softmax(ExceptionState& exception_state);
 
   MLOperand* softplus(const MLOperand* input,
                       ExceptionState& exception_state);

@@ -15,8 +15,6 @@ namespace {
 webnn::mojom::blink::Operation::Tag ActivationKindToOperationKind(
     webnn::mojom::blink::Activation::Tag kind) {
   switch (kind) {
-    case webnn::mojom::blink::Activation::Tag::kClamp:
-      return webnn::mojom::blink::Operation::Tag::kClamp;
     case webnn::mojom::blink::Activation::Tag::kElu:
       return webnn::mojom::blink::Operation::Tag::kElu;
     case webnn::mojom::blink::Activation::Tag::kGelu:
@@ -31,8 +29,6 @@ webnn::mojom::blink::Operation::Tag ActivationKindToOperationKind(
       return webnn::mojom::blink::Operation::Tag::kRelu;
     case webnn::mojom::blink::Activation::Tag::kSigmoid:
       return webnn::mojom::blink::Operation::Tag::kSigmoid;
-    case webnn::mojom::blink::Activation::Tag::kSoftmax:
-      return webnn::mojom::blink::Operation::Tag::kSoftmax;
     case webnn::mojom::blink::Activation::Tag::kSoftplus:
       return webnn::mojom::blink::Operation::Tag::kSoftplus;
     case webnn::mojom::blink::Activation::Tag::kSoftsign:

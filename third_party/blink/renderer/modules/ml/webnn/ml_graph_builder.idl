@@ -215,7 +215,6 @@ dictionary MLTriangularOptions {
   [RaisesException] MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance, optional MLBatchNormalizationOptions options = {});
 
   [RaisesException] MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
-  [RaisesException] MLActivation clamp(optional MLClampOptions options = {});
 
   [RaisesException] MLOperand concat(sequence<MLOperand> inputs, [EnforceRange] unsigned long axis);
 
@@ -333,7 +332,6 @@ dictionary MLTriangularOptions {
   [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes);
 
   [RaisesException] MLOperand softmax(MLOperand input);
-  [RaisesException] MLActivation softmax();
 
   [RaisesException] MLOperand softplus(MLOperand input);
   [RaisesException] MLActivation softplus();

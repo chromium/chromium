@@ -4,6 +4,7 @@
 
 #include "services/webnn/webnn_graph_impl.h"
 
+#include <cmath>
 #include <limits>
 
 #include "base/containers/contains.h"
@@ -638,7 +639,6 @@ TEST_F(WebNNGraphImplTest, HardSigmoidTest) {
 
 struct Activation {
   mojom::Activation::Tag kind;
-  std::optional<ClampTester::ClampAttributes> clamp_attributes;
   std::optional<float> elu_alpha;
   std::optional<float> hard_sigmoid_alpha;
   std::optional<float> hard_sigmoid_beta;
@@ -2861,23 +2861,19 @@ TEST_F(WebNNGraphImplTest, GruTest) {
                                             hidden_size}},
         .steps = steps,
         .hidden_size = hidden_size,
-        .attributes =
-            {.direction = mojom::RecurrentNetworkDirection::kBackward,
-             .activations = {Activation{.kind =
-                                            mojom::Activation::Tag::kSigmoid},
-                             Activation{.kind = mojom::Activation::Tag::kTanh},
-                             Activation{
-                                 .kind = mojom::Activation::Tag::kClamp,
-                                 .clamp_attributes =
-                                     ClampTester::ClampAttributes{
-                                         .min_value = 2.0, .max_value = 3.0}}}},
+        .attributes = {.direction = mojom::RecurrentNetworkDirection::kBackward,
+                       .activations =
+                           {Activation{.kind =
+                                           mojom::Activation::Tag::kSigmoid},
+                            Activation{.kind = mojom::Activation::Tag::kTanh},
+                            Activation{.kind = mojom::Activation::Tag::kTanh}}},
         .outputs = {{.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size}}},
         .expected = false}
         .Test();
   }
   {
-    // Test the invalid graph when the clamp activation has incorrect
+    // Test the invalid graph when the leakyRelu activation has incorrect
     // attributes.
     uint32_t steps = 2;
     uint32_t batch_size = 1;
@@ -2899,10 +2895,8 @@ TEST_F(WebNNGraphImplTest, GruTest) {
              .activations = {Activation{.kind =
                                             mojom::Activation::Tag::kSigmoid},
                              Activation{
-                                 .kind = mojom::Activation::Tag::kClamp,
-                                 .clamp_attributes =
-                                     ClampTester::ClampAttributes{
-                                         .min_value = 3.0, .max_value = 2.0}}}},
+                                 .kind = mojom::Activation::Tag::kLeakyRelu,
+                                 .leaky_relu_alpha = NAN}}},
         .outputs = {{.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size}}},
         .expected = false}
@@ -3353,7 +3347,7 @@ TEST_F(WebNNGraphImplTest, GruCellTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the clamp activation has incorrect
+    // Test the invalid graph when the leakyRelu activation has incorrect
     // attributes.
     GruCellTester{
         .input = valid_input,
@@ -3365,10 +3359,8 @@ TEST_F(WebNNGraphImplTest, GruCellTest) {
             {.activations = {Activation{.kind =
                                             mojom::Activation::Tag::kSigmoid},
                              Activation{
-                                 .kind = mojom::Activation::Tag::kClamp,
-                                 .clamp_attributes =
-                                     ClampTester::ClampAttributes{
-                                         .min_value = 3.0, .max_value = 2.0}}}},
+                                 .kind = mojom::Activation::Tag::kLeakyRelu,
+                                 .leaky_relu_alpha = NAN}}},
         .output = valid_output,
         .expected = false}
         .Test();
@@ -4020,7 +4012,7 @@ TEST_F(WebNNGraphImplTest, LstmTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the clamp activation has incorrect
+    // Test the invalid graph when the leakyRelu activation has incorrect
     // attributes.
     uint32_t steps = 2;
     uint32_t batch_size = 1;
@@ -4044,10 +4036,8 @@ TEST_F(WebNNGraphImplTest, LstmTest) {
                                             mojom::Activation::Tag::kSigmoid},
                              Activation{.kind = mojom::Activation::Tag::kTanh},
                              Activation{
-                                 .kind = mojom::Activation::Tag::kClamp,
-                                 .clamp_attributes =
-                                     ClampTester::ClampAttributes{
-                                         .min_value = 3.0, .max_value = 2.0}}}},
+                                 .kind = mojom::Activation::Tag::kLeakyRelu,
+                                 .leaky_relu_alpha = NAN}}},
         .outputs = {{.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {direction_count, batch_size, hidden_size}},
                     {.type = mojom::Operand::DataType::kFloat32,
@@ -4396,7 +4386,7 @@ TEST_F(WebNNGraphImplTest, LstmCellTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the elu activation has incorrect
+    // Test the invalid graph when the leakyRelu activation has incorrect
     // attributes.
     LstmCellTester{
         .input = valid_input,
@@ -4409,8 +4399,9 @@ TEST_F(WebNNGraphImplTest, LstmCellTest) {
             {.activations = {Activation{.kind =
                                             mojom::Activation::Tag::kSigmoid},
                              Activation{.kind = mojom::Activation::Tag::kTanh},
-                             Activation{.kind = mojom::Activation::Tag::kElu,
-                                        .elu_alpha = -1.0}}},
+                             Activation{
+                                 .kind = mojom::Activation::Tag::kLeakyRelu,
+                                 .leaky_relu_alpha = NAN}}},
         .outputs = valid_outputs,
         .expected = false}
         .Test();

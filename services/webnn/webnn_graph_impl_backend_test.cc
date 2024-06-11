@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -583,7 +584,6 @@ struct ClampAttributes {
 
 struct Activation {
   mojom::Activation::Tag kind;
-  std::optional<ClampAttributes> clamp_attributes;
   std::optional<float> elu_alpha;
   std::optional<float> hard_sigmoid_alpha;
   std::optional<float> hard_sigmoid_beta;
@@ -602,6 +602,10 @@ void BuildStandaloneActivation(GraphInfoBuilder& builder,
       builder.BuildElu(input_operand_id, output_operand_id,
                        activation.elu_alpha.value());
       return;
+    }
+    case mojom::Activation::Tag::kGelu: {
+      // TODO(crbug.com/345640552): Support fusing gelu.
+      NOTREACHED_NORETURN();
     }
     case mojom::Activation::Tag::kHardSigmoid: {
       CHECK(activation.hard_sigmoid_alpha.has_value());
@@ -631,18 +635,15 @@ void BuildStandaloneActivation(GraphInfoBuilder& builder,
     case mojom::Activation::Tag::kSigmoid:
       builder.BuildSigmoid(input_operand_id, output_operand_id);
       return;
-    case mojom::Activation::Tag::kSoftplus: {
+    case mojom::Activation::Tag::kSoftplus:
       builder.BuildSoftplus(input_operand_id, output_operand_id);
       return;
-    }
     case mojom::Activation::Tag::kSoftsign:
       builder.BuildSoftsign(input_operand_id, output_operand_id);
       return;
     case mojom::Activation::Tag::kTanh:
       builder.BuildTanh(input_operand_id, output_operand_id);
       return;
-    default:
-      NOTREACHED_IN_MIGRATION();
   }
 }
 

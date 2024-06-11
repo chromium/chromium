@@ -1120,16 +1120,6 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
       webnn::DataTypeConstraintSet::All(), input, options);
 }
 
-MLActivation* MLGraphBuilder::clamp(const MLClampOptions* options,
-                                    ExceptionState& exception_state) {
-  if (!ValidateClampOptions(options, exception_state)) {
-    return nullptr;
-  }
-  // Create the clamp operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kClamp, options);
-}
-
 MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                   const MLOperand* filter,
                                   const MLConv2dOptions* options,
@@ -2189,12 +2179,6 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   }
   softmax->Connect({input}, {output.value()});
   return output.value();
-}
-
-MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
-  // Create the softmax operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kSoftmax);
 }
 
 MLOperand* MLGraphBuilder::softplus(const MLOperand* input,

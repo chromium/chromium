@@ -182,8 +182,6 @@ bool ValidateLinearAttributes(const mojom::LinearPtr& linear) {
 
 bool ValidateActivation(const mojom::ActivationPtr& activation) {
   switch (activation->which()) {
-    case mojom::Activation::Tag::kClamp:
-      return ValidateClampAttributes(activation->get_clamp());
     case mojom::Activation::Tag::kElu:
       return ValidateEluAttributes(activation->get_elu());
     case mojom::Activation::Tag::kHardSigmoid:
@@ -195,7 +193,6 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
     case mojom::Activation::Tag::kGelu:
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
-    case mojom::Activation::Tag::kSoftmax:
     case mojom::Activation::Tag::kSoftplus:
     case mojom::Activation::Tag::kSoftsign:
     case mojom::Activation::Tag::kTanh:
