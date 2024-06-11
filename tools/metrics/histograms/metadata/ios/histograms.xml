@@ -3192,7 +3192,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
-    expires_after="2024-07-21">
+    expires_after="2025-07-21">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
