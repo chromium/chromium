@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.FinalState.Number{Event}"
-    units="count" expires_after="2024-10-06">
+    units="count" expires_after="2024-12-08">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>

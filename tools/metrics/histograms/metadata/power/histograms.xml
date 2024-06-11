@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU8.Total{UsageScenario}"
-    units="1/100 %" expires_after="2024-10-06">
+    units="1/100 %" expires_after="2024-12-08">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -699,7 +699,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2024-10-06">
+    units="milliwatts" expires_after="2024-12-08">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>

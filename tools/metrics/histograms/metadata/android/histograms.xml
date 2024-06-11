@@ -4586,7 +4586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.PlaceholderStripLeftoverTabsCount"
-    units="tabs" expires_after="2024-10-06">
+    units="tabs" expires_after="2024-12-08">
   <owner>nemco@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>twellington@chromium.org</owner>
@@ -4606,7 +4606,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.TabStrip.PlaceholderStripTabsCreatedDuringRestoreCount"
-    units="tabs" expires_after="2024-10-06">
+    units="tabs" expires_after="2024-12-08">
   <owner>nemco@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>twellington@chromium.org</owner>

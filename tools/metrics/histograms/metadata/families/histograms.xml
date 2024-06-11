@@ -1008,7 +1008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{RequestType}.{Status}.Latency" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

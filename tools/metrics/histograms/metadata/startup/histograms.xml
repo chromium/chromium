@@ -787,7 +787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.GPU.LoadTime.ApplicationStartToGpuInitialized"
-    units="ms" expires_after="2024-10-06">
+    units="ms" expires_after="2024-12-08">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -810,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.GPU.LoadTime.ChromeMainToGpuInitialized" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -824,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.GPU.LoadTime.ProcessCreationToGpuInitialized"
-    units="ms" expires_after="2024-10-06">
+    units="ms" expires_after="2024-12-08">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>

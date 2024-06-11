@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>
@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>

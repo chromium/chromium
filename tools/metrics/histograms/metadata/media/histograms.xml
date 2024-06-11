@@ -4698,7 +4698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Count" units="count"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4719,7 +4719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Source" enum="MediaNotificationSource"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>yrw@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6424,7 +6424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCaptureManager.DesktopCaptureImplementationAndType"
-    enum="DesktopCaptureImplementationAndType" expires_after="2024-10-06">
+    enum="DesktopCaptureImplementationAndType" expires_after="2024-12-08">
   <owner>handellm@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -7119,7 +7119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Channel.Error"
-    enum="MediaRouterCastChannelError" expires_after="2024-10-06">
+    enum="MediaRouterCastChannelError" expires_after="2024-12-08">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

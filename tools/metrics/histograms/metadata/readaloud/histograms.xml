@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.Eligibility.IsUserEligible" enum="BooleanEligible"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.IsPageReadable" enum="BooleanEligible"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>

@@ -185,7 +185,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2024-10-06">
+    units="Extension Count" expires_after="2024-12-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

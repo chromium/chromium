@@ -810,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
-    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2024-10-06">
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2024-12-08">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

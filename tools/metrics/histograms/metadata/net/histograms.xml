@@ -3054,7 +3054,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCode{Closer}{ServerType}{HandshakeType}"
-    enum="QuicErrorCodes" expires_after="2024-10-06">
+    enum="QuicErrorCodes" expires_after="2024-12-08">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>

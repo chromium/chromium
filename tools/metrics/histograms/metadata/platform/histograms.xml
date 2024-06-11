@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.{Partition}_ErrorCount" units="errors"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -596,7 +596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.{Partition}_{MountResult}" enum="Boolean"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>

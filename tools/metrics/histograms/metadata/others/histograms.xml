@@ -4260,7 +4260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure"
-    enum="ConversionReportSendRetryCount" expires_after="2024-10-06">
+    enum="ConversionReportSendRetryCount" expires_after="2024-12-08">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

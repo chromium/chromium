@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.AsmjsInstantiateResult" enum="AsmJsInstantiateResult"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.CollectionRate.Young" units="%"
-    expires_after="M130">
+    expires_after="2024-12-08">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Full" units="ms" expires_after="M130">
+<histogram name="V8.GC.Cycle.Full" units="ms" expires_after="2024-12-08">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -622,7 +622,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Full.Sweep.Cpp" units="ms" expires_after="M130">
+<histogram name="V8.GC.Cycle.Full.Sweep.Cpp" units="ms"
+    expires_after="2024-12-08">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -649,7 +650,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full" units="ms" expires_after="M130">
+<histogram name="V8.GC.Cycle.MainThread.Full" units="ms"
+    expires_after="2024-12-08">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -895,7 +897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Sweep.Cpp" units="ms"
-    expires_after="M130">
+    expires_after="2024-12-08">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -927,7 +929,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Young" units="ms" expires_after="M130">
+<histogram name="V8.GC.Cycle.MainThread.Young" units="ms"
+    expires_after="2024-12-08">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -996,7 +999,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Young" units="ms" expires_after="M130">
+<histogram name="V8.GC.Cycle.Young" units="ms" expires_after="2024-12-08">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1160,7 +1163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingStart" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in starting incremental marking.</summary>
@@ -1722,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCodeCaching" enum="WasmCodeCaching"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -1761,7 +1764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCompileAfterDeserializeMilliSeconds" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -1862,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmDeserializationTimeMilliSeconds" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -2105,7 +2108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleSizeBytes" units="bytes"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -2196,7 +2199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmSerializationTimeMilliSeconds" units="ms"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>

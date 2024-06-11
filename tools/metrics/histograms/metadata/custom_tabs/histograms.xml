@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.MinimizedFeatureAvailability"
-    enum="CustomTabsMinimizedFeatureAvailability" expires_after="2024-10-06">
+    enum="CustomTabsMinimizedFeatureAvailability" expires_after="2024-12-08">
   <owner>sinansahin@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -786,7 +786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TimeElapsedSinceMinimized.Destroyed" units="s"
-    expires_after="2024-10-06">
+    expires_after="2024-12-08">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
