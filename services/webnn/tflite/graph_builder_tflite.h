@@ -151,6 +151,18 @@ class GraphBuilderTflite final {
       std::optional<int32_t> scale_tensor_index,
       std::optional<int32_t> bias_tensor_index);
 
+  // Compute the means and variance values for the instance and layer
+  // normalization.
+  std::tuple<int32_t, int32_t> ComputeMeanAndVarianceForNormalization(
+      base::span<const int32_t> input_dimensions,
+      ::tflite::TensorType input_tensor_type,
+      int32_t input_tensor_index,
+      base::span<const int32_t> axes);
+  int32_t TransposeAndReshapeLayerNormalizationScaleBias(
+      base::span<const int32_t> input_dimensions,
+      uint64_t scale_or_bias_operand_id,
+      base::span<const uint32_t> axes);
+
   // This function is called by `SerializeReduce` to serialize WebNN
   // reduce operators or used to emulate WebNN operations.
   OperatorOffset SerializeReduceOperation(
@@ -193,7 +205,8 @@ class GraphBuilderTflite final {
 
   // Insert a tempary transpose operation for input operand with calling
   // `SerializeTransposeOperation`.
-  int32_t InsertTransposeOperation(const mojom::Operand& input_operand,
+  int32_t InsertTransposeOperation(base::span<const int32_t> input_dimensions,
+                                   ::tflite::TensorType input_tensor_type,
                                    int32_t input_tensor_index,
                                    base::span<const uint32_t> permutation);
 
@@ -221,6 +234,8 @@ class GraphBuilderTflite final {
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
       const mojom::InstanceNormalization& instance_normalization);
+  base::expected<OperatorOffset, std::string> SerializeLayerNormalization(
+      const mojom::LayerNormalization& layer_normalization);
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
   OperatorOffset SerializeLinear(const mojom::Linear& linear);
   OperatorOffset SerializeLogicalNot(

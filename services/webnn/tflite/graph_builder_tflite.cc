@@ -5,6 +5,7 @@
 #include "services/webnn/tflite/graph_builder_tflite.h"
 
 #include <cstdint>
+#include <numeric>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
@@ -206,6 +207,19 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
                        .paddings = explicit_padding};
 }
 
+// Sort the indexes of the elements in the axes array based on their values and
+// return the sorted index array for adding a transpose operation if needed. For
+// example input shape is [2, 1, 4, 3], the shape of the scale and bias is [3,
+// 1, 4] if axes is [3, 1, 2], the sorted axes would be [1, 2, 3], then the
+// permutation would be (sorted indices array) [1, 2, 0].
+std::vector<uint32_t> GetIndexOfSortedValue(base::span<const uint32_t> axes) {
+  std::vector<uint32_t> sorted_indices(axes.size());
+  std::iota(sorted_indices.begin(), sorted_indices.end(), 0);
+  base::ranges::sort(sorted_indices, base::ranges::less(),
+                     [axes](uint32_t index) { return axes[index]; });
+  return sorted_indices;
+}
+
 }  // namespace
 
 // static
@@ -332,6 +346,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
                                             *op.get_instance_normalization()));
       break;
     }
+    case mojom::Operation::Tag::kLayerNormalization: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeLayerNormalization(
+                                            *op.get_layer_normalization()));
+      break;
+    }
     case mojom::Operation::Tag::kLeakyRelu:
       operator_offset = SerializeLeakyRelu(*op.get_leaky_relu());
       break;
@@ -407,7 +426,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kGelu:
     case mojom::Operation::Tag::kGru:
     case mojom::Operation::Tag::kGruCell:
-    case mojom::Operation::Tag::kLayerNormalization:
     case mojom::Operation::Tag::kLstm:
     case mojom::Operation::Tag::kLstmCell:
     case mojom::Operation::Tag::kTriangular:
@@ -803,29 +821,21 @@ auto GraphBuilderTflite::InsertPadOperation(const mojom::Operand& input_operand,
 }
 
 int32_t GraphBuilderTflite::InsertTransposeOperation(
-    const mojom::Operand& input_operand,
+    base::span<const int32_t> input_dimensions,
+    ::tflite::TensorType input_tensor_type,
     int32_t input_tensor_index,
     base::span<const uint32_t> permutation) {
   // Create `tflite::Tensor` for the output operand of Transpose operator with
   // the dimensions and tensor data type.
-  const std::vector<uint32_t>& input_shape = input_operand.dimensions;
-  const size_t input_rank = input_shape.size();
+  const size_t input_rank = input_dimensions.size();
   CHECK_EQ(permutation.size(), input_rank);
   std::vector<int32_t> output_shape;
   output_shape.reserve(input_rank);
   for (size_t i = 0; i < input_rank; ++i) {
-    // The input shape has been validated the overflow before creating tensor.
-    output_shape.push_back(
-        base::checked_cast<int32_t>(input_shape[permutation[i]]));
+    output_shape.push_back(input_dimensions[permutation[i]]);
   }
-  const ::tflite::TensorType input_tensor_type =
-      MojoOperandTypeToTFLite(input_operand.data_type);
   const int32_t output_tensor_index =
-      base::checked_cast<int32_t>(tensors_.size());
-  tensors_.emplace_back(::tflite::CreateTensor(
-      builder_, builder_.CreateVector<int32_t>(output_shape),
-      input_tensor_type));
-
+      SerializeTemporaryTensor(output_shape, input_tensor_type);
   operators_.emplace_back(SerializeTransposeOperation(
       input_tensor_index, output_tensor_index, permutation));
 
@@ -1344,10 +1354,15 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   if (!gemm.b_transpose) {
     const mojom::Operand& filter_operand = GetOperand(filter_operand_id);
     CHECK_EQ(filter_operand.dimensions.size(), 2u);
+    // The shape has been validated to not overflow before creating tensor.
+    const auto filter_dimensions =
+        ToSignedDimensions(filter_operand.dimensions);
+    CHECK(filter_dimensions.has_value());
 
     const std::array<uint32_t, 2> permutation = {1u, 0u};
-    transposed_filter_index =
-        InsertTransposeOperation(filter_operand, filter_index, permutation);
+    transposed_filter_index = InsertTransposeOperation(
+        *filter_dimensions, MojoOperandTypeToTFLite(filter_operand.data_type),
+        filter_index, permutation);
   }
 
   std::vector<int32_t> op_inputs = {operand_to_index_map_.at(gemm.a_operand_id),
@@ -1405,6 +1420,93 @@ auto GraphBuilderTflite::SerializeHardSwish(const mojom::HardSwish& hard_swish)
       operand_to_index_map_.at(hard_swish.output_operand_id));
 }
 
+std::tuple<int32_t, int32_t>
+GraphBuilderTflite::ComputeMeanAndVarianceForNormalization(
+    base::span<const int32_t> input_dimensions,
+    ::tflite::TensorType input_tensor_type,
+    int32_t input_tensor_index,
+    base::span<const int32_t> spatial_dimensions) {
+  // Get mean values with reduceMean over the spatial dimensions of the input.
+  std::vector<int32_t> reduce_dimensions(input_dimensions.begin(),
+                                         input_dimensions.end());
+  for (auto dimension : spatial_dimensions) {
+    reduce_dimensions[dimension] = 1;
+  }
+  const int32_t mean_tensor_index =
+      SerializeTemporaryTensor(reduce_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeReduceOperation(
+      ::tflite::BuiltinOperator_MEAN, input_tensor_index, mean_tensor_index,
+      spatial_dimensions, /*keep_dimensions=*/true));
+
+  // Get variance with expression `Variance = ReduceMean(Pow(Input - Mean, 2))`
+  // over the spatial dimensions of the input.
+  const int32_t output_tensor_index_of_sub =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_SUB, input_tensor_index, mean_tensor_index,
+      output_tensor_index_of_sub));
+  const int32_t pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{2.0},
+      /*dimensions=*/{});
+  const int32_t output_tensor_index_of_pow =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_POW, output_tensor_index_of_sub,
+      pow_constant_tensor_index, output_tensor_index_of_pow));
+  const int32_t variance_tensor_index =
+      SerializeTemporaryTensor(reduce_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeReduceOperation(
+      ::tflite::BuiltinOperator_MEAN, output_tensor_index_of_pow,
+      variance_tensor_index, spatial_dimensions, /*keep_dimensions=*/true));
+
+  return std::make_tuple(mean_tensor_index, variance_tensor_index);
+}
+
+int32_t GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
+    base::span<const int32_t> input_dimensions,
+    uint64_t scale_or_bias_operand_id,
+    base::span<const uint32_t> axes) {
+  const mojom::Operand& scale_or_bias_operand =
+      GetOperand(scale_or_bias_operand_id);
+  // The shape has been validated to not overflow before creating tensor.
+  const auto scale_or_bias_dimensions =
+      ToSignedDimensions(scale_or_bias_operand.dimensions);
+  CHECK(scale_or_bias_dimensions.has_value());
+  const ::tflite::TensorType scale_or_bias_tensor_type =
+      MojoOperandTypeToTFLite(scale_or_bias_operand.data_type);
+  const int32_t scale_or_bias_tensor_index =
+      operand_to_index_map_.at(scale_or_bias_operand_id);
+  std::vector<int32_t> compatible_shape(input_dimensions.size(), 1);
+  for (auto axis : axes) {
+    compatible_shape[axis] = input_dimensions[axis];
+  }
+
+  // The shape of the scale and bias tensors is determined by the axes selected
+  // from the input tensor. These tensors need to be reshaped and/or transposed
+  // so that they can be element-wise multiplied (for scale) or added (for bias)
+  // during normalization.
+  //
+  // For example, if the input shape is [2, 1, 4, 3] and the axes are [3, 1, 2]
+  // then the scale shape will be [3, 1, 4]. The scale shape needs to be
+  // transposed to [1, 4, 3] and then reshaped to [1, 1, 4, 3].
+  std::optional<int32_t> transpose_tensor_index;
+  const std::vector<uint32_t> sorted_indices = GetIndexOfSortedValue(axes);
+  if (!base::ranges::is_sorted(sorted_indices)) {
+    transpose_tensor_index = InsertTransposeOperation(
+        *scale_or_bias_dimensions, scale_or_bias_tensor_type,
+        scale_or_bias_tensor_index, sorted_indices);
+  }
+
+  const int32_t reshape_tensor_index =
+      SerializeTemporaryTensor(compatible_shape, scale_or_bias_tensor_type);
+  operators_.emplace_back(SerializeReshapeOperation(
+      transpose_tensor_index ? *transpose_tensor_index
+                             : scale_or_bias_tensor_index,
+      reshape_tensor_index, compatible_shape));
+
+  return reshape_tensor_index;
+}
+
 auto GraphBuilderTflite::SerializeInstanceNormalization(
     const mojom::InstanceNormalization& instance_normalization)
     -> base::expected<OperatorOffset, std::string> {
@@ -1439,35 +1541,12 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
   std::vector<int32_t> new_shape(signed_input_dimensions->size(), 1);
   new_shape[channel_axis] = (*signed_input_dimensions)[channel_axis];
 
-  // Get mean values with reduceMean over the spatial dimensions of the input.
   const int32_t input_tensor_index =
       operand_to_index_map_.at(instance_normalization.input_operand_id);
-  const int32_t mean_tensor_index =
-      SerializeTemporaryTensor(new_shape, input_tensor_type);
-  operators_.emplace_back(SerializeReduceOperation(
-      ::tflite::BuiltinOperator_MEAN, input_tensor_index, mean_tensor_index,
-      spatial_dimensions, /*keep_dimensions=*/true));
-
-  // Get variance with expression `Variance = ReduceMean(Pow(Input - Mean, 2))`
-  // over the spatial dimensions of the input.
-  const int32_t output_tensor_index_of_sub =
-      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
-  operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_SUB, input_tensor_index, mean_tensor_index,
-      output_tensor_index_of_sub));
-  const int32_t pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
-      /*buffer=*/std::array<float, 1>{2.0},
-      /*dimensions=*/{});
-  const int32_t output_tensor_index_of_pow =
-      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
-  operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_POW, output_tensor_index_of_sub,
-      pow_constant_tensor_index, output_tensor_index_of_pow));
-  const int32_t variance_tensor_index =
-      SerializeTemporaryTensor(new_shape, input_tensor_type);
-  operators_.emplace_back(SerializeReduceOperation(
-      ::tflite::BuiltinOperator_MEAN, output_tensor_index_of_pow,
-      variance_tensor_index, spatial_dimensions, /*keep_dimensions=*/true));
+  const auto [mean_tensor_index, variance_tensor_index] =
+      ComputeMeanAndVarianceForNormalization(
+          *signed_input_dimensions, input_tensor_type, input_tensor_index,
+          spatial_dimensions);
 
   // Reshape the 1-D tensor of the scale operand to the new shape if needed.
   std::optional<int32_t> reshape_scale_tensor_index;
@@ -1500,6 +1579,56 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
       operand_to_index_map_.at(instance_normalization.output_operand_id),
       mean_tensor_index, variance_tensor_index, instance_normalization.epsilon,
       reshape_scale_tensor_index, reshape_bias_tensor_index);
+}
+
+auto GraphBuilderTflite::SerializeLayerNormalization(
+    const mojom::LayerNormalization& layer_normalization)
+    -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& input_operand =
+      GetOperand(layer_normalization.input_operand_id);
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type is not supported.");
+  }
+  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+
+  // Get mean and variance values with reduceMean on the fly across all the
+  // input features of each individual sample in the batch.
+  ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
+                   ToSignedDimensions(layer_normalization.axes));
+  const int32_t input_tensor_index =
+      operand_to_index_map_.at(layer_normalization.input_operand_id);
+  const auto [mean_tensor_index, variance_tensor_index] =
+      ComputeMeanAndVarianceForNormalization(*signed_input_dimensions,
+                                             input_tensor_type,
+                                             input_tensor_index, signed_axes);
+
+  std::optional<int32_t> scale_tensor_index;
+  if (layer_normalization.scale_operand_id) {
+    scale_tensor_index = TransposeAndReshapeLayerNormalizationScaleBias(
+        *signed_input_dimensions, *layer_normalization.scale_operand_id,
+        layer_normalization.axes);
+  }
+
+  std::optional<int32_t> bias_tensor_index;
+  if (layer_normalization.bias_operand_id) {
+    bias_tensor_index = TransposeAndReshapeLayerNormalizationScaleBias(
+        *signed_input_dimensions, *layer_normalization.bias_operand_id,
+        layer_normalization.axes);
+  }
+
+  return SerializeNormalizationOperation(
+      *signed_input_dimensions, input_tensor_type, input_tensor_index,
+      operand_to_index_map_.at(layer_normalization.output_operand_id),
+      mean_tensor_index, variance_tensor_index, layer_normalization.epsilon,
+      scale_tensor_index, bias_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
