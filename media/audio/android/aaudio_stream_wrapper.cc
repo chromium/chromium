@@ -10,12 +10,11 @@
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 namespace media {
 
 // Used to circumvent issues where the AAudio thread callbacks continue
 // after AAudioStream_requestStop() completes. See crbug.com/1183255.
-class LOCKABLE AAudioDestructionHelper {
+class REQUIRES_ANDROID_API(AAUDIO_MIN_API) LOCKABLE AAudioDestructionHelper {
  public:
   explicit AAudioDestructionHelper(AAudioStreamWrapper* wrapper)
       : wrapper_(wrapper) {}
@@ -49,11 +48,11 @@ class LOCKABLE AAudioDestructionHelper {
   bool is_closing_ GUARDED_BY(lock_) = false;
 };
 
-static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
-    AAudioStream* stream,
-    void* user_data,
-    void* audio_data,
-    int32_t num_frames) {
+static REQUIRES_ANDROID_API(AAUDIO_MIN_API) aaudio_data_callback_result_t
+    OnAudioDataRequestedCallback(AAudioStream* stream,
+                                 void* user_data,
+                                 void* audio_data,
+                                 int32_t num_frames) {
   AAudioDestructionHelper* destruction_helper =
       reinterpret_cast<AAudioDestructionHelper*>(user_data);
 
@@ -69,9 +68,10 @@ static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
   return result;
 }
 
-static void OnStreamErrorCallback(AAudioStream* stream,
-                                  void* user_data,
-                                  aaudio_result_t error) {
+static REQUIRES_ANDROID_API(AAUDIO_MIN_API) void OnStreamErrorCallback(
+    AAudioStream* stream,
+    void* user_data,
+    aaudio_result_t error) {
   AAudioDestructionHelper* destruction_helper =
       reinterpret_cast<AAudioDestructionHelper*>(user_data);
 
@@ -111,14 +111,12 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
   }
 
-#pragma clang attribute pop
   TRACE_EVENT2("audio", "AAudioStreamWrapper::AAudioStreamWrapper",
                "AAUDIO_PERFORMANCE_MODE_LOW_LATENCY",
                performance_mode_ == AAUDIO_PERFORMANCE_MODE_LOW_LATENCY
                    ? "true"
                    : "false",
                "frames_per_buffer", params_.frames_per_buffer());
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 }
 
 AAudioStreamWrapper::~AAudioStreamWrapper() {
@@ -208,11 +206,9 @@ bool AAudioStreamWrapper::Open() {
   int32_t size_requested = frames_per_burst * (frames_per_burst < 128 ? 3 : 2);
   AAudioStream_setBufferSizeInFrames(aaudio_stream_, size_requested);
 
-#pragma clang attribute pop
   TRACE_EVENT2("audio", "AAudioStreamWrapper::Open", "params",
                params_.AsHumanReadableString(), "requested buffer size",
                size_requested);
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API(AAUDIO_MIN_API)
 
   return true;
 }
@@ -352,4 +348,3 @@ void AAudioStreamWrapper::OnStreamError(aaudio_result_t error) {
 }
 
 }  // namespace media
-#pragma clang attribute pop
