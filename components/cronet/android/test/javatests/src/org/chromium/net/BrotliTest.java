@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -34,6 +34,7 @@ import java.util.Arrays;
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support Brotli")
+@DisabledTest(message = "crbug.com/344959577")
 public class BrotliTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
@@ -89,7 +90,6 @@ public class BrotliTest {
 
     @Test
     @SmallTest
-    @RequiresRestart("crbug.com/344959577")
     public void testBrotliDecoded() throws Exception {
         mTestRule
                 .getTestFramework()
