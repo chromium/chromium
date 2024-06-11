@@ -47,17 +47,19 @@ const WrapperTypeInfo& DOMArrayBuffer::wrapper_type_info_ =
 #pragma clang diagnostic pop
 #endif
 
-static void AccumulateArrayBuffersForAllWorlds(
-    v8::Isolate* isolate,
-    const DOMArrayBuffer* object,
-    v8::LocalVector<v8::ArrayBuffer>& buffers) {
+namespace {
+
+template <typename Function>
+void ForArrayBuffersInAllWorlds(v8::Isolate* isolate,
+                                const DOMArrayBuffer* object,
+                                Function f) {
   if (!object->has_non_main_world_wrappers() && IsMainThread()) {
     const DOMWrapperWorld& world = DOMWrapperWorld::MainWorld(isolate);
     v8::Local<v8::Object> wrapper;
     if (world.DomDataStore()
             .Get</*entered_context=*/false>(isolate, object)
             .ToLocal(&wrapper)) {
-      buffers.push_back(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
+      f(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
     }
     return;
   }
@@ -69,20 +71,22 @@ static void AccumulateArrayBuffersForAllWorlds(
     if (world->DomDataStore()
             .Get</*entered_context=*/false>(isolate, object)
             .ToLocal(&wrapper)) {
-      buffers.push_back(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
+      f(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
     }
   }
 }
 
+}  // namespace
+
 bool DOMArrayBuffer::IsDetachable(v8::Isolate* isolate) {
   v8::HandleScope handle_scope(isolate);
   v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
-  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
-
   bool is_detachable = true;
-  for (const auto& buffer_handle : buffer_handles)
-    is_detachable &= buffer_handle->IsDetachable();
-
+  ForArrayBuffersInAllWorlds(
+      isolate, this,
+      [&is_detachable](v8::Local<v8::ArrayBuffer> buffer_handle) {
+        is_detachable &= buffer_handle->IsDetachable();
+      });
   return is_detachable;
 }
 
@@ -94,13 +98,15 @@ void DOMArrayBuffer::SetDetachKey(v8::Isolate* isolate,
 
   v8::HandleScope handle_scope(isolate);
   v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
-  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   v8::Local<v8::String> v8_detach_key = V8AtomicString(isolate, detach_key);
   detach_key_.Reset(isolate, v8_detach_key);
 
-  for (const auto& buffer_handle : buffer_handles)
-    buffer_handle->SetDetachKey(v8_detach_key);
+  ForArrayBuffersInAllWorlds(
+      isolate, this,
+      [&v8_detach_key](v8::Local<v8::ArrayBuffer> buffer_handle) {
+        buffer_handle->SetDetachKey(v8_detach_key);
+      });
 }
 
 bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
@@ -162,22 +168,35 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
 
   v8::HandleScope handle_scope(isolate);
   v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
-  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
-  for (wtf_size_t i = 0; i < buffer_handles.size(); ++i) {
-    // Loop to detach all buffer handles. This may throw an exception
-    // if the |detach_key| is incorrect. It should either fail for all handles
-    // or succeed for all handles. It should never be the case that the handles
-    // have different detach keys. CHECK to catch when this invariant is broken.
-    bool detach_result = false;
-    if (!buffer_handles[i]->Detach(detach_key).To(&detach_result)) {
-      CHECK_EQ(i, 0u);
-      // Propagate an exception to the caller.
-      return v8::Nothing<bool>();
-    }
-    // On success, Detach must always return true.
-    DCHECK(detach_result);
+  bool first = true;
+  bool failed = false;
+  ForArrayBuffersInAllWorlds(
+      isolate, this,
+      [&first, &failed, &detach_key](v8::Local<v8::ArrayBuffer> buffer_handle) {
+        // Loop to detach all buffer handles. This may throw an exception
+        // if the |detach_key| is incorrect. It should either fail for all
+        // handles or succeed for all handles. It should never be the case that
+        // the handles have different detach keys. CHECK to catch when this
+        // invariant is broken.
+        if (!failed) {
+          bool detach_result = false;
+          if (!buffer_handle->Detach(detach_key).To(&detach_result)) {
+            CHECK(first);
+            failed = true;
+          } else {
+            // On success, Detach must always return true.
+            DCHECK(detach_result);
+          }
+          first = false;
+        }
+      });
+
+  if (failed) {
+    // Propagate an exception to the caller.
+    return v8::Nothing<bool>();
   }
+
   Detach();
   return v8::Just(true);
 }
@@ -282,21 +301,22 @@ bool DOMArrayBuffer::IsDetached() const {
 
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
-  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
-  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   // There may be several v8::ArrayBuffers corresponding to the DOMArrayBuffer,
   // but at most one of them may be non-detached.
   int nondetached_count = 0;
   int detached_count = 0;
 
-  for (const auto& buffer_handle : buffer_handles) {
-    if (buffer_handle->WasDetached()) {
-      ++detached_count;
-    } else {
-      ++nondetached_count;
-    }
-  }
+  ForArrayBuffersInAllWorlds(isolate, this,
+                             [&detached_count, &nondetached_count](
+                                 v8::Local<v8::ArrayBuffer> buffer_handle) {
+                               if (buffer_handle->WasDetached()) {
+                                 ++detached_count;
+                               } else {
+                                 ++nondetached_count;
+                               }
+                             });
+
   // This CHECK fires even though it should not. TODO(330759272): Investigate
   // under which conditions we end up with multiple non-detached JSABs for the
   // same DOMAB and potentially restore this check.
