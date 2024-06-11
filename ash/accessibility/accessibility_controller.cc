@@ -187,14 +187,11 @@ const FeatureData kFeatures[] = {
 // them.
 const FeatureDialogData kFeatureDialogs[] = {
     {FeatureType::kFullscreenMagnifier,
-     prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_SCREEN_MAGNIFIER_TITLE, IDS_ASH_SCREEN_MAGNIFIER_BODY},
+     prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted},
     {FeatureType::kDockedMagnifier,
-     prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_DOCKED_MAGNIFIER_TITLE, IDS_ASH_DOCKED_MAGNIFIER_BODY},
+     prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted},
     {FeatureType::kHighContrast,
-     prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_HIGH_CONTRAST_TITLE, IDS_ASH_HIGH_CONTRAST_BODY}};
+     prefs::kHighContrastAcceleratorDialogHasBeenAccepted}};
 
 constexpr char kNotificationId[] = "chrome://settings/accessibility";
 constexpr char kNotifierAccessibility[] = "ash.accessibility";
@@ -1035,7 +1032,7 @@ AccessibilityController::FeatureWithDialog::FeatureWithDialog(
     const gfx::VectorIcon* icon,
     const int name_resource_id,
     const bool toggleable_in_quicksettings,
-    const Dialog& dialog,
+    const std::string& dialog_pref,
     AccessibilityController* controller)
     : AccessibilityController::Feature(type,
                                        pref_name,
@@ -1043,7 +1040,7 @@ AccessibilityController::FeatureWithDialog::FeatureWithDialog(
                                        name_resource_id,
                                        toggleable_in_quicksettings,
                                        controller),
-      dialog_(dialog) {}
+      dialog_pref_(dialog_pref) {}
 AccessibilityController::FeatureWithDialog::~FeatureWithDialog() = default;
 
 void AccessibilityController::FeatureWithDialog::SetDialogAccepted() {
@@ -1051,14 +1048,14 @@ void AccessibilityController::FeatureWithDialog::SetDialogAccepted() {
   if (!prefs) {
     return;
   }
-  prefs->SetBoolean(dialog_.pref_name, true);
+  prefs->SetBoolean(dialog_pref_, true);
   prefs->CommitPendingWrite();
 }
 
 bool AccessibilityController::FeatureWithDialog::WasDialogAccepted() const {
   PrefService* prefs = owner_->active_user_prefs_;
   DCHECK(prefs);
-  return prefs->GetBoolean(dialog_.pref_name);
+  return prefs->GetBoolean(dialog_pref_);
 }
 
 // static
@@ -1089,10 +1086,9 @@ AccessibilityController::~AccessibilityController() {
 
 void AccessibilityController::CreateAccessibilityFeatures() {
   // First, build all features with dialog.
-  std::map<FeatureType, Dialog> dialogs;
+  std::map<FeatureType, std::string> dialogs;
   for (auto dialog_data : kFeatureDialogs) {
-    dialogs[dialog_data.type] = {dialog_data.pref, dialog_data.title,
-                                 dialog_data.body};
+    dialogs[dialog_data.type] = dialog_data.pref;
   }
   for (auto feature_data : kFeatures) {
     size_t feature_index = static_cast<size_t>(feature_data.type);
@@ -2119,7 +2115,8 @@ void AccessibilityController::ShowDictationKeyboardDialog() {
                 IDS_ASH_DICTATION_KEYBOARD_DIALOG_DESCRIPTION_SODA_NOT_AVAILABLE,
                 replacements, nullptr);
   ShowConfirmationDialog(
-      title, description, l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      title, description, l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
+      l10n_util::GetStringUTF16(IDS_APP_CANCEL),
       base::BindOnce(
           &AccessibilityController::OnDictationKeyboardDialogAccepted,
           GetWeakPtr()),
@@ -2161,7 +2158,8 @@ void AccessibilityController::ShowSelectToSpeakKeyboardDialog() {
   std::u16string description = l10n_util::GetStringFUTF16(
       IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_DESCRIPTION, modifier_key);
   ShowConfirmationDialog(
-      title, description, l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      title, description, l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
+      l10n_util::GetStringUTF16(IDS_APP_CANCEL),
       base::BindOnce(
           &AccessibilityController::OnSelectToSpeakKeyboardDialogAccepted,
           GetWeakPtr()),
@@ -3118,6 +3116,7 @@ void AccessibilityController::EnableChromeVoxVolumeSlideGesture() {
 void AccessibilityController::ShowConfirmationDialog(
     const std::u16string& title,
     const std::u16string& description,
+    const std::u16string& confirm_name,
     const std::u16string& cancel_name,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback,
@@ -3131,14 +3130,22 @@ void AccessibilityController::ShowConfirmationDialog(
     return;
   }
   auto* dialog = new AccessibilityConfirmationDialog(
-      title, description, cancel_name, std::move(on_accept_callback),
-      std::move(on_cancel_callback), std::move(on_close_callback));
+      title, description, confirm_name, cancel_name,
+      std::move(on_accept_callback), std::move(on_cancel_callback),
+      std::move(on_close_callback));
   // Save the dialog so it doesn't go out of scope before it is
   // used and closed.
   confirmation_dialog_ = dialog->GetWeakPtr();
   if (show_confirmation_dialog_callback_for_testing_) {
     show_confirmation_dialog_callback_for_testing_.Run();
   }
+}
+
+gfx::Rect AccessibilityController::GetConfirmationDialogBoundsInScreen() {
+  if (!confirmation_dialog_.get()) {
+    return gfx::Rect();
+  }
+  return confirmation_dialog_.get()->GetWidget()->GetWindowBoundsInScreen();
 }
 
 void AccessibilityController::

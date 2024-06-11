@@ -891,11 +891,12 @@ AccessibilityPrivateShowConfirmationDialogFunction::Run() {
 
   std::u16string title = base::UTF8ToUTF16(params->title);
   std::u16string description = base::UTF8ToUTF16(params->description);
+  std::u16string confirm = l10n_util::GetStringUTF16(IDS_APP_CONTINUE);
   std::u16string cancel_name =
       params->cancel_name ? base::UTF8ToUTF16(params->cancel_name.value())
                           : l10n_util::GetStringUTF16(IDS_APP_CANCEL);
   ash::AccessibilityController::Get()->ShowConfirmationDialog(
-      title, description, cancel_name,
+      title, description, confirm, cancel_name,
       base::BindOnce(
           &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
           this, /* confirmed */ true),

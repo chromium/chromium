@@ -3923,6 +3923,21 @@ No devices connected.
       <message name="IDS_ASH_SCREEN_MAGNIFIER_BODY" desc="The text for the screen magnifier dialog.">
         You pressed the keyboard shortcut for the full-screen magnifier. Do you want to turn it on?
       </message>
+      <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TITLE" desc="Dialog title when screen magnifier is enabled.">
+        Full-screen magnifier is on
+      </message>
+      <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY" desc="The text for the screen magnifier dialog, explaining how to move around with keyboard shortcuts.">
+        You pressed the keyboard shortcut for the full-screen magnifier. Use ctrl + alt + arrows to move around the zoomed in view.
+      </message>
+      <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY_DYNAMIC" desc="The text for the screen magnifier dialog, explaining how to zoom in/out and move around with keyboard shortcuts.">
+        You pressed the keyboard shortcut for the full-screen magnifier. Use <ph name="zoom_in_accelerator">$1<ex>ctrl+alt+brightness up</ex></ph> to zoom in and <ph name="zoom_out_accelerator">$2<ex>ctrl+alt+brightness down</ex></ph> to zoom out. Use ctrl+alt+arrows to move around the zoomed in view.
+      </message>
+      <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TURN_OFF_BUTTON" desc="Dialog cancel button for when screen magnifier is enabled by keyboard shortcut.">
+        Turn off
+      </message>
+      <message name="IDS_ASH_SCREEN_MAGNIFIER_DIALOG_KEEP_ON_BUTTON" desc="Dialog confirm button for when screen magnifier is enabled by keyboard shortcut.">
+        Keep it on
+      </message>
       <message name="IDS_ASH_ROTATE_SCREEN_TITLE" desc="Dialog title for when the screen has been rotated.">
         Rotate Screen
       </message>

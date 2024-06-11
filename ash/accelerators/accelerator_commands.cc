@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/accelerators/accelerator_lookup.h"
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
@@ -29,6 +30,7 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/picker/picker_controller.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -80,6 +82,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1171,6 +1174,7 @@ void RotateScreen() {
     Shell::Get()->accessibility_controller()->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_ROTATE_SCREEN_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_ROTATE_SCREEN_BODY),
+        l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
         l10n_util::GetStringUTF16(IDS_APP_CANCEL),
         base::BindOnce(&OnRotationDialogAccepted),
         base::BindOnce(&OnRotationDialogCancelled),
@@ -1451,6 +1455,7 @@ void ToggleDockedMagnifier() {
     accessibility_controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_DOCKED_MAGNIFIER_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_DOCKED_MAGNIFIER_BODY),
+        l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
         l10n_util::GetStringUTF16(IDS_APP_CANCEL), base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
@@ -1516,18 +1521,60 @@ void ToggleFullscreenMagnifier() {
       accessibility_controller->fullscreen_magnifier().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
+    // Enable fullscreen magnifier before showing the dialog, so that users
+    // can see the dialog more clearly.
+    bool magnify_dialog =
+        ::features::IsAccessibilityMagnifyAcceleratorDialogEnabled();
+    int title = IDS_ASH_SCREEN_MAGNIFIER_TITLE;
+    std::u16string body =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY);
+    int cancel = IDS_APP_CANCEL;
+    int confirm = IDS_ASH_CONTINUE_BUTTON;
+    if (magnify_dialog) {
+      Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(true);
+      title = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TITLE;
+      cancel = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TURN_OFF_BUTTON;
+      confirm = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_KEEP_ON_BUTTON;
+
+      std::vector<AcceleratorLookup::AcceleratorDetails> zoom_in_details =
+          Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
+              AcceleratorAction::kMagnifierZoomIn);
+      std::vector<AcceleratorLookup::AcceleratorDetails> zoom_out_details =
+          Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
+              AcceleratorAction::kMagnifierZoomOut);
+      if (zoom_in_details.empty() || zoom_out_details.empty()) {
+        body = l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY);
+      } else {
+        std::u16string zoom_in_text =
+            AcceleratorLookup::GetAcceleratorDetailsText(zoom_in_details[0]);
+        std::u16string zoom_out_text =
+            AcceleratorLookup::GetAcceleratorDetailsText(zoom_out_details[0]);
+        body = l10n_util::GetStringFUTF16(
+            IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY_DYNAMIC, zoom_in_text,
+            zoom_out_text);
+      }
+    }
     accessibility_controller->ShowConfirmationDialog(
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_TITLE),
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY),
-        l10n_util::GetStringUTF16(IDS_APP_CANCEL), base::BindOnce([]() {
+        l10n_util::GetStringUTF16(title), body,
+        l10n_util::GetStringUTF16(confirm), l10n_util::GetStringUTF16(cancel),
+        base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
               ->fullscreen_magnifier()
               .SetDialogAccepted();
           SetFullscreenMagnifierEnabled(true);
         }),
-        /*on_cancel_callback=*/base::DoNothing(),
-        /*on_close_callback=*/base::DoNothing());
+        /*on_cancel_callback=*/base::BindOnce([]() {
+          Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(false);
+        }),
+        /*on_close_callback=*/base::BindOnce([]() {
+          Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(false);
+        }));
+    // Center the magnifier on the new dialog. This is done manually because the
+    // dialog focus may change before the AccessibilityCommon extension has
+    // loaded and begun listening for focus events.
+    magnification_controller->HandleMoveMagnifierToRect(
+        accessibility_controller->GetConfirmationDialogBoundsInScreen());
   } else {
     SetFullscreenMagnifierEnabled(!current_enabled);
   }
@@ -1565,6 +1612,7 @@ void ToggleHighContrast() {
     controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(IDS_ASH_HIGH_CONTRAST_TITLE),
         l10n_util::GetStringUTF16(IDS_ASH_HIGH_CONTRAST_BODY),
+        l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
         l10n_util::GetStringUTF16(IDS_APP_CANCEL), base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()

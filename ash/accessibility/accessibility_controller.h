@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_notification_controller.h"
@@ -171,17 +172,6 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     const raw_ptr<AccessibilityController> owner_;
   };
 
-  // Helper struct to store information about a11y dialog -- pref name, resource
-  // ids for title and body. Also stores the information whether this dialog is
-  // mandatory for every SetEnabled call.
-  struct Dialog {
-    std::string pref_name;
-    int title_resource_id;
-    int body_resource_id;
-    // Whether this dialog should be shown on every SetEnabled action.
-    bool mandatory;
-  };
-
   // Some features have confirmation dialog associated with them.
   // Dialog can be applied for all SetEnabled() actions, or only to ones
   // associated with accelerators.
@@ -192,7 +182,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
                       const gfx::VectorIcon* icon,
                       const int name_resource_id,
                       const bool toggleable_in_quicksettings,
-                      const Dialog& dialog,
+                      const std::string& dialog_pref_name,
                       AccessibilityController* controller);
     ~FeatureWithDialog() override;
 
@@ -200,7 +190,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     bool WasDialogAccepted() const;
 
    private:
-    Dialog dialog_;
+    const std::string dialog_pref_;
   };
 
   // Contains data used to give an accessibility-related notification.
@@ -593,10 +583,12 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // voices.
   void ShowConfirmationDialog(const std::u16string& title,
                               const std::u16string& description,
+                              const std::u16string& confirm_name,
                               const std::u16string& cancel_name,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback);
+  gfx::Rect GetConfirmationDialogBoundsInScreen();
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;

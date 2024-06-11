@@ -660,6 +660,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_CLOSE" desc="A generic term for Close on buttons and menus.">
         Close
       </message>
+      <message name="IDS_APP_CONTINUE" desc="A generic term for Continue on buttons.">
+        Continue
+      </message>
 
       <!-- Key names -->
       <message name="IDS_APP_ESC_KEY" desc="Escape key">

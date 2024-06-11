@@ -2589,7 +2589,8 @@ void AccessibilityManager::ShowNetworkDictationDialog() {
   const std::u16string text =
       l10n_util::GetStringUTF16(IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TEXT);
   AccessibilityController::Get()->ShowConfirmationDialog(
-      title, text, l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      title, text, l10n_util::GetStringUTF16(IDS_APP_CONTINUE),
+      l10n_util::GetStringUTF16(IDS_APP_CANCEL),
       base::BindOnce(&AccessibilityManager::OnNetworkDictationDialogAccepted,
                      base::Unretained(this)),
       base::BindOnce(&AccessibilityManager::OnNetworkDictationDialogDismissed,

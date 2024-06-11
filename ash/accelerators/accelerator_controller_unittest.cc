@@ -2932,10 +2932,15 @@ class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
 
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityMagnifyAcceleratorDialog);
 
     // Create user session and simulate its login.
     SimulateUserLogin(kUserEmail);
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO (afakhry): Remove this class after refactoring MagnificationManager.
@@ -2984,6 +2989,22 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
       accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
   EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
   EXPECT_TRUE(IsConfirmationDialogOpen());
+  // Magnifier is enabled in order to let users better see the dialog.
+  EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
+  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
+
+  CancelConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
+  // Magnifier is disabled when the dialog is cancelled.
+  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
+
+  // Open the dialog again.
+  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
+  EXPECT_TRUE(IsConfirmationDialogOpen());
+  EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
+
   AcceptConfirmationDialog();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsConfirmationDialogOpen());
@@ -3047,6 +3068,91 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_TRUE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_TRUE(ContainsDockedMagnifierNotification());
+
+  RemoveAllNotifications();
+}
+
+class MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest
+    : public MagnifiersAcceleratorsTester {
+ public:
+  MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest() = default;
+  MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest(
+      const MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest&) =
+      delete;
+  MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest& operator=(
+      const MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest&) =
+      delete;
+  ~MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest() override =
+      default;
+
+  void SetUp() override {
+    AcceleratorControllerTest::SetUp();
+    feature_list_.InitAndDisableFeature(
+        ::features::kAccessibilityMagnifyAcceleratorDialog);
+
+    // Create user session and simulate its login.
+    SimulateUserLogin(kUserEmail);
+  }
+};
+
+TEST_F(MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest,
+       TestToggleFullscreenMagnifier) {
+  FakeMagnificationManager manager;
+  manager.SetPrefs(user_pref_service());
+  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
+  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
+  EXPECT_FALSE(IsConfirmationDialogOpen());
+
+  AccessibilityController* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  // Toggle the fullscreen magnifier on/off, dialog should be shown on first use
+  // of accelerator.
+  const ui::Accelerator fullscreen_magnifier_accelerator(
+      ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
+  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
+  EXPECT_TRUE(IsConfirmationDialogOpen());
+  // Magnifier is not enabled when feature is not on.
+  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
+  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
+
+  CancelConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
+  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
+
+  // Open the dialog again.
+  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
+  EXPECT_TRUE(IsConfirmationDialogOpen());
+  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
+
+  AcceptConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsConfirmationDialogOpen());
+  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
+  EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
+  EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
+  EXPECT_FALSE(
+      IsNotificationPinned(kFullscreenMagnifierToggleAccelNotificationId));
+
+  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
+  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
+  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
+  EXPECT_TRUE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
+  EXPECT_FALSE(IsConfirmationDialogOpen());
+  EXPECT_FALSE(ContainsFullscreenMagnifierNotification());
+
+  // Dialog will not be shown the second time the accelerator is used.
+  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
+  EXPECT_FALSE(IsConfirmationDialogOpen());
+  EXPECT_TRUE(
+      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
+  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
+  EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
+  EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
 
   RemoveAllNotifications();
 }
