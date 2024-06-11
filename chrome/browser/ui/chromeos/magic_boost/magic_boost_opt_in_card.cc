@@ -286,7 +286,8 @@ void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   // TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
   // is pressed. We should also use `MagicBoostState::Get()` here instead when
   // it is available.
-  mahi::MahiPrefsController::Get()->SetMahiEnabled(false);
+  // TODO(b/346622428): fix the bug and uncomment the following line.
+  //   mahi::MahiPrefsController::Get()->SetMahiEnabled(false);
 }
 
 BEGIN_METADATA(MagicBoostOptInCard)

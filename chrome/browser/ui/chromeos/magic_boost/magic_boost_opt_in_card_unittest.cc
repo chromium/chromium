@@ -8,14 +8,12 @@
 
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/lottie/resource.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -47,16 +45,7 @@ void LeftClickOn(views::View* view) {
 
 class MagicBoostOptInCardTest : public ChromeViewsTestBase {
  public:
-  MagicBoostOptInCardTest() {
-// Sets the default functions for the test to create image with the lottie
-// resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in the
-// `ResourceBundle`.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
-#endif
-  }
+  MagicBoostOptInCardTest() = default;
 
   // ChromeViewsTestBase:
   void SetUp() override {
@@ -78,7 +67,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
       &crosapi_controller_};
 };
 
-TEST_F(MagicBoostOptInCardTest, ButtonActions) {
+TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   auto* controller = MagicBoostCardController::Get();
 
   // Show the opt-in UI card.
@@ -95,15 +84,15 @@ TEST_F(MagicBoostOptInCardTest, ButtonActions) {
 
   LeftClickOn(primary_button);
   EXPECT_FALSE(controller->opt_in_widget_for_test());
+}
 
-  // Close the disclaimer UI directly without pressing its buttons, which won't
-  // set the `CanShowOptInUi` pref to false. This may happen during shutdown.
-  controller->CloseDisclaimerUi();
+TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
+  auto* controller = MagicBoostCardController::Get();
 
-  // Attempt re-showing the opt-in UI card. It should show since
-  // `CanShowOptInUI` pref is still true.
+  // Show the opt-in UI card.
   controller->ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
-  ASSERT_TRUE(controller->opt_in_widget_for_test());
+  auto* opt_in_widget = controller->opt_in_widget_for_test();
+  ASSERT_TRUE(opt_in_widget);
 
   // Test that pressing the secondary button closes the card and sets the pref
   // so the card won't be able to show again.

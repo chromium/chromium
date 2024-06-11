@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"

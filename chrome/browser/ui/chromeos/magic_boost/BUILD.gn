@@ -12,8 +12,6 @@ source_set("magic_boost") {
     "magic_boost_card_controller.cc",
     "magic_boost_card_controller.h",
     "magic_boost_constants.h",
-    "magic_boost_disclaimer_view.cc",
-    "magic_boost_disclaimer_view.h",
     "magic_boost_opt_in_card.cc",
     "magic_boost_opt_in_card.h",
   ]

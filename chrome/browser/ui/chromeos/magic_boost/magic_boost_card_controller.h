@@ -61,7 +61,6 @@ class MagicBoostCardController : public ReadWriteCardController {
   void ShowDisclaimerUi(
       int64_t display_id,
       crosapi::mojom::MagicBoostController::TransitionAction action);
-  void CloseDisclaimerUi();
 
   // Whether the Quick Answers and Mahi features should show the opt in UI.
   virtual bool ShouldQuickAnswersAndMahiShowOptIn();
@@ -90,9 +89,6 @@ class MagicBoostCardController : public ReadWriteCardController {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
-  views::Widget* disclaimer_widget_for_test() {
-    return disclaimer_widget_.get();
-  }
 
  protected:
   friend class base::NoDestructor<MagicBoostCardController>;
@@ -105,7 +101,6 @@ class MagicBoostCardController : public ReadWriteCardController {
   bool is_orca_included_ = false;
 
   views::UniqueWidgetPtr opt_in_widget_;
-  views::UniqueWidgetPtr disclaimer_widget_;
 
   std::unique_ptr<::mahi::MahiPrefsController> mahi_prefs_controller_;
 
