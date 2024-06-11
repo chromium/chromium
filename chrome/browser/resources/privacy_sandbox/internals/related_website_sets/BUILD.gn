@@ -11,7 +11,18 @@ build_webui("build") {
 
   static_files = [ "related_website_sets.html" ]
 
-  non_web_component_files = [ "related_website_sets.ts" ]
+  non_web_component_files = [
+    "app.ts",
+    "app.html.ts",
+    "related_website_sets.ts"
+  ]
+
+  css_files = [ "app.css" ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+  ]
   generate_grdp = true
   grd_resource_path_prefix = "related_website_sets"
 }
