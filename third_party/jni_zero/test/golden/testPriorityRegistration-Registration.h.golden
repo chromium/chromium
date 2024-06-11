@@ -83,7 +83,7 @@ JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1I(
           
           default:
             JNI_ZERO_ILOG("J_N__1Z_1I was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -98,7 +98,7 @@ JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
           
           default:
             JNI_ZERO_ILOG("J_N__1Z_1O was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -113,7 +113,7 @@ JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
           
           default:
             JNI_ZERO_ILOG("J_N__1I_1I was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -128,7 +128,7 @@ JNI_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
           
           default:
             JNI_ZERO_ILOG("J_N__1V_1OO was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return;
         }
 }
@@ -143,7 +143,7 @@ JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1OA_1OA(
           
           default:
             JNI_ZERO_ILOG("J_N__1OA_1OA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -158,7 +158,7 @@ JNI_BOUNDARY_EXPORT jintArray Java_J_N__1IA_1IATAA(
           
           default:
             JNI_ZERO_ILOG("J_N__1IA_1IATAA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -173,7 +173,7 @@ JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1RAA_1IAOAA(
           
           default:
             JNI_ZERO_ILOG("J_N__1RAA_1IAOAA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -188,7 +188,7 @@ JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
           
           default:
             JNI_ZERO_ILOG("J_N__1I_1OO was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return {};
         }
 }
@@ -209,7 +209,7 @@ JNI_BOUNDARY_EXPORT void Java_J_N__1V(
           
           default:
             JNI_ZERO_ILOG("J_N__1V was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return;
         }
 }

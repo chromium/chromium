@@ -305,7 +305,7 @@ JNI_BOUNDARY_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
           default:
             JNI_ZERO_ILOG("${CLASS_NAME}_${PROXY_SIGNATURE} was called with an \
 invalid switch number: %d", switch_num);
-            JNI_ZERO_CHECK(false);
+            JNI_ZERO_DCHECK(false);
             return${DEFAULT_RETURN};
         }
 }""")
