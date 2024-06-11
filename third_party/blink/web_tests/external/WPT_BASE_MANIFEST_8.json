@@ -315425,7 +315425,7 @@
         []
        ],
        "NotoEmoji-Regular_subset.ttf": [
-        "0b054c7c8d597e6d600817ec05543d7612e79351",
+        "18f3ed97e6de76f823e8d2a9b1cde161a0df1321",
         []
        ],
        "NotoEmoji-Regular_without-cmap14-subset.ttf": [
@@ -524394,6 +524394,69 @@
     }
    },
    "file-system-access": {
+    "getDirectory.https.any.js": [
+     "bace6860b85cfbb170b4b87982de20af86d86f3b",
+     [
+      "file-system-access/getDirectory.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "file-system-access/getDirectory.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "file-system-access/getDirectory.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "file-system-access/getDirectory.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.https.any.js": [
      "ca3e92061a2a5a09f04c9548d9163bba8f39521d",
      [
