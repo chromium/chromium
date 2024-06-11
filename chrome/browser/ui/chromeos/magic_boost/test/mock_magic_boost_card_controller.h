@@ -17,7 +17,7 @@ class MockMagicBoostCardController : public MagicBoostCardController {
   MockMagicBoostCardController(const MockMagicBoostCardController&) = delete;
   MockMagicBoostCardController& operator=(const MockMagicBoostCardController&) =
       delete;
-  ~MockMagicBoostCardController();
+  ~MockMagicBoostCardController() override;
 
   // chromeos::MahiManager:
   MOCK_METHOD(void, ShowOptInUi, (const gfx::Rect&), (override));

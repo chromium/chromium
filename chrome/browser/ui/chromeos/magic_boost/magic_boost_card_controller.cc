@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -70,6 +71,33 @@ MagicBoostCardController::MagicBoostCardController() {
 }
 
 MagicBoostCardController::~MagicBoostCardController() = default;
+
+void MagicBoostCardController::OnContextMenuShown(Profile* profile) {}
+
+void MagicBoostCardController::OnTextAvailable(
+    const gfx::Rect& anchor_bounds,
+    const std::string& selected_text,
+    const std::string& surrounding_text) {
+  ShowOptInUi(/*anchor_view_bounds=*/anchor_bounds);
+}
+
+void MagicBoostCardController::OnAnchorBoundsChanged(
+    const gfx::Rect& anchor_bounds) {
+  if (!opt_in_widget_ || !opt_in_widget_->GetContentsView()) {
+    return;
+  }
+
+  views::AsViewClass<MagicBoostOptInCard>(opt_in_widget_->GetContentsView())
+      ->UpdateWidgetBounds(/*anchor_view_bounds=*/anchor_bounds);
+}
+
+void MagicBoostCardController::OnDismiss(bool is_other_command_executed) {
+  // If context menu is dismissed and the opt-in widget is active (i.e. keyboard
+  // focus is on a button), we should not close the widget.
+  if (opt_in_widget_ && !opt_in_widget_->IsActive()) {
+    opt_in_widget_.reset();
+  }
+}
 
 void MagicBoostCardController::ShowOptInUi(
     const gfx::Rect& anchor_view_bounds) {

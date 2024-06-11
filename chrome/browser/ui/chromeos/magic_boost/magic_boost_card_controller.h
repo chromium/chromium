@@ -7,8 +7,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "base/no_destructor.h"
+#include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -30,16 +32,26 @@ namespace mahi {
 class MahiPrefsController;
 }  // namespace mahi
 
+class Profile;
+
 namespace chromeos {
 
 // The controller that manages the lifetime of opt-in cards.
 // Some functions in this controller are virtual for testing.
-class MagicBoostCardController {
+class MagicBoostCardController : public ReadWriteCardController {
  public:
   MagicBoostCardController(const MagicBoostCardController&) = delete;
   MagicBoostCardController& operator=(const MagicBoostCardController&) = delete;
 
   static MagicBoostCardController* Get();
+
+  // ReadWriteCardController:
+  void OnContextMenuShown(Profile* profile) override;
+  void OnTextAvailable(const gfx::Rect& anchor_bounds,
+                       const std::string& selected_text,
+                       const std::string& surrounding_text) override;
+  void OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) override;
+  void OnDismiss(bool is_other_command_executed) override;
 
   // Shows/closes Magic Boost opt-in widget.
   virtual void ShowOptInUi(const gfx::Rect& anchor_view_bounds);
@@ -86,7 +98,7 @@ class MagicBoostCardController {
   friend class base::NoDestructor<MagicBoostCardController>;
 
   MagicBoostCardController();
-  ~MagicBoostCardController();
+  ~MagicBoostCardController() override;
 
  private:
   // If Orca feature is included.

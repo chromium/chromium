@@ -51,6 +51,57 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
       &crosapi_controller_};
 };
 
+// Tests the behavior of the controller when `OnTextAvailable()` and
+// `OnDismiss()` are triggered.
+TEST_F(MagicBoostCardControllerTest, OnTextAvailableAndDismiss) {
+  auto* controller = MagicBoostCardController::Get();
+
+  // Initially the opt-in widget is not visible.
+  EXPECT_FALSE(controller->opt_in_widget_for_test());
+
+  // Show the opt-in widget and test that the proper views are set.
+  controller->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                              /*selected_text=*/"",
+                              /*surrounding_text=*/"");
+  auto* opt_in_widget = controller->opt_in_widget_for_test();
+  ASSERT_TRUE(opt_in_widget);
+  EXPECT_TRUE(opt_in_widget->IsVisible());
+  EXPECT_TRUE(views::IsViewClass<MagicBoostOptInCard>(
+      opt_in_widget->GetContentsView()));
+
+  // Test that the opt-in widget is closed on `CloseOptInUI`.
+  controller->OnDismiss(/*is_other_command_executed=*/false);
+  EXPECT_FALSE(controller->opt_in_widget_for_test());
+}
+
+// Tests the behavior of the controller when `OnAnchorBoundsChanged()` is
+// triggered.
+TEST_F(MagicBoostCardControllerTest, BoundsChanged) {
+  auto* controller = MagicBoostCardController::Get();
+
+  EXPECT_FALSE(controller->opt_in_widget_for_test());
+
+  gfx::Rect anchor_bounds = gfx::Rect(50, 50, 25, 100);
+  controller->OnTextAvailable(anchor_bounds,
+                              /*selected_text=*/"",
+                              /*surrounding_text=*/"");
+  auto* widget = controller->opt_in_widget_for_test();
+  EXPECT_TRUE(widget);
+
+  // Correct bounds should be set.
+  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
+                                             widget->GetContentsView()),
+            widget->GetRestoredBounds());
+
+  anchor_bounds = gfx::Rect(0, 50, 55, 80);
+
+  // Widget should change bounds accordingly.
+  controller->OnAnchorBoundsChanged(anchor_bounds);
+  EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
+                                             widget->GetContentsView()),
+            widget->GetRestoredBounds());
+}
+
 TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
   auto* controller = MagicBoostCardController::Get();
 
@@ -68,25 +119,6 @@ TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
           });
 
   controller->ShowDisclaimerUi(expected_display_id, expected_action);
-}
-
-TEST_F(MagicBoostCardControllerTest, OptInUi) {
-  auto* controller = MagicBoostCardController::Get();
-
-  // Initially the opt-in widget is not visible.
-  EXPECT_FALSE(controller->opt_in_widget_for_test());
-
-  // Show the opt-in widget and test that the proper views are set.
-  controller->ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
-  auto* opt_in_widget = controller->opt_in_widget_for_test();
-  ASSERT_TRUE(opt_in_widget);
-  EXPECT_TRUE(opt_in_widget->IsVisible());
-  EXPECT_TRUE(views::IsViewClass<MagicBoostOptInCard>(
-      opt_in_widget->GetContentsView()));
-
-  // Test that the opt-in widget is closed on `CloseOptInUI`.
-  controller->CloseOptInUi();
-  EXPECT_FALSE(controller->opt_in_widget_for_test());
 }
 
 }  // namespace chromeos
