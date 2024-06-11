@@ -34,8 +34,7 @@ class TrackingProtectionOnboarding : public KeyedService {
     kIneligible = 0,
     kEligible = 1,
     kOnboarded = 2,
-    kOffboarded = 3,
-    kMaxValue = kOffboarded,
+    kMaxValue = kOnboarded,
   };
 
   // Enum value interfacing with the TrackingProtectionOnboarding service
@@ -67,8 +66,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kNone,
     // The notice in question is an Onboarding Notice.
     kOnboarding,
-    // The notice in question is an offboarding/rollback notice.
-    kOffboarding,
     // The notice in question is a silent onboarding notice.
     kSilentOnboarding,
   };

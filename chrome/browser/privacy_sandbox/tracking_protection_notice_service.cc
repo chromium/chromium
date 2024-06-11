@@ -60,8 +60,6 @@ void CreateHistogramNoticeServiceEvent(
           "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
           event);
       break;
-    case TrackingProtectionOnboarding::NoticeType::kOffboarding:
-      break;
     case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
       base::UmaHistogramEnumeration(
           "PrivacySandbox.TrackingProtection.SilentOnboarding."
@@ -349,8 +347,6 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
       onboarding_notice_ = std::make_unique<OnboardingNotice>(
           profile_, onboarding_service_, this);
       InitializeTabStripTracker();
-      return;
-    case TrackingProtectionOnboarding::NoticeType::kOffboarding:
       return;
     case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
       silent_onboarding_notice_ = std::make_unique<SilentOnboardingNotice>(

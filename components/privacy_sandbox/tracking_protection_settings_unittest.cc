@@ -309,17 +309,6 @@ TEST_F(TrackingProtectionSettingsTest,
   EXPECT_TRUE(
       tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
   EXPECT_TRUE(tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
-
-  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
-  EXPECT_CALL(observer, OnTrackingProtection3pcdChanged());
-
-  tracking_protection_settings()->OnTrackingProtectionOnboardingUpdated(
-      TrackingProtectionOnboarding::OnboardingStatus::kOffboarded);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-  EXPECT_FALSE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
-  EXPECT_FALSE(
-      tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
 }
 
 TEST_F(TrackingProtectionSettingsTest,

@@ -60,14 +60,6 @@ public class TrackingProtectionModeBOnboardingViewTest {
     }
 
     @Test
-    public void testShowNotice_Offboarding() {
-        when(mTrackingProtectionBridge.getRequiredNotice()).thenReturn(NoticeType.OFFBOARDING);
-        mView.showNotice(
-                mNoticeShownCallback, mNoticeDismissedCallback, mNoticePrimaryActionCallback);
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(true));
-    }
-
-    @Test
     public void testIsNoticeShowing_AfterShow() {
         assertFalse(mView.wasNoticeRequested());
         mView.showNotice(

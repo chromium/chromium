@@ -497,8 +497,6 @@ void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
     case NoticeType::kOnboarding:
       OnboardingNoticeShown();
       return;
-    case NoticeType::kOffboarding:
-      return;
     case NoticeType::kSilentOnboarding:
       SilentOnboardingNoticeShown();
       return;
@@ -548,8 +546,6 @@ void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
       return;
     case NoticeType::kOnboarding:
       OnboardingNoticeActionTaken(action);
-      return;
-    case NoticeType::kOffboarding:
       return;
     case NoticeType::kSilentOnboarding:
       return;

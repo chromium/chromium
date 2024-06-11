@@ -86,8 +86,7 @@ public final class TrackingProtectionNoticeTest {
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(
-                    new ParameterSet().value(NoticeType.ONBOARDING).name("OnboardingNotice"),
-                    new ParameterSet().value(NoticeType.OFFBOARDING).name("OffboardingNotice"));
+                    new ParameterSet().value(NoticeType.ONBOARDING).name("OnboardingNotice"));
         }
     }
 
@@ -111,18 +110,6 @@ public final class TrackingProtectionNoticeTest {
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
 
         renderViewWithId(R.id.message_banner, "tracking_protection_onboarding_notice");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    public void testRenderOffboardingNotice() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.OFFBOARDING);
-
-        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
-        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
-
-        renderViewWithId(R.id.message_banner, "tracking_protection_offboarding_notice");
     }
 
     @Test
@@ -248,26 +235,6 @@ public final class TrackingProtectionNoticeTest {
         // Verify TP Settings page is shown and notice is dismissed.
         onView(withText("Tracking Protections")).check(doesNotExist());
         Espresso.pressBack();
-        onView(withId(R.id.message_banner)).check(doesNotExist());
-    }
-
-    @Test
-    @SmallTest
-    public void testNoticeDismissedWhenLearnMoreClicked() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.OFFBOARDING);
-        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
-
-        // Show the notice.
-        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
-        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
-
-        // Click on learn more.
-        onView(withId(R.id.message_secondary_button)).perform(click());
-        onView(withText("Learn more")).perform(click());
-        assertNoticeShownActionIsRecorded();
-        assertLastAction(NoticeAction.LEARN_MORE);
-
-        // Verify the notice is dismissed.
         onView(withId(R.id.message_banner)).check(doesNotExist());
     }
 
