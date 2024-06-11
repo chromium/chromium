@@ -13,6 +13,9 @@
 namespace {
 // Height and Width of the trailing and the leading image views.
 const CGFloat kImageViewSize = 20.0;
+
+// Padding used between leading image view and label.
+const CGFloat kLeadingImageViewPadding = 20.0;
 }  // namespace
 
 @interface PlusAddressSuggestionLabelCell () {
@@ -90,7 +93,7 @@ const CGFloat kImageViewSize = 20.0;
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       [_textLabel.leadingAnchor
           constraintEqualToAnchor:_leadingImageView.trailingAnchor
-                         constant:kTableViewImagePadding],
+                         constant:kLeadingImageViewPadding],
       [_textLabel.trailingAnchor
           constraintEqualToAnchor:_trailingButtonView.leadingAnchor
                          constant:-kTableViewImagePadding],
