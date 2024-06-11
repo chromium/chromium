@@ -900,7 +900,7 @@ class ContainerRewriter {
       OutputHelper& output_helper,
       std::map<std::string, std::set<Node>>& sig_nodes,
       std::vector<std::pair<std::string, std::string>>& sig_pairs,
-      const FilterFile* excluded_paths)
+      const raw_ptr_plugin::FilterFile* excluded_paths)
       : match_finder_(finder),
         affected_ptr_expr_rewriter_(output_helper),
         potentail_nodes_(output_helper),
@@ -930,9 +930,10 @@ class ContainerRewriter {
 
     auto tst_type_loc = templateSpecializationTypeLoc(
         loc(qualType(supported_containers)),
-        hasTemplateArgumentLoc(0, hasTypeLoc(loc(qualType(allOf(
-                                      supported_pointer_type(),
-                                      unless(const_char_pointer_type())))))));
+        hasTemplateArgumentLoc(
+            0, hasTypeLoc(loc(qualType(allOf(
+                   raw_ptr_plugin::supported_pointer_type(),
+                   unless(raw_ptr_plugin::const_char_pointer_type(false))))))));
 
     auto lhs_location =
         templateSpecializationTypeLoc(
@@ -957,15 +958,17 @@ class ContainerRewriter {
                                             hasName("base::OnceCallback")))))));
 
     auto field_exclusions =
-        anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-              isInThirdPartyLocation(), isInGeneratedLocation(),
-              ImplicitFieldDeclaration(), exclude_callbacks,
+        anyOf(isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
+              raw_ptr_plugin::isInThirdPartyLocation(),
+              raw_ptr_plugin::isInGeneratedLocation(),
+              raw_ptr_plugin::ImplicitFieldDeclaration(), exclude_callbacks,
               // Exclude fieldDecls in macros.
-              // `isInMacroLocation()` is also true for fields annotated with
-              // RAW_PTR_EXCLUSION. The annotated fields are not included in
-              // `field_exclusions` as they are handled differently by the
-              // `excluded_field_decl` matcher.
-              allOf(isInMacroLocation(), unless(isRawPtrExclusionAnnotated())));
+              // `raw_ptr_plugin::isInMacroLocation()` is also true for fields
+              // annotated with RAW_PTR_EXCLUSION. The annotated fields are not
+              // included in `field_exclusions` as they are handled differently
+              // by the `excluded_field_decl` matcher.
+              allOf(raw_ptr_plugin::isInMacroLocation(),
+                    unless(raw_ptr_plugin::isRawPtrExclusionAnnotated())));
 
     // Supports typedefs as well.
     auto lhs_type_loc =
@@ -980,10 +983,12 @@ class ContainerRewriter {
               hasDescendant(rhs_location));
 
     auto lhs_field =
-        fieldDecl(hasExplicitFieldDecl(lhs_type_loc), unless(field_exclusions))
+        fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(lhs_type_loc),
+                  unless(field_exclusions))
             .bind("lhs_field");
     auto rhs_field =
-        fieldDecl(hasExplicitFieldDecl(rhs_type_loc), unless(field_exclusions))
+        fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(rhs_type_loc),
+                  unless(field_exclusions))
             .bind("rhs_field");
 
     auto lhs_var = anyOf(
@@ -995,10 +1000,12 @@ class ContainerRewriter {
         varDecl(rhs_type_loc).bind("rhs_var"));
 
     auto lhs_param =
-        parmVarDecl(hasExplicitParmVarDecl(lhs_type_loc)).bind("lhs_param");
+        parmVarDecl(raw_ptr_plugin::hasExplicitParmVarDecl(lhs_type_loc))
+            .bind("lhs_param");
 
     auto rhs_param =
-        parmVarDecl(hasExplicitParmVarDecl(rhs_type_loc)).bind("rhs_param");
+        parmVarDecl(raw_ptr_plugin::hasExplicitParmVarDecl(rhs_type_loc))
+            .bind("rhs_param");
 
     auto rhs_call_expr =
         callExpr(callee(functionDecl(hasReturnTypeLoc(rhs_type_loc))));
@@ -1017,8 +1024,9 @@ class ContainerRewriter {
     // To make sure we add all field decls to the graph.(Specifically those not
     // connected to other nodes)
     auto field_decl =
-        fieldDecl(hasExplicitFieldDecl(lhs_type_loc),
-                  unless(anyOf(field_exclusions, isRawPtrExclusionAnnotated())))
+        fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(lhs_type_loc),
+                  unless(anyOf(field_exclusions,
+                               raw_ptr_plugin::isRawPtrExclusionAnnotated())))
             .bind("field_decl");
     match_finder_.addMatcher(field_decl, &potentail_nodes_);
 
@@ -1030,8 +1038,8 @@ class ContainerRewriter {
     // used as a starting point to propagate the exclusion before running dfs on
     // the graph.
     auto excluded_field_decl =
-        fieldDecl(hasExplicitFieldDecl(lhs_type_loc),
-                  anyOf(isRawPtrExclusionAnnotated(),
+        fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(lhs_type_loc),
+                  anyOf(raw_ptr_plugin::isRawPtrExclusionAnnotated(),
                         isInLocationListedInFilterFile(paths_to_exclude)))
             .bind("excluded_field_decl");
     match_finder_.addMatcher(excluded_field_decl, &potentail_nodes_);
@@ -1292,7 +1300,7 @@ class ContainerRewriter {
     // This creates a link between the expr and the underlying field.
     auto var_passed_in_initlistExpr = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        initListExpr(forEachInitExprWithFieldDecl(
+        initListExpr(raw_ptr_plugin::forEachInitExprWithFieldDecl(
             expr(anyOf(
                 rhs_expr_variations,
                 conditionalOperator(hasTrueExpression(rhs_expr_variations)))),
@@ -1358,17 +1366,17 @@ class ContainerRewriter {
     // This is problematic in the case of callbacks defined in function.
     auto fct_decls_params = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        functionDecl(
-            forEachParmVarDecl(rhs_param),
-            unless(anyOf(isExpansionInSystemHeader(), isInMacroLocation())))
+        functionDecl(forEachParmVarDecl(rhs_param),
+                     unless(anyOf(isExpansionInSystemHeader(),
+                                  raw_ptr_plugin::isInMacroLocation())))
             .bind("fct_decl"));
     match_finder_.addMatcher(fct_decls_params, &fct_sig_nodes_);
 
     auto fct_decls_returns = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        functionDecl(
-            hasReturnTypeLoc(rhs_type_loc),
-            unless(anyOf(isExpansionInSystemHeader(), isInMacroLocation())))
+        functionDecl(hasReturnTypeLoc(rhs_type_loc),
+                     unless(anyOf(isExpansionInSystemHeader(),
+                                  raw_ptr_plugin::isInMacroLocation())))
             .bind("fct_decl"));
     match_finder_.addMatcher(fct_decls_returns, &fct_sig_nodes_);
 
@@ -1377,7 +1385,7 @@ class ContainerRewriter {
         templateSpecializationTypeLoc(
             rhs_location,
             hasAncestor(
-                cxxMethodDecl(isInMacroLocation(),
+                cxxMethodDecl(raw_ptr_plugin::isInMacroLocation(),
                               anyOf(isExpandedFromMacro("MOCK_METHOD"),
                                     isExpandedFromMacro("MOCK_METHOD0"),
                                     isExpandedFromMacro("MOCK_METHOD1"),
@@ -1413,7 +1421,7 @@ class ContainerRewriter {
   AffectedPtrExprRewriter affected_ptr_expr_rewriter_;
   PotentialNodes potentail_nodes_;
   FunctionSignatureNodes fct_sig_nodes_;
-  const FilterFile* paths_to_exclude;
+  const raw_ptr_plugin::FilterFile* paths_to_exclude;
 };
 
 }  // namespace
@@ -1435,7 +1443,7 @@ int main(int argc, const char* argv[]) {
   clang::tooling::ClangTool tool(options->getCompilations(),
                                  options->getSourcePathList());
 
-  std::unique_ptr<FilterFile> paths_to_exclude;
+  std::unique_ptr<raw_ptr_plugin::FilterFile> paths_to_exclude;
   if (override_exclude_paths_param.getValue().empty()) {
     std::vector<std::string> paths_to_exclude_lines;
     for (auto* const line : kRawPtrManualPathsToIgnore) {
@@ -1444,11 +1452,12 @@ int main(int argc, const char* argv[]) {
     for (auto* const line : kSeparateRepositoryPaths) {
       paths_to_exclude_lines.push_back(line);
     }
-    paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
-  } else {
     paths_to_exclude =
-        std::make_unique<FilterFile>(override_exclude_paths_param,
-                                     override_exclude_paths_param.ArgStr.str());
+        std::make_unique<raw_ptr_plugin::FilterFile>(paths_to_exclude_lines);
+  } else {
+    paths_to_exclude = std::make_unique<raw_ptr_plugin::FilterFile>(
+        override_exclude_paths_param,
+        override_exclude_paths_param.ArgStr.str());
   }
 
   // Map a function signature, which is modeled as a string representing file

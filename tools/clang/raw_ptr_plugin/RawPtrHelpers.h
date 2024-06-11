@@ -490,7 +490,8 @@ AST_MATCHER_P(clang::CastExpr,
 clang::ast_matchers::internal::Matcher<clang::Type> supported_pointer_type();
 
 // Matches const char pointers.
-clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type();
+clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type(
+    bool should_rewrite_non_string_literals);
 
 // These represent the common conditions to skip the rewrite for reference and
 // pointer decls. This includes decls that are:

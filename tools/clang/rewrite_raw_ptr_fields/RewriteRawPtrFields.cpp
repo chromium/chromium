@@ -81,7 +81,7 @@ const char kRawSpanIncludePath[] = "base/memory/raw_span.h";
 //
 // See also:
 // - OutputSectionHelper
-// - FilterFile
+// - raw_ptr_plugin::FilterFile
 const char kExcludeFieldsParamName[] = "exclude-fields";
 
 // Name of a cmdline parameter that can be used to specify a file listing
@@ -112,7 +112,7 @@ const char kOverrideExcludePathsParamName[] = "override-exclude-paths";
 // changes).
 //
 // See also:
-// - FilterFile
+// - raw_ptr_plugin::FilterFile
 // - OutputHelper
 class OutputSectionHelper {
  public:
@@ -406,8 +406,9 @@ AST_MATCHER_P(clang::QualType,
     return false;
 
   if (const clang::CXXRecordDecl* record_decl = type->getAsCXXRecordDecl()) {
-    auto matcher = recordDecl(forEach(fieldDecl(hasExplicitFieldDecl(anyOf(
-        InnerMatcher, hasType(typeWithEmbeddedFieldDecl(InnerMatcher)))))));
+    auto matcher =
+        recordDecl(forEach(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(anyOf(
+            InnerMatcher, hasType(typeWithEmbeddedFieldDecl(InnerMatcher)))))));
     return matcher.matches(*record_decl, Finder, Builder);
   }
 
@@ -569,9 +570,10 @@ class FilteredExprWriter : public MatchFinder::MatchCallback {
 
 class RawPtrRewriter {
  public:
-  RawPtrRewriter(OutputHelper* output_helper,
-                 MatchFinder& finder,
-                 const RawPtrAndRefExclusionsOptions& exclusion_options)
+  RawPtrRewriter(
+      OutputHelper* output_helper,
+      MatchFinder& finder,
+      const raw_ptr_plugin::RawPtrAndRefExclusionsOptions& exclusion_options)
       : match_finder(finder),
         field_decl_rewriter(output_helper, "raw_ptr<{0}> ", kRawPtrIncludePath),
         affected_expr_rewriter(output_helper, getRangeAndText_),
@@ -602,7 +604,8 @@ class RawPtrRewriter {
     //   additional work and should cause related fields to be emitted as
     //   candidates for the --field-filter-file parameter.
     auto affected_member_expr_matcher =
-        memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))
+        memberExpr(member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                       field_decl_matcher))))
             .bind("affectedMemberExpr");
     auto affected_expr_matcher = ignoringImplicit(affected_member_expr_matcher);
 
@@ -750,9 +753,10 @@ class RawPtrRewriter {
     //
     // See also the testcases in tests/gen-in-out-arg-test.cc.
     auto affected_in_out_ref_arg_matcher = callExpr(forEachArgumentWithParam(
-        affected_expr_matcher, hasExplicitParmVarDecl(hasType(qualType(
-                                   allOf(referenceType(pointee(pointerType())),
-                                         unless(rValueReferenceType())))))));
+        affected_expr_matcher,
+        raw_ptr_plugin::hasExplicitParmVarDecl(
+            hasType(qualType(allOf(referenceType(pointee(pointerType())),
+                                   unless(rValueReferenceType())))))));
 
     match_finder.addMatcher(affected_in_out_ref_arg_matcher,
                             &filtered_in_out_ref_arg_writer);
@@ -767,8 +771,8 @@ class RawPtrRewriter {
 
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
-    auto macro_field_decl_matcher =
-        fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
+    auto macro_field_decl_matcher = fieldDecl(
+        allOf(field_decl_matcher, raw_ptr_plugin::isInMacroLocation()));
 
     match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
 
@@ -783,7 +787,7 @@ class RawPtrRewriter {
     // safe usage of union (i.e. doesn't cause ref count mismatch), such as
     // std::optional and absl::variant.
     files_with_audited_unions =
-        std::make_unique<FilterFile>(std::vector<std::string>{
+        std::make_unique<raw_ptr_plugin::FilterFile>(std::vector<std::string>{
             "third_party/libc++/src/include/optional",
             "third_party/abseil-cpp/absl/types/internal/variant.h",
         });
@@ -855,15 +859,16 @@ class RawPtrRewriter {
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter union_field_decl_writer;
   FilteredExprWriter reinterpret_cast_struct_writer;
-  std::unique_ptr<FilterFile> files_with_audited_unions;
-  const RawPtrAndRefExclusionsOptions exclusion_options_;
+  std::unique_ptr<raw_ptr_plugin::FilterFile> files_with_audited_unions;
+  const raw_ptr_plugin::RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
 class RawRefRewriter {
  public:
-  RawRefRewriter(OutputHelper* output_helper,
-                 MatchFinder& finder,
-                 const RawPtrAndRefExclusionsOptions& exclusion_options)
+  RawRefRewriter(
+      OutputHelper* output_helper,
+      MatchFinder& finder,
+      const raw_ptr_plugin::RawPtrAndRefExclusionsOptions& exclusion_options)
       : match_finder(finder),
         field_decl_rewriter(output_helper,
                             "const raw_ref<{0}> ",
@@ -890,13 +895,15 @@ class RawRefRewriter {
     // should be rewritten as |someClass.ref_field->sub_member| as we can't
     // overload `operator.` in C++.
     auto affected_member_expr_operator_matcher =
-        expr(
-            anyOf(memberExpr(has(memberExpr(member(
-                      fieldDecl(hasExplicitFieldDecl(field_decl_matcher)))))),
-                  memberExpr(has(implicitCastExpr(has(memberExpr(member(
-                      fieldDecl(hasExplicitFieldDecl(field_decl_matcher)))))))),
-                  cxxDependentScopeMemberExpr(has(memberExpr(member(
-                      fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))))
+        expr(anyOf(memberExpr(has(memberExpr(
+                       member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                           field_decl_matcher)))))),
+                   memberExpr(has(implicitCastExpr(has(memberExpr(
+                       member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                           field_decl_matcher)))))))),
+                   cxxDependentScopeMemberExpr(has(memberExpr(
+                       member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                           field_decl_matcher))))))))
             .bind("affectedMemberExprOperator");
 
     match_finder.addMatcher(affected_member_expr_operator_matcher,
@@ -906,43 +913,46 @@ class RawRefRewriter {
     // became |const raw_ref<SomeType>| after the rewrite.
     auto affected_member_expr = memberExpr(
         memberExpr(
-            member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))),
-            unless(anyOf(
-                hasParent(memberExpr()),
-                hasParent(implicitCastExpr(hasParent(memberExpr()))),
-                hasParent(cxxDependentScopeMemberExpr()),
-                hasParent(varDecl(unless(
-                    anyOf(hasType(referenceType(pointee(autoType()))),
+            member(fieldDecl(
+                raw_ptr_plugin::hasExplicitFieldDecl(field_decl_matcher))),
+            unless(
+                anyOf(hasParent(memberExpr()),
+                      hasParent(implicitCastExpr(hasParent(memberExpr()))),
+                      hasParent(cxxDependentScopeMemberExpr()),
+                      hasParent(varDecl(unless(anyOf(
+                          hasType(referenceType(pointee(autoType()))),
                           hasParent(declStmt(hasParent(cxxForRangeStmt()))))))),
-                hasAncestor(cxxConstructorDecl(isDefaulted())),
-                hasParent(cxxOperatorCallExpr()),
-                hasParent(unaryOperator(
-                    anyOf(hasOperatorName("--"), hasOperatorName("++")))),
-                hasParent(arraySubscriptExpr()),
-                hasParent(callExpr(callee(
-                    fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))))
+                      hasAncestor(cxxConstructorDecl(isDefaulted())),
+                      hasParent(cxxOperatorCallExpr()),
+                      hasParent(unaryOperator(
+                          anyOf(hasOperatorName("--"), hasOperatorName("++")))),
+                      hasParent(arraySubscriptExpr()),
+                      hasParent(callExpr(
+                          callee(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                              field_decl_matcher))))))))
             .bind("affectedMemberExpr"),
 
         unless(anyOf(
             // Exclude memberExpressions appearing inside a constructor
             // initializer of a reference field where we should NOT add
             // operator*.
-            hasParent(cxxConstructorDecl(hasAnyConstructorInitializer(allOf(
-                withInitializer(
-                    memberExpr(equalsBoundNode("affectedMemberExpr"))),
-                forField(
-                    fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))),
+            hasParent(cxxConstructorDecl(hasAnyConstructorInitializer(
+                allOf(withInitializer(
+                          memberExpr(equalsBoundNode("affectedMemberExpr"))),
+                      forField(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                          field_decl_matcher))))))),
             // Exclude memberExpressions, in initializer lists, that are
             // initializing a reference field that will be rewritten into
             // raw_ref.
-            hasParent(initListExpr(forEachInitExprWithFieldDecl(
+            hasParent(initListExpr(raw_ptr_plugin::forEachInitExprWithFieldDecl(
                 memberExpr(equalsBoundNode("affectedMemberExpr")),
-                hasExplicitFieldDecl(field_decl_matcher)))))));
+                raw_ptr_plugin::hasExplicitFieldDecl(field_decl_matcher)))))));
 
     match_finder.addMatcher(affected_member_expr, &affected_expr_rewriter);
 
     auto affected_member_expr_matcher =
-        memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))
+        memberExpr(member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                       field_decl_matcher))))
             .bind("affectedMemberExpr");
 
     // Calls to constructors via an implicit cast =========
@@ -983,13 +993,15 @@ class RawRefRewriter {
 
     // Matches affected member expressions that need parenthesization.
     auto affected_member_expr_with_parentheses =
-        memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))),
+        memberExpr(member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                       field_decl_matcher))),
                    anyOf(hasParent(cxxOperatorCallExpr()),
                          hasParent(unaryOperator(anyOf(hasOperatorName("--"),
                                                        hasOperatorName("++")))),
                          hasParent(arraySubscriptExpr()),
-                         hasParent(callExpr(callee(fieldDecl(
-                             hasExplicitFieldDecl(field_decl_matcher)))))))
+                         hasParent(callExpr(callee(
+                             fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                                 field_decl_matcher)))))))
             .bind("affectedMemberExprWithParentheses");
 
     match_finder.addMatcher(affected_member_expr_with_parentheses,
@@ -1003,15 +1015,16 @@ class RawRefRewriter {
     // int num = x;
     // A a{num}; => A a{raw_ref(num)};
     auto init_list_expr_with_raw_ref = initListExpr(
-        forEachInitExprWithFieldDecl(
+        raw_ptr_plugin::forEachInitExprWithFieldDecl(
             expr(unless(anyOf(
                      materializeTemporaryExpr(),
                      // Exclude member expressions where the member is a
                      // reference field that will be rewritten into raw_ref.
-                     memberExpr(member(fieldDecl(
-                         hasExplicitFieldDecl(field_decl_matcher)))))))
+                     memberExpr(
+                         member(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
+                             field_decl_matcher)))))))
                 .bind("initializer_expr"),
-            hasExplicitFieldDecl(field_decl_matcher)),
+            raw_ptr_plugin::hasExplicitFieldDecl(field_decl_matcher)),
         unless(hasParent(cxxConstructExpr())));
 
     match_finder.addMatcher(init_list_expr_with_raw_ref,
@@ -1027,8 +1040,8 @@ class RawRefRewriter {
 
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
-    auto macro_field_decl_matcher =
-        fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
+    auto macro_field_decl_matcher = fieldDecl(
+        allOf(field_decl_matcher, raw_ptr_plugin::isInMacroLocation()));
 
     match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
 
@@ -1168,7 +1181,7 @@ class RawRefRewriter {
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter overlapping_field_decl_writer;
   FilteredExprWriter macro_field_decl_writer;
-  const RawPtrAndRefExclusionsOptions exclusion_options_;
+  const raw_ptr_plugin::RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
 class SpanFieldDeclRewriter : public MatchFinder::MatchCallback {
@@ -1330,9 +1343,10 @@ class SpanFieldDeclRewriter : public MatchFinder::MatchCallback {
 
 class SpanRewriter {
  public:
-  SpanRewriter(OutputHelper* output_helper,
-               MatchFinder& finder,
-               const RawPtrAndRefExclusionsOptions& exclusion_options)
+  SpanRewriter(
+      OutputHelper* output_helper,
+      MatchFinder& finder,
+      const raw_ptr_plugin::RawPtrAndRefExclusionsOptions& exclusion_options)
       : match_finder(finder),
         field_decl_rewriter(output_helper, kRawSpanIncludePath),
         global_scope_rewriter(output_helper, "global-scope"),
@@ -1426,8 +1440,8 @@ class SpanRewriter {
 
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
-    auto macro_field_decl_matcher =
-        fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
+    auto macro_field_decl_matcher = fieldDecl(
+        allOf(field_decl_matcher, raw_ptr_plugin::isInMacroLocation()));
 
     match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
   }
@@ -1438,7 +1452,7 @@ class SpanRewriter {
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter overlapping_field_decl_writer;
   FilteredExprWriter macro_field_decl_writer;
-  const RawPtrAndRefExclusionsOptions exclusion_options_;
+  const raw_ptr_plugin::RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
 }  // namespace
@@ -1483,10 +1497,10 @@ int main(int argc, const char* argv[]) {
       !enable_raw_ref_rewrite && !enable_raw_ptr_rewrite;
   MatchFinder match_finder;
   OutputHelper output_helper;
-  FilterFile fields_to_exclude(exclude_fields_param,
-                               exclude_fields_param.ArgStr.str());
+  raw_ptr_plugin::FilterFile fields_to_exclude(
+      exclude_fields_param, exclude_fields_param.ArgStr.str());
 
-  std::unique_ptr<FilterFile> paths_to_exclude;
+  std::unique_ptr<raw_ptr_plugin::FilterFile> paths_to_exclude;
   if (override_exclude_paths_param == "") {
     std::vector<std::string> paths_to_exclude_lines;
     for (auto* const line : kRawPtrManualPathsToIgnore) {
@@ -1495,15 +1509,16 @@ int main(int argc, const char* argv[]) {
     for (auto* const line : kSeparateRepositoryPaths) {
       paths_to_exclude_lines.push_back(line);
     }
-    paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
-  } else {
     paths_to_exclude =
-        std::make_unique<FilterFile>(override_exclude_paths_param,
-                                     override_exclude_paths_param.ArgStr.str());
+        std::make_unique<raw_ptr_plugin::FilterFile>(paths_to_exclude_lines);
+  } else {
+    paths_to_exclude = std::make_unique<raw_ptr_plugin::FilterFile>(
+        override_exclude_paths_param,
+        override_exclude_paths_param.ArgStr.str());
   }
 
-  chrome_checker::StackAllocatedPredicate stack_allocated_checker;
-  RawPtrAndRefExclusionsOptions exclusion_options{
+  raw_ptr_plugin::StackAllocatedPredicate stack_allocated_checker;
+  raw_ptr_plugin::RawPtrAndRefExclusionsOptions exclusion_options{
       &fields_to_exclude, paths_to_exclude.get(), exclude_stack_allocated,
       &stack_allocated_checker, true};
 
