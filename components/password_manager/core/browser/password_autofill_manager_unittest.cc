@@ -57,6 +57,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -444,8 +445,11 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
                   autofill::SuggestionType::kPasswordEntry,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
-  EXPECT_TRUE(
-      AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
+  EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
+      open_args.suggestions[0].custom_icon));
+  EXPECT_TRUE(AreImagesEqual(
+      absl::get<gfx::Image>(open_args.suggestions[0].custom_icon),
+      kTestFavicon));
 
   EXPECT_CALL(*client.mock_driver(),
               FillSuggestion(test_username_, test_password_));
@@ -501,10 +505,16 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::SuggestionType::kAccountStoragePasswordEntry,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
-  EXPECT_TRUE(
-      AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
-  EXPECT_TRUE(
-      AreImagesEqual(open_args.suggestions[1].custom_icon, kTestFavicon));
+  EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
+      open_args.suggestions[0].custom_icon));
+  EXPECT_TRUE(AreImagesEqual(
+      absl::get<gfx::Image>(open_args.suggestions[0].custom_icon),
+      kTestFavicon));
+  EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
+      open_args.suggestions[1].custom_icon));
+  EXPECT_TRUE(AreImagesEqual(
+      absl::get<gfx::Image>(open_args.suggestions[1].custom_icon),
+      kTestFavicon));
 
   // When selecting the account-stored credential, make sure the filled
   // password belongs to the selected credential (and not to the first match).
@@ -1794,8 +1804,11 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
-  EXPECT_TRUE(
-      AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
+  EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
+      open_args.suggestions[0].custom_icon));
+  EXPECT_TRUE(AreImagesEqual(
+      absl::get<gfx::Image>(open_args.suggestions[0].custom_icon),
+      kTestFavicon));
   ASSERT_EQ(open_args.suggestions[0].labels.size(), 1U);
   ASSERT_EQ(open_args.suggestions[0].labels[0].size(), 1U);
   EXPECT_EQ(open_args.suggestions[0].labels[0][0].value,
@@ -1952,8 +1965,11 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
                   autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
-  EXPECT_TRUE(
-      AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
+  EXPECT_TRUE(absl::holds_alternative<gfx::Image>(
+      open_args.suggestions[0].custom_icon));
+  EXPECT_TRUE(AreImagesEqual(
+      absl::get<gfx::Image>(open_args.suggestions[0].custom_icon),
+      kTestFavicon));
 }
 
 // Regression test for crbug.com/1362742.

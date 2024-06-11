@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -325,9 +326,10 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     return std::make_unique<views::ImageView>(image_model.value());
   };
 
-  if (!suggestion.custom_icon.IsEmpty()) {
+  if (auto* icon = absl::get_if<gfx::Image>(&suggestion.custom_icon);
+      icon && !icon->IsEmpty()) {
     std::optional<ui::ImageModel> image_model =
-        ImageModelFromImageSkia(suggestion.custom_icon.AsImageSkia());
+        ImageModelFromImageSkia(icon->AsImageSkia());
     return convert_to_image_view_lambda(image_model);
   }
   std::unique_ptr<views::ImageView> icon_image_view =

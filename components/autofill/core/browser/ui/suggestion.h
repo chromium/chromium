@@ -47,6 +47,7 @@ struct Suggestion {
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload =
       absl::variant<BackendId, GURL, ValueToFill, PasswordSuggestionDetails>;
+  using FaviconDomainUrl = base::StrongAlias<class FaviconDomainURLTag, GURL>;
 
   // The text information shown on the UI layer for a Suggestion.
   struct Text {
@@ -222,8 +223,12 @@ struct Suggestion {
   // display is enabled.
   std::u16string additional_label;
 
-  // Contains an image to display for the suggestion.
-  gfx::Image custom_icon;
+  // Custom image that overrides the `Suggestion::icon` on the UI. Can be
+  // defined as an image instance or as a URL to get the favicon from.
+  // The latter is used for manually triggered password suggestions only.
+  // While the favicon loads, the icon from `Suggestion::icon` will be used as
+  // a placeholder.
+  absl::variant<gfx::Image, FaviconDomainUrl> custom_icon;
 
   // The children of this suggestion. If present, the autofill popup will have
   // submenus.
@@ -231,6 +236,7 @@ struct Suggestion {
 #if BUILDFLAG(IS_ANDROID)
   // The url for the custom icon. This is used by android to fetch the image as
   // android does not support gfx::Image directly.
+  // TODO(crbug.com/325246516): Merge with `custom_icon`.
   GURL custom_icon_url;
 
   // On Android, the icon can be at the start of the suggestion before the label

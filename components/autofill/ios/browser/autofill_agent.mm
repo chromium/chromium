@@ -75,8 +75,10 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "third_party/abseil-cpp/absl/types/variant.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
+#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
 using autofill::AutofillJavaScriptFeature;
@@ -1102,8 +1104,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // If available, the custom icon for the card is preferred over the
   // generic network icon. The network icon may also be missing, in
   // which case we do not set an icon at all.
-  if (!popup_suggestion.custom_icon.IsEmpty()) {
-    UIImage* icon = popup_suggestion.custom_icon.ToUIImage();
+  if (auto* custom_icon =
+          absl::get_if<gfx::Image>(&popup_suggestion.custom_icon);
+      custom_icon && !custom_icon->IsEmpty()) {
+    UIImage* icon = custom_icon->ToUIImage();
 
     // On iOS, the keyboard accessory wants smaller icons than the default
     // 40x24 size, so we resize them to 32x20, if the provided icon is

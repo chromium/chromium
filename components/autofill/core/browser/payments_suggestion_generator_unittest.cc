@@ -43,6 +43,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -241,7 +242,9 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
     return suggestion.custom_icon_url == expected_url;
 #else
-    return AreImagesEqual(suggestion.custom_icon, expected_image);
+    CHECK(absl::holds_alternative<gfx::Image>(suggestion.custom_icon));
+    return AreImagesEqual(absl::get<gfx::Image>(suggestion.custom_icon),
+                          expected_image);
 #endif
   }
 

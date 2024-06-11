@@ -280,6 +280,7 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
         credential.password, base::UTF8ToUTF16(kDisplaySingonRealm),
         is_cross_origin.value());
     suggestion.is_acceptable = on_password_form.value();
+    suggestion.custom_icon = Suggestion::FaviconDomainUrl(domain_info.url);
 
     if (!replaced) {
       AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
