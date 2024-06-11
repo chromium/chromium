@@ -319,6 +319,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.3 -> 4.5.4"
 notes = "Minimal diff - only module naming/nesting-related changes."
 
+[[audits.clap]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.4 -> 4.5.7"
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -355,6 +360,11 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.1 -> 4.5.2"
 notes = "Reviewed in https://crrev.com/c/5362201"
+
+[[audits.clap_builder]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.2 -> 4.5.7"
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
