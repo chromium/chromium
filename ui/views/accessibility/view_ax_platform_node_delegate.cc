@@ -706,7 +706,7 @@ gfx::RectF ViewAXPlatformNodeDelegate::RelativeToContainerBounds(
   gfx::RectF relative_bounds = bounds;
   relative_bounds.Offset(scroll_x, 0);
 
-  gfx::RectF container_bounds = data_.relative_bounds.bounds;
+  gfx::RectF container_bounds = gfx::RectF(view()->GetBoundsInScreen());
   container_bounds.set_origin(gfx::PointF());
   gfx::RectF intersection = relative_bounds;
   intersection.Intersect(container_bounds);

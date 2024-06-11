@@ -68,6 +68,9 @@ void AXViewObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   ViewAccessibility& view_accessibility = view_->GetViewAccessibility();
   view_accessibility.GetAccessibleNodeData(out_node_data);
 
+  out_node_data->relative_bounds.bounds =
+      gfx::RectF(view_->GetBoundsInScreen());
+
   if (view_accessibility.GetNextWindowFocus()) {
     out_node_data->AddIntAttribute(
         ax::mojom::IntAttribute::kNextWindowFocusId,

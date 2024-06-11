@@ -188,7 +188,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
   }
 
-  data->relative_bounds.bounds = gfx::RectF(view_->GetBoundsInScreen());
+  data->relative_bounds.bounds = gfx::RectF(view_->bounds());
 
   DCHECK(!data->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
       << "Please annotate child tree ids using "
