@@ -4165,9 +4165,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARK_TOOLBAR_SEARCH_TITLE" desc="Toolbar search title [CHAR_LIMIT=32]">
         Search
       </message>
-      <message name="IDS_BOOKMARK_NO_RESULT" desc="Text explaining that no bookmarks are found to match a search query">
-        Can’t find that bookmark. Check your spelling or add a new bookmark.
-      </message>
       <message name="IDS_EDIT_BOOKMARK" desc='The string prompting the user to edit the content of a bookmark. [CHAR_LIMIT=30]'>
         Edit bookmark
       </message>

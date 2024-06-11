@@ -10,8 +10,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -32,7 +34,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -53,7 +54,6 @@ import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -221,32 +221,8 @@ class BookmarkManagerMediator
                     setBookmarks(
                             mBookmarkQueryHandler.buildBookmarkListForParent(
                                     getCurrentFolderId(), mCurrentPowerFilter));
-                    updateEmptyViewText();
                     setSearchTextAndUpdateButtonVisibility("");
                     clearSearchBoxFocus();
-                }
-
-                private void updateEmptyViewText() {
-                    assert getCurrentFolderId() != null;
-                    if (getCurrentFolderId().getType() == BookmarkType.READING_LIST) {
-                        TrackerFactory.getTrackerForProfile(mProfile)
-                                .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
-                        getSelectableListLayout()
-                                .setEmptyStateImageRes(
-                                        R.drawable.reading_list_empty_state_illustration);
-                        getSelectableListLayout()
-                                .setEmptyStateViewText(
-                                        R.string.reading_list_manager_empty_state,
-                                        R.string.reading_list_manager_save_page_to_read_later);
-                    } else {
-                        getSelectableListLayout()
-                                .setEmptyStateImageRes(
-                                        R.drawable.bookmark_empty_state_illustration);
-                        getSelectableListLayout()
-                                .setEmptyStateViewText(
-                                        R.string.bookmark_manager_empty_state,
-                                        R.string.bookmark_manager_back_to_page_by_adding_bookmark);
-                    }
                 }
             };
 
@@ -751,7 +727,6 @@ class BookmarkManagerMediator
     @Override
     public void openSearchUi() {
         onSearchTextChangeCallback("");
-        mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
     }
 
     @Override
@@ -799,8 +774,6 @@ class BookmarkManagerMediator
     // Actual interface implemented in BookmarkManager(Coordinator).
 
     void onEndSearch() {
-        mSelectableListLayout.onEndSearch();
-
         // Pop the search state off the stack.
         mStateStack.pop();
 
@@ -1000,6 +973,12 @@ class BookmarkManagerMediator
 
         for (BookmarkListEntry bookmarkListEntry : bookmarkListEntryList) {
             updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
+        }
+
+        // Only show the empty state if there's only a searchbox.
+        boolean listIsEmpty = index == 1;
+        if (listIsEmpty) {
+            updateOrAdd(index++, buildEmptyStateListItem());
         }
 
         if (mModelList.size() == 0 && index == 0) {
@@ -1248,6 +1227,31 @@ class BookmarkManagerMediator
                         .build();
         updateSearchBoxShoppingFilterVisibility(propertyModel);
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
+    }
+
+    private ListItem buildEmptyStateListItem() {
+        BookmarkId currentParent = getCurrentFolderId();
+
+        @StringRes int titleRes = R.string.bookmark_manager_empty_state;
+        @StringRes int subtitleRes = R.string.bookmark_manager_back_to_page_by_adding_bookmark;
+        @DrawableRes int imageRes = R.drawable.bookmark_empty_state_illustration;
+        // The currentParent will be null when searching. In this case, fallback to the regular
+        // bookmarks empty state.
+        if (currentParent != null && currentParent.getType() == BookmarkType.READING_LIST) {
+            titleRes = R.string.reading_list_manager_empty_state;
+            subtitleRes = R.string.reading_list_manager_save_page_to_read_later;
+            imageRes = R.drawable.reading_list_empty_state_illustration;
+        }
+
+        PropertyModel model =
+                new PropertyModel.Builder(BookmarkManagerEmptyStateProperties.ALL_KEYS)
+                        .with(BookmarkManagerEmptyStateProperties.EMPTY_STATE_TITLE_RES, titleRes)
+                        .with(
+                                BookmarkManagerEmptyStateProperties.EMPTY_STATE_DESCRIPTION_RES,
+                                subtitleRes)
+                        .with(BookmarkManagerEmptyStateProperties.EMPTY_STATE_IMAGE_RES, imageRes)
+                        .build();
+        return new ListItem(ViewType.EMPTY_STATE, model);
     }
 
     private ListItem buildBookmarkListItem(BookmarkListEntry bookmarkListEntry) {
