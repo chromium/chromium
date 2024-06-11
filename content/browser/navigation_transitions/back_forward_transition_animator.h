@@ -113,6 +113,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // `WebContentsObserver`:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // `RenderWidgetHostObserver`:
@@ -276,11 +277,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   [[nodiscard]] bool SetLayerTransformationAndTickEffect(
       const PhysicsModel::Result& result);
 
-  void CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(
-      RenderFrameHostImpl* old_host,
-      RenderFrameHostImpl* new_host);
-
   void CloneOldSurfaceLayer(RenderWidgetHostViewBase* old_main_frame_view);
+
+  // Called when the navigation is ready to be committed in the renderer.
+  void SubscribeToNewRenderWidgetHost(NavigationRequest* navigation_request);
 
   void UnregisterNewFrameActivationObserver();
 
@@ -331,6 +331,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // Tracks various state of the navigation request associated with this
   // gesture. Only set if the navigation request is successfully created.
   NavigationState navigation_state_ = NavigationState::kNotStarted;
+
+  // The destination `FrameNavigationEntry::item_sequence_number()` of the
+  // gesture back navigation in the primary main frame. Set when the browser
+  // tells the renderer to commit the navigation.
+  int64_t primary_main_frame_navigation_entry_item_sequence_number_ =
+      cc::RenderFrameMetadata::kInvalidItemSequenceNumber;
 
   // If viz has already activated a frame for the new page before the invoke
   // animation finishes, we set this bit so we can start the crossfade animation

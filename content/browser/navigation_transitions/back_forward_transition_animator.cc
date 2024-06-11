@@ -347,8 +347,15 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
           // decide not show the animation at all (i.e. abort animation early
           // when we receive the response header).
         }
-        CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(old_host,
-                                                                  new_host);
+        // We need to check if hosts have changed, since they could have stayed
+        // the same if the old page was early-swapped out, which can happen in
+        // navigations from a crashed page.
+        //
+        // TODO(https://crbug.com/346308473): Clone the old surface layer for
+        // same-RFH navigations as well.
+        if (old_host != new_host) {
+          CloneOldSurfaceLayer(old_host->GetView());
+        }
       } else {
         // Our navigation has already committed while a second navigation
         // commits. This can be a client redirect: A.com -> B.com and B.com's
@@ -457,6 +464,12 @@ void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
   if (state_ != State::kWaitingForContentForNavigationEntryShown) {
     return;
   }
+  // The embedder has finished cross-fading from the screenshot to the new
+  // content. Unregister `this` from the `RenderWidgetHost` to stop the
+  // `RenderWidgetHostDestroyed()` notification.
+  CHECK(new_render_widget_host_);
+  new_render_widget_host_->RemoveObserver(this);
+  new_render_widget_host_ = nullptr;
   AdvanceAndProcessState(State::kAnimationFinished);
 }
 
@@ -471,42 +484,44 @@ AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
   }
 }
 
-// This is only called after we subscribe to the new `RenderWidgetHost` in
-// `OnDidNavigatePrimaryMainFramePreCommit()`, meaning this method, just like
-// `OnDidNavigatePrimaryMainFramePreCommit()`, won't be called for
+// This is only called after we subscribe to the new `RenderWidgetHost` when the
+// navigation is ready to commit, meaning this method won't be called for
 // 204/205/Download navigations, and won't be called if the navigation is
 // cancelled.
-//
-// The manager won't be notified by the
-// `OnRenderFrameMetadataChangedAfterActivation()`s that arrive earlier than
-// `OnDidNavigatePrimaryMainFramePreCommit()` either if the renderer is too busy
-// to reply the DidCommit message while viz has already activated a new frame
-// for the new page. See
-// `CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver()` on how we guard
-// this case.
-//
-// TODO(crbug.com/41488142): Should consider subscribe to FCP. FCP
-// works mainframe as well as subframes navigations, with the exceptions of
-// same-doc navigations.
 void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
-  // `OnDidNavigatePrimaryMainFramePreCommit()` is the prerequisite for this
-  // API.
+  // `new_render_widget_host_` and
+  // `primary_main_frame_navigation_entry_item_sequence_number_` are set when
+  // the navigation is ready to commit.
   CHECK(new_render_widget_host_);
+  CHECK_NE(primary_main_frame_navigation_entry_item_sequence_number_,
+           cc::RenderFrameMetadata::kInvalidItemSequenceNumber);
 
-  // The navigation must have successfully committed, resulting us swapping the
-  // `RenderWidgetHostView`s thus getting this notification.
-  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+  // Viz can activate the frame before the DidCommit message arrives at the
+  // browser (kStarted), since we start to get this notification when the
+  // browser tells the renderer to commit the navigation.
+  CHECK(navigation_state_ == NavigationState::kCommitted ||
+        navigation_state_ == NavigationState::kStarted);
 
-  // Again this notification is only received after the
-  // `OnDidNavigatePrimaryMainFramePreCommit()`. So we must have started playing
-  // the invoke animation, or the invoke animation has finished.
+  // Again this notification is only received after the browser tells the
+  // renderer to commit the navigation. So we must have started playing the
+  // invoke animation, or the invoke animation has finished.
   CHECK(state_ == State::kDisplayingInvokeAnimation ||
         state_ == State::kWaitingForNewRendererToDraw)
       << ToString(state_);
 
   CHECK(!viz_has_activated_first_frame_)
       << "OnRenderFrameMetadataChangedAfterActivation can only be called once.";
+
+  if (new_render_widget_host_->render_frame_metadata_provider()
+          ->LastRenderFrameMetadata()
+          .primary_main_frame_item_sequence_number !=
+      primary_main_frame_navigation_entry_item_sequence_number_) {
+    // We shouldn't dismiss the screenshot if the activated frame isn't what we
+    // are expecting.
+    return;
+  }
+
   viz_has_activated_first_frame_ = true;
 
   // No longer interested in any other compositor frame submission
@@ -630,6 +645,21 @@ void BackForwardTransitionAnimator::DidStartNavigation(
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
+void BackForwardTransitionAnimator::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  CHECK(!navigation_handle->IsSameDocument());
+
+  if (navigation_handle->GetNavigationId() !=
+      primary_main_frame_navigation_request_id_of_gesture_nav_) {
+    // A unrelated navigation is ready to commit. This is possible with
+    // NavigationQueuing. We ignore the unrelated navigation request.
+    return;
+  }
+
+  SubscribeToNewRenderWidgetHost(
+      static_cast<NavigationRequest*>(navigation_handle));
+}
+
 // We only use `DidFinishNavigation()` for navigations that never commit
 // (204/205/downloads), or the cancelled / replaced navigations. For a committed
 // navigation, everything is set in `OnDidNavigatePrimaryMainFramePreCommit()`,
@@ -666,11 +696,9 @@ void BackForwardTransitionAnimator::RenderWidgetHostDestroyed(
   if (widget_host != new_render_widget_host_) {
     return;
   }
-  // Our new widget host is about to be destroyed. This can happen for a client
-  // redirect, where we never get the
-  // `OnRenderFrameMetadataChangedAfterActivation()` of any frame of a committed
-  // renderer. The screenshot isn't dismissed even after the gesture navigation
-  // is committed. Destroy `this` and reset everything.
+  // The subscribed `RenderWidgetHost` is getting destroyed. We must cancel the
+  // transition and reset everything. This can happen for a client redirect,
+  // where Viz never activates a frame from the committed renderer.
   CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
   CHECK_EQ(navigation_state_, NavigationState::kCommitted);
   animation_manager_->SynchronouslyDestroyAnimator();
@@ -1053,12 +1081,6 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
     return false;
   }
 
-  if (primary_main_frame_request->IsSameDocument()) {
-    // TODO(https://crbug.com/339208674): Animate the same-doc navigations
-    // end-to-end.
-    return false;
-  }
-
   // The resulting `NavigationRequest` must be associated with the intended
   // `NavigationEntry`, to safely start the animation.
   //
@@ -1080,7 +1102,11 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
       primary_main_frame_request->GetNavigationId();
   if (primary_main_frame_request->IsNavigationStarted()) {
     navigation_state_ = NavigationState::kStarted;
+    if (primary_main_frame_request->IsSameDocument()) {
+      SubscribeToNewRenderWidgetHost(primary_main_frame_request.get());
+    }
   } else {
+    CHECK(!primary_main_frame_request->IsSameDocument());
     CHECK(primary_main_frame_request->IsWaitingForBeforeUnload());
     navigation_state_ = NavigationState::kBeforeUnloadDispatched;
   }
@@ -1140,76 +1166,9 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
   return result.done && effect_.keyframe_models().empty();
 }
 
-void BackForwardTransitionAnimator::
-    CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(
-        RenderFrameHostImpl* old_host,
-        RenderFrameHostImpl* new_host) {
-  auto* old_view =
-      static_cast<RenderWidgetHostViewAndroid*>(old_host->GetView());
-  CHECK(old_view);
-  if (old_host == new_host) {
-    // The RFH for the old page is early-swapped out. This can only happen to
-    // navigation from a crashed page.
-    //
-    // TODO(crbug.com/40283503): The Clank's interstitial page isn't
-    // drawn by `old_view`. We need to address as part of "navigating from NTP"
-    // animation.
-  } else {
-    CloneOldSurfaceLayer(old_host->GetView());
-  }
-  CHECK(new_host);
-  auto* new_widget_host = new_host->GetRenderWidgetHost();
-  // We must have a live new widget.
-  CHECK(new_widget_host);
-  // `render_frame_metadata_provider()` is guaranteed non-null.
-  std::optional<viz::LocalSurfaceId> last_frame_local_surface_id =
-      static_cast<RenderWidgetHostImpl*>(new_widget_host)
-          ->render_frame_metadata_provider()
-          ->LastRenderFrameMetadata()
-          .local_surface_id;
-  auto* new_view =
-      static_cast<RenderWidgetHostViewBase*>(new_widget_host->GetView());
-  if (last_frame_local_surface_id.has_value() &&
-      last_frame_local_surface_id.value().is_valid() &&
-      last_frame_local_surface_id.value().embed_token() ==
-          new_view->GetLocalSurfaceId().embed_token() &&
-      last_frame_local_surface_id.value().IsSameOrNewerThan(
-          new_view->GetLocalSurfaceId())) {
-    // This can happen where the renderer's main thread is very busy to reply
-    // `DidCommitNavigation()` back to the browser, but viz has already
-    // activated the first frame. Because the browser hasn't received the
-    // `DidCommitNavigation()` message, this animation manager hasn't subscribed
-    // to the new widget host, therefore missed out on the first
-    // `OnRenderFrameMetadataChangedAfterActivation()`. The screenshot will stay
-    // until the next `OnRenderFrameMetadataChangedAfterActivation()`
-    // notification.
-    //
-    // In this case we inspect the `LocalSurfaceId` of activated frame. If the
-    // ID is greater than what the browser is embedding, we know viz has already
-    // activated a frame. We don't need to subscribe to the new widget host
-    // for `OnRenderFrameMetadataChangedAfterActivation()` at all.
-    CHECK(!viz_has_activated_first_frame_);
-    viz_has_activated_first_frame_ = true;
-    return;
-  }
-
-  if (screenshot_->is_copied_from_embedder()) {
-    return;
-  }
-
-  // We subscribe to `new_widget_host` to get notified when the new renderer
-  // draws a new frame, so we can start cross-fading from the preview screenshot
-  // to the new page's live content.
-  //
-  // TODO(crbug.com/41483162): This won't work for same-doc navigations.
-  // We need to listen to `OnLocalSurfaceIdChanged` when we bump the `SurfaceId`
-  // for same-doc navigations.
-  CHECK(!new_render_widget_host_);
-  new_render_widget_host_ = RenderWidgetHostImpl::From(new_widget_host);
-  new_render_widget_host_->AddObserver(this);
-  new_render_widget_host_->render_frame_metadata_provider()->AddObserver(this);
-}
-
+// TODO(crbug.com/40283503): The Clank's interstitial page isn't
+// drawn by `old_view`. We need to address as part of "navigating from NTP"
+// animation.
 void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
     RenderWidgetHostViewBase* old_main_frame_view) {
   // The old View must be still alive (and its renderer).
@@ -1238,6 +1197,46 @@ void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
            parent_for_web_widgets->parent());
 
   parent_for_web_widgets->parent()->AddChild(old_surface_clone_);
+}
+
+void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
+    NavigationRequest* navigation_request) {
+  CHECK(!new_render_widget_host_);
+
+  if (!navigation_request->GetNavigationEntry()) {
+    // Error case: The navigation entry is deleted when the navigation is ready
+    // to commit. Abort the transition.
+    animation_manager_->SynchronouslyDestroyAnimator();
+    return;
+  }
+
+  auto* new_host = navigation_request->GetRenderFrameHost();
+  CHECK(new_host);
+  new_render_widget_host_ = new_host->GetRenderWidgetHost();
+  new_render_widget_host_->AddObserver(this);
+
+  CHECK_EQ(primary_main_frame_navigation_entry_item_sequence_number_,
+           cc::RenderFrameMetadata::kInvalidItemSequenceNumber);
+
+  if (screenshot_->is_copied_from_embedder()) {
+    // The embedder will be responsible for cross-fading from the screenshot
+    // to the new content. We don't register
+    // `RenderFrameMetadataProvider::Observer` and do not set
+    // `primary_main_frame_navigation_entry_item_sequence_number_`.
+    return;
+  }
+
+  new_render_widget_host_->render_frame_metadata_provider()->AddObserver(this);
+  FrameNavigationEntry* frame_nav_entry =
+      static_cast<NavigationEntryImpl*>(
+          navigation_request->GetNavigationEntry())
+          ->GetFrameEntry(new_host->frame_tree_node());
+  // This is a session history of the primary main frame. We must have a
+  // valid `FrameNavigationEntry`.
+  CHECK(frame_nav_entry);
+  CHECK_NE(frame_nav_entry->item_sequence_number(), -1);
+  primary_main_frame_navigation_entry_item_sequence_number_ =
+      frame_nav_entry->item_sequence_number();
 }
 
 void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {

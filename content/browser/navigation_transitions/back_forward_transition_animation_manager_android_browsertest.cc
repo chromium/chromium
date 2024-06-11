@@ -189,6 +189,16 @@ float GetProgress(GestureType gesture, SwipeEdge edge) {
   }
 }
 
+int64_t GetItemSequenceNumberForNavigation(
+    NavigationHandle* navigation_handle) {
+  auto* request = static_cast<NavigationRequest*>(navigation_handle);
+  EXPECT_TRUE(request->GetNavigationEntry());
+  EXPECT_TRUE(request->GetRenderFrameHost());
+  return static_cast<NavigationEntryImpl*>(request->GetNavigationEntry())
+      ->GetFrameEntry(request->GetRenderFrameHost()->frame_tree_node())
+      ->item_sequence_number();
+}
+
 // Assert that the layers directly owned by the WebContents's native view have
 // the transform `transforms`.
 enum class CrossFadeOrOldSurfaceClone {
@@ -401,6 +411,12 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     BackForwardTransitionAnimator::OnCrossFadeAnimationDisplayed();
   }
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    BackForwardTransitionAnimator::ReadyToCommitNavigation(navigation_handle);
+    if (post_ready_to_commit_callback_) {
+      std::move(post_ready_to_commit_callback_).Run();
+    }
+  }
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (did_finish_navigation_callback_) {
       std::move(did_finish_navigation_callback_).Run();
@@ -489,6 +505,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     ASSERT_FALSE(next_on_animate_callback_);
     next_on_animate_callback_ = std::move(callback);
   }
+  void set_post_ready_to_commit_callback(base::OnceClosure callback) {
+    ASSERT_FALSE(post_ready_to_commit_callback_);
+    post_ready_to_commit_callback_ = std::move(callback);
+  }
   void set_did_finish_navigation_callback(base::OnceClosure callback) {
     ASSERT_FALSE(did_finish_navigation_callback_);
     did_finish_navigation_callback_ = std::move(callback);
@@ -540,6 +560,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   base::OnceClosure on_cross_fade_animation_displayed_;
   base::OnceClosure waited_for_renderer_new_frame_;
   base::OnceClosure next_on_animate_callback_;
+  base::OnceClosure post_ready_to_commit_callback_;
   base::OnceClosure did_finish_navigation_callback_;
   base::OnceClosure on_impl_destroyed_;
 };
@@ -1205,15 +1226,31 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // animation.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        IgnoreNonPrimaryMainFrameNavigations) {
-  RenderFrameHostWrapper green_rfh(web_contents()->GetPrimaryMainFrame());
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
   std::vector<GestureAndScreenChanged> expected;
   expected.push_back({.gesture = GestureType::kStart});
   expected.push_back({.gesture = GestureType::k60ViewportWidth});
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
-  // Add an iframe to the green page. This will trigger a renderer-initiated
-  // navigation in the subframe.
+  base::RunLoop invoke_played;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_played.QuitClosure());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+  auto* animation_manager = GetAnimationManager(web_contents());
+  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForResponse());
+
+  // Add an iframe to the green page while the gesture is in-progress. This will
+  // trigger a renderer-initiated navigation in the subframe.
   constexpr char kAddIframeScript[] = R"({
     (()=>{
         return new Promise((resolve) => {
@@ -1227,17 +1264,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                      JsReplace(kAddIframeScript, BlueURL())));
 
-  base::RunLoop invoke_played;
-  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
-      invoke_played.QuitClosure());
-  base::RunLoop cross_fade_displayed;
-  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
-      cross_fade_displayed.QuitClosure());
-  base::RunLoop destroyed;
-  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
-
-  auto* animation_manager = GetAnimationManager(web_contents());
-  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
   invoke_played.Run();
   cross_fade_displayed.Run();
   destroyed.Run();
@@ -1300,11 +1327,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
 }
 
-// Test that, when the browser receives the DidCommit message, the renderer has
-// already submitted a compositor frame. We will also skip
-// `kWaitingForNewRendererToDraw` in this case.
+// Test that, when the browser receives the DidCommit message, Viz has already
+// activated a render frame, we will also skip `kWaitingForNewRendererToDraw`.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
-                       CompositorFrameSubmittedBeforeDidCommit) {
+                       RenderFrameActivatedBeforeDidCommit) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -1329,21 +1355,29 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   animation_manager->OnGestureInvoked();
   ASSERT_TRUE(back_to_red.WaitForResponse());
 
-  // Manually set the new frame metadata before the DidCommit message.
-  RenderFrameHostImpl* red_rfh = web_contents()
-                                     ->GetPrimaryMainFrame()
-                                     ->frame_tree_node()
-                                     ->render_manager()
-                                     ->speculative_frame_host();
-  auto* new_widget_host = red_rfh->GetRenderWidgetHost();
-  ASSERT_TRUE(new_widget_host);
-  auto* new_view = new_widget_host->GetView();
-  ASSERT_TRUE(new_view);
+  // Manually set the new frame metadata before the DidCommit message and call
+  // `OnRenderFrameMetadataChangedAfterActivation()` to simulate a frame
+  // activation.
   {
+    RenderFrameHostImpl* red_rfh = web_contents()
+                                       ->GetPrimaryMainFrame()
+                                       ->frame_tree_node()
+                                       ->render_manager()
+                                       ->speculative_frame_host();
+    auto* new_widget_host = red_rfh->GetRenderWidgetHost();
+    ASSERT_TRUE(new_widget_host);
+    auto* new_view = new_widget_host->GetView();
+    ASSERT_TRUE(new_view);
     cc::RenderFrameMetadata metadata;
-    metadata.local_surface_id = new_view->GetLocalSurfaceId();
-    new_widget_host->render_frame_metadata_provider()
-        ->SetLastRenderFrameMetadataForTest(std::move(metadata));
+    metadata.primary_main_frame_item_sequence_number =
+        GetItemSequenceNumberForNavigation(back_to_red.GetNavigationHandle());
+    GetAnimatorForTesting()->set_post_ready_to_commit_callback(
+        base::BindLambdaForTesting([&]() {
+          new_widget_host->render_frame_metadata_provider()
+              ->SetLastRenderFrameMetadataForTest(std::move(metadata));
+          GetAnimatorForTesting()->OnRenderFrameMetadataChangedAfterActivation(
+              base::TimeTicks());
+        }));
   }
 
   ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
@@ -1354,10 +1388,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 }
 
 // Test that, when the invoke animation finishes (when the active page is
-// completely out of the view port), if the renderer has already submitted a
-// frame, we skip `kWaitingForNewRendererToDraw`.
+// completely out of the view port), if Viz has already activated a new frame
+// submitted by the new renderer, we skip `kWaitingForNewRendererToDraw`.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
-                       CompositorFrameSubmittedDuringInvokeAnimation) {
+                       RenderFrameActivatedDuringInvokeAnimation) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -1374,29 +1408,38 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       base::BindLambdaForTesting(
           [&]() { received_frame_while_waiting = true; }));
 
-  // Call `OnRenderFrameMetadataChangedAfterActivation()` at the end of the
-  // DidCommit message, to simulate the case where the renderer submits the
-  // first compositor frame while the invoke animation is playing.
-  //
-  // Note: this is different from `render_frame_metadata_provider()` already
-  // having the first frame metadata when DidCommit message arrives at the
-  // browser. The frame metadata is set via
-  // `OnRenderFrameMetadataChangedBeforeActivation()`, which we don't call in
-  // this test.
-  GetAnimatorForTesting()->set_did_finish_navigation_callback(base::BindOnce(
-      [](base::OnceClosure expect_invoke_playing,
-         base::OnceClosure metadata_changed) {
-        std::move(expect_invoke_playing).Run();
-        std::move(metadata_changed).Run();
-      },
-      base::BindOnce(&AnimatorForTesting::ExpectDisplayingInvokeAnimation,
-                     base::Unretained(GetAnimatorForTesting())),
-      base::BindOnce(
-          &AnimatorForTesting::OnRenderFrameMetadataChangedAfterActivation,
-          base::Unretained(GetAnimatorForTesting()), base::TimeTicks())));
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+  auto* animation_manager = GetAnimationManager(web_contents());
+  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForResponse());
 
-  GetAnimationManager(web_contents())->OnGestureInvoked();
+  // Manually set the new frame metadata before the DidCommit message and call
+  // `OnRenderFrameMetadataChangedAfterActivation()` to simulate a frame
+  // activation. Do this at the end of the "DidCommit" stack to simulate the
+  // viz activates the first frame while the invoke animation is still playing.
+  {
+    RenderFrameHostImpl* red_rfh = web_contents()
+                                       ->GetPrimaryMainFrame()
+                                       ->frame_tree_node()
+                                       ->render_manager()
+                                       ->speculative_frame_host();
+    auto* new_widget_host = red_rfh->GetRenderWidgetHost();
+    ASSERT_TRUE(new_widget_host);
+    auto* new_view = new_widget_host->GetView();
+    ASSERT_TRUE(new_view);
+    cc::RenderFrameMetadata metadata;
+    metadata.primary_main_frame_item_sequence_number =
+        GetItemSequenceNumberForNavigation(back_to_red.GetNavigationHandle());
+    GetAnimatorForTesting()->set_did_finish_navigation_callback(
+        base::BindLambdaForTesting([&]() {
+          new_widget_host->render_frame_metadata_provider()
+              ->SetLastRenderFrameMetadataForTest(std::move(metadata));
+          GetAnimatorForTesting()->OnRenderFrameMetadataChangedAfterActivation(
+              base::TimeTicks());
+        }));
+  }
 
+  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
   destroyed.Run();
   ASSERT_FALSE(received_frame_while_waiting);
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
@@ -2026,16 +2069,38 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimatorForTesting()->PauseAnimationAtDisplayingCrossFadeAnimation();
   GetAnimatorForTesting()->SetFinishedStateToDisplayingCrossFadeAnimation();
 
-  GetAnimationManager(web_contents())->OnGestureInvoked();
+  auto* animation_manager = GetAnimationManager(web_contents());
+  animation_manager->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForResponse());
+  // Force a call of `OnRenderFrameMetadataChangedAfterActivation()` when the
+  // navigation back to red is committed. This makes sure that the animation
+  // manager is displaying the cross-fade animation while the redirec to blue
+  // is happening.
+  {
+    RenderFrameHostImpl* red_rfh = web_contents()
+                                       ->GetPrimaryMainFrame()
+                                       ->frame_tree_node()
+                                       ->render_manager()
+                                       ->speculative_frame_host();
+    auto* new_widget_host = red_rfh->GetRenderWidgetHost();
+    ASSERT_TRUE(new_widget_host);
+    auto* new_view = new_widget_host->GetView();
+    ASSERT_TRUE(new_view);
+    cc::RenderFrameMetadata metadata;
+    metadata.primary_main_frame_item_sequence_number =
+        GetItemSequenceNumberForNavigation(
+            back_nav_to_red.GetNavigationHandle());
+    GetAnimatorForTesting()->set_did_finish_navigation_callback(
+        base::BindLambdaForTesting([&]() {
+          new_widget_host->render_frame_metadata_provider()
+              ->SetLastRenderFrameMetadataForTest(std::move(metadata));
+          GetAnimatorForTesting()->OnRenderFrameMetadataChangedAfterActivation(
+              base::TimeTicks());
+        }));
+  }
 
   ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
   ASSERT_TRUE(back_nav_to_red.was_successful());
-  // Force a fake call in case we don't get a new frame from the new renderer if
-  // the client redirect happens so fast. This makes sure when the invoke
-  // animation finishes, we can directly advance to
-  // `kDisplayingCrossFadeAnimation`.
-  GetAnimatorForTesting()->OnRenderFrameMetadataChangedAfterActivation(
-      base::TimeTicks{});
   invoke_played.Run();
   GetAnimatorForTesting()->ExpectWaitingForDisplayingCrossFadeAnimation();
 

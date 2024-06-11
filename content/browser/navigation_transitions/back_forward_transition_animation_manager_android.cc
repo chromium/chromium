@@ -151,13 +151,6 @@ BackForwardTransitionAnimationManagerAndroid::GetCurrentAnimationStage() {
                    : AnimationStage::kNone;
 }
 
-void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
-  web_contents_view_android()
-      ->web_contents()
-      ->GetDelegate()
-      ->DidBackForwardTransitionAnimationChange();
-}
-
 void BackForwardTransitionAnimationManagerAndroid::
     OnDidNavigatePrimaryMainFramePreCommit(
         NavigationRequest* navigation_request,
@@ -181,6 +174,13 @@ void BackForwardTransitionAnimationManagerAndroid::
   CHECK(animator_);
   animator_.reset();
   OnAnimationStageChanged();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
+  web_contents_view_android()
+      ->web_contents()
+      ->GetDelegate()
+      ->DidBackForwardTransitionAnimationChange();
 }
 
 }  // namespace content
