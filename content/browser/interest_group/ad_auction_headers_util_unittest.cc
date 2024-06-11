@@ -217,8 +217,7 @@ class IsAdAuctionHeadersEligibleForNavigationTest
  public:
   IsAdAuctionHeadersEligibleForNavigationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage,
-                              features::kEnableUpdatingUserBiddingSignals},
+        /*enabled_features=*/{blink::features::kInterestGroupStorage},
         /*disabled_features=*/{});
   }
 

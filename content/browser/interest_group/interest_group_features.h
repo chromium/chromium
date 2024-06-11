@@ -16,7 +16,6 @@ namespace features {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableIFrameAdAuctionHeaders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kEnableUpdatingExecutionModeToFrozenContext);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableUpdatingUserBiddingSignals);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);

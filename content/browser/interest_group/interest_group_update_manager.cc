@@ -710,11 +710,8 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
   if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
     return std::nullopt;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kEnableUpdatingUserBiddingSignals)) {
-    if (!TryToCopyUserBiddingSignals(*dict, interest_group_update)) {
-      return std::nullopt;
-    }
+  if (!TryToCopyUserBiddingSignals(*dict, interest_group_update)) {
+    return std::nullopt;
   }
   if (!TryToCopyAds(*dict, interest_group_update)) {
     return std::nullopt;
