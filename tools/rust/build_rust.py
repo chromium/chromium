@@ -803,8 +803,8 @@ def main():
     # Delete the build directory.
     if not args.skip_clean:
         print('Clearing build directory...')
-        if os.path.exists(BUILD_DIR):
-            RmTree(BUILD_DIR)
+        if os.path.exists(RUST_BUILD_DIR):
+            RmTree(RUST_BUILD_DIR)
 
     if not args.skip_test:
         print(f'Building stage 2 artifacts and running tests...')
