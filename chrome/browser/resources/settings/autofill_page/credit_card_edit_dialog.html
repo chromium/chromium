@@ -80,7 +80,10 @@
       <div slot="title">[[title_]]</div>
       <div slot="body">
         <cr-input id="numberInput" label="$i18n{creditCardNumber}"
-            value="{{cardNumber_}}" autofocus>
+            on-blur="onNumberInputBlurred_"
+            invalid="[[showErrorForCardNumber_(cardNumberValidationState_)]]"
+            error-message="$i18n{creditCardNumberInvalid}"
+            value="{{rawCardNumber_}}" autofocus>
         </cr-input>
         <!-- aria-hidden for creditCardExpiration label since
           creditCardExpirationMonth and creditCardExpirationYear provide
@@ -113,8 +116,8 @@
               placeholder="$i18n{creditCardCvcInputPlaceholder}"
               value="{{cvc_}}">
             <img slot="suffix" id="cvcImage"
-                src="[[getCvcImageSource_(cardNumber_)]]"
-                title="[[getCvcImageTooltip_(cardNumber_)]]">
+                src="[[getCvcImageSource_(sanitizedCardNumber_)]]"
+                title="[[getCvcImageTooltip_(sanitizedCardNumber_)]]">
             </img>
           </cr-input>
         </template>
@@ -140,8 +143,8 @@
             on-click="onCancelButtonClick_">$i18n{cancel}</cr-button>
         <cr-button id="saveButton" class="action-button"
             on-click="onSaveButtonClick_"
-            disabled="[[!saveEnabled_(nicknameInvalid_,
-                expired_, name_, cardNumber_, nickname_)]]">
+            disabled="[[!saveEnabled_(nicknameInvalid_, cardNumberValidationState_,
+                expired_, name_, sanitizedCardNumber_, nickname_)]]">
           $i18n{save}
         </cr-button>
       </div>

@@ -198,6 +198,12 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
              "AutofillParseVcnCardOnFileStandaloneCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the add/edit local card dialog in chrome://settings on Desktop
+// requires that the card number be valid before saving is allowed.
+BASE_FEATURE(kAutofillRequireValidLocalCardsInSettings,
+             "AutofillRequireValidLocalCardsInSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, IBAN Autofill suggestions are shown via the keyboard accessory
 // instead of the bottom sheet.

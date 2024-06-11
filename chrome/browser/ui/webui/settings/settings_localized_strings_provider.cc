@@ -1129,6 +1129,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"creditCardName", IDS_SETTINGS_NAME_ON_CREDIT_CARD},
       {"creditCardNickname", IDS_SETTINGS_CREDIT_CARD_NICKNAME},
       {"creditCardNicknameInvalid", IDS_SETTINGS_CREDIT_CARD_NICKNAME_INVALID},
+      {"creditCardNumberInvalid",
+       IDS_PAYMENTS_CARD_NUMBER_INVALID_VALIDATION_MESSAGE},
       {"creditCardCvcInputTitle", IDS_SETTINGS_CREDIT_CARD_CVC_TITLE},
       {"creditCardCvcImageTitle", IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE},
       {"creditCardCvcAmexImageTitle",
@@ -1336,6 +1338,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
+
+  html_source->AddBoolean(
+      "requireValidLocalCards",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillRequireValidLocalCardsInSettings));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

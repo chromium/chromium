@@ -10937,6 +10937,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableMerchantDomainInUnmaskCardRequest)},
 
+    {"autofill-require-valid-local-cards-in-settings",
+     flag_descriptions::kAutofillRequireValidLocalCardsInSettingsName,
+     flag_descriptions::kAutofillRequireValidLocalCardsInSettingsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillRequireValidLocalCardsInSettings)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"upstream-trusted-reports-firmware",
      flag_descriptions::kUpstreamTrustedReportsFirmwareName,

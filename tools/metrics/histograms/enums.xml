@@ -21484,6 +21484,8 @@ from previous Chrome versions.
   <int value="463664416" label="TabStripLayoutOptimization:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
   <int value="464425854" label="UnoDesktop:disabled"/>
+  <int value="464619264"
+      label="AutofillRequireValidLocalCardsInSettings:enabled"/>
   <int value="464773709" label="OmniboxExperimentalSuggestScoring:enabled"/>
   <int value="464979219" label="CrOSLateBootAudioHFPOffload:disabled"/>
   <int value="465600939" label="DefaultPassthroughCommandDecoder:enabled"/>
@@ -23746,6 +23748,8 @@ from previous Chrome versions.
   <int value="1451065780" label="MediaFoundationClearRendering:enabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
+  <int value="1451160278"
+      label="AutofillRequireValidLocalCardsInSettings:disabled"/>
   <int value="1451778280" label="AtomicMoveAPI:disabled"/>
   <int value="1452411293" label="ShowFeaturedEnterpriseSiteSearch:enabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
