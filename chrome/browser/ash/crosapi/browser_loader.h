@@ -101,7 +101,6 @@ class BrowserLoader {
   virtual void Load(LoadCompletionCallback callback);
 
   // Starts to unload lacros-chrome binary.
-  // Note that this triggers to remove the user directory for lacros-chrome.
   // Once Unload is called, BrowserLoader should NOT accept Load requests.
   //
   // If Unload is called during Load, stops loading procedure on main thread and

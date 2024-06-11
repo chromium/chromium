@@ -57,6 +57,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_launcher.h"
@@ -637,7 +638,8 @@ void BrowserManager::InitializeAndStartIfNeeded() {
     }
   } else {
     SetState(State::UNAVAILABLE);
-    browser_loader_->Unload();  // NOTE: This deletes the user data dir.
+    browser_loader_->Unload();
+    ClearLacrosData();
   }
 
   // Post `DryRunToCollectUMA()` to send UMA stats about sizes of files/dirs
@@ -870,6 +872,36 @@ void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
                      weak_factory_.GetWeakPtr(), std::move(action)));
 }
 
+void BrowserManager::ClearLacrosData() {
+  // Check that Lacros is not running.
+  CHECK_EQ(state_, State::UNAVAILABLE);
+  // Skip if Chrome is in safe mode to avoid deleting
+  // user data when Lacros is disabled only temporarily.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kSafeMode)) {
+    return;
+  }
+
+  // TODO(hidehiko): This approach has timing issue. Specifically, if Chrome
+  // shuts down during the directory remove, some partially-removed directory
+  // may be kept, and if the user flips the flag in the next time, that
+  // partially-removed directory could be used. Fix this.
+  if (!ash::BrowserDataBackMigrator::IsBackMigrationEnabled(
+          ash::standalone_browser::migrator_util::PolicyInitState::
+              kAfterInit)) {
+    // If backward migration is enabled, don't remove the lacros directory as it
+    // will be used by the migration and will be removed after it completes.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce([]() {
+          base::DeletePathRecursively(browser_util::GetUserDataDir());
+        }));
+  }
+
+  // TODO(b/297826137): Remove 'standalone_browser_preferences.json'.
+}
+
 void BrowserManager::OnBrowserServiceConnected(
     CrosapiId id,
     mojo::RemoteSetElementId mojo_id,
@@ -1022,6 +1054,7 @@ void BrowserManager::OnLacrosChromeTerminated() {
     DCHECK(!relaunch_requested_);
     SetState(State::UNAVAILABLE);
     browser_loader_->Unload();
+    ClearLacrosData();
     return;
   }
 

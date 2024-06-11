@@ -16,14 +16,12 @@
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 
@@ -98,36 +96,6 @@ std::string CheckForComponentToPreloadMayBlock() {
   return "";
 }
 
-// Returns whether lacros-fishfood component is already installed.
-// If it is, delete the user directory, too, because it will be
-// uninstalled.
-bool CheckInstalledAndMaybeRemoveUserDirectory(
-    scoped_refptr<component_updater::ComponentManagerAsh> manager,
-    const std::string& lacros_component_name) {
-  if (!CheckRegisteredMayBlock(manager, lacros_component_name)) {
-    return false;
-  }
-
-  // Since we're already on a background thread, delete the user-data-dir
-  // associated with lacros. Skip if Chrome is in safe mode to avoid deleting of
-  // user data when Lacros is disabled only temporarily.
-  // TODO(hidehiko): This approach has timing issue. Specifically, if Chrome
-  // shuts down during the directory remove, some partially-removed directory
-  // may be kept, and if the user flips the flag in the next time, that
-  // partially-removed directory could be used. Fix this.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kSafeMode)) {
-    // If backward migration is enabled, don't remove the lacros folder as it
-    // will used by the migration and will be removed after it completes.
-    if (!ash::BrowserDataBackMigrator::IsBackMigrationEnabled(
-            ash::standalone_browser::migrator_util::PolicyInitState::
-                kBeforeInit)) {
-      base::DeletePathRecursively(browser_util::GetUserDataDir());
-    }
-  }
-  return true;
-}
-
 }  // namespace
 
 StatefulLacrosLoader::StatefulLacrosLoader(
@@ -193,8 +161,8 @@ void StatefulLacrosLoader::Unload(base::OnceClosure callback) {
 
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
-          base::BindOnce(&CheckInstalledAndMaybeRemoveUserDirectory,
-                         component_manager_, lacros_component_name_),
+          base::BindOnce(&CheckRegisteredMayBlock, component_manager_,
+                         lacros_component_name_),
           base::BindOnce(&StatefulLacrosLoader::OnCheckInstalledToUnload,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
       break;
