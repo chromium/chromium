@@ -578,6 +578,13 @@ def AutoUpdate(args):
     CheckoutInitialBranch(upstream_branch)
 
     todo_crate_ids = FindUpdateableCrates()
+
+    if args.skip:
+        todo_crate_ids = list([
+            crate_id for crate_id in todo_crate_ids
+            if not crate_id.split("@")[0] in args.skip
+        ])
+
     if not todo_crate_ids:
         print("There were no updates - exiting early...")
         return 0
@@ -699,6 +706,9 @@ def main():
         "--upstream-branch",
         default="origin/main",
         help="The upstream branch on which to base the series of CLs.")
+    parser_auto.add_argument("--skip",
+                             nargs="+",
+                             help="Skip updating this crate name.")
 
     parser_single = subparsers.add_parser(
         "single",
