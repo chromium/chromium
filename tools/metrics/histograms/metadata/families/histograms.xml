@@ -636,15 +636,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.{ExtensionStatus}ExtensionsCount2"
-    units="Number of Extensions" expires_after="2024-11-03">
+    units="Number of Extensions" expires_after="2024-12-31">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Records the number of non-component {ExtensionStatus} regular browser
     extensions and themes around once per day, regardless of when they were last
     used.
   </summary>
   <token key="ExtensionStatus">
+<!-- Note: the Disable variant is not used on ChromeOS. -->
+
+    <variant name="Disabled" summary="disabled"/>
     <variant name="Enabled" summary="enabled"/>
     <variant name="Installed" summary="installed"/>
   </token>

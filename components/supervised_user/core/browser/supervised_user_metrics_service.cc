@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
@@ -38,10 +39,18 @@ int SupervisedUserMetricsService::GetDayIdForTesting(base::Time time) {
 
 SupervisedUserMetricsService::SupervisedUserMetricsService(
     PrefService* pref_service,
-    supervised_user::SupervisedUserURLFilter* url_filter)
-    : pref_service_(pref_service), url_filter_(url_filter) {
+    supervised_user::SupervisedUserURLFilter* url_filter,
+    std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
+        extensions_metrics_delegate)
+    : pref_service_(pref_service),
+      url_filter_(url_filter),
+      extensions_metrics_delegate_(std::move(extensions_metrics_delegate)) {
   DCHECK(pref_service_);
   DCHECK(url_filter_);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  CHECK(extensions_metrics_delegate_)
+      << "Extensions metrics delegate must exist on Win/Linux/Mac";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   CheckForNewDay();
   // Check for a new day every |kTimerInterval| as well.
@@ -61,8 +70,16 @@ void SupervisedUserMetricsService::CheckForNewDay() {
   base::Time now = base::Time::Now();
   // The OnNewDay() event can fire sooner or later than 24 hours due to clock or
   // time zone changes.
+  bool should_update_day_id = false;
   if (day_id < GetDayId(now)) {
     if (url_filter_->EmitURLFilterMetrics()) {
+      should_update_day_id = true;
+    }
+    if (extensions_metrics_delegate_ &&
+        extensions_metrics_delegate_->RecordExtensionsMetrics()) {
+      should_update_day_id = true;
+    }
+    if (should_update_day_id) {
       pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
                                 GetDayId(now));
     }

@@ -38,8 +38,12 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
+  std::unique_ptr<supervised_user::SupervisedUserMetricsService ::
+                      SupervisedUserMetricsServiceExtensionDelegate>
+      extensions_metrics_delegate = nullptr;
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       browser_state->GetPrefs(),
       SupervisedUserServiceFactory::GetForBrowserState(browser_state)
-          ->GetURLFilter());
+          ->GetURLFilter(),
+      std::move(extensions_metrics_delegate));
 }
