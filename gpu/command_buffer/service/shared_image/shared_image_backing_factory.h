@@ -33,14 +33,15 @@ struct Mailbox;
 class GPU_GLES2_EXPORT SharedImageBackingFactory {
  public:
   // Mask for all valid usage flags.
-  static constexpr uint32_t kUsageAll = (LAST_SHARED_IMAGE_USAGE << 1) - 1;
+  static constexpr SharedImageUsageSet kUsageAll =
+      SharedImageUsageSet((LAST_SHARED_IMAGE_USAGE << 1) - 1);
 
   // `valid_usages` is an allowlist of usages that the backing created by
   // factory can support. Requests to create a new shared image that contain
   // any usages not in `valid_usages` will be rejected by the factory. However,
   // if all usages are in `valid_usages` that doesn't imply support as
   // IsSupported() may contain additional logic.
-  explicit SharedImageBackingFactory(uint32_t valid_usages);
+  explicit SharedImageBackingFactory(SharedImageUsageSet valid_usages);
   virtual ~SharedImageBackingFactory();
 
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -106,7 +107,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       gfx::BufferUsage buffer_usage);
 
   // Returns true if the factory is supported
-  bool CanCreateSharedImage(uint32_t usage,
+  bool CanCreateSharedImage(SharedImageUsageSet usage,
                             viz::SharedImageFormat format,
                             const gfx::Size& size,
                             bool thread_safe,
@@ -124,7 +125,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
   // Returns true if the factory is supported. This must return false if `usage`
   // contains any usages from `invalid_usages_`. This is a temporary state to
   // verify `invalid_usages_` is correct.
-  virtual bool IsSupported(uint32_t usage,
+  virtual bool IsSupported(SharedImageUsageSet usage,
                            viz::SharedImageFormat format,
                            const gfx::Size& size,
                            bool thread_safe,
@@ -135,7 +136,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
   void InvalidateWeakPtrsForTesting();
 
  private:
-  const uint32_t invalid_usages_;
+  const SharedImageUsageSet invalid_usages_;
   base::WeakPtrFactory<SharedImageBackingFactory> weak_ptr_factory_{this};
 };
 

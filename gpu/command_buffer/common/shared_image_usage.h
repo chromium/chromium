@@ -171,6 +171,12 @@ inline constexpr const SharedImageUsageSet Intersection(
 }
 // The global operators below cause 'SharedImageUsage' operations to result in
 // 'SharedImageUsageSet' and avoid the ambiguity with uint32_t.
+inline constexpr gpu::SharedImageUsageSet operator|(
+    gpu::SharedImageUsageSet set_a,
+    gpu::SharedImageUsageSet set_b) {
+  set_a.PutAll(set_b);
+  return set_a;
+}
 
 inline constexpr gpu::SharedImageUsageSet operator|(
     gpu::SharedImageUsageSet set_a,

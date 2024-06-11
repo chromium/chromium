@@ -174,7 +174,7 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
   return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
 }
 
-constexpr uint32_t kSupportedUsage =
+constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -719,7 +719,7 @@ AHardwareBufferImageBackingFactory::~AHardwareBufferImageBackingFactory() =
     default;
 
 bool AHardwareBufferImageBackingFactory::ValidateUsage(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     const gfx::Size& size,
     viz::SharedImageFormat format) const {
   if (!AHardwareBufferSupportedFormat(format)) {
@@ -751,7 +751,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
@@ -898,7 +898,7 @@ bool AHardwareBufferImageBackingFactory::CanImportGpuMemoryBuffer(
 }
 
 bool AHardwareBufferImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,

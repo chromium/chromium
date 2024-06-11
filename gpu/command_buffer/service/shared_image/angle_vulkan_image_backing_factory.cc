@@ -20,7 +20,7 @@ namespace {
 
 // TODO(penghuang): verify the scanout is the right usage for video playback.
 // crbug.com/1280798
-constexpr uint32_t kSupportedUsage =
+constexpr SharedImageUsageSet kSupportedUsage =
 #if BUILDFLAG(IS_LINUX)
     SHARED_IMAGE_USAGE_SCANOUT |
 #endif
@@ -153,7 +153,7 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
 }
 
 bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     gfx::GpuMemoryBufferType gmb_type) const {
   if (!IsGMBSupported(gmb_type))
     return false;
@@ -168,7 +168,7 @@ bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
 }
 
 bool AngleVulkanImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,

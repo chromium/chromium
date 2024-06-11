@@ -89,7 +89,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       std::string debug_label) override {
     return nullptr;
   }
-  bool IsSupported(uint32_t usage,
+  bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,

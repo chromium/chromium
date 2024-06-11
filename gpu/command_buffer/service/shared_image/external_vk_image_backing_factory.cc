@@ -146,7 +146,7 @@ bool IsFormatSupported(viz::SharedImageFormat format,
 
 }  // namespace
 
-constexpr uint32_t kSupportedUsage =
+constexpr SharedImageUsageSet kSupportedUsage =
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DAWN)
     SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
@@ -297,7 +297,7 @@ bool ExternalVkImageBackingFactory::CanImportGpuMemoryBuffer(
 }
 
 bool ExternalVkImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,

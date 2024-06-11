@@ -67,6 +67,19 @@ TEST(SharedImageUsage, GlobalOperatorCasting) {
       SHARED_IMAGE_USAGE_RASTER_WRITE));
 }
 
+TEST(SharedImageUsage, GlobalOperatorSetUnion) {
+  // Global operators will create a 'SharedImageUsageSet'.
+  SharedImageUsageSet usage_a =
+      SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;
+  SharedImageUsageSet usage_b =
+      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_RASTER_WRITE;
+  SharedImageUsageSet usage_set_union = usage_a | usage_b;
+  EXPECT_TRUE(usage_set_union.HasAll(SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
+                                     SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                     SHARED_IMAGE_USAGE_CPU_WRITE |
+                                     SHARED_IMAGE_USAGE_WEBGPU_READ));
+}
+
 TEST(SharedImageUsage, ImplicitCasting) {
   SharedImageUsageSet as_usage_set =
       SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;

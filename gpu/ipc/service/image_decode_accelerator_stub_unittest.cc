@@ -212,7 +212,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
 
     return std::move(test_image_backing);
   }
-  bool IsSupported(uint32_t usage,
+  bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,

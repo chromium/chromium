@@ -27,13 +27,14 @@ bool IsFormatSupportedForScanout(viz::SharedImageFormat format) {
           (format == viz::SinglePlaneFormat::kRGBA_1010102));
 }
 
-constexpr uint32_t kDXGISwapChainUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                         SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                         SHARED_IMAGE_USAGE_SCANOUT;
-constexpr uint32_t kDCompSurfaceUsage =
+constexpr SharedImageUsageSet kDXGISwapChainUsage =
+    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+    SHARED_IMAGE_USAGE_SCANOUT;
+constexpr SharedImageUsageSet kDCompSurfaceUsage =
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT |
     SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
-constexpr uint32_t kSupportedUsage = kDXGISwapChainUsage | kDCompSurfaceUsage;
+constexpr SharedImageUsageSet kSupportedUsage =
+    kDXGISwapChainUsage | kDCompSurfaceUsage;
 
 }  // namespace
 
@@ -119,7 +120,7 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
 }
 
 bool DCompImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,

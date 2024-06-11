@@ -9,7 +9,8 @@
 
 namespace gpu {
 
-SharedImageBackingFactory::SharedImageBackingFactory(uint32_t valid_usages)
+SharedImageBackingFactory::SharedImageBackingFactory(
+    SharedImageUsageSet valid_usages)
     : invalid_usages_(~valid_usages) {}
 
 SharedImageBackingFactory::~SharedImageBackingFactory() = default;
@@ -36,7 +37,7 @@ SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
 }
 
 bool SharedImageBackingFactory::CanCreateSharedImage(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,

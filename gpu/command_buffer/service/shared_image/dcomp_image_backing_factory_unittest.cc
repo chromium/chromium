@@ -173,7 +173,8 @@ TEST_F(DCompImageBackingFactoryTest, HDR10Support) {
 }
 
 TEST_F(DCompImageBackingFactoryTest, ValidFormats) {
-  uint32_t valid_usages[2] = {kDCompSurfaceUsage, kDXGISwapChainUsage};
+  SharedImageUsageSet valid_usages[2] = {kDCompSurfaceUsage,
+                                         kDXGISwapChainUsage};
 
   viz::SharedImageFormat valid_formats[5] = {
       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,

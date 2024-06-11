@@ -126,7 +126,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       SharedImageUsageSet usage,
       std::string debug_label) override;
 
-  bool IsSupported(uint32_t usage,
+  bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,
@@ -153,7 +153,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label);
   bool SupportsBGRA8UnormStorage();
 

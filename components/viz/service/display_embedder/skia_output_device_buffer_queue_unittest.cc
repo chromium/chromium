@@ -218,7 +218,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  bool IsSupported(uint32_t usage,
+  bool IsSupported(gpu::SharedImageUsageSet usage,
                    SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,

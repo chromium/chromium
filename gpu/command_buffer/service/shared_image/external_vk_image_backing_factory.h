@@ -92,7 +92,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
       bool is_thread_safe,
       gfx::BufferUsage buffer_usage) override;
 
-  bool IsSupported(uint32_t usage,
+  bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,

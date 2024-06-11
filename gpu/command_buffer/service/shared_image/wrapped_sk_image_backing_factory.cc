@@ -30,18 +30,18 @@ namespace {
 // NOTE: WrappedSkImage cannot be used with raster-over-GLES2 as it doesn't
 // support GLES2 usage, and hence it doesn't support RASTER_OVER_GLES2_ONLY
 // usage.
-constexpr uint32_t kSupportedUsage =
+constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
     SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_MIPMAP;
 
-uint32_t GetSupportedUsage(const SharedContextState* context_state) {
+SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
 #if BUILDFLAG(SKIA_USE_DAWN) && !BUILDFLAG(IS_ANDROID)
   // We support WebGL and WebGPU fallback when using Graphite Dawn Vulkan or
   // D3D12. Except on Android where AHardwareBufferImageBackingFactory is used
   // for interop with WebGL and WebGPU.
-  constexpr uint32_t kGraphiteDawnFallbackUsage =
+  constexpr SharedImageUsageSet kGraphiteDawnFallbackUsage =
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
       SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
       // NOTE: In this case, it is also possible to support raster-over-GLES2.
@@ -186,7 +186,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
 }
 
 bool WrappedSkImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,

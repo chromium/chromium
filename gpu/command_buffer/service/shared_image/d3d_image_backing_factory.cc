@@ -98,7 +98,7 @@ bool UseUpdateSubresource1(const GpuDriverBugWorkarounds& workarounds) {
          !workarounds.disable_d3d11_update_subresource1;
 }
 
-constexpr uint32_t kSupportedUsage =
+constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -536,7 +536,7 @@ bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
   return supports_bgra8unorm_storage_.value();
 }
 
-bool D3DImageBackingFactory::IsSupported(uint32_t usage,
+bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          viz::SharedImageFormat format,
                                          const gfx::Size& size,
                                          bool thread_safe,
@@ -572,7 +572,7 @@ D3DImageBackingFactory::CreateSharedImageGMBs(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label) {
   const gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {

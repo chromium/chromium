@@ -122,7 +122,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
 }
 
 bool SharedMemoryImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,
