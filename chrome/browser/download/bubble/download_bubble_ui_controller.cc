@@ -220,12 +220,7 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
-  if (last_partial_view_shown_time_.has_value()) {
-    base::UmaHistogramLongTimes(
-        "Download.Bubble.PartialToFullViewLatency",
-        base::Time::Now() - (*last_partial_view_shown_time_));
-    last_partial_view_shown_time_ = std::nullopt;
-  }
+  last_partial_view_shown_time_ = std::nullopt;
   last_primary_view_was_partial_ = false;
   std::vector<DownloadUIModelPtr> list =
       GetDownloadUIModels(/*is_main_view=*/true);
