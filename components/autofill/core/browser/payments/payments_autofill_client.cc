@@ -173,4 +173,6 @@ void PaymentsAutofillClient::UpdateOfferNotification(
 
 void PaymentsAutofillClient::DismissOfferNotification() {}
 
+void PaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {}
+
 }  // namespace autofill::payments

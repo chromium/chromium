@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+class GURL;
+
 namespace autofill {
 
 class AutofillErrorDialogControllerImpl;
@@ -161,6 +163,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const AutofillOfferData& offer,
       const OfferNotificationOptions& options) override;
   void DismissOfferNotification() override;
+  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {

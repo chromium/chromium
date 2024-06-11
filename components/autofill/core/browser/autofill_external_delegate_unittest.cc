@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -174,9 +175,24 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
+class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
+ public:
+  explicit MockPaymentsAutofillClient(AutofillClient* client)
+      : payments::TestPaymentsAutofillClient(client) {}
+  ~MockPaymentsAutofillClient() override = default;
+
+  MOCK_METHOD(void,
+              OpenPromoCodeOfferDetailsURL,
+              (const GURL& url),
+              (override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
-  MockAutofillClient() = default;
+  MockAutofillClient() {
+    set_payments_autofill_client(
+        std::make_unique<MockPaymentsAutofillClient>(this));
+  }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   MOCK_METHOD(void,
@@ -195,10 +211,6 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               HideAutofillSuggestions,
               (SuggestionHidingReason),
-              (override));
-  MOCK_METHOD(void,
-              OpenPromoCodeOfferDetailsURL,
-              (const GURL& url),
               (override));
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
@@ -223,6 +235,7 @@ class MockAutofillClient : public TestAutofillClient {
   void set_last_queried_field(FieldGlobalId field_id) {
     last_queried_field_id_ = field_id;
   }
+
  private:
   FieldGlobalId last_queried_field_id_;
 #endif
@@ -404,6 +417,11 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   }
 
   const FormFieldData& queried_field() { return queried_form().fields.front(); }
+
+  MockPaymentsAutofillClient& payments_client() {
+    return static_cast<MockPaymentsAutofillClient&>(
+        *client().GetPaymentsAutofillClient());
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -1198,7 +1216,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateMerchantPromoCodeSuggestionsFooter) {
   IssueOnQuery();
   const GURL gurl{"https://example.com/"};
-  EXPECT_CALL(client(), OpenPromoCodeOfferDetailsURL(gurl));
+  EXPECT_CALL(payments_client(), OpenPromoCodeOfferDetailsURL(gurl));
 
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(SuggestionType::kSeePromoCodeDetails,

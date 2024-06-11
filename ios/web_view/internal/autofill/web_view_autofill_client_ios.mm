@@ -143,7 +143,7 @@ WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
         std::make_unique<payments::IOSWebViewPaymentsAutofillClient>(
-            this, bridge_, web_state_->GetBrowserState());
+            this, bridge_, web_state_);
   }
 
   return payments_autofill_client_.get();
@@ -301,13 +301,6 @@ void WebViewAutofillClientIOS::DidFillOrPreviewField(
 
 bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
-}
-
-void WebViewAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
-  web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
 }
 
 autofill::FormInteractionsFlowId

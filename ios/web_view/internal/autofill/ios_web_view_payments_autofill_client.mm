@@ -12,22 +12,24 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "url/gurl.h"
 
 namespace autofill::payments {
 
 IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
     autofill::WebViewAutofillClientIOS* client,
     id<CWVAutofillClientIOSBridge> bridge,
-    web::BrowserState* browser_state)
+    web::WebState* web_state)
     : client_(CHECK_DEREF(client)),
       bridge_(bridge),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                  browser_state->GetURLLoaderFactory()),
+                  web_state->GetBrowserState()->GetURLLoaderFactory()),
               client->GetIdentityManager(),
               &client->GetPersonalDataManager()->payments_data_manager(),
-              browser_state->IsOffTheRecord())) {}
+              web_state->GetBrowserState()->IsOffTheRecord())),
+      web_state_(CHECK_DEREF(web_state)) {}
 
 IOSWebViewPaymentsAutofillClient::~IOSWebViewPaymentsAutofillClient() = default;
 
@@ -69,6 +71,14 @@ IOSWebViewPaymentsAutofillClient::GetCvcAuthenticator() {
         std::make_unique<CreditCardCvcAuthenticator>(&client_.get());
   }
   return *cvc_authenticator_;
+}
+
+void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
+    const GURL& url) {
+  web_state_->OpenURL(web::WebState::OpenURLParams(
+      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false));
 }
 
 void IOSWebViewPaymentsAutofillClient::set_bridge(

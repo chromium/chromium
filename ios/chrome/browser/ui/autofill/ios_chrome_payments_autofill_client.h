@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 
 class ChromeBrowserState;
+class GURL;
 
 namespace web {
 class WebState;
@@ -106,6 +107,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
+  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {
@@ -125,6 +127,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
+  // TODO(crbug.com/40937065): Make these member variables as const raw_refs.
   const raw_ptr<ChromeBrowserState> browser_state_;
   const raw_ptr<web::WebState> web_state_;
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;

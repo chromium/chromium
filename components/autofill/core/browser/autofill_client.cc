@@ -148,10 +148,6 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   return *ablation_study;
 }
 
-void AutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
-  NOTIMPLEMENTED();
-}
-
 bool AutofillClient::ShouldFormatForLargeKeyboardAccessory() const {
   return false;
 }

@@ -1366,8 +1366,9 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       break;
     case SuggestionType::kSeePromoCodeDetails:
       // Open a new tab and navigate to the offer details page.
-      manager_->client().OpenPromoCodeOfferDetailsURL(
-          suggestion.GetPayload<GURL>());
+      manager_->client()
+          .GetPaymentsAutofillClient()
+          ->OpenPromoCodeOfferDetailsURL(suggestion.GetPayload<GURL>());
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
                                                 suggestion.type, query_form_,
                                                 query_field_);
