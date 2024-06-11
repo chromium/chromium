@@ -51,6 +51,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_store.h"
+#include "components/prefs/wrap_with_prefix_pref_store.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -364,6 +365,8 @@ class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
 
 namespace chrome_prefs {
 
+const char kAccountPreferencesPrefix[] = "account_values";
+
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
     scoped_refptr<PersistentPrefStore> pref_store,
@@ -423,19 +426,33 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
 #endif
 
   PrepareFactory(&factory, profile_path, policy_service,
-                 supervised_user_settings, std::move(user_pref_store),
+                 supervised_user_settings, user_pref_store,
                  std::move(extension_prefs),
                  std::move(standalone_browser_prefs), async, connector);
 
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    // Note: Only mobile platforms are targeted as part of the experiment,
-    // which do not require preference protection. Hence pref filters and
-    // ProfilePrefStoreManager::CreateProfilePrefStore() can be avoided.
+    // Desktop and Mobile platforms have different implementation for account
+    // preferences. Mobile platforms have a separate file to store account
+    // preferences. Whereas, desktop platforms would store account preferences
+    // as a dictionary in the main preference file.
+    // TODO(crbug.com/346508597): Migrate Mobile platforms to the desktop
+    // implementation.
+#if BUILDFLAG(IS_ANDROID)
+    // Mobile platforms do not require preference protection. Hence pref
+    // filters and ProfilePrefStoreManager::CreateProfilePrefStore() can be
+    // avoided.
     factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
         /*pref_filename=*/profile_path.Append(
             chrome::kAccountPreferencesFilename),
         /*pref_filter=*/nullptr,
         /*file_task_runner=*/io_task_runner));
+#else
+    // Register `kAccountPreferencesPrefix` as dictionary pref. This prevents
+    // others from using the prefix as a preference.
+    pref_registry->RegisterDictionaryPref(kAccountPreferencesPrefix);
+    factory.SetAccountPrefStore(base::MakeRefCounted<WrapWithPrefixPrefStore>(
+        std::move(user_pref_store), kAccountPreferencesPrefix));
+#endif
   }
 
   return factory.CreateSyncable(std::move(pref_registry));

@@ -45,6 +45,10 @@ class SupervisedUserSettingsService;
 
 namespace chrome_prefs {
 
+// The prefix (without the trailing ".") with which the account preference
+// values are stored in the preference file.
+extern const char kAccountPreferencesPrefix[];
+
 // Factory methods that create and initialize a new instance of a
 // PrefService for Chrome with the applicable PrefStores. The
 // |pref_filename| points to the user preference file. This is the

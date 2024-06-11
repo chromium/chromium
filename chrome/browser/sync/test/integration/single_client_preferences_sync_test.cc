@@ -14,6 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -211,7 +212,8 @@ class SingleClientPreferencesWithAccountStorageSyncTest
       : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
 
   // This returns nullopt if there was an error reading the account preferences
-  // from the file, for e.g., the file or the key doesn't exist.
+  // from the file, for e.g., the file doesn't exist.
+  // NOTE: Account preferences missing from the file would return an empty dict.
   std::optional<base::Value::Dict> GetAccountPreferencesFromFile() const {
     std::optional<base::Value::Dict> result;
     // ASSERT_* returns void. Thus using a lambda to not exit from the function,
@@ -220,7 +222,11 @@ class SingleClientPreferencesWithAccountStorageSyncTest
       base::ScopedAllowBlockingForTesting allow_blocking;
 
       base::FilePath file_path =
+#if BUILDFLAG(IS_ANDROID)
           GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
+#else
+          GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename);
+#endif
       ASSERT_TRUE(base::PathExists(file_path))
           << "Preference file " << file_path << " does not exist.";
       std::string file_content;
@@ -229,7 +235,14 @@ class SingleClientPreferencesWithAccountStorageSyncTest
           base::JSONReader::Read(file_content);
       ASSERT_TRUE(json_content.has_value() && json_content->is_dict())
           << "Failed to parse file content: " << file_content;
-      result = std::move(json_content->GetDict());
+      base::Value::Dict values = std::move(json_content->GetDict());
+#if BUILDFLAG(IS_ANDROID)
+      result = std::move(values);
+#else
+      base::Value::Dict* dict =
+          values.EnsureDict(chrome_prefs::kAccountPreferencesPrefix);
+      result = std::move(*dict);
+#endif
     }();
     return result;
   }
