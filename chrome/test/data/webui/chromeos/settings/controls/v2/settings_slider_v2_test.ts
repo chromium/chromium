@@ -159,14 +159,41 @@ suite(SettingsSliderV2Element.is, () => {
           internalSlider, slider.shadowRoot!.activeElement);
     });
 
-    test('A11y role description includes minLabel and maxLabel', () => {
-      slider.minLabel = 'Low';
-      slider.maxLabel = 'High';
-      assertEquals('Slider: Low to High', internalSlider.ariaRoleDescription);
-    });
+    suite('for a11y', () => {
+      test('ariaLabel property should apply to internal select', () => {
+        const ariaLabel = 'A11y label';
+        slider.ariaLabel = ariaLabel;
+        assertEquals(ariaLabel, internalSlider.getAttribute('aria-label'));
+      });
 
-    test('A11y role description is blank if no minLabel and maxLabel', () => {
-      assertNull(internalSlider.ariaRoleDescription);
+      test('ariaLabel property does not reflect to attribute', () => {
+        const ariaLabel = 'A11y label';
+        slider.ariaLabel = ariaLabel;
+        assertFalse(slider.hasAttribute('aria-label'));
+      });
+
+      test('ariaDescription property should apply to internal select', () => {
+        const ariaDescription = 'A11y description';
+        slider.ariaDescription = ariaDescription;
+        assertEquals(
+            ariaDescription, internalSlider.getAttribute('aria-description'));
+      });
+
+      test('ariaDescription property does not reflect to attribute', () => {
+        const ariaDescription = 'A11y description';
+        slider.ariaDescription = ariaDescription;
+        assertFalse(slider.hasAttribute('aria-description'));
+      });
+
+      test('A11y role description includes minLabel and maxLabel', () => {
+        slider.minLabel = 'Low';
+        slider.maxLabel = 'High';
+        assertEquals('Slider: Low to High', internalSlider.ariaRoleDescription);
+      });
+
+      test('A11y role description is blank if no minLabel and maxLabel', () => {
+        assertNull(internalSlider.ariaRoleDescription);
+      });
     });
   });
 

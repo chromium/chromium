@@ -53,7 +53,8 @@
       on-dragging-changed="onSliderChanged_"
       on-updating-from-key="onSliderChanged_"
       aria-roledescription$="[[getRoleDescription_(minLabel, maxLabel)]]"
-      aria-label$="[[ariaLabel]]"
+      aria-label="[[ariaLabel]]"
+      aria-description="[[ariaDescription]]"
       aria-disabled$="[[getAriaDisabled_(disabled)]]">
   </cr-slider>
   <!-- aria-hidden because role description on #slider contains min/max. -->
