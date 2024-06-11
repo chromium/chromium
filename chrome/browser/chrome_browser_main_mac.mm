@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -91,6 +92,10 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   // ChromeBrowserMainParts should have loaded the resource bundle by this
   // point (needed to load the nib).
   CHECK(ui::ResourceBundle::HasSharedInstance());
+
+#if BUILDFLAG(ENABLE_UPDATER)
+  updater::SchedulePeriodicTasks();
+#endif  // BUILDFLAG(ENABLE_UPDATER)
 
 #if !BUILDFLAG(CHROME_FOR_TESTING)
   // Disk image installation is sort of a first-run task, so it shares the
