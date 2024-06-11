@@ -737,14 +737,17 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     if (file_icon_.IsEmpty()) {
       file_icon_ = GetDefaultIconImage(GetColorProvider());
     }
-    if (!download_dragging_pin_ && navigation_handler_) {
-      download_dragging_pin_ =
+    // Make this a local to avoid UAF if `this` is deleted during dragging.
+    std::unique_ptr<DownloadBubbleNavigationHandler::CloseOnDeactivatePin>
+        download_dragging_pin;
+    if (navigation_handler_) {
+      download_dragging_pin =
           navigation_handler_->PreventDialogCloseOnDeactivate();
     }
     DragDownloadItem(info_->model()->GetDownloadItem(), &file_icon_,
                      widget ? widget->GetNativeView() : nullptr);
     // DragDownloadItem returns when the drag is over.
-    download_dragging_pin_.reset();
+    // `this` may be deleted by now!
   }
   return true;
 }
