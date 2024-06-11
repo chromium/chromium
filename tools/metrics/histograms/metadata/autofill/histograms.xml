@@ -3789,6 +3789,7 @@ chromium-metrics-reviews@google.com.
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
+    Obsolete histogram as of M128, superseded by PlusAddresses.Modal.Events.
     Records user interactions with the experimental plus addresses modal, which
     provides context for new plus addresses and gives the user a chance to opt
     out if desired. Written when the user clicks either of the cancel or ok
@@ -3801,9 +3802,11 @@ chromium-metrics-reviews@google.com.
   <owner>jkeitel@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <summary>
-    Records number of times a user refreshes the proposed plus addresses during
-    the lifetime of a creation dialog (modal or bottomsheet). Emitted once per
-    creation dialog including error states.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.Modal.{Status}.Refreshes. Records number of times a user
+    refreshes the proposed plus addresses during the lifetime of a creation
+    dialog (modal or bottomsheet). Emitted once per creation dialog including
+    error states.
   </summary>
   <token key="Status" variants="AutofillPlusAddressModalCompletionStatus"/>
 </histogram>
@@ -3814,12 +3817,13 @@ chromium-metrics-reviews@google.com.
   <owner>kaklilu@chromium.org</owner>
   <owner>minap@chromium.org</owner>
   <summary>
-    Records the duration of time the user take to interact with the experimental
-    plus addresses modal/bottomsheet on iOS, providing insight on the user
-    experience with it. The duration is the span between when the
-    modal/bottomsheet is shown and when the user decides to confirm or cancel
-    the plus address. An error status is recorded if the user cancels after an
-    error occurs.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.Modal.{Status}.ShownDuration. Records the duration of time the
+    user take to interact with the experimental plus addresses modal/bottomsheet
+    on iOS, providing insight on the user experience with it. The duration is
+    the span between when the modal/bottomsheet is shown and when the user
+    decides to confirm or cancel the plus address. An error status is recorded
+    if the user cancels after an error occurs.
   </summary>
   <token key="Status" variants="AutofillPlusAddressModalCompletionStatus"/>
 </histogram>
@@ -3829,10 +3833,11 @@ chromium-metrics-reviews@google.com.
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
-    Records any OAuth error that the experimental plus addresses feature
-    encounters. This is recorded when the PlusAddressClient needs to fetch an
-    OAuth token to make a network request. This enum also captures the non-error
-    case with NONE.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.NetworkRequest.OauthError. Records any OAuth error that the
+    experimental plus addresses feature encounters. This is recorded when the
+    PlusAddressClient needs to fetch an OAuth token to make a network request.
+    This enum also captures the non-error case with NONE.
   </summary>
 </histogram>
 
@@ -3841,11 +3846,12 @@ chromium-metrics-reviews@google.com.
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
-    Measures the latency of network requests made by the experimental plus
-    addresses feature. Latency is measured as the difference between when the
-    PlusAddressClient issues the request and when it receives a response. The
-    PlusAddressClient records this whenever it gets a response for the network
-    requests it makes.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.NetworkRequest.{Type}.Latency. Measures the latency of network
+    requests made by the experimental plus addresses feature. Latency is
+    measured as the difference between when the PlusAddressClient issues the
+    request and when it receives a response. The PlusAddressClient records this
+    whenever it gets a response for the network requests it makes.
   </summary>
   <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
@@ -3855,9 +3861,11 @@ chromium-metrics-reviews@google.com.
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
-    Records the response body size of network requests made by the experimental
-    plus addresses feature. The PlusAddressClient records this whenever it gets
-    a response for the network requests it makes.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.NetworkRequest.{Type}.ResponseByteSize. Records the response
+    body size of network requests made by the experimental plus addresses
+    feature. The PlusAddressClient records this whenever it gets a response for
+    the network requests it makes.
   </summary>
   <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
@@ -3867,9 +3875,11 @@ chromium-metrics-reviews@google.com.
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
-    Records HTTP response codes of network requests made by the experimental
-    plus addresses feature. The PlusAddressClient records this whenever it gets
-    a response for the network requests it makes.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.NetworkRequest.{Type}.ResponseCode. Records HTTP response
+    codes of network requests made by the experimental plus addresses feature.
+    The PlusAddressClient records this whenever it gets a response for the
+    network requests it makes.
   </summary>
   <token key="Type" variants="AutofillPlusAddressNetworkRequestType"/>
 </histogram>
@@ -3879,10 +3889,12 @@ chromium-metrics-reviews@google.com.
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
-    Records user interactions with the experimental plus addresses feature in
-    autofill. Includes suggestions and clicks of both new plus address creation
-    suggestions and existing plus address filling suggestions. Recorded when the
-    suggestions are shown, and when they are chosen.
+    Obsolete histogram as of M128, superseded by
+    PlusAddresses.Suggestion.Events. Records user interactions with the
+    experimental plus addresses feature in autofill. Includes suggestions and
+    clicks of both new plus address creation suggestions and existing plus
+    address filling suggestions. Recorded when the suggestions are shown, and
+    when they are chosen.
   </summary>
 </histogram>
 

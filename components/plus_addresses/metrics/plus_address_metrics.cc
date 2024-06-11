@@ -14,9 +14,6 @@ namespace plus_addresses::metrics {
 
 void RecordModalEvent(
     PlusAddressModalEvent plus_address_modal_event) {
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramEnumeration("Autofill.PlusAddresses.Modal.Events",
-                                plus_address_modal_event);
   base::UmaHistogramEnumeration("PlusAddresses.Modal.Events",
                                 plus_address_modal_event);
 }
@@ -25,26 +22,12 @@ void RecordModalShownOutcome(
     PlusAddressModalCompletionStatus status,
     base::TimeDelta modal_shown_duration,
     int refresh_count) {
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramTimes(
-      base::ReplaceStringPlaceholders(
-          "Autofill.PlusAddresses.Modal.$1.ShownDuration",
-          {PlusAddressModalCompletionStatusToString(status)},
-          /*offsets=*/nullptr),
-      modal_shown_duration);
   base::UmaHistogramTimes(
       base::ReplaceStringPlaceholders(
           "PlusAddresses.Modal.$1.ShownDuration",
           {PlusAddressModalCompletionStatusToString(status)},
           /*offsets=*/nullptr),
       modal_shown_duration);
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramExactLinear(
-      base::ReplaceStringPlaceholders(
-          "Autofill.PlusAddresses.Modal.$1.Refreshes",
-          {PlusAddressModalCompletionStatusToString(status)},
-          /*offsets=*/nullptr),
-      refresh_count, /*exclusive_max=*/31);
   base::UmaHistogramExactLinear(
       base::ReplaceStringPlaceholders(
           "PlusAddresses.Modal.$1.Refreshes",
@@ -56,9 +39,6 @@ void RecordModalShownOutcome(
 void RecordAutofillSuggestionEvent(
     autofill::AutofillPlusAddressDelegate::SuggestionEvent
         plus_address_autofill_suggestion_event) {
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramEnumeration("Autofill.PlusAddresses.Suggestion.Events",
-                                plus_address_autofill_suggestion_event);
   base::UmaHistogramEnumeration("PlusAddresses.Suggestion.Events",
                                 plus_address_autofill_suggestion_event);
 }
@@ -66,13 +46,6 @@ void RecordAutofillSuggestionEvent(
 void RecordNetworkRequestLatency(
     PlusAddressNetworkRequestType type,
     base::TimeDelta request_latency) {
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramTimes(
-      base::ReplaceStringPlaceholders(
-          "Autofill.PlusAddresses.NetworkRequest.$1.Latency",
-          {PlusAddressNetworkRequestTypeToString(type)},
-          /*offsets=*/nullptr),
-      request_latency);
   base::UmaHistogramTimes(base::ReplaceStringPlaceholders(
                               "PlusAddresses.NetworkRequest.$1.Latency",
                               {PlusAddressNetworkRequestTypeToString(type)},
@@ -84,13 +57,6 @@ void RecordNetworkRequestResponseCode(
     PlusAddressNetworkRequestType type,
     int response_code) {
   // Mapped to "HttpErrorCodes" in histograms.xml.
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramSparse(
-      base::ReplaceStringPlaceholders(
-          "Autofill.PlusAddresses.NetworkRequest.$1.ResponseCode",
-          {PlusAddressNetworkRequestTypeToString(type)},
-          /*offsets=*/nullptr),
-      response_code);
   base::UmaHistogramSparse(base::ReplaceStringPlaceholders(
                                "PlusAddresses.NetworkRequest.$1.ResponseCode",
                                {PlusAddressNetworkRequestTypeToString(type)},
@@ -101,13 +67,6 @@ void RecordNetworkRequestResponseCode(
 void RecordNetworkRequestResponseSize(
     PlusAddressNetworkRequestType type,
     int response_size) {
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramCounts10000(
-      base::ReplaceStringPlaceholders(
-          "Autofill.PlusAddresses.NetworkRequest.$1.ResponseByteSize",
-          {PlusAddressNetworkRequestTypeToString(type)},
-          /*offsets=*/nullptr),
-      response_size);
   base::UmaHistogramCounts10000(
       base::ReplaceStringPlaceholders(
           "PlusAddresses.NetworkRequest.$1.ResponseByteSize",
@@ -119,10 +78,6 @@ void RecordNetworkRequestResponseSize(
 
 void RecordNetworkRequestOauthError(
     GoogleServiceAuthError error) {
-  // TODO: crbug.com/346076280 - Remove this metric for M128.
-  base::UmaHistogramEnumeration(
-      "Autofill.PlusAddresses.NetworkRequest.OauthError", error.state(),
-      GoogleServiceAuthError::NUM_STATES);
   base::UmaHistogramEnumeration("PlusAddresses.NetworkRequest.OauthError",
                                 error.state(),
                                 GoogleServiceAuthError::NUM_STATES);
