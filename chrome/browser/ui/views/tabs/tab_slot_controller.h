@@ -231,6 +231,10 @@ class TabSlotController {
 
   virtual const Browser* GetBrowser() const = 0;
 
+  // Returns the current width of inactive tabs. An individual inactive tab may
+  // differ from this width slightly due to rounding.
+  virtual int GetInactiveTabWidth() const = 0;
+
  protected:
   virtual ~TabSlotController() = default;
 };

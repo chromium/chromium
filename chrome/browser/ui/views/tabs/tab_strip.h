@@ -311,6 +311,7 @@ class TabStrip : public views::View,
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override;
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   const Browser* GetBrowser() const override;
+  int GetInactiveTabWidth() const override;
 
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;
@@ -368,10 +369,6 @@ class TabStrip : public views::View,
 
   // Returns the current width of the active tab.
   int GetActiveTabWidth() const;
-
-  // Returns the current width of inactive tabs. An individual inactive tab may
-  // differ from this width slightly due to rounding.
-  int GetInactiveTabWidth() const;
 
   // Returns the last tab in the strip that's actually visible.  This will be
   // the actual last tab unless the strip is in the overflow node_data.

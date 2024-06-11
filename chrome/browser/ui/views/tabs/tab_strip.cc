@@ -1905,6 +1905,10 @@ const Browser* TabStrip::GetBrowser() const {
   return controller_->GetBrowser();
 }
 
+int TabStrip::GetInactiveTabWidth() const {
+  return tab_container_->GetInactiveTabWidth();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, views::View overrides:
 
@@ -2064,10 +2068,6 @@ bool TabStrip::TitlebarBackgroundIsTransparent() const {
 
 int TabStrip::GetActiveTabWidth() const {
   return tab_container_->GetActiveTabWidth();
-}
-
-int TabStrip::GetInactiveTabWidth() const {
-  return tab_container_->GetInactiveTabWidth();
 }
 
 const Tab* TabStrip::GetLastVisibleTab() const {

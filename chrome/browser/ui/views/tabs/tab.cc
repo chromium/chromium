@@ -321,7 +321,8 @@ void Tab::Layout(PassKey) {
     if (base::FeatureList::IsEnabled(
             performance_manager::features::kDiscardRingImprovements)) {
       icon_->EnlargeDiscardIndicatorRadius(
-          width() - 2 * tab_style()->GetBottomCornerRadius() >=
+          controller()->GetInactiveTabWidth() -
+                      2 * tab_style()->GetBottomCornerRadius() >=
                   gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
               ? kIncreasedDiscardIndicatorRadiusDp
               : 0);
