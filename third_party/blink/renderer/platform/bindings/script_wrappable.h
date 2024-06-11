@@ -56,9 +56,7 @@ class PLATFORM_EXPORT ScriptWrappable
       public NameClient {
  public:
   // This is a type dispatcher from ScriptWrappable* to a subtype, optimized for
-  // use cases that perform downcasts multiple times. If you perform a downcast
-  // only once, ScriptWrappable::DowncastTo or ScriptWrappable::ToMostDerived
-  // would be a better choice.
+  // use cases that perform downcasts multiple times.
   class TypeDispatcher final {
     STACK_ALLOCATED();
 
@@ -109,49 +107,6 @@ class PLATFORM_EXPORT ScriptWrappable
 
   virtual void Trace(Visitor*) const;
 
-  // Downcasts this instance to the given template parameter type or nullptr if
-  // this instance doesn't implement the given type. The inheritance is checked
-  // with WrapperTypeInfo, i.e. the check is based on the IDL definitions in
-  // *.idl files, not based on C++ class inheritance.
-  template <typename T>
-  T* DowncastTo() {
-    if (GetWrapperTypeInfo()->IsSubclass(T::GetStaticWrapperTypeInfo()))
-      return static_cast<T*>(this);
-    return nullptr;
-  }
-
-  // Downcasts this instance to the given template parameter type iff this
-  // instance implements the type as the most derived class (i.e. this instance
-  // does _not_ implement a subtype of the given type). Otherwise, returns
-  // nullptr. The inheritance is checked with WrapperTypeInfo, i.e. the check is
-  // based on the IDL definitions in *.idl files, not based on C++ class
-  // inheritance.
-  template <typename T>
-  T* ToMostDerived() {
-    if (GetWrapperTypeInfo() == T::GetStaticWrapperTypeInfo())
-      return static_cast<T*>(this);
-    return nullptr;
-  }
-
-  template <typename T>
-  T* ToImpl() {  // DEPRECATED
-    // All ScriptWrappables are managed by the Blink GC heap; check that
-    // |T| is a garbage collected type.
-    static_assert(
-        sizeof(T) && WTF::IsGarbageCollectedType<T>::value,
-        "Classes implementing ScriptWrappable must be garbage collected.");
-
-    // Check if T* is castable to ScriptWrappable*, which means T doesn't
-    // have two or more ScriptWrappable as superclasses. If T has two
-    // ScriptWrappable as superclasses, conversions from T* to
-    // ScriptWrappable* are ambiguous.
-    static_assert(!static_cast<ScriptWrappable*>(static_cast<T*>(nullptr)),
-                  "Class T must not have two or more ScriptWrappable as its "
-                  "superclasses.");
-
-    return static_cast<T*>(this);
-  }
-
   // Returns the WrapperTypeInfo of the instance.
   //
   // This method must be overridden by DEFINE_WRAPPERTYPEINFO macro.
@@ -201,11 +156,10 @@ template <typename T>
   requires std::derived_from<T, ScriptWrappable>
 T* ToScriptWrappable(v8::Isolate* isolate, v8::Local<v8::Object> wrapper) {
   const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
-  return v8::Object::Unwrap<ScriptWrappable>(
-             isolate, wrapper,
-             v8::CppHeapPointerTagRange(wrapper_type_info->this_tag,
-                                        wrapper_type_info->max_subclass_tag))
-      ->template ToImpl<T>();
+  return static_cast<T*>(v8::Object::Unwrap<ScriptWrappable>(
+      isolate, wrapper,
+      v8::CppHeapPointerTagRange(wrapper_type_info->this_tag,
+                                 wrapper_type_info->max_subclass_tag)));
 }
 
 // Defines |GetWrapperTypeInfo| virtual method which returns the WrapperTypeInfo

@@ -28,8 +28,8 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
   // no longer "unsafe", and should be renamed or merged with ToWrappable().
   static inline T* ToWrappableUnsafe(v8::Isolate* isolate,
                                      v8::Local<v8::Object> value) {
-    return v8::Object::Unwrap<ScriptWrappable>(isolate, value, V8T::kTagRange)
-        ->template ToImpl<T>();
+    return static_cast<T*>(
+        v8::Object::Unwrap<ScriptWrappable>(isolate, value, V8T::kTagRange));
   }
 
   static inline bool HasInstance(v8::Isolate* isolate,
