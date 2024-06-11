@@ -28,6 +28,9 @@ import java.util.Set;
 class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     private static final String TAG = "HttpEngBuilderWrap";
 
+    private static boolean sLibraryLoaderUnsupportedLogged;
+    private static boolean sNQEUnsupportedLogged;
+
     private final HttpEngine.Builder mBackend;
     private int mThreadPriority = Integer.MIN_VALUE;
 
@@ -54,10 +57,12 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     @Override
     public ICronetEngineBuilder setLibraryLoader(CronetEngine.Builder.LibraryLoader loader) {
-        Log.w(
-                TAG,
-                "Custom library loader isn't supported when using the platform Cronet provider."
-                        + " Ignoring...");
+        if (!sLibraryLoaderUnsupportedLogged) {
+            Log.i(
+                    TAG,
+                    "Custom library loader is unsupported when HttpEngineNativeProvider is used.");
+            sLibraryLoaderUnsupportedLogged = true;
+        }
         return this;
     }
 
@@ -131,6 +136,17 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         mBackend.setConnectionMigrationOptions(parseConnectionMigrationOptions(options));
         mBackend.setDnsOptions(parseDnsOptions(options));
         mBackend.setQuicOptions(parseQuicOptions(options));
+        return this;
+    }
+
+    @Override
+    public ICronetEngineBuilder enableNetworkQualityEstimator(boolean value) {
+        if (!sNQEUnsupportedLogged) {
+            Log.i(
+                    TAG,
+                    "NetworkQualityEstimator is unsupported when HttpEngineNativeProvider is used");
+            sNQEUnsupportedLogged = true;
+        }
         return this;
     }
 

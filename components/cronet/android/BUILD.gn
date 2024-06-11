@@ -549,6 +549,7 @@ android_library("httpengine_native_provider_java") {
     "java/src/org/chromium/net/impl/AndroidHttpExceptionWrapper.java",
     "java/src/org/chromium/net/impl/AndroidNetworkExceptionWrapper.java",
     "java/src/org/chromium/net/impl/AndroidQuicExceptionWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidRequestFinishedInfoWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUploadDataProviderWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUploadDataSinkWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlRequestCallbackWrapper.java",

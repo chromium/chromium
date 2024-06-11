@@ -104,15 +104,13 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
             @RequestFinishedInfoImpl.FinishedReason int finishedReason,
             AndroidUrlResponseInfoWrapper responseInfo,
             CronetException exception) {
-        final RequestFinishedInfo requestInfo =
-                new RequestFinishedInfoImpl(
-                        mInitialUrl,
-                        mAnnotations,
-                        new CronetMetrics(
-                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, -1, -1),
-                        finishedReason,
-                        responseInfo,
-                        exception);
-        mEngine.reportRequestFinished(requestInfo, mRequestFinishedInfoListener);
+        AndroidRequestFinishedInfoWrapper.reportFinished(
+                mEngine,
+                mInitialUrl,
+                mAnnotations,
+                mRequestFinishedInfoListener,
+                finishedReason,
+                responseInfo,
+                exception);
     }
 }

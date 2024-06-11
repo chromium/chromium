@@ -95,15 +95,7 @@ class AndroidBidirectionalStreamWrapper extends org.chromium.net.ExperimentalBid
             @RequestFinishedInfoImpl.FinishedReason int finishedReason,
             AndroidUrlResponseInfoWrapper responseInfo,
             CronetException exception) {
-        final RequestFinishedInfo requestInfo =
-                new RequestFinishedInfoImpl(
-                        mInitialUrl,
-                        mAnnotations,
-                        new CronetMetrics(
-                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, -1, -1),
-                        finishedReason,
-                        responseInfo,
-                        exception);
-        mEngine.reportRequestFinished(requestInfo, null);
+        AndroidRequestFinishedInfoWrapper.reportFinished(
+                mEngine, mInitialUrl, mAnnotations, null, finishedReason, responseInfo, exception);
     }
 }
