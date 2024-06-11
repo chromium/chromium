@@ -4018,32 +4018,32 @@ No devices connected.
 
       <!-- Notification that an accelerator was pressed, so the user knows how to toggle it back -->
       <message name="IDS_HIGH_CONTRAST_ACCEL_TITLE"
-               desc="Notification title to tell users that they just pressed the Ctrl+Search+H shortcut to toggle Color Inversion Mode (formerly known as High Contrast), and that pressing it again will toggle it off.">
+               desc="Notification title to tell users that they just pressed an accelerator keyboard shortcut shortcut to toggle Color Inversion Mode (formerly known as High Contrast), and that pressing it again will toggle it off.">
         Color Inversion Mode
       </message>
       <message name="IDS_HIGH_CONTRAST_ACCEL_MSG"
-               desc="Notification message to tell users that they just pressed the Ctrl+Search+H shortcut to toggle Color Inversion Mode (formerly known as High Contrast), and that pressing it again will toggle it off.">
-        Color Inversion Mode enabled. Press Ctrl+Search+H again to toggle it off.
+               desc="Notification message to tell users that they just pressed an accelerator keyboard shortcut to toggle Color Inversion Mode (formerly known as High Contrast), and that pressing it again will toggle it off.">
+        Color Inversion Mode enabled. Press <ph name="accelerator">$1<ex>ctrl+search+h</ex></ph> again to toggle it off.
       </message>
 
       <!-- Notification that an accelerator was pressed, so the user knows how to toggle it back -->
       <message name="IDS_DOCKED_MAGNIFIER_ACCEL_TITLE"
-               desc="Notification title to tell users that they just pressed the Ctrl+Search+D shortcut to toggle Docked Magnifier, and that pressing it again will toggle it off.">
+               desc="Notification title to tell users that they just pressed the accelerator keyboard shortcut to toggle Docked Magnifier, and that pressing it again will toggle it off.">
         Docked Magnifier
       </message>
       <message name="IDS_DOCKED_MAGNIFIER_ACCEL_MSG"
-               desc="Notification message to tell users that they just pressed the Ctrl+Search+D shortcut to toggle Docked Magnifier, and that pressing it again will toggle it off.">
-        Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.
+               desc="Notification message to tell users that they just pressed the accelerator keyboard shortcut to toggle Docked Magnifier, and that pressing it again will toggle it off.">
+        Docked Magnifier enabled. Press <ph name="accelerator">$1<ex>ctrl+search+d</ex></ph> again to toggle it off.
       </message>
 
       <!-- Notification that an accelerator was pressed, so the user knows how to toggle it back -->
       <message name="IDS_FULLSCREEN_MAGNIFIER_ACCEL_TITLE"
-               desc="Notification title to tell users that they just pressed the Ctrl+Search+M shortcut to toggle Full-screen Magnifier, and that pressing it again will toggle it off.">
+               desc="Notification title to tell users that they just pressed an accelerator keyboard shortcut to toggle Full-screen Magnifier, and that pressing it again will toggle it off.">
         Full-screen Magnifier
       </message>
       <message name="IDS_FULLSCREEN_MAGNIFIER_ACCEL_MSG"
-               desc="Notification message to tell users that they just pressed the Ctrl+Search+M shortcut to toggle Full-screen Magnifier, and that pressing it again will toggle it off.">
-        Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.
+               desc="Notification message to tell users that they just pressed an accelerator keyboard shortcut to toggle Full-screen Magnifier, and that pressing it again will toggle it off.">
+        Full-screen Magnifier enabled. Press <ph name="accelerator">$1<ex>ctrl+search+m</ex></ph> again to toggle it off.
       </message>
 
       <message name="IDS_ASH_ACCELERATOR_LAUNCHER_KEY" desc="Label for the launcher key in ChromeOS keyboards.">
