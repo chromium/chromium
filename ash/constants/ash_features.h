@@ -427,6 +427,8 @@ BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGlanceablesTimeManagementOverscrollToExpand);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGaiaRecordAccountCreation);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGameDashboard);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGameDashboardGamePWAs);
@@ -1175,6 +1177,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool AreAnyGlanceablesTimeManagementViewsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGlanceablesTimeManagementOverscrollToExpandEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

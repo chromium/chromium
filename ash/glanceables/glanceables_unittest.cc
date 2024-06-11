@@ -80,7 +80,8 @@ class GlanceablesBaseTest : public AshTestBase {
     features_.InitWithFeatures(
         /*enabled_features=*/
         {features::kGlanceablesTimeManagementTasksView,
-         features::kGlanceablesTimeManagementClassroomStudentView},
+         features::kGlanceablesTimeManagementClassroomStudentView,
+         features::kGlanceablesTimeManagementOverscrollToExpand},
         /*disabled_features=*/{});
   }
 

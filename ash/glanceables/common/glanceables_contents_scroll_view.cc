@@ -7,6 +7,7 @@
 #include <limits>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -85,6 +86,10 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
     RoundedScrollBar::OnGestureEvent(event);
   }
   void ObserveScrollEvent(const ui::ScrollEvent& event) override {
+    if (!features::IsGlanceablesTimeManagementOverscrollToExpandEnabled()) {
+      return;
+    }
+
     switch (event.type()) {
       case ui::ET_SCROLL_FLING_CANCEL:
         // Check if the position is at the max/min position at the start of the
@@ -186,7 +191,11 @@ GlanceablesContentsScrollView::GlanceablesContentsScrollView(
 
 void GlanceablesContentsScrollView::SetOnOverscrollCallback(
     const base::RepeatingClosure& callback) {
-  scroll_bar_->SetOnOverscrollCallback(std::move(callback));
+  if (!features::IsGlanceablesTimeManagementOverscrollToExpandEnabled()) {
+    return;
+  }
+
+  scroll_bar_->SetOnOverscrollCallback(callback);
 }
 
 void GlanceablesContentsScrollView::OnGestureEvent(ui::GestureEvent* event) {
@@ -199,7 +208,8 @@ void GlanceablesContentsScrollView::OnGestureEvent(ui::GestureEvent* event) {
                       event->type() == ui::ET_GESTURE_SCROLL_END ||
                       event->type() == ui::ET_SCROLL_FLING_START;
 
-  if (!scroll_bar_->GetVisible() && scroll_event) {
+  if (features::IsGlanceablesTimeManagementOverscrollToExpandEnabled() &&
+      !scroll_bar_->GetVisible() && scroll_event) {
     scroll_bar_->OnGestureEvent(event);
     return;
   }
