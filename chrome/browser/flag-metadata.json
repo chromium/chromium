@@ -3049,7 +3049,7 @@
   {
     "name": "enable-external-keyboards-in-diagnostics-app",
     "owners": [ "jimmyxgong@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-fake-keyboard-heuristic",
