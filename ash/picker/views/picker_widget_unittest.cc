@@ -42,6 +42,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void StartSearch(const std::u16string& query,
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override {}
+  void StartEmojiSearch(const std::u16string& query,
+                        EmojiSearchResultsCallback callback) override {}
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {}
   void OpenResult(const PickerSearchResult& result) override {}
   void ShowEmojiPicker(ui::EmojiPickerCategory category,

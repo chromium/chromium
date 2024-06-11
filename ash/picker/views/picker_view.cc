@@ -356,6 +356,9 @@ void PickerView::StartSearch(const std::u16string& query) {
   if (!query.empty()) {
     SetActivePage(search_results_view_);
     published_first_results_ = false;
+    delegate_->StartEmojiSearch(query,
+                                base::BindOnce(&PickerView::PublishEmojiResults,
+                                               weak_ptr_factory_.GetWeakPtr()));
     delegate_->StartSearch(
         query, selected_category_,
         base::BindRepeating(
@@ -368,6 +371,10 @@ void PickerView::StartSearch(const std::u16string& query) {
     ResetEmojiBarToZeroState();
     SetActivePage(zero_state_view_);
   }
+}
+
+void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
+  emoji_bar_view_->SetSearchResults(std::move(results));
 }
 
 void PickerView::PublishSearchResults(
@@ -389,11 +396,6 @@ void PickerView::PublishSearchResults(
     // Do not show GIFs.
     if (result.type() == PickerSectionType::kGifs) {
       continue;
-    } else if (result.type() == PickerSectionType::kExpressions) {
-      // TODO: b/327255023 - Avoid this copy by having a separate method for
-      // publishing expression results.
-      emoji_bar_view_->SetSearchResults(
-          {result.results().begin(), result.results().end()});
     } else {
       search_results_view_->AppendSearchResults(std::move(result));
     }

@@ -38,8 +38,9 @@ class ASH_EXPORT PickerSearchController {
                    base::span<const PickerCategory> available_categories,
                    PickerViewDelegate::SearchResultsCallback callback);
 
-  void StartEmojiSearch(const std::u16string& query,
-                        PickerViewDelegate::SearchResultsCallback callback);
+  void StartEmojiSearch(
+      const std::u16string& query,
+      PickerViewDelegate::EmojiSearchResultsCallback callback);
 
  private:
   const raw_ref<PickerClient> client_;

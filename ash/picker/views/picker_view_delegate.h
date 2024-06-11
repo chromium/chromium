@@ -26,6 +26,8 @@ class ASH_EXPORT PickerViewDelegate {
  public:
   using SearchResultsCallback = base::RepeatingCallback<void(
       std::vector<PickerSearchResultsSection> results)>;
+  using EmojiSearchResultsCallback =
+      base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
   using SuggestedEditorResultsCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
 
@@ -52,6 +54,10 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void StartSearch(const std::u16string& query,
                            std::optional<PickerCategory> category,
                            SearchResultsCallback callback) = 0;
+
+  // Starts a emoji search for `query`. Results will be returned via `callback`.
+  virtual void StartEmojiSearch(const std::u16string& query,
+                                EmojiSearchResultsCallback callback) = 0;
 
   // Inserts `result` into the next focused input field.
   // If there's no focus event within some timeout after the widget is closed,

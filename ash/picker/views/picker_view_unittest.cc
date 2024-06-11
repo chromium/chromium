@@ -116,6 +116,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     std::vector<PickerCategory> available_categories;
     FakeSearchFunction search_function;
     PickerActionType action_type = PickerActionType::kInsert;
+    std::vector<PickerSearchResult> emoji_results;
     std::vector<std::string> recent_emojis;
     std::vector<std::string> placeholder_emojis;
   };
@@ -152,6 +153,11 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     } else {
       options_.search_function.Run(std::move(callback));
     }
+  }
+
+  void StartEmojiSearch(const std::u16string& query,
+                        EmojiSearchResultsCallback callback) override {
+    std::move(callback).Run(options_.emoji_results);
   }
 
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {
@@ -648,28 +654,15 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
 }
 
 TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
-  base::test::TestFuture<void> search_called;
-  FakePickerViewDelegate::SearchResultsCallback search_callback;
   FakePickerViewDelegate delegate({
-      .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
-            search_callback = std::move(callback);
-            search_called.SetValue();
-          }),
+      .emoji_results = {PickerSearchResult::Emoji(u"😊"),
+                        PickerSearchResult::Symbol(u"♬")},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  ASSERT_TRUE(search_called.Wait());
-
-  search_callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                 {{PickerSearchResult::Emoji(u"😊"),
-                                   PickerSearchResult::Symbol(u"♬")}},
-                                 /*has_more_results=*/false),
-  });
 
   EXPECT_TRUE(picker_view->emoji_bar_view_for_testing().GetVisible());
   EXPECT_THAT(picker_view->emoji_bar_view_for_testing()
@@ -1031,23 +1024,13 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
 }
 
 TEST_F(PickerViewTest, ArrowKeysNavigateEmojiBar) {
-  base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
-      .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
-            future.SetValue();
-            callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                           {{PickerSearchResult::Emoji(u"😊"),
-                                             PickerSearchResult::Symbol(u"♬")}},
-                                           /*has_more_results=*/false),
-            });
-          }),
+      .emoji_results = {PickerSearchResult::Emoji(u"😊"),
+                        PickerSearchResult::Symbol(u"♬")},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  ASSERT_TRUE(future.Wait());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);

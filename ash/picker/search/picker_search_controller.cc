@@ -71,7 +71,7 @@ void PickerSearchController::StartSearch(
 
 void PickerSearchController::StartEmojiSearch(
     const std::u16string& query,
-    PickerViewDelegate::SearchResultsCallback callback) {
+    PickerViewDelegate::EmojiSearchResultsCallback callback) {
   const base::TimeTicks search_start = base::TimeTicks::Now();
 
   emoji::EmojiSearchResult results =
@@ -111,14 +111,7 @@ void PickerSearchController::StartEmojiSearch(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
   }
 
-  const size_t full_results_count =
-      results.emojis.size() + results.symbols.size() + results.emoticons.size();
-
-  std::vector<PickerSearchResultsSection> sections;
-  sections.emplace_back(
-      PickerSectionType::kExpressions, std::move(emoji_results),
-      /*has_more_results=*/emoji_results.size() < full_results_count);
-  std::move(callback).Run(std::move(sections));
+  std::move(callback).Run(std::move(emoji_results));
 }
 
 }  // namespace ash

@@ -112,8 +112,11 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
  private:
   // Starts a search with `query`, with search results being returned to
-  // `PublishSearchResults`.
+  // `PublishSearchResults` and `PublishEmojiResults`.
   void StartSearch(const std::u16string& query);
+
+  // Displays `results` in the emoji bar.
+  void PublishEmojiResults(std::vector<PickerSearchResult> results);
 
   // Displays `results` in the search view.
   // If `show_no_results_found` is true and `results` is empty, then a "no
