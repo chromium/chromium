@@ -25,7 +25,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -51,6 +53,7 @@ import java.util.concurrent.TimeoutException;
     "enable-features=" + BlinkFeatures.BACK_FORWARD_TRANSITIONS
 })
 @DoNotBatch(reason = "Affect nav settings")
+@EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
 public class ScreenshotCaptureTest {
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -61,7 +64,7 @@ public class ScreenshotCaptureTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_NAVIGATION_GESTURENAV)
                     .build();
 
