@@ -92,7 +92,10 @@ source_set("unit_tests") {
 
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/feature_engagement/components_unittests.filter
-  sources = [ "configuration_unittest.cc" ]
+  sources = [
+    "configuration_unittest.cc",
+    "feature_list_unittest.cc",
+  ]
 
   deps = [
     ":public",

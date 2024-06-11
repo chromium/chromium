@@ -31,6 +31,7 @@ namespace {
 // This is intended to be used with VARIATION_ENTRY below to be able to insert
 // it into an array of flags_ui::FeatureEntry::FeatureVariation.
 #define DEFINE_VARIATION_PARAM(base_feature, feature_name)                     \
+  using validate_##base_feature##_t = decltype(&base_feature);                 \
   constexpr flags_ui::FeatureEntry::FeatureParam base_feature##Variation[] = { \
       {kIPHDemoModeFeatureChoiceParam, feature_name}}
 
@@ -69,9 +70,9 @@ DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageFeature,
                        "IPH_AutoDarkUserEducationMessage");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageOptInFeature,
                        "IPH_AutoDarkUserEducationMessageOptIn");
-DEFINE_VARIATION_PARAM(kIPHAppSpecificHistoryFeature, "IPH_AppSpecificHistory");
-DEFINE_VARIATION_PARAM(kIPHCCTHistoryFeature, "IPH_CCTHistory");
-DEFINE_VARIATION_PARAM(kIPHCCTMinimizedFeature, "IPH_CCTMinimized");
+DEFINE_VARIATION_PARAM(kIPHAppSpecificHistory, "IPH_AppSpecificHistory");
+DEFINE_VARIATION_PARAM(kIPHCCTHistory, "IPH_CCTHistory");
+DEFINE_VARIATION_PARAM(kIPHCCTMinimized, "IPH_CCTMinimized");
 DEFINE_VARIATION_PARAM(kIPHContextualPageActionsQuietVariantFeature,
                        "IPH_ContextualPageActions_QuietVariant");
 DEFINE_VARIATION_PARAM(kIPHContextualPageActionsActionChipFeature,
@@ -209,7 +210,7 @@ DEFINE_VARIATION_PARAM(kIPHDefaultSiteViewFeature, "IPH_DefaultSiteView");
 DEFINE_VARIATION_PARAM(kIPHFollowWhileBrowsingFeature,
                        "IPH_FollowWhileBrowsing");
 DEFINE_VARIATION_PARAM(kIPHPriceNotificationsWhileBrowsingFeature,
-                       "IPHPriceNotificationsWhileBrowsing");
+                       "IPH_PriceNotificationsWhileBrowsing");
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserBadgeEligibilityFeature,
                        "IPH_iOSDefaultBrowserBadgeEligibility");
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
@@ -289,8 +290,6 @@ DEFINE_VARIATION_PARAM(kIPHDesktopNewTabPageModulesCustomizeFeature,
                        "IPH_DesktopNewTabPageModulesCustomize");
 DEFINE_VARIATION_PARAM(kIPHDiscardRingFeature, "IPH_DiscardRing");
 DEFINE_VARIATION_PARAM(kIPHDownloadEsbPromoFeature, "IPH_DownloadEsbPromo");
-DEFINE_VARIATION_PARAM(kIPHDownloadToolbarButtonFeature,
-                       "IPH_DownloadToolbarButton");
 DEFINE_VARIATION_PARAM(kIPHExperimentalAIPromoFeature,
                        "IPH_ExperimentalAIPromo");
 DEFINE_VARIATION_PARAM(kIPHExplicitBrowserSigninPreferenceRememberedFeature,
@@ -300,15 +299,13 @@ DEFINE_VARIATION_PARAM(kIPHExtensionsMenuFeature, "IPH_ExtensionsMenu");
 DEFINE_VARIATION_PARAM(kIPHExtensionsRequestAccessButtonFeature,
                        "IPH_ExtensionsRequestAccessButton");
 #endif
-DEFINE_VARIATION_PARAM(kIPHFocusModeFeature, "IPH_FocusMode");
-DEFINE_VARIATION_PARAM(kIPHGlobalMediaControls, "IPH_GlobalMediaControls");
 DEFINE_VARIATION_PARAM(kIPHGMCCastStartStopFeature, "IPH_GMCCastStartStop");
 DEFINE_VARIATION_PARAM(kIPHGMCLocalMediaCastingFeature,
                        "IPH_GMCLocalMediaCasting");
 // The feature is used in Finch experiments so it is unable to be renamed
 // alongside the variable name.
 DEFINE_VARIATION_PARAM(kIPHMemorySaverModeFeature, "IPH_HighEfficiencyMode");
-DEFINE_VARIATION_PARAM(kIPHLiveCaption, "IPH_LiveCaption");
+DEFINE_VARIATION_PARAM(kIPHLiveCaptionFeature, "IPH_LiveCaption");
 DEFINE_VARIATION_PARAM(kIPHPasswordsAccountStorageFeature,
                        "IPH_PasswordsAccountStorage");
 DEFINE_VARIATION_PARAM(kIPHPasswordsManagementBubbleAfterSaveFeature,
@@ -389,7 +386,7 @@ DEFINE_VARIATION_PARAM(kIPHAutofillExternalAccountProfileSuggestionFeature,
 DEFINE_VARIATION_PARAM(kIPHAutofillManualFallbackFeature,
                        "IPH_AutofillManualFallback");
 DEFINE_VARIATION_PARAM(kIPHAutofillVirtualCardCVCSuggestionFeature,
-                       "IPH_AutofillVirtualCardCVCSuggestionFeature");
+                       "IPH_AutofillVirtualCardCVCSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillVirtualCardSuggestionFeature,
                        "IPH_AutofillVirtualCardSuggestion");
 DEFINE_VARIATION_PARAM(kIPHCookieControlsFeature, "IPH_CookieControls");
@@ -506,9 +503,9 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAutoDarkOptOutFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageOptInFeature),
-        VARIATION_ENTRY(kIPHAppSpecificHistoryFeature),
-        VARIATION_ENTRY(kIPHCCTHistoryFeature),
-        VARIATION_ENTRY(kIPHCCTMinimizedFeature),
+        VARIATION_ENTRY(kIPHAppSpecificHistory),
+        VARIATION_ENTRY(kIPHCCTHistory),
+        VARIATION_ENTRY(kIPHCCTMinimized),
         VARIATION_ENTRY(kIPHContextualPageActionsQuietVariantFeature),
         VARIATION_ENTRY(kIPHContextualPageActionsActionChipFeature),
         VARIATION_ENTRY(kIPHDataSaverDetailFeature),
@@ -634,19 +631,16 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeRefreshFeature),
         VARIATION_ENTRY(kIPHDesktopNewTabPageModulesCustomizeFeature),
         VARIATION_ENTRY(kIPHDiscardRingFeature),
-        VARIATION_ENTRY(kIPHDownloadToolbarButtonFeature),
         VARIATION_ENTRY(kIPHExperimentalAIPromoFeature),
         VARIATION_ENTRY(kIPHExplicitBrowserSigninPreferenceRememberedFeature),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         VARIATION_ENTRY(kIPHExtensionsMenuFeature),
         VARIATION_ENTRY(kIPHExtensionsRequestAccessButtonFeature),
 #endif
-        VARIATION_ENTRY(kIPHFocusModeFeature),
-        VARIATION_ENTRY(kIPHGlobalMediaControls),
         VARIATION_ENTRY(kIPHGMCCastStartStopFeature),
         VARIATION_ENTRY(kIPHGMCLocalMediaCastingFeature),
         VARIATION_ENTRY(kIPHMemorySaverModeFeature),
-        VARIATION_ENTRY(kIPHLiveCaption),
+        VARIATION_ENTRY(kIPHLiveCaptionFeature),
         VARIATION_ENTRY(kIPHPasswordsAccountStorageFeature),
         VARIATION_ENTRY(kIPHPasswordsManagementBubbleAfterSaveFeature),
         VARIATION_ENTRY(kIPHPasswordsManagementBubbleDuringSigninFeature),
