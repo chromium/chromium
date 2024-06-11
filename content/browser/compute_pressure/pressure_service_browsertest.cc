@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
@@ -108,8 +107,6 @@ class ComputePressureBrowserTest : public ContentBrowserTest {
   ComputePressureBrowserTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeUIForMediaStream);
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kComputePressure);
   }
 
   void SetUpOnMainThread() override {
@@ -131,7 +128,6 @@ class ComputePressureBrowserTest : public ContentBrowserTest {
   device::ScopedPressureManagerOverrider pressure_manager_overrider_;
   TestWebContentsDelegate web_contents_delegate_;
   std::unique_ptr<TestContentBrowserClient> content_browser_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_ =
       net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS);
   GURL test_url_;

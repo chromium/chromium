@@ -53,12 +53,6 @@ ScriptPromise<IDLUndefined> PressureObserver::observe(
     V8PressureSource source,
     PressureObserverOptions* options,
     ExceptionState& exception_state) {
-  if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Compute Pressure API is not available.");
-    return EmptyPromise();
-  }
-
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
