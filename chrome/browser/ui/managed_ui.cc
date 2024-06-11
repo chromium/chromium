@@ -34,7 +34,6 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -193,9 +192,7 @@ const gfx::VectorIcon& GetManagedUiIcon(Profile* profile) {
   CHECK(ShouldDisplayManagedUi(profile));
 
   if (enterprise_util::IsBrowserManaged(profile)) {
-    return features::IsChromeRefresh2023()
-               ? vector_icons::kBusinessChromeRefreshIcon
-               : vector_icons::kBusinessIcon;
+    return vector_icons::kBusinessChromeRefreshIcon;
   }
 
   CHECK(ShouldDisplayManagedByParentUi(profile));
