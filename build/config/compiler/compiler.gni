@@ -263,6 +263,17 @@ if (clang_need_input_root_absolute_path) {
   compiler_logs = [ "clang_need_input_root_absolute_path=false" ]
 }
 
+# TODO: https://issues.chromium.org/40120210 - remove this
+# once we can use relative path in hmap.
+clang_need_input_root_absolute_path_for_objc =
+    clang_need_input_root_absolute_path
+if (target_os == "ios") {
+  # objc/objcxx uses hmap, which contains absolute path
+  # see also b/256536089
+  clang_need_input_root_absolute_path_for_objc = true
+}
+compiler_logs += [ "clang_need_input_root_absolute_path_for_objc=$clang_need_input_root_absolute_path_for_objc" ]
+
 # If it wasn't manually set, set to an appropriate default.
 assert(symbol_level >= -1 && symbol_level <= 2, "Invalid symbol_level")
 if (symbol_level == -1) {
