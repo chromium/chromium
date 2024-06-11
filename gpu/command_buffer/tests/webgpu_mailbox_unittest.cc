@@ -790,15 +790,20 @@ TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
 
 // Tests that using a shared image aftr it is dissociated produces an error.
 TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
-  // Create a the shared image
+  // Create the shared image.
+  // NOTE: It's necessary to add WEBGPU_WRITE access as the created SharedImage
+  // will be uncleared and hence require lazy clearing on access.
+  // WebGPUDecoderImpl might also need to fall back to using Skia to read and
+  // write, making it necessary to add those usages as well.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->CreateSharedImage({GetParam().format,
-                              {1, 1},
-                              gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
-                              "TestLabel"},
-                             kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
+      {GetParam().format,
+       {1, 1},
+       gfx::ColorSpace::CreateSRGB(),
+       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+           SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
+       "TestLabel"},
+      kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -810,9 +815,13 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
       webgpu()->ReserveTexture(device_.Get());
   wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
 
+  // NOTE: Accessing an uncleared Dawn texture requires passing a usage that
+  // supports lazy clearing (otherwise AssociateMailbox() will generate an
+  // error, which is not the error case that this test is looking to test).
   webgpu()->AssociateMailbox(
       reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, WGPUTextureUsage_CopySrc,
+      reservation.generation,
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment,
       webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
   webgpu()->DissociateMailbox(reservation.id, reservation.generation);
 

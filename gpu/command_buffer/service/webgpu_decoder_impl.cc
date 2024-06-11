@@ -79,6 +79,9 @@ constexpr wgpu::TextureUsage kAllowedWritableMailboxTextureUsages =
     wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment |
     wgpu::TextureUsage::StorageBinding;
 
+constexpr wgpu::TextureUsage kWritableUsagesSupportingLazyClear =
+    wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
+
 constexpr wgpu::TextureUsage kAllowedReadableMailboxTextureUsages =
     wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
 
@@ -1996,6 +1999,21 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
       // indicate a Dawn write access if the SI is not cleared.
       internal_usage |= wgpu::TextureUsage::RenderAttachment;
     }
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDawnSIRepsUseClientProvidedInternalUsages) &&
+             !shared_image->IsCleared()) {
+    if (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
+                    "WebGPU write access to the SharedImage";
+      return nullptr;
+    }
+
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture "
+                    "requires passing a usage that supports lazy clearing";
+      return nullptr;
+    }
   }
 
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> scoped_access =
@@ -2054,6 +2072,21 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
       // SharedImage Dawn representations validate that the passed-in usages
       // indicate a Dawn write access if the SI is not cleared.
       internal_usage |= wgpu::TextureUsage::RenderAttachment;
+    }
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDawnSIRepsUseClientProvidedInternalUsages) &&
+             !shared_image->IsCleared()) {
+    if (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
+                    "WebGPU write access to the SharedImage";
+      return nullptr;
+    }
+
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture "
+                    "requires passing a usage that supports lazy clearing";
+      return nullptr;
     }
   }
 
