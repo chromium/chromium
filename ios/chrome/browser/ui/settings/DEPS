@@ -29,4 +29,7 @@ specific_include_rules = {
   "settings_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
+  "search_engine_settings_test_case_base\.mm": [
+    "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h",
+  ],
 }

@@ -10,6 +10,7 @@
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/settings/search_engine_settings_test_case_base.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,128 +24,16 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 
-namespace {
-
-NSString* kCustomSearchEngineName = @"Custom Search Engine";
-const char kPageURL[] = "/";
-const char kOpenSearch[] = "/opensearch.xml";
-const char kSearchURL[] = "/search?q=";
-
-const TemplateURLPrepopulateData::PrepopulatedEngine&
-    kSecondPrepopulatedSearchEngine = TemplateURLPrepopulateData::qwant;
-
-std::string GetSearchExample() {
-  return std::string(kSearchURL) + "example";
-}
-
-// Responses for different search engine. The name of the search engine is
-// displayed on the page.
-std::unique_ptr<net::test_server::HttpResponse> SearchResponse(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-  const std::string googleSearchEngineKeyword(
-      base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
-  const std::string secondSearchEngineKeyword(
-      base::UTF16ToUTF8(kSecondPrepopulatedSearchEngine.keyword));
-  if (base::Contains(request.GetURL().path(), googleSearchEngineKeyword)) {
-    http_response->set_content("<body>" + googleSearchEngineKeyword +
-                               "</body>");
-  } else if (base::Contains(request.GetURL().path(),
-                            secondSearchEngineKeyword)) {
-    http_response->set_content("<body>" + secondSearchEngineKeyword +
-                               "</body>");
-  }
-  return std::move(http_response);
-}
-
-// Responses for the test http server. `server_url` is the URL of the server,
-// used for absolute URL in the response. `open_search_queried` is set to true
-// when the OpenSearchDescription is queried.
-std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
-    std::string* server_url,
-    bool* open_search_queried,
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-
-  if (request.relative_url == kPageURL) {
-    http_response->set_content("<head><link rel=\"search\" "
-                               "type=\"application/opensearchdescription+xml\" "
-                               "title=\"Custom Search Engine\" href=\"" +
-                               std::string(kOpenSearch) +
-                               "\"></head><body>Test Search</body>");
-  } else if (request.relative_url == kOpenSearch) {
-    *open_search_queried = true;
-    http_response->set_content(
-        "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">"
-        "<ShortName>" +
-        base::SysNSStringToUTF8(kCustomSearchEngineName) +
-        "</ShortName>"
-        "<Description>Description</Description>"
-        "<Url type=\"text/html\" method=\"get\" template=\"" +
-        *server_url + kSearchURL +
-        "{searchTerms}\"/>"
-        "</OpenSearchDescription>");
-  } else if (request.relative_url == GetSearchExample()) {
-    http_response->set_content("<head><body>Search Result</body>");
-
-  } else {
-    return nullptr;
-  }
-  return std::move(http_response);
-}
-
-}  // namespace
-
-@interface SearchEngineSettingsChoiceScreenTestCase : ChromeTestCase {
-  std::string _serverURL;
-  bool _openSearchCalled;
-}
-
+@interface SearchEngineSettingsEEATestCase : SearchEngineSettingsTestCaseBase
 @end
 
-@implementation SearchEngineSettingsChoiceScreenTestCase
-
-- (void)setUp {
-  [super setUp];
-  [SettingsAppInterface resetSearchEngine];
-}
-
-- (void)tearDown {
-  [SettingsAppInterface resetSearchEngine];
-  [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      std::string("--") + switches::kSearchEngineChoiceCountry + "=FR");
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
-  return config;
-}
+@implementation SearchEngineSettingsEEATestCase
 
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
 - (void)testChangeSearchEngine {
-  self.testServer->RegisterRequestHandler(base::BindRepeating(&SearchResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-
-  GURL url = self.testServer->GetURL(kPageURL);
-  NSString* port = base::SysUTF8ToNSString(url.port());
-
-  const std::string googleSearchEngineKeyword(
-      base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
-  const std::string secondSearchEngineKeyword(
-      base::UTF16ToUTF8(kSecondPrepopulatedSearchEngine.keyword));
-  NSArray<NSString*>* hosts = @[
-    base::SysUTF8ToNSString(googleSearchEngineKeyword),
-    base::SysUTF8ToNSString(secondSearchEngineKeyword)
-  ];
-
-  [SettingsAppInterface addURLRewriterForHosts:hosts onPort:port];
+  [self startHTTPServer];
+  [self addURLRewriter];
 
   // Search on Google.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
@@ -152,18 +41,23 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"test")];
+      performAction:grey_replaceText(@"firstsearch")];
   // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
+  const std::string googleSearchEngineKeyword(
+      base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
   [ChromeEarlGrey waitForWebStateContainingText:googleSearchEngineKeyword];
 
   // Change default search engine to `kSecondPrepopulatedSearchEngine`.
+  const TemplateURLPrepopulateData::PrepopulatedEngine*
+      secondPrepopulatedSearchEngine =
+          [self.class secondPrepopulatedSearchEngine];
   [SearchEngineChoiceEarlGreyUI openSearchEngineSettings];
   [[SearchEngineChoiceEarlGreyUI
       interactionForSettingsWithPrepopulatedSearchEngine:
-          kSecondPrepopulatedSearchEngine] performAction:grey_tap()];
+          *secondPrepopulatedSearchEngine] performAction:grey_tap()];
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
@@ -171,7 +65,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 
-  [SettingsAppInterface addURLRewriterForHosts:hosts onPort:port];
+  [self addURLRewriter];
 
   // Search on selected search engine.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
@@ -179,12 +73,16 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
+  // Search something different than the first search to make sure the omnibox
+  // doesn't use the history instead of really searching.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"test")];
+      performAction:grey_replaceText(@"secondsearch")];
   // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
+  const std::string secondSearchEngineKeyword(
+      base::UTF16ToUTF8(secondPrepopulatedSearchEngine->keyword));
   [ChromeEarlGrey waitForWebStateContainingText:secondSearchEngineKeyword];
 }
 
@@ -263,43 +161,25 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       assertWithMatcher:grey_nil()];
+  // Verify the default search engine is still Google.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+  NSString* googleSearchEngineName =
+      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
+                                        TemplateURLPrepopulateData::google];
+  [SearchEngineChoiceEarlGreyUI
+      verifyDefaultSearchEngineSetting:googleSearchEngineName];
 }
 
-#pragma mark - helpers
+#pragma mark - SearchEngineSettingsTestCaseBase
 
-// Adds a custom search engine by navigating to a fake search engine page, then
-// enters the search engine screen in Settings.
-- (void)enterSettingsWithCustomSearchEngine {
-  _openSearchCalled = false;
-  self.testServer->RegisterRequestHandler(base::BindRepeating(
-      &StandardResponse, &(_serverURL), &(_openSearchCalled)));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-  _serverURL = pageURL.spec();
-  // Remove trailing "/".
-  _serverURL.pop_back();
-
-  [ChromeEarlGrey loadURL:pageURL];
-
-  __weak __typeof(self) weakSelf = self;
-  GREYCondition* openSearchQuery =
-      [GREYCondition conditionWithName:@"Wait for Open Search query"
-                                 block:^BOOL {
-                                   return [weakSelf wasOpenSearchCalled];
-                                 }];
-  // Wait for the
-  GREYAssertTrue(
-      [openSearchQuery waitWithTimeout:base::test::ios::kWaitForPageLoadTimeout
-                                           .InSecondsF()],
-      @"The open search XML hasn't been queried.");
-
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(GetSearchExample())];
-
-  [SearchEngineChoiceEarlGreyUI openSearchEngineSettings];
++ (const char*)countryForTestCase {
+  return "FR";
 }
 
-- (BOOL)wasOpenSearchCalled {
-  return _openSearchCalled;
++ (const TemplateURLPrepopulateData::PrepopulatedEngine*)
+    secondPrepopulatedSearchEngine {
+  return &TemplateURLPrepopulateData::qwant;
 }
 
 @end

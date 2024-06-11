@@ -443,8 +443,10 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "search_engine_settings_choice_screen_egtest.mm",
-    "search_engine_settings_egtest.mm",
+    "search_engine_settings_eea_egtest.mm",
+    "search_engine_settings_non_eea_egtest.mm",
+    "search_engine_settings_test_case_base.h",
+    "search_engine_settings_test_case_base.mm",
     "settings_accessibility_egtest.mm",
     "settings_egtest.mm",
     "signin_settings_egtest.mm",
