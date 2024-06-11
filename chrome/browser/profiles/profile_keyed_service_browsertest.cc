@@ -189,6 +189,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           switches::kEnableBoundSessionCredentials,
 #endif  // BUILDFLAG(IS_WIN)
           blink::features::kBrowsingTopics,
+          net::features::kTopLevelTpcdOriginTrial,
           net::features::kTpcdTrialSettings,
           net::features::kTopLevelTpcdTrialSettings,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -496,6 +497,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OneTimePermissionsTrackerKeyedService",
     "OperationManager",
     "OptimizationGuideKeyedService",
+    "OriginTrialService",
     "PageContentAnnotationsService",
     "PasswordsPrivateEventRouter",
     "PermissionDecisionAutoBlocker",
