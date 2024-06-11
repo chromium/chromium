@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <math.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -22,6 +23,18 @@ using segmentation_platform::processing::ProcessedValue;
 namespace visited_url_ranking {
 
 namespace {
+
+// Bucketize the value to exponential buckets. Returns lower bound of the bucket.
+float BucketizeExp(int64_t value, int max_buckets) {
+  if (value <= 0) {
+    return 0;
+  }
+  int log_val = floor(log2(value));
+  if (log_val >= max_buckets) {
+    log_val = max_buckets;
+  }
+  return pow(2, log_val);
+}
 
 // Used as input to the model, it is ok to group some platforms together. Only
 // lists platforms that use the service.
@@ -115,7 +128,7 @@ scoped_refptr<InputContext> AsInputContext(
         break;
       case kTabCount:
         if (tab_data) {
-          value = ProcessedValue::FromFloat(tab_data->tab_count);
+          value = ProcessedValue::FromFloat(BucketizeExp(tab_data->tab_count, 50));
         }
         break;
       case kVisitCount:
