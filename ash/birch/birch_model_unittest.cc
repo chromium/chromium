@@ -126,6 +126,9 @@ class StubBirchClient : public BirchClient {
   base::FilePath GetRemovedItemsFilePath() override {
     return test_dir_.GetPath();
   }
+  void RemoveFileItemFromLauncher(const base::FilePath& path) override {
+    last_removed_path_ = path;
+  }
 
   StubBirchDataProvider calendar_provider_;
   StubBirchDataProvider file_suggest_provider_;
@@ -137,6 +140,7 @@ class StubBirchClient : public BirchClient {
   std::unique_ptr<StubBirchDataProvider> weather_provider_;
 
   base::ScopedTempDir test_dir_;
+  base::FilePath last_removed_path_;
 };
 
 class TestModelConsumer {
@@ -1469,6 +1473,25 @@ TEST_F(BirchModelTest, RemoveAndFilterFileItem) {
 
   all_items = model->GetAllItems();
   ASSERT_EQ(all_items.size(), 2u);
+}
+
+TEST_F(BirchModelTest, RemoveFileItemNotifiesBirchClient) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("/test/path"), u"suggestion",
+                              base::Time(), "file_id_0", "icon_url");
+  model->SetFileSuggestItems(file_item_list);
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+
+  // Remove the item.
+  model->RemoveItem(&file_item_list[0]);
+
+  // Verify the birch client was notified of the removal.
+  EXPECT_EQ(stub_birch_client_.last_removed_path_,
+            base::FilePath("/test/path"));
 }
 
 TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {

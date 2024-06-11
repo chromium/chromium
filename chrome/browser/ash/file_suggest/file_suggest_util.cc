@@ -108,6 +108,7 @@ FileSuggestData::~FileSuggestData() = default;
 
 // Helper functions ------------------------------------------------------------
 
+// Calculates the ID used to remove suggestions the user doesn't want to see.
 std::string CalculateSuggestionId(FileSuggestionType type,
                                   const base::FilePath& file_path) {
   return GetPrefixFromSuggestionType(type) + file_path.value();

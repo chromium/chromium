@@ -265,6 +265,8 @@ class TestBirchClient : public BirchClient {
     return test_dir_.GetPath();
   }
 
+  void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
+
  private:
   void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items) {
     // The production calendar provider sets both calendar items and attachment

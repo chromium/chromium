@@ -479,6 +479,14 @@ void BirchModel::RemoveItem(BirchItem* item) {
   base::UmaHistogramEnumeration("Ash.Birch.Chip.Hidden", item->GetType());
 
   item_remover_->RemoveItem(item);
+
+  // File items must be removed from launcher suggestions.
+  if (item->GetType() == BirchItemType::kFile) {
+    auto* file_item = static_cast<BirchFileItem*>(item);
+    if (birch_client_) {
+      birch_client_->RemoveFileItemFromLauncher(file_item->file_path());
+    }
+  }
 }
 
 void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {

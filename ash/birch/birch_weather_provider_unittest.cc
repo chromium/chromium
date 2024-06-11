@@ -60,6 +60,7 @@ class StubBirchClient : public BirchClient {
     std::move(callback).Run();
   }
   base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
+  void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
 
   StubBirchDataProvider provider_;
   bool did_wait_for_refresh_tokens_ = false;

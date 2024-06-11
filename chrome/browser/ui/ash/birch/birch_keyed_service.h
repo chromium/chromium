@@ -61,6 +61,7 @@ class BirchKeyedService : public KeyedService,
 
   void WaitForRefreshTokens(base::OnceClosure callback) override;
   base::FilePath GetRemovedItemsFilePath() override;
+  void RemoveFileItemFromLauncher(const base::FilePath& path) override;
 
   void set_calendar_provider_for_test(BirchDataProvider* provider) {
     calendar_provider_for_test_ = provider;

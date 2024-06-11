@@ -102,6 +102,8 @@ void FileSuggestKeyedService::GetSuggestFileData(
   }
 }
 
+// NOTE: An absolute file path for a Google Doc looks like:
+// /media/fuse/drivefs-48de6bc248c2f6d8e809521347ef6190/root/Test doc.gdoc
 void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
     const std::vector<base::FilePath>& absolute_file_paths) {
   if (!IsProtoInitialized()) {

@@ -11,6 +11,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
@@ -112,6 +113,14 @@ void BirchKeyedService::WaitForRefreshTokens(base::OnceClosure callback) {
 
 base::FilePath BirchKeyedService::GetRemovedItemsFilePath() {
   return profile_->GetPath().AppendASCII(kRemovedBirchItemsFile);
+}
+
+void BirchKeyedService::RemoveFileItemFromLauncher(const base::FilePath& path) {
+  std::vector<base::FilePath> file_paths;
+  file_paths.push_back(path);
+  auto* file_suggest_keyed_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
+  file_suggest_keyed_service->RemoveSuggestionsAndNotify(file_paths);
 }
 
 void BirchKeyedService::ShutdownBirch() {

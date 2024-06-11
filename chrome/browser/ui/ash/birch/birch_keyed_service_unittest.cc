@@ -770,4 +770,27 @@ TEST_F(BirchKeyedServiceTest, NoTabSuggestionsWithDisabledChromeSyncPref) {
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 }
 
+TEST_F(BirchKeyedServiceTest, RemoveFileItemFromLauncher) {
+  WaitUntilFileSuggestServiceReady(
+      ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+          GetProfile()));
+
+  // Override the default behavior in MockFileSuggestKeyedService, which calls
+  // into the production code and causes failures.
+  ON_CALL(*file_suggest_service(), RemoveSuggestionsAndNotify(testing::_))
+      .WillByDefault([](const std::vector<base::FilePath>& paths) {
+        // Do nothing.
+      });
+
+  base::FilePath test_path(
+      "/media/fuse/drivefs-48de6bc248c2f6d8e809521347ef6190/root/Test "
+      "doc.gdoc");
+  std::vector<base::FilePath> paths = {test_path};
+
+  // Removing a file item via the birch keyed service will call into file
+  // suggest keyed service and remove it.
+  EXPECT_CALL(*file_suggest_service(), RemoveSuggestionsAndNotify(paths));
+  birch_keyed_service()->RemoveFileItemFromLauncher(test_path);
+}
+
 }  // namespace ash

@@ -219,6 +219,7 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   const base::Time& timestamp() const { return timestamp_; }
   const std::string& file_id() const { return file_id_; }
   const std::string& icon_url() const { return icon_url_; }
+  const base::FilePath& file_path() const { return file_path_; }
 
  private:
   static std::u16string GetTitle(const base::FilePath& file_path);
@@ -227,6 +228,8 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   // BirchFileItem and BirchAttachmentItem.
   std::string file_id_;
   std::string icon_url_;
+  // For Google Drive documents the path looks like:
+  // /media/fuse/drivefs-48de6bc248c2f6d8e809521347ef6190/root/Test doc.gdoc
   base::FilePath file_path_;
   base::Time timestamp_;
 };

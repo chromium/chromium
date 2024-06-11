@@ -36,6 +36,11 @@ class ASH_EXPORT BirchClient {
   // Returns the path on disk where removed items are read from and written to.
   virtual base::FilePath GetRemovedItemsFilePath() = 0;
 
+  // Prevents a file item from showing up in launcher zero suggest. For Google
+  // Drive files the path looks like:
+  // /media/fuse/drivefs-48de6bc248c2f6d8e809521347ef6190/root/Test doc.gdoc
+  virtual void RemoveFileItemFromLauncher(const base::FilePath& path) = 0;
+
   virtual ~BirchClient() = default;
 };
 
