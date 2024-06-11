@@ -11,6 +11,9 @@ template("node") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     # Declare dependencies to all involved tools.
+    # sha1 files needs to be kept to serve anywhere where node.gni is used.
+    # They trigger `third_party/webgpu-cts/scripts/compile_src.py` if there is
+    # any changed. Otherwise, build tools may think it's a noop.
     inputs += [
       "//third_party/node/node.py",
       "//third_party/node/node_modules.py",

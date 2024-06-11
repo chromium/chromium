@@ -768,6 +768,21 @@ deps = {
           },
       ],
   },
+  # Pull down NPM dependencies for WebUI toolchain.
+  'src/third_party/node/node_modules': {
+    'bucket': 'chromium-nodejs',
+    'dep_type': 'gcs',
+    'condition': 'non_git_source',
+    'objects': [
+      {
+        'object_name': 'fd7984116d9f3a7b3606f1812c6dbe005a5d063a',
+        'sha256sum': '3742b9b51ce4d2396250aa4bfd2738581d894a5ffcc9474dbb07de02eeabdfdf',
+        'size_bytes': 9757046,
+        'generation': 1717278555089119,
+        'output_file': 'node_modules.tar.gz',
+      },
+    ],
+  },
   # Download selected models from TFHub as testdata.
   'src/third_party/tfhub_models/testdata': {
     'bucket': 'chromium-tfhub-models',
@@ -5361,20 +5376,6 @@ hooks = [
                 '--num_threads=16',
                 '--bucket', 'chromium-apache-win32',
                 'src/third_party/apache-win32',
-    ],
-  },
-
-  # Pull down NPM dependencies for WebUI toolchain.
-  {
-    'name': 'webui_node_modules',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--extract',
-                '--no_auth',
-                '--bucket', 'chromium-nodejs',
-                '-s', 'src/third_party/node/node_modules.tar.gz.sha1',
     ],
   },
 

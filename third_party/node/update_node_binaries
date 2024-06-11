@@ -37,62 +37,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# This function updates the DEPS file under `src/` using `gclient setdep`.
-# The current working directory is set to `src/third_party/node` at the top,
-# which is where the `update_node_binaries` located.
-# Therefore, the `--deps-file` need to be set to specify the DEPS file location.
-# Simply using a relative path, i.e. `../../DEPS`, would not work because
-# gclient runs from the src/ directory and it uses the `--deps-file` in some
-# processes. A relative path may result in a fatal message in those processes.
-set_deps() {
-  current_dir=$(dirname "$0" | pwd)
-  gclient setdep -r $1@$2 --deps-file="${current_dir}"/../../DEPS
-}
-
-# Helper function to upload content to GCS and set DEPS
-# 1) The Python script uploads content to Google Cloud Storage and returns a
-#    string that part of it contains the JSON which need be used to
-#    update the DEPS file. Here is a sample response.
-#Uploading mac/node-linux-x64.tar.gz as gs://chromium-nodejs/20.11.0/<sha1>
-#{
-#  "path": {
-#    "dep_type": "gcs",
-#    "bucket": "chromium-nodejs",
-#    "objects": [
-#      {
-#        "object_name":
-#          "20.11.0/f9a337cfa0e2b92d3e5c671c26b454bd8e99769e",
-#        "sha256sum":
-#          "0ba9cc91698c1f833a1fdc1fe0cb392d825ad484c71b0d84388ac80bfd3d6079",
-#        "size_bytes": 41024270,
-#        "generation": 1715983096515156
-#      }
-#    ]
-#  }
-#}
-# 2) grep gets only the JSON part in the string.
-# 3) jq extracts the `objects` in the returned JSON.
-# 4) sed generates the output by replacing newlines with commas and
-#    removing any trailing commas.
-# 5) The output will be like
-#    `${NODE_VERSION:1}/object_name,sha256sum,size_bytes,generation`
-# These values will be used to update the DEPS file.
-# first argument: google storage path
-# second argument: relative DEPS path
-upload_and_set() {
-  local sha1
-  local response
-  sha1="$(sha1sum $1 | cut -d ' ' -f1)"
-  response="$(upload_to_google_storage_first_class.py \
-      --bucket=chromium-nodejs \
-      --object-name=${NODE_VERSION:1}/${sha1} \
-      $1)"
-  set_deps $2 "$(echo ${response} | \
-    grep -o '{.*}' |
-    jq -r .path.objects[0][] |
-    sed -z 's/\n/,/g;s/,$/\n/')"
-}
-
 upload_unix(){
   local SUFFIX="$1"
   local FOLDER="$2"
@@ -110,7 +54,7 @@ upload_unix(){
     if [[ "$SUFFIX" == "linux-x64" ]]; then
       local PATHNAME="src/third_party/node/linux"
     fi
-    upload_and_set "${UPLOAD_FILE}" "${PATHNAME}"
+    ./upload_to_gcs_and_update_deps "${UPLOAD_FILE}" "${PATHNAME}"
     echo "DONE uploading ${SUFFIX} binaries and updating DEPS file.."
   else
     echo "Error: File '${UPLOAD_FILE}' does not exist."
@@ -124,7 +68,7 @@ upload_win(){
   local UPLOAD_FILE="${FOLDER}/${FILENAME}"
 
   if [[ -e "${UPLOAD_FILE}" ]]; then
-    upload_and_set "${UPLOAD_FILE}" src/third_party/node/win
+    ./upload_to_gcs_and_update_deps "${UPLOAD_FILE}" src/third_party/node/win
     echo "DONE uploading Windows binaries and updating DEPS file.."
   else
     echo "Error: File '$UPLOAD_FILE' does not exist."
