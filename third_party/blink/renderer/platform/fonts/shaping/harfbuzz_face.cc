@@ -47,10 +47,12 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/variation_selector_mode.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/resolution_units.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -77,19 +79,24 @@ void HarfBuzzFace::Trace(Visitor* visitor) const {
   visitor->Trace(harfbuzz_font_data_);
 }
 
-bool& GetIgnoreVariationSelectors() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WTF::ThreadSpecific<bool>,
-                                  ignore_variation_selectors, ());
-  return *ignore_variation_selectors;
+VariationSelectorMode& GetIgnoreVariationSelectorModeRef() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WTF::ThreadSpecific<VariationSelectorMode>,
+                                  variation_selector_mode, ());
+  return *variation_selector_mode;
 }
 
-bool HarfBuzzFace::ShouldIgnoreVariationSelectors() {
-  return GetIgnoreVariationSelectors();
+VariationSelectorMode HarfBuzzFace::GetVariationSelectorMode() {
+  return GetIgnoreVariationSelectorModeRef();
 }
 
-void HarfBuzzFace::SetIgnoreVariationSelectors(bool value) {
-  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled() || value);
-  GetIgnoreVariationSelectors() = value;
+void HarfBuzzFace::SetVariationSelectorMode(VariationSelectorMode value) {
+  // Ignore variation selectors mode should be on only when the
+  // FontVariationSequences runtime flag is enabled.
+  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled() ||
+         !ShouldIgnoreVariationSelector(value));
+  DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled() ||
+         !UseFontVariantEmojiVariationSelector(value));
+  GetIgnoreVariationSelectorModeRef() = value;
 }
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
@@ -123,13 +130,32 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // cmap format 14 subtable and when we found only a base character of the
   // variation sequence. In the latter case we set the glyph value to
   // `kUnmatchedVSGlyphId`.
-  bool consider_variation_selector =
-      RuntimeEnabledFeatures::FontVariationSequencesEnabled() &&
-      !HarfBuzzFace::ShouldIgnoreVariationSelectors() &&
+  VariationSelectorMode variation_selector_mode =
+      HarfBuzzFace::GetVariationSelectorMode();
+  bool is_variation_sequence =
+      !ShouldIgnoreVariationSelector(variation_selector_mode) &&
       Character::IsUnicodeVariationSelector(variation_selector) &&
       Character::IsVariationSequence(unicode, variation_selector);
+  bool consider_variant_emoji =
+      RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
+      UseFontVariantEmojiVariationSelector(variation_selector_mode) &&
+      Character::IsEmoji(unicode);
+  bool consider_variation_selector =
+      RuntimeEnabledFeatures::FontVariationSequencesEnabled() &&
+      (is_variation_sequence || consider_variant_emoji);
 
   if (consider_variation_selector) {
+    if (!is_variation_sequence) {
+      if (variation_selector_mode == kForceVariationSelector15 ||
+          (variation_selector_mode == kUseUnicodeDefaultPresentation &&
+           Character::IsEmojiTextDefault(unicode))) {
+        variation_selector = kVariationSelector15Character;
+      } else if (variation_selector_mode == kForceVariationSelector16 ||
+                 (variation_selector_mode == kUseUnicodeDefaultPresentation &&
+                  Character::IsEmojiEmojiDefault(unicode))) {
+        variation_selector = kVariationSelector16Character;
+      }
+    }
     hb_bool_t hb_has_vs_glyph = hb_font_get_variation_glyph(
         hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
     if (hb_has_vs_glyph) {
@@ -345,7 +371,6 @@ Glyph HarfBuzzFace::HbGlyphForCharacter(UChar32 character) {
 hb_codepoint_t HarfBuzzFace::HarfBuzzGetGlyphForTesting(
     UChar32 character,
     UChar32 variation_selector) {
-  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
   hb_codepoint_t glyph = 0;
   HarfBuzzGetGlyph(harfbuzz_font_data_->unscaled_font_.get(),
                    harfbuzz_font_data_, character, variation_selector, &glyph,

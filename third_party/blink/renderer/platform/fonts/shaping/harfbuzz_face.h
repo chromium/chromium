@@ -31,7 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/variation_selector_mode.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -90,9 +92,9 @@ class PLATFORM_EXPORT HarfBuzzFace final
 
   static void Init();
 
-  static bool ShouldIgnoreVariationSelectors();
+  static VariationSelectorMode GetVariationSelectorMode();
 
-  static void SetIgnoreVariationSelectors(bool value);
+  static void SetVariationSelectorMode(VariationSelectorMode value);
 
  private:
 
