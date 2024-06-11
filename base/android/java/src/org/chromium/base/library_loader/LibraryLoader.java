@@ -41,18 +41,16 @@ import java.lang.annotation.RetentionPolicy;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This class provides functionality to load and register the native libraries.
- * Callers are allowed to separate loading the libraries from initializing
- * them. When a zygote process is used (WebView or AppZygote) the per process
- * initialization happens after the application processes are forked from the
- * zygote process.
+ * This class provides functionality to load and register the native libraries. Callers are allowed
+ * to separate loading the libraries from initializing them. When a zygote process is used (WebView
+ * or AppZygote) the per process initialization happens after the application processes are forked
+ * from the zygote process.
  *
- * The libraries may be loaded and initialized from any thread. Synchronization
- * primitives are used to ensure that overlapping requests from different
- * threads are handled sequentially.
+ * <p>The libraries may be loaded and initialized from any thread. Synchronization primitives are
+ * used to ensure that overlapping requests from different threads are handled sequentially.
  *
- * See also base/android/library_loader/library_loader_hooks.cc, which contains
- * the native counterpart to this class.
+ * <p>See also base/android/library_loader/library_loader_hooks.cc, which contains the native
+ * counterpart to this class.
  */
 @JNINamespace("base::android")
 public class LibraryLoader {
@@ -60,10 +58,6 @@ public class LibraryLoader {
 
     // Constant guarding debug logging in this class.
     static final boolean DEBUG = false;
-
-    // Compile time switch for sharing RELRO between the browser and the app zygote.
-    // TODO(crbug.com/40159355): remove when the issue is closed.
-    private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = true;
 
     // Shared preferences key for the background thread pool setting.
     private static final String BACKGROUND_THREAD_POOL_KEY = "background_thread_pool_enabled";
@@ -163,38 +157,38 @@ public class LibraryLoader {
     // Returns true when sharing RELRO between the browser process and the app zygote should *not*
     // be attempted.
     public static boolean mainProcessIntendsToProvideRelroFd() {
-        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R;
+        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.R;
     }
 
     /**
      * Inner class encapsulating points of communication between instances of LibraryLoader in
      * different processes.
      *
-     * Usage:
+     * <p>Usage:
      *
-     * 0. In the main (Browser) process this mediator can be bypassed by
-     *    {@link LibraryLoader#ensureInitialized()}. It is convenient for targets that do not pay
-     *    attention to RELRO sharing and load time statistics, but it is also more error prone. The
-     *    {@link #ensureInitializedInMainProcess()} is recommended.
+     * <p>0. In the main (Browser) process this mediator can be bypassed by {@link
+     * LibraryLoader#ensureInitialized()}. It is convenient for targets that do not pay attention to
+     * RELRO sharing and load time statistics, but it is also more error prone. The {@link
+     * #ensureInitializedInMainProcess()} is recommended.
      *
-     * 1. For a {@link LibraryLoader} requiring the knowledge of the load address before
-     *    initialization, {@link #takeLoadAddressFromBundle(Bundle)} should be called first. It is
-     *    done very early after establishing a Binder connection.
+     * <p>1. For a {@link LibraryLoader} requiring the knowledge of the load address before
+     * initialization, {@link #takeLoadAddressFromBundle(Bundle)} should be called first. It is done
+     * very early after establishing a Binder connection.
      *
-     * 2. After the load address is received, the object needs to be initialized using one of
-     *    {@link #ensureInitializedInMainProcess()}, {@link #initInChildProcess()} and
-     *    {@link #initInAppZygote()}. For the main process the subsequent calls to initialization
-     *    are ignored, primarily to simplify tests.
+     * <p>2. After the load address is received, the object needs to be initialized using one of
+     * {@link #ensureInitializedInMainProcess()}, {@link #initInChildProcess()} and {@link
+     * #initInAppZygote()}. For the main process the subsequent calls to initialization are ignored,
+     * primarily to simplify tests.
      *
-     * 3. Later {@link #putLoadAddressToBundle(Bundle)} and
-     *    {@link #takeLoadAddressFromBundle(Bundle)} should be called for passing the RELRO
-     *    information between library loaders.
+     * <p>3. Later {@link #putLoadAddressToBundle(Bundle)} and {@link
+     * #takeLoadAddressFromBundle(Bundle)} should be called for passing the RELRO information
+     * between library loaders.
      *
-     * Internally the {@link LibraryLoader} may ignore these messages because it can fall back to
+     * <p>Internally the {@link LibraryLoader} may ignore these messages because it can fall back to
      * not sharing RELRO.
      *
-     * In general the class is *not* thread safe. The client must guarantee that the steps 1-3 above
-     * happen sequentially in the memory model sense. After that the class is safe to use from
+     * <p>In general the class is *not* thread safe. The client must guarantee that the steps 1-3
+     * above happen sequentially in the memory model sense. After that the class is safe to use from
      * multiple threads concurrently.
      */
     public class MultiProcessMediator {
