@@ -1714,6 +1714,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetKeepAliveTimeoutForTesting(base::TimeDelta timeout);
 
   network::mojom::WebSandboxFlags active_sandbox_flags() {
+    CHECK(policy_container_host_)
+        << LifecycleStateImplToString(lifecycle_state_);
     return policy_container_host_->sandbox_flags();
   }
   bool is_mhtml_document() { return is_mhtml_document_; }
