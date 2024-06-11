@@ -83,9 +83,6 @@ class KEYED_SERVICE_EXPORT KeyedServiceTemplatedFactory
   // Returns a new service that will be associated with `context`.
   virtual OwnedServicePtr BuildServiceInstanceFor(void* context) const = 0;
 
-  // Returns whether the `context` is off-the-record or not.
-  virtual bool IsOffTheRecord(void* context) const = 0;
-
   // KeyedServiceBaseFactory:
   void ContextShutdown(void* context) override;
   void ContextDestroyed(void* context) override;

@@ -70,10 +70,6 @@ BrowserStateKeyedServiceFactory::BuildServiceInstanceFor(void* context) const {
   return BuildServiceInstanceFor(static_cast<web::BrowserState*>(context));
 }
 
-bool BrowserStateKeyedServiceFactory::IsOffTheRecord(void* context) const {
-  return static_cast<web::BrowserState*>(context)->IsOffTheRecord();
-}
-
 void* BrowserStateKeyedServiceFactory::GetContextToUse(void* context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AssertContextWasntDestroyed(context);

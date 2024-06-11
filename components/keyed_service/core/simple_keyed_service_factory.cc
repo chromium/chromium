@@ -78,10 +78,6 @@ SimpleKeyedServiceFactory::BuildServiceInstanceFor(void* context) const {
   return BuildServiceInstanceFor(static_cast<SimpleFactoryKey*>(context));
 }
 
-bool SimpleKeyedServiceFactory::IsOffTheRecord(void* context) const {
-  return static_cast<SimpleFactoryKey*>(context)->IsOffTheRecord();
-}
-
 void* SimpleKeyedServiceFactory::GetContextToUse(void* context) const {
   AssertContextWasntDestroyed(context);
   return GetKeyToUse(static_cast<SimpleFactoryKey*>(context));

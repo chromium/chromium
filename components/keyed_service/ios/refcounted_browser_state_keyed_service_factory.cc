@@ -78,11 +78,6 @@ RefcountedBrowserStateKeyedServiceFactory::BuildServiceInstanceFor(
   return BuildServiceInstanceFor(static_cast<web::BrowserState*>(context));
 }
 
-bool RefcountedBrowserStateKeyedServiceFactory::IsOffTheRecord(
-    void* context) const {
-  return static_cast<web::BrowserState*>(context)->IsOffTheRecord();
-}
-
 void* RefcountedBrowserStateKeyedServiceFactory::GetContextToUse(
     void* context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
