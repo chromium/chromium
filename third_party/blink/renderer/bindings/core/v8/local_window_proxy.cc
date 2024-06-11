@@ -494,14 +494,12 @@ v8::Local<v8::Value> GetNamedProperty(HTMLDocument* html_document,
     DCHECK(element);
     if (auto* iframe = DynamicTo<HTMLIFrameElement>(*element)) {
       if (Frame* frame = iframe->ContentFrame()) {
-        return ToV8Traits<DOMWindow>::ToV8(isolate, frame->DomWindow(),
-                                           creation_context);
+        return frame->DomWindow()->ToV8(isolate, creation_context);
       }
     }
-    return ToV8Traits<HTMLElement>::ToV8(isolate, element, creation_context);
+    return element->ToV8(isolate, creation_context);
   }
-  return ToV8Traits<DocumentNameCollection>::ToV8(isolate, items,
-                                                  creation_context);
+  return items->ToV8(isolate, creation_context);
 }
 
 void Getter(v8::Local<v8::Name> property,

@@ -159,6 +159,12 @@ class PLATFORM_EXPORT ScriptWrappable
 
   // Returns a wrapper object, creating it if needed.
   v8::Local<v8::Value> ToV8(ScriptState*);
+
+  // This overload is used for the case when a `ToV8()` caller does not have
+  // `script_state` but does have a receiver object (a creation context object)
+  // which is needed to create a wrapper. If a wrapper object corresponding to
+  // the receiver object exists, `ToV8()` can return it without a call to
+  // `ScriptState::ForRelevantRealm`, which is slow.
   v8::Local<v8::Value> ToV8(v8::Isolate*,
                             v8::Local<v8::Object> creation_context_object);
 
