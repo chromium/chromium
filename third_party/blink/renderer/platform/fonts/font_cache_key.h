@@ -170,6 +170,12 @@ struct HashTraits<blink::FontCacheKey>
   static const bool kEmptyValueIsZero = false;
 };
 
+// `FontCacheKey` contains an `std::string` (via `FontFaceCreationParams`)
+// which contains poisoned metadata for detecting buffer overflows in short
+// strings. Copying this string as part of `KeyValuePairExtractor` will thus
+// trigger ASAN warnings.
+static_assert(!HashTraits<blink::FontCacheKey>::kCanTraceConcurrently);
+
 }  // namespace WTF
 
 template <>
