@@ -265,8 +265,6 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 }
 
 void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
-  recordreplay::Assert("[RUN-1436] FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool");
-
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
   // The WakeUpBudgetPool is selected based on origin state, frame visibility
@@ -274,6 +272,13 @@ void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
   //
   // For each throttled queue, check if it should be in a different
   // WakeUpBudgetPool and make the necessary adjustments.
+
+  REPLAY_ASSERT(
+      "[TT-393] "
+      "FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool A %d %u",
+      recordreplay::PointerId(this),
+      frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
+
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     auto* task_queue = task_queue_and_voter.first;
@@ -285,7 +290,6 @@ void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
     if (task_queue->GetWakeUpBudgetPool() == new_wake_up_budget_pool) {
       continue;
     }
-
     parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(task_queue,
                                                             &lazy_now);
     parent_page_scheduler_->AddQueueToWakeUpBudgetPool(
