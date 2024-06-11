@@ -9504,25 +9504,6 @@
             ]
         }
     ],
-    "FixDataPipeTrapBug": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "FixDataPipeTrapBug"
-                    ]
-                }
-            ]
-        }
-    ],
     "Floss": [
         {
             "platforms": [
@@ -13574,27 +13555,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MojoChannelAssociatedSendUsesRunOrPostTask"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MojoFixAssociatedHandleLeak": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "MojoFixAssociatedHandleLeak"
                     ]
                 }
             ]
