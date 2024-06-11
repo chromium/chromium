@@ -86,6 +86,10 @@ BASE_FEATURE(kAppPreloadServiceEnableShelfPin,
              "AppPreloadServiceEnableShelfPin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppPreloadServiceAllUserTypes,
+             "AppPreloadServiceAllUserTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {

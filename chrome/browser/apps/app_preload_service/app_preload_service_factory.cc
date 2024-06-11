@@ -67,11 +67,13 @@ bool AppPreloadServiceFactory::IsAvailable(Profile* profile) {
     return false;
   }
 
-  // App Preload Service is currently only available for unmanaged, unsupervised
-  // accounts.
-  std::string user_type = apps::DetermineUserType(profile);
-  if (user_type != apps::kUserTypeUnmanaged) {
-    return false;
+  // App Preload Service is only available for unmanaged, unsupervised accounts
+  // if AppPreloadServiceAllUserTypes is not enabled.
+  if (!base::FeatureList::IsEnabled(kAppPreloadServiceAllUserTypes)) {
+    std::string user_type = apps::DetermineUserType(profile);
+    if (user_type != apps::kUserTypeUnmanaged) {
+      return false;
+    }
   }
 
   return true;

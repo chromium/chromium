@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kAppPreloadServiceEnableArcApps);
 // Feature to allow apps to be pinned to the shelf.
 BASE_DECLARE_FEATURE(kAppPreloadServiceEnableShelfPin);
 
+// Feature to allow App Preload Service to run for all user types.
+BASE_DECLARE_FEATURE(kAppPreloadServiceAllUserTypes);
+
 class AppPreloadService : public KeyedService {
  public:
   explicit AppPreloadService(Profile* profile);

@@ -16339,6 +16339,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AppPreloadServiceAllUserTypes",
                         "PreinstalledWebAppsCoreOnly"
                     ]
                 }
