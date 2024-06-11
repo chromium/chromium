@@ -155,10 +155,6 @@ class ConnectionTest : public testing::Test {
   ~ConnectionTest() override = default;
 
   void SetUp() override {
-    // Since this test doesn't run in a sandbox, disable the sandbox checks
-    // on QuickStartMessage. Without this, the Message class will fail.
-    QuickStartMessage::DisableSandboxCheckForTesting();
-
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
