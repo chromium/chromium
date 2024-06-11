@@ -23,6 +23,7 @@ namespace {
 // android_webview/common/aw_features.cc or in other locations in the code base
 // (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &features::kWebViewBackForwardCache,
     &features::kWebViewDisplayCutout,
     &features::kWebViewExitReasonMetric,
     &features::kWebViewInvokeZoomPickerOnGSU,

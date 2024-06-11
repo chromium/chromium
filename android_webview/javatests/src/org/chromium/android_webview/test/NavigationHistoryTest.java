@@ -4,8 +4,12 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -17,6 +21,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwFeatureMap;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -26,6 +32,8 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
+
+import java.util.concurrent.TimeUnit;
 
 /** Navigation history tests. */
 @RunWith(Parameterized.class)
@@ -39,10 +47,14 @@ public class NavigationHistoryTest extends AwParameterizedTest {
     private static final String PAGE_2_TITLE = "Page 2 Title";
     private static final String PAGE_WITH_HASHTAG_REDIRECT_TITLE = "Page with hashtag";
     private static final String PAGE_WITH_SAME_DOCUMENT = "/page3.html";
+    private static final String NOTIFY_LOADED_SCRIPT =
+            "<script>window.addEventListener('pageshow',(e)=>{awFullyLoadedFuture.done()});</script>";
 
     private TestWebServer mWebServer;
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
+    private TestPageLoadedNotifier mLoadedNotifier;
+    private String mLoadedFutureName = "awFullyLoadedFuture";
 
     public NavigationHistoryTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -55,7 +67,12 @@ public class NavigationHistoryTest extends AwParameterizedTest {
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         mWebServer = TestWebServer.start();
+        mLoadedNotifier = new TestPageLoadedNotifier();
+        mLoadedNotifier.setFuture(SettableFuture.create());
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, mLoadedNotifier, mLoadedFutureName);
     }
 
     @After
@@ -88,7 +105,8 @@ public class NavigationHistoryTest extends AwParameterizedTest {
         return mWebServer.setResponse(
                 PAGE_1_PATH,
                 CommonResources.makeHtmlPageFrom(
-                        "<title>" + PAGE_1_TITLE + "</title>", "<div>This is test page 1.</div>"),
+                        "<title>" + PAGE_1_TITLE + "</title>",
+                        NOTIFY_LOADED_SCRIPT + "<div>This is test page 1.</div>"),
                 CommonResources.getTextHtmlHeaders(false));
     }
 
@@ -96,7 +114,8 @@ public class NavigationHistoryTest extends AwParameterizedTest {
         return mWebServer.setResponse(
                 PAGE_2_PATH,
                 CommonResources.makeHtmlPageFrom(
-                        "<title>" + PAGE_2_TITLE + "</title>", "<div>This is test page 2.</div>"),
+                        "<title>" + PAGE_2_TITLE + "</title>",
+                        NOTIFY_LOADED_SCRIPT + "<div>This is test page 2.</div>"),
                 CommonResources.getTextHtmlHeaders(false));
     }
 
@@ -105,7 +124,9 @@ public class NavigationHistoryTest extends AwParameterizedTest {
                 PAGE_2_PATH,
                 CommonResources.makeHtmlPageFrom(
                         "<title>" + PAGE_WITH_HASHTAG_REDIRECT_TITLE + "</title>",
-                        "<iframe onLoad=\"location.replace(location.href + '#tag');\" />"),
+                        NOTIFY_LOADED_SCRIPT
+                                + "<iframe onLoad=\"location.replace(location.href + '#tag');\""
+                                + " />"),
                 CommonResources.getTextHtmlHeaders(false));
     }
 
@@ -114,8 +135,27 @@ public class NavigationHistoryTest extends AwParameterizedTest {
                 PAGE_WITH_SAME_DOCUMENT,
                 CommonResources.makeHtmlPageFrom(
                         "<script>history.pushState(null, null, '/history.html');</script>",
-                        "<div>This is test page with samedocument.</div>"),
+                        NOTIFY_LOADED_SCRIPT + "<div>This is test page with samedocument.</div>"),
                 CommonResources.getTextHtmlHeaders(false));
+    }
+
+    private void navigateBack() throws Throwable {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
+            SettableFuture<Boolean> pageFullyLoadedFuture = SettableFuture.create();
+            mLoadedNotifier.setFuture(pageFullyLoadedFuture);
+            HistoryUtils.goBackSync(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mAwContents.getWebContents(),
+                    mContentsClient.getOnPageStartedHelper());
+            // Wait for the page to be fully loaded
+            Assert.assertTrue(
+                    pageFullyLoadedFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        } else {
+            HistoryUtils.goBackSync(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mAwContents.getWebContents(),
+                    mContentsClient.getOnPageFinishedHelper());
+        }
     }
 
     @Test
@@ -161,10 +201,7 @@ public class NavigationHistoryTest extends AwParameterizedTest {
         Assert.assertTrue(mAwContents.canGoBackOrForward(-1));
         Assert.assertFalse(mAwContents.canGoBackOrForward(-2));
 
-        HistoryUtils.goBackSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mAwContents.getWebContents(),
-                mContentsClient.getOnPageFinishedHelper());
+        navigateBack();
 
         Assert.assertTrue(mAwContents.canGoBackOrForward(1));
         Assert.assertFalse(mAwContents.canGoBackOrForward(2));
@@ -212,10 +249,7 @@ public class NavigationHistoryTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, page1Url);
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, page2Url);
 
-        HistoryUtils.goBackSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mAwContents.getWebContents(),
-                onPageFinishedHelper);
+        navigateBack();
         list = getNavigationHistory(mAwContents);
 
         // Make sure the first entry is still okay
@@ -276,10 +310,7 @@ public class NavigationHistoryTest extends AwParameterizedTest {
             onReceivedTitleHelper.waitForCallback(onReceivedTitleCallCount);
             onReceivedTitleCallCount = onReceivedTitleHelper.getCallCount();
         } while (!PAGE_2_TITLE.equals(onReceivedTitleHelper.getTitle()));
-        HistoryUtils.goBackSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mAwContents.getWebContents(),
-                onPageFinishedHelper);
+        navigateBack();
         onReceivedTitleHelper.waitForCallback(onReceivedTitleCallCount);
         Assert.assertEquals(PAGE_1_TITLE, onReceivedTitleHelper.getTitle());
     }

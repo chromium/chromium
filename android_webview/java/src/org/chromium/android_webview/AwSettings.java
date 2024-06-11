@@ -457,6 +457,9 @@ public class AwSettings {
 
     private void flushBackForwardCache(WebContents contents, boolean backForwardCacheEnabled) {
         ThreadUtils.assertOnUiThread();
+        backForwardCacheEnabled =
+                AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)
+                        || backForwardCacheEnabled;
         if (contents != null && backForwardCacheEnabled) {
             AwContents awContents = AwContents.fromWebContents(contents);
             if (awContents != null) {

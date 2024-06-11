@@ -48,20 +48,6 @@ import java.util.concurrent.TimeUnit;
 @DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
 public class AwBackForwardCacheTest extends AwParameterizedTest {
 
-    static class PageLoadedNotifier {
-        @JavascriptInterface
-        public void done() {
-            mPageFullyLoadedFuture.set(true);
-        }
-
-        public void setFuture(SettableFuture<Boolean> future) {
-            mPageFullyLoadedFuture = future;
-        }
-
-        private SettableFuture<Boolean> mPageFullyLoadedFuture;
-    }
-    ;
-
     private static final String TAG = "AwBackForwardCacheTest";
 
     @Rule public AwActivityTestRule mActivityTestRule;
@@ -81,7 +67,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
 
     private EmbeddedTestServer mTestServer;
 
-    private PageLoadedNotifier mLoadedNotifier;
+    private TestPageLoadedNotifier mLoadedNotifier;
 
     public AwBackForwardCacheTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -104,7 +90,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // The future is for waiting until page fully loaded.
         // We use this future instead of `DidFinishLoad` since this callback
         // will not get called if a page is restored from BFCache.
-        mLoadedNotifier = new PageLoadedNotifier();
+        mLoadedNotifier = new TestPageLoadedNotifier();
         mLoadedNotifier.setFuture(SettableFuture.create());
         String name = "awFullyLoadedFuture";
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(mAwContents, mLoadedNotifier, name);
@@ -222,6 +208,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"disable-features=WebViewBackForwardCache"})
     public void testBackNavigationFollowsSettings() throws Exception, Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
         mActivityTestRule.loadUrlSync(

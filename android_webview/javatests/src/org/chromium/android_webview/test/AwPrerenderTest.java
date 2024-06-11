@@ -26,7 +26,9 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.ScriptHandler;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.DoNotBatch;
@@ -540,8 +542,17 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 () -> {
                     mAwContents.evaluateJavaScript("history.back();", null);
                 });
-        helper.waitForCallback(callCount);
-        Assert.assertEquals(helper.getUrls(), Arrays.asList(url1));
+        // If BfCache is enabled, the original page restore will not trigger
+        // ShouldInterceptRequest. However, the prerender page will get loaded
+        // since the injected speculation rule also gets restored.
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
+            // Wait for loading of the prerendered page and the resource.
+            helper.waitForCallback(callCount, 2);
+            Assert.assertEquals(helper.getUrls(), Arrays.asList(url2, scriptUrl));
+        } else {
+            helper.waitForCallback(callCount);
+            Assert.assertEquals(helper.getUrls(), Arrays.asList(url1));
+        }
 
         // An IO thread associated with the third page (the same IO thread used by the first page)
         // should

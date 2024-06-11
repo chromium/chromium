@@ -1295,7 +1295,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
+    // TODO: Run the test with BFCache after relanding crrev.com/c/5434056
+    @CommandLineFlags.Add({
+        "enable-features=AndroidAutofillCancelSessionOnNavigation",
+        "disable-features=WebViewBackForwardCache"
+    })
     public void testNavigationAfterProbableSubmitResultsInSessionCommit() throws Throwable {
         int cnt = 0;
         loadHTML(
@@ -2368,6 +2372,8 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @RequiresRestart("https://crbug.com/1422936")
+    // TODO: Run the test with BFCache after relanding crrev.com/c/5434056
+    @CommandLineFlags.Add({"disable-features=WebViewBackForwardCache"})
     public void testUmaFunnelMetrics() throws Throwable {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
 

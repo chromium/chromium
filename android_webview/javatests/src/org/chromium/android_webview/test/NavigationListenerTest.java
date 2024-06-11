@@ -11,9 +11,9 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +21,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -31,7 +33,6 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.ByteArrayInputStream;
@@ -43,8 +44,6 @@ import java.net.URLEncoder;
 @Batch(Batch.PER_CLASS)
 public class NavigationListenerTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
-
-    @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     private static final String RESOURCE_PATH = "/android_webview/test/data";
     private static final String PAGE_A = RESOURCE_PATH + "/hello_world.html";
@@ -73,7 +72,14 @@ public class NavigationListenerTest extends AwParameterizedTest {
         mAwContents = testContainerView.getAwContents();
         mListener = new TestWebMessageListener();
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
-        mTestServer = sTestServerRule.getServer();
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
+    }
+
+    @After
+    public void tearDown() {
+        mTestServer.stopAndDestroyServer();
     }
 
     // Test that adding the special navigationListener will result in receiving
@@ -209,11 +215,12 @@ public class NavigationListenerTest extends AwParameterizedTest {
         mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mAwContents, mContentsClient, "location.href = '404.html'; ");
 
-        // Since this navigation creates a new Page (an error page), the
-        // previous Page gets deleted.
-        data = mListener.waitForOnPostMessage();
-        assertNavigationMessageType(data, "PAGE_DELETED");
-        Assert.assertEquals(page3ReplyProxy, data.mReplyProxy);
+        // The previous page can be stored into the BFCache. If the BFCache
+        // is not enabled, the original page will be deleted.
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "PAGE_DELETED");
+        }
 
         data = mListener.waitForOnPostMessage();
         assertNavigationData(
@@ -332,11 +339,12 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // for the iframe loaded by the previous page..
         final String url2 = loadUrlFromPath(PAGE_B);
 
-        // Since this navigation creates a new Page, the previous Page gets
-        // deleted.
-        data = mListener.waitForOnPostMessage();
-        assertNavigationMessageType(data, "PAGE_DELETED");
-        Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
+        // The previous page can be stored into the BFCache. If the BFCache
+        // is not enabled, the original page will be deleted.
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "PAGE_DELETED");
+        }
 
         // The notification should indicate that the navigation is
         // cross-document and uses a new JavaScriptReplyProxy.
@@ -645,11 +653,13 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         /* responseHeaders= */ null));
         final String url2 = loadUrlFromPath(PAGE_B);
 
-        // Since this navigation creates a new Page, the previous Page gets
-        // deleted.
-        data = mListener.waitForOnPostMessage();
-        assertNavigationMessageType(data, "PAGE_DELETED");
-        Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
+        // The previous page can be stored into the BFCache. If the BFCache
+        // is not enabled, the original page will be deleted.
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "PAGE_DELETED");
+            Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
+        }
 
         // The notification should indicate that the navigation is
         // cross-document and uses a new JavaScriptReplyProxy.
@@ -745,9 +755,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({
         "enable-features=EnableNavigationListener",
+        "disable-features=WebViewBackForwardCache"
     })
     public void testNavigationHistoryNavigationBFCacheDisabled() throws Throwable {
-        mAwContents.getSettings().setBackForwardCacheEnabled(false);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
