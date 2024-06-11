@@ -191,29 +191,6 @@ TEST(RTreeTest, GetBoundsWithEmptyRect) {
   EXPECT_EQ(expected_all_bounds, rtree.GetAllBoundsForTracing());
 }
 
-TEST(RTreeTest, BuildAfterReset) {
-  std::vector<gfx::Rect> rects;
-  rects.push_back(gfx::Rect(0, 0, 10, 10));
-  rects.push_back(gfx::Rect(0, 0, 10, 10));
-  rects.push_back(gfx::Rect(0, 0, 10, 10));
-  rects.push_back(gfx::Rect(0, 0, 10, 10));
-
-  RTree<size_t> rtree;
-  rtree.Build(rects);
-
-  // Resetting should give the same as an empty rtree.
-  rtree.Reset();
-  EXPECT_EQ(gfx::Rect(), *rtree.bounds());
-  EXPECT_TRUE(rtree.GetAllBoundsForTracing().empty());
-
-  // Should be able to rebuild from a reset rtree.
-  rtree.Build(rects);
-  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), *rtree.bounds());
-  std::map<size_t, gfx::Rect> expected_all_bounds = {
-      {0, rects[0]}, {1, rects[1]}, {2, rects[2]}, {3, rects[3]}};
-  EXPECT_EQ(expected_all_bounds, rtree.GetAllBoundsForTracing());
-}
-
 TEST(RTreeTest, Payload) {
   using Container = std::vector<std::pair<gfx::Rect, float>>;
   Container data;
@@ -258,22 +235,6 @@ TEST(RTreeTest, InvalidBounds) {
   rtree.Build(rects);
 
   EXPECT_FALSE(rtree.has_valid_bounds());
-}
-
-TEST(RTreeTest, InvalidBoundsReset) {
-  std::vector<gfx::Rect> rects;
-  rects.push_back(gfx::Rect(-INT_MAX, -INT_MAX, INT_MAX, INT_MAX));
-  rects.push_back(gfx::Rect(100, 100, 10, 10));
-
-  RTree<size_t> rtree;
-  rtree.Build(rects);
-
-  EXPECT_FALSE(rtree.has_valid_bounds());
-
-  // Reset() should restore us to an empty (but valid) state.
-  rtree.Reset();
-  ASSERT_TRUE(rtree.has_valid_bounds());
-  EXPECT_EQ(gfx::Rect(), *rtree.bounds());
 }
 
 TEST(RTreeTest, InvalidBoundsSearch) {

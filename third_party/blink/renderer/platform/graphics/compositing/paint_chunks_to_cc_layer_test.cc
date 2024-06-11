@@ -479,7 +479,7 @@ TEST_P(PaintChunksToCcLayerTest, VisualRect) {
       gfx::Vector2dF(100, 200), nullptr, *cc_list);
   EXPECT_EQ(gfx::Rect(-50, -100, 100, 100), cc_list->VisualRectForTesting(4));
 
-  EXPECT_THAT(cc_list->FinalizeAndReleaseAsRecord(),
+  EXPECT_THAT(cc_list->FinalizeAndReleaseAsRecordForTesting(),
               ElementsAre(PaintOpIs<cc::SaveOp>(),        //
                           PaintOpIs<cc::TranslateOp>(),   // <layer_offset>
                           PaintOpIs<cc::SaveOp>(),        //
@@ -1087,7 +1087,7 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
     EXPECT_EQ(expected_visual_rect, cc_list->VisualRectForTesting(i));
   }
 
-  auto output = cc_list->FinalizeAndReleaseAsRecord();
+  auto output = cc_list->FinalizeAndReleaseAsRecordForTesting();
 
   cc::PaintFlags expected_flags;
   expected_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
@@ -1127,7 +1127,7 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
     EXPECT_EQ(expected_filter_visual_rect, cc_list->VisualRectForTesting(i));
   }
 
-  auto output = cc_list->FinalizeAndReleaseAsRecord();
+  auto output = cc_list->FinalizeAndReleaseAsRecordForTesting();
 
   cc::PaintFlags expected_flags;
   expected_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(

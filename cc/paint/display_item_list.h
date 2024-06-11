@@ -126,9 +126,8 @@ class CC_PAINT_EXPORT DisplayItemList
   // Called after all items are appended, to process the items.
   void Finalize();
 
-  // Calls Finalize(), and returns a PaintRecord from this DisplayItemList,
-  // leaving |this| in an empty state.
-  PaintRecord FinalizeAndReleaseAsRecord();
+  // For testing only, to examine the painted result.
+  PaintRecord FinalizeAndReleaseAsRecordForTesting();
 
   // If this list represents an image that should be directly composited (i.e.
   // rasterized at the intrinsic size of the image), return the intrinsic size
@@ -229,8 +228,6 @@ class CC_PAINT_EXPORT DisplayItemList
 
   ~DisplayItemList();
 
-  void Reset();
-
   std::unique_ptr<base::trace_event::TracedValue> CreateTracedValue(
       bool include_items) const;
   void AddToValue(base::trace_event::TracedValue*, bool include_items) const;
@@ -241,10 +238,6 @@ class CC_PAINT_EXPORT DisplayItemList
     if (!paired_begin_stack_.empty())
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
-
-  // Shared between Finalize() and FinalizeAndReleaseAsRecord(). Does not modify
-  // `paint_op_buffer_`.
-  void FinalizeImpl();
 
   void GenerateDiscardableImagesMetadata() const;
 

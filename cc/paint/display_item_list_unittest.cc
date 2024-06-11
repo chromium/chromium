@@ -1141,7 +1141,7 @@ TEST_F(DisplayItemListTest, TotalOpCount) {
   list->StartPaint();
   list->push<SaveOp>();
   list->push<TranslateOp>(10.f, 20.f);
-  list->push<DrawRecordOp>(sub_list->FinalizeAndReleaseAsRecord());
+  list->push<DrawRecordOp>(sub_list->FinalizeAndReleaseAsRecordForTesting());
   list->push<RestoreOp>();
   list->EndPaintOfUnpaired(gfx::Rect());
   EXPECT_EQ(8u, list->TotalOpCount());
@@ -1149,7 +1149,6 @@ TEST_F(DisplayItemListTest, TotalOpCount) {
 
 TEST_F(DisplayItemListTest, AreaOfDrawText) {
   auto list = base::MakeRefCounted<DisplayItemList>();
-  auto sub_list = base::MakeRefCounted<DisplayItemList>();
 
   SkFont font = skia::DefaultFont();
   auto text_blob1 = SkTextBlob::MakeFromString("ABCD", font);
@@ -1161,10 +1160,9 @@ TEST_F(DisplayItemListTest, AreaOfDrawText) {
                             ceilf(text_blob2->bounds().height()));
   auto text_blob2_area = text_blob2_size.width() * text_blob2_size.height();
 
-  sub_list->StartPaint();
-  sub_list->push<DrawTextBlobOp>(text_blob1, 0.0f, 0.0f, PaintFlags());
-  sub_list->EndPaintOfUnpaired(gfx::Rect());
-  auto record = sub_list->FinalizeAndReleaseAsRecord();
+  PaintOpBuffer sub_buffer;
+  sub_buffer.push<DrawTextBlobOp>(text_blob1, 0.0f, 0.0f, PaintFlags());
+  auto record = sub_buffer.ReleaseAsRecord();
 
   list->StartPaint();
   list->push<SaveOp>();

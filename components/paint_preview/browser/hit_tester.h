@@ -40,9 +40,6 @@ class HitTester {
   // a vector of non-owning pointers to corresponding GURLs.
   void HitTest(const gfx::Rect& query, std::vector<const GURL*>* results) const;
 
-  // Clears all data.
-  void Reset();
-
  private:
   cc::RTree<GURL> rtree_;
 };

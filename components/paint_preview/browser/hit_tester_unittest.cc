@@ -32,11 +32,6 @@ TEST(PaintPreviewHitTesterTest, TestBuildLinkData) {
   urls.clear();
   hit_tester.HitTest(gfx::Rect(1, 1, 1, 1), &urls);
   EXPECT_TRUE(urls.empty());
-
-  hit_tester.Reset();
-  urls.clear();
-  hit_tester.HitTest(gfx::Rect(75, 75, 1, 1), &urls);
-  EXPECT_TRUE(urls.empty());
 }
 
 TEST(PaintPreviewHitTesterTest, TestBuildPaintPreviewFrameProto) {
@@ -59,11 +54,6 @@ TEST(PaintPreviewHitTesterTest, TestBuildPaintPreviewFrameProto) {
 
   urls.clear();
   hit_tester.HitTest(gfx::Rect(0, 0, 1, 1), &urls);
-  EXPECT_TRUE(urls.empty());
-
-  hit_tester.Reset();
-  urls.clear();
-  hit_tester.HitTest(gfx::Rect(5, 5, 1, 1), &urls);
   EXPECT_TRUE(urls.empty());
 }
 

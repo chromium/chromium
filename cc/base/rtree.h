@@ -94,8 +94,6 @@ class RTree {
   // Production code except tracing should not use this method.
   std::map<T, gfx::Rect> GetAllBoundsForTracing() const;
 
-  void Reset();
-
  private:
   // These values were empirically determined to produce reasonable performance
   // in most cases.
@@ -410,15 +408,6 @@ void RTree<T>::GetAllBoundsRecursive(Node<T>* node,
     else
       GetAllBoundsRecursive(node->children[i].subtree, results);
   }
-}
-
-template <typename T>
-void RTree<T>::Reset() {
-  num_data_elements_ = 0;
-  root_.subtree = nullptr;
-  nodes_.clear();
-  root_.bounds = gfx::Rect();
-  has_valid_bounds_ = true;
 }
 
 }  // namespace cc

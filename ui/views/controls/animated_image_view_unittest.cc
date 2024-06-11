@@ -84,7 +84,7 @@ class AnimatedImageViewTest : public ViewsTestBase {
     view()->Paint(PaintInfo::CreateRootPaintInfo(paint_context,
                                                  invalidation_rect.size()));
     RunPendingMessages();
-    return display_list->FinalizeAndReleaseAsRecord();
+    return display_list->FinalizeAndReleaseAsRecordForTesting();
   }
 
   AnimatedImageView* view() {

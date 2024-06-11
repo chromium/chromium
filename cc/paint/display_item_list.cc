@@ -191,11 +191,6 @@ void DisplayItemList::EndPaintOfPairedEnd() {
 }
 
 void DisplayItemList::Finalize() {
-  FinalizeImpl();
-  paint_op_buffer_.ShrinkToFit();
-}
-
-void DisplayItemList::FinalizeImpl() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "DisplayItemList::Finalize");
 #if DCHECK_IS_ON()
@@ -216,13 +211,12 @@ void DisplayItemList::FinalizeImpl() {
   offsets_.clear();
   offsets_.shrink_to_fit();
   paired_begin_stack_.shrink_to_fit();
+  paint_op_buffer_.ShrinkToFit();
 }
 
-PaintRecord DisplayItemList::FinalizeAndReleaseAsRecord() {
-  FinalizeImpl();
-  PaintRecord record = paint_op_buffer_.ReleaseAsRecord();
-  Reset();
-  return record;
+PaintRecord DisplayItemList::FinalizeAndReleaseAsRecordForTesting() {
+  Finalize();
+  return paint_op_buffer_.ReleaseAsRecord();
 }
 
 void DisplayItemList::EmitTraceSnapshot() const {
@@ -319,26 +313,6 @@ void DisplayItemList::GenerateDiscardableImagesMetadata() const {
   image_map_.emplace();
   // Bounds are only used to size an SkNoDrawCanvas.
   image_map_->Generate(paint_op_buffer_, bounds().value_or(kMaxBounds));
-}
-
-void DisplayItemList::Reset() {
-#if DCHECK_IS_ON()
-  DCHECK(!IsPainting());
-  DCHECK(paired_begin_stack_.empty());
-#endif
-
-  rtree_.Reset();
-  {
-    base::AutoLock lock(image_generation_lock_);
-    image_map_.reset();
-  }
-  paint_op_buffer_.Reset();
-  visual_rects_.clear();
-  visual_rects_.shrink_to_fit();
-  offsets_.clear();
-  offsets_.shrink_to_fit();
-  paired_begin_stack_.clear();
-  paired_begin_stack_.shrink_to_fit();
 }
 
 bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
