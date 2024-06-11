@@ -26,6 +26,10 @@ build_webui("build") {
     "sync_confirmation/sync_confirmation.html",
     "sync_confirmation/sync_disabled_confirmation.html",
     "sync_confirmation/sync_loading_confirmation.html",
+    "managed_user_profile_notice/images/enrollment_in_progress.svg",
+    "managed_user_profile_notice/images/enrollment_failure.svg",
+    "managed_user_profile_notice/images/enrollment_success.svg",
+    "managed_user_profile_notice/images/enrollment_timeout.svg",
   ]
   if (!is_chromeos_ash) {
     static_files += [
