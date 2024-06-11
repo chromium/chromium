@@ -294,7 +294,8 @@ TEST_F(TypedTraceEventTest, InternedData) {
   CancelTrace();
 }
 
-TEST_F(TypedTraceEventTest, InstantThreadEvent) {
+// TODO: crbug/334063999 - The test is disabled due to flakiness.
+TEST_F(TypedTraceEventTest, DISABLED_InstantThreadEvent) {
   EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "ThreadEvent", [](perfetto::EventContext) {});
@@ -304,7 +305,8 @@ TEST_F(TypedTraceEventTest, InstantThreadEvent) {
   CancelTrace();
 }
 
-TEST_F(TypedTraceEventTest, InstantProcessEvent) {
+// TODO: crbug/334063999 - The test is disabled due to flakiness.
+TEST_F(TypedTraceEventTest, DISABLED_InstantProcessEvent) {
   EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "ProcessEvent", perfetto::ProcessTrack::Current(),
