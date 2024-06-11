@@ -3,36 +3,62 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
 <style>
-  #feature-running-text,
-  #feature-disabled-text,
-  #feature-enabled-text {
+  #featureRunningText,
+  #featureDisabledText,
+  #featureEnabledText {
     font-weight: bold;
+  }
+
+  #cameraFeedContainer,
+  #cameraFeed {
+    width: 56vw;
+  }
+
+  #cameraFeedContainer {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px #333 solid;
+  }
+
+  #overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 </style>
 
 <h1>Kiosk Vision Internals</h1>
 
-<template is="dom-if" if="[[statusIs_(state_, 'kRunning')]]">
-  <p>The Kiosk Vision feature <span id="feature-running-text">is running</span>.</p>
-  <p>There are [[state_.boxes.length]] boxes to be displayed.</p>
-</template>
-
-<template is="dom-if" if="[[statusIs_(state_, 'kUnknown')]]">
-  <p>Unknown status. Possibly still loading...</p>
-</template>
-
-<template is="dom-if" if="[[statusIs_(state_, 'kFeatureDisabled')]]">
-  <p>The Kiosk Vision feature <span id="feature-disabled-text">is disabled</span>.</p>
-</template>
-
-<template is="dom-if" if="[[statusIs_(state_, 'kFeatureNotInitialized')]]">
+<div hidden$="[[!statusIs_(state_, 'kRunning')]]">
   <p>
-    The Kiosk Vision feature <span id="feature-enabled-text">is enabled</span>
+    The Kiosk Vision feature <span id="featureRunningText">is running</span>.
+  </p>
+
+  <div id="cameraFeedContainer">
+    <video id="cameraFeed" autoplay="true"></video>
+    <canvas id="overlay"></canvas>
+  </div>
+</div>
+
+<div hidden$="[[!statusIs_(state_, 'kUnknown')]]">
+  <p>Unknown status. Possibly still loading...</p>
+</div>
+
+<div hidden$="[[!statusIs_(state_, 'kFeatureDisabled')]]">
+  <p>
+    The Kiosk Vision feature <span id="featureDisabledText">is disabled</span>.
+  </p>
+</div>
+
+<div hidden$="[[!statusIs_(state_, 'kFeatureNotInitialized')]]">
+  <p>
+    The Kiosk Vision feature <span id="featureEnabledText">is enabled</span>
     but not yet initialized.
   </p>
   <p>Possibly still loading...</p>
-</template>
+</div>
 
-<template is="dom-if" if="[[statusIs_(state_, 'kError')]]">
+<div hidden$="[[!statusIs_(state_, 'kError')]]">
   <p>There has been an error.</p>
-</template>
+</div>
