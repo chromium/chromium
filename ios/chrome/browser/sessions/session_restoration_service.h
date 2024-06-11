@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -20,6 +21,7 @@ namespace proto {
 class WebStateStorage;
 }  // namespace proto
 class WebState;
+class WebStateID;
 }  // namespace web
 
 // Service responsible for session saving and restoration.
@@ -124,6 +126,55 @@ class SessionRestorationService : public KeyedService {
 
   // Returns whether placeholder tabs support is enabled.
   virtual bool PlaceholderTabsEnabled() const = 0;
+
+  // Asynchronously loads data for all WebStates in `browser`, invoking
+  // `parse` for each of them in order to extract the interesting part.
+  // The result is collected in a map which is passed to `done` when it
+  // is invoked on the current sequence.
+  //
+  // Note: `parse` needs to be sequence-safe as it is invoked on a
+  // background sequence. In general, it should not use any state, and
+  // should just parse the data from `web::proto::WebStateStorage`.
+  //
+  // Note: since this is a templated method, you need to include the
+  // file session_restoration_service_tmpl.h to get the definition or
+  // you'll get a link error (this is an optimisation to reduce the
+  // compilation time as most client of SessionRestorationService do
+  // not need the definition of this method).
+  template <typename T>
+  void LoadDataFromStorage(
+      Browser* browser,
+      base::RepeatingCallback<T(web::proto::WebStateStorage)> parse,
+      base::OnceCallback<void(std::map<web::WebStateID, T>)> done);
+
+ protected:
+  // Callback invoked with information loaded from disk for a WebState.
+  // This callback may be invoked on a background sequence, so it *must*
+  // be sequence-safe.
+  using WebStateStorageIterationCallback =
+      base::RepeatingCallback<void(web::WebStateID,
+                                   web::proto::WebStateStorage)>;
+
+  // Callback invoked when the iteration over all WebState is complete.
+  // This callback will be invoked on the same sequence where the method
+  // `ParseDataForBrowserAsync()` was invoked.
+  using WebStateStorageIterationCompleteCallback = base::OnceClosure;
+
+  // Asynchronously loads data for all WebStates in `browser`, invoking
+  // `iterator` callback with the loaded data (on a background sequence).
+  // Once the iteration is complete, `done` callback is invoked (on the
+  // same background sequence).
+  //
+  // It is not recommended to use this method directly. Instead use the
+  // templated helper `LoadDataFromStorage`.
+  //
+  // Note: the implementation guarantees that `done` will only be called
+  // once, and that `iterator` will never be called after `done` has been
+  // called.
+  virtual void ParseDataForBrowserAsync(
+      Browser* browser,
+      WebStateStorageIterationCallback iter_callback,
+      WebStateStorageIterationCompleteCallback done) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_

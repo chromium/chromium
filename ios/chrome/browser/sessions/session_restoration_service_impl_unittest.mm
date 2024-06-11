@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "ios/chrome/browser/sessions/session_loading.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_tmpl.h"
 #import "ios/chrome/browser/sessions/test_session_restoration_observer.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -31,9 +32,13 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/common/user_agent.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -295,6 +300,45 @@ void MoveWebStateBetweenWebStateList(WebStateList* src_web_state_list,
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(0).Activate(active));
   }
+}
+
+// Map WebStateID to timestamp.
+using WebStateIDToTime = std::map<web::WebStateID, base::Time>;
+
+// Collects the timestamp of the last committed items for each WebState's in
+// `web_state_list` and returns a mapping from their identifier to the value.
+WebStateIDToTime CollectLastCommittedItemTimestampFromWebStateList(
+    WebStateList* web_state_list) {
+  WebStateIDToTime result;
+
+  const int web_state_list_count = web_state_list->count();
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* const web_state = web_state_list->GetWebStateAt(index);
+    const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+    web::NavigationManager* const manager = web_state->GetNavigationManager();
+    web::NavigationItem* const item = manager->GetLastCommittedItem();
+    const base::Time timestamp = item->GetTimestamp();
+    DCHECK_NE(timestamp, base::Time());
+
+    result.insert(std::make_pair(web_state_id, timestamp));
+  }
+
+  return result;
+}
+
+// Extracts the timestamp of the last committed item from `storage`.
+base::Time GetLastCommittedTimestampFromStorage(
+    web::proto::WebStateStorage storage) {
+  const auto& navigation_storage = storage.navigation();
+  const int index = navigation_storage.last_committed_item_index();
+  if (index < 0 || navigation_storage.items_size() <= index) {
+    // Invalid last committed item index, return null timestamp.
+    return base::Time();
+  }
+
+  const auto& item_storage = navigation_storage.items(index);
+  return web::TimeFromProto(item_storage.timestamp());
 }
 
 }  // namespace
@@ -1453,4 +1497,64 @@ TEST_F(SessionRestorationServiceImplTest, MoveWebStateWithoutMetadata) {
 
   service()->Disconnect(&browser1);
   service()->Disconnect(&browser0);
+}
+
+// Tests that LoadDataFromStorage(...) allow extracting data about WebStates
+// for a session even if none of the WebState are realized.
+TEST_F(SessionRestorationServiceImplTest, LoadDataFromStorage) {
+  // Insert a few WebState in a Browser, wait for the changes to be saved,
+  // then destroy the Browser. Record the mapping of WebState's identifier
+  // to the timestamp of the last navigation.
+  WebStateIDToTime expected_times;
+  {
+    TestBrowser browser = TestBrowser(browser_state());
+    service()->SetSessionID(&browser, kIdentifier0);
+
+    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    WaitForSessionSaveComplete();
+
+    expected_times = CollectLastCommittedItemTimestampFromWebStateList(
+        browser.GetWebStateList());
+
+    service()->Disconnect(&browser);
+    WaitForSessionSaveComplete();
+  }
+
+  // Create a new Browser and load the session.
+  TestBrowser browser = TestBrowser(browser_state());
+  service()->SetSessionID(&browser, kIdentifier0);
+  service()->LoadSession(&browser);
+
+  // Check that all WebStates are unrealized.
+  WebStateList* web_state_list = browser.GetWebStateList();
+  const int web_state_list_count = web_state_list->count();
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    ASSERT_FALSE(web_state->IsRealized());
+  }
+
+  // Asynchronously load the data for the WebState and check that the
+  // timestamps are correctly loaded.
+  WebStateIDToTime loaded;
+  base::RunLoop run_loop;
+  service()->LoadDataFromStorage(
+      &browser, base::BindRepeating(&GetLastCommittedTimestampFromStorage),
+      base::BindOnce(
+          [](WebStateIDToTime* loaded, WebStateIDToTime result) {
+            *loaded = std::move(result);
+          },
+          &loaded)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Check that the data was loaded and is expected.
+  EXPECT_EQ(expected_times, loaded);
+
+  // Check that all WebStates are still unrealized.
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    EXPECT_FALSE(web_state->IsRealized());
+  }
+
+  service()->Disconnect(&browser);
 }

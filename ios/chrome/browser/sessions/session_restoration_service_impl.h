@@ -62,6 +62,10 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
       base::OnceClosure closure) final;
   void PurgeUnassociatedData(base::OnceClosure closure) final;
   bool PlaceholderTabsEnabled() const final;
+  void ParseDataForBrowserAsync(
+      Browser* browser,
+      WebStateStorageIterationCallback iter_callback,
+      WebStateStorageIterationCompleteCallback done) final;
 
  private:
   // Helper type used to record information about a single WebStateList.

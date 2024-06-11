@@ -60,6 +60,10 @@ class LegacySessionRestorationService final : public SessionRestorationService,
       base::OnceClosure closure) final;
   void PurgeUnassociatedData(base::OnceClosure closure) final;
   bool PlaceholderTabsEnabled() const final;
+  void ParseDataForBrowserAsync(
+      Browser* browser,
+      WebStateStorageIterationCallback iter_callback,
+      WebStateStorageIterationCompleteCallback done) final;
 
   // SessionRestorationObserver implementation.
   void WillStartSessionRestoration(Browser* browser) final;

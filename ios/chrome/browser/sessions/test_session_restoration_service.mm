@@ -115,3 +115,12 @@ void TestSessionRestorationService::PurgeUnassociatedData(
 bool TestSessionRestorationService::PlaceholderTabsEnabled() const {
   return false;
 }
+
+void TestSessionRestorationService::ParseDataForBrowserAsync(
+    Browser* browser,
+    WebStateStorageIterationCallback iter_callback,
+    WebStateStorageIterationCompleteCallback done) {
+  // Pretends the session is empty, so invoke `done` without calling `iterator`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(done));
+}

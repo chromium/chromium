@@ -175,8 +175,16 @@ source_set("session_io") {
 }
 
 source_set("session_restoration_service") {
-  sources = [ "session_restoration_service.h" ]
-  deps = [ "//components/keyed_service/core" ]
+  sources = [
+    "session_restoration_service.h",
+    "session_restoration_service_tmpl.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//ios/web/public",
+  ]
+  public_deps = [ "//ios/web/public/session/proto" ]
 }
 
 source_set("session_restoration_service_impl") {
@@ -373,6 +381,7 @@ source_set("unit_tests") {
     ":session_internal_util",
     ":session_io",
     ":session_migration",
+    ":session_restoration_service",
     ":session_restoration_service_factory",
     ":session_restoration_service_impl",
     ":session_service",

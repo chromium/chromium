@@ -190,6 +190,30 @@ void UpdateMetadataMap(WebStateMetadataMap& metadata_map,
   DCHECK_EQ(metadata_map.size(), static_cast<size_t>(count));
 }
 
+// Callback invoked for each WebState by `IterateDataForSessionAtPath`.
+using SessionDataIterator =
+    base::RepeatingCallback<void(web::WebStateID, web::proto::WebStateStorage)>;
+
+// Loads data for session at `session_dir` invoking `iterator` for each
+// WebState.
+void IterateDataForSessionAtPath(const base::FilePath& session_dir,
+                                 const SessionDataIterator& iterator) {
+  const ios::proto::WebStateListStorage session =
+      ios::sessions::LoadSessionStorage(session_dir);
+
+  for (const auto& item : session.items()) {
+    DCHECK(web::WebStateID::IsValidValue(item.identifier()));
+    web::WebStateID web_state_id =
+        web::WebStateID::FromSerializedValue(item.identifier());
+
+    const base::FilePath web_state_storage_path =
+        ios::sessions::WebStateDirectory(session_dir, web_state_id)
+            .Append(kWebStateStorageFilename);
+
+    iterator.Run(web_state_id, LoadWebStateStorage(web_state_storage_path));
+  }
+}
+
 }  // anonymous namespace
 
 // Class storing information about a WebStateList tracked by the
@@ -600,6 +624,23 @@ void SessionRestorationServiceImpl::PurgeUnassociatedData(
 bool SessionRestorationServiceImpl::PlaceholderTabsEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
+}
+
+void SessionRestorationServiceImpl::ParseDataForBrowserAsync(
+    Browser* browser,
+    WebStateStorageIterationCallback iter_callback,
+    WebStateStorageIterationCompleteCallback done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iter = infos_.find(browser->GetWebStateList());
+  DCHECK(iter != infos_.end());
+
+  const WebStateListInfo& info = *iter->second;
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&IterateDataForSessionAtPath,
+                     storage_path_.Append(info.identifier()),
+                     std::move(iter_callback)),
+      std::move(done));
 }
 
 #pragma mark - Private

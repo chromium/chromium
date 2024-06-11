@@ -203,6 +203,42 @@ bool LegacySessionRestorationService::PlaceholderTabsEnabled() const {
   return false;
 }
 
+void LegacySessionRestorationService::ParseDataForBrowserAsync(
+    Browser* browser,
+    WebStateStorageIterationCallback iter_callback,
+    WebStateStorageIterationCompleteCallback done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(base::Contains(browsers_, browser));
+  using SessionMap = std::map<web::WebStateID, CRWSessionStorage*>;
+  SessionMap sessions;
+
+  // Collect the data synchronously (since it is available when using the
+  // legacy implementation).
+  WebStateList* const web_state_list = browser->GetWebStateList();
+  const int web_state_list_count = web_state_list->count();
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* const web_state = web_state_list->GetWebStateAt(index);
+    web::WebStateID const web_state_id = web_state->GetUniqueIdentifier();
+    sessions.insert(
+        std::make_pair(web_state_id, web_state->BuildSessionStorage()));
+  }
+
+  // Post a task that will invoke `iter_callback` for all WebState and
+  // then `done`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](SessionMap sessions, WebStateStorageIterationCallback iterator) {
+            for (const auto& [web_state_id, session] : sessions) {
+              web::proto::WebStateStorage storage;
+              [session serializeToProto:storage];
+              iterator.Run(web_state_id, std::move(storage));
+            }
+          },
+          std::move(sessions), std::move(iter_callback))
+          .Then(std::move(done)));
+}
+
 void LegacySessionRestorationService::WillStartSessionRestoration(
     Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

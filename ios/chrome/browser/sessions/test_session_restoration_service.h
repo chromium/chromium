@@ -44,6 +44,10 @@ class TestSessionRestorationService : public SessionRestorationService {
       base::OnceClosure closure) override;
   void PurgeUnassociatedData(base::OnceClosure closure) final;
   bool PlaceholderTabsEnabled() const final;
+  void ParseDataForBrowserAsync(
+      Browser* browser,
+      WebStateStorageIterationCallback iter_callback,
+      WebStateStorageIterationCompleteCallback done) final;
 
  private:
   base::ObserverList<SessionRestorationObserver, true> observers_;
