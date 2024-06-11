@@ -59,70 +59,66 @@ namespace {
 #if VECTORIZE_SCANNING
 // We use the vectorized classification trick to scan and classify characters.
 // Instead of checking the string byte-by-byte (or vector-by-vector), the
-// algorithm splits each character of the passed string into two nibbles (4
-// bytes) that are then used as indices in the 2 lookup tables, represented as
-// vectors. The algorithm uses the table lookup instructions (pshufb or vtbl) to
-// get values in those tables and then bit-wise ands the values. The resulting
-// vector consists of the classified values, which are used to dispatch to a
-// proper handler. See more on the idea here: https://arxiv.org/pdf/1902.08318.
+// algorithm takes the lower nibbles (4-bits) of the passed string and uses them
+// as offsets into the table, represented as a vector. The values corresponding
+// to those offsets are actual interesting symbols. The algorithm then simply
+// compares the looked up values with the input vector. The true lanes in the
+// resulting vector correspond to the interesting symbols.
+//
+// A big shout out to Daniel Lemire for suggesting the idea. See more on
+// vectorized classification in the Daniel's paper:
+// https://arxiv.org/pdf/1902.08318.
+//
 // For relatively short incoming strings (less than 64 characters) it's assumed
-// that byte-by-byte comparison is faster.
+// that byte-by-byte comparison is faster. TODO(340582182): According to
+// microbenchmarks on M1, string larger than 16 bytes are already scanned faster
+// with SIMD.
 constexpr size_t kVectorizationThreshold = 64;
 // The byte that shall never match any symbol. Using 0xff for it is okay since
-// we only want to match ASCII chars (<=128). This sentinel char is used when
-// matching the tail of a 2-byte string.
+// we only want to match ASCII chars (<=128).
 constexpr uint8_t kNeverMatchedChar = 0xff;
 
-// The classified value for a single character. Assumed to be 0 for unmatched
-// characters.
-using ClassifiedValue = uint8_t;
-
-// The result of the TryMatch function (see below). Contains the classified
-// value of the first matched character in the string and the index inside the
-// vector (i.e. lane).
+// The result of the TryMatch function (see below). Contains the index inside
+// the vector (the lane) and the found character.
 struct MatchedCharacter {
-  bool Matched() const { return classified_value; }
+  bool Matched() const { return found_character != kNeverMatchedChar; }
 
   size_t index_in_vector = 0;
-  ClassifiedValue classified_value = 0;
+  uint8_t found_character = kNeverMatchedChar;
 };
 
 // Tries to match the characters for the single vector. If matched, returns the
 // first matched character in the vector.
 template <typename D, typename VectorT>
+  requires(sizeof(hwy::HWY_NAMESPACE::TFromD<D>) == 1)
 HWY_ATTR ALWAYS_INLINE MatchedCharacter TryMatch(D tag,
                                                  VectorT input,
-                                                 VectorT low_nibble_mask,
-                                                 VectorT high_nibble_mask,
+                                                 VectorT low_nibble_table,
                                                  VectorT low_nib_and_mask) {
   namespace hw = hwy::HWY_NAMESPACE;
 
+  // Get the low nibbles.
   const auto nib_lo = input & low_nib_and_mask;
-  const auto nib_hi = hw::ShiftRight<4>(input);
-
-  const auto shuf_lo = hw::TableLookupBytes(low_nibble_mask, nib_lo);
-  const auto shuf_hi = hw::TableLookupBytes(high_nibble_mask, nib_hi);
-
-  const auto classified = shuf_lo & shuf_hi;
-
-  if (const intptr_t index =
-          hw::FindFirstTrue(tag, classified != hw::Zero(tag));
-      index != -1) {
-    return {static_cast<size_t>(index), hw::ExtractLane(classified, index)};
+  // Lookup the values in the table using the nibbles as offsets into the table.
+  const auto shuf_lo = hw::TableLookupBytes(low_nibble_table, nib_lo);
+  // The values in the tables correspond to the interesting symbols. Just
+  // compare them with the input vector.
+  const auto result = shuf_lo == input;
+  // Find the interesting symbol.
+  if (const intptr_t index = hw::FindFirstTrue(tag, result); index != -1) {
+    return {static_cast<size_t>(index), hw::ExtractLane(input, index)};
   }
 
   return {};
 }
 
-// Scans the 1-byte string and returns the classified value that first matched
-// character.
+// Scans the 1-byte string and returns the first matched character (1-byte) or
+// kNeverMatchedChar otherwise.
 template <typename T, typename VectorT>
   requires(sizeof(T) == 1)
-HWY_ATTR ALWAYS_INLINE ClassifiedValue
-SimdAdvanceAndClassify(const T*& start,
-                       const T* end,
-                       VectorT low_nibble_mask,
-                       VectorT high_nibble_mask) {
+HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
+                                                    const T* end,
+                                                    VectorT low_nibble_table) {
   namespace hw = hwy::HWY_NAMESPACE;
   DCHECK_GE(static_cast<size_t>(end - start), kVectorizationThreshold);
 
@@ -134,11 +130,11 @@ SimdAdvanceAndClassify(const T*& start,
   // The main scanning loop.
   for (; start + (stride - 1) < end; start += stride) {
     const auto input = hw::LoadU(tag, reinterpret_cast<const uint8_t*>(start));
-    if (const auto result = TryMatch(tag, input, low_nibble_mask,
-                                     high_nibble_mask, low_nib_and_mask);
+    if (const auto result =
+            TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
         result.Matched()) {
       start = reinterpret_cast<const T*>(start + result.index_in_vector);
-      return result.classified_value;
+      return result.found_character;
     };
   }
 
@@ -146,16 +142,16 @@ SimdAdvanceAndClassify(const T*& start,
   if (start < end) {
     const auto input =
         hw::LoadU(tag, reinterpret_cast<const uint8_t*>(end - stride));
-    if (const auto result = TryMatch(tag, input, low_nibble_mask,
-                                     high_nibble_mask, low_nib_and_mask);
+    if (const auto result =
+            TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
         result.Matched()) {
       start = end - stride + result.index_in_vector;
-      return result.classified_value;
+      return result.found_character;
     }
     start = end;
   }
 
-  return 0;
+  return kNeverMatchedChar;
 }
 
 // This overload for 2-bytes strings uses the interleaved load to check the
@@ -163,11 +159,9 @@ SimdAdvanceAndClassify(const T*& start,
 // not available on NEON (as opposed to SVE) and is emulated in Highway.
 template <typename T, typename VectorT>
   requires(sizeof(T) == 2)
-HWY_ATTR ALWAYS_INLINE ClassifiedValue
-SimdAdvanceAndClassify(const T*& start,
-                       const T* end,
-                       VectorT low_nibble_mask,
-                       VectorT high_nibble_mask) {
+HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(const T*& start,
+                                                    const T* end,
+                                                    VectorT low_nibble_table) {
   namespace hw = hwy::HWY_NAMESPACE;
   DCHECK_GE(static_cast<size_t>(end - start), kVectorizationThreshold);
 
@@ -182,14 +176,14 @@ SimdAdvanceAndClassify(const T*& start,
     VectorT input;
     hw::LoadInterleaved2(tag, reinterpret_cast<const uint8_t*>(start), input,
                          dummy_upper);
-    if (const auto result = TryMatch(tag, input, low_nibble_mask,
-                                     high_nibble_mask, low_nib_and_mask);
+    if (const auto result =
+            TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
         result.Matched()) {
       const auto index = result.index_in_vector;
       // Check if the upper byte is zero.
       if (*(start + index) >> 8 == 0) {
         start = reinterpret_cast<const T*>(start + index);
-        return result.classified_value;
+        return result.found_character;
       }
 
       start += index + 1;
@@ -206,16 +200,14 @@ SimdAdvanceAndClassify(const T*& start,
     VectorT input;
     hw::LoadInterleaved2(tag, reinterpret_cast<const uint8_t*>(end - stride),
                          input, dummy_upper);
-    for (auto result = TryMatch(tag, input, low_nibble_mask, high_nibble_mask,
-                                low_nib_and_mask);
+    for (auto result = TryMatch(tag, input, low_nibble_table, low_nib_and_mask);
          result.Matched();
-         result = TryMatch(tag, input, low_nibble_mask, high_nibble_mask,
-                           low_nib_and_mask)) {
+         result = TryMatch(tag, input, low_nibble_table, low_nib_and_mask)) {
       const auto index = result.index_in_vector;
       // Check if the upper byte is zero.
       if (*(end - stride + index) >> 8 == 0) {
         start = reinterpret_cast<const T*>(end - stride + index);
-        return result.classified_value;
+        return result.found_character;
       }
 
       // Otherwise, set the corresponding lane to kNeverMatchedChar to never
@@ -225,7 +217,7 @@ SimdAdvanceAndClassify(const T*& start,
     start = end;
   }
 
-  return 0;
+  return kNeverMatchedChar;
 }
 #endif  // VECTORIZE_SCANNING
 
@@ -743,42 +735,25 @@ class HTMLFastPathParser {
     //  \r: 0000 1101
     //  \0: 0000 0000
     //   &: 0010 0110
-    // We pick the following values for nibbles:
-    // - high nibbles:
-    //   0: 1001
-    //   2: 0100
-    //   3: 0010
-    // - low nibbles:
-    //   0: 0001
-    //   6: 0100
-    //  12: 0010
-    //  13: 1000
-    // Result of anding the nibbles:
-    //  \0: 1
-    //   <: 2
-    //   &: 4
-    //  \r: 8
-    const auto low_nibble_mask =
-        hw::Dup128VecFromValues(tag, 0b0001, 0, 0, 0, 0, 0, 0b0100, 0, 0, 0, 0,
-                                0, 0b0010, 0b1000, 0, 0);
-    const auto high_nibble_mask = hw::Dup128VecFromValues(
-        tag, 0b1001, 0, 0b0100, 0b0010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    switch (
-        SimdAdvanceAndClassify(pos_, end_, low_nibble_mask, high_nibble_mask)) {
-      case 0:
+    // The lower nibbles represent offsets into the |low_nibble_table|. The
+    // values in the table are the corresponding characters.
+    const auto low_nibble_table = hw::Dup128VecFromValues(
+        tag, '\0', 0, 0, 0, 0, 0, '&', 0, 0, 0, 0, 0, '<', '\r', 0, 0);
+    switch (SimdAdvanceAndLookup(pos_, end_, low_nibble_table)) {
+      case kNeverMatchedChar:
         DCHECK_EQ(pos_, end_);
         return {{initial_start, static_cast<size_t>(pos_ - initial_start)},
                 nullptr};
-      case 1:  // '\0'
+      case '\0':
         DCHECK_EQ(*pos_, '\0');
         return Fail(HtmlFastPathResult::kFailedContainsNull,
                     ScanTextResult<Char>{Span{}, nullptr});
-      case 2:  // '<'
+      case '<':
         DCHECK_EQ(*pos_, '<');
         return {{initial_start, static_cast<size_t>(pos_ - initial_start)},
                 nullptr};
-      case 4:  // '&'
-      case 8:  // '\r'
+      case '&':
+      case '\r':
         DCHECK(*pos_ == '&' || *pos_ == '\r');
         pos_ = initial_start;
         return {Span{}, ScanEscapedText()};
@@ -923,7 +898,7 @@ class HTMLFastPathParser {
   }
 
 #if VECTORIZE_SCANNING
-  ALWAYS_INLINE ClassifiedValue
+  ALWAYS_INLINE uint8_t
   ScanAttrValueVectorizedWithSingleQuote(const Char* initial_start) {
     namespace hw = hwy::HWY_NAMESPACE;
     DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
@@ -933,30 +908,14 @@ class HTMLFastPathParser {
     //  \r: 0000 1101
     //  \0: 0000 0000
     //   &: 0010 0110
-    // We pick the following values for nibbles:
-    // - high nibbles:
-    //   0: 1001
-    //   2: 0110
-    // - low nibbles:
-    //   0: 0001
-    //   6: 0100
-    //   7: 0010
-    //  13: 1000
-    // Result of anding the nibbles:
-    //  \0: 1
-    //   ': 2
-    //   &: 4
-    //  \r: 8
-    const auto low_nibble_mask =
-        hw::Dup128VecFromValues(tag, 0b0001, 0, 0, 0, 0, 0, 0b0100, 0b0010, 0,
-                                0, 0, 0, 0, 0b1000, 0, 0);
-    const auto high_nibble_mask = hw::Dup128VecFromValues(
-        tag, 0b1001, 0, 0b0110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    return SimdAdvanceAndClassify(pos_, end_, low_nibble_mask,
-                                  high_nibble_mask);
+    // The lower nibbles represent offsets into the |low_nibble_table|. The
+    // values in the table are the corresponding characters.
+    const auto low_nibble_table = hw::Dup128VecFromValues(
+        tag, '\0', 0, 0, 0, 0, 0, '&', '\'', 0, 0, 0, 0, 0, '\r', 0, 0);
+    return SimdAdvanceAndLookup(pos_, end_, low_nibble_table);
   }
 
-  ALWAYS_INLINE ClassifiedValue
+  ALWAYS_INLINE uint8_t
   ScanAttrValueVectorizedWithDoubleQuote(const Char* initial_start) {
     namespace hw = hwy::HWY_NAMESPACE;
     DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
@@ -966,50 +925,35 @@ class HTMLFastPathParser {
     //  \r: 0000 1101
     //  \0: 0000 0000
     //   &: 0010 0110
-    // We pick the following values for nibbles:
-    // - high nibbles:
-    //   0: 1001
-    //   2: 0110
-    // - low nibbles:
-    //   0: 0001
-    //   2: 0010
-    //   6: 0100
-    //  13: 1000
-    // Result of anding the nibbles:
-    //  \0: 1
-    //   ": 2
-    //   &: 4
-    //  \r: 8
-    const auto low_nibble_mask =
-        hw::Dup128VecFromValues(tag, 0b0001, 0, 0b0010, 0, 0, 0, 0b0100, 0, 0,
-                                0, 0, 0, 0, 0b1000, 0, 0);
-    const auto high_nibble_mask = hw::Dup128VecFromValues(
-        tag, 0b1001, 0, 0b0110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    return SimdAdvanceAndClassify(pos_, end_, low_nibble_mask,
-                                  high_nibble_mask);
+    // The lower nibbles represent offsets into the |low_nibble_table|. The
+    // values in the table are the corresponding characters.
+    const auto low_nibble_table = hw::Dup128VecFromValues(
+        tag, '\0', 0, '"', 0, 0, 0, '&', 0, 0, 0, 0, 0, 0, '\r', 0, 0);
+    return SimdAdvanceAndLookup(pos_, end_, low_nibble_table);
   }
 
   ALWAYS_INLINE std::pair<Span, USpan> ScanAttrValueVectorized(
       Char quote_symbol,
       const Char* initial_start) {
     DCHECK(quote_symbol == '\'' || quote_symbol == '\"');
-    const ClassifiedValue classified_value =
+    const uint8_t found_character =
         quote_symbol == '\''
             ? ScanAttrValueVectorizedWithSingleQuote(initial_start)
             : ScanAttrValueVectorizedWithDoubleQuote(initial_start);
 
-    switch (classified_value) {
-      case 0:
+    switch (found_character) {
+      case kNeverMatchedChar:
         DCHECK_EQ(pos_, end_);
         return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
                     std::pair{Span{}, USpan{}});
-      case 1:  // '\0'
+      case '\0':
         DCHECK_EQ(*pos_, '\0');
         // \0 is generally mapped to \uFFFD (but there are exceptions).
         // Fallback to normal path as this generally does not happen often.
         return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
                     std::pair{Span{}, USpan{}});
-      case 2: {  // ''', '\"'
+      case '\'':
+      case '"': {
         DCHECK(*pos_ == '\'' || *pos_ == '\"');
         Span result =
             Span{initial_start, static_cast<size_t>(pos_ - initial_start)};
@@ -1017,8 +961,8 @@ class HTMLFastPathParser {
         ConsumeNext();
         return {result, USpan{}};
       }
-      case 4:  // '&'
-      case 8:  // '\r'
+      case '&':
+      case '\r':
         DCHECK(*pos_ == '&' || *pos_ == '\r');
         pos_ = initial_start - 1;
         return {Span{}, ScanEscapedAttrValue()};
