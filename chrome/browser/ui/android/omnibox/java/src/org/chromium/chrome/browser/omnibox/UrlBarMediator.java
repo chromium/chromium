@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -78,6 +79,14 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     /** Sets a listener for url text changes. */
     public void setTextChangeListener(Callback<String> listener) {
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, listener);
+    }
+
+    /**
+     * Sets a listener for url key events. See the {@link
+     * UrlBarCoordinator#setHardwareKeyEventListener(View.OnKeyListener)}.
+     */
+    public void setHardwareKeyEventListener(View.OnKeyListener listener) {
+        mModel.set(UrlBarProperties.HW_KEY_EVENT_LISTENER, listener);
     }
 
     /**

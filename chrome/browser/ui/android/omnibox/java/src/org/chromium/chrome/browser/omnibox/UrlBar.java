@@ -91,6 +91,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     private UrlBarDelegate mUrlBarDelegate;
     private Optional<Callback<String>> mTextChangeListener;
+    private Optional<OnKeyListener> mHwKeyEventListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private Callback<Integer> mUrlDirectionListener;
 
@@ -262,6 +263,10 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        boolean consumed =
+                mHwKeyEventListener.map(l -> l.onKey(this, keyCode, event)).orElse(false);
+        if (consumed) return true;
+
         if (KeyEvent.KEYCODE_BACK == keyCode && event.getAction() == KeyEvent.ACTION_UP) {
             mKeyboardHideHelper.monitorForKeyboardHidden();
         }
@@ -468,6 +473,15 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     public void setTextChangeListener(Callback<String> listener) {
         mTextChangeListener = Optional.ofNullable(listener);
+    }
+
+    /**
+     * Set the listener to be notified on each UrlBar KeyEvent.
+     *
+     * @param listener The listener to be notified.
+     */
+    public void setHardwareKeyEventListener(OnKeyListener listener) {
+        mHwKeyEventListener = Optional.ofNullable(listener);
     }
 
     /** Set the text to report to Autofill services upon call to onProvideAutofillStructure. */

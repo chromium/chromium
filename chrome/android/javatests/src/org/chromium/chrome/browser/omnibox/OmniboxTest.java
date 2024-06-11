@@ -159,8 +159,8 @@ public class OmniboxTest {
                         0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    urlBar.dispatchKeyEvent(keyDownEvent);
-                    urlBar.dispatchKeyEvent(keyUpEvent);
+                    urlBar.onKeyPreIme(keyDownEvent.getKeyCode(), keyDownEvent);
+                    urlBar.onKeyPreIme(keyUpEvent.getKeyCode(), keyUpEvent);
                 });
 
         Tab resultTab = mActivityTestRule.getActivity().getActivityTab();

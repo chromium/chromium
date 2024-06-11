@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.graphics.Typeface;
 import android.view.ActionMode;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,6 +140,10 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<Callback<String>> TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The callback to be notified on url key events. */
+    public static final WritableObjectPropertyKey<View.OnKeyListener> HW_KEY_EVENT_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** Specifies the typeface for url bar text. */
     public static final WritableObjectPropertyKey<Typeface> TYPEFACE =
             new WritableObjectPropertyKey<>();
@@ -176,6 +181,7 @@ class UrlBarProperties {
                 TEXT_STATE,
                 URL_DIRECTION_LISTENER,
                 TEXT_CHANGE_LISTENER,
+                HW_KEY_EVENT_LISTENER,
                 INCOGNITO_COLORS_ENABLED,
                 WINDOW_DELEGATE,
                 HAS_URL_SUGGESTIONS,

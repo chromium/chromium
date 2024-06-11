@@ -24,8 +24,6 @@ import java.util.Optional;
 
 /** Handles translating the UrlBar model data to the view state. */
 class UrlBarViewBinder {
-    private static final String TAG = "UrlBarViewBinder";
-
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
@@ -91,6 +89,8 @@ class UrlBarViewBinder {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
         } else if (UrlBarProperties.TEXT_CHANGE_LISTENER.equals(propertyKey)) {
             view.setTextChangeListener(model.get(UrlBarProperties.TEXT_CHANGE_LISTENER));
+        } else if (UrlBarProperties.HW_KEY_EVENT_LISTENER.equals(propertyKey)) {
+            view.setHardwareKeyEventListener(model.get(UrlBarProperties.HW_KEY_EVENT_LISTENER));
         } else if (UrlBarProperties.WINDOW_DELEGATE.equals(propertyKey)) {
             view.setWindowDelegate(model.get(UrlBarProperties.WINDOW_DELEGATE));
         } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {

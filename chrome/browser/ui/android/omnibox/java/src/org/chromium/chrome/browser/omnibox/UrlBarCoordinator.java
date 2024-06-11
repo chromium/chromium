@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
 import android.view.ActionMode;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IntDef;
@@ -98,9 +99,18 @@ public class UrlBarCoordinator
         mUrlBar.destroy();
     }
 
-    /** Specifies the callback that will be invoked each time the content of the Omnibox changes. */
+    /** Set the callback that will be invoked each time the content of the Omnibox changes. */
     public void setTextChangeListener(Callback<String> listener) {
         mMediator.setTextChangeListener(listener);
+    }
+
+    /**
+     * Set the callback that will be invoked for every KeyEvent UrlBar receives from the hardware
+     * keyboard. The callback implementation should carefully decide which keys to consume to avoid
+     * affecting user text composition.
+     */
+    public void setHardwareKeyEventListener(View.OnKeyListener listener) {
+        mMediator.setHardwareKeyEventListener(listener);
     }
 
     /**
