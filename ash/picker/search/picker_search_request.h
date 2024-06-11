@@ -21,11 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/ash/components/emoji/emoji_search.h"
-
-namespace emoji {
-class EmojiSearch;
-}
 
 namespace ash {
 
@@ -46,7 +41,6 @@ class ASH_EXPORT PickerSearchRequest {
       std::optional<PickerCategory> category,
       SearchResultsCallback callback,
       PickerClient* client,
-      emoji::EmojiSearch* emoji_search,
       base::span<const PickerCategory> available_categories);
   PickerSearchRequest(const PickerSearchRequest&) = delete;
   PickerSearchRequest& operator=(const PickerSearchRequest&) = delete;
@@ -67,20 +61,16 @@ class ASH_EXPORT PickerSearchRequest {
                                std::vector<PickerSearchResult> results);
   void HandleGifSearchResults(std::string query,
                               std::vector<PickerSearchResult> results);
-  void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
   void HandleDateSearchResults(std::vector<PickerSearchResult> results);
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
   void HandleEditorSearchResults(PickerSearchSource source,
                                  std::optional<PickerSearchResult> result);
-  const base::Value::Dict* LoadEmojiVariantsFromPrefs();
 
   bool is_category_specific_search_;
   const raw_ref<PickerClient> client_;
 
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
-
-  const raw_ref<emoji::EmojiSearch> emoji_search_;
 
   SearchResultsCallback current_callback_;
 

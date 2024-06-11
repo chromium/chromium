@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_search_aggregator.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -17,9 +19,25 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
+namespace {
+
+constexpr int kMaxEmojiResults = 3;
+constexpr int kMaxSymbolResults = 2;
+constexpr int kMaxEmoticonResults = 2;
+
+base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
+    base::span<const emoji::EmojiSearchEntry> container,
+    size_t n) {
+  return container.subspan(0, std::min(container.size(), n));
+}
+
+}  // namespace
 
 PickerSearchController::PickerSearchController(PickerClient* client,
                                                base::TimeDelta burn_in_period)
@@ -40,7 +58,67 @@ void PickerSearchController::StartSearch(
       query, std::move(category),
       base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
                           aggregator_->GetWeakPtr()),
-      &client_.get(), &emoji_search_, available_categories);
+      &client_.get(), available_categories);
+}
+
+void PickerSearchController::StartEmojiSearch(
+    const std::u16string& query,
+    PickerViewDelegate::SearchResultsCallback callback) {
+  const base::TimeTicks search_start = base::TimeTicks::Now();
+
+  emoji::EmojiSearchResult results =
+      emoji_search_.SearchEmoji(base::UTF16ToUTF8(query));
+
+  base::TimeDelta elapsed = base::TimeTicks::Now() - search_start;
+  base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime", elapsed);
+
+  std::vector<PickerSearchResult> emoji_results;
+  emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
+                        kMaxEmoticonResults);
+
+  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs();
+
+  for (const emoji::EmojiSearchEntry& result :
+       FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
+    std::string emoji_string = result.emoji_string;
+    if (emoji_variants != nullptr) {
+      const std::string* variant_string =
+          emoji_variants->FindString(emoji_string);
+      if (variant_string != nullptr) {
+        emoji_string = *variant_string;
+      }
+    }
+    emoji_results.push_back(
+        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji_string)));
+  }
+  for (const emoji::EmojiSearchEntry& result :
+       FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
+    emoji_results.push_back(
+        PickerSearchResult::Symbol(base::UTF8ToUTF16(result.emoji_string)));
+  }
+  for (const emoji::EmojiSearchEntry& result :
+       FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
+    emoji_results.push_back(
+        PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
+  }
+
+  const size_t full_results_count =
+      results.emojis.size() + results.symbols.size() + results.emoticons.size();
+
+  std::vector<PickerSearchResultsSection> sections;
+  sections.emplace_back(
+      PickerSectionType::kExpressions, std::move(emoji_results),
+      /*has_more_results=*/emoji_results.size() < full_results_count);
+  std::move(callback).Run(std::move(sections));
+}
+
+const base::Value::Dict* PickerSearchController::LoadEmojiVariantsFromPrefs() {
+  if (client_->GetPrefs() == nullptr) {
+    return nullptr;
+  }
+  return client_->GetPrefs()
+      ->GetDict(prefs::kEmojiPickerPreferences)
+      .FindDict("preferred_variants");
 }
 
 }  // namespace ash

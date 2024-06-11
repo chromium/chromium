@@ -440,6 +440,7 @@ void PickerController::StartSearch(const std::u16string& query,
                                    std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
   CHECK(search_controller_);
+  search_controller_->StartEmojiSearch(query, callback);
   search_controller_->StartSearch(query, std::move(category),
                                   GetAvailableCategories(),
                                   std::move(callback));

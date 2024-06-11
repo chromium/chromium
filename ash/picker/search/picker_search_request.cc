@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_pref_names.h"
 #include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
@@ -30,35 +29,17 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/emoji/emoji_search.h"
-#include "components/prefs/pref_service.h"
 
 namespace ash {
-
-namespace {
-
-constexpr int kMaxEmojiResults = 3;
-constexpr int kMaxSymbolResults = 2;
-constexpr int kMaxEmoticonResults = 2;
-
-base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
-    base::span<const emoji::EmojiSearchEntry> container,
-    size_t n) {
-  return container.subspan(0, std::min(container.size(), n));
-}
-
-}  // namespace
 
 PickerSearchRequest::PickerSearchRequest(
     const std::u16string& query,
     std::optional<PickerCategory> category,
     SearchResultsCallback callback,
     PickerClient* client,
-    emoji::EmojiSearch* emoji_search,
     base::span<const PickerCategory> available_categories)
     : is_category_specific_search_(category.has_value()),
       client_(CHECK_DEREF(client)),
-      emoji_search_(CHECK_DEREF(emoji_search)),
       current_callback_(std::move(callback)),
       gif_search_debouncer_(kGifDebouncingDelay) {
   std::string utf8_query = base::UTF16ToUTF8(query);
@@ -105,10 +86,6 @@ PickerSearchRequest::PickerSearchRequest(
       gif_search_debouncer_.RequestSearch(
           base::BindOnce(&PickerSearchRequest::StartGifSearch,
                          weak_ptr_factory_.GetWeakPtr(), utf8_query));
-
-      emoji_search_start_ = base::TimeTicks::Now();
-      // Emoji search is currently synchronous.
-      HandleEmojiSearchResults(emoji_search_->SearchEmoji(utf8_query));
     }
 
     category_search_start_ = base::TimeTicks::Now();
@@ -248,60 +225,6 @@ void PickerSearchRequest::HandleGifSearchResults(
   // There are always more GIF results.
   HandleSearchSourceResults(PickerSearchSource::kTenor, std::move(results),
                             /*has_more_results=*/true);
-}
-
-const base::Value::Dict* PickerSearchRequest::LoadEmojiVariantsFromPrefs() {
-  if (client_->GetPrefs() == nullptr) {
-    return nullptr;
-  }
-  return client_->GetPrefs()
-      ->GetDict(prefs::kEmojiPickerPreferences)
-      .FindDict("preferred_variants");
-}
-
-void PickerSearchRequest::HandleEmojiSearchResults(
-    emoji::EmojiSearchResult results) {
-  if (emoji_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *emoji_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime",
-                            elapsed);
-  }
-
-  std::vector<PickerSearchResult> emoji_results;
-  emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
-                        kMaxEmoticonResults);
-
-  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs();
-
-  for (const emoji::EmojiSearchEntry& result :
-       FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
-    std::string emoji_string = result.emoji_string;
-    if (emoji_variants != nullptr) {
-      const std::string* variant_string =
-          emoji_variants->FindString(emoji_string);
-      if (variant_string != nullptr) {
-        emoji_string = *variant_string;
-      }
-    }
-    emoji_results.push_back(
-        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji_string)));
-  }
-  for (const emoji::EmojiSearchEntry& result :
-       FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
-    emoji_results.push_back(
-        PickerSearchResult::Symbol(base::UTF8ToUTF16(result.emoji_string)));
-  }
-  for (const emoji::EmojiSearchEntry& result :
-       FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
-    emoji_results.push_back(
-        PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
-  }
-
-  const size_t full_results_count =
-      results.emojis.size() + results.symbols.size() + results.emoticons.size();
-  HandleSearchSourceResults(
-      PickerSearchSource::kEmoji, std::move(emoji_results),
-      /*has_more_results=*/emoji_results.size() < full_results_count);
 }
 
 void PickerSearchRequest::HandleDateSearchResults(

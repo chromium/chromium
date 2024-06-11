@@ -26,7 +26,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/emoji/emoji_search.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -76,13 +75,10 @@ class PickerSearchRequestTest : public testing::Test {
 
   MockSearchPickerClient& client() { return client_; }
 
-  emoji::EmojiSearch& emoji_search() { return emoji_search_; }
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NiceMock<MockSearchPickerClient> client_;
-  emoji::EmojiSearch emoji_search_;
 };
 
 TEST_F(PickerSearchRequestTest, SendsQueryToCrosSearchImmediately) {
@@ -93,7 +89,7 @@ TEST_F(PickerSearchRequestTest, SendsQueryToCrosSearchImmediately) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
@@ -118,7 +114,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -153,7 +149,7 @@ TEST_F(PickerSearchRequestTest, TruncatesOmniboxResults) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -192,7 +188,7 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
       u"cat", PickerCategory::kLinks,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -244,7 +240,7 @@ TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&first_search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   after_start_search.Call();
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -261,7 +257,7 @@ TEST_F(PickerSearchRequestTest, RecordsOmniboxMetrics) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -303,7 +299,7 @@ TEST_F(PickerSearchRequestTest,
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
@@ -339,7 +335,7 @@ TEST_F(PickerSearchRequestTest,
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kFileSearch,
         {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
@@ -382,7 +378,7 @@ TEST_F(
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&first_search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kOmnibox,
         {ash::PickerSearchResult::BrowsingHistory(
@@ -392,9 +388,6 @@ TEST_F(
 
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 1);
 }
-
-// TODO: b/333302795 - Add tests for searching emoji once EmojiSearch can be
-// easily faked.
 
 TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
@@ -413,7 +406,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
       {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
@@ -445,7 +438,7 @@ TEST_F(PickerSearchRequestTest, TruncatesResultsFromFileSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
       {ash::PickerSearchResult::Text(u"1.jpg"),
@@ -484,7 +477,7 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
       u"cat", PickerCategory::kLocalFiles,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
       {ash::PickerSearchResult::Text(u"1.jpg"),
@@ -501,7 +494,7 @@ TEST_F(PickerSearchRequestTest, RecordsFileMetrics) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
@@ -540,7 +533,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.FileProvider.QueryTime", 0);
@@ -576,7 +569,7 @@ TEST_F(PickerSearchRequestTest,
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kOmnibox,
         {ash::PickerSearchResult::BrowsingHistory(
@@ -604,7 +597,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
       {ash::PickerSearchResult::Text(u"catrbug_135117.jpg")});
@@ -636,7 +629,7 @@ TEST_F(PickerSearchRequestTest, TruncatesResultsFromDriveSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
       {ash::PickerSearchResult::Text(u"1.jpg"),
@@ -675,7 +668,7 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromDriveOnlySearch) {
       u"cat", /*category=*/PickerCategory::kDriveFiles,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
       {ash::PickerSearchResult::Text(u"1.jpg"),
@@ -692,7 +685,7 @@ TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
@@ -731,7 +724,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.DriveProvider.QueryTime", 0);
@@ -767,7 +760,7 @@ TEST_F(PickerSearchRequestTest,
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
     client().cros_search_callback().Run(
         ash::AppListSearchResultType::kOmnibox,
         {ash::PickerSearchResult::BrowsingHistory(
@@ -786,7 +779,7 @@ TEST_F(PickerSearchRequestTest, DoesNotSendQueryToGifSearchImmediately) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, SendsQueryToGifSearchAfterDelay) {
@@ -797,7 +790,7 @@ TEST_F(PickerSearchRequestTest, SendsQueryToGifSearchAfterDelay) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 }
 
@@ -824,7 +817,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromGifSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
   std::move(client().gif_search_callback())
@@ -864,7 +857,7 @@ TEST_F(PickerSearchRequestTest, StopsOldGifSearches) {
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
     task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
     old_gif_callback = std::move(client().gif_search_callback());
     EXPECT_FALSE(old_gif_callback.is_null());
@@ -881,7 +874,7 @@ TEST_F(PickerSearchRequestTest, RecordsGifMetrics) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   std::move(client().gif_search_callback())
       .Run({ash::PickerSearchResult::Gif(
@@ -905,7 +898,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordGifMetricsIfNoResponse) {
         u"cat", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.GifProvider.QueryTime", 0);
@@ -928,7 +921,7 @@ TEST_F(PickerSearchRequestTest, PublishesDateResultsOnlyOnce) {
       u"next Friday", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
@@ -946,7 +939,7 @@ TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
         u"next Friday", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.DateProvider.QueryTime", 1);
@@ -969,7 +962,7 @@ TEST_F(PickerSearchRequestTest, PublishesDateResultsWhenDateCategorySelected) {
       u"next Friday", PickerCategory::kDatesTimes,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, PublishesMathResultsOnlyOnce) {
@@ -983,7 +976,7 @@ TEST_F(PickerSearchRequestTest, PublishesMathResultsOnlyOnce) {
       u"1 + 1", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, RecordsMathMetricsOnlyOnce) {
@@ -999,7 +992,7 @@ TEST_F(PickerSearchRequestTest, RecordsMathMetricsOnlyOnce) {
         u"1 + 1", std::nullopt,
         base::BindRepeating(&MockSearchResultsCallback::Call,
                             base::Unretained(&search_results_callback)),
-        &client(), &emoji_search(), kAllCategories);
+        &client(), kAllCategories);
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.MathProvider.QueryTime", 1);
@@ -1016,7 +1009,7 @@ TEST_F(PickerSearchRequestTest, PublishesMathResultsWhenMathCategorySelected) {
       u"1 + 1", PickerCategory::kUnitsMaths,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
@@ -1033,18 +1026,15 @@ TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
 
   {
     PickerSearchRequest request(u"ant", PickerCategory::kLinks,
-                                base::DoNothing(), &client(), &emoji_search(),
-                                kAllCategories);
+                                base::DoNothing(), &client(), kAllCategories);
   }
   {
     PickerSearchRequest request(u"bat", PickerCategory::kDriveFiles,
-                                base::DoNothing(), &client(), &emoji_search(),
-                                kAllCategories);
+                                base::DoNothing(), &client(), kAllCategories);
   }
   {
     PickerSearchRequest request(u"cat", PickerCategory::kLocalFiles,
-                                base::DoNothing(), &client(), &emoji_search(),
-                                kAllCategories);
+                                base::DoNothing(), &client(), kAllCategories);
   }
 }
 
@@ -1077,7 +1067,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 }
 
 TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
@@ -1096,7 +1086,7 @@ TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), kAllCategories);
+      &client(), kAllCategories);
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.ClipboardProvider.QueryTime", kMetricMetricTime, 1);
@@ -1127,7 +1117,7 @@ TEST_P(PickerSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), {{category}});
+      &client(), {{category}});
 }
 
 TEST_P(PickerSearchRequestEditorTest,
@@ -1141,7 +1131,7 @@ TEST_P(PickerSearchRequestEditorTest,
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), {});
+      &client(), {});
 }
 
 TEST_P(PickerSearchRequestEditorTest, RecordsEditorMetrics) {
@@ -1153,7 +1143,7 @@ TEST_P(PickerSearchRequestEditorTest, RecordsEditorMetrics) {
       u"quick brown fox jumped over lazy dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
-      &client(), &emoji_search(), {{category}});
+      &client(), {{category}});
 
   histogram.ExpectTotalCount("Ash.Picker.Search.EditorProvider.QueryTime", 1);
 }
