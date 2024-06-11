@@ -103,8 +103,6 @@ MultideviceHandler::MultideviceHandler(
       apps_access_manager_(apps_access_manager),
       camera_roll_manager_(camera_roll_manager),
       browser_tabs_model_provider_(browser_tabs_model_provider) {
-  CHECK((multidevice_setup_client_ != nullptr) ==
-        multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs_));
   pref_change_registrar_.Init(prefs_);
 }
 

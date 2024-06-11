@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
@@ -357,22 +358,26 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile,
   synced_printers_manager_observer_.Observe(synced_printers_manager_);
   MaybeNotifyHasSavedPrinters();
 
-  DCHECK(ash::Shell::Get()->system_tray_model()->phone_hub_manager())
-      << "PhoneHubManager is expected to be initialized at a specific timing. "
-         "See a comment in "
-         "PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext. Below "
-         "PhoneHubManagerFactory::GetForProfile will lazy create a "
-         "PhoneHubManager. It should be fine as ScalableIph is also "
-         "initialized at the same timing. But it's ideal if PhoneHubManager is "
-         "created at the intended initialization timing instead of our call, "
-         "i.e. PhoneHubManager should be already created at this point.";
-  phonehub::PhoneHubManager* phone_hub_manager =
-      phonehub::PhoneHubManagerFactory::GetForProfile(profile);
-  CHECK(phone_hub_manager);
-  feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
-  CHECK(feature_status_provider_);
-  feature_status_provider_observer_.Observe(feature_status_provider_);
-  MaybeNotifyPhoneHubOnboardingEligibility();
+  if (features::IsCrossDeviceFeatureSuiteAllowed()) {
+    DCHECK(ash::Shell::Get()->system_tray_model()->phone_hub_manager())
+        << "PhoneHubManager is expected to be initialized at a specific "
+           "timing. "
+           "See a comment in "
+           "PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext. Below "
+           "PhoneHubManagerFactory::GetForProfile will lazy create a "
+           "PhoneHubManager. It should be fine as ScalableIph is also "
+           "initialized at the same timing. But it's ideal if PhoneHubManager "
+           "is "
+           "created at the intended initialization timing instead of our call, "
+           "i.e. PhoneHubManager should be already created at this point.";
+    phonehub::PhoneHubManager* phone_hub_manager =
+        phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+    CHECK(phone_hub_manager);
+    feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
+    CHECK(feature_status_provider_);
+    feature_status_provider_observer_.Observe(feature_status_provider_);
+    MaybeNotifyPhoneHubOnboardingEligibility();
+  }
 }
 
 // Remember NOT to interact with `iph_session` from the destructor. See the

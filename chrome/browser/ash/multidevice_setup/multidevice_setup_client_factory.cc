@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -125,15 +126,20 @@ MultiDeviceSetupClientFactory* MultiDeviceSetupClientFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 MultiDeviceSetupClientFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (IsAllowedByPolicy(context)) {
-    PA_LOG(INFO)
-        << "Allowed by policy. Returning new MultiDeviceSetupClientHolder";
-    return std::make_unique<MultiDeviceSetupClientHolder>(context);
+  if (!IsAllowedByPolicy(context)) {
+    PA_LOG(INFO) << "NOT allowed by policy. Unable to return "
+                    "MultiDeviceSetupClientHolder, returning nullptr instead.";
+    return nullptr;
   }
 
-  PA_LOG(INFO) << "NOT allowed by policy. Unable to return "
-                  "MultiDeviceSetupClientHolder, returning nullptr instead.";
-  return nullptr;
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
+    PA_LOG(INFO) << "Cross-device feature suite is disabled. Unable to return "
+                    "MultiDeviceSetupClientHolder, returning nullptr instead.";
+    return nullptr;
+  }
+
+  PA_LOG(INFO) << "Allowed. Returning new MultiDeviceSetupClientHolder";
+  return std::make_unique<MultiDeviceSetupClientHolder>(context);
 }
 
 bool MultiDeviceSetupClientFactory::ServiceIsNULLWhileTesting() const {

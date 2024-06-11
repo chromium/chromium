@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -73,6 +74,10 @@ KeyedService* SmartLockServiceFactory::BuildServiceInstanceFor(
   }
 
   if (!IsFeatureAllowed(context)) {
+    return nullptr;
+  }
+
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     return nullptr;
   }
 

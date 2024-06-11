@@ -130,6 +130,10 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
+    return nullptr;
+  }
+
   std::unique_ptr<AttestationCertificateGeneratorImpl>
       attestation_certificate_generator = nullptr;
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
@@ -65,8 +66,13 @@ TetherServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(NetworkHandler::IsInitialized());
 
-  if (!IsFeatureAllowed(context))
+  if (!IsFeatureAllowed(context)) {
     return nullptr;
+  }
+
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
+    return nullptr;
+  }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kTetherStub)) {
