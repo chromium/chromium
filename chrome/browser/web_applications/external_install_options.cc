@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -24,7 +25,9 @@ ExternalInstallOptions::ExternalInstallOptions(
     ExternalInstallSource install_source)
     : install_url(install_url),
       user_display_mode(user_display_mode),
-      install_source(install_source) {}
+      install_source(install_source) {
+  CHECK(install_url.is_valid(), base::NotFatalUntil::M130);
+}
 
 ExternalInstallOptions::~ExternalInstallOptions() = default;
 

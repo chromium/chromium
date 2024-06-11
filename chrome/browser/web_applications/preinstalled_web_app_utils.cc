@@ -213,16 +213,28 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& dir,
                            const base::FilePath& file,
                            const base::Value& app_config) {
-  ExternalInstallOptions options(GURL(), mojom::UserDisplayMode::kStandalone,
-                                 ExternalInstallSource::kExternalDefault);
-  options.require_manifest = true;
-  options.force_reinstall = false;
-
   if (app_config.type() != base::Value::Type::DICT) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " was not a dictionary as the top level"});
   }
   const base::Value::Dict& app_config_dict = app_config.GetDict();
+
+  // app_url
+  const std::string* app_url_string = app_config_dict.FindString(kAppUrl);
+  if (!app_url_string) {
+    return base::StrCat({file.AsUTF8Unsafe(), " had a missing ", kAppUrl});
+  }
+  GURL install_url = GURL(*app_url_string);
+  if (!install_url.is_valid()) {
+    return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ", kAppUrl, ": ",
+                         *app_url_string});
+  }
+
+  ExternalInstallOptions options(install_url,
+                                 mojom::UserDisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalDefault);
+  options.require_manifest = true;
+  options.force_reinstall = false;
 
   // user_type
   const base::Value::List* list = app_config_dict.FindList(kUserType);
@@ -252,17 +264,6 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   if (feature_name_or_installed) {
     options.gate_on_feature_or_installed = *feature_name_or_installed;
   }
-
-  // app_url
-  const std::string* string = app_config_dict.FindString(kAppUrl);
-  if (!string) {
-    return base::StrCat({file.AsUTF8Unsafe(), " had a missing ", kAppUrl});
-  }
-  options.install_url = GURL(*string);
-  if (!options.install_url.is_valid()) {
-    return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ", kAppUrl});
-  }
-
   // only_for_new_users
   const base::Value* value = app_config_dict.Find(kOnlyForNewUsers);
   if (value) {
@@ -334,19 +335,19 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
 
   // launch_container
-  string = app_config_dict.FindString(kLaunchContainer);
-  if (!string) {
+  const std::string* launch_container_str =
+      app_config_dict.FindString(kLaunchContainer);
+  if (!launch_container_str) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " had an invalid ", kLaunchContainer});
   }
-  std::string launch_container_str = *string;
-  if (launch_container_str == kLaunchContainerTab) {
+  if (*launch_container_str == kLaunchContainerTab) {
     options.user_display_mode = mojom::UserDisplayMode::kBrowser;
-  } else if (launch_container_str == kLaunchContainerWindow) {
+  } else if (*launch_container_str == kLaunchContainerWindow) {
     options.user_display_mode = mojom::UserDisplayMode::kStandalone;
   } else {
     return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
-                         kLaunchContainer, ": ", launch_container_str});
+                         kLaunchContainer, ": ", *launch_container_str});
   }
 
   // launch_query_params

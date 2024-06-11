@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/to_string.h"
@@ -298,6 +299,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     const ExternalInstallOptions& install_options =
         front->task->install_options();
 
+    CHECK(install_options.install_url.is_valid(), base::NotFatalUntil::M130);
     std::optional<webapps::AppId> app_id =
         lock.registrar().LookupExternalAppId(install_options.install_url);
     debug_value.Set("app_id_from_install_url", app_id.value_or("<none>"));

@@ -695,7 +695,7 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
 TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
   const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -737,7 +737,7 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
   const GURL kRedirectToUrl =
       GURL("https://www.otherorigin.com/redirected.html");
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -786,7 +786,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -836,7 +836,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -883,7 +883,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
 
   webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
@@ -929,7 +929,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
 
   webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
@@ -976,7 +976,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
 
   webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
@@ -1020,7 +1020,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFixedBySecondInstallUrlInstallNow) {
   const GURL kManifestUrl = GURL("https://www.example.com/manifest1.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl1, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -1099,7 +1099,7 @@ TEST_F(ExternallyAppManagerTest,
   // the placeholder app's default identity).
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl1, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -1171,7 +1171,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl1, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
