@@ -317,6 +317,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();
 
+  tabs::TabInterface* GetTabInterface();
+
   // Testing function to issue a Lens (region selection) request.
   void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
 
@@ -332,49 +334,43 @@ class LensOverlayController : public LensSearchboxClient,
       int selection_start_index,
       int selection_end_index);
 
-  tabs::TabInterface* GetTabInterface();
-
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
 
   // Returns the current page URL for testing.
-  const GURL& GetPageURLForTesting() { return GetPageURL(); }
+  const GURL& GetPageURLForTesting();
 
   // Returns the current searchbox page classification for testing.
   metrics::OmniboxEventProto::PageClassification
-  GetPageClassificationForTesting() {
-    return GetPageClassification();
-  }
+  GetPageClassificationForTesting();
 
   // Returns the current thumbnail URI for testing.
-  const std::string& GetThumbnailForTesting() { return GetThumbnail(); }
+  const std::string& GetThumbnailForTesting();
 
   // Handles the event where text was modified in the searchbox for testing.
-  void OnTextModifiedForTesting() { OnTextModified(); }
+  void OnTextModifiedForTesting();
 
   // Handles the event where the thumbnail was removed from the searchbox for
   // testing.
-  void OnThumbnailRemovedForTesting() { OnThumbnailRemoved(); }
+  void OnThumbnailRemovedForTesting();
 
   // Returns the lens response stored in this controller for testing.
   const lens::proto::LensOverlayInteractionResponse&
-  GetLensResponseForTesting() {
-    return GetLensResponse();
-  }
+  GetLensResponseForTesting();
 
-  const lens::mojom::CenterRotatedBoxPtr& GetSelectedRegionForTesting() {
+  const lens::mojom::CenterRotatedBoxPtr& get_selected_region_for_testing() {
     return initialization_data_->selected_region_;
   }
 
-  const std::optional<std::pair<int, int>> GetSelectedTextForTesting() {
+  const std::optional<std::pair<int, int>> get_selected_text_for_region() {
     return initialization_data_->selected_text_;
   }
 
-  const std::vector<SearchQuery>& GetSearchQueryHistoryForTesting() {
+  const std::vector<SearchQuery>& get_search_query_history_for_testing() {
     return initialization_data_->search_query_history_stack_;
   }
 
-  const std::optional<SearchQuery>& GetLoadedSearchQueryForTesting() {
+  const std::optional<SearchQuery>& get_loaded_search_query_for_testing() {
     return initialization_data_->currently_loaded_search_query_;
   }
 
@@ -384,11 +380,14 @@ class LensOverlayController : public LensSearchboxClient,
   }
 
   lens::LensPermissionBubbleController*
-  GetLensPermissionBubbleControllerForTesting() {
+  get_lens_permission_bubble_controller_for_testing() {
     return permission_bubble_controller_.get();
   }
 
-  lens::LensSearchBubbleController* GetLensSearchBubbleControllerForTesting();
+  lens::LensSearchBubbleController*
+  get_lens_search_bubble_controller_for_testing() {
+    return search_bubble_controller_.get();
+  }
 
  protected:
   // Override these methods to stub out network requests for testing.

@@ -738,6 +738,10 @@ void LensOverlayController::OnSidePanelHidden() {
   CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
 }
 
+tabs::TabInterface* LensOverlayController::GetTabInterface() {
+  return tab_;
+}
+
 void LensOverlayController::IssueLensRequestForTesting(
     lens::mojom::CenterRotatedBoxPtr region) {
   IssueLensRequest(std::move(region));
@@ -760,10 +764,6 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
                                  selection_start_index, selection_end_index);
 }
 
-tabs::TabInterface* LensOverlayController::GetTabInterface() {
-  return tab_;
-}
-
 content::WebContents*
 LensOverlayController::GetSidePanelWebContentsForTesting() {
   if (!results_side_panel_coordinator_) {
@@ -772,9 +772,30 @@ LensOverlayController::GetSidePanelWebContentsForTesting() {
   return results_side_panel_coordinator_->GetSidePanelWebContents();
 }
 
-lens::LensSearchBubbleController*
-LensOverlayController::GetLensSearchBubbleControllerForTesting() {
-  return search_bubble_controller_.get();
+const GURL& LensOverlayController::GetPageURLForTesting() {
+  return GetPageURL();
+}
+
+metrics::OmniboxEventProto::PageClassification
+LensOverlayController::GetPageClassificationForTesting() {
+  return GetPageClassification();
+}
+
+const std::string& LensOverlayController::GetThumbnailForTesting() {
+  return GetThumbnail();
+}
+
+void LensOverlayController::OnTextModifiedForTesting() {
+  OnTextModified();
+}
+
+void LensOverlayController::OnThumbnailRemovedForTesting() {
+  OnThumbnailRemoved();
+}
+
+const lens::proto::LensOverlayInteractionResponse&
+LensOverlayController::GetLensResponseForTesting() {
+  return GetLensResponse();
 }
 
 std::unique_ptr<lens::LensOverlayQueryController>

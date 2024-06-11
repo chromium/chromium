@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
                   ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
                   ->HasOpenDialogWidget());
 
   // Simulate click on the accept button.
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                           bubble_widget_delegate->GetOkButton());
   // Wait for the bubble to be destroyed.
   views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
-  ASSERT_FALSE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
   // Verify sharing the page screenshot is now permitted.
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
                   ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
                   ->HasOpenDialogWidget());
 
   // Simulate click on the reject button.
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                           bubble_widget_delegate->GetCancelButton());
   // Wait for the bubble to be destroyed.
   views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
-  ASSERT_FALSE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
   // Verify sharing the page screenshot is still not permitted.
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
                   ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
@@ -682,14 +682,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
                   ->HasOpenDialogWidget());
 
   // Simulate pref being enabled elsewhere.
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
   // Wait for the bubble to be destroyed.
   views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
-  ASSERT_FALSE(controller->GetLensPermissionBubbleControllerForTesting()
+  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
   // Verify sharing the page screenshot is now permitted.
@@ -996,8 +996,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                controller->GetSidePanelWebContentsForTesting(),
                content::JsReplace(kCheckSidePanelThumbnailShownScript));
   }));
-  EXPECT_FALSE(controller->GetSelectedTextForTesting().has_value());
-  EXPECT_FALSE(controller->GetSelectedRegionForTesting().is_null());
+  EXPECT_FALSE(controller->get_selected_text_for_region().has_value());
+  EXPECT_FALSE(controller->get_selected_region_for_testing().is_null());
   EXPECT_TRUE(base::StartsWith(controller->GetThumbnailForTesting(), "data:"));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX);
@@ -1014,8 +1014,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                   content::JsReplace(kCheckSearchboxInput, text_query),
                   content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES)
                   .ExtractBool());
-  EXPECT_TRUE(controller->GetSelectedTextForTesting().has_value());
-  EXPECT_TRUE(controller->GetSelectedRegionForTesting().is_null());
+  EXPECT_TRUE(controller->get_selected_text_for_region().has_value());
+  EXPECT_TRUE(controller->get_selected_region_for_testing().is_null());
   EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // no text selection is present.
   EXPECT_FALSE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
   controller->OnTextModifiedForTesting();
-  EXPECT_FALSE(controller->GetSelectedTextForTesting().has_value());
+  EXPECT_FALSE(controller->get_selected_text_for_region().has_value());
   fake_controller->FlushForTesting();
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
 }
@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   auto* bubble_controller =
-      controller->GetLensSearchBubbleControllerForTesting();
+      controller->get_lens_search_bubble_controller_for_testing();
   EXPECT_TRUE(!!bubble_controller->bubble_view_for_testing());
 
   // We need to flush the mojo receiver calls to make sure the screenshot was
@@ -1668,8 +1668,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
-  auto loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -1693,8 +1693,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
-  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
-  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -1713,8 +1713,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the previous query.
-  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
-  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -1767,8 +1767,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
-  auto loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   GURL url_without_start_time_or_size =
@@ -1797,9 +1797,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should have 1 entry and the currently loaded
   // region should be set.
-  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
   EXPECT_FALSE(loaded_search_query->selected_text_);
@@ -1818,9 +1818,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
-  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 2UL);
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 2UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   url_without_start_time_or_size =
@@ -1843,9 +1843,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should have 1 entry and the previously
   // loaded region should be present.
-  EXPECT_EQ(controller->GetSearchQueryHistoryForTesting().size(), 1UL);
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
   EXPECT_FALSE(loaded_search_query->selected_text_);
@@ -1861,9 +1861,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the original query.
-  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
   loaded_search_query.reset();
-  loaded_search_query = controller->GetLoadedSearchQueryForTesting();
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   url_without_start_time_or_size =
@@ -1936,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   pop_observer.WaitForNavigationFinished();
   // The search query history stack should be empty and the currently loaded
   // query should be set to the previous query.
-  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
