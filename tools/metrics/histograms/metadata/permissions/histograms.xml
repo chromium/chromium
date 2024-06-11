@@ -798,6 +798,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Prompt.Dismissed.InvalidContentSetting"
+    enum="ContentSetting" expires_after="2025-06-01">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric is used to investigate a crash observed when a certain type of
+    permission prompt is dismissed. It's recorded when a permission prompt is
+    dismissed with an invalid content setting (aka one that does not have a
+    corresponding request type) and it records the content setting itself.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Prompt.Dismissed.PriorDismissCount2" units="units"
     expires_after="2024-07-09">
   <owner>engedy@chromium.org</owner>
