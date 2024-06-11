@@ -5138,6 +5138,9 @@ crbug.com/1444349 http/tests/devtools/sources/debugger-pause/debugger-eval-on-ca
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Failure Pass Timeout ]
 
+# crbug.com/338456744: Minor pixel differences from the expected image.
+crbug.com/338456744 [ Win ] virtual/text-antialias/large-text-composed-char.html [ Failure Pass ]
+
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 
 # Sheriff 2021-10-15, 2021-12-07
