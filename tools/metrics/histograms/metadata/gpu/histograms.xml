@@ -1583,13 +1583,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.{CacheType}LoadHitInCache" enum="Boolean"
-    expires_after="2024-06-01">
+    expires_after="2024-09-01">
   <owner>blundell@chromium.org</owner>
   <owner>geofflang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     For each load of an entry from {CacheType}, records whether the entry was
-    found in the cache.
+    found in the cache. Expired on June 1 2024 and revived on June 11 2024.
   </summary>
 </histogram>
 
