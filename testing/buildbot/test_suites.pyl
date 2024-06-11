@@ -6605,24 +6605,6 @@
       },
     },
 
-    'chromeos_brya_preuprev_tests': {
-      'chromeos_chrome_cq_medium_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_device_only_gtests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_integration_tests_suite': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-    },
-
     'chromeos_brya_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
@@ -6650,6 +6632,24 @@
         ],
       },
       'chromeos_vaapi_gtests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+    },
+
+    'chromeos_ctp_preuprev_tests': {
+      'chromeos_chrome_cq_medium_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_device_only_gtests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
@@ -6814,24 +6814,6 @@
         'mixins': [
           'skylab-cft',
         ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'chromeos_volteer_preuprev_tests': {
-      'chromeos_chrome_cq_medium_tast_tests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_device_only_gtests': {
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_RELEASE_LKGM',
         ],

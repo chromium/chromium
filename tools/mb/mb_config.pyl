@@ -72,6 +72,7 @@
     },
 
     'chromeos.preuprev': {
+      'chromeos-betty-chrome-preuprev': 'chromeos_betty_include_unwind_tables_official_reclient',
       'chromeos-betty-pi-arc-chrome-preuprev': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-preuprev': 'chromeos_brya_include_unwind_tables_official_skylab_reclient',
       'chromeos-jacuzzi-chrome-preuprev': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',

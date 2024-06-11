@@ -475,7 +475,8 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_brya_preuprev_tests",
+    # Standard set of test scheduled via CTP for preuprev.
+    name = "chromeos_ctp_preuprev_tests",
     basic_suites = {
         "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
             variants = [
@@ -503,27 +504,6 @@ targets.legacy_matrix_compound_suite(
                 # jacuzzi is slow. So that we use more number of shards.
                 "shards-10",
             ],
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "chromeos_volteer_preuprev_tests",
-    basic_suites = {
-        "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_RELEASE_LKGM",
             ],

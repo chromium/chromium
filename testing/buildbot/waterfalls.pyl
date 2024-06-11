@@ -365,6 +365,21 @@
     'name': 'chromeos.preuprev',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+      'chromeos-betty-chrome-preuprev': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'skylab-cft',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_ctp_preuprev_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+        'run_cft': True,
+      },
       'chromeos-betty-pi-arc-chrome-preuprev': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -384,7 +399,7 @@
           'skylab-cft',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_brya_preuprev_tests',
+          'skylab_tests': 'chromeos_ctp_preuprev_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'brya',
@@ -411,7 +426,7 @@
           'skylab-cft',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_volteer_preuprev_tests',
+          'skylab_tests': 'chromeos_ctp_preuprev_tests',
         },
         'os_type': 'chromeos',
         'cros_board': 'volteer',
