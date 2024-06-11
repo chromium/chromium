@@ -87,7 +87,7 @@ android_library("test_support_java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:java_resources",
-    "//third_party/android_deps:espresso_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/hamcrest:hamcrest_java",
   ]
 }
