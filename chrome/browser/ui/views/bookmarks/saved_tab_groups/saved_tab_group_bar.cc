@@ -968,6 +968,11 @@ void SavedTabGroupBar::MaybeShowClosePromo(const base::Uuid& saved_group_id) {
     return;
   }
 
+  // Do not show close promo while the browser is closing
+  if (browser_->IsBrowserClosing()) {
+    return;
+  }
+
   // Only show this promo if the group exists and was closed.
   const tab_groups::SavedTabGroup* const group =
       saved_tab_group_model_->Get(saved_group_id);
