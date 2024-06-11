@@ -30,6 +30,9 @@ class OptimizationGuideDecider {
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called after the browser has been
   // initialized.
+  //
+  // Registering an OptimizationType will cause data for the type to be fetched
+  // and cached on each page load.
   virtual void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) = 0;
 
