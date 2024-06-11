@@ -575,7 +575,10 @@ using feed::FeedUserActionType;
 
 - (void)recordFeedSelected:(FeedType)feedType
     fromPreviousFeedPosition:(NSUInteger)index {
-  DCHECK(self.followDelegate);
+  if (!self.followDelegate) {
+    NOTREACHED(base::NotFatalUntil::M129);
+    return;
+  }
   switch (feedType) {
     case FeedTypeDiscover:
       [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
