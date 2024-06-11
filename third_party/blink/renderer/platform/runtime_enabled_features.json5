@@ -1838,6 +1838,9 @@
       name: "FontationsFontBackend",
     },
     {
+      name: "FontationsForSelectedFormats",
+    },
+    {
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {

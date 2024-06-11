@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
-#include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
@@ -41,12 +42,17 @@ sk_sp<SkTypeface> expect_not_called(sk_sp<SkData>) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+WebFontTypefaceFactory::FontInstantiator g_expectSystem{
+    expect_called, expect_not_called, expect_not_called};
+WebFontTypefaceFactory::FontInstantiator g_expectFontations{
+    expect_not_called, expect_called, expect_not_called};
+WebFontTypefaceFactory::FontInstantiator g_expectFallback{
+    expect_not_called, expect_not_called, expect_called};
+#else
 WebFontTypefaceFactory::FontInstantiator g_expectSystem{expect_called,
                                                         expect_not_called};
-WebFontTypefaceFactory::FontInstantiator g_expectFallback{expect_not_called,
-                                                          expect_called};
-#else
-WebFontTypefaceFactory::FontInstantiator g_expectSystem{expect_called};
+WebFontTypefaceFactory::FontInstantiator g_expectFontations{expect_not_called,
+                                                            expect_called};
 #endif
 
 TEST(WebFontTypefaceFactoryTest, DefaultAlwaysSystem) {
@@ -76,6 +82,20 @@ TEST(WebFontTypefaceFactoryTest, ColrV1AlwaysFallback) {
   );
 }
 
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysColrV1) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+  EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV1())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  sk_sp<SkTypeface> out_typeface;
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check,
+                                         g_expectFontations);
+}
+
 TEST(WebFontTypefaceFactoryTest, Cff2AlwaysFallback) {
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
@@ -93,6 +113,20 @@ TEST(WebFontTypefaceFactoryTest, Cff2AlwaysFallback) {
   );
 }
 
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCFF2) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+  EXPECT_CALL(mock_font_format_check, IsCff2OutlineFont())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  sk_sp<SkTypeface> out_typeface;
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check,
+                                         g_expectFontations);
+}
+
 TEST(WebFontTypefaceFactoryTest, CbdtCblcAlwaysFallback) {
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
@@ -108,6 +142,20 @@ TEST(WebFontTypefaceFactoryTest, CbdtCblcAlwaysFallback) {
                                          g_expectSystem
 #endif
   );
+}
+
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCbdtCblc) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+  EXPECT_CALL(mock_font_format_check, IsCbdtCblcColorFont())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  sk_sp<SkTypeface> out_typeface;
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check,
+                                         g_expectFontations);
 }
 
 TEST(WebFontTypefaceFactoryTest, ColrV0FallbackApple) {
@@ -149,6 +197,58 @@ TEST(WebFontTypefaceFactoryTest, VariableColrV0FallbackWindowsApple) {
                                          mock_font_format_check, expectation);
 }
 
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedVariableSystem) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+
+  sk_sp<SkTypeface> out_typeface;
+  WebFontTypefaceFactory::FontInstantiator& expectation = g_expectSystem;
+#if BUILDFLAG(IS_WIN)
+  if (!DWriteVersionSupportsVariations()) {
+    expectation = g_expectFallback;
+  }
+#endif
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check, expectation);
+}
+
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedStaticSystem) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+
+  sk_sp<SkTypeface> out_typeface;
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check,
+                                         g_expectSystem);
+}
+
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedVariableColrV0) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+  EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV0())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_font_format_check, IsVariableFont())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  sk_sp<SkTypeface> out_typeface;
+
+  WebFontTypefaceFactory::FontInstantiator& expectation = g_expectFontations;
+#if BUILDFLAG(IS_WIN)
+  if (DWriteVersionSupportsVariations()) {
+    expectation = g_expectSystem;
+  }
+#endif
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check, expectation);
+}
+
 #if BUILDFLAG(IS_IOS)
 // TODO(crbug.com/1499557): Currently fails on the platform.
 #define MAYBE_SbixFallbackWindows DISABLED_SbixFallbackWindows
@@ -170,6 +270,27 @@ TEST(WebFontTypefaceFactoryTest, MAYBE_SbixFallbackWindows) {
                                          g_expectSystem
 #endif
   );
+}
+
+TEST(WebFontTypefaceFactoryTest, FontationsSelectedSbixNonApple) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      true);
+  sk_sp<SkData> data = SkData::MakeEmpty();
+  MockFontFormatCheck mock_font_format_check(data);
+  EXPECT_CALL(mock_font_format_check, IsSbixColorFont())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  sk_sp<SkTypeface> out_typeface;
+
+#if BUILDFLAG(IS_APPLE)
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check,
+                                         g_expectSystem);
+#else
+  WebFontTypefaceFactory::CreateTypeface(SkData::MakeEmpty(), out_typeface,
+                                         mock_font_format_check,
+                                         g_expectFontations);
+#endif
 }
 
 #if BUILDFLAG(IS_IOS)
