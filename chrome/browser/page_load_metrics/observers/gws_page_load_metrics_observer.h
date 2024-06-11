@@ -35,6 +35,9 @@ class GWSPageLoadMetricsObserver
       delete;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
+  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
+                        const GURL& currently_committed_url,
+                        bool started_in_foreground) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
 
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -46,6 +47,19 @@ const char kHistogramGWSParseStart[] =
 }  // namespace internal
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() = default;
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+GWSPageLoadMetricsObserver::OnStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url,
+    bool started_in_foreground) {
+  if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
+    // Emit a trigger to allow trace collection tied to gws navigations.
+    base::trace_event::EmitNamedTrigger("gws-navigation-start");
+  }
+
+  return CONTINUE_OBSERVING;
+}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::OnCommit(
