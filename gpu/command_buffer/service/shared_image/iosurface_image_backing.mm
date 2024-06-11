@@ -1594,7 +1594,6 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
         std::move(mtl_textures));
 #endif
   }
-  NOTREACHED_NORETURN();
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {
