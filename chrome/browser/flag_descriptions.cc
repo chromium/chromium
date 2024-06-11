@@ -6928,21 +6928,6 @@ const char kHoldingSpaceSuggestionsDescription[] =
     "Enables pinned file suggestions in holding space to help the user "
     "understand and discover the ability to pin.";
 
-const char kHoldingSpaceWallpaperNudgeName[] =
-    "Enable holding space wallpaper nudge";
-const char kHoldingSpaceWallpaperNudgeDescription[] =
-    "Enables the nudge that educates the user on holding space pinning "
-    "behavior when the user drags a file over the wallpaper.";
-
-const char kHoldingSpaceWallpaperNudgeForceEligibilityName[] =
-    "Force eligibility for holding space wallpaper nudge";
-const char kHoldingSpaceWallpaperNudgeForceEligibilityDescription[] =
-    "Ignores the rate limits and user type limits put on the holding space "
-    "wallpaper nudge, meaning it will show whenever a user takes a triggering "
-    "action, regardless of how much or how recently it has been shown, user "
-    "new-ness, or account type. Enabling this flag has no effect unless the "
-    "holding space wallpaper nudge is enabled.";
-
 const char kHotspotName[] = "Hotspot";
 const char kHotspotDescription[] =
     "Enables the Chromebook to share its cellular internet connection to other "

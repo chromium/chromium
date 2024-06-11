@@ -1602,49 +1602,6 @@ BASE_FEATURE(kHoldingSpaceSuggestions,
              "HoldingSpaceSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the nudge that introduces new users to the Holding Space feature when
-// a user drags a file over the wallpaper.
-BASE_FEATURE(kHoldingSpaceWallpaperNudge,
-             "HoldingSpaceWallpaperNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether holding space should be automatically opened when the user pins a
-// file by dropping it on the wallpaper. Note that this param has no effect
-// unless `kHoldingSpaceWallpaperNudge` is also enabled with "drop-to-pin".
-const base::FeatureParam<bool> kHoldingSpaceWallpaperNudgeAutoOpenEnabled{
-    &kHoldingSpaceWallpaperNudge, "auto-open", true};
-
-// Whether the user should be able to pin a file to holding space by dropping it
-// on the wallpaper. Note that this param no effect unless
-// `kHoldingSpaceWallpaperNudge` is also enabled.
-const base::FeatureParam<bool> kHoldingSpaceWallpaperNudgeDropToPinEnabled{
-    &kHoldingSpaceWallpaperNudge, "drop-to-pin", false};
-
-// Whether the holding space wallpaper nudge feature is only enabled for
-// counterfactual analysis. Note that this param has no effect unless
-// `kHoldingSpaceWallpaperNudge` is also enabled.
-const base::FeatureParam<bool>
-    kHoldingSpaceWallpaperNudgeEnabledCounterfactually{
-        &kHoldingSpaceWallpaperNudge, "is-counterfactual", false};
-
-// Ignores the rate limiting of holding space wallpaper nudge so that it will
-// show every time a user drags a file over the wallpaper. Enabling this flag
-// does nothing unless `kHoldingSpaceWallpaperNudge` is also enabled.
-BASE_FEATURE(kHoldingSpaceWallpaperNudgeForceEligibility,
-             "HoldingSpaceWallpaperNudgeForceEligibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether the holding space wallpaper nudge should use accelerated rate
-// limiting so that testers only need to wait for one minute before another
-// nudge can be shown. Note that this param has no effect unless the following
-// flags are also enabled:
-// * `kHoldingSpaceWallpaperNudge`
-// * `kHoldingSpaceWallpaperNudgeForceEligibility`
-const base::FeatureParam<bool>
-    kHoldingSpaceWallpaperNudgeForceEligibilityRateAcceleratedLimitingEnabled{
-        &kHoldingSpaceWallpaperNudgeForceEligibility,
-        "accelerated-rate-limiting-enabled", false};
-
 BASE_FEATURE(kHomeButtonQuickAppAccess,
              "HomeButtonQuickAppAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3887,37 +3844,6 @@ bool IsHoldingSpaceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
 }
 
-bool IsHoldingSpaceWallpaperNudgeAutoOpenEnabled() {
-  return IsHoldingSpaceWallpaperNudgeDropToPinEnabled() &&
-         kHoldingSpaceWallpaperNudgeAutoOpenEnabled.Get();
-}
-
-bool IsHoldingSpaceWallpaperNudgeDropToPinEnabled() {
-  return IsHoldingSpaceWallpaperNudgeEnabled() &&
-         kHoldingSpaceWallpaperNudgeDropToPinEnabled.Get();
-}
-
-bool IsHoldingSpaceWallpaperNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceWallpaperNudge);
-}
-
-bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() {
-  return IsHoldingSpaceWallpaperNudgeEnabled() &&
-         kHoldingSpaceWallpaperNudgeEnabledCounterfactually.Get();
-}
-
-bool IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled() {
-  return IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() &&
-         kHoldingSpaceWallpaperNudgeForceEligibilityRateAcceleratedLimitingEnabled
-             .Get();
-}
-
-bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() {
-  return IsHoldingSpaceWallpaperNudgeEnabled() &&
-         base::FeatureList::IsEnabled(
-             kHoldingSpaceWallpaperNudgeForceEligibility);
-}
-
 bool IsHomeButtonQuickAppAccessEnabled() {
   return base::FeatureList::IsEnabled(kHomeButtonQuickAppAccess) ||
          base::FeatureList::IsEnabled(kQuickAppAccessTestUI);
@@ -4684,7 +4610,7 @@ bool ShouldUseStorkSmds() {
 }
 
 bool IsUserEducationEnabled() {
-  return IsHoldingSpaceWallpaperNudgeEnabled() || IsWelcomeTourEnabled();
+  return IsWelcomeTourEnabled();
 }
 
 bool IsLiveCaptionUserMicrophoneEnabled() {

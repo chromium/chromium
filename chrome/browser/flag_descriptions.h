@@ -4016,12 +4016,6 @@ extern const char kHoldingSpaceRefreshDescription[];
 extern const char kHoldingSpaceSuggestionsName[];
 extern const char kHoldingSpaceSuggestionsDescription[];
 
-extern const char kHoldingSpaceWallpaperNudgeName[];
-extern const char kHoldingSpaceWallpaperNudgeDescription[];
-
-extern const char kHoldingSpaceWallpaperNudgeForceEligibilityName[];
-extern const char kHoldingSpaceWallpaperNudgeForceEligibilityDescription[];
-
 extern const char kHotspotName[];
 extern const char kHotspotDescription[];
 

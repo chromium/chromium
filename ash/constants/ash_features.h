@@ -540,10 +540,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHoldingSpacePredictability);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHoldingSpaceRefresh);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHoldingSpaceSuggestions);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudge);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudgeForceEligibility);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonQuickAppAccess);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kImeDownloaderExperiment);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kImeDownloaderUpdate);
@@ -1188,17 +1184,6 @@ bool IsHoldingSpacePhotoshopWebIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpacePredictabilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceWallpaperNudgeAutoOpenEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceWallpaperNudgeDropToPinEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceWallpaperNudgeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();

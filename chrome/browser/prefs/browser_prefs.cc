@@ -1135,6 +1135,51 @@ inline constexpr char kTrackingProtectionOffboardedSince[] =
 inline constexpr char kTrackingProtectionOffboardingAckAction[] =
     "tracking_protection.tracking_protection_offboarding_ack_action";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 06/2024.
+constexpr std::array<const char*, 12u>
+    kHoldingSpaceWallpaperNudgeTimesOfFirstInteraction = {
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "DroppedFileOnHoldingSpace.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "DroppedFileOnWallpaper.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "DraggedFileOverWallpaper.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time.OpenedHoldingSpace."
+        "first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "PinnedFileFromAnySource.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "PinnedFileFromContextMenu.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "PinnedFileFromFilesApp.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "PinnedFileFromHoldingSpaceDrop.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "PinnedFileFromPinButton.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time."
+        "PinnedFileFromWallpaperDrop.first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time.UsedOtherItem."
+        "first_time",
+        "ash.holding_space.wallpaper_nudge.interaction_time.UsedPinnedItem."
+        "first_time",
+};
+
+// Deprecated 06/2024.
+constexpr char kHoldingSpaceWallpaperNudgeLastTimeNudgeShownCounterfactual[] =
+    "ash.holding_space.wallpaper_nudge.last_shown_time_counterfactual";
+constexpr char kHoldingSpaceWallpaperNudgeLastTimeNudgeShown[] =
+    "ash.holding_space.wallpaper_nudge.last_shown_time";
+constexpr char kHoldingSpaceWallpaperNudgeNudgeShownCountCounterfactual[] =
+    "ash.holding_space.wallpaper_nudge.shown_count_counterfactual";
+constexpr char kHoldingSpaceWallpaperNudgeNudgeShownCount[] =
+    "ash.holding_space.wallpaper_nudge.shown_count";
+constexpr char kHoldingSpaceWallpaperNudgeUserEligibleForNudge[] =
+    "ash.holding_space.wallpaper_nudge.user_eligible";
+constexpr char kHoldingSpaceWallpaperNudgeUserFirstEligibleSessionTime[] =
+    "ash.holding_space.wallpaper_nudge.first_eligible_session_time";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1649,6 +1694,27 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kTrackingProtectionOffboarded, false);
   registry->RegisterTimePref(kTrackingProtectionOffboardedSince, base::Time());
   registry->RegisterIntegerPref(kTrackingProtectionOffboardingAckAction, 0);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 06/2024.
+  for (const char* pref : kHoldingSpaceWallpaperNudgeTimesOfFirstInteraction) {
+    registry->RegisterTimePref(pref, base::Time());
+  }
+
+  // Deprecated 06/2024.
+  registry->RegisterBooleanPref(kHoldingSpaceWallpaperNudgeUserEligibleForNudge,
+                                false);
+  registry->RegisterTimePref(
+      kHoldingSpaceWallpaperNudgeLastTimeNudgeShownCounterfactual,
+      base::Time());
+  registry->RegisterTimePref(kHoldingSpaceWallpaperNudgeLastTimeNudgeShown,
+                             base::Time());
+  registry->RegisterTimePref(
+      kHoldingSpaceWallpaperNudgeUserFirstEligibleSessionTime, base::Time());
+  registry->RegisterUint64Pref(
+      kHoldingSpaceWallpaperNudgeNudgeShownCountCounterfactual, 0u);
+  registry->RegisterUint64Pref(kHoldingSpaceWallpaperNudgeNudgeShownCount, 0u);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -3047,6 +3113,24 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kTrackingProtectionOffboarded);
   profile_prefs->ClearPref(kTrackingProtectionOffboardedSince);
   profile_prefs->ClearPref(kTrackingProtectionOffboardingAckAction);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 06/2024.
+  for (const char* pref : kHoldingSpaceWallpaperNudgeTimesOfFirstInteraction) {
+    profile_prefs->ClearPref(pref);
+  }
+
+  // Added 06/2024.
+  profile_prefs->ClearPref(kHoldingSpaceWallpaperNudgeUserEligibleForNudge);
+  profile_prefs->ClearPref(
+      kHoldingSpaceWallpaperNudgeLastTimeNudgeShownCounterfactual);
+  profile_prefs->ClearPref(kHoldingSpaceWallpaperNudgeLastTimeNudgeShown);
+  profile_prefs->ClearPref(
+      kHoldingSpaceWallpaperNudgeUserFirstEligibleSessionTime);
+  profile_prefs->ClearPref(
+      kHoldingSpaceWallpaperNudgeNudgeShownCountCounterfactual);
+  profile_prefs->ClearPref(kHoldingSpaceWallpaperNudgeNudgeShownCount);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
