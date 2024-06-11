@@ -65,6 +65,12 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
+  public Map getMap(Map arg0) {
+    return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getMap(
+        arg0);
+  }
+
+  @Override
   public Object getNonPODDatatype(SampleForTests jcaller) {
     return (Object) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getNonPODDatatype(
         jcaller);
@@ -98,12 +104,6 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   public List listTest2(Set items) {
     return (List) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_listTest2(
         items);
-  }
-
-  @Override
-  public Map mapTest2(Map arg0) {
-    return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_mapTest2(
-        arg0);
   }
 
   @Override

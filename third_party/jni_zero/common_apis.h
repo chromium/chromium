@@ -15,13 +15,6 @@ CollectionToArray(JNIEnv* env, const JavaRef<jobject>& collection);
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToList(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array);
-// Serializes a Map to an array of key/values.
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobjectArray> MapToArray(
-    JNIEnv* env,
-    const JavaRef<jobject>& map);
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToMap(
-    JNIEnv* env,
-    const JavaRef<jobjectArray>& array);
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_COMMON_APIS_H_

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -34,7 +33,8 @@ class HttpClient {
       int32_t response_code,
       int32_t net_error_code,
       std::vector<uint8_t>&& response_bytes,
-      std::map<std::string, std::string>&& response_headers)>;
+      std::vector<std::string>&& response_header_keys,
+      std::vector<std::string>&& response_header_values)>;
 
   explicit HttpClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -45,12 +45,15 @@ class HttpClient {
   HttpClient& operator=(const HttpClient& client) = delete;
 
   // Send a HTTP request to |url| of type |request_type|, with body
-  // |request_body|, and headers assembled from |headers|. |callback| will be
-  // called when the request completes with response or error.
+  // |request_body|, and headers assembled from |header_keys| and
+  // |header_values|. The order of |header_keys| must match the order of
+  // |header_values|. |callback| will be called when the request completes with
+  // response or error.
   void Send(const GURL& gurl,
             const std::string& request_type,
             std::vector<uint8_t>&& request_body,
-            std::map<std::string, std::string>&& headers,
+            std::vector<std::string>&& header_keys,
+            std::vector<std::string>&& header_values,
             const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
             ResponseCallback callback);
 

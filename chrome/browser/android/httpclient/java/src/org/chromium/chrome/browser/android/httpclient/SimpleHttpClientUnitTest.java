@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /** Unit test for {@link SimpleHttpClient}. */
@@ -65,7 +66,15 @@ public class SimpleHttpClientUnitTest {
 
     @Test
     public void testParseHeader() {
-        final Map<String, String> headers = Map.of("Foo", "valFoo", "Bar", "valBar");
+        final String keyFoo = "Foo";
+        final String keyBar = "Bar";
+        final String valFoo = "valFoo";
+        final String valBar = "valBar";
+
+        final Map<String, String> headers = new HashMap<>();
+        headers.put(keyFoo, valFoo);
+        headers.put(keyBar, valBar);
+
         final CallbackHelper responseCallback = new CallbackHelper();
         final byte[] requestBody = {};
         final String requestType = "requestType";
@@ -84,20 +93,44 @@ public class SimpleHttpClientUnitTest {
                         eq(JUnitTestGURLs.BLUE_1),
                         eq(requestType),
                         eq(requestBody),
-                        eq(headers),
+                        mHeaderKeysCaptor.capture(),
+                        mHeaderValuesCaptor.capture(),
                         eq(NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS.getHashCode()),
                         any());
+
+        // Verify the key value for the string does match.
+        String[] headerKeys = mHeaderKeysCaptor.getValue();
+        String[] headerValues = mHeaderValuesCaptor.getValue();
+
+        Assert.assertEquals("Header key array length is different.", 2, headerKeys.length);
+        Assert.assertEquals("Header value array length is different.", 2, headerValues.length);
+
+        Assert.assertEquals(
+                "Header keys and values should match at the index 0.",
+                "val" + headerKeys[0],
+                headerValues[0]);
+        Assert.assertEquals(
+                "Header keys and values should match at the index 1.",
+                "val" + headerKeys[1],
+                headerValues[1]);
     }
 
     @Test
     public void testCreateHttpResponse() {
-        Map<String, String> responseHeaders = Map.of("Foo", "valFoo1\nvalFoo2", "Bar", "valBar");
+        String[] responseHeaderKeys = {"Foo", "Foo", "Bar"};
+        String[] responseHeaderValues = {"valFoo1", "valFoo2", "valBar"};
         byte[] responseBody = "responseBody".getBytes();
 
         HttpResponse response =
-                SimpleHttpClient.createHttpResponse(200, 0, responseBody, responseHeaders);
+                SimpleHttpClient.createHttpResponse(
+                        200, 0, responseBody, responseHeaderKeys, responseHeaderValues);
+
+        Assert.assertNotNull(response.mHeaders.get("Foo"));
+        Assert.assertNotNull(response.mHeaders.get("Bar"));
+
         Assert.assertEquals(200, response.mResponseCode);
         Assert.assertEquals(responseBody, response.mBody);
-        Assert.assertEquals(responseHeaders, response.mHeaders);
+        Assert.assertEquals("valFoo1\nvalFoo2", response.mHeaders.get("Foo"));
+        Assert.assertEquals("valBar", response.mHeaders.get("Bar"));
     }
 }
