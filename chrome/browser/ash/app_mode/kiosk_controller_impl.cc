@@ -78,6 +78,8 @@ KioskControllerImpl::KioskControllerImpl(
 KioskControllerImpl::~KioskControllerImpl() = default;
 
 std::vector<KioskApp> KioskControllerImpl::GetApps() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::vector<KioskApp> apps;
   for (const KioskAppManagerBase::App& web_app : web_app_manager_.GetApps()) {
     apps.emplace_back(KioskAppId::ForWebApp(web_app.account_id), web_app.name,
@@ -94,6 +96,8 @@ std::vector<KioskApp> KioskControllerImpl::GetApps() const {
 
 std::optional<KioskApp> KioskControllerImpl::GetAppById(
     const KioskAppId& app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   switch (app_id.type) {
     case KioskAppType::kWebApp:
       return WebAppById(web_app_manager_, app_id.account_id);
@@ -103,6 +107,8 @@ std::optional<KioskApp> KioskControllerImpl::GetAppById(
 }
 
 std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (const auto& web_account_id = web_app_manager_.GetAutoLaunchAccountId();
       web_account_id.is_valid()) {
     return WebAppById(web_app_manager_, web_account_id);
@@ -118,6 +124,8 @@ void KioskControllerImpl::InitializeKioskSystemSession(
     Profile* profile,
     const KioskAppId& kiosk_app_id,
     const std::optional<std::string>& app_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   CHECK(!system_session_.has_value())
       << "KioskSystemSession is already initialized";
 
@@ -136,6 +144,8 @@ void KioskControllerImpl::InitializeKioskSystemSession(
 void KioskControllerImpl::StartSession(const KioskAppId& app,
                                        bool is_auto_launch,
                                        LoginDisplayHost* host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   CHECK_EQ(launch_controller_, nullptr);
   CHECK(!system_session_.has_value());
   launch_controller_ = std::make_unique<KioskLaunchController>(
@@ -146,6 +156,8 @@ void KioskControllerImpl::StartSession(const KioskAppId& app,
 }
 
 bool KioskControllerImpl::IsSessionStarting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return launch_controller_ != nullptr;
 }
 
@@ -155,22 +167,30 @@ void KioskControllerImpl::CancelSessionStart() {
 
 void KioskControllerImpl::AddProfileLoadFailedObserver(
     KioskProfileLoadFailedObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   CHECK_NE(launch_controller_, nullptr);
   launch_controller_->AddKioskProfileLoadFailedObserver(observer);
 }
 
 void KioskControllerImpl::RemoveProfileLoadFailedObserver(
     KioskProfileLoadFailedObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (launch_controller_) {
     launch_controller_->RemoveKioskProfileLoadFailedObserver(observer);
   }
 }
 
 bool KioskControllerImpl::HandleAccelerator(LoginAcceleratorAction action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return launch_controller_ && launch_controller_->HandleAccelerator(action);
 }
 
 KioskSystemSession* KioskControllerImpl::GetKioskSystemSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!system_session_.has_value()) {
     return nullptr;
   }
@@ -187,6 +207,8 @@ KioskControllerImpl::GetKioskVisionTelemetryProcessor() {
 }
 
 void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!user.IsKioskType()) {
     return;
   }
@@ -246,6 +268,8 @@ void KioskControllerImpl::DeleteLaunchControllerAsync() {
 }
 
 void KioskControllerImpl::DeleteLaunchController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   launch_controller_.reset();
 }
 

@@ -72,16 +72,21 @@ class KioskControllerImpl : public KioskController,
   void DeleteLaunchControllerAsync();
   void DeleteLaunchController();
 
-  WebKioskAppManager web_app_manager_;
-  KioskChromeAppManager chrome_app_manager_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  WebKioskAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;
+  KioskChromeAppManager GUARDED_BY_CONTEXT(sequence_checker_)
+      chrome_app_manager_;
 
   // Created once the Kiosk session launch starts. Only not null during the
   // kiosk launch.
-  std::unique_ptr<KioskLaunchController> launch_controller_;
+  std::unique_ptr<KioskLaunchController> GUARDED_BY_CONTEXT(sequence_checker_)
+      launch_controller_;
 
   // Created once the Kiosk session is launched successfully. `nullopt` before
   // Kiosk launch and generally when outside Kiosk.
-  std::optional<KioskSystemSession> system_session_;
+  std::optional<KioskSystemSession> GUARDED_BY_CONTEXT(sequence_checker_)
+      system_session_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
