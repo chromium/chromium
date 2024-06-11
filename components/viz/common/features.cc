@@ -421,11 +421,11 @@ BASE_FEATURE(kColorConversionInRenderer,
              "ColorConversionInRenderer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Changes BeginFrame issue to use LastUsedBeginFrameArgs() instead of the
-// current set of BeginFrameArgs.
+// Stops BeginFrame issue to use |last_vsync_interval_| instead of the current
+// set of BeginFrameArgs.
 // TODO(b/333940735): Should be removed if the issue isn't fixed.
-BASE_FEATURE(kUseLastBeginFrameArgs,
-             "UseLastBeginFrameArgs",
+BASE_FEATURE(kLastVSyncArgsKillswitch,
+             "LastVSyncArgsKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use BlitRequests for copy requests made by ViewTransition.

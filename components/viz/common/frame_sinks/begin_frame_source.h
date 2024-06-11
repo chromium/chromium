@@ -394,6 +394,7 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   std::unique_ptr<DelayBasedTimeSource> time_source_;
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
   base::TimeTicks last_timebase_;
+  base::TimeDelta last_vsync_interval_;
   std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
   int vrr_tick_count_ = 0;
   BeginFrameArgs last_begin_frame_args_;

@@ -336,6 +336,7 @@ DelayBasedBeginFrameSource::DelayBasedBeginFrameSource(
     : SyntheticBeginFrameSource(restart_id),
       time_source_(std::move(time_source)) {
   time_source_->SetClient(this);
+  last_vsync_interval_ = BeginFrameArgs::DefaultInterval();
 }
 
 DelayBasedBeginFrameSource::~DelayBasedBeginFrameSource() {
@@ -454,6 +455,7 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
   for (BeginFrameObserver* obs : observers) {
     IssueBeginFrameToObserver(obs, last_begin_frame_args_);
   }
+  last_vsync_interval_ = time_source_->Interval();
 }
 
 void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
@@ -461,17 +463,22 @@ void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
     const BeginFrameArgs& args) {
   BeginFrameArgs last_args = obs->LastUsedBeginFrameArgs();
 
-  // We should use |last_args| for margin calculation with
-  // |obs->LastUsedBeginFrameArgs()| cached during last OnBeginFrame, as the
-  // passed in |args| is updated if interval changes since last frame.
-  auto args_for_margin =
-      base::FeatureList::IsEnabled(features::kUseLastBeginFrameArgs) ? last_args
-                                                                     : args;
-
+  // * If a FrameSink is throttled, |last_args.interval| is the throttled
+  //   interval (e.g. 50ms) while the frame_time delta is still the actual
+  //   vsync (OnTimerTick) interval.
+  // * If the vsync (OnTimerTick) interval is throttled, at the first tick after
+  //   throttling, the |args.interval| is updated to the throttled interval
+  //   while the frame_time delta is not.
+  //
+  // Both cases can cause the double tick check below to fail and an unexpected
+  // frame drop. To avoid this, we use the cached |last_vsync_interval_| here.
+  auto interval_for_margin =
+      base::FeatureList::IsEnabled(features::kLastVSyncArgsKillswitch)
+          ? args.interval
+          : last_vsync_interval_;
   const base::TimeDelta double_tick_margin =
-      max_vrr_interval_.has_value()
-          ? base::TimeDelta()
-          : args_for_margin.interval / kDoubleTickDivisor;
+      max_vrr_interval_.has_value() ? base::TimeDelta()
+                                    : interval_for_margin / kDoubleTickDivisor;
   if (!last_args.IsValid() ||
       (args.frame_time > last_args.frame_time + double_tick_margin)) {
     if (args.type == BeginFrameArgs::MISSED) {
