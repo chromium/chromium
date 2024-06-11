@@ -573,6 +573,25 @@ const FeatureEntry::FeatureVariation kCCTGoogleBottomBarVariations[] = {
      std::size(kCCTBottomBarPihInSpotlightParam), nullptr},
 };
 
+const FeatureEntry::FeatureParam kCCTDoubleDeckerBottomBarParam[] = {
+    {"google_bottom_bar_layout_variant", "0"}};
+const FeatureEntry::FeatureParam kCCTSingleDeckerBottomBarParam[] = {
+    {"google_bottom_bar_layout_variant", "1"}};
+const FeatureEntry::FeatureParam
+    kCCTSingleDeckerBottomBarWithButtonsOnRightParam[] = {
+        {"google_bottom_bar_layout_variant", "2"}};
+
+const FeatureEntry::FeatureVariation
+    kCCTGoogleBottomBarVariantLayoutsVariations[] = {
+        {"Double decker", kCCTDoubleDeckerBottomBarParam,
+         std::size(kCCTDoubleDeckerBottomBarParam), nullptr},
+        {"Single decker", kCCTSingleDeckerBottomBarParam,
+         std::size(kCCTSingleDeckerBottomBarParam), nullptr},
+        {"Single decker with button(s) on right",
+         kCCTSingleDeckerBottomBarWithButtonsOnRightParam,
+         std::size(kCCTSingleDeckerBottomBarWithButtonsOnRightParam), nullptr},
+};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -7604,6 +7623,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTGoogleBottomBar,
                                     kCCTGoogleBottomBarVariations,
                                     "CCTGoogleBottomBarVariations")},
+    {"cct-google-bottom-bar-variant-layouts",
+     flag_descriptions::kCCTGoogleBottomBarVariantLayoutsName,
+     flag_descriptions::kCCTGoogleBottomBarVariantLayoutsDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kCCTGoogleBottomBarVariantLayouts,
+         kCCTGoogleBottomBarVariantLayoutsVariations,
+         "CCTGoogleBottomBarVariantLayoutsVariations")},
     {"cct-revamped-branding", flag_descriptions::kCCTRevampedBrandingName,
      flag_descriptions::kCCTRevampedBrandingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTRevampedBranding)},

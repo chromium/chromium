@@ -250,6 +250,8 @@ public abstract class ChromeFeatureList {
             "CCTPageInsightsHubBetterScroll";
 
     public static final String CCT_GOOGLE_BOTTOM_BAR = "CCTGoogleBottomBar";
+    public static final String CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS =
+            "CCTGoogleBottomBarVariantLayouts";
     public static final String CCT_PREWARM_TAB = "CCTPrewarmTab";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
@@ -570,6 +572,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_NAVIGATIONAL_PREFETCH, false);
     public static final CachedFlag sCctGoogleBottomBar =
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
+    public static final CachedFlag sCctGoogleBottomBarVariantLayouts =
+            newCachedFlag(CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctRevampedBranding =
@@ -715,6 +719,7 @@ public abstract class ChromeFeatureList {
                     sCctNavigationalPrefetch,
                     sCctPageInsightsHub,
                     sCctGoogleBottomBar,
+                    sCctGoogleBottomBarVariantLayouts,
                     sCctResizableForThirdParties,
                     sCctRevampedBranding,
                     sCctNestedSecurityIcon,

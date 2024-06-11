@@ -4125,6 +4125,11 @@ const char kCCTGoogleBottomBarName[] = "Google Bottom Bar";
 const char kCCTGoogleBottomBarDescription[] =
     "Show bottom bar on Custom Tabs opened by the Android Google App.";
 
+const char kCCTGoogleBottomBarVariantLayoutsName[] =
+    "Google Bottom Bar Variant Layouts";
+const char kCCTGoogleBottomBarVariantLayoutsDescription[] =
+    "Show different layouts on Google Bottom Bar.";
+
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

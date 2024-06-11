@@ -21105,6 +21105,7 @@ from previous Chrome versions.
   <int value="304901781" label="NewUsbBackend:enabled"/>
   <int value="305356014" label="WebViewMeasureScreenCoverage:disabled"/>
   <int value="305786802" label="PasswordDomainCapabilitiesFetching:enabled"/>
+  <int value="306239302" label="CCTGoogleBottomBarVariantLayouts:enabled"/>
   <int value="306565540" label="UseOfHashAffiliationFetcher:enabled"/>
   <int value="306641800" label="AndroidSiteSettingsUIRefresh:disabled"/>
   <int value="306662699" label="AutofillVirtualViewStructureAndroid:disabled"/>
@@ -24930,6 +24931,7 @@ from previous Chrome versions.
       label="MagnifierContinuousMouseFollowingModeSetting:disabled"/>
   <int value="1946358032" label="SwapClankShareHubRows:disabled"/>
   <int value="1947350992" label="drop-sync-credential:disabled"/>
+  <int value="1947522706" label="CCTGoogleBottomBarVariantLayouts:disabled"/>
   <int value="1947757329" label="UseDMSAAForTilesAndroidGL:enabled"/>
   <int value="1948509466" label="PasswordChangeAccountStoreUsers:disabled"/>
   <int value="1948753119" label="OmniboxExpandedStateHeight:disabled"/>

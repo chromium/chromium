@@ -2423,6 +2423,9 @@ extern const char kCCTPageInsightsHubBetterScrollDescription[];
 extern const char kCCTGoogleBottomBarName[];
 extern const char kCCTGoogleBottomBarDescription[];
 
+extern const char kCCTGoogleBottomBarVariantLayoutsName[];
+extern const char kCCTGoogleBottomBarVariantLayoutsDescription[];
+
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 
