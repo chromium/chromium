@@ -15,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
@@ -762,6 +763,13 @@ TEST_F(ShoppingServiceHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
   EXPECT_CALL(*delegate_, ShowBookmarkEditorForCurrentUrl).Times(1);
 
   handler_->ShowBookmarkEditorForCurrentUrl();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestShowProductSpecificationsSetForUuid) {
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  const GURL url = commerce::GetProductSpecsTabUrlForID(uuid);
+  EXPECT_CALL(*delegate_, OpenUrlInNewTab(url)).Times(1);
+  handler_->ShowProductSpecificationsSetForUuid(uuid);
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {

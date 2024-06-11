@@ -245,6 +245,9 @@ interface ShoppingServiceHandler {
   // called when the current page is bookmarked.
   ShowBookmarkEditorForCurrentUrl();
 
+  // Show the product specifications set based on the uuid.
+  ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid);
+
   // Show feedback form.
   ShowFeedback();
 

@@ -141,6 +141,10 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.handler.showBookmarkEditorForCurrentUrl();
   }
 
+  showProductSpecificationsSetForUuid(uuid: Uuid) {
+    this.handler.showProductSpecificationsSetForUuid(uuid);
+  }
+
   showFeedback() {
     this.handler.showFeedback();
   }

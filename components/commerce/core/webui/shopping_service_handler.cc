@@ -17,6 +17,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -647,6 +648,14 @@ void ShoppingServiceHandler::GetParentBookmarkFolderNameForCurrentUrl(
 
 void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {
   delegate_->ShowBookmarkEditorForCurrentUrl();
+}
+
+void ShoppingServiceHandler::ShowProductSpecificationsSetForUuid(
+    const base::Uuid& uuid) {
+  if (!delegate_) {
+    return;
+  }
+  delegate_->OpenUrlInNewTab(commerce::GetProductSpecsTabUrlForID(uuid));
 }
 
 void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(

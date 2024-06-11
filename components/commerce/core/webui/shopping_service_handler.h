@@ -116,6 +116,7 @@ class ShoppingServiceHandler
   void GetParentBookmarkFolderNameForCurrentUrl(
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
+  void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid) override;
   void ShowFeedback() override;
   void GetAllProductSpecificationsSets(
       GetAllProductSpecificationsSetsCallback callback) override;
