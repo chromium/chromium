@@ -16083,7 +16083,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressRefresh",
+                        "PlusAddressRefreshUiInAndroid",
                         "PlusAddressRefreshUiInDesktopModal",
+                        "PlusAddressRefreshUiInIOS",
                         "PlusAddressUIRedesign",
                         "PlusAddressesEnabled"
                     ]
