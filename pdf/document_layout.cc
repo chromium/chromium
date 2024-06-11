@@ -31,12 +31,6 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
   return widest_page_width;
 }
 
-gfx::Rect InsetRect(const gfx::Rect& rect, const gfx::Insets& insets) {
-  gfx::Rect inset_rect(rect);
-  inset_rect.Inset(insets);
-  return inset_rect;
-}
-
 }  // namespace
 
 DocumentLayout::Options::Options() = default;
@@ -131,8 +125,8 @@ void DocumentLayout::ComputeOneUpLayout(
     gfx::Rect page_rect =
         draw_utils::GetRectForSingleView(page_size, document_size);
     CopyRectIfModified(page_rect, page_layouts_[i].outer_rect);
-    CopyRectIfModified(InsetRect(page_rect, kSingleViewInsets),
-                       page_layouts_[i].inner_rect);
+    page_rect.Inset(kSingleViewInsets);
+    CopyRectIfModified(page_rect, page_layouts_[i].inner_rect);
 
     draw_utils::ExpandDocumentSize(page_size, &document_size);
   }
@@ -169,8 +163,8 @@ void DocumentLayout::ComputeTwoUpOddLayout(
           0, std::max(page_size.height(), page_sizes[i - 1].height()));
     }
     CopyRectIfModified(page_rect, page_layouts_[i].outer_rect);
-    CopyRectIfModified(InsetRect(page_rect, page_insets),
-                       page_layouts_[i].inner_rect);
+    page_rect.Inset(page_insets);
+    CopyRectIfModified(page_rect, page_layouts_[i].inner_rect);
   }
 
   if (page_sizes.size() % 2 == 1) {
