@@ -6333,7 +6333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SetAcceptThirdPartyCookies"
-    enum="BooleanAccepted" expires_after="2024-06-13">
+    enum="BooleanAccepted" expires_after="2025-06-13">
   <owner>jdeabreu@chromium.org</owner>
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
