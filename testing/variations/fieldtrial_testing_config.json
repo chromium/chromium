@@ -18809,6 +18809,7 @@
     "SafetyHubAbusiveNotificationRevocation": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
