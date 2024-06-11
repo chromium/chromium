@@ -41,7 +41,13 @@ build_webui("build") {
 
   webui_context_type = "trusted"
   if (!is_android) {
-    extra_grdp_files = [ "$target_gen_dir/related_website_sets/resources.grdp" ]
-    extra_grdp_deps = [ "related_website_sets:build_grdp" ]
+    extra_grdp_files = [
+        "$target_gen_dir/private_state_tokens/resources.grdp",
+        "$target_gen_dir/related_website_sets/resources.grdp",
+    ]
+    extra_grdp_deps = [
+        "private_state_tokens:build_grdp",
+        "related_website_sets:build_grdp",
+    ]
   }
 }

@@ -39,6 +39,10 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     source->AddResourcePath("related-website-sets",
                             IDR_RELATED_WEBSITE_SETS_RELATED_WEBSITE_SETS_HTML);
   }
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
+    source->AddResourcePath("private-state-tokens",
+                            IDR_PRIVATE_STATE_TOKENS_APP_HTML);
+  }
 #endif
 }
 
