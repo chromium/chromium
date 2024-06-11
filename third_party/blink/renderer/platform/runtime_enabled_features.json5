@@ -3411,7 +3411,7 @@
     {
       // crbug.com/324111880
       name: "RubyLineBreakable",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/340041662
