@@ -709,8 +709,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
   peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
   const GURL kURL("http://foo.test/");
-  SchemefulSite kSiteFoo(GURL("http://foo.test"));
-  SchemefulSite kSiteBar(GURL("http://bar.test"));
+  const SchemefulSite kSiteFoo(GURL("http://foo.test"));
+  const SchemefulSite kSiteBar(GURL("http://bar.test"));
   const auto kKey1 = NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
   const auto kKey2 = NetworkAnonymizationKey::CreateSameSite(kSiteBar);
   PreconnectHelperForURL(1, kURL, kKey1, SecureDnsPolicy::kAllow,
@@ -747,8 +747,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
   peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
   const GURL kURL("http://foo.test/");
-  SchemefulSite kSiteFoo(GURL("http://foo.test"));
-  SchemefulSite kSiteBar(GURL("http://bar.test"));
+  const SchemefulSite kSiteFoo(GURL("http://foo.test"));
+  const SchemefulSite kSiteBar(GURL("http://bar.test"));
   PreconnectHelperForURL(1, kURL, NetworkAnonymizationKey(),
                          SecureDnsPolicy::kAllow, session.get());
   EXPECT_EQ(1, transport_conn_pool->last_num_streams());

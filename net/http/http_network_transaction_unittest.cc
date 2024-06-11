@@ -6458,14 +6458,6 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
 
 // Make sure that NetworkAnonymizationKeys are passed down to the proxy layer.
 TEST_P(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
-  const SchemefulSite kSite(GURL("https://foo.test/"));
-  const SchemefulSite kOtherSite(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey =
-      NetworkIsolationKey(kSite, kOtherSite);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey =
-      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          kNetworkIsolationKey);
-
   ProxyConfig proxy_config;
   proxy_config.set_auto_detect(true);
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
