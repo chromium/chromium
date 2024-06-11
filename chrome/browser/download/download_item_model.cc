@@ -44,6 +44,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -325,6 +326,11 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
 }
 
 int64_t DownloadItemModel::GetCompletedBytes() const {
+  auto* renamer = download_->GetRenameHandler();
+  if (renamer && renamer->ShowRenameProgress()) {
+    return static_cast<int>(
+        (download_->GetReceivedBytes() + download_->GetUploadedBytes()) * 0.5);
+  }
   return download_->GetReceivedBytes();
 }
 
@@ -337,6 +343,13 @@ int64_t DownloadItemModel::GetTotalBytes() const {
 //     ChromeDownloadManagerDelegate, we should calculate the percentage here
 //     instead of calling into the DownloadItem.
 int DownloadItemModel::PercentComplete() const {
+  auto* renamer = download_->GetRenameHandler();
+  if (renamer && renamer->ShowRenameProgress()) {
+    return static_cast<int>(
+        ((download_->GetReceivedBytes() + download_->GetUploadedBytes()) * 0.5 *
+         100.0) /
+        GetTotalBytes());
+  }
   return download_->PercentComplete();
 }
 
