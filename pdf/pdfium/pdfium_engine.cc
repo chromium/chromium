@@ -2719,6 +2719,15 @@ void PDFiumEngine::AppendBlankPages(size_t num_pages) {
   LoadPageInfo();
 }
 
+gfx::Size PDFiumEngine::plugin_size() const {
+  if (plugin_size_.has_value()) {
+    return plugin_size_.value();
+  }
+  // TODO(crbug.com/40193305): Fix call sites and inline this getter again.
+  DUMP_WILL_BE_NOTREACHED();
+  return gfx::Size();
+}
+
 void PDFiumEngine::LoadDocument() {
   // Check if the document is ready for loading. If it isn't just bail for now,
   // we will call LoadDocument() again later.

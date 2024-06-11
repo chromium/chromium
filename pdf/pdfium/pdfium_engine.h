@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -279,11 +278,7 @@ class PDFiumEngine : public PDFEngine,
   friend class PDFiumTestBase;
   friend class SelectionChangeInvalidator;
 
-  gfx::Size plugin_size() const {
-    // TODO(crbug.com/40193305): Just use .value() after fixing call sites.
-    DCHECK(plugin_size_.has_value());
-    return plugin_size_.value_or(gfx::Size());
-  }
+  gfx::Size plugin_size() const;
 
   // We finished getting the pdf file, so load it. This will complete
   // asynchronously (due to password fetching) and may be run multiple times.
