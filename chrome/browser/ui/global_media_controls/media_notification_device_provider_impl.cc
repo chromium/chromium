@@ -36,9 +36,9 @@ void MaybeRemoveDefaultDevice(media::AudioDeviceDescriptions& descriptions) {
   // the following prefix.
   const std::string default_device_name_prefix =
       media::AudioDeviceDescription::GetDefaultDeviceName() + " - ";
-  if (std::equal(default_device_name_prefix.cbegin(),
-                 default_device_name_prefix.cend(),
-                 default_device_it->device_name.cbegin())) {
+
+  if (base::StartsWith(default_device_it->device_name,
+                       default_device_name_prefix)) {
     std::string real_default_device_name =
         default_device_it->device_name.substr(
             default_device_name_prefix.size());
