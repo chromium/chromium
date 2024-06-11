@@ -309,12 +309,12 @@ function safeString(value: any) {
 
 const kSections = {
   featureStatus: ['Graphics Feature Status', 'ul'],
+  clientInfo: ['Version Information', 'div'],
+  basicInfo: ['Driver Information', 'div'],
   workarounds: ['Driver Bug Workarounds', 'ul'],
   problems: ['Problems Detected', 'ul'],
   angleFeatures: ['ANGLE Features', 'ul'],
   dawnInfo: ['Dawn Info', 'ul'],
-  clientInfo: ['Version Information', 'div'],
-  basicInfo: ['Driver Information', 'div'],
   compositorInfo: ['Compositor Information', 'div'],
   gpuMemoryBufferInfo: ['GpuMemoryBuffers Status', 'div'],
   displayInfo: ['Display(s) Information', 'div'],
