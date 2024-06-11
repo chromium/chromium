@@ -579,6 +579,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "no_fatal_linker_warnings",
+    args = {
+        "fatal_linker_warnings": False,
+    },
+)
+
+gn_args.config(
     name = "fail_on_android_expectations",
     args = {
         "fail_on_android_expectations": True,

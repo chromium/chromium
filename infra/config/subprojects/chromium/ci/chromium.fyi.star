@@ -2018,6 +2018,8 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
+            "no_lld",
+            "no_fatal_linker_warnings",
         ],
     ),
     os = os.MAC_BETA,
