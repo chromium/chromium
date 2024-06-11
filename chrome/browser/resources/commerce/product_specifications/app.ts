@@ -21,30 +21,17 @@ import {getTemplate} from './app.html.js';
 import type {HeaderElement} from './header.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {ProductInfo, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import type {TableColumn, TableElement, TableRow} from './table.js';
 
 interface AggregatedProductData {
-  info: ProductInfo;
+  info: ProductInfo|null;
   spec: ProductSpecificationsProduct|null;
 }
 
 interface LoadingState {
   loading: boolean;
   urlCount: number;
-}
-
-function aggregateProductDataByClusterId(
-    infos: ProductInfo[], specs: ProductSpecificationsProduct[]):
-    Record<string, AggregatedProductData> {
-  const aggregatedDatas: Record<string, AggregatedProductData> = {};
-  infos.forEach((info, index) => {
-    aggregatedDatas[info.clusterId.toString()] = {
-      info,
-      spec: specs[index]!,
-    };
-  });
-  return aggregatedDatas;
 }
 
 export interface ProductSpecificationsElement {
@@ -54,6 +41,21 @@ export interface ProductSpecificationsElement {
     productSelector: ProductSelectorElement,
     summaryTable: TableElement,
   };
+}
+
+function findProductInResults(clusterId: bigint, specs: ProductSpecifications):
+    ProductSpecificationsProduct|null {
+  if (!specs) {
+    return null;
+  }
+
+  for (const product of specs.products) {
+    if (product.productClusterId.toString() === clusterId.toString()) {
+      return product;
+    }
+  }
+
+  return null;
 }
 
 export class ProductSpecificationsElement extends PolymerElement {
@@ -160,36 +162,57 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.showEmptyState_ = false;
     this.loadingState_ = {loading: true, urlCount: urls.length};
 
-    let aggregatedDatas: Record<string, AggregatedProductData> = {};
     const rows: TableRow[] = [];
+    const columns: TableColumn[] = [];
     if (urls.length) {
       const {productSpecs} =
           await this.shoppingApi_.getProductSpecificationsForUrls(
               urls.map(url => ({url})));
+      const aggregatedDataByUrl =
+          await this.aggregateProductDataByUrl_(urls, productSpecs);
+
       productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
         const descriptions: string[] = [];
         const summaries: string[] = [];
-        productSpecs.products.forEach(
-            (product: ProductSpecificationsProduct) => {
-              const value = product.productDimensionValues.get(key);
-              descriptions.push(
-                  (value?.specificationDescriptions || [])
-                      .flatMap(description => description.options)
-                      .flatMap(option => option.descriptions)
-                      .map(descText => descText.text)
-                      .join(', ') ||
-                  '');
-              summaries.push(
-                  (value?.summary || [])
-                      .map(summary => summary?.text || '')
-                      ?.join(' ') ||
-                  '');
-            });
+
+        // In the order that the URLs were provided, add the data to the table.
+        urls.map((url: string) => {
+          const product = aggregatedDataByUrl.get(url)?.spec;
+          if (product) {
+            const value = product.productDimensionValues.get(key);
+            descriptions.push(
+                (value?.specificationDescriptions || [])
+                    .flatMap(description => description.options)
+                    .flatMap(option => option.descriptions)
+                    .map(descText => descText.text)
+                    .join(', ') ||
+                '');
+            summaries.push(
+                (value?.summary || [])
+                    .map(summary => summary?.text || '')
+                    ?.join(' ') ||
+                '');
+          } else {
+            descriptions.push('');
+            summaries.push('');
+          }
+        });
+
         rows.push({title, descriptions, summaries});
       });
-      const infos = await this.getInfoForUrls_(urls);
-      aggregatedDatas =
-          aggregateProductDataByClusterId(infos, productSpecs.products);
+
+      urls.map((url: string) => {
+        const info = aggregatedDataByUrl.get(url)?.info;
+        const product = aggregatedDataByUrl.get(url)?.spec;
+
+        columns.push({
+          selectedItem: {
+            title: product ? product.title : '',
+            url: url,
+            imageUrl: info ? info.imageUrl.url : '',
+          },
+        });
+      });
     }
 
     // Enforce a minimum amount of time in the loading state to avoid it
@@ -201,16 +224,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     this.specsTable_ = {
-      columns:
-          Object.values(aggregatedDatas).map((data: AggregatedProductData) => {
-            return {
-              selectedItem: {
-                title: data.spec ? data.spec.title : '',
-                url: data.info.productUrl.url,
-                imageUrl: data.info.imageUrl.url,
-              },
-            };
-          }),
+      columns,
       rows,
     };
     this.showEmptyState_ = this.specsTable_.columns.length === 0;
@@ -222,15 +236,41 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
   }
 
-  private async getInfoForUrls_(urls: string[]): Promise<ProductInfo[]> {
-    const infos: ProductInfo[] = [];
+  private async getInfoForUrls_(urls: string[]):
+      Promise<Map<string, ProductInfo>> {
+    const infoMap: Map<string, ProductInfo> = new Map();
     for (const url of urls) {
       const {productInfo} = await this.shoppingApi_.getProductInfoForUrl({url});
-      if (productInfo.clusterId) {
-        infos.push(productInfo);
+      if (productInfo && productInfo.clusterId) {
+        infoMap.set(url, productInfo);
       }
     }
-    return infos;
+    return infoMap;
+  }
+
+  private async aggregateProductDataByUrl_(
+      urls: string[], specs: ProductSpecifications):
+      Promise<Map<string, AggregatedProductData>> {
+    const urlToInfoMap: Map<string, ProductInfo> =
+        await this.getInfoForUrls_(urls);
+    const specProductMap: Map<string, ProductSpecificationsProduct> = new Map();
+    urlToInfoMap.forEach((value, key) => {
+      const product = findProductInResults(value.clusterId, specs);
+      if (product) {
+        specProductMap.set(key, product);
+      }
+    });
+
+    const aggregatedDatas: Map<string, AggregatedProductData> = new Map();
+    urls.forEach((url) => {
+      const productInfo = urlToInfoMap.get(url);
+      const productSpecs = specProductMap.get(url);
+      aggregatedDatas.set(url, {
+        info: productInfo ? productInfo : null,
+        spec: productSpecs ? productSpecs : null,
+      });
+    });
+    return aggregatedDatas;
   }
 
   private showTable_(): boolean {

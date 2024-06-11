@@ -10,6 +10,7 @@ import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, P
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -117,16 +118,21 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'getProductSpecificationsForUrls',
         Promise.resolve({productSpecs: promiseValues.specs}));
-    let infoFetchCount = 0;
-    shoppingServiceApi.setResultMapperFor('getProductInfoForUrl', () => {
-      if (infoFetchCount >= promiseValues.infos.length) {
-        return;
-      }
-      infoFetchCount++;
-      return Promise.resolve(
-          {productInfo: promiseValues.infos[infoFetchCount - 1]});
-    });
-    return createAppElement();
+    shoppingServiceApi.setResultMapperFor(
+        'getProductInfoForUrl', (url: Url) => {
+          for (const info of promiseValues.infos) {
+            if (info.productUrl.url === url.url) {
+              return Promise.resolve({productInfo: info});
+            }
+          }
+          const emptyInfo = createInfo();
+          return Promise.resolve({productInfo: emptyInfo});
+        });
+
+    const appElement = createAppElement();
+    await flushTasks();
+
+    return appElement;
   }
 
   setup(async () => {
@@ -330,7 +336,11 @@ suite('AppTest', () => {
     const rows = appElement.$.summaryTable.rows;
     assertEquals(1, rows.length);
     assertArrayEquals(
-        [{title: rowTitle, descriptions: ['bar, baz'], summaries: ['summary']}],
+        [{
+          title: rowTitle,
+          descriptions: ['bar, baz', ''],
+          summaries: ['summary', ''],
+        }],
         rows);
   });
 
@@ -401,6 +411,128 @@ suite('AppTest', () => {
         [{title: rowTitle, descriptions: ['bar'], summaries: ['']}], rows);
   });
 
+  test('populates specs table, correct column order', async () => {
+    const rowTitle = 'Section';
+
+    // Set up the first product with at least one unique description.
+    const dimensionValues1 = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [
+            {
+              descriptions: [
+                {
+                  text: 'desc 1',
+                  url: {url: ''},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const dimensionValuesMap1 = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues1]]);
+
+    const specsProduct1 = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product 1',
+      productDimensionValues: dimensionValuesMap1,
+    });
+    const info1 = createInfo({
+      clusterId: BigInt(123),
+      title: 'Product 1',
+      productUrl: {url: 'https://example.com/1'},
+      imageUrl: {url: 'http://example.com/image1.png'},
+    });
+
+    // Set up the second product - the description needs to be different from
+    // the one above.
+    const dimensionValues2 = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [
+            {
+              descriptions: [
+                {
+                  text: 'desc 2',
+                  url: {url: ''},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const dimensionValuesMap2 = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues2]]);
+
+    const specsProduct2 = createSpecsProduct({
+      productClusterId: BigInt(456),
+      title: 'Product 2',
+      productDimensionValues: dimensionValuesMap2,
+    });
+    const info2 = createInfo({
+      clusterId: BigInt(456),
+      title: 'Product 2',
+      productUrl: {url: 'https://example.com/2'},
+      imageUrl: {url: 'http://example.com/image2.png'},
+    });
+
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/1', 'https://example.com/2'],
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        // These products are intentionally swapped to ensure they are shown
+        // in the correct column, even if output order doesn't match input
+        // order.
+        products: [specsProduct2, specsProduct1],
+      }),
+      infos: [info1, info2],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await flushTasks();
+
+    // Ensure the column header matches the content.
+    const columns = appElement.$.summaryTable.columns;
+    assertEquals(2, columns.length);
+    assertArrayEquals(
+        [
+          {
+            selectedItem: {
+              title: specsProduct1.title,
+              url: 'https://example.com/1',
+              imageUrl: info1.imageUrl.url,
+            },
+          },
+          {
+            selectedItem: {
+              title: specsProduct2.title,
+              url: 'https://example.com/2',
+              imageUrl: info2.imageUrl.url,
+            },
+          },
+        ],
+        columns);
+
+    const rows = appElement.$.summaryTable.rows;
+    assertEquals(1, rows.length);
+    assertArrayEquals(
+        [{
+          title: rowTitle,
+          descriptions: ['desc 1', 'desc 2'],
+          summaries: ['', ''],
+        }],
+        rows);
+  });
+
   test('shows full table loading state', async () => {
     const minLoadingAnimationMs = 10;
     const promiseValues = createAppPromiseValues({
@@ -450,6 +582,7 @@ suite('AppTest', () => {
         index: 0,
       },
     }));
+    await flushTasks();
 
     assertEquals(
         2, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
