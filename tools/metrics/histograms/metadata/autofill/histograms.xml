@@ -2342,6 +2342,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
+    enum="AutofillFormEvent" expires_after="2025-07-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>yishuil@google.com</owner>
+  <summary>
+    Autofill form events for credit card forms that contain at least one
+    suggestion where a card benefit is available. This includes logging for when
+    card suggestions with benefits are shown, selected, filled, and submitted,
+    and logs at each of those times. Log emission pertains to the credit card
+    issuer, {CardIssuerId}.
+  </summary>
+  <token key="CardIssuerId" variants="Autofill.CreditCardIssuerId"/>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
     enum="AutofillFormEvent" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>

@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 
+#include <unordered_set>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -37,6 +40,12 @@ CardMetadataLoggingContext& CardMetadataLoggingContext::operator=(
     const CardMetadataLoggingContext&) = default;
 CardMetadataLoggingContext::~CardMetadataLoggingContext() = default;
 
+bool CardMetadataLoggingContext::HasBenefitForInstrumentId(
+    int64_t instrument_id) {
+  return instrument_ids_to_issuer_ids_with_benefits_available.contains(
+      instrument_id);
+}
+
 void CardMetadataLoggingContext::SetSelectedCardInfo(
     const CreditCard& credit_card) {
   selected_card_has_metadata_available =
@@ -44,6 +53,12 @@ void CardMetadataLoggingContext::SetSelectedCardInfo(
   selected_issuer_or_network_to_metadata_availability = {
       {credit_card.issuer_id(), selected_card_has_metadata_available},
       {credit_card.network(), selected_card_has_metadata_available}};
+
+  if (HasBenefitForInstrumentId(credit_card.instrument_id())) {
+    selected_issuer_id_with_benefit_available = credit_card.issuer_id();
+  } else {
+    selected_issuer_id_with_benefit_available = std::string();
+  }
 }
 
 std::string_view GetCardIssuerIdOrNetworkSuffix(
@@ -214,6 +229,54 @@ void LogCardWithMetadataFormEventMetric(
   }
 }
 
+void LogCardWithBenefitFormEventMetric(
+    CardMetadataLoggingEvent event,
+    const CardMetadataLoggingContext& context) {
+  // `issuers_shown` contains all credit card issuers that were shown with
+  // benefits to the user. Only used in the `CardMetadataLoggingEvent::kShown`
+  // branch.
+
+  switch (event) {
+    case CardMetadataLoggingEvent::kShown: {
+      std::unordered_set<std::string> issuers_shown;
+      for (const auto& [instrument_id, issuer_id] :
+           context.instrument_ids_to_issuer_ids_with_benefits_available) {
+        if (!issuers_shown.contains(issuer_id)) {
+          LogBenefitFormEventToIssuerHistogram(
+              issuer_id,
+              FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
+          issuers_shown.insert(issuer_id);
+        }
+      }
+      break;
+    }
+    case CardMetadataLoggingEvent::kSelected:
+      if (!context.selected_issuer_id_with_benefit_available.empty()) {
+        LogBenefitFormEventToIssuerHistogram(
+            context.selected_issuer_id_with_benefit_available,
+            FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE);
+      }
+      break;
+    case CardMetadataLoggingEvent::kFilled:
+      if (!context.selected_issuer_id_with_benefit_available.empty()) {
+        LogBenefitFormEventToIssuerHistogram(
+            context.selected_issuer_id_with_benefit_available,
+            FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE);
+      }
+      break;
+    case CardMetadataLoggingEvent::kSubmitted:
+      if (!context.selected_issuer_id_with_benefit_available.empty()) {
+        LogBenefitFormEventToIssuerHistogram(
+            context.selected_issuer_id_with_benefit_available,
+            FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE);
+      }
+      break;
+    case CardMetadataLoggingEvent::kWillSubmit:
+      // Currently do not log kWillSubmit events for benefits.
+      break;
+  }
+}
+
 void LogAcceptanceLatency(base::TimeDelta latency,
                           const CardMetadataLoggingContext& suggestion_context,
                           const CreditCard& selected_card) {
@@ -243,6 +306,15 @@ void LogAcceptanceLatency(base::TimeDelta latency,
 void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled) {
   base::UmaHistogramBoolean(
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", enabled);
+}
+
+void LogBenefitFormEventToIssuerHistogram(const std::string& issuer_id,
+                                          FormEvent event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.FormEvents.CreditCard."
+                    "WithBenefits.",
+                    GetCardIssuerIdOrNetworkSuffix(issuer_id)}),
+      event, NUM_FORM_EVENTS);
 }
 
 }  // namespace autofill::autofill_metrics
