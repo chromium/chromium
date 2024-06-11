@@ -85,8 +85,10 @@ desc: |-
 # 3. will be available (overriding 2.) if this policy's name is listed in the
 #    EnableExperimentalPolicies policy
 # Currently supported platforms:
-#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
-#   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
+#   `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`.
+#   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
+#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
 #   Note that `chrome_frame` has been deprecated.
 future_on:
 - ios
@@ -97,8 +99,10 @@ future_on:
 # |since_version| and is removed after |until_version|. |until_version|
 # is optional.
 # Currently supported platforms:
-#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
-#   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
+#   `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`.
+#   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
+#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
 #   Note that `chrome_frame` has been deprecated.
 supported_on:
 - android:106-
