@@ -100,12 +100,8 @@ void LimitedEntropySyntheticTrial::SetSeedFromAsh(PrefService* local_state,
   }
 }
 
-// static
 uint64_t LimitedEntropySyntheticTrial::GetRandomizationSeed(
     PrefService* local_state) {
-  // Initialize the trial to set the value of
-  // |kVariationsLimitedEntropySyntheticTrialSeed|.
-  LimitedEntropySyntheticTrial trial(local_state);
   return local_state->GetUint64(
       prefs::kVariationsLimitedEntropySyntheticTrialSeed);
 }
