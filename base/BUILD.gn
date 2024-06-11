@@ -1358,6 +1358,15 @@ component("base") {
     public_deps += [ "//third_party/jni_zero:jni_zero" ]
   }  # is_android || is_robolectric
 
+  if (is_android && !is_robolectric) {
+    # The robolectic toolchain doesn't provide the NDK headers required for data
+    # and function type definitions used by BinderApi et al.
+    sources += [
+      "android/binder.cc",
+      "android/binder.h",
+    ]
+  }
+
   # Chromeos.
   if (is_chromeos) {
     sources += [
@@ -3796,6 +3805,7 @@ test("base_unittests") {
 
     sources += [
       "android/application_status_listener_unittest.cc",
+      "android/binder_unittest.cc",
       "android/child_process_unittest.cc",
       "android/content_uri_utils_unittest.cc",
       "android/jank_metric_uma_recorder_unittest.cc",
