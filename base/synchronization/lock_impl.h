@@ -5,6 +5,8 @@
 #ifndef BASE_SYNCHRONIZATION_LOCK_IMPL_H_
 #define BASE_SYNCHRONIZATION_LOCK_IMPL_H_
 
+#include <utility>
+
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
