@@ -10,6 +10,8 @@
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -260,9 +262,15 @@ const CGFloat kGroupColorViewSize = 18;
                                                  size:totalTabsCount];
 }
 
+- (void)setTabsCount:(NSInteger)tabsCount {
+  _tabsCount = tabsCount;
+}
+
 - (void)setTitle:(NSString*)title {
   _titleLabel.text = title;
-  self.accessibilityLabel = title;
+  self.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE,
+      base::SysNSStringToUTF16(title), base::NumberToString16(_tabsCount));
   _title = [title copy];
 }
 

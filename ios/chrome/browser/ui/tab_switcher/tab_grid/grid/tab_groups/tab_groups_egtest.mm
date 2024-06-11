@@ -210,8 +210,12 @@ id<GREYMatcher> CreateTabGroupCancelButtonMatcher() {
 }
 
 // Matcher for tab group grid cell for the given `group_name`.
-id<GREYMatcher> TabGroupGridCellMatcher(NSString* group_name) {
-  return grey_allOf(grey_accessibilityLabel(group_name),
+id<GREYMatcher> TabGroupGridCellMatcher(NSString* group_name,
+                                        NSInteger tab_count) {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSStringF(
+                        IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE,
+                        base::SysNSStringToUTF16(group_name),
+                        base::NumberToString16(tab_count))),
                     grey_kindOfClassName(@"GroupGridCell"),
                     grey_sufficientlyVisible(), nil);
 }
@@ -337,7 +341,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
 
   // Open the group.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 1)]
       performAction:grey_tap()];
 
   // Open the tab.
@@ -361,7 +365,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 0)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -475,7 +479,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   RenameGroupAtIndex(0, kGroup1Name);
 
   // Check the group's new name.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 1)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -495,11 +499,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 
   // The created group is no longer in the grid.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
 }
 
 // Tests the group deletion from the group's context menu in the grid.
@@ -515,11 +518,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // The tab and the group are deleted.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
 }
 
 // Tests closing the group from the close button.
@@ -541,11 +543,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // The tab and the group are deleted.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
 
   // The IPH is shown.
   [[EarlGrey selectElementWithMatcher:
@@ -561,11 +562,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::TabGridCloseButtonForGroupCellAtIndex(0)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
 
   // The IPH is *not* shown.
   [[EarlGrey selectElementWithMatcher:
@@ -608,11 +608,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_nil()];
 
   // The group with title `1 Tab` is present in the grid.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_notNil()];
 }
 
 // Tests the adding a tab to a group in selection mode.
@@ -661,18 +660,16 @@ void DeleteGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_nil()];
 
   // The group with title `1 Tab` is no longer present in the grid.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
 
   // The group with title `2 Tabs` is present in the grid.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))]
-      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 2),
+                                          2)] assertWithMatcher:grey_notNil()];
 }
 
 // Checks that all the options are displayed in the group's overflow menu.
@@ -723,11 +720,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_notNil()];
 
   // Close all (groups and tabs).
   [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
@@ -739,11 +735,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
 
   // Tap Undo button.
   [[EarlGrey selectElementWithMatcher:TabGridUndoCloseAllButton()]
@@ -752,11 +747,10 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // Check that `Tab 2` and the group with title `1 Tab` are back in the grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_notNil()];
 }
 
 // Tests opening a tab group after resetting the incognito browser (i.e. closing
@@ -831,7 +825,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
       performAction:grey_replaceText(@"1gr")];
 
   // Tap on it in the second window.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 1)]
       performAction:grey_tap()];
 
   // Verify that it opens in the first window.
@@ -842,7 +836,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   // Tap on it again in the second window.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 1)]
       performAction:grey_tap()];
 
   // Verify that it's still open in the first window.
@@ -857,7 +851,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
       performAction:grey_replaceText(@"2gr")];
 
   // Tap on it in the second window.
-  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup2Name)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup2Name, 1)]
       performAction:grey_tap()];
 
   // Verify that it opens in the first window.

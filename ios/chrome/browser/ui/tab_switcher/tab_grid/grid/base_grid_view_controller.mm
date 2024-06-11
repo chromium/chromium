@@ -1617,6 +1617,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.theme = self.theme;
   cell.itemIdentifier = groupItemIdentifier;
   cell.groupColor = item.groupColor;
+  cell.tabsCount = item.numberOfTabsInGroup;
   cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
