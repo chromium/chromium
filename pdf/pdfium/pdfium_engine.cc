@@ -3110,7 +3110,7 @@ gfx::Size PDFiumEngine::GetPageSizeForLayout(
   return gfx::Size(width_in_pixels, height_in_pixels);
 }
 
-gfx::Insets PDFiumEngine::GetInsetSizes(
+gfx::Insets PDFiumEngine::GetInsets(
     const DocumentLayout::Options& layout_options,
     size_t page_index,
     size_t num_of_pages) const {
@@ -3129,10 +3129,9 @@ void PDFiumEngine::EnlargePage(const DocumentLayout::Options& layout_options,
                                size_t page_index,
                                size_t num_of_pages,
                                gfx::Size* page_size) const {
-  gfx::Insets inset_sizes =
-      GetInsetSizes(layout_options, page_index, num_of_pages);
-  page_size->Enlarge(inset_sizes.left() + inset_sizes.right(),
-                     inset_sizes.top() + inset_sizes.bottom());
+  gfx::Insets insets = GetInsets(layout_options, page_index, num_of_pages);
+  page_size->Enlarge(insets.left() + insets.right(),
+                     insets.top() + insets.bottom());
 }
 
 void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
@@ -3140,13 +3139,12 @@ void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
                              size_t num_of_pages,
                              double multiplier,
                              gfx::Rect& rect) const {
-  gfx::Insets inset_sizes =
-      GetInsetSizes(layout_options, page_index, num_of_pages);
-  rect.Inset(gfx::Insets::TLBR(
-      static_cast<int>(ceil(inset_sizes.top() * multiplier)),
-      static_cast<int>(ceil(inset_sizes.left() * multiplier)),
-      static_cast<int>(ceil(inset_sizes.bottom() * multiplier)),
-      static_cast<int>(ceil(inset_sizes.right() * multiplier))));
+  gfx::Insets insets = GetInsets(layout_options, page_index, num_of_pages);
+  rect.Inset(
+      gfx::Insets::TLBR(static_cast<int>(ceil(insets.top() * multiplier)),
+                        static_cast<int>(ceil(insets.left() * multiplier)),
+                        static_cast<int>(ceil(insets.bottom() * multiplier)),
+                        static_cast<int>(ceil(insets.right() * multiplier))));
 }
 
 std::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
@@ -3258,8 +3256,7 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
   FPDF_BITMAP bitmap = progressive_paints_[progressive_index].bitmap();
-  gfx::Insets inset_sizes =
-      GetInsetSizes(layout_.options(), page_index, pages_.size());
+  gfx::Insets insets = GetInsets(layout_.options(), page_index, pages_.size());
 
   gfx::Rect page_rect = pages_[page_index]->rect();
   const bool is_two_up_view =
@@ -3269,7 +3266,7 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
     // since the gap between the left and right page will be drawn by the left
     // page.
     gfx::Rect left_in_screen = GetScreenRect(draw_utils::GetLeftFillRect(
-        page_rect, inset_sizes, DocumentLayout::kBottomSeparator));
+        page_rect, insets, DocumentLayout::kBottomSeparator));
     left_in_screen.Intersect(dirty_in_screen);
 
     FPDFBitmap_FillRect(bitmap, left_in_screen.x() - dirty_in_screen.x(),
@@ -3279,9 +3276,9 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
   }
 
   if (page_rect.right() < layout_.size().width()) {
-    gfx::Rect right_in_screen = GetScreenRect(draw_utils::GetRightFillRect(
-        page_rect, inset_sizes, layout_.size().width(),
-        DocumentLayout::kBottomSeparator));
+    gfx::Rect right_in_screen = GetScreenRect(
+        draw_utils::GetRightFillRect(page_rect, insets, layout_.size().width(),
+                                     DocumentLayout::kBottomSeparator));
     right_in_screen.Intersect(dirty_in_screen);
 
     FPDFBitmap_FillRect(bitmap, right_in_screen.x() - dirty_in_screen.x(),
@@ -3304,7 +3301,7 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
     bottom_in_screen.Intersect(dirty_in_screen);
   } else {
     bottom_in_screen = GetScreenRect(draw_utils::GetBottomFillRect(
-        page_rect, inset_sizes, DocumentLayout::kBottomSeparator));
+        page_rect, insets, DocumentLayout::kBottomSeparator));
     bottom_in_screen.Intersect(dirty_in_screen);
   }
 
@@ -3468,8 +3465,7 @@ gfx::Rect PDFiumEngine::GetVisibleRect() const {
 
 gfx::Rect PDFiumEngine::GetPageScreenRect(int page_index) const {
   gfx::Rect page_rect = pages_[page_index]->rect();
-  gfx::Insets inset_sizes =
-      GetInsetSizes(layout_.options(), page_index, pages_.size());
+  gfx::Insets insets = GetInsets(layout_.options(), page_index, pages_.size());
 
   int max_page_height = page_rect.height();
   std::optional<size_t> adjacent_page_index =
@@ -3480,7 +3476,7 @@ gfx::Rect PDFiumEngine::GetPageScreenRect(int page_index) const {
   }
 
   return GetScreenRect(draw_utils::GetSurroundingRect(
-      page_rect.y(), max_page_height, inset_sizes, layout_.size().width(),
+      page_rect.y(), max_page_height, insets, layout_.size().width(),
       DocumentLayout::kBottomSeparator));
 }
 

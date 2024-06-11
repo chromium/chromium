@@ -364,9 +364,9 @@ class PDFiumEngine : public PDFEngine,
   // Helper function for getting the inset sizes for the current layout. If
   // two-up view is enabled, the configuration of inset sizes depends on
   // the position of the page, specified by `page_index` and `num_of_pages`.
-  gfx::Insets GetInsetSizes(const DocumentLayout::Options& layout_options,
-                            size_t page_index,
-                            size_t num_of_pages) const;
+  gfx::Insets GetInsets(const DocumentLayout::Options& layout_options,
+                        size_t page_index,
+                        size_t num_of_pages) const;
 
   // If two-up view is disabled, enlarges `page_size` with inset sizes for
   // single-view. If two-up view is enabled, calls GetInsetSizes() with
