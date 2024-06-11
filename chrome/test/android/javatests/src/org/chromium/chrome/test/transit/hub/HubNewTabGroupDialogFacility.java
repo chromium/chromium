@@ -15,8 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
-import static org.chromium.base.test.transit.ViewElement.viewElement;
 
 import android.content.Context;
 import android.view.View;
@@ -40,17 +40,19 @@ import java.util.List;
 /** Dialog that appears when a new tab group is created to name the group and pick a color. */
 public class HubNewTabGroupDialogFacility extends Facility<HubTabSwitcherBaseStation> {
 
-    public static final ViewElement DIALOG = viewElement(withId(R.id.visual_data_dialog_layout));
+    public static final ViewElement DIALOG =
+            scopedViewElement(withId(R.id.visual_data_dialog_layout));
     public static final ViewElement DIALOG_TITLE =
-            viewElement(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group")));
+            scopedViewElement(
+                    allOf(withId(R.id.visual_data_dialog_title), withText("New tab group")));
     public static final Matcher<View> TITLE_INPUT_MATCHER =
             allOf(withId(R.id.title_input_text), isAssignableFrom(EditText.class));
     // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
     public static final ViewElement COLOR_PICKER_CONTAINER =
-            viewElement(
+            scopedViewElement(
                     withId(R.id.color_picker_container),
                     ViewElement.newOptions().displayingAtLeast(50).build());
-    public static final ViewElement DONE_BUTTON = viewElement(withId(R.id.positive_button));
+    public static final ViewElement DONE_BUTTON = scopedViewElement(withId(R.id.positive_button));
 
     private final List<Integer> mTabIdsToGroup;
     private final String mTitle;
@@ -86,7 +88,7 @@ public class HubNewTabGroupDialogFacility extends Facility<HubTabSwitcherBaseSta
 
         String inputElementId = "Tab group title input showing " + mTitle;
         mTitleInputElement =
-                viewElement(
+                scopedViewElement(
                         allOf(TITLE_INPUT_MATCHER, withText(mTitle)),
                         ViewElement.newOptions().elementId(inputElementId).build());
         elements.declareView(mTitleInputElement);

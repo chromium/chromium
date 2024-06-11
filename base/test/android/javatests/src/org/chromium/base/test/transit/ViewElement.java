@@ -48,38 +48,25 @@ public class ViewElement {
     private final String mId;
     private final Options mOptions;
 
-    /** Alias for {@link #sharedViewElement(Matcher)} as the default way to declare ViewElements. */
-    public static ViewElement viewElement(Matcher<View> viewMatcher) {
-        return sharedViewElement(viewMatcher);
-    }
-
     /**
-     * Alias for {@link #sharedViewElement(Matcher, Options)} as the default way to declare
-     * ViewElements.
-     */
-    public static ViewElement viewElement(Matcher<View> viewMatcher, Options options) {
-        return sharedViewElement(viewMatcher, options);
-    }
-
-    /**
-     * Version of {@link #sharedViewElement(Matcher, Options)} using default Options.
+     * Version of {@link #scopedViewElement(Matcher, Options)} using default Options.
      *
      * <p>This is a good default method to the declare ViewElements; when in doubt, use this.
      */
-    public static ViewElement sharedViewElement(Matcher<View> viewMatcher) {
+    public static ViewElement scopedViewElement(Matcher<View> viewMatcher) {
         return new ViewElement(viewMatcher, Scope.SCOPED, Options.DEFAULT);
     }
 
     /**
-     * Create a shared ViewElement that matches |viewMatcher|.
+     * Create a scoped ViewElement that matches |viewMatcher|.
      *
      * <p>ViewElements are matched to View instances as ENTER conditions.
      *
-     * <p>Shared ViewElements add an EXIT condition that no View is matched unless transitioning to
+     * <p>Scoped ViewElements add an EXIT condition that no View is matched unless transitioning to
      * a ConditionalState that declares a ViewElement with the same id (which usually means an equal
      * Matcher<View>).
      */
-    public static ViewElement sharedViewElement(Matcher<View> viewMatcher, Options options) {
+    public static ViewElement scopedViewElement(Matcher<View> viewMatcher, Options options) {
         return new ViewElement(viewMatcher, Scope.SCOPED, options);
     }
 

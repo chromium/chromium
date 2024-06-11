@@ -10,7 +10,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import android.view.View;
 
@@ -287,11 +287,11 @@ public abstract class ScrollableFacility<HostStationT extends Station>
                     break;
                 case Presence.PRESENT_AND_ENABLED:
                 case Presence.MAYBE_PRESENT:
-                    mViewElement = sharedViewElement(mOnScreenViewMatcher);
+                    mViewElement = scopedViewElement(mOnScreenViewMatcher);
                     break;
                 case Presence.PRESENT_AND_DISABLED:
                     mViewElement =
-                            sharedViewElement(
+                            scopedViewElement(
                                     mOnScreenViewMatcher,
                                     ViewElement.newOptions().expectDisabled().build());
                     break;

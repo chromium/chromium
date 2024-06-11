@@ -6,6 +6,8 @@ package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+
 import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Elements;
@@ -19,10 +21,13 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
  * <p>TODO(crbug.com/328277614): This is a stub; add more elements and methods.
  */
 public class SettingsStation extends Station {
+
+    public static final ViewElement SEARCH_ENGINE = scopedViewElement(withText("Search engine"));
+
     @Override
     public void declareElements(Elements.Builder elements) {
         elements.declareActivity(SettingsActivity.class);
-        elements.declareView(ViewElement.sharedViewElement(withText("Search engine")));
+        elements.declareView(SEARCH_ENGINE);
     }
 
     /** Press back to leave the SettingsActivity back to the previous state. */

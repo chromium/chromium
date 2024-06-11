@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
@@ -19,9 +19,9 @@ import org.chromium.ui.base.DeviceFormFactor;
  * WebContents.
  */
 public class NewTabPageStation extends PageStation {
-    public ViewElement SEARCH_LOGO = sharedViewElement(withId(R.id.search_provider_logo));
-    public ViewElement SEARCH_BOX = sharedViewElement(withId(R.id.search_box));
-    public ViewElement MOST_VISITED_TILES = sharedViewElement(withId(R.id.mv_tiles_container));
+    public ViewElement SEARCH_LOGO = scopedViewElement(withId(R.id.search_provider_logo));
+    public ViewElement SEARCH_BOX = scopedViewElement(withId(R.id.search_box));
+    public ViewElement MOST_VISITED_TILES = scopedViewElement(withId(R.id.mv_tiles_container));
 
     protected <T extends NewTabPageStation> NewTabPageStation(Builder<T> builder) {
         super(builder.withIncognito(false));

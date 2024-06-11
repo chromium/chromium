@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -57,9 +59,11 @@ public class HubTabSwitcherGroupCardFacility extends Facility<HubTabSwitcherBase
 
     @Override
     public void declareElements(Elements.Builder elements) {
+        String titleElementId = "Tab Group card title: " + mTitle;
         elements.declareView(
-                ViewElement.sharedViewElement(
-                        allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))));
+                scopedViewElement(
+                        allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD)),
+                        ViewElement.newOptions().elementId(titleElementId).build()));
 
         elements.declareEnterCondition(
                 new TabGroupExistsCondition(

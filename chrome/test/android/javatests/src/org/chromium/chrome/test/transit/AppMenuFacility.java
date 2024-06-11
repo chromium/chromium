@@ -11,7 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import android.view.View;
 
@@ -29,6 +29,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -109,7 +110,8 @@ public abstract class AppMenuFacility<HostStationT extends Station>
         return items.declarePossibleItem(itemViewMatcher(id), itemDataMatcher(id), selectHandler);
     }
 
-    public static final Matcher<View> MENU_LIST = withId(R.id.app_menu_list);
+    public static final Matcher<View> MENU_LIST_MATCHER = withId(R.id.app_menu_list);
+    public static final ViewElement MENU_LIST = scopedViewElement(MENU_LIST_MATCHER);
 
     public static final @IdRes int NEW_TAB_ID = R.id.new_tab_menu_id;
     public static final @IdRes int NEW_INCOGNITO_TAB_ID = R.id.new_incognito_tab_menu_id;
@@ -137,7 +139,7 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(sharedViewElement(MENU_LIST));
+        elements.declareView(MENU_LIST);
 
         super.declareElements(elements);
     }
@@ -168,11 +170,11 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     }
 
     protected static Matcher<View> itemViewMatcher(@IdRes int id) {
-        return allOf(withId(id), isDescendantOfA(MENU_LIST));
+        return allOf(withId(id), isDescendantOfA(MENU_LIST_MATCHER));
     }
 
     protected static Matcher<View> itemViewMatcher(String text) {
-        return allOf(withText(text), isDescendantOfA(MENU_LIST));
+        return allOf(withText(text), isDescendantOfA(MENU_LIST_MATCHER));
     }
 
     protected static Matcher<ListItem> itemDataMatcher(@IdRes int id) {
@@ -209,6 +211,6 @@ public abstract class AppMenuFacility<HostStationT extends Station>
                         },
                         Press.FINGER);
         mHostStation.exitFacilitySync(
-                this, () -> onView(MENU_LIST).perform(clickBetweenViewAndLeftEdge));
+                this, () -> onView(MENU_LIST_MATCHER).perform(clickBetweenViewAndLeftEdge));
     }
 }

@@ -104,9 +104,9 @@ Example of a concrete `Station`:
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
 public class TabSwitcherStation extends Station {
     public static final ViewElement NEW_TAB_BUTTON =
-            viewElement(withId(R.id.new_tab_button));
+            scopedViewElement(withId(R.id.new_tab_button));
     public static final ViewElement INCOGNITO_TOGGLE_TABS =
-            viewElement(withId(R.id.incognito_toggle_tabs));
+            scopedViewElement(withId(R.id.incognito_toggle_tabs));
 
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
 

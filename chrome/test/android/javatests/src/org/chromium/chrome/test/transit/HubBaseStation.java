@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
@@ -42,25 +42,25 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends Station {
-    public static final ViewElement HUB_TOOLBAR = sharedViewElement(withId(R.id.hub_toolbar));
-    public static final ViewElement HUB_PANE_HOST = sharedViewElement(withId(R.id.hub_pane_host));
+    public static final ViewElement HUB_TOOLBAR = scopedViewElement(withId(R.id.hub_toolbar));
+    public static final ViewElement HUB_PANE_HOST = scopedViewElement(withId(R.id.hub_pane_host));
     public static final ViewElement HUB_MENU_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             isDescendantOfA(withId(R.id.hub_toolbar)),
                             withId(org.chromium.chrome.R.id.menu_button)));
     public static final ViewElement HUB_PANE_SWITCHER =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
     public static final ViewElement REGULAR_TOGGLE_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withContentDescription(
                                     R.string.accessibility_tab_switcher_standard_stack)));
 
     public static final ViewElement INCOGNITO_TOGGLE_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withContentDescription(
                                     R.string.accessibility_tab_switcher_incognito_stack)));

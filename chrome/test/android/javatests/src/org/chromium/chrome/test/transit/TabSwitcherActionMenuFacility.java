@@ -11,7 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewElement.viewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
@@ -23,20 +23,20 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** The action menu opened when long pressing the tab switcher button in a {@link PageStation}. */
 public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
-    public static final ViewElement APP_MENU_LIST = viewElement(withId(R.id.app_menu_list));
+    public static final ViewElement APP_MENU_LIST = scopedViewElement(withId(R.id.app_menu_list));
     // withId() cannot differentiate items because android:id is id/menu_item_text for all items.
     public static final ViewElement CLOSE_TAB_MENU_ITEM =
-            viewElement(
+            scopedViewElement(
                     allOf(
                             withText(R.string.close_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
     public static final ViewElement NEW_TAB_MENU_ITEM =
-            viewElement(
+            scopedViewElement(
                     allOf(
                             withText(R.string.menu_new_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
     public static final ViewElement NEW_INCOGNITO_TAB_MENU_ITEM =
-            viewElement(
+            scopedViewElement(
                     allOf(
                             withText(R.string.menu_new_incognito_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));

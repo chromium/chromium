@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import android.view.View;
 
@@ -52,27 +52,27 @@ import org.chromium.chrome.test.util.ToolbarTestUtils;
  */
 public abstract class TabSwitcherStation extends Station {
     public static final ViewElement TOOLBAR =
-            sharedViewElement(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR));
+            scopedViewElement(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR));
     public static final ViewElement TOOLBAR_NEW_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     either(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR_NEW_TAB))
                             .or(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR_NEW_TAB_VARIATION)));
 
     public static final ViewElement INCOGNITO_TOGGLE_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withContentDescription(
                                     R.string.accessibility_tab_switcher_incognito_stack)));
     public static final ViewElement REGULAR_TOGGLE_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withContentDescription(
                                     R.string.accessibility_tab_switcher_standard_stack)));
 
     public static final ViewElement INCOGNITO_TOGGLE_TABS =
-            sharedViewElement(withId(R.id.incognito_toggle_tabs));
+            scopedViewElement(withId(R.id.incognito_toggle_tabs));
     public static final ViewElement RECYCLER_VIEW =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withId(R.id.tab_list_recycler_view),
                             withParent(withId(R.id.compositor_view_holder))));

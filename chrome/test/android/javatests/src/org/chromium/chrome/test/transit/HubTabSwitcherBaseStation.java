@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import android.view.View;
 
@@ -33,19 +33,19 @@ import org.chromium.chrome.test.R;
 /** The base station for Hub tab switcher stations. */
 public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
     public static final ViewElement TAB_LIST_RECYCLER_VIEW =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             isDescendantOfA(HubBaseStation.HUB_PANE_HOST.getViewMatcher()),
                             withId(R.id.tab_list_recycler_view)));
 
     public static final ViewElement TOOLBAR_NEW_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withId(R.id.toolbar_action_button),
                             isDescendantOfA(instanceOf(HubToolbarView.class))));
 
     public static final ViewElement FLOATING_NEW_TAB_BUTTON =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withId(R.id.host_action_button),
                             isDescendantOfA(HubBaseStation.HUB_PANE_HOST.getViewMatcher())));

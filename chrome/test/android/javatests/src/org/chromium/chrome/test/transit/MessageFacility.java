@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import android.os.Build;
@@ -108,12 +108,12 @@ public class MessageFacility extends Facility<PageStation> {
 
     /** Create a ViewElement expecting the message's |title|. */
     protected static ViewElement titleViewElement(String title) {
-        return sharedViewElement(CoreMatchers.allOf(MESSAGE_TITLE_MATCHER, withText(title)));
+        return scopedViewElement(CoreMatchers.allOf(MESSAGE_TITLE_MATCHER, withText(title)));
     }
 
     /** Create a ViewElement expecting the message's primary button with |text|. */
     protected static ViewElement primaryButtonViewElement(String text) {
-        return sharedViewElement(
+        return scopedViewElement(
                 CoreMatchers.allOf(MESSAGE_PRIMARY_BUTTON_MATCHER, withText(text)));
     }
 }
