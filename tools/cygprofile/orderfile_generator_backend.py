@@ -510,6 +510,8 @@ class OrderfileGenerator:
     else:
       self._clank_dir = _SRC_PATH / 'clank'
     self._orderfiles_dir = self._clank_dir / 'orderfiles'
+    if self._options.profile_webview_startup:
+      self._orderfiles_dir = self._orderfiles_dir / 'webview'
     self._orderfiles_dir.mkdir(exist_ok=True)
 
   def _GetPathToOrderfile(self):
@@ -646,13 +648,14 @@ class OrderfileGenerator:
 
     assert self._compiler is not None, (
         'A valid compiler is needed to generate profiles.')
-    files = self._profiler.CollectSystemHealthProfile(
-        self._compiler.chrome_apk_path)
     if self._options.profile_webview_startup:
       self._profiler.InstallAndSetWebViewProvider(
           self._compiler.webview_installer_path)
-      files += self._profiler.CollectWebViewStartupProfile(
+      files = self._profiler.CollectWebViewStartupProfile(
           self._compiler.webview_apk_path)
+    else:
+      files = self._profiler.CollectSystemHealthProfile(
+          self._compiler.chrome_apk_path)
     self._MaybeSaveProfile()
     try:
       self._ProcessPhasedOrderfile(files)
@@ -1016,9 +1019,10 @@ class OrderfileGenerator:
         # If there are pregenerated profiles, the instrumented build should
         # not be changed to avoid invalidating the pregenerated profile
         # offsets.
-        self._compiler.CompileChromeApk(instrumented=True)
         if self._options.profile_webview_startup:
           self._compiler.CompileWebViewApk(instrumented=True)
+        else:
+          self._compiler.CompileChromeApk(instrumented=True)
       self._GenerateAndProcessProfile()
       self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
     elif self._options.manual_symbol_offsets:
