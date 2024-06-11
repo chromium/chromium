@@ -114,6 +114,10 @@ class BluetoothLowEnergyEventRouter
     kStatusErrorNotReady,
     kStatusErrorAlreadyExists,
     kStatusErrorDoesNotExist,
+    kStatusErrorNoMemory,
+    kStatusErrorJniEnvironment,
+    kStatusErrorJniThreadAttach,
+    kStatusErrorWakelock,
   };
 
   // Error callback is used by asynchronous methods to report failures.

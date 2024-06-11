@@ -58,6 +58,10 @@ const char kErrorInProgress[] = "In progress";
 const char kErrorInsufficientAuthorization[] = "Insufficient authorization";
 const char kErrorInvalidAdvertisementLength[] = "Invalid advertisement length";
 const char kErrorInvalidLength[] = "Invalid attribute value length";
+const char kErrorInvalidServiceId[] = "The service ID doesn't exist.";
+const char kErrorJniThreadAttach[] = "JNI thread attach error";
+const char kErrorJniEnvironment[] = "JNI environment error";
+const char kErrorNoMemory[] = "No memory";
 const char kErrorNotConnected[] = "Not connected";
 const char kErrorNotFound[] = "Instance not found";
 const char kErrorNotNotifying[] = "Not notifying";
@@ -68,7 +72,7 @@ const char kErrorPlatformNotSupported[] =
 const char kErrorTimeout[] = "Operation timed out";
 const char kErrorUnsupportedDevice[] =
     "This device is not supported on the current platform";
-const char kErrorInvalidServiceId[] = "The service ID doesn't exist.";
+const char kErrorWakelock[] = "Wakelock error";
 const char kErrorInvalidCharacteristicId[] =
     "The characteristic ID doesn't exist.";
 const char kErrorNotifyPropertyNotSet[] =
@@ -112,6 +116,14 @@ std::string StatusToString(BluetoothLowEnergyEventRouter::Status status) {
       return kErrorInsufficientAuthorization;
     case BluetoothLowEnergyEventRouter::kStatusErrorInvalidLength:
       return kErrorInvalidLength;
+    case BluetoothLowEnergyEventRouter::kStatusErrorInvalidServiceId:
+      return kErrorInvalidServiceId;
+    case BluetoothLowEnergyEventRouter::kStatusErrorJniEnvironment:
+      return kErrorJniEnvironment;
+    case BluetoothLowEnergyEventRouter::kStatusErrorJniThreadAttach:
+      return kErrorJniThreadAttach;
+    case BluetoothLowEnergyEventRouter::kStatusErrorNoMemory:
+      return kErrorNoMemory;
     case BluetoothLowEnergyEventRouter::kStatusErrorNotConnected:
       return kErrorNotConnected;
     case BluetoothLowEnergyEventRouter::kStatusErrorNotFound:
@@ -124,8 +136,8 @@ std::string StatusToString(BluetoothLowEnergyEventRouter::Status status) {
       return kErrorTimeout;
     case BluetoothLowEnergyEventRouter::kStatusErrorUnsupportedDevice:
       return kErrorUnsupportedDevice;
-    case BluetoothLowEnergyEventRouter::kStatusErrorInvalidServiceId:
-      return kErrorInvalidServiceId;
+    case BluetoothLowEnergyEventRouter::kStatusErrorWakelock:
+      return kErrorWakelock;
     case BluetoothLowEnergyEventRouter::kStatusSuccess:
       NOTREACHED();
       break;

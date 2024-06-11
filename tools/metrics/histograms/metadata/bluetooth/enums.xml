@@ -62,6 +62,15 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Connection in progress"/>
   <int value="11" label="Device not found"/>
   <int value="12" label="Bluetooth disabled"/>
+  <int value="13" label="Device not ready"/>
+  <int value="14" label="Already connected"/>
+  <int value="15" label="Device already exists"/>
+  <int value="16" label="Invalid args"/>
+  <int value="17" label="Non-auth timeout"/>
+  <int value="18" label="No memory"/>
+  <int value="19" label="JNI environment error"/>
+  <int value="20" label="JNI thread attach error"/>
+  <int value="21" label="Wakelock error"/>
 </enum>
 
 <enum name="BluetoothConnectToServiceError">
@@ -87,6 +96,10 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Does Not Exist"/>
   <int value="13" label="Invalid Arguments"/>
   <int value="14" label="Non-authorization Timeout"/>
+  <int value="15" label="No memory"/>
+  <int value="16" label="JNI environment error"/>
+  <int value="17" label="JNI thread attach error"/>
+  <int value="18" label="Wakelock error"/>
 </enum>
 
 <enum name="BluetoothDeviceConnectToServiceFailureReason">
@@ -1401,6 +1414,10 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Does Not Exist"/>
   <int value="15" label="Invalid Arguments"/>
   <int value="16" label="Non-auth Timeout"/>
+  <int value="17" label="No memory"/>
+  <int value="18" label="JNI environment error"/>
+  <int value="19" label="JNI thread attach error"/>
+  <int value="20" label="Wakelock error"/>
 </enum>
 
 <enum name="WebBluetoothGATTOperationOutcome">

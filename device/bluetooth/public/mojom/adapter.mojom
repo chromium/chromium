@@ -30,6 +30,10 @@ enum ConnectResult {
   DOES_NOT_EXIST,
   INVALID_ARGS,
   NON_AUTH_TIMEOUT,
+  NO_MEMORY,
+  JNI_ENVIRONMENT,
+  JNI_THREAD_ATTACH,
+  WAKELOCK,
 };
 
 union LocalCharacteristicReadResult {

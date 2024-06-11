@@ -55,6 +55,10 @@ chrome.bluetoothPrivate.ConnectResultType = {
   DOES_NOT_EXIST: 'doesNotExist',
   INVALID_ARGS: 'invalidArgs',
   NON_AUTH_TIMEOUT: 'nonAuthTimeout',
+  NO_MEMORY: 'noMemory',
+  JNI_ENVIRONMENT: 'jniEnvironment',
+  JNI_THREAD_ATTACH: 'jniThreadAttach',
+  WAKELOCK: 'wakelock',
 };
 
 /**

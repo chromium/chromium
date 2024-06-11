@@ -58,7 +58,16 @@ enum class ConnectionFailureReason {
   kInprogress = 10,
   kNotFound = 11,
   kBluetoothDisabled = 12,
-  kMaxValue = kBluetoothDisabled
+  kDeviceNotReady = 13,
+  kAlreadyConnected = 14,
+  kDeviceAlreadyExists = 15,
+  kInvalidArgs = 16,
+  kNonAuthTimeout = 17,
+  kNoMemory = 18,
+  kJniEnvironment = 19,
+  kJniThreadAttach = 20,
+  kWakelock = 21,
+  kMaxValue = kWakelock
 };
 
 // This enum is tied directly to a UMA enum defined in
@@ -115,6 +124,10 @@ enum class BluetoothTransportType {
   kInvalid = 4,
   kMaxValue = kInvalid
 };
+
+// Converts ConnectErrorCode to ConnectionFailureReason.
+DEVICE_BLUETOOTH_EXPORT ConnectionFailureReason GetConnectionFailureReason(
+    device::BluetoothDevice::ConnectErrorCode error_code);
 
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList

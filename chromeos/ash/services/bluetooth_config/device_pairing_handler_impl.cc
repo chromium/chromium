@@ -304,42 +304,7 @@ void DevicePairingHandlerImpl::HandlePairingFailed(
   BLUETOOTH_LOG(ERROR) << current_pairing_device_id()
                        << ": Pairing failed with error code: " << error_code;
 
-  using ErrorCode = device::BluetoothDevice::ConnectErrorCode;
-  switch (error_code) {
-    case ErrorCode::ERROR_AUTH_CANCELED:
-      FinishCurrentPairingRequest(
-          device::ConnectionFailureReason::kAuthCanceled);
-      return;
-    case ErrorCode::ERROR_AUTH_FAILED:
-      FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
-      return;
-    case ErrorCode::ERROR_AUTH_REJECTED:
-      FinishCurrentPairingRequest(
-          device::ConnectionFailureReason::kAuthRejected);
-      return;
-    case ErrorCode::ERROR_AUTH_TIMEOUT:
-      FinishCurrentPairingRequest(
-          device::ConnectionFailureReason::kAuthTimeout);
-      return;
-
-    case ErrorCode::ERROR_FAILED:
-      FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
-      return;
-    case ErrorCode::ERROR_INPROGRESS:
-      FinishCurrentPairingRequest(device::ConnectionFailureReason::kInprogress);
-      return;
-    case ErrorCode::ERROR_UNKNOWN:
-      FinishCurrentPairingRequest(
-          device::ConnectionFailureReason::kUnknownError);
-      return;
-    case ErrorCode::ERROR_UNSUPPORTED_DEVICE:
-      FinishCurrentPairingRequest(
-          device::ConnectionFailureReason::kUnsupportedDevice);
-      return;
-    default:
-      BLUETOOTH_LOG(ERROR) << "Error code is invalid.";
-      break;
-  }
+  FinishCurrentPairingRequest(GetConnectionFailureReason(error_code));
 }
 
 device::BluetoothDevice* DevicePairingHandlerImpl::FindDevice(
