@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.23](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.22...chromium-bidi-v0.5.23) (2024-06-11)
+
+
+### Bug Fixes
+
+* remove requests after they have been completed ([#2302](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2302)) ([e4b4139](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e4b4139e534b64c56824208e8773b0d12b50acb9)), closes [#2301](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2301)
+
 ## [0.5.22](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.21...chromium-bidi-v0.5.22) (2024-06-10)
 
 
