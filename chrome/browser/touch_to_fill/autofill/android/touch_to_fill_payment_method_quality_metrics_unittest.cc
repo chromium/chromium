@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -85,11 +86,13 @@ class TouchToFillForPaymentMethodsTest
     ASSERT_EQ(form.fields.size(), fields_have_autofilled_values.size());
     ASSERT_EQ(form.fields.size(), field_types.size());
     for (size_t i = 0; i < fields_have_autofilled_values.size(); i++) {
-      form.fields[i].set_is_autofilled(fields_have_autofilled_values[i]);
+      test_api(form).fields()[i].set_is_autofilled(
+          fields_have_autofilled_values[i]);
       CreditCard test_card = test::GetCreditCard();
-      form.fields[i].set_value(field_types[i] != CREDIT_CARD_VERIFICATION_CODE
-                                   ? test_card.GetRawInfo(field_types[i])
-                                   : u"123");
+      test_api(form).fields()[i].set_value(
+          field_types[i] != CREDIT_CARD_VERIFICATION_CODE
+              ? test_card.GetRawInfo(field_types[i])
+              : u"123");
     }
   }
 

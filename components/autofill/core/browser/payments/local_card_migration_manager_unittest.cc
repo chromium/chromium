@@ -50,6 +50,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -130,11 +131,17 @@ class LocalCardMigrationManagerTest : public testing::Test {
                           std::string_view expiration_year,
                           std::string_view cvc) {
     DCHECK(credit_card_form.fields.size() >= 5);
-    credit_card_form.fields[0].set_value(ASCIIToUTF16(name_on_card));
-    credit_card_form.fields[1].set_value(ASCIIToUTF16(card_number));
-    credit_card_form.fields[2].set_value(ASCIIToUTF16(expiration_month));
-    credit_card_form.fields[3].set_value(ASCIIToUTF16(expiration_year));
-    credit_card_form.fields[4].set_value(ASCIIToUTF16(cvc));
+    test_api(credit_card_form)
+        .fields()[0]
+        .set_value(ASCIIToUTF16(name_on_card));
+    test_api(credit_card_form).fields()[1].set_value(ASCIIToUTF16(card_number));
+    test_api(credit_card_form)
+        .fields()[2]
+        .set_value(ASCIIToUTF16(expiration_month));
+    test_api(credit_card_form)
+        .fields()[3]
+        .set_value(ASCIIToUTF16(expiration_year));
+    test_api(credit_card_form).fields()[4].set_value(ASCIIToUTF16(cvc));
   }
 
   void AddLocalCreditCard(TestPersonalDataManager& personal_data,

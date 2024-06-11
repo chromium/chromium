@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -390,7 +391,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   // Creates a form and removes the last element, whose now unlisted ID is used.
   autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
   const autofill::FormFieldData selected_form_field = form_data.fields.back();
-  form_data.fields.pop_back();
+  test_api(form_data).fields().pop_back();
 
   // Emulates the expected Autofill driver response.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))

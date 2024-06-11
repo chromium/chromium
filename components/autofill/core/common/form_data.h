@@ -362,6 +362,8 @@ struct FormData {
 #endif
 
  private:
+  friend class FormDataTestApi;
+
   std::u16string id_attribute_;
   std::u16string name_attribute_;
   std::u16string name_;

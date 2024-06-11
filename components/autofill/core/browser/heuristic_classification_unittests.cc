@@ -144,6 +144,7 @@
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -396,7 +397,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     if (!field_json.is_dict()) {
       return AssertionFailure() << "A field is no dict in " << site_url;
     }
-    form_data.fields.push_back(
+    test_api(form_data).fields().push_back(
         ParseFieldFromJsonDict(field_json.GetDict(), form_data));
   }
 

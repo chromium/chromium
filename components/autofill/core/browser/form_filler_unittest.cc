@@ -42,6 +42,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -204,7 +205,7 @@ class FormFillerTest : public testing::Test {
           trigger_details);
     }
     // Copy the filled data into the form.
-    for (FormFieldData& field : form.fields) {
+    for (FormFieldData& field : test_api(form).fields()) {
       if (auto it = base::ranges::find(filled_fields, field.global_id(),
                                        &FormFieldData::global_id);
           it != filled_fields.end()) {
@@ -346,7 +347,7 @@ TEST_F(FormFillerTest, FillTriggeredSection) {
 TEST_F(FormFillerTest, DoNotFillIfFormFieldChanged) {
   FormData form = test::CreateTestAddressFormData();
   FormsSeen({form});
-  form.fields.back() = FormFieldData();
+  test_api(form).fields().back() = FormFieldData();
 
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
@@ -362,7 +363,7 @@ TEST_F(FormFillerTest, DoNotFillIfFormFieldChanged) {
 TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
   FormData form = test::CreateTestAddressFormData();
   FormsSeen({form});
-  form.fields.pop_back();
+  test_api(form).fields().pop_back();
 
   EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(0);
   browser_autofill_manager_->FillOrPreviewProfileForm(
@@ -512,15 +513,15 @@ TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
   FormData form = test::CreateTestAddressFormData();
 
   AutofillField filled_autofill_field(form.fields.front());
-  FormFieldData* field_ptr = &form.fields.front();
-  AutofillField* autofill_field_ptr = &filled_autofill_field;
-  form.fields.front().set_is_autofilled(false);
+  const FormFieldData* field_ptr = &form.fields.front();
+  const AutofillField* autofill_field_ptr = &filled_autofill_field;
+  test_api(form).fields().front().set_is_autofilled(false);
   test_api(test_api(*browser_autofill_manager_).form_filler())
       .AddFormFillEntry(base::make_span(&field_ptr, 1u),
                         base::make_span(&autofill_field_ptr, 1u),
                         FillingProduct::kAddress, /*is_refill=*/false);
 
-  form.fields.front().set_is_autofilled(true);
+  test_api(form).fields().front().set_is_autofilled(true);
   FormsSeen({form});
 
   const AutofillField* autofill_field =
@@ -705,7 +706,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
                              20, {.autocomplete_attribute = "cc-number"})});
   // Set the size limit of the first nineteen fields to 1.
   for (size_t i = 0; i < 19; i++) {
-    form.fields[i].set_max_length(1);
+    test_api(form).fields()[i].set_max_length(1);
   }
   FormsSeen({form});
 
@@ -764,13 +765,13 @@ TEST_F(FormFillerTest, OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
   // Add 20 selection boxes that should be fillable since the correct
   // entry is present.
   for (int i = 0; i < 20; i++) {
-    form.fields.push_back(
+    test_api(form).fields().push_back(
         test::CreateTestSelectField("State", "state", "", "address-level1",
                                     {"AA", "BB", "CA"}, {"AA", "BB", "CA"}));
   }
   // Add 10 other a selection box for the country.
   for (int i = 0; i < 10; ++i) {
-    form.fields.push_back(
+    test_api(form).fields().push_back(
         test::CreateTestSelectField("Country", "country", "", "country",
                                     {"DE", "FR", "US"}, {"DE", "FR", "US"}));
   }
@@ -854,7 +855,7 @@ TEST_F(FormFillerTest,
   // Create a form where the middle name field has autocomplete=off.
   FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                      /*use_month_type=*/false);
-  form.fields.front().set_autocomplete_attribute("unrecognized");
+  test_api(form).fields().front().set_autocomplete_attribute("unrecognized");
   FormsSeen({form});
 
   CreditCard credit_card = test::GetCreditCard();
@@ -869,7 +870,7 @@ TEST_F(FormFillerTest,
 TEST_F(FormFillerTest, FillCreditCardForm_AutocompleteOffBehavior) {
   FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                      /*use_month_type=*/false);
-  form.fields.front().set_autocomplete_attribute("off");
+  test_api(form).fields().front().set_autocomplete_attribute("off");
   FormsSeen({form});
 
   CreditCard credit_card = test::GetCreditCard();
@@ -945,15 +946,15 @@ TEST_F(FormFillerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
                   {.role = ADDRESS_HOME_COUNTRY,
                    .autocomplete_attribute = "country"}}});
-  form.fields.back().set_is_focusable(false);
-  form.fields.push_back(test::CreateTestSelectOrSelectListField(
+  test_api(form).fields().back().set_is_focusable(false);
+  test_api(form).fields().push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "country", {"CA", "US"},
       {"Canada", "United States"}, FormControlType::kSelectList));
-  form.fields.back().set_is_focusable(false);
-  form.fields.push_back(test::CreateTestSelectOrSelectListField(
+  test_api(form).fields().back().set_is_focusable(false);
+  test_api(form).fields().push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "country", {"CA", "US"},
       {"Canada", "United States"}, FormControlType::kSelectOne));
-  form.fields.back().set_is_focusable(false);
+  test_api(form).fields().back().set_is_focusable(false);
   FormsSeen({form});
 
   AutofillProfile profile = test::GetFullProfile();
@@ -1062,7 +1063,7 @@ TEST_F(FormFillerTest, FillAutofilledAddressForm) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
-  for (FormFieldData& field : form.fields) {
+  for (FormFieldData& field : test_api(form).fields()) {
     field.set_is_autofilled(true);
   }
   FormsSeen({form});
@@ -1084,7 +1085,7 @@ TEST_F(FormFillerTest, FillAutofilledCreditCardForm) {
                                      .autocomplete_attribute = "cc-name"},
                                     {.role = CREDIT_CARD_NUMBER,
                                      .autocomplete_attribute = "cc-number"}}});
-  for (FormFieldData& field : form.fields) {
+  for (FormFieldData& field : test_api(form).fields()) {
     field.set_is_autofilled(true);
   }
   FormsSeen({form});
@@ -1107,13 +1108,13 @@ TEST_F(FormFillerTest, FillPartlyManuallyFilledAddressForm) {
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
-  form.fields[0].set_value(u"Michael");
-  form.fields[0].set_properties_mask(form.fields[0].properties_mask() |
-                                     kUserTyped);
+  test_api(form).fields()[0].set_value(u"Michael");
+  test_api(form).fields()[0].set_properties_mask(
+      form.fields[0].properties_mask() | kUserTyped);
   // Jackson will be preserved.
-  form.fields[2].set_value(u"Jackson");
-  form.fields[2].set_properties_mask(form.fields[2].properties_mask() |
-                                     kUserTyped);
+  test_api(form).fields()[2].set_value(u"Jackson");
+  test_api(form).fields()[2].set_properties_mask(
+      form.fields[2].properties_mask() | kUserTyped);
   FormsSeen({form});
 
   AutofillProfile profile = test::GetFullProfile();
@@ -1138,13 +1139,13 @@ TEST_F(FormFillerTest, FillPartlyManuallyFilledCreditCardForm) {
                    .autocomplete_attribute = "cc-number"}}});
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
-  form.fields[0].set_value(u"Michael");
-  form.fields[0].set_properties_mask(form.fields[0].properties_mask() |
-                                     kUserTyped);
+  test_api(form).fields()[0].set_value(u"Michael");
+  test_api(form).fields()[0].set_properties_mask(
+      form.fields[0].properties_mask() | kUserTyped);
   // Jackson will be preserved.
-  form.fields[1].set_value(u"Jackson");
-  form.fields[1].set_properties_mask(form.fields[1].properties_mask() |
-                                     kUserTyped);
+  test_api(form).fields()[1].set_value(u"Jackson");
+  test_api(form).fields()[1].set_properties_mask(
+      form.fields[1].properties_mask() | kUserTyped);
   FormsSeen({form});
 
   // First fill the address data.
@@ -1189,13 +1190,13 @@ TEST_F(FormFillerTest, FillPhoneNumber) {
     FormFieldData field = test::CreateTestFormField(
         test_field.label, test_field.name, "", FormControlType::kInputText, "",
         test_field.max_length);
-    form_with_us_number_max_length.fields.push_back(field);
+    test_api(form_with_us_number_max_length).fields().push_back(field);
 
     field.set_max_length(default_max_length);
     field.set_autocomplete_attribute(test_field.autocomplete_attribute);
     field.set_parsed_autocomplete(
         ParseAutocompleteAttribute(test_field.autocomplete_attribute));
-    form_with_autocompletetype.fields.push_back(field);
+    test_api(form_with_autocompletetype).fields().push_back(field);
   }
 
   FormsSeen({form_with_us_number_max_length, form_with_autocompletetype});
@@ -1462,21 +1463,23 @@ TEST_F(FormFillerTest, FormWithHiddenOrPresentationalFields) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
 
-  form.fields.push_back(
+  test_api(form).fields().push_back(
       test::CreateTestSelectField("Country", "country", "", "country",
                                   {"CA", "US"}, {"Canada", "United States"}));
-  form.fields.back().set_is_focusable(false);
-  form.fields.push_back(
+  test_api(form).fields().back().set_is_focusable(false);
+  test_api(form).fields().push_back(
       test::CreateTestSelectField("State", "state", "", "address-level1",
                                   {"NY", "CA"}, {"New York", "California"}));
-  form.fields.back().set_role(FormFieldData::RoleAttribute::kPresentation);
+  test_api(form).fields().back().set_role(
+      FormFieldData::RoleAttribute::kPresentation);
 
-  form.fields.push_back(test::CreateTestFormField("City", "city", "",
-                                                  FormControlType::kInputText));
-  form.fields.back().set_is_focusable(false);
-  form.fields.push_back(test::CreateTestFormField(
+  test_api(form).fields().push_back(test::CreateTestFormField(
+      "City", "city", "", FormControlType::kInputText));
+  test_api(form).fields().back().set_is_focusable(false);
+  test_api(form).fields().push_back(test::CreateTestFormField(
       "Street Address", "address", "", FormControlType::kInputText, "address"));
-  form.fields.back().set_role(FormFieldData::RoleAttribute::kPresentation);
+  test_api(form).fields().back().set_role(
+      FormFieldData::RoleAttribute::kPresentation);
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -1541,7 +1544,7 @@ TEST_F(FormFillerTest, FormChangesRemoveField) {
                   {.role = PHONE_HOME_WHOLE_NUMBER,
                    .autocomplete_attribute = "tel"}}});
   FormsSeen({form});
-  form.fields.pop_back();
+  test_api(form).fields().pop_back();
   FormsSeen({form});
 
   AutofillProfile profile = test::GetFullProfile();
@@ -1559,7 +1562,7 @@ TEST_F(FormFillerTest, FormChangesAddField) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
   FormsSeen({form});
-  form.fields.push_back(test::CreateTestFormField(
+  test_api(form).fields().push_back(test::CreateTestFormField(
       "email", "email", "", FormControlType::kInputText, "email"));
   FormsSeen({form});
 
@@ -1604,8 +1607,8 @@ TEST_F(FormFillerTest, FormChangesVisibilityOfFields) {
   // Two other fields will show up. Select the second profile. The fields that
   // were already filled, would be left unchanged, and the rest would be filled
   // with the second profile.
-  filled_form.fields[2].set_is_focusable(true);
-  filled_form.fields[3].set_is_focusable(true);
+  test_api(filled_form).fields()[2].set_is_focusable(true);
+  test_api(filled_form).fields()[3].set_is_focusable(true);
 
   // Reparse the form to validate the visibility changes. Fast forward so that
   // no refill is triggered automatically.
@@ -1710,7 +1713,7 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
   FormData filled_form = FillAutofillFormData(form, form.fields[0], &profile);
 
   // Simulate editing the first field.
-  filled_form.fields[0].set_value(u"");
+  test_api(filled_form).fields()[0].set_value(u"");
   browser_autofill_manager_->OnTextFieldDidChange(
       filled_form, filled_form.fields[0].global_id(), base::TimeTicks::Now());
 
@@ -1797,7 +1800,9 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
 
   // Simulate that JavaScript modifies the expiration date field.
   FormData form_after_js_modification = first_fill_data;
-  form_after_js_modification.fields[2].set_value(test_case.exp_date_from_js);
+  test_api(form_after_js_modification)
+      .fields()[2]
+      .set_value(test_case.exp_date_from_js);
   browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
       form_after_js_modification,
       form_after_js_modification.fields[2].global_id(), u"04/2999",

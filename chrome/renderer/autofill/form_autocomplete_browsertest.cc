@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -217,14 +218,14 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.set_value(u"John");
   field_data.set_is_autofilled(true);
   field_data.set_renderer_id(form_util::GetFieldRendererId(fname_element));
-  data.fields.push_back(field_data);
+  test_api(data).fields().push_back(field_data);
 
   if (!lname_element.IsNull()) {
     field_data.set_name(u"lname");
     field_data.set_value(u"Smith");
     field_data.set_is_autofilled(true);
     field_data.set_renderer_id(form_util::GetFieldRendererId(lname_element));
-    data.fields.push_back(field_data);
+    test_api(data).fields().push_back(field_data);
   }
 
   return data;
@@ -335,20 +336,20 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     field.set_value(u"John");
     field.set_is_autofilled(true);
     field.set_renderer_id(form_util::GetFieldRendererId(fname_element));
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     field.set_name(u"lname");
     field.set_value(u"Smith");
     field.set_is_autofilled(true);
     field.set_renderer_id(form_util::GetFieldRendererId(lname_element));
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     // Additional non-autofillable field.
     field.set_name(u"mname");
     field.set_value(u"James");
     field.set_is_autofilled(false);
     field.set_renderer_id(form_util::GetFieldRendererId(mname_element));
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     // This call is necessary to setup the autofill agent appropriate for the
     // user selection; simulates the menu actually popping up.

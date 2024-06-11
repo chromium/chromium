@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -42,7 +43,7 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_NotFilled) {
   FormData form = test::CreateTestAddressFormData();
-  form.fields[0].set_parsed_autocomplete(
+  test_api(form).fields()[0].set_parsed_autocomplete(
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   ShowSuggestions(form);
@@ -62,7 +63,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_Filled) {
   FormData form = test::CreateTestAddressFormData();
-  form.fields[0].set_parsed_autocomplete(
+  test_api(form).fields()[0].set_parsed_autocomplete(
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   ShowSuggestions(form);
   // Fill the suggestion.
@@ -93,7 +94,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   // Dynamically change the autocomplete attribute before accepting the
   // suggestion. This causes `OnDidFillFormFillingSuggestion()` to be called,
   // even though `OnDidShowSuggestions()` was never called.
-  form.fields[0].set_parsed_autocomplete(
+  test_api(form).fields()[0].set_parsed_autocomplete(
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   autofill_manager().FillOrPreviewProfileForm(

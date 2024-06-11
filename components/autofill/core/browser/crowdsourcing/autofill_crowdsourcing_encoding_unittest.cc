@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/signatures.h"
@@ -282,7 +283,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
 
   // Add 2 address fields - this should be still a valid form.
   for (size_t i = 0; i < 2; ++i) {
-    form.fields.push_back(
+    test_api(form).fields().push_back(
         test::GetFormFieldData({.label = u"Address", .name = u"address"}));
     test::InitializePossibleTypes(possible_field_types,
                                   {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
@@ -320,7 +321,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   // Add 300 address fields - now the form is invalid, as it has too many
   // fields.
   for (size_t i = 0; i < 300; ++i) {
-    form.fields.push_back(
+    test_api(form).fields().push_back(
         test::GetFormFieldData({.label = u"Address", .name = u"address"}));
     test::InitializePossibleTypes(possible_field_types,
                                   {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
@@ -442,32 +443,41 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));
   form.set_renderer_id(test::MakeFormRendererId());
-
-  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
-                                            FormControlType::kInputText,
-                                            "given-name"));
-  form.fields.back().set_name_attribute(form.fields.back().name());
-  form.fields.back().set_id_attribute(u"first_name");
-  form.fields.back().set_css_classes(u"class1 class2");
-  form.fields.back().set_properties_mask(FieldPropertiesFlags::kHadFocus);
+  form.set_fields({
+      [] {
+        FormFieldData f =
+            CreateTestFormField("First Name", "firstname", "",
+                                FormControlType::kInputText, "given-name");
+        f.set_name_attribute(f.name());
+        f.set_id_attribute(u"first_name");
+        f.set_css_classes(u"class1 class2");
+        f.set_properties_mask(FieldPropertiesFlags::kHadFocus);
+        return f;
+      }(),
+      [] {
+        FormFieldData f =
+            CreateTestFormField("Last Name", "lastname", "",
+                                FormControlType::kInputText, "family-name");
+        f.set_name_attribute(f.name());
+        f.set_id_attribute(u"last_name");
+        f.set_css_classes(u"class1 class2");
+        f.set_properties_mask(FieldPropertiesFlags::kHadFocus |
+                              FieldPropertiesFlags::kUserTyped);
+        return f;
+      }(),
+      [] {
+        FormFieldData f = CreateTestFormField(
+            "Email", "email", "", FormControlType::kInputEmail, "email");
+        f.set_name_attribute(f.name());
+        f.set_id_attribute(u"e-mail");
+        f.set_css_classes(u"class1 class2");
+        f.set_properties_mask(FieldPropertiesFlags::kHadFocus |
+                              FieldPropertiesFlags::kUserTyped);
+        return f;
+      }(),
+  });
   test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
-
-  form.fields.push_back(CreateTestFormField(
-      "Last Name", "lastname", "", FormControlType::kInputText, "family-name"));
-  form.fields.back().set_name_attribute(form.fields.back().name());
-  form.fields.back().set_id_attribute(u"last_name");
-  form.fields.back().set_css_classes(u"class1 class2");
-  form.fields.back().set_properties_mask(FieldPropertiesFlags::kHadFocus |
-                                         FieldPropertiesFlags::kUserTyped);
   test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
-
-  form.fields.push_back(CreateTestFormField(
-      "Email", "email", "", FormControlType::kInputEmail, "email"));
-  form.fields.back().set_name_attribute(form.fields.back().name());
-  form.fields.back().set_id_attribute(u"e-mail");
-  form.fields.back().set_css_classes(u"class1 class2");
-  form.fields.back().set_properties_mask(FieldPropertiesFlags::kHadFocus |
-                                         FieldPropertiesFlags::kUserTyped);
   test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -1192,7 +1202,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.set_autocomplete_attribute(f.autocomplete);
     field.set_parsed_autocomplete(ParseAutocompleteAttribute(f.autocomplete));
     field.set_renderer_id(test::MakeFieldRendererId());
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
   }
   RandomizedEncoder encoder("seed for testing",
                             AutofillRandomizedValue_EncodingType_ALL_BITS,
@@ -1341,7 +1351,7 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
     field.set_label(u"email");
     field.set_name(u"email");
     field.set_renderer_id(test::MakeFieldRendererId());
-    form.fields.push_back(field);
+    form.set_fields({field});
 
     TestingPrefServiceSimple prefs;
     prefs.registry()->RegisterBooleanPref(
@@ -1370,7 +1380,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormFieldData field;
   field.set_name(u"text field");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  form.set_fields({field});
 
   FormStructure form_structure(form);
   form_structure.field(0)->set_single_username_vote_type(
@@ -1398,7 +1408,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormFieldData field_data;
   field_data.set_name(u"text field");
   field_data.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field_data);
+  form.set_fields({field_data});
 
   FormStructure form_structure(form);
   for (auto& field : form_structure) {
@@ -1567,31 +1577,31 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   field.set_name(u"name_on_card");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(form_signature);
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address");
   field.set_name(u"billing_address");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(67890UL));
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Expiration Date");
   field.set_name(u"expiration_month");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Expiration Year");
   field.set_name(u"expiration_year");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   // Add checkable field.
   FormFieldData checkable_field;
@@ -1601,7 +1611,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   checkable_field.set_name(u"Checkable1");
   checkable_field.set_renderer_id(test::MakeFieldRendererId());
   checkable_field.set_host_form_signature(form_signature);
-  form.fields.push_back(checkable_field);
+  test_api(form).fields().push_back(checkable_field);
 
   FormStructure form_structure(form);
 
@@ -1660,7 +1670,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
   // Add 5 address fields - this should be still a valid form.
   FormSignature form_signature3(2608858059775241169UL);
-  for (auto& f : form.fields) {
+  for (auto& f : test_api(form).fields()) {
     if (f.host_form_signature() == form_signature) {
       f.set_host_form_signature(form_signature3);
     }
@@ -1670,7 +1680,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     field.set_name(u"address");
     field.set_renderer_id(test::MakeFieldRendererId());
     field.set_host_form_signature(form_signature3);
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
   }
 
   FormStructure form_structure3(form);
@@ -1701,7 +1711,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   EXPECT_THAT(encoded_query3, SerializesSameAs(query));
 
   // |form_structures4| will have the same signature as |form_structure3|.
-  form.fields.back().set_name(u"address123456789");
+  test_api(form).fields().back().set_name(u"address123456789");
 
   FormStructure form_structure4(form);
   forms.push_back(&form_structure4);
@@ -1720,7 +1730,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     field.set_label(u"Address");
     field.set_name(u"address");
     field.set_renderer_id(test::MakeFieldRendererId());
-    malformed_form.fields.push_back(field);
+    test_api(malformed_form).fields().push_back(field);
   }
 
   FormStructure malformed_form_structure(malformed_form);
@@ -1909,7 +1919,7 @@ TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
   form.set_url(GURL("http://foo.com"));
   // Check that the form with 250 fields are processed correctly.
   for (size_t i = 0; i < 250; ++i) {
-    form.fields.push_back(test::GetFormFieldData({
+    test_api(form).fields().push_back(test::GetFormFieldData({
         .name = u"text" + base::NumberToString16(i),
     }));
   }
@@ -3295,7 +3305,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
     field.set_name(base::NumberToString16(i));
     field.set_label((base::NumberToString16(i)));
     field.set_renderer_id(test::MakeFieldRendererId());
-    form_data.fields.push_back(field);
+    test_api(form_data).fields().push_back(field);
   }
 
   FormStructure form(form_data);

@@ -28,6 +28,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -490,9 +491,11 @@ class FormAutofillTest : public ChromeRenderViewTest {
           field_cases[i].autocomplete_attribute);
       EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[i]);
       // Fill the form_data for the field.
-      form.fields[i].set_value(ASCIIToUTF16(field_cases[i].autofill_value));
+      test_api(form).fields()[i].set_value(
+          ASCIIToUTF16(field_cases[i].autofill_value));
       // Set the is_autofilled property for the field.
-      form.fields[i].set_is_autofilled(field_cases[i].should_be_autofilled);
+      test_api(form).fields()[i].set_is_autofilled(
+          field_cases[i].should_be_autofilled);
     }
 
     // Autofill the form using the given fill form function.
@@ -848,12 +851,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Fill the form.
-    form.fields[0].set_value(u"Brother");
-    form.fields[1].set_value(u"Jonathan");
-    form.fields[2].set_value(u"brotherj@example.com");
-    form.fields[0].set_is_autofilled(true);
-    form.fields[1].set_is_autofilled(true);
-    form.fields[2].set_is_autofilled(true);
+    test_api(form).fields()[0].set_value(u"Brother");
+    test_api(form).fields()[1].set_value(u"Jonathan");
+    test_api(form).fields()[2].set_value(u"brotherj@example.com");
+    test_api(form).fields()[0].set_is_autofilled(true);
+    test_api(form).fields()[1].set_is_autofilled(true);
+    test_api(form).fields()[2].set_is_autofilled(true);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kFill);
@@ -935,9 +938,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Fill the form.
-    form.fields[0].set_value(u"Brother");
-    form.fields[1].set_value(u"Jonathan");
-    form.fields[2].set_value(u"brotherj@example.com");
+    test_api(form).fields()[0].set_value(u"Brother");
+    test_api(form).fields()[1].set_value(u"Jonathan");
+    test_api(form).fields()[2].set_value(u"brotherj@example.com");
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kFill);
@@ -1011,9 +1014,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Fill the form.
-    form.fields[0].set_value(u"Wyatt");
-    form.fields[1].set_value(u"Earp");
-    form.fields[2].set_value(u"wyatt@example.com");
+    test_api(form).fields()[0].set_value(u"Wyatt");
+    test_api(form).fields()[1].set_value(u"Earp");
+    test_api(form).fields()[2].set_value(u"wyatt@example.com");
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kFill);
@@ -1095,12 +1098,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[unowned_offset + 2]);
 
     // Fill the form.
-    form.fields[unowned_offset + 0].set_value(u"Red");
-    form.fields[unowned_offset + 1].set_value(u"Yellow");
-    form.fields[unowned_offset + 2].set_value(u"Also Yellow");
-    form.fields[unowned_offset + 0].set_is_autofilled(true);
-    form.fields[unowned_offset + 1].set_is_autofilled(true);
-    form.fields[unowned_offset + 2].set_is_autofilled(true);
+    test_api(form).fields()[unowned_offset + 0].set_value(u"Red");
+    test_api(form).fields()[unowned_offset + 1].set_value(u"Yellow");
+    test_api(form).fields()[unowned_offset + 2].set_value(u"Also Yellow");
+    test_api(form).fields()[unowned_offset + 0].set_is_autofilled(true);
+    test_api(form).fields()[unowned_offset + 1].set_is_autofilled(true);
+    test_api(form).fields()[unowned_offset + 2].set_is_autofilled(true);
     ExecuteJavaScriptForTests("document.getElementById('apple').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kFill);
@@ -1216,12 +1219,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Preview the form and verify that the cursor position has been updated.
-    form.fields[0].set_value(u"Wyatt");
-    form.fields[1].set_value(u"Earp");
-    form.fields[2].set_value(u"wyatt@example.com");
-    form.fields[0].set_is_autofilled(true);
-    form.fields[1].set_is_autofilled(true);
-    form.fields[2].set_is_autofilled(true);
+    test_api(form).fields()[0].set_value(u"Wyatt");
+    test_api(form).fields()[1].set_value(u"Earp");
+    test_api(form).fields()[2].set_value(u"wyatt@example.com");
+    test_api(form).fields()[0].set_is_autofilled(true);
+    test_api(form).fields()[1].set_is_autofilled(true);
+    test_api(form).fields()[2].set_is_autofilled(true);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kPreview);
@@ -1358,18 +1361,18 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(6U, fields.size());
 
     // Preview the form and verify that the cursor position has been updated.
-    form.fields[0].set_value(u"Wyatt");
-    form.fields[1].set_value(u"Earpagus");
-    form.fields[2].set_value(u"888-123-4567");
-    form.fields[3].set_value(u"1111-2222-3333-4444");
-    form.fields[4].set_value(u"Montreal");
-    form.fields[5].set_value(u"AA");
-    form.fields[0].set_is_autofilled(true);
-    form.fields[1].set_is_autofilled(true);
-    form.fields[2].set_is_autofilled(true);
-    form.fields[3].set_is_autofilled(true);
-    form.fields[4].set_is_autofilled(true);
-    form.fields[5].set_is_autofilled(true);
+    test_api(form).fields()[0].set_value(u"Wyatt");
+    test_api(form).fields()[1].set_value(u"Earpagus");
+    test_api(form).fields()[2].set_value(u"888-123-4567");
+    test_api(form).fields()[3].set_value(u"1111-2222-3333-4444");
+    test_api(form).fields()[4].set_value(u"Montreal");
+    test_api(form).fields()[5].set_value(u"AA");
+    test_api(form).fields()[0].set_is_autofilled(true);
+    test_api(form).fields()[1].set_is_autofilled(true);
+    test_api(form).fields()[2].set_is_autofilled(true);
+    test_api(form).fields()[3].set_is_autofilled(true);
+    test_api(form).fields()[4].set_is_autofilled(true);
+    test_api(form).fields()[5].set_is_autofilled(true);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kPreview);
@@ -1523,12 +1526,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(3U, fields.size());
 
     // Preview the form and verify that the cursor position has been updated.
-    form.fields[0].set_value(u"Wyatt");
-    form.fields[1].set_value(u"Earpagus");
-    form.fields[2].set_value(u"susan@smith.com");
-    form.fields[0].set_is_autofilled(true);
-    form.fields[1].set_is_autofilled(true);
-    form.fields[2].set_is_autofilled(false);
+    test_api(form).fields()[0].set_value(u"Wyatt");
+    test_api(form).fields()[1].set_value(u"Earpagus");
+    test_api(form).fields()[2].set_value(u"susan@smith.com");
+    test_api(form).fields()[0].set_is_autofilled(true);
+    test_api(form).fields()[1].set_is_autofilled(true);
+    test_api(form).fields()[2].set_is_autofilled(false);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kPreview);
@@ -1634,12 +1637,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(3U, fields.size());
 
     // Preview the form and verify that the cursor position has been updated.
-    form.fields[0].set_value(u"1111-2222-3333-4444");
-    form.fields[1].set_value(u"03/2030");
-    form.fields[2].set_value(u"Susan Smith");
-    form.fields[0].set_is_autofilled(true);
-    form.fields[1].set_is_autofilled(true);
-    form.fields[2].set_is_autofilled(true);
+    test_api(form).fields()[0].set_value(u"1111-2222-3333-4444");
+    test_api(form).fields()[1].set_value(u"03/2030");
+    test_api(form).fields()[2].set_value(u"Susan Smith");
+    test_api(form).fields()[0].set_is_autofilled(true);
+    test_api(form).fields()[1].set_is_autofilled(true);
+    test_api(form).fields()[2].set_is_autofilled(true);
     ExecuteJavaScriptForTests("document.getElementById('cc').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kPreview);
@@ -1756,12 +1759,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(3U, fields.size());
 
     // Preview the form and verify that the cursor position has been updated.
-    form.fields[0].set_value(u"1111-2222-3333-4444");
-    form.fields[1].set_value(u"03/2030");
-    form.fields[2].set_value(u"Susan Smith");
-    form.fields[0].set_is_autofilled(true);
-    form.fields[1].set_is_autofilled(true);
-    form.fields[2].set_is_autofilled(true);
+    test_api(form).fields()[0].set_value(u"1111-2222-3333-4444");
+    test_api(form).fields()[1].set_value(u"03/2030");
+    test_api(form).fields()[2].set_value(u"Susan Smith");
+    test_api(form).fields()[0].set_is_autofilled(true);
+    test_api(form).fields()[1].set_is_autofilled(true);
+    test_api(form).fields()[2].set_is_autofilled(true);
     ExecuteJavaScriptForTests("document.getElementById('cc').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields,
                       mojom::ActionPersistence::kPreview);
@@ -3265,7 +3268,7 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
       *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
                        *base::MakeRefCounted<FieldDataManager>());
   ASSERT_EQ(form.fields.size(), 1u);
-  FormFieldData& form_field_data = form.fields[0];
+  FormFieldData& form_field_data = test_api(form).fields()[0];
 
   EXPECT_EQ(form_field_data.label(), u"foo bar");
   EXPECT_EQ(form_field_data.label_source(), FormFieldData::LabelSource::kForId);
@@ -4762,8 +4765,8 @@ TEST_F(FormAutofillTest, UndoAutofill) {
     std::u16string type = i == 0   ? u"text"
                           : i == 2 ? u"select_option"
                                    : u"selectlist_option";
-    form.fields[i].set_value(u"undo_" + type + u"_1");
-    form.fields[i].set_is_autofilled(false);
+    test_api(form).fields()[i].set_value(u"undo_" + type + u"_1");
+    test_api(form).fields()[i].set_is_autofilled(false);
     undo_fields.push_back(form.fields[i]);
   }
 
@@ -4985,7 +4988,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   expected.set_max_length(0);
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
-  form.fields.clear();
+  form.set_fields({});
   // Extract the country select-one value as value.
   form = *ExtractFormData(forms[0].GetDocument(), forms[0],
                           *base::MakeRefCounted<FieldDataManager>(),

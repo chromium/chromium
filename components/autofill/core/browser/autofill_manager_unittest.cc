@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/autofill_manager.h"
+
 #include <iterator>
 #include <memory>
 #include <tuple>
@@ -11,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -328,8 +330,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
   task_environment_.RunUntilIdle();
 
-  form.fields.push_back(form.fields.back());
-  form.fields.back().set_renderer_id(test::MakeFieldRendererId());
+  test_api(form).fields().push_back(form.fields.back());
+  test_api(form).fields().back().set_renderer_id(test::MakeFieldRendererId());
 
   // The form was just changed, which causes a reparse. The reparse is
   // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.

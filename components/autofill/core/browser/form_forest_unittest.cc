@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/form_forest.h"
+
 #include <stdint.h>
 
 #include <algorithm>
@@ -19,11 +21,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/form_forest.h"
 #include "components/autofill/core/browser/form_forest_test_api.h"
 #include "components/autofill/core/browser/form_forest_util_inl.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -157,18 +159,19 @@ using ::autofill::test::WithoutValues;
 
 // Fills the fields 0..5 of |form| with data according to |profile|, the
 // fields 6..11 with |profile|+1, etc.
-FormData WithValues(FormData& form, Profile profile = Profile(0)) {
-  CHECK_EQ(form.fields.size() % 6, 0u);
-  CHECK_GT(form.fields.size() / 6, 0u);
-  for (size_t i = 0; i < form.fields.size() / 6; ++i) {
+FormData WithValues(FormData form, Profile profile = Profile(0)) {
+  std::vector<FormFieldData>& fields = test_api(form).fields();
+  CHECK_EQ(fields.size() % 6, 0u);
+  CHECK_GT(fields.size() / 6, 0u);
+  for (size_t i = 0; i < fields.size() / 6; ++i) {
     std::bitset<6> bitset(profile.value() + i);
-    form.fields[6 * i + 0].set_value(bitset.test(0) ? u"Jane" : u"John");
-    form.fields[6 * i + 1].set_value(bitset.test(1) ? u"Doe" : u"Average");
-    form.fields[6 * i + 2].set_value(bitset.test(2) ? u"4444333322221111"
-                                                    : u"4444444444444444");
-    form.fields[6 * i + 3].set_value(bitset.test(3) ? u"01" : u"12");
-    form.fields[6 * i + 4].set_value(bitset.test(4) ? u"2083" : u"2087");
-    form.fields[6 * i + 5].set_value(bitset.test(5) ? u"123" : u"456");
+    fields[6 * i + 0].set_value(bitset.test(0) ? u"Jane" : u"John");
+    fields[6 * i + 1].set_value(bitset.test(1) ? u"Doe" : u"Average");
+    fields[6 * i + 2].set_value(bitset.test(2) ? u"4444333322221111"
+                                               : u"4444444444444444");
+    fields[6 * i + 3].set_value(bitset.test(3) ? u"01" : u"12");
+    fields[6 * i + 4].set_value(bitset.test(4) ? u"2083" : u"2087");
+    fields[6 * i + 5].set_value(bitset.test(5) ? u"123" : u"456");
   }
   return form;
 }
@@ -323,7 +326,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
   [[nodiscard]] FormData Lift(FormData form) {
     form.set_host_frame(GetFrameToken());
     form.set_main_frame_origin(main_origin());
-    for (FormFieldData& field : form.fields) {
+    for (FormFieldData& field : test_api(form).fields()) {
       field.set_host_frame(form.host_frame());
       field.set_host_form_id(form.renderer_id());
       field.set_origin(origin());
@@ -423,7 +426,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
       FormData data = form_info.form;
       data.set_name(base::ASCIIToUTF16(form_info.name));
       data.set_url(url);
-      for (FormFieldData& field : data.fields) {
+      for (FormFieldData& field : test_api(data).fields()) {
         field.set_name(base::StrCat({data.name(), u".", field.name()}));
       }
       data = driver->Lift(data);
@@ -501,7 +504,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
         copy.back()->parent_form = frame->parent_form;
         copy.back()->child_forms = frame->child_forms;
         for (FormData& child_form : copy.back()->child_forms) {
-          child_form.fields.clear();
+          child_form.set_fields({});
         }
         copy.back()->driver = frame->driver;
       }
@@ -979,9 +982,10 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
   GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
-  base::ranges::copy(GetFlattenedForm("leaf").fields,
-                     std::back_inserter(GetFlattenedForm("main").fields));
-  GetFlattenedForm("leaf").fields.clear();
+  base::ranges::copy(
+      test_api(GetFlattenedForm("leaf")).fields(),
+      std::back_inserter(test_api(GetFlattenedForm("main")).fields()));
+  GetFlattenedForm("leaf").set_fields({});
   ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
   ASSERT_EQ(GetFlattenedForm("leaf").fields.size(), 0u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
@@ -1046,9 +1050,10 @@ TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
   GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
-  base::ranges::copy(GetFlattenedForm("leaf").fields,
-                     std::back_inserter(GetFlattenedForm("main").fields));
-  GetFlattenedForm("leaf").fields.clear();
+  base::ranges::copy(
+      GetFlattenedForm("leaf").fields,
+      std::back_inserter(test_api(GetFlattenedForm("main")).fields()));
+  GetFlattenedForm("leaf").set_fields({});
   ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
   ASSERT_EQ(GetFlattenedForm("leaf").fields.size(), 0u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
@@ -1117,7 +1122,9 @@ class FormForestTestUpdateFieldRemove
   void DoRemove() {
     FormData& source_form = GetMockedForm(GetParam().form_name);
     size_t source_index = GetParam().field_index;
-    source_form.fields.erase(source_form.fields.begin() + source_index);
+    test_api(source_form)
+        .fields()
+        .erase(source_form.fields.begin() + source_index);
   }
 };
 
@@ -1156,7 +1163,9 @@ class FormForestTestUpdateFieldAdd
     FormFieldData field = target_form.fields.front();
     field.set_name(base::StrCat({field.name(), u"_copy"}));
     field.set_renderer_id(test::MakeFieldRendererId());
-    target_form.fields.insert(target_form.fields.begin() + target_index, field);
+    test_api(target_form)
+        .fields()
+        .insert(target_form.fields.begin() + target_index, field);
   }
 };
 
@@ -1205,13 +1214,19 @@ class FormForestTestUpdateFieldMove
     field.set_host_form_id(target_form.renderer_id());
 
     if (source_index > target_index) {
-      source_form.fields.erase(source_form.fields.begin() + source_index);
-      target_form.fields.insert(target_form.fields.begin() + target_index,
-                                field);
+      test_api(source_form)
+          .fields()
+          .erase(source_form.fields.begin() + source_index);
+      test_api(target_form)
+          .fields()
+          .insert(target_form.fields.begin() + target_index, field);
     } else {
-      target_form.fields.insert(target_form.fields.begin() + target_index,
-                                field);
-      source_form.fields.erase(source_form.fields.begin() + source_index);
+      test_api(target_form)
+          .fields()
+          .insert(target_form.fields.begin() + target_index, field);
+      test_api(source_form)
+          .fields()
+          .erase(source_form.fields.begin() + source_index);
     }
   }
 };
@@ -1337,8 +1352,8 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
     return child_frames;
   }());
   GetMockedFrame("grandchild2").parent_form = std::nullopt;
-  GetMockedForm("grandchild2").fields.clear();
-  GetMockedForm("greatgrandchild").fields.clear();
+  GetMockedForm("grandchild2").set_fields({});
+  GetMockedForm("greatgrandchild").set_fields({});
   MockFlattening({{"main"}, {"child1"}, {"grandchild1"}, {"child2"}},
                  ForceReset(true));
   MockFlattening({{"grandchild2"}, {"greatgrandchild"}});
@@ -1563,10 +1578,10 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
       WithValues(GetMockedForm("child2"), Profile(2))};
   // Clear sensitive fields: the credit card number (field index 2) and CVC
   // (field index 5) in the two main-origin forms.
-  expectation[0].fields[2].set_value({});
-  expectation[0].fields[5].set_value({});
-  expectation[1].fields[2].set_value({});
-  expectation[1].fields[5].set_value({});
+  test_api(expectation[0]).fields()[2].set_value({});
+  test_api(expectation[0]).fields()[5].set_value({});
+  test_api(expectation[1]).fields()[2].set_value({});
+  test_api(expectation[1]).fields()[5].set_value({});
   EXPECT_THAT(GetRendererFormsOfBrowserFields("main", Origin(kIframeUrl),
                                               FieldTypeMap("main")),
               UnorderedArrayEquals(expectation));

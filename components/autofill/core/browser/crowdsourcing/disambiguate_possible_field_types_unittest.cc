@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -37,7 +38,7 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
       const std::vector<TestFieldData>& test_fields) {
     FormData form;
     for (size_t i = 0; i < test_fields.size(); ++i) {
-      form.fields.push_back(
+      test_api(form).fields().push_back(
           CreateTestFormField("", "", "", FormControlType::kInputText));
     }
     FormStructure form_structure(form);

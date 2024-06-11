@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -186,7 +187,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
        // RATIONALIZATION_OK because it's a type mismatch.
        CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
                            FormControlType::kInputText)});
-  form.fields[2].set_is_autofilled(true);
+  test_api(form).fields()[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL,
                                             ADDRESS_HOME_LINE1,
@@ -234,7 +235,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
        // RATIONALIZATION_GOOD because it's empty.
        CreateTestFormField("Phone1", "phone1", "",
                            FormControlType::kInputText)});
-  form.fields[2].set_is_autofilled(true);
+  test_api(form).fields()[2].set_is_autofilled(true);
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         PHONE_HOME_CITY_AND_NUMBER,
@@ -275,7 +276,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
       CreateTestFormField("Phone1", "phone1", "2345678901",
                           FormControlType::kInputText),
   });
-  form.fields[2].set_is_autofilled(true);
+  test_api(form).fields()[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                             PHONE_HOME_CITY_AND_NUMBER,
@@ -325,7 +326,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
        // FALSE_NEGATIVE_MISMATCH + RATIONALIZATION_OK
        CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
                            FormControlType::kInputText)});
-  form.fields[2].set_is_autofilled(true);
+  test_api(form).fields()[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL,
                                             ADDRESS_HOME_LINE1,
@@ -715,8 +716,8 @@ TEST_F(QualityMetricsTest, NoSubmission) {
                            FormControlType::kSelectOne),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  form.fields.front().set_is_autofilled(true);
-  form.fields.back().set_is_autofilled(true);
+  test_api(form).fields().front().set_is_autofilled(true);
+  test_api(form).fields().back().set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
@@ -959,7 +960,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
   // email).
   {
     base::HistogramTester histogram_tester;
-    form.fields[2].set_value(u"notemailtext");
+    test_api(form).fields()[2].set_value(u"notemailtext");
     FillTestProfile(form);
     SubmitForm(form);
 
@@ -970,7 +971,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
   // Check that the metric is not recorded for empty values.
   {
     base::HistogramTester histogram_tester;
-    form.fields[2].set_value(u"");
+    test_api(form).fields()[2].set_value(u"");
     FillTestProfile(form);
     SubmitForm(form);
     histogram_tester.ExpectTotalCount(precision_histogram, 0);
@@ -1023,7 +1024,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
   // Check that the metric is not recorded for empty values.
   {
     base::HistogramTester histogram_tester;
-    form.fields[2].set_value(u"");
+    test_api(form).fields()[2].set_value(u"");
     FillTestProfile(form);
     SubmitForm(form);
     histogram_tester.ExpectTotalCount(precision_histogram, 0);

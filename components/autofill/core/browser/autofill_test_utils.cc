@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -158,28 +159,27 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
   form.set_submission_event(
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
 
-  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Middle Name", "middlename", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Last Name", "lastname", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Address Line 1", "addr1", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Address Line 2", "addr2", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(
-      CreateTestFormField("City", "city", "", FormControlType::kInputText));
-  form.fields.push_back(
-      CreateTestFormField("State", "state", "", FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Postal Code", "zipcode", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Country", "country", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Phone Number", "phonenumber", "",
-                                            FormControlType::kInputTelephone));
-  form.fields.push_back(
-      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail));
+  form.set_fields(
+      {CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Middle Name", "middlename", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address Line 1", "addr1", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address Line 2", "addr2", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("City", "city", "", FormControlType::kInputText),
+       CreateTestFormField("State", "state", "", FormControlType::kInputText),
+       CreateTestFormField("Postal Code", "zipcode", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country", "country", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Phone Number", "phonenumber", "",
+                           FormControlType::kInputTelephone),
+       CreateTestFormField("Email", "email", "",
+                           FormControlType::kInputEmail)});
   return form;
 }
 

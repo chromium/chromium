@@ -63,6 +63,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -223,7 +224,7 @@ TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
                                     {.role = ADDRESS_HOME_CITY,
                                      .value = u"Munich",
                                      .is_autofilled = true}}});
-  payments_form.fields.back().set_is_user_edited(true);
+  test_api(payments_form).fields().back().set_is_user_edited(true);
   autofill_manager().AddSeenForm(address_form, {NAME_FULL, ADDRESS_HOME_LINE1});
   autofill_manager().AddSeenForm(payments_form,
                                  {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
@@ -348,10 +349,12 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
                           FormControlType::kSelectOne)  // doesn't skip
   });
 
-  form.fields[1].set_is_focusable(false);
-  form.fields[2].set_role(FormFieldData::RoleAttribute::kPresentation);
-  form.fields[3].set_is_focusable(false);
-  form.fields[4].set_role(FormFieldData::RoleAttribute::kPresentation);
+  test_api(form).fields()[1].set_is_focusable(false);
+  test_api(form).fields()[2].set_role(
+      FormFieldData::RoleAttribute::kPresentation);
+  test_api(form).fields()[3].set_is_focusable(false);
+  test_api(form).fields()[4].set_role(
+      FormFieldData::RoleAttribute::kPresentation);
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
@@ -425,16 +428,16 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
 
   field.set_label(u"fullname");
   field.set_name(u"fullname");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Street 1");
   field.set_name(u"street1");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
   field.set_label(u"Street 2");
   field.set_name(u"street2");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   field_signature[1] = Collapse(CalculateFieldSignatureForField(field));
 
   FormSignature form_signature = Collapse(CalculateFormSignature(form));
@@ -523,23 +526,23 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
 
   field.set_label(u"Country");
   field.set_name(u"country");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
   field.set_label(u"fullname");
   field.set_name(u"fullname");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"State");
   field.set_name(u"state");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   field_signature[2] = Collapse(CalculateFieldSignatureForField(field));
 
   field.set_label(u"State");
   field.set_name(u"state");
   field.set_is_focusable(false);
   field.set_form_control_type(FormControlType::kSelectOne);
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   // Regardless of the order of appearance, hidden fields are rationalized
   // before their corresponding visible one.
   field_signature[1] = Collapse(CalculateFieldSignatureForField(field));
@@ -652,9 +655,9 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
                            "buddy@gmail.com", FormControlType::kInputText),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  form.fields[0].set_is_autofilled(true);
-  form.fields[1].set_is_autofilled(false);
-  form.fields[2].set_is_autofilled(false);
+  test_api(form).fields()[0].set_is_autofilled(true);
+  test_api(form).fields()[1].set_is_autofilled(false);
+  test_api(form).fields()[2].set_is_autofilled(false);
 
   SeeForm(form);
 
@@ -687,7 +690,7 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
                            FormControlType::kInputText),
        CreateTestFormField("Unknown", "unknown", "garbage",
                            FormControlType::kInputText)});
-  form.fields.front().set_is_autofilled(true);
+  test_api(form).fields().front().set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, PHONE_HOME_NUMBER,
                                             ADDRESS_HOME_CITY, UNKNOWN_TYPE};
@@ -796,9 +799,9 @@ TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUkmLogging) {
                            "buddy@gmail.com", FormControlType::kInputText),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  form.fields[0].set_is_autofilled(true);
-  form.fields[1].set_is_autofilled(true);
-  form.fields[2].set_is_autofilled(true);
+  test_api(form).fields()[0].set_is_autofilled(true);
+  test_api(form).fields()[1].set_is_autofilled(true);
+  test_api(form).fields()[2].set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
                                             PHONE_HOME_CITY_AND_NUMBER};
@@ -902,7 +905,7 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   }
 
   // Add another field to the form, so that it becomes fillable.
-  form.fields.push_back(
+  test_api(form).fields().push_back(
       CreateTestFormField("Phone", "phone", "", FormControlType::kInputText));
 
   // Expect the "form parsed without hints" metric to be logged.
@@ -920,11 +923,11 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   // three fillable fields to be considered to be autofillable; and if at least
   // one field specifies an explicit type hint, we don't apply any of our usual
   // local heuristics to detect field types in the rest of the form.
-  form.fields.push_back(CreateTestFormField(
+  test_api(form).fields().push_back(CreateTestFormField(
       "", "", "", FormControlType::kInputText, "given-name"));
-  form.fields.push_back(
+  test_api(form).fields().push_back(
       CreateTestFormField("", "", "", FormControlType::kInputText, "email"));
-  form.fields.push_back(CreateTestFormField(
+  test_api(form).fields().push_back(CreateTestFormField(
       "", "", "", FormControlType::kInputText, "address-line1"));
 
   // Expect the "form parsed with field type hints" metric to be logged.
@@ -955,7 +958,7 @@ TEST_F(AutofillMetricsTest,
   }
 
   // Add another field to the form, so that it becomes fillable.
-  form.fields.push_back(
+  test_api(form).fields().push_back(
       CreateTestFormField("Phone", "phone", "", FormControlType::kInputText));
 
   // Expect the "form parsed without field type hints" metric and the
@@ -4879,22 +4882,24 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
        CreateTestFormField("Phone", "phone", "", FormControlType::kInputText)});
 
   FormData filled_form = empty_form;
-  filled_form.fields[0].set_value(u"Elvis Aaron Presley");
-  filled_form.fields[1].set_value(u"theking@gmail.com");
-  filled_form.fields[2].set_value(u"12345678901");
+  test_api(filled_form).fields()[0].set_value(u"Elvis Aaron Presley");
+  test_api(filled_form).fields()[1].set_value(u"theking@gmail.com");
+  test_api(filled_form).fields()[2].set_value(u"12345678901");
 
   // Fill additional form.
   FormData second_form = empty_form;
   second_form.set_host_frame(test::MakeLocalFrameToken());
   second_form.set_renderer_id(test::MakeFormRendererId());
-  second_form.fields.push_back(CreateTestFormField(
-      "Second Phone", "second_phone", "", FormControlType::kInputText));
+  test_api(second_form)
+      .fields()
+      .push_back(CreateTestFormField("Second Phone", "second_phone", "",
+                                     FormControlType::kInputText));
 
   // Fill the field values for form submission.
-  second_form.fields[0].set_value(u"Elvis Aaron Presley");
-  second_form.fields[1].set_value(u"theking@gmail.com");
-  second_form.fields[2].set_value(u"12345678901");
-  second_form.fields[3].set_value(u"51512345678");
+  test_api(second_form).fields()[0].set_value(u"Elvis Aaron Presley");
+  test_api(second_form).fields()[1].set_value(u"theking@gmail.com");
+  test_api(second_form).fields()[2].set_value(u"12345678901");
+  test_api(second_form).fields()[3].set_value(u"51512345678");
 
   // Expect only form load metrics to be logged if the form is submitted without
   // user interaction.
@@ -5299,11 +5304,11 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
 
     field.set_label(u"fullname");
     field.set_name(u"fullname");
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     field.set_label(u"address");
     field.set_name(u"address");
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     // Checkable fields should be ignored in parsing.
     FormFieldData checkable_field;
@@ -5311,19 +5316,19 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     checkable_field.set_form_control_type(FormControlType::kInputRadio);
     checkable_field.set_check_status(
         FormFieldData::CheckStatus::kCheckableButUnchecked);
-    form.fields.push_back(checkable_field);
+    test_api(form).fields().push_back(checkable_field);
 
     owned_forms_.push_back(std::make_unique<FormStructure>(form));
     forms_.push_back(owned_forms_.back().get());
 
     field.set_label(u"email");
     field.set_name(u"email");
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     field.set_label(u"password");
     field.set_name(u"password");
     field.set_form_control_type(FormControlType::kInputPassword);
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
 
     owned_forms_.push_back(std::make_unique<FormStructure>(form));
     forms_.push_back(owned_forms_.back().get());
@@ -5648,7 +5653,7 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   FillTestProfile(form);
 
   // Dynamically change the form.
-  form.fields.pop_back();
+  test_api(form).fields().pop_back();
 
   // Simulate checking whether to fill a dynamic form after the form was filled
   // initially.
@@ -5856,7 +5861,7 @@ TEST_P(WebOTPPhoneCollectionMetricsTest,
     FormData form;
     CreateSimpleForm(autofill_client_->form_origin(), form);
     for (const char* autocomplete : test_case.autocomplete_field) {
-      form.fields.push_back(CreateTestFormField(
+      test_api(form).fields().push_back(CreateTestFormField(
           "", "", "", FormControlType::kInputText, autocomplete));
     }
 
@@ -5881,10 +5886,10 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
   FormData form;
   CreateSimpleForm(autofill_client_->form_origin(), form);
   // Document collects phone number
-  form.fields.push_back(
+  test_api(form).fields().push_back(
       CreateTestFormField("", "", "", FormControlType::kInputTelephone, "tel"));
   // Document uses OntTimeCode
-  form.fields.push_back(CreateTestFormField(
+  test_api(form).fields().push_back(CreateTestFormField(
       "", "", "", FormControlType::kInputText, "one-time-code"));
 
   base::HistogramTester histogram_tester;
@@ -5904,7 +5909,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
 TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   FormData form = CreateForm({CreateTestFormField(
       "", "", "", FormControlType::kInputPassword, "one-time-code")});
-  form.fields[0].set_value(u"123456");
+  test_api(form).fields()[0].set_value(u"123456");
 
   {
     base::HistogramTester histogram_tester;
@@ -6121,7 +6126,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
     for (FieldType fill_type : fill_field_types) {
       auto index_it = type_to_index.find(fill_type);
       ASSERT_NE(index_it, type_to_index.end());
-      FormFieldData& field = form_.fields[index_it->second];
+      FormFieldData& field = test_api(form_).fields()[index_it->second];
       field.set_value(fill_type != CREDIT_CARD_VERIFICATION_CODE
                           ? fill_data().credit_card.GetRawInfo(fill_type)
                           : fill_data().cvc);
@@ -6132,8 +6137,8 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   }
 
   FormFieldData& GetFieldById(FieldGlobalId field) {
-    auto it =
-        base::ranges::find(form_.fields, field, &FormFieldData::global_id);
+    auto it = base::ranges::find(test_api(form_).fields(), field,
+                                 &FormFieldData::global_id);
     CHECK(it != form_.fields.end());
     return *it;
   }
@@ -7184,7 +7189,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   FormData form = CreateForm({CreateTestFormField(
       "Search", "Search", "", FormControlType::kInputText)});
   // The form only has one field which has a placeholder of 'Search'.
-  form.fields[0].set_placeholder(u"Search");
+  test_api(form).fields()[0].set_placeholder(u"Search");
 
   SeeForm(form);
   SubmitForm(form);

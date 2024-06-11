@@ -147,14 +147,16 @@ FormData GetFormData(const FormDescription& d) {
   if (d.main_frame_origin) {
     f.set_main_frame_origin(*d.main_frame_origin);
   }
-  f.fields.reserve(d.fields.size());
+  std::vector<FormFieldData> fs;
+  fs.reserve(d.fields.size());
   for (const FieldDescription& dd : d.fields) {
     FormFieldData ff = GetFormFieldData(dd);
     ff.set_host_frame(dd.host_frame.value_or(f.host_frame()));
     ff.set_origin(dd.origin.value_or(f.main_frame_origin()));
     ff.set_host_form_id(f.renderer_id());
-    f.fields.push_back(ff);
+    fs.push_back(ff);
   }
+  f.set_fields(std::move(fs));
   return f;
 }
 

@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -583,7 +584,7 @@ class AutofillAcrossIframesTest_DeletedFrame
         R"( document.getElementsByTagName('iframe')[1].remove(); )");
     EXPECT_EQ(4u, num_frames());
     FillCard(main_frame(), form, trigger_field);
-    form.fields.erase(form.fields.begin() + 1);
+    test_api(form).fields().erase(form.fields.begin() + 1);
     return AllFieldValues(web_contents(), form);
   }
 

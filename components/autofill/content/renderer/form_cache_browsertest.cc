@@ -19,6 +19,7 @@
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/test/render_view_test.h"
@@ -413,8 +414,8 @@ struct FillElementData {
 
 FormFieldData* FindFieldByName(FormData& form_data,
                                blink::WebString search_field_name) {
-  auto it = base::ranges::find(form_data.fields, search_field_name.Utf16(),
-                               &FormFieldData::name);
+  auto it = base::ranges::find(test_api(form_data).fields(),
+                               search_field_name.Utf16(), &FormFieldData::name);
   return it != form_data.fields.end() ? &*it : nullptr;
 }
 

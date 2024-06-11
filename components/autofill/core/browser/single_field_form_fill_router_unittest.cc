@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
@@ -19,8 +20,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/version_info/version_info.h"
-#include "form_structure_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -102,9 +103,9 @@ TEST_F(SingleFieldFormFillRouterTest,
   FormData form_data;
   size_t number_of_fields_for_testing = 3;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  form_data.fields.resize(3 * number_of_fields_for_testing);
+  test_api(form_data).fields().resize(3 * number_of_fields_for_testing);
 #else
-  form_data.fields.resize(2 * number_of_fields_for_testing);
+  test_api(form_data).fields().resize(2 * number_of_fields_for_testing);
 #endif
 
   FormStructure form_structure{form_data};

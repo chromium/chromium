@@ -39,11 +39,12 @@ class CategoryResolvedKeyMetricsTest
   // TODO(crbug.com/40100455): Replace this with a modern form creation
   // function.
   FormData CreateAndSeeForm() {
-    FormData form = CreateEmptyForm();
-    form.fields.resize(3);
-    for (FormFieldData& field : form.fields) {
+    std::vector<FormFieldData> fields(3);
+    for (FormFieldData& field : fields) {
       field.set_renderer_id(autofill_test_environment_.NextFieldRendererId());
     }
+    FormData form = CreateEmptyForm();
+    form.set_fields(std::move(fields));
     autofill_manager().AddSeenForm(
         form, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
     SeeForm(form);

@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -682,8 +683,8 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   ASSERT_FALSE(field.IsNull());
 
   std::u16string prior_value = form.fields[0].value();
-  form.fields[0].set_value(form.fields[0].value() + u"AUTOFILLED");
-  form.fields[0].set_is_autofilled(true);
+  test_api(form).fields()[0].set_value(form.fields[0].value() + u"AUTOFILLED");
+  test_api(form).fields()[0].set_is_autofilled(true);
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
@@ -877,8 +878,8 @@ TEST_P(AutofillAgentSubmissionTest,
                                   {form_util::ExtractOption::kValue});
 
   ASSERT_EQ(1u, form.fields.size());
-  form.fields[0].set_value(u"autofilled");
-  form.fields[0].set_is_autofilled(true);
+  test_api(form).fields()[0].set_value(u"autofilled");
+  test_api(form).fields()[0].set_is_autofilled(true);
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
@@ -1107,7 +1108,7 @@ TEST_P(AutofillAgentSubmissionTest,
               blink::WebAutofillState::kNotFilled);
   }
 
-  for (FormFieldData& field : form->fields) {
+  for (FormFieldData& field : test_api(*form).fields()) {
     field.set_value(field.id_attribute() + u" autofilled");
     field.set_is_autofilled(true);
   }

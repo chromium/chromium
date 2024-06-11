@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/autofill_provider.h"
+#include "components/android_autofill/browser/android_autofill_provider.h"
 
 #include <memory>
 
@@ -16,9 +16,9 @@
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
-#include "components/android_autofill/browser/android_autofill_provider.h"
 #include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/android_autofill_provider_test_api.h"
+#include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/form_data_android_test_api.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -408,14 +409,14 @@ TEST_F(AndroidAutofillProviderTest, NotifyAboutVisibilityChangeOnFocus) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   // For Android Autofill, focusability is the same as visibility.
-  form.fields[0].set_is_focusable(false);
-  form.fields[2].set_is_focusable(false);
+  test_api(form).fields()[0].set_is_focusable(false);
+  test_api(form).fields()[2].set_is_focusable(false);
 
   // Start an Autofill session.
   android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
 
-  form.fields[0].set_is_focusable(true);
-  form.fields[2].set_is_focusable(true);
+  test_api(form).fields()[0].set_is_focusable(true);
+  test_api(form).fields()[2].set_is_focusable(true);
 
   EXPECT_CALL(provider_bridge(), OnFormFieldVisibilitiesDidChange(
                                      /*indices=*/UnorderedElementsAre(0, 2)));
@@ -552,7 +553,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
   // Simulate a value change.
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
-  form.fields[1].set_value(form.fields[1].value() + u"x");
+  test_api(form).fields()[1].set_value(form.fields[1].value() + u"x");
   android_autofill_manager().SimulateOnTextFieldDidChange(form, form.fields[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
   ASSERT_TRUE(test_api(autofill_provider()).form());
@@ -576,7 +577,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
 
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
-  form2.fields[1].set_value(form2.fields[1].value() + u"x");
+  test_api(form2).fields()[1].set_value(form2.fields[1].value() + u"x");
   android_autofill_manager().SimulateOnTextFieldDidChange(form2,
                                                           form2.fields[1]);
 }
@@ -1090,7 +1091,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   FormData changed_form = form;
-  changed_form.fields.pop_back();
+  test_api(changed_form).fields().pop_back();
   android_autofill_manager().OnFormsSeen({changed_form},
                                          /*removed_forms=*/{});
   SessionId autofill_session_id = SessionId(0);

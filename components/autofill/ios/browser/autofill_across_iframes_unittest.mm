@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/form_data_test_api.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -430,7 +431,7 @@ TEST_F(AutofillAcrossIframesTest, FillForm) {
   FormData form = main_frame_manager().seen_forms()[0];
   base::flat_map<FieldGlobalId, FieldType> field_type_map;
 
-  for (FormFieldData& field : form.fields) {
+  for (FormFieldData& field : test_api(form).fields()) {
     if (field.placeholder() == kNamePlaceholder) {
       field.set_value(kFakeName);
       field_type_map[field.global_id()] = FieldType::NAME_FULL;

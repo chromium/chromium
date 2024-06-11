@@ -138,7 +138,7 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   valid_cc.set_value(u"4012888888881881");
   valid_cc.set_properties_mask(valid_cc.properties_mask() | kUserTyped);
   valid_cc.set_form_control_type(FormControlType::kInputText);
-  form.fields.push_back(valid_cc);
+  form.set_fields({valid_cc});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -162,7 +162,7 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   invalid_cc.set_value(u"4580123456789012");
   invalid_cc.set_properties_mask(invalid_cc.properties_mask() | kUserTyped);
   invalid_cc.set_form_control_type(FormControlType::kInputText);
-  form.fields.push_back(invalid_cc);
+  form.set_fields({invalid_cc});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -183,7 +183,7 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   ssn.set_value(u"078-05-1120");
   ssn.set_properties_mask(ssn.properties_mask() | kUserTyped);
   ssn.set_form_control_type(FormControlType::kInputText);
-  form.fields.push_back(ssn);
+  form.set_fields({ssn});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -205,7 +205,7 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   search_field.set_value(u"my favorite query");
   search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
   search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.fields.push_back(search_field);
+  form.set_fields({search_field});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -226,7 +226,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   search_field.set_value(u"my favorite query");
   search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
   search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.fields.push_back(search_field);
+  form.set_fields({search_field});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -241,32 +241,20 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   form.set_url(GURL("http://myform.com/form.html"));
   form.set_action(GURL("http://myform.com/submit.html"));
 
-  // Search field.
-  FormFieldData search_field;
+  auto make_field = [](std::u16string label, std::u16string name,
+                       std::u16string value) {
+    FormFieldData f;
+    f.set_label(label);
+    f.set_name(name);
+    f.set_value(value);
+    f.set_properties_mask(kUserTyped);
+    f.set_form_control_type(FormControlType::kInputSearch);
+    return f;
+  };
 
-  // Empty value.
-  search_field.set_label(u"Search");
-  search_field.set_name(u"search");
-  search_field.set_value(u"");
-  search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
-  search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.fields.push_back(search_field);
-
-  // Single whitespace.
-  search_field.set_label(u"Search2");
-  search_field.set_name(u"other search");
-  search_field.set_value(u" ");
-  search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
-  search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.fields.push_back(search_field);
-
-  // Multiple whitespaces.
-  search_field.set_label(u"Search3");
-  search_field.set_name(u"other search");
-  search_field.set_value(u"      ");
-  search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
-  search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.fields.push_back(search_field);
+  form.set_fields({make_field(u"Search", u"search", u""),
+                   make_field(u"Search2", u"other search", u" "),
+                   make_field(u"Search3", u"other search", u"      ")});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -292,7 +280,7 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   field.set_properties_mask(field.properties_mask() | kUserTyped);
   field.set_form_control_type(FormControlType::kInputText);
   field.set_should_autocomplete(false);
-  form.fields.push_back(field);
+  form.set_fields({field});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -316,7 +304,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   search_field.set_value(u"my favorite query");
   search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
   search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.fields.push_back(search_field);
+  form.set_fields({search_field});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -342,7 +330,7 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   search_field.set_form_control_type(FormControlType::kInputSearch);
   search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
   search_field.set_is_focusable(false);
-  form.fields.push_back(search_field);
+  form.set_fields({search_field});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
   autocomplete_manager_->OnWillSubmitFormWithFields(
@@ -367,7 +355,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   field.set_properties_mask(field.properties_mask() | kUserTyped);
   field.set_form_control_type(FormControlType::kInputText);
   field.set_role(FormFieldData::RoleAttribute::kPresentation);
-  form.fields.push_back(field);
+  form.set_fields({field});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(

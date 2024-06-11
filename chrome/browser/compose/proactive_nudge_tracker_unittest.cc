@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -59,13 +60,11 @@ autofill::FormFieldData CreateTestFormFieldData(
 
 autofill::FormData CreateFormData() {
   // Set up a form with two fields, the compose-eligible field is the first one.
-  autofill::FormData form_data;
-  form_data.fields.push_back(CreateTestFormFieldData());
-
   autofill::FormFieldData other_field;
   other_field.set_form_control_type(autofill::FormControlType::kInputMonth);
-  form_data.fields.push_back(std::move(other_field));
-  return form_data;
+  autofill::FormData form;
+  form.set_fields({CreateTestFormFieldData(), std::move(other_field)});
+  return form;
 }
 
 GURL TestURL() {

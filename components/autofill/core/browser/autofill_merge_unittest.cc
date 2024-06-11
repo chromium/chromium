@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/data_driven_testing/data_driven_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -217,7 +218,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       field.set_value(value);
       field.set_form_control_type(FormControlType::kInputText);
       field.set_is_focusable(true);
-      form.fields.push_back(field);
+      test_api(form).fields().push_back(field);
     }
 
     // The first line is always a profile separator, and the last profile is not
@@ -247,7 +248,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       EXPECT_FALSE(extracted_data.extracted_credit_card);
 
       // Clear the |form| to start a new profile.
-      form.fields.clear();
+      form.set_fields({});
     }
   }
 

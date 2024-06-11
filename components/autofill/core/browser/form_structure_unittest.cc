@@ -39,6 +39,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/signatures.h"
@@ -238,7 +239,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.set_name(u"username");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   // With min required fields enabled.
   EXPECT_FALSE(FormIsAutofillable(form));
@@ -249,7 +250,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.set_name(u"password");
   field.set_form_control_type(FormControlType::kInputPassword);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_FALSE(FormIsAutofillable(form));
 
@@ -259,7 +260,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.set_name(u"fullname");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_FALSE(FormIsAutofillable(form));
 
@@ -269,7 +270,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.set_name(u"address1");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_FALSE(FormIsAutofillable(form));
 
@@ -278,7 +279,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   field.set_name(u"email");
   field.set_form_control_type(FormControlType::kInputEmail);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_TRUE(FormIsAutofillable(form));
 
@@ -309,7 +310,7 @@ class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
 
   void AddField(FormFieldData field) {
     field.set_renderer_id(test::MakeFieldRendererId());
-    form_.fields.push_back(std::move(field));
+    test_api(form_).fields().push_back(std::move(field));
     form_structure_ = nullptr;
   }
 
@@ -871,12 +872,12 @@ TEST_F(FormStructureTestImpl,
   field.set_label(u"First Name");
   field.set_name(u"firstname");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Last Name");
   field.set_name(u"lastname");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_FALSE(FormShouldRunHeuristics(form));
 
@@ -917,7 +918,7 @@ TEST_F(FormStructureTestImpl,
   // autocomplete attribute, even if its the only field in the form.
   {
     FormData form_copy = form;
-    form_copy.fields.pop_back();
+    test_api(form_copy).fields().pop_back();
     FormStructure form_structure(form_copy);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                            nullptr);
@@ -942,7 +943,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   field.set_label(u"Promo Code");
   field.set_name(u"promocode");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
 
@@ -1059,53 +1060,53 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   field.set_label(u"Your First Name:");
   field.set_name(u"bill.first");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Your Last Name:");
   field.set_name(u"bill.last");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Street Address Line 1:");
   field.set_name(u"bill.street1");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Street Address Line 2:");
   field.set_name(u"bill.street2");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"City");
   field.set_name(u"bill.city");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"State (U.S.):");
   field.set_name(u"bill.state");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Zip/Postal Code:");
   field.set_name(u"BillTo.PostalCode");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Country:");
   field.set_name(u"bill.country");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Phone Number:");
   field.set_name(u"BillTo.Phone");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"Submit");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1151,39 +1152,39 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   field.set_label(u"E-mail address");
   field.set_name(u"email");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Full name");
   field.set_name(u"name");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Company");
   field.set_name(u"company");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address");
   field.set_name(u"address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"City");
   field.set_name(u"city");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Zip Code");
   field.set_name(u"Home.PostalCode");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"Submit");
   field.set_value(u"continue");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1222,43 +1223,43 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   field.set_label(u"First Name");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Last Name");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Email");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Phone");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Zip code");
   field.set_name(std::u16string());
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"Submit");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1300,33 +1301,33 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   field.set_label(u"Name on Card");
   field.set_name(u"name_on_card");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Exp Month");
   field.set_name(u"ccmonth");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Exp Year");
   field.set_name(u"ccyear");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Verification");
   field.set_name(u"verification");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"Submit");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1362,40 +1363,40 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   field.set_label(u"Name on Card");
   field.set_name(u"name_on_card");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   // This is not a field we know how to process.  But we should skip over it
   // and process the other fields in the card block.
   field.set_label(u"Card image");
   field.set_name(u"card_image");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Exp Month");
   field.set_name(u"ccmonth");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Exp Year");
   field.set_name(u"ccyear");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Verification");
   field.set_name(u"verification");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"Submit");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1433,22 +1434,22 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
   field.set_label(u"Address Line1");
   field.set_name(u"Address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address Line2");
   field.set_name(u"Address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address Line3");
   field.set_name(u"Address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"City");
   field.set_name(u"city");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1479,22 +1480,22 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
   field.set_label(u"Address Line1");
   field.set_name(u"shipping.address.addressLine1");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address Line2");
   field.set_name(u"shipping.address.addressLine2");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address Line3");
   field.set_name(u"billing.address.addressLine3");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address Line4");
   field.set_name(u"billing.address.addressLine4");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1528,22 +1529,22 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
   field.set_label(u"Street:");
   field.set_name(u"FOPIH_RgWebCC_0_IHAddress_ads1");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Suite or Apt:");
   field.set_name(u"FOPIH_RgWebCC_0_IHAddress_adap");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Street address second line");
   field.set_name(u"FOPIH_RgWebCC_0_IHAddress_ads2");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"City:");
   field.set_name(u"FOPIH_RgWebCC_0_IHAddress_adct");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1576,17 +1577,17 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
   field.set_label(u"Address Line1");
   field.set_name(u"address1");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Floor number, suite number, etc");
   field.set_name(u"address2");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"City:");
   field.set_name(u"city");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1614,17 +1615,17 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
   field.set_label(u"Address Line1");
   field.set_name(u"Address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address Line2");
   field.set_name(u"Address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"State/Province/Region");
   field.set_name(u"State");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1653,57 +1654,57 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   field.set_label(u"First Name*:");
   field.set_name(u"editBillingAddress$firstNameBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Last Name*:");
   field.set_name(u"editBillingAddress$lastNameBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Company Name:");
   field.set_name(u"editBillingAddress$companyBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address*:");
   field.set_name(u"editBillingAddress$addressLine1Box");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Apt/Suite :");
   field.set_name(u"editBillingAddress$addressLine2Box");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"City*:");
   field.set_name(u"editBillingAddress$cityBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"State/Province*:");
   field.set_name(u"editBillingAddress$stateDropDown");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Country*:");
   field.set_name(u"editBillingAddress$countryDropDown");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Postal Code*:");
   field.set_name(u"editBillingAddress$zipCodeBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Phone*:");
   field.set_name(u"editBillingAddress$phoneBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Email Address*:");
   field.set_name(u"email$emailBox");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1741,13 +1742,13 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   field.set_name(u"dayphone1");
   field.set_max_length(0);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"-");
   field.set_name(u"dayphone2");
   field.set_max_length(3);  // Size of prefix is 3.
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"-");
   field.set_name(u"dayphone3");
@@ -1755,13 +1756,13 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
                             // passed, phone will be parsed as
                             // <country code> - <area code> - <phone>.
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"ext.:");
   field.set_name(u"dayphone4");
   field.set_max_length(0);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1789,27 +1790,27 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
   field.set_label(u"Name on Card");
   field.set_name(u"name_on_card");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Address");
   field.set_name(u"billing_address");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Expiration Date");
   field.set_name(u"expiration_month");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Expiration Year");
   field.set_name(u"expiration_year");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1846,32 +1847,32 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   field.set_label(u"Card number");
   field.set_name(u"ccnumber");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"First name");
   field.set_name(u"first_name");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Last name");
   field.set_name(u"last_name");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Expiration date");
   field.set_name(u"ccexpiresmonth");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"ccexpiresyear");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"cvc number");
   field.set_name(u"csc");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1912,32 +1913,32 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   field.set_label(u"Cardholder Name");
   field.set_name(u"cc_first_name");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Last name");
   field.set_name(u"last_name");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Card number");
   field.set_name(u"ccnumber");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Expiration date");
   field.set_name(u"ccexpiresmonth");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"ccexpiresyear");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"cvc number");
   field.set_name(u"csc");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -2015,12 +2016,12 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.set_label(u"email");
   field.set_name(u"email");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"First Name");
   field.set_name(u"first");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   // Checkable fields shouldn't affect the signature.
   field.set_label(u"Select");
@@ -2028,7 +2029,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.set_form_control_type(FormControlType::kInputCheckbox);
   field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
 
@@ -2059,22 +2060,22 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.set_name(u"random1234");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Random Field label2");
   field.set_name(u"random12345");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Random Field label3");
   field.set_name(u"1ran12dom12345678");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Random Field label3");
   field.set_name(u"12345ran123456dom123");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_EQ(FormStructureTestImpl::Hash64Bit(
@@ -2089,19 +2090,19 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureLarge) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  large_form.fields.push_back(field1);
+  test_api(large_form).fields().push_back(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  large_form.fields.push_back(field2);
+  test_api(large_form).fields().push_back(field2);
 
   FormFieldData field3;
   field3.set_form_control_type(FormControlType::kInputEmail);
-  large_form.fields.push_back(field3);
+  test_api(large_form).fields().push_back(field3);
 
   FormFieldData field4;
   field4.set_form_control_type(FormControlType::kInputTelephone);
-  large_form.fields.push_back(field4);
+  test_api(large_form).fields().push_back(field4);
 
   // Alternative form signature string of a form with more than two fields
   // should only concatenate scheme, host, and field types.
@@ -2117,11 +2118,11 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallPath) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  small_form_path.fields.push_back(field1);
+  test_api(small_form_path).fields().push_back(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  small_form_path.fields.push_back(field2);
+  test_api(small_form_path).fields().push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less should
   // concatenate scheme, host, field types, and path if it is non-empty.
@@ -2137,11 +2138,11 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallRef) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  small_form_ref.fields.push_back(field1);
+  test_api(small_form_ref).fields().push_back(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  small_form_ref.fields.push_back(field2);
+  test_api(small_form_ref).fields().push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
   // without a path should concatenate scheme, host, field types, and reference
@@ -2158,11 +2159,11 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallQuery) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  small_form_query.fields.push_back(field1);
+  test_api(small_form_query).fields().push_back(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  small_form_query.fields.push_back(field2);
+  test_api(small_form_query).fields().push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
   // without a path or reference should concatenate scheme, host, field types,
@@ -2185,19 +2186,19 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   field.set_name(u"username");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"password");
   field.set_name(u"password");
   field.set_form_control_type(FormControlType::kInputPassword);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(std::u16string());
   field.set_name(u"Submit");
   field.set_form_control_type(FormControlType::kInputText);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_TRUE(FormData::DeepEqual(form, FormStructure(form).ToFormData()));
 }
@@ -2210,7 +2211,7 @@ TEST_F(FormStructureTestImpl, OneFieldPasswordFormShouldNotBeUpload) {
   field.set_name(u"Password");
   field.set_form_control_type(FormControlType::kInputPassword);
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   EXPECT_FALSE(FormStructure(form).ShouldBeUploaded());
 }
@@ -2228,32 +2229,32 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   field.set_label(u"Full Name");
   field.set_name(u"fullName");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Country");
   field.set_name(u"country");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Phone");
   field.set_name(u"phone");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Full Name");
   field.set_name(u"fullName");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Country");
   field.set_name(u"country");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Phone");
   field.set_name(u"phone");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   FormStructure form_structure(form);
   test_api(form_structure)
@@ -2324,18 +2325,18 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   field.set_label(u"Full Name");
   field.set_name(u"fullName");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   FieldGlobalId full_name_id = field.global_id();
 
   field.set_label(u"Country");
   field.set_name(u"country");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_label(u"Unknown");
   field.set_name(u"unknown");
   field.set_renderer_id(test::MakeFieldRendererId());
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   FieldGlobalId unknown_id = field.global_id();
 
   FormStructure form_structure(form);
@@ -2404,7 +2405,7 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
     field.set_renderer_id(test::MakeFieldRendererId());
     field.set_host_frame(frame_token);
     field.set_host_form_id(host_form_id);
-    form.fields.push_back(field);
+    test_api(form).fields().push_back(field);
   };
 
   LocalFrameToken frame_1(base::UnguessableToken::Create());
@@ -2439,7 +2440,7 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
 // classified as address forms.
 TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
   FormData form = test::CreateTestAddressFormData();
-  for (FormFieldData& field : form.fields) {
+  for (FormFieldData& field : test_api(form).fields()) {
     field.set_parsed_autocomplete(
         AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   }

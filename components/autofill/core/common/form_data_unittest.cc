@@ -8,6 +8,8 @@
 
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,12 +166,12 @@ void FillInDummyFormData(FormData* data) {
   field_data.set_text_direction(base::i18n::RIGHT_TO_LEFT);
   field_data.set_options({{.value = u"First", .content = u"First"},
                           {.value = u"Second", .content = u"Second"}});
-  data->fields.push_back(field_data);
+  test_api(*data).fields().push_back(field_data);
 
   // Change a few fields.
   field_data.set_max_length(150);
   field_data.set_options({{.value = u"Third", .content = u"Third"}});
-  data->fields.push_back(field_data);
+  test_api(*data).fields().push_back(field_data);
 }
 
 }  // namespace

@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,13 +90,14 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   // flakiness.
   client.SetKeepPopupOpenForTesting(true);
 
+  FormFieldData field = test::CreateTestFormField(
+      "Full name", "name", "", FormControlType::kInputText, "name");
+  field.set_is_focusable(true);
+  field.set_should_autocomplete(true);
+  field.set_bounds(element_bounds);
   FormData form;
   form.set_url(GURL("https://foo.com/bar"));
-  form.fields = {test::CreateTestFormField(
-      "Full name", "name", "", FormControlType::kInputText, "name")};
-  form.fields.front().set_is_focusable(true);
-  form.fields.front().set_should_autocomplete(true);
-  form.fields.front().set_bounds(element_bounds);
+  form.set_fields({field});
 
   // Not adding a profile would result in `AskForValuesToFill()` not finding any
   // suggestions and hiding the Autofill Popup.

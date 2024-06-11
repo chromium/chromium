@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -155,13 +156,14 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
 TEST_F(PlusAddressSubmissionLoggerTest, NoMetricForSignedOutUsers) {
   FormData form = GetEmailForm();
   submission_logger().OnPlusAddressSuggestionShown(
-      autofill_manager(), form.global_id(), form.fields[0].global_id(),
+      autofill_manager(), form.global_id(),
+      test_api(form).fields()[0].global_id(),
       SuggestionContext::kAutofillProfileOnEmailField,
       PasswordFormType::kNoPasswordForm,
       SuggestionType::kFillExistingPlusAddress,
       /*plus_address_count=*/1);
 
-  form.fields[0].set_value(kSamplePlusAddress_U16);
+  test_api(form).fields()[0].set_value(kSamplePlusAddress_U16);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
                                      kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), IsEmpty());
@@ -252,11 +254,11 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
     }
   }();
   submission_logger().OnPlusAddressSuggestionShown(
-      autofill_manager(), form.global_id(), form.fields[0].global_id(),
-      input.context, input.form_type, input.suggestion_type,
-      input.plus_address_count);
+      autofill_manager(), form.global_id(),
+      test_api(form).fields()[0].global_id(), input.context, input.form_type,
+      input.suggestion_type, input.plus_address_count);
 
-  form.fields[0].set_value(input.submitted_value);
+  test_api(form).fields()[0].set_value(input.submitted_value);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
                                      kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().ukms));

@@ -36,10 +36,12 @@ class FormTypesTest : public testing::TestWithParam<FormTypesTestCase> {
 TEST_P(FormTypesTest, FormHasFillableCreditCardFields) {
   FormTypesTestCase test_case = GetParam();
 
-  FormData form;
+  std::vector<FormFieldData> fields;
   for (const auto& value : test_case.field_values) {
-    form.fields.emplace_back(CreateFieldWithValue(value));
+    fields.push_back(CreateFieldWithValue(value));
   }
+  FormData form;
+  form.set_fields(std::move(fields));
   FormStructure form_structure(form);
   test_api(form_structure).SetFieldTypes(test_case.field_types);
 

@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/browser/web_contents.h"
@@ -97,7 +98,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
                        AutofillPopupIsShownIfOverlappingWithIph) {
   FormData form = test::CreateTestAddressFormData();
-  form.fields[0].set_bounds(gfx::RectF(10, 10));
+  test_api(form).fields()[0].set_bounds(gfx::RectF(10, 10));
   client()->ShowAutofillFieldIphForManualFallbackFeature(form.fields[0]);
 
   auto delegate = std::make_unique<MockAutofillExternalDelegate>(

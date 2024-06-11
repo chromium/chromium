@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -315,8 +316,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   form.set_name(u"MyForm");
   form.set_url(GURL("https://myform.com/form.html"));
   form.set_action(GURL("https://myform.com/submit.html"));
-  form.fields.push_back(CreateTestFormField("", "1", test_case.input_value,
-                                            FormControlType::kInputText));
+  test_api(form).fields().push_back(CreateTestFormField(
+      "", "1", test_case.input_value, FormControlType::kInputText));
 
   FormStructure form_structure(form);
 
@@ -615,13 +616,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   profiles.push_back(profile);
 
   FormData form;
-  form.fields.push_back(CreateTestFormField("foo", "foo", "invalidemail",
-                                            FormControlType::kInputText));
+  test_api(form).fields().push_back(CreateTestFormField(
+      "foo", "foo", "invalidemail", FormControlType::kInputText));
   // The email value is different from the stored profile's email. The
   // classification is then extracted from matching the value and not the
   // profile's email.
-  form.fields.push_back(CreateTestFormField("foo", "foo", "myemail@gmail.com",
-                                            FormControlType::kInputText));
+  test_api(form).fields().push_back(CreateTestFormField(
+      "foo", "foo", "myemail@gmail.com", FormControlType::kInputText));
 
   FormStructure form_structure(form);
   DeterminePossibleFieldTypesForUpload(profiles, {}, std::u16string(), "en-us",

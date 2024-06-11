@@ -39,6 +39,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -312,12 +313,12 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void, Reset, (), (override));
-  MOCK_METHOD(bool, ShouldParseForms, (), ());
+  MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void,
               OnFormsSeen,
               (const std::vector<FormData>& updated_forms,
                const std::vector<FormGlobalId>& removed_forms),
-              ());
+              (override));
 };
 
 class ContentAutofillDriverWithFakeAutofillAgent
@@ -516,7 +517,7 @@ class ContentAutofillDriverWithMultiFrameCreditCardForm
                             std::string_view name,
                             content::RenderFrameHost* target_rfh = nullptr) {
     FormData form;
-    form.fields.push_back(test::CreateTestFormField(
+    test_api(form).fields().push_back(test::CreateTestFormField(
         /*label=*/name, /*name=*/name, /*value=*/"",
         FormControlType::kInputText,
         /*autocomplete=*/base::StrCat({"cc-", name})));
@@ -551,7 +552,7 @@ TEST_F(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
 TEST_F(ContentAutofillDriverTest, Lift_Form) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   FormData form;
-  form.fields.emplace_back();
+  test_api(form).fields().emplace_back();
   test_api(driver()).LiftForTest(form);
 
   EXPECT_EQ(form.host_frame(), frame_token());
@@ -682,7 +683,7 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
 TEST_F(ContentAutofillDriverTestWithAddressForm,
        FormDataSentToRenderer_FillForm) {
   url::Origin triggered_origin;
-  for (FormFieldData& field : address_form().fields) {
+  for (FormFieldData& field : test_api(address_form()).fields()) {
     field.set_origin(triggered_origin);
     field.set_value(u"dummy_value");
   }
@@ -705,7 +706,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
 TEST_F(ContentAutofillDriverTestWithAddressForm,
        FormDataSentToRenderer_PreviewForm) {
   url::Origin triggered_origin;
-  for (FormFieldData& field : address_form().fields) {
+  for (FormFieldData& field : test_api(address_form()).fields()) {
     field.set_origin(triggered_origin);
     field.set_value(u"dummy_value");
   }

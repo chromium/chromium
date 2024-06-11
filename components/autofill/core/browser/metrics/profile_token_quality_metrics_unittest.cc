@@ -106,7 +106,7 @@ TEST(ProfileTokenQualityMetricsTest,
   // Create a dummy FormStructure and simulate that the first two fields were
   // filled.
   FormData form_data;
-  form_data.fields.resize(3);
+  form_data.set_fields({FormFieldData(), FormFieldData(), FormFieldData()});
   FormStructure form(form_data);
   test_api(form).SetFieldTypes({NAME_FIRST, NAME_LAST, ADDRESS_HOME_CITY});
   form.field(0)->set_autofill_source_profile_guid(profile.guid());
@@ -151,7 +151,8 @@ TEST(ProfileTokenQualityMetricsTest, LogProfileTokenQualityScoreMetric) {
   // Create a dummy FormStructure and simulate that the first two fields
   // were filled.
   FormData form_data;
-  form_data.fields.resize(5);
+  form_data.set_fields({FormFieldData(), FormFieldData(), FormFieldData(),
+                        FormFieldData(), FormFieldData()});
   FormStructure form(form_data);
   test_api(form).SetFieldTypes({NAME_FIRST, NAME_LAST, ADDRESS_HOME_STATE,
                                 ADDRESS_HOME_STREET_ADDRESS,

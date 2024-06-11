@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -338,7 +339,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     LocalFrameToken frame_token =
         LocalFrameToken(main_rfh()->GetFrameToken().value());
     form.set_host_frame(frame_token);
-    for (FormFieldData& field : form.fields) {
+    for (FormFieldData& field : test_api(form).fields()) {
       field.set_host_frame(frame_token);
     }
   }
@@ -365,7 +366,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   // and registers it with the manager.
   FormData CreateAndAttachAutocompleteUnrecognizedForm() {
     FormData form = test::CreateTestAddressFormData();
-    for (FormFieldData& field : form.fields) {
+    for (FormFieldData& field : test_api(form).fields()) {
       field.set_parsed_autocomplete(AutocompleteParsingResult{
           .field_type = HtmlFieldType::kUnrecognized});
     }
@@ -377,7 +378,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   // manager.
   FormData CreateAndAttachUnclassifiedForm() {
     FormData form = test::CreateTestAddressFormData();
-    for (FormFieldData& field : form.fields) {
+    for (FormFieldData& field : test_api(form).fields()) {
       field.set_label(u"unclassifiable");
       field.set_name(u"unclassifiable");
     }
@@ -393,8 +394,8 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     form.set_name(u"MyForm");
     form.set_url(GURL("https://myform.com/form.html"));
     form.set_action(GURL("https://myform.com/submit.html"));
-    form.fields.push_back(test::CreateTestFormField(
-        "Password", "password", "", FormControlType::kInputPassword));
+    form.set_fields({test::CreateTestFormField(
+        "Password", "password", "", FormControlType::kInputPassword)});
     AttachForm(form);
     return form;
   }

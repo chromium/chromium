@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -102,8 +103,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
                   {.role = CREDIT_CARD_NUMBER,
                    .autocomplete_attribute = "cc-number"}}});
-  form.fields.front().set_value(std::u16string(3, 'a'));
-  form.fields.back().set_value(std::u16string(2, 'a'));
+  test_api(form).fields().front().set_value(std::u16string(3, 'a'));
+  test_api(form).fields().back().set_value(std::u16string(2, 'a'));
   autofill_manager().OnFormsSeen({form}, {});
   {
     Suggestion address_suggestion;

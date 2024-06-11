@@ -22,10 +22,10 @@ FormData CreateFormDataForRenderFrameHost(content::RenderFrameHost& rfh,
   form.set_action(form.url());
   form.set_host_frame(LocalFrameToken(rfh.GetFrameToken().value()));
   form.set_renderer_id(MakeFormRendererId());
-  form.fields = std::move(fields);
-  for (FormFieldData& field : form.fields) {
+  for (FormFieldData& field : fields) {
     field.set_host_frame(form.host_frame());
   }
+  form.set_fields(std::move(fields));
   return form;
 }
 

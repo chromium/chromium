@@ -133,6 +133,7 @@ static_library("test_support") {
   sources = [
     "autofill_test_utils.cc",
     "autofill_test_utils.h",
+    "form_data_test_api.h",
   ]
   deps = [
     "//base",
@@ -171,6 +172,7 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//components/autofill/core/common:test_support",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",

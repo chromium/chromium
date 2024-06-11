@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -266,9 +267,9 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
   observed_form.set_url(password_form_.url);
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  observed_form.fields.push_back(field);
+  test_api(observed_form).fields().push_back(field);
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
-  observed_form.fields.push_back(field);
+  test_api(observed_form).fields().push_back(field);
 
   std::unique_ptr<password_manager::FormSaver> form_saver;
   if (profile_store) {
@@ -298,7 +299,7 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
   fetcher_.NotifyFetchCompleted();
 
   autofill::FormData submitted_form = observed_form;
-  submitted_form.fields[1].set_value(u"new_password");
+  test_api(submitted_form).fields()[1].set_value(u"new_password");
   form_manager->ProvisionallySave(
       submitted_form, &driver_,
       base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(

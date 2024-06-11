@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -108,13 +109,14 @@ FormData CreateFeedbackTestFormData() {
   form.set_action(GURL("https://myform.com/submit.html"));
   form.set_main_frame_origin(
       url::Origin::Create(GURL("https://myform_root.com/form.html")));
-  form.fields = {
-      CreateTestFormField("First Name on Card", "firstnameoncard", "",
-                          FormControlType::kInputText, "cc-given-name"),
-      CreateTestFormField("Last Name on Card", "lastnameoncard", "",
-                          FormControlType::kInputText, "cc-family-name"),
-      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
-  for (FormFieldData& field : form.fields) {
+  form.set_fields(
+      {CreateTestFormField("First Name on Card", "firstnameoncard", "",
+                           FormControlType::kInputText, "cc-given-name"),
+       CreateTestFormField("Last Name on Card", "lastnameoncard", "",
+                           FormControlType::kInputText, "cc-family-name"),
+       CreateTestFormField("Email", "email", "",
+                           FormControlType::kInputEmail)});
+  for (FormFieldData& field : test_api(form).fields()) {
     field.set_host_frame(form.host_frame());
   }
   return form;
@@ -190,7 +192,7 @@ TEST_F(AutofillFeedbackDataUnitTest,
        NotIncludeLastAutofillEventIfExceedTimeLimit) {
   TestAutofillClock clock(AutofillClock::Now());
   FormData form = CreateFeedbackTestFormData();
-  FormFieldData& field = form.fields[0];
+  const FormFieldData& field = form.fields[0];
   browser_autofill_manager_->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});

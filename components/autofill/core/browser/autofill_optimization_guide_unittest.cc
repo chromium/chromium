@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -271,7 +272,7 @@ TEST_F(AutofillOptimizationGuideTest,
   FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
                                                     /*use_month_type=*/false);
   base::ranges::move(CreateTestIbanFormData().fields,
-                     std::back_inserter(form_data.fields));
+                     std::back_inserter(test_api(form_data).fields()));
   FormStructure form_structure{form_data};
   const std::vector<FieldType> field_types = {
       CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,        CREDIT_CARD_NUMBER,

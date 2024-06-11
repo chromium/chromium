@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +52,7 @@ class ProfileTokenQualityTest : public testing::Test {
   void EditFieldValue(FormData& form,
                       size_t field_index,
                       std::u16string new_value) {
-    FormFieldData& field = form.fields[field_index];
+    FormFieldData& field = test_api(form).fields()[field_index];
     field.set_value(std::move(new_value));
     bam_.OnTextFieldDidChange(form, field.global_id(), base::TimeTicks::Now());
   }
