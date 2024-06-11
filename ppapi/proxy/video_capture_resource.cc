@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "ppapi/c/dev/ppp_video_capture_dev.h"
 #include "ppapi/proxy/dispatch_reply_message.h"
@@ -160,7 +161,7 @@ void VideoCaptureResource::OnPluginMsgOnDeviceInfo(
 
   PluginResourceTracker* tracker =
       PluginGlobals::Get()->plugin_resource_tracker();
-  std::unique_ptr<PP_Resource[]> resources(new PP_Resource[buffers.size()]);
+  auto resources = base::HeapArray<PP_Resource>::WithSize(buffers.size());
   for (size_t i = 0; i < buffers.size(); ++i) {
     // We assume that the browser created a new set of resources.
     DCHECK(!tracker->PluginResourceForHostResource(buffers[i]));
@@ -170,12 +171,9 @@ void VideoCaptureResource::OnPluginMsgOnDeviceInfo(
 
   buffer_in_use_ = std::vector<bool>(buffers.size());
 
-  CallWhileUnlocked(ppp_video_capture_impl_->OnDeviceInfo,
-                    pp_instance(),
-                    pp_resource(),
-                    &info,
-                    static_cast<uint32_t>(buffers.size()),
-                    resources.get());
+  CallWhileUnlocked(ppp_video_capture_impl_->OnDeviceInfo, pp_instance(),
+                    pp_resource(), &info, static_cast<uint32_t>(buffers.size()),
+                    resources.data());
 
   for (size_t i = 0; i < buffers.size(); ++i)
     tracker->ReleaseResource(resources[i]);
