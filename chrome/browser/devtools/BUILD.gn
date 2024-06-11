@@ -318,6 +318,14 @@ static_library("devtools") {
         "//components/printing/browser/headless",
         "//components/printing/browser/print_to_pdf",
       ]
+      if (enable_oop_printing) {
+        # protocol/page_handler.cc directly includes
+        # chrome/browser/printing/print_view_manager.h, and thus is dependent
+        # upon some mojom files.  This could go away and have a cleaner dep on
+        # //chrome/browser/printing if the //chrome build layer could get
+        # sufficiently untangled.
+        deps += [ "//chrome/services/printing/public/mojom" ]
+      }
     }
     sources += rebase_path(_protocol_generated, ".", target_gen_dir)
   }
