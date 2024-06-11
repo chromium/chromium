@@ -1099,7 +1099,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
   }
 
-  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
+  if (self.mode == TabGridModeSelection || self.mode == TabGridModeSearch) {
+    [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
+  } else {
+    [self.diffableDataSource applySnapshot:snapshot
+                      animatingDifferences:YES
+                                completion:nil];
+  }
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
