@@ -124,6 +124,14 @@
       "id": 101
     },
 
+    // *** *** *** *** WARNING *** *** *** ***
+    // The Google Search Engine definitions below are not the only source of
+    // truth for Android devices.
+    // Please read http://go/chrome-templateurl-definitions-for-google for more
+    // information.
+    // *** *** *** *** WARNING *** *** *** ***
+    // TODO(b/343792225): Identify a way to resolve this problem and implement
+    // necessary changes.
     "google": {
       "name": "Google",
       "keyword": "google.com",
