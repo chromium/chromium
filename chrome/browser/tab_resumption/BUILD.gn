@@ -109,6 +109,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/SyncDerivedSuggestionEntrySourceTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/SyncDerivedTabResumptionDataProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleEnablementUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMetricsUtilsUnitTest.java",
@@ -116,6 +117,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TestSupport.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TestSupportExtended.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/UrlImageSourceImplUnitTest.java",
   ]
 

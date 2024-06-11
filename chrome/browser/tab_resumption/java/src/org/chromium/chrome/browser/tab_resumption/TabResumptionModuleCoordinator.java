@@ -104,7 +104,11 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
     @Override
     public void onContextMenuCreated() {}
 
-    private void onSeeMoreClicked() {
+    PropertyModel getModelForTesting() {
+        return mModel;
+    }
+
+    void onSeeMoreClicked() {
         mModuleDelegate.onUrlClicked(new GURL(UrlConstants.RECENT_TABS_URL), getModuleType());
     }
 }
