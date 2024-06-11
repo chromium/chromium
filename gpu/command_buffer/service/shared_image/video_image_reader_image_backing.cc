@@ -317,14 +317,17 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
 // inner class out of the implementation here and that in
 // DawnAHBImageRepresentation.
 class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
-    : public SkiaGraphiteImageRepresentation {
+    : public SkiaGraphiteImageRepresentation,
+      public RefCountedLockHelperDrDc {
  public:
   SkiaGraphiteDawnImageRepresentation(
       SharedImageManager* manager,
       VideoImageReaderImageBacking* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<SharedContextState> context_state)
+      scoped_refptr<SharedContextState> context_state,
+      scoped_refptr<RefCountedLock> drdc_lock)
       : SkiaGraphiteImageRepresentation(manager, backing, tracker),
+        RefCountedLockHelperDrDc(std::move(drdc_lock)),
         context_state_(context_state) {}
   ~SkiaGraphiteDawnImageRepresentation() override = default;
 
@@ -347,7 +350,10 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     auto* stream_texture_sii = video_backing()->stream_texture_sii_.get();
 
     // Obtain the AHB for the current video frame.
-    scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
+    {
+      base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+      scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
+    }
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
       return {};
@@ -494,6 +500,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     texture_.Destroy();
     texture_ = nullptr;
     shared_texture_memory_ = nullptr;
+
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;
   }
 
@@ -706,8 +714,10 @@ VideoImageReaderImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+  base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+
   return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
-      manager, this, tracker, context_state);
+      manager, this, tracker, context_state, GetDrDcLock());
 }
 #endif
 
