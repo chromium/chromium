@@ -31,9 +31,9 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
   return widest_page_width;
 }
 
-gfx::Rect InsetRect(const gfx::Rect& rect, const gfx::Insets& inset_sizes) {
+gfx::Rect InsetRect(const gfx::Rect& rect, const gfx::Insets& insets) {
   gfx::Rect inset_rect(rect);
-  inset_rect.Inset(inset_sizes);
+  inset_rect.Inset(insets);
   return inset_rect;
 }
 
