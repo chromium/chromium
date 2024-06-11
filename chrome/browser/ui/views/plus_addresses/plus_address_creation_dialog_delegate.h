@@ -28,7 +28,7 @@ namespace plus_addresses {
 
 class PlusAddressCreationController;
 
-//  A delegate that creates and updates the PlusAddresses dialog.
+// A delegate that creates and updates the PlusAddresses dialog.
 class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
                                           public PlusAddressCreationView {
  public:

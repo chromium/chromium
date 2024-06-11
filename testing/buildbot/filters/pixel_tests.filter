@@ -88,6 +88,7 @@ PerformanceInterventionInteractiveTest.InterventionToolbarButton
 PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*View*BrowserTest.InvokeUi_*
 PermissionPromptPreviewBrowserTest.InvokeUi_*
+PlusAddressCreationDialogInteractiveTest.*
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*

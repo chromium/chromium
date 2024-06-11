@@ -90,6 +90,7 @@ int GetPlusAddressLabelVerticalMargin() {
 }
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressDescriptionTextElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
@@ -130,6 +131,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build();
+  primary_view->SetProperty(views::kElementIdentifierKey, kTopViewId);
 
   // Create hero image.
   std::unique_ptr<views::ImageView> logo_image;

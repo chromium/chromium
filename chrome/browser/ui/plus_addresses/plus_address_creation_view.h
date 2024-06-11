@@ -19,6 +19,7 @@ enum class PlusAddressViewButtonType { kCancel = 0, kConfirm = 1, kClose = 2 };
 // An interface for orchestrating plus address creation UI.
 class PlusAddressCreationView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressDescriptionTextElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressErrorTextElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressConfirmButtonElementId);
