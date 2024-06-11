@@ -1351,37 +1351,11 @@
   "moduleExtensions": {
     "//tools/bazel:extension.bzl%crate_repositories": {
       "general": {
-        "bzlTransitiveDigest": "7PNfc9VDjcyFLTIEiASfh2+u2LlNqlcvESpBBlt2rgY=",
+        "bzlTransitiveDigest": "KLTQo2FCPDLUcn0Tevgb8BMOlQfZErc4eelciqboEOg=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "vendor__unicode-width-0.1.12": {
-            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
-            "ruleClassName": "http_archive",
-            "attributes": {
-              "sha256": "68f5e5f3158ecfd4b8ff6fe086db7c8467a2dfdac97fe420f2b7c4aa97af66d6",
-              "type": "tar.gz",
-              "urls": [
-                "https://static.crates.io/crates/unicode-width/0.1.12/download"
-              ],
-              "strip_prefix": "unicode-width-0.1.12",
-              "build_file": "@@//third-party/bazel:BUILD.unicode-width-0.1.12.bazel"
-            }
-          },
-          "vendor__proc-macro2-1.0.82": {
-            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
-            "ruleClassName": "http_archive",
-            "attributes": {
-              "sha256": "8ad3d49ab951a01fbaafe34f2ec74122942fe18a3f9814c3268f1bb72042131b",
-              "type": "tar.gz",
-              "urls": [
-                "https://static.crates.io/crates/proc-macro2/1.0.82/download"
-              ],
-              "strip_prefix": "proc-macro2-1.0.82",
-              "build_file": "@@//third-party/bazel:BUILD.proc-macro2-1.0.82.bazel"
-            }
-          },
           "vendor__quote-1.0.36": {
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
             "ruleClassName": "http_archive",
@@ -1393,6 +1367,19 @@
               ],
               "strip_prefix": "quote-1.0.36",
               "build_file": "@@//third-party/bazel:BUILD.quote-1.0.36.bazel"
+            }
+          },
+          "vendor__unicode-width-0.1.13": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+            "ruleClassName": "http_archive",
+            "attributes": {
+              "sha256": "0336d538f7abc86d282a4189614dfaa90810dfc2c6f6427eaf88e16311dd225d",
+              "type": "tar.gz",
+              "urls": [
+                "https://static.crates.io/crates/unicode-width/0.1.13/download"
+              ],
+              "strip_prefix": "unicode-width-0.1.13",
+              "build_file": "@@//third-party/bazel:BUILD.unicode-width-0.1.13.bazel"
             }
           },
           "vendor__clap_builder-4.5.2": {
@@ -1486,17 +1473,17 @@
               "build_file": "@@//third-party/bazel:BUILD.windows_aarch64_gnullvm-0.52.5.bazel"
             }
           },
-          "vendor__cc-1.0.97": {
+          "vendor__cc-1.0.98": {
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
             "ruleClassName": "http_archive",
             "attributes": {
-              "sha256": "099a5357d84c4c61eb35fc8eafa9a79a902c2f76911e5747ced4e032edd8d9b4",
+              "sha256": "41c270e7540d725e65ac7f1b212ac8ce349719624d7bcff99f8e2e488e8cf03f",
               "type": "tar.gz",
               "urls": [
-                "https://static.crates.io/crates/cc/1.0.97/download"
+                "https://static.crates.io/crates/cc/1.0.98/download"
               ],
-              "strip_prefix": "cc-1.0.97",
-              "build_file": "@@//third-party/bazel:BUILD.cc-1.0.97.bazel"
+              "strip_prefix": "cc-1.0.98",
+              "build_file": "@@//third-party/bazel:BUILD.cc-1.0.98.bazel"
             }
           },
           "vendor__clap_lex-0.7.0": {
@@ -1549,6 +1536,19 @@
               ],
               "strip_prefix": "windows_x86_64_msvc-0.52.5",
               "build_file": "@@//third-party/bazel:BUILD.windows_x86_64_msvc-0.52.5.bazel"
+            }
+          },
+          "vendor__proc-macro2-1.0.85": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+            "ruleClassName": "http_archive",
+            "attributes": {
+              "sha256": "22244ce15aa966053a896d1accb3a6e68469b97c7f33f284b99f0d576879fc23",
+              "type": "tar.gz",
+              "urls": [
+                "https://static.crates.io/crates/proc-macro2/1.0.85/download"
+              ],
+              "strip_prefix": "proc-macro2-1.0.85",
+              "build_file": "@@//third-party/bazel:BUILD.proc-macro2-1.0.85.bazel"
             }
           },
           "vendor__once_cell-1.19.0": {
@@ -1623,6 +1623,19 @@
               "build_file": "@@//third-party/bazel:BUILD.codespan-reporting-0.11.1.bazel"
             }
           },
+          "vendor__syn-2.0.66": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+            "ruleClassName": "http_archive",
+            "attributes": {
+              "sha256": "c42f3f41a2de00b01c0aaad383c5a45241efc8b2d1eda5661812fda5f3cdcff5",
+              "type": "tar.gz",
+              "urls": [
+                "https://static.crates.io/crates/syn/2.0.66/download"
+              ],
+              "strip_prefix": "syn-2.0.66",
+              "build_file": "@@//third-party/bazel:BUILD.syn-2.0.66.bazel"
+            }
+          },
           "vendor__clap-4.5.4": {
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
             "ruleClassName": "http_archive",
@@ -1634,19 +1647,6 @@
               ],
               "strip_prefix": "clap-4.5.4",
               "build_file": "@@//third-party/bazel:BUILD.clap-4.5.4.bazel"
-            }
-          },
-          "vendor__syn-2.0.61": {
-            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
-            "ruleClassName": "http_archive",
-            "attributes": {
-              "sha256": "c993ed8ccba56ae856363b1845da7266a7cb78e1d146c8a32d54b45a8b831fc9",
-              "type": "tar.gz",
-              "urls": [
-                "https://static.crates.io/crates/syn/2.0.61/download"
-              ],
-              "strip_prefix": "syn-2.0.61",
-              "build_file": "@@//third-party/bazel:BUILD.syn-2.0.61.bazel"
             }
           },
           "vendor__windows-targets-0.52.5": {
@@ -1707,8 +1707,8 @@
           ],
           [
             "",
-            "vendor__cc-1.0.97",
-            "vendor__cc-1.0.97"
+            "vendor__cc-1.0.98",
+            "vendor__cc-1.0.98"
           ],
           [
             "",
@@ -1727,8 +1727,8 @@
           ],
           [
             "",
-            "vendor__proc-macro2-1.0.82",
-            "vendor__proc-macro2-1.0.82"
+            "vendor__proc-macro2-1.0.85",
+            "vendor__proc-macro2-1.0.85"
           ],
           [
             "",
@@ -1742,8 +1742,8 @@
           ],
           [
             "",
-            "vendor__syn-2.0.61",
-            "vendor__syn-2.0.61"
+            "vendor__syn-2.0.66",
+            "vendor__syn-2.0.66"
           ]
         ]
       }
@@ -1777,7 +1777,7 @@
     },
     "@@bazel_features~//private:extensions.bzl%version_extension": {
       "general": {
-        "bzlTransitiveDigest": "3FcE0iMy2yYKEbEO19f72k9dzcpRUXHH+igow5yVy8g=",
+        "bzlTransitiveDigest": "UwYHXjy4P9iCTMR9n5kWsy4RwLoowjUrfDFTkBo5RG8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1872,7 +1872,7 @@
     },
     "@@rules_java~//java:extensions.bzl%toolchains": {
       "general": {
-        "bzlTransitiveDigest": "tJHbmWnq7m+9eUBnUdv7jZziQ26FmcGL9C5/hU3Q9UQ=",
+        "bzlTransitiveDigest": "0N5b5J9fUzo0sgvH4F3kIEaeXunz4Wy2/UtSFV/eXUY=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -2377,7 +2377,7 @@
     },
     "@@rules_rust~//rust:extensions.bzl%rust": {
       "general": {
-        "bzlTransitiveDigest": "SK5LDBC3NXoGJpZ7+I1UKZnqpkmBucyJltLo0L9X66w=",
+        "bzlTransitiveDigest": "Bkg/y2nX0L2A/okVxlQwqWZtrAAGUAbopnVsIjvPO9I=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -3905,7 +3905,7 @@
     },
     "@@rules_rust~//rust/private:extensions.bzl%i": {
       "general": {
-        "bzlTransitiveDigest": "X2v+7Bz11W5htCVO7xqy67eK7NWv0mmFRB4EQTVUZOY=",
+        "bzlTransitiveDigest": "0xQ8gkHYndhEbuFNeerZYDJaVUFrW6VFLldMBZfj2YU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},

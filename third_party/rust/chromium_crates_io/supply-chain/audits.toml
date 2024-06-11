@@ -440,6 +440,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.120 -> 1.0.121"
 
+[[audits.cxx]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.122 -> 1.0.123"
+notes = "safe-to-deploy and ub-risk-2 are provided by exemption"
+
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -523,6 +529,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "1.0.122"
 notes = "no grep hits for cipher, crypto, fs, net, or unsafe"
 
+[[audits.cxxbridge-flags]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.122 -> 1.0.123"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"
@@ -532,6 +543,11 @@ no grep hits for cipher, crypto.
 
 safe-to-deploy and ub-risk-2 are provided by exemption.
 """
+
+[[audits.cxxbridge-macro]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.122 -> 1.0.123"
 
 [[audits.either]]
 who = "agl@chromium.org"

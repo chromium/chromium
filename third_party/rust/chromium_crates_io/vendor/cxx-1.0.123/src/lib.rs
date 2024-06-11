@@ -364,8 +364,8 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.122")]
-#![cfg_attr(doc_cfg, feature(doc_cfg))]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.123")]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
     improper_ctypes_definitions,
@@ -477,7 +477,7 @@ mod weak_ptr;
 
 pub use crate::cxx_vector::CxxVector;
 #[cfg(feature = "alloc")]
-#[cfg_attr(doc_cfg, doc(cfg(feature = "alloc")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub use crate::exception::Exception;
 pub use crate::extern_type::{kind, ExternType};
 pub use crate::shared_ptr::SharedPtr;

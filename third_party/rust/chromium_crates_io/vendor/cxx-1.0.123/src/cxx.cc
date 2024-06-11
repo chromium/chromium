@@ -561,6 +561,11 @@ using isize_if_unique =
     typename std::conditional<std::is_same<rust::isize, int64_t>::value ||
                                   std::is_same<rust::isize, int32_t>::value,
                               struct isize_ignore, rust::isize>::type;
+// Similarly, on some platforms char may just be an alias for [u]int8_t.
+using char_if_unique =
+    typename std::conditional<std::is_same<char, uint8_t>::value ||
+                                  std::is_same<char, int8_t>::value,
+                              struct char_ignore, char>::type;
 
 class Fail final {
   repr::PtrLen &throw$;
@@ -800,7 +805,7 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
 #define FOR_EACH_RUST_VEC(MACRO)                                               \
   FOR_EACH_NUMERIC(MACRO)                                                      \
   MACRO(bool, bool)                                                            \
-  MACRO(char, char)                                                            \
+  MACRO(char, rust::detail::char_if_unique)                                    \
   MACRO(usize, rust::detail::usize_if_unique)                                  \
   MACRO(isize, rust::detail::isize_if_unique)                                  \
   MACRO(string, rust::String)                                                  \

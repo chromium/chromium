@@ -217,7 +217,7 @@ impl_extern_type! {
     f64 = "double"
 
     #[cfg(feature = "alloc")]
-    #[cfg_attr(doc_cfg, doc(cfg(feature = "alloc")))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     String = "rust::String"
 
     [Opaque]
