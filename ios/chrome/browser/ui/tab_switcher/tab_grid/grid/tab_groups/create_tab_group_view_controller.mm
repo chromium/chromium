@@ -69,6 +69,11 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 // virtual keyboard.
 const CGFloat kKeyboardToolbarHeightThreshold = 70;
 
+// Clear button constants.
+const CGFloat kClearButtonAlpha = 0.34;
+const CGFloat kClearButtonSize = 20;
+const CGFloat kClearButtonWidthAndHeight = 40;
+
 }  // namespace
 
 @implementation CreateTabGroupViewController {
@@ -218,7 +223,28 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   tabGroupTextField.translatesAutoresizingMaskIntoConstraints = NO;
   tabGroupTextField.autocorrectionType = UITextAutocorrectionTypeNo;
   tabGroupTextField.spellCheckingType = UITextSpellCheckingTypeNo;
-  tabGroupTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+
+  UIButton* clearButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  clearButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [clearButton setImage:DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
+                                                   kClearButtonSize)
+               forState:UIControlStateNormal];
+  [clearButton setTintColor:[[UIColor colorNamed:kSolidBlackColor]
+                                colorWithAlphaComponent:kClearButtonAlpha]];
+  [clearButton addTarget:self
+                  action:@selector(clearTextField)
+        forControlEvents:UIControlEventTouchUpInside];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [clearButton.widthAnchor
+        constraintEqualToConstant:kClearButtonWidthAndHeight],
+    [clearButton.heightAnchor constraintEqualToAnchor:clearButton.widthAnchor],
+  ]];
+
+  // Assign the overlay button to the text field
+  tabGroupTextField.rightView = clearButton;
+  tabGroupTextField.rightViewMode = UITextFieldViewModeWhileEditing;
+
   tabGroupTextField.accessibilityIdentifier =
       kCreateTabGroupTextFieldIdentifier;
   tabGroupTextField.text = _title;
@@ -233,7 +259,13 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
       initWithString:l10n_util::GetNSString(
                          IDS_IOS_TAB_GROUP_CREATION_PLACEHOLDER)
           attributes:@{NSForegroundColorAttributeName : placeholderTextColor}];
+
   return tabGroupTextField;
+}
+
+// Removes text in the text field.
+- (void)clearTextField {
+  _tabGroupTextField.text = @"";
 }
 
 // Returns the group color dot view.
