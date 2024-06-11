@@ -610,6 +610,13 @@ export class SettingsGoogleDriveSubpageElement extends
   private onCleanUpStorage_(): void {
     this.dialogType_ = ConfirmationDialogType.BULK_PINNING_CLEAN_UP_STORAGE;
   }
+
+  /** Gets the mirror sync sub label. */
+  private getMirrorSyncDescription_(): string {
+    // TODO(b/338158838) Get size of MyFiles.
+    // TODO(b/338158838) Get available space on Google Drive.
+    return this.i18n('googleDriveMirrorSyncDescription');
+  }
 }
 
 declare global {
