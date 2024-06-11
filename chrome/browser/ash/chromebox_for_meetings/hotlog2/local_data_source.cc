@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
 
+#include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +28,9 @@ constexpr LazyRE2 kFullLogLineRegex = {
     "^(?:([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:\\.]+Z) )?"
     "(?:(EMERG|ALERT|CRIT|SEVERE|ERR|ERROR|WARNING|INFO|NOTICE"
     "|DEBUG|VERBOSE[1-4]) )?((?s).*)"};
+
+// Number of characters to ingest per log line to create unique hash.
+constexpr size_t kLogMsgHashSize = 50;
 
 }  // namespace
 
@@ -103,6 +107,10 @@ void LocalDataSource::StartCollectingData() {
   poll_timer_.Start(FROM_HERE, poll_rate_,
                     base::BindRepeating(&LocalDataSource::FillDataBuffer,
                                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LocalDataSource::AssignDeviceID(const std::string& id) {
+  device_id_ = id;
 }
 
 void LocalDataSource::FillDataBuffer() {
@@ -245,8 +253,7 @@ void LocalDataSource::BuildLogEntryFromLogLine(
     // used to identify this entry. This will aid in de-duplication on the
     // server side.
     if (is_incremental_ && time_since_epoch != 0) {
-      entry.set_insert_id(GetDisplayName() + ":" +
-                          base::NumberToString(time_since_epoch));
+      entry.set_insert_id(GetUniqueInsertId(log_msg));
     }
 
     // Even if the match succeeded, the timestamps and severity are optional
@@ -256,6 +263,14 @@ void LocalDataSource::BuildLogEntryFromLogLine(
                                         : SeverityStringToEnum(severity));
     entry.set_text_payload(log_msg);
   }
+}
+
+const std::string LocalDataSource::GetUniqueInsertId(
+    const std::string& log_msg) {
+  std::string to_be_hashed = device_id_ + ":" + GetDisplayName() + ":" +
+                             log_msg.substr(0, kLogMsgHashSize);
+  size_t hash = base::FastHash(to_be_hashed);
+  return base::NumberToString(hash);
 }
 
 RE2& LocalDataSource::GetLogLineRegex() {

@@ -177,14 +177,16 @@ void DataAggregatorService::AddLocalCommandSource(
       FROM_HERE,
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-             const std::string& command, const base::TimeDelta& poll_freq) {
+             const std::string& device_id, const std::string& command,
+             const base::TimeDelta& poll_freq) {
             auto source = std::make_unique<CommandSource>(command, poll_freq);
+            source->AssignDeviceID(device_id);
             source->StartCollectingData();
 
             mojo::MakeSelfOwnedReceiver(std::move(source),
                                         std::move(pending_receiver));
           },
-          remote.BindNewPipeAndPassReceiver(), command, poll_freq));
+          remote.BindNewPipeAndPassReceiver(), device_id_, command, poll_freq));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
@@ -216,15 +218,16 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
       FROM_HERE,
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-             const std::string& filepath) {
+             const std::string& device_id, const std::string& filepath) {
             auto source = LogSource::Create(filepath, kDefaultLogPollFrequency,
                                             kDefaultLogBatchSize);
+            source->AssignDeviceID(device_id);
             source->StartCollectingData();
 
             mojo::MakeSelfOwnedReceiver(std::move(source),
                                         std::move(pending_receiver));
           },
-          remote.BindNewPipeAndPassReceiver(), filepath));
+          remote.BindNewPipeAndPassReceiver(), device_id_, filepath));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalLogDisconnect,
@@ -367,6 +370,7 @@ void DataAggregatorService::StoreDeviceId(
   if (policy_info->device_id.has_value()) {
     device_id_ = policy_info->device_id.value();
     VLOG(4) << "Assigning device ID " << device_id_;
+    InitializeLocalSources();
     StartFetchTimer();
   }
 }
@@ -496,7 +500,6 @@ DataAggregatorService::DataAggregatorService()
                                base::BindOnce(&PersistentDb::Initialize));
 
   InitializeUploadEndpoint(/*num_tries=*/0);
-  InitializeLocalSources();
 }
 
 DataAggregatorService::~DataAggregatorService() {
