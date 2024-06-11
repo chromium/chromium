@@ -90,6 +90,35 @@ TEST_F(TabGroupMediatorTest, DropLocalTab) {
   EXPECT_EQ("| f [ 1 a* d b c ] e", builder_->GetWebStateListDescription());
 }
 
+// Tests dropping tabs from the grid to a tab group.
+TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+
+  // Drop "F" before "A".
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:NO];
+  EXPECT_EQ("| [ 1 f a* b c ] d e", builder_->GetWebStateListDescription());
+
+  // Drop "D" before "B".
+  web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:2 fromSameCollection:NO];
+  EXPECT_EQ("| [ 1 f a* d b c ] e", builder_->GetWebStateListDescription());
+}
+
 // Tests dropping a tab from another browser (e.g. drag from another window) in
 // the grid.
 TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
