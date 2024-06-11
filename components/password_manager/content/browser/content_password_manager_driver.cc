@@ -294,7 +294,7 @@ ContentPasswordManagerDriver::GetPasswordGenerationHelper() {
   return &password_generation_helper_;
 }
 
-PasswordManager* ContentPasswordManagerDriver::GetPasswordManager() {
+PasswordManagerInterface* ContentPasswordManagerDriver::GetPasswordManager() {
   return client_->GetPasswordManager();
 }
 

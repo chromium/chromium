@@ -107,12 +107,13 @@ profile_metrics::BrowserProfileType PasswordManagerClient::GetProfileType()
   return profile_metrics::BrowserProfileType::kRegular;
 }
 
-const PasswordManager* PasswordManagerClient::GetPasswordManager() const {
+const PasswordManagerInterface* PasswordManagerClient::GetPasswordManager()
+    const {
   return nullptr;
 }
 
-PasswordManager* PasswordManagerClient::GetPasswordManager() {
-  return const_cast<PasswordManager*>(
+PasswordManagerInterface* PasswordManagerClient::GetPasswordManager() {
+  return const_cast<PasswordManagerInterface*>(
       static_cast<const PasswordManagerClient*>(this)->GetPasswordManager());
 }
 

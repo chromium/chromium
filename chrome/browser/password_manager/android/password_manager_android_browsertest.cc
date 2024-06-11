@@ -137,7 +137,11 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
           GetActiveWebContents()->GetPrimaryMainFrame());
 
   // There should be only one form with two fields in the test html.
-  ASSERT_EQ(driver->GetPasswordManager()->form_managers().size(), 1u);
+  ASSERT_EQ(static_cast<const password_manager::PasswordManager*>(
+                driver->GetPasswordManager())
+                ->form_managers()
+                .size(),
+            1u);
 
   PasswordsNavigationObserver observer(GetActiveWebContents());
   observer.SetPathToWaitFor("/password/done.html");

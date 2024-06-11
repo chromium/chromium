@@ -90,7 +90,7 @@ class ContentPasswordManagerDriver final
                                  autofill::mojom::AutofillSuggestionAvailability
                                      suggestion_availability) override;
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
-  PasswordManager* GetPasswordManager() override;
+  PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   void SendLoggingAvailability() override;
   bool IsInPrimaryMainFrame() const override;

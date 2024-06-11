@@ -1264,7 +1264,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerOverwritePlaceholderTest,
           WebContents())
           ->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
   autofill::FormData form_data(
-      *driver->GetPasswordManager()->form_managers()[0]->observed_form());
+      *static_cast<const password_manager::PasswordManager*>(
+           driver->GetPasswordManager())
+           ->form_managers()[0]
+           ->observed_form());
   driver->GetPasswordManager()->ProcessAutofillPredictions(
       driver, form_data,
       {{form_data.fields[0].global_id(), std::move(username_prediction)},

@@ -24,6 +24,35 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
               (override));
 
   // PasswordManagerInterface:
+  MOCK_METHOD(void, DropFormManagers, (), (override));
+  MOCK_METHOD((const PasswordFormCache*),
+              GetPasswordFormCache,
+              (),
+              (const override));
+  MOCK_METHOD(bool, IsPasswordFieldDetectedOnPage, (), (const override));
+#if BUILDFLAG(USE_BLINK)
+  MOCK_METHOD(void,
+              LogFirstFillingResult,
+              (PasswordManagerDriver*, autofill::FormRendererId, int32_t),
+              (override));
+#endif  // BUILDFLAG(USE_BLINK)
+  MOCK_METHOD(void, NotifyStorePasswordCalled, (), (override));
+  MOCK_METHOD(void,
+              OnDynamicFormSubmission,
+              (PasswordManagerDriver*,
+               autofill::mojom::SubmissionIndicatorEvent),
+              (override));
+  MOCK_METHOD(void,
+              OnGeneratedPasswordAccepted,
+              (PasswordManagerDriver*,
+               const autofill::FormData&,
+               autofill::FieldRendererId,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              OnInformAboutUserInput,
+              (PasswordManagerDriver*, const autofill::FormData&),
+              (override));
   MOCK_METHOD(void,
               OnPasswordFormsParsed,
               (PasswordManagerDriver*, const std::vector<autofill::FormData>&),
@@ -39,6 +68,14 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
   MOCK_METHOD(void,
               OnPasswordFormCleared,
               (PasswordManagerDriver*, const autofill::FormData&),
+              (override));
+  MOCK_METHOD(void,
+              OnUserModifiedNonPasswordField,
+              (PasswordManagerDriver*,
+               autofill::FieldRendererId,
+               const std::u16string&,
+               bool,
+               bool),
               (override));
   MOCK_METHOD(void,
               SetGenerationElementAndTypeForForm,
@@ -62,6 +99,10 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
                              autofill::AutofillType::ServerPrediction>&)),
       (override));
   MOCK_METHOD(PasswordManagerClient*, GetClient, (), (override));
+  MOCK_METHOD(const PasswordForm*,
+              GetParsedObservedForm,
+              (PasswordManagerDriver*, autofill::FieldRendererId),
+              (const override));
 #if BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               OnSubframeFormSubmission,
