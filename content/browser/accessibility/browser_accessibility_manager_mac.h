@@ -29,7 +29,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerMac(const ui::AXTreeUpdate& initial_tree,
-                                 ui::AXPlatformTreeManagerDelegate* delegate);
+                                 ui::AXPlatformTreeManagerDelegate& delegate);
 
   BrowserAccessibilityManagerMac(const BrowserAccessibilityManagerMac&) =
       delete;

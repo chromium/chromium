@@ -25,7 +25,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
  public:
   BrowserAccessibilityManagerFuchsia(
       const ui::AXTreeUpdate& initial_tree,
-      ui::AXPlatformTreeManagerDelegate* delegate);
+      ui::AXPlatformTreeManagerDelegate& delegate);
   ~BrowserAccessibilityManagerFuchsia() override;
 
   BrowserAccessibilityManagerFuchsia(

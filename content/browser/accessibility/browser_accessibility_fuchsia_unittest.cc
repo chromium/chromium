@@ -123,6 +123,8 @@ class BrowserAccessibilityFuchsiaTest : public testing::Test {
  protected:
   std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
       test_browser_accessibility_delegate_;
+  std::unique_ptr<ui::TestAXPlatformTreeManagerDelegate>
+      leaf_browser_accessibility_delegate_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -137,6 +139,9 @@ class BrowserAccessibilityFuchsiaTest : public testing::Test {
 void BrowserAccessibilityFuchsiaTest::SetUp() {
   test_browser_accessibility_delegate_ =
       std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  leaf_browser_accessibility_delegate_ =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  leaf_browser_accessibility_delegate_->is_root_frame_ = false;
 }
 
 TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
@@ -172,7 +177,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
     std::unique_ptr<BrowserAccessibilityManager> manager(
         BrowserAccessibilityManager::Create(
             MakeAXTreeUpdateForTesting(node),
-            test_browser_accessibility_delegate_.get()));
+            *test_browser_accessibility_delegate_));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
         ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -205,7 +210,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
     std::unique_ptr<BrowserAccessibilityManager> manager(
         BrowserAccessibilityManager::Create(
             MakeAXTreeUpdateForTesting(node),
-            test_browser_accessibility_delegate_.get()));
+            *test_browser_accessibility_delegate_));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
         ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -232,7 +237,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesLabels) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -265,7 +270,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -289,7 +294,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
        ToFuchsiaNodeDataTranslatesTableAttributes) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          CreateTableUpdate(), test_browser_accessibility_delegate_.get()));
+          CreateTableUpdate(), *test_browser_accessibility_delegate_));
 
   // Verify table node translation.
   {
@@ -355,7 +360,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
        ToFuchsiaNodeDataTranslatesListAttributes) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          CreateListUpdate(), test_browser_accessibility_delegate_.get()));
+          CreateListUpdate(), *test_browser_accessibility_delegate_));
 
   // Verify that the list root was translated.
   {
@@ -412,7 +417,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
     std::unique_ptr<BrowserAccessibilityManager> manager(
         BrowserAccessibilityManager::Create(
             MakeAXTreeUpdateForTesting(node),
-            test_browser_accessibility_delegate_.get()));
+            *test_browser_accessibility_delegate_));
 
     BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
         ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -436,7 +441,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -458,7 +463,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -480,7 +485,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -506,7 +511,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesValue) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -531,7 +536,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -572,7 +577,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -612,7 +617,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node, node_2, node_3),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   // Verify that node 2's offset container was translated correctly.
   BrowserAccessibilityFuchsia* root =
@@ -645,7 +650,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node, node_2),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   // Verify that node 2's offset container was translated correctly.
   BrowserAccessibilityFuchsia* child =
@@ -670,7 +675,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node, node_2, node_3),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());
@@ -706,7 +711,8 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ChildTree) {
   node_3.id = 3;
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdateForTesting(node, node_2, node_3), nullptr));
+          MakeAXTreeUpdateForTesting(node, node_2, node_3),
+          *leaf_browser_accessibility_delegate_));
 
   // Create a parent tree that points to the child tree.
   ui::AXNodeData node_4;
@@ -717,7 +723,8 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ChildTree) {
   node_5.AddChildTreeId(child_manager->GetTreeID());
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdateForTesting(node_4, node_5), nullptr));
+          MakeAXTreeUpdateForTesting(node_4, node_5),
+          *test_browser_accessibility_delegate_));
 
   // Update the child tree's parent tree ID.
   ui::AXTreeData updated_data = child_manager->GetTreeData();
@@ -767,7 +774,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ChildTreeMissing) {
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node_4, node_5),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   // Get the parent node that points to the child tree.
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
@@ -780,17 +787,15 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ChildTreeMissing) {
 }
 
 TEST_F(BrowserAccessibilityFuchsiaTest, GetFuchsiaNodeIDNonRootTree) {
-  // We want to verify that the root of a non-root tree will NOT be assigned ID
-  // = 0, so Specify that this tree is not the root.
-  test_browser_accessibility_delegate_->is_root_frame_ = false;
-
   ui::AXNodeData node;
   node.id = kRootId;
 
+  // We want to verify that the root of a non-root tree will NOT be assigned ID
+  // = 0, so use the delegate for a leaf (non-root).
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node),
-          test_browser_accessibility_delegate_.get()));
+          *leaf_browser_accessibility_delegate_));
 
   BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       ToBrowserAccessibilityFuchsia(manager->GetBrowserAccessibilityRoot());

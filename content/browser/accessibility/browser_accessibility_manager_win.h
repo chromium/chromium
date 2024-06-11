@@ -34,7 +34,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerWin(const ui::AXTreeUpdate& initial_tree,
-                                 ui::AXPlatformTreeManagerDelegate* delegate);
+                                 ui::AXPlatformTreeManagerDelegate& delegate);
 
   BrowserAccessibilityManagerWin(const BrowserAccessibilityManagerWin&) =
       delete;

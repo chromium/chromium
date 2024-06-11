@@ -224,7 +224,7 @@ void AccessibilityNotificationWaiter::OnFocusChanged() {
       static_cast<WebContentsImpl*>(web_contents());
   BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
-  if (manager && manager->delegate() && manager->GetFocus()) {
+  if (manager && manager->GetFocus()) {
     OnGeneratedEvent(manager, ui::AXEventGenerator::Event::FOCUS_CHANGED,
                      manager->GetFocus()->GetId());
   }

@@ -139,8 +139,8 @@ AccessibilityHitTestingBrowserTest::HitTestAndWaitForResultWithEvent(
   action_data.action = ax::mojom::Action::kHitTest;
   action_data.target_point = CSSToFramePoint(point);
   action_data.hit_test_event_to_fire = event_to_fire;
-  manager->delegate()->AccessibilityHitTest(CSSToFramePoint(point),
-                                            event_to_fire, 0, {});
+  manager->delegate().AccessibilityHitTest(CSSToFramePoint(point),
+                                           event_to_fire, 0, {});
   EXPECT_TRUE(event_waiter.WaitForNotification());
 
   BrowserAccessibilityManager* target_manager =
@@ -172,7 +172,7 @@ AccessibilityHitTestingBrowserTest::AsyncHitTestAndWaitForCallback(
     hit_node_id = node_id;
     run_loop.QuitClosure().Run();
   };
-  manager->delegate()->AccessibilityHitTest(
+  manager->delegate().AccessibilityHitTest(
       target_point, ax::mojom::Event::kNone, 0,
       base::BindLambdaForTesting(callback));
   run_loop.Run();

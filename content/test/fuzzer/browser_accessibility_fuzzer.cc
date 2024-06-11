@@ -176,9 +176,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   ui::TestAXPlatformTreeManagerDelegate delegate;
   std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, &delegate));
+      BrowserAccessibilityManager::Create(tree, delegate));
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree, &delegate));
+      BrowserAccessibilityManager::Create(child_tree, delegate));
 
   // We want to call a bunch of functions but we don't care what the
   // return values are. To ensure the compiler doesn't optimize the calls

@@ -106,7 +106,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, para1, text1),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
@@ -145,7 +145,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, heading1, text1),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
@@ -185,7 +185,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, para1, text1),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
@@ -274,7 +274,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
           MakeAXTreeUpdateForTesting(root, container, form, label, label_text,
                                      input_time, input_container, input_text,
                                      button, button_text),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
 
   BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
   EXPECT_FALSE(root_obj->IsLeaf());
@@ -352,7 +352,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
           MakeAXTreeUpdateForTesting(root, container_para, text1, text2, text3),
-          test_browser_accessibility_delegate_.get()));
+          *test_browser_accessibility_delegate_));
   BrowserAccessibility* container_obj = manager->GetFromID(11);
   // Default caller gets full text.
   EXPECT_EQ(u"1Foo2Bar3Baz", container_obj->GetTextContentUTF16());
@@ -410,7 +410,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          tree, test_browser_accessibility_delegate_.get()));
+          tree, *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());
@@ -463,7 +463,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          tree, test_browser_accessibility_delegate_.get()));
+          tree, *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());
@@ -507,7 +507,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          tree, test_browser_accessibility_delegate_.get()));
+          tree, *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());
@@ -562,7 +562,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          tree, test_browser_accessibility_delegate_.get()));
+          tree, *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());
@@ -621,7 +621,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          tree, test_browser_accessibility_delegate_.get()));
+          tree, *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());
@@ -674,7 +674,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          tree, test_browser_accessibility_delegate_.get()));
+          tree, *test_browser_accessibility_delegate_));
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());

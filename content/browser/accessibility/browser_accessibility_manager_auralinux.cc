@@ -17,16 +17,19 @@
 namespace content {
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+std::unique_ptr<BrowserAccessibilityManager>
+BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerAuraLinux(initial_tree, delegate);
+    ui::AXPlatformTreeManagerDelegate& delegate) {
+  return std::make_unique<BrowserAccessibilityManagerAuraLinux>(initial_tree,
+                                                                delegate);
 }
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerAuraLinux(
+std::unique_ptr<BrowserAccessibilityManager>
+BrowserAccessibilityManager::Create(
+    ui::AXPlatformTreeManagerDelegate& delegate) {
+  return std::make_unique<BrowserAccessibilityManagerAuraLinux>(
       BrowserAccessibilityManagerAuraLinux::GetEmptyDocument(), delegate);
 }
 
@@ -37,7 +40,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerAuraLinux() {
 
 BrowserAccessibilityManagerAuraLinux::BrowserAccessibilityManagerAuraLinux(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    ui::AXPlatformTreeManagerDelegate& delegate)
     : BrowserAccessibilityManager(delegate) {
   Initialize(initial_tree);
 }

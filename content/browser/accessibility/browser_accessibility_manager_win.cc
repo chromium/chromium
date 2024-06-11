@@ -60,16 +60,19 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 }  // namespace
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+std::unique_ptr<BrowserAccessibilityManager>
+BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerWin(initial_tree, delegate);
+    ui::AXPlatformTreeManagerDelegate& delegate) {
+  return std::make_unique<BrowserAccessibilityManagerWin>(initial_tree,
+                                                          delegate);
 }
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerWin(
+std::unique_ptr<BrowserAccessibilityManager>
+BrowserAccessibilityManager::Create(
+    ui::AXPlatformTreeManagerDelegate& delegate) {
+  return std::make_unique<BrowserAccessibilityManagerWin>(
       BrowserAccessibilityManagerWin::GetEmptyDocument(), delegate);
 }
 
@@ -80,7 +83,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerWin() {
 
 BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    ui::AXPlatformTreeManagerDelegate& delegate)
     : BrowserAccessibilityManager(delegate) {
   ui::win::CreateATLModuleIfNeeded();
   Initialize(initial_tree);

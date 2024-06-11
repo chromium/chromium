@@ -18,25 +18,23 @@
 namespace content {
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
+std::unique_ptr<BrowserAccessibilityManager>
+BrowserAccessibilityManagerAndroid::Create(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate* delegate) {
-  if (!delegate)
-    return new BrowserAccessibilityManagerAndroid(initial_tree, nullptr,
-                                                  nullptr);
-
+    ui::AXPlatformTreeManagerDelegate& delegate) {
   WebContentsAccessibilityAndroid* wcax = nullptr;
-  if (delegate->AccessibilityIsRootFrame()) {
+  if (delegate.AccessibilityIsRootFrame()) {
     wcax = static_cast<WebContentsAccessibilityAndroid*>(
-        delegate->AccessibilityGetWebContentsAccessibility());
+        delegate.AccessibilityGetWebContentsAccessibility());
   }
-  return new BrowserAccessibilityManagerAndroid(
+  return std::make_unique<BrowserAccessibilityManagerAndroid>(
       initial_tree, wcax ? wcax->GetWeakPtr() : nullptr, delegate);
 }
 
 // static
-BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
-    ui::AXPlatformTreeManagerDelegate* delegate) {
+std::unique_ptr<BrowserAccessibilityManager>
+BrowserAccessibilityManagerAndroid::Create(
+    ui::AXPlatformTreeManagerDelegate& delegate) {
   return BrowserAccessibilityManagerAndroid::Create(
       BrowserAccessibilityManagerAndroid::GetEmptyDocument(), delegate);
 }
@@ -44,7 +42,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     const ui::AXTreeUpdate& initial_tree,
     base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
-    ui::AXPlatformTreeManagerDelegate* delegate)
+    ui::AXPlatformTreeManagerDelegate& delegate)
     : BrowserAccessibilityManager(delegate),
       web_contents_accessibility_(std::move(web_contents_accessibility)),
       prune_tree_for_screen_reader_(true) {

@@ -26,7 +26,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
  public:
   BrowserAccessibilityManagerAuraLinux(
       const ui::AXTreeUpdate& initial_tree,
-      ui::AXPlatformTreeManagerDelegate* delegate);
+      ui::AXPlatformTreeManagerDelegate& delegate);
 
   BrowserAccessibilityManagerAuraLinux(
       const BrowserAccessibilityManagerAuraLinux&) = delete;
