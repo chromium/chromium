@@ -22,39 +22,36 @@ import {ChromeVoxRange} from '../chromevox_range.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 
 export class PanelNodeMenuBackground {
+  private node_: AutomationNode;
+  private pred_: AutomationPredicate.Unary;
+  private menuId_: PanelNodeMenuId;
+  private isActivated_: boolean;
+  private walker_?: AutomationTreeWalker;
+  private nodeCount_ = 0;
+  private isEmpty_ = true;
+  private onFinish_?: VoidFunction;
+  private finishPromise_: Promise<void>;
+
+
   /**
-   * @param {!PanelNodeMenuData} menuData
-   * @param {AutomationNode} node ChromeVox's current position.
-   * @param {boolean} isActivated Whether the menu was explicitly activated.
+   * @param node ChromeVox's current position.
+   * @param isActivated Whether the menu was explicitly activated.
    *     If false, the menu is populated asynchronously by posting a task
    *     after searching each chunk of nodes.
    */
-  constructor(menuData, node, isActivated) {
-    /** @private {AutomationNode} */
+  constructor(
+      menuData: PanelNodeMenuData, node: AutomationNode, isActivated: boolean) {
     this.node_ = node;
-    /** @private {AutomationPredicate.Unary} */
     this.pred_ = menuData.predicate;
-    /** @private {!PanelNodeMenuId} */
     this.menuId_ = menuData.menuId;
-    /** @private {boolean} */
     this.isActivated_ = isActivated;
-    /** @private {AutomationTreeWalker|undefined} */
-    this.walker_;
-    /** @private {number} */
-    this.nodeCount_ = 0;
-    /** @private {boolean} */
-    this.isEmpty_ = true;
-    /** @private {function()} */
-    this.onFinish_;
-    /** @private {!Promise} */
     this.finishPromise_ = new Promise(resolve => this.onFinish_ = resolve);
   }
 
-  /** @return {!Promise} */
-  waitForFinish() {
+  waitForFinish(): Promise<void> {
     return this.finishPromise_;
   }
 
@@ -62,7 +59,7 @@ export class PanelNodeMenuBackground {
    * Create the AutomationTreeWalker and kick off the search to find
    * nodes that match the predicate for this menu.
    */
-  populate() {
+  populate(): void {
     if (!this.node_) {
       this.finish_();
       return;
@@ -91,22 +88,22 @@ export class PanelNodeMenuBackground {
    * have been scanned, call setTimeout to defer searching. This frees up the
    * main event loop to keep the panel menu responsive, otherwise it basically
    * freezes up until all of the nodes have been found.
-   * @private
    */
-  findMoreNodes_() {
-    while (this.walker_.next().node) {
-      const node = this.walker_.node;
-      if (this.pred_(node)) {
+  private findMoreNodes_(): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    while (this.walker_!.next().node) {
+      const node = this.walker_!.node;
+      if (this.pred_(node!)) {
         this.isEmpty_ = false;
         const output = new Output();
-        const range = CursorRange.fromNode(node);
+        const range = CursorRange.fromNode(node!);
         output.withoutHints();
         output.withSpeech(range, range, OutputCustomEvent.NAVIGATE);
         const title = output.toString();
 
         const callbackId = new BridgeCallbackId(
             BridgeContext.BACKGROUND,
-            () => ChromeVoxRange.navigateTo(CursorRange.fromNode(node)));
+            () => ChromeVoxRange.navigateTo(CursorRange.fromNode(node!)));
         const isActive = node === this.node_ && this.isActivated_;
         const menuId = this.menuId_;
         this.addMenuItemFromData_({title, callbackId, isActive, menuId});
@@ -114,7 +111,7 @@ export class PanelNodeMenuBackground {
 
       if (!this.isActivated_) {
         this.nodeCount_++;
-        if (this.nodeCount_ >= PanelNodeMenuBackground.MAX_NODES_BEFORE_ASYNC) {
+        if (this.nodeCount_ >= MAX_NODES_BEFORE_ASYNC) {
           this.nodeCount_ = 0;
           setTimeout(() => this.findMoreNodes_(), 0);
           return;
@@ -127,9 +124,8 @@ export class PanelNodeMenuBackground {
   /**
    * Called when we've finished searching for nodes. If no matches were
    * found, adds an item to the menu indicating none were found.
-   * @private
    */
-  finish_() {
+  private finish_(): void {
     if (this.isEmpty_) {
       this.addMenuItemFromData_({
         title: Msgs.getMsg('panel_menu_item_none'),
@@ -138,23 +134,19 @@ export class PanelNodeMenuBackground {
         menuId: this.menuId_,
       });
     }
-    this.onFinish_();
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.onFinish_!();
   }
 
-  /**
-   * @param {!PanelNodeMenuItemData} itemData
-   * @private
-   */
-  async addMenuItemFromData_(itemData) {
+  private async addMenuItemFromData_(
+      itemData: PanelNodeMenuItemData): Promise<void> {
     await PanelBridge.addMenuItem(itemData);
   }
 }
 
-/**
- * The number of nodes to search before posting a task to finish
- * searching.
- * @const {number}
- */
-PanelNodeMenuBackground.MAX_NODES_BEFORE_ASYNC = 100;
+// Local to module.
+
+/** The number of nodes to search before posting a task to finish searching. */
+const MAX_NODES_BEFORE_ASYNC = 100;
 
 TestImportManager.exportForTesting(PanelNodeMenuBackground);
