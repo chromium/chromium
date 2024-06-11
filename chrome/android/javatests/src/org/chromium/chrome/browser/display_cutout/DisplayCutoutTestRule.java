@@ -88,9 +88,9 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
             if (getLayoutInDisplayCutoutMode()
                             == LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                     && mDeviceHasCutout) {
-                onSafeAreaChanged(TEST_SAFE_AREA_WITH_CUTOUT);
+                onSafeAreaChanged(new Rect(TEST_SAFE_AREA_WITH_CUTOUT));
             } else {
-                onSafeAreaChanged(TEST_SAFE_AREA_WITHOUT_CUTOUT);
+                onSafeAreaChanged(new Rect(TEST_SAFE_AREA_WITHOUT_CUTOUT));
             }
         }
 
