@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -548,13 +549,12 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
   // scaling operation failed, this sprite should draw nothing, and so fully
   // transparent pixels will be generated instead.
   const int num_pixels = size_.GetArea();
-  std::unique_ptr<float[]> alphas(new float[num_pixels]);
-  std::unique_ptr<gfx::ColorTransform::TriStim[]> colors(
-      new gfx::ColorTransform::TriStim[num_pixels]);
+  auto alphas = base::HeapArray<float>::Uninit(num_pixels);
+  auto colors =
+      base::HeapArray<gfx::ColorTransform::TriStim>::WithSize(num_pixels);
   if (scaled_image.drawsNothing()) {
-    std::fill(alphas.get(), alphas.get() + num_pixels, 0.0f);
-    std::fill(colors.get(), colors.get() + num_pixels,
-              gfx::ColorTransform::TriStim());
+    std::fill(alphas.begin(), alphas.end(), 0.0f);
+    std::fill(colors.begin(), colors.end(), gfx::ColorTransform::TriStim());
   } else {
     int pos = 0;
     for (int y = 0; y < size_.height(); ++y) {
@@ -584,7 +584,7 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
   if (image_color_space != color_space_) {
     const auto color_transform =
         gfx::ColorTransform::NewColorTransform(image_color_space, color_space_);
-    color_transform->Transform(colors.get(), num_pixels);
+    color_transform->Transform(colors.data(), num_pixels);
   }
 
   switch (format_) {
@@ -613,13 +613,12 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
       float* out_uv_1_minus_alpha = out_luma + num_pixels;
       float* out_u = out_uv_1_minus_alpha + num_chroma_pixels;
       float* out_v = out_u + num_chroma_pixels;
-      const float* alpha_row0 = alphas.get();
-      const float* const alpha_row_end = alpha_row0 + num_pixels;
-      const gfx::ColorTransform::TriStim* color_row0 = colors.get();
+      auto alpha_row0 = alphas.begin();
+      auto alpha_row_end = alphas.end();
+      auto color_row0 = colors.begin();
       while (alpha_row0 < alpha_row_end) {
-        const float* alpha_row1 = alpha_row0 + size_.width();
-        const gfx::ColorTransform::TriStim* color_row1 =
-            color_row0 + size_.width();
+        const auto alpha_row1 = alpha_row0 + size_.width();
+        const auto color_row1 = color_row0 + size_.width();
         for (int col = 0; col < size_.width(); col += 2) {
           // First, the downscaled alpha is the average of the four original
           // alpha values:
