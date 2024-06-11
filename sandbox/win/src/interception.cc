@@ -8,13 +8,14 @@
 #include "sandbox/win/src/interception.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
-#include <memory>
 #include <set>
 #include <string>
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/scoped_native_library.h"
@@ -135,19 +136,18 @@ ResultCode InterceptionManager::InitializeInterceptions() {
   if (interceptions_.empty())
     return SBOX_ALL_OK;  // Nothing to do here
 
-  size_t buffer_bytes = GetBufferSize();
-  std::unique_ptr<char[]> local_buffer(new char[buffer_bytes]);
+  auto local_buffer = base::HeapArray<uint8_t>::Uninit(GetBufferSize());
 
-  if (!SetupConfigBuffer(local_buffer.get(), buffer_bytes))
+  if (!SetupConfigBuffer(local_buffer.data(), local_buffer.size())) {
     return SBOX_ERROR_CANNOT_SETUP_INTERCEPTION_CONFIG_BUFFER;
+  }
 
   void* remote_buffer;
-  if (!CopyToChildMemory(child_->Process(), local_buffer.get(), buffer_bytes,
-                         &remote_buffer))
+  if (!CopyToChildMemory(child_->Process(), local_buffer, &remote_buffer)) {
     return SBOX_ERROR_CANNOT_COPY_DATA_TO_CHILD;
+  }
 
-  bool hot_patch_needed = (0 != buffer_bytes);
-  ResultCode rc = PatchNtdll(hot_patch_needed);
+  ResultCode rc = PatchNtdll(/*hot_patch_needed=*/!local_buffer.empty());
 
   if (rc != SBOX_ALL_OK)
     return rc;

@@ -11,6 +11,7 @@
 
 #include <algorithm>
 
+#include "base/containers/heap_array.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/heap_helper.h"
 #include "sandbox/win/src/sandbox.h"
@@ -141,9 +142,10 @@ SBOX_TESTS_COMMAND int Lpc_TestValidProcessHeaps(int argc, wchar_t** argv) {
   //
   // This is inherently racy as is, but it's not something that we observe a lot
   // in Chrome, the heaps tend to be created at startup only.
-  std::unique_ptr<HANDLE[]> all_heaps(new HANDLE[number_of_heaps]);
-  if (::GetProcessHeaps(number_of_heaps, all_heaps.get()) != number_of_heaps)
+  auto all_heaps = base::HeapArray<HANDLE>::Uninit(number_of_heaps);
+  if (::GetProcessHeaps(number_of_heaps, all_heaps.data()) != number_of_heaps) {
     return SBOX_TEST_FIRST_ERROR;
+  }
 
   for (size_t i = 0; i < number_of_heaps; ++i) {
     HANDLE handle = all_heaps[i];

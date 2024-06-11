@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
@@ -98,14 +99,14 @@ bool HeapFlags(HANDLE handle, DWORD* flags) {
 
 HANDLE FindCsrPortHeap() {
   DWORD number_of_heaps = ::GetProcessHeaps(0, nullptr);
-  std::unique_ptr<HANDLE[]> all_heaps(new HANDLE[number_of_heaps]);
-  if (::GetProcessHeaps(number_of_heaps, all_heaps.get()) != number_of_heaps)
+  auto all_heaps = base::HeapArray<HANDLE>::Uninit(number_of_heaps);
+  if (::GetProcessHeaps(number_of_heaps, all_heaps.data()) != number_of_heaps) {
     return nullptr;
+  }
 
   // Search for the CSR port heap handle, identified purely based on flags.
   HANDLE csr_port_heap = nullptr;
-  for (size_t i = 0; i < number_of_heaps; ++i) {
-    HANDLE handle = all_heaps[i];
+  for (HANDLE handle : all_heaps) {
     DWORD flags = 0;
     if (!HeapFlags(handle, &flags)) {
       DLOG(ERROR) << "Unable to get flags for this heap";

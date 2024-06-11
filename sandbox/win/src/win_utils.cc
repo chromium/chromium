@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
@@ -109,25 +110,24 @@ std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
 }
 
 bool CopyToChildMemory(HANDLE child,
-                       const void* local_buffer,
-                       size_t buffer_bytes,
+                       const base::span<uint8_t> local_buffer,
                        void** remote_buffer) {
   DCHECK(remote_buffer);
-  if (0 == buffer_bytes) {
+  if (local_buffer.empty()) {
     *remote_buffer = nullptr;
     return true;
   }
 
   // Allocate memory in the target process without specifying the address
-  void* remote_data = ::VirtualAllocEx(child, nullptr, buffer_bytes, MEM_COMMIT,
-                                       PAGE_READWRITE);
+  void* remote_data = ::VirtualAllocEx(child, nullptr, local_buffer.size(),
+                                       MEM_COMMIT, PAGE_READWRITE);
   if (!remote_data)
     return false;
 
   SIZE_T bytes_written;
-  bool success = ::WriteProcessMemory(child, remote_data, local_buffer,
-                                      buffer_bytes, &bytes_written);
-  if (!success || bytes_written != buffer_bytes) {
+  bool success = ::WriteProcessMemory(child, remote_data, local_buffer.data(),
+                                      local_buffer.size(), &bytes_written);
+  if (!success || bytes_written != local_buffer.size()) {
     ::VirtualFreeEx(child, remote_data, 0, MEM_RELEASE);
     return false;
   }

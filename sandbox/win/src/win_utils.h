@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_WIN_UTILS_H_
 #define SANDBOX_WIN_SRC_WIN_UTILS_H_
 
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <map>
@@ -14,6 +15,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/win/windows_types.h"
 
 namespace sandbox {
@@ -59,15 +61,14 @@ std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path);
 // Resolves a handle to its type name. Returns the typename if successful.
 std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
 
-// Allocates |buffer_bytes| in child (PAGE_READWRITE) and copies data
+// Allocates |local_buffer.size()| in child (PAGE_READWRITE) and copies data
 // from |local_buffer| in this process into |child|. |remote_buffer|
 // contains the address in the chile.  If a zero byte copy is
 // requested |true| is returned and no allocation or copying is
 // attempted.  Returns false if allocation or copying fails. If
 // copying fails, the allocation will be reversed.
 bool CopyToChildMemory(HANDLE child,
-                       const void* local_buffer,
-                       size_t buffer_bytes,
+                       base::span<uint8_t> local_buffer,
                        void** remote_buffer);
 
 // Returns true if the provided path points to a pipe using a native path.
